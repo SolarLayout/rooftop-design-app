@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Card } from "@/components/ui/Card";
 
 type Props = {
   /** The name the browser tests find the example by. */
@@ -23,10 +24,10 @@ type SectionProps = { title: string; children: ReactNode };
 /** A card of the kit: a title and what belongs under it. */
 export function Section({ title, children }: SectionProps) {
   return (
-    <section className="flex flex-col gap-4.5 rounded-card border border-line bg-surface-1 p-card shadow-card">
+    <Card className="flex flex-col gap-4.5">
       <h2 className="type-section text-text-3">{title}</h2>
       {children}
-    </section>
+    </Card>
   );
 }
 

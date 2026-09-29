@@ -64,11 +64,16 @@ A stepper is a number field with minus and plus buttons of 30 (44 on touch).
 `surface-1`, border `line`, radius `radius-card`, `shadow-card`, padding `space-card`.
 Equipment card (module, inverter): glyph 44 by 56 to 60, name in Geist 600, one or two lines of facts in
 `text-caption`, file name in Geist Mono, a secondary button (Replace).
-Selected card: `note-surface`, accent border, `halo-focus`.
+Selected card: `note-surface`, accent border, `halo-selected`.
+Compact card: radius `radius-card-s`, padding `space-card-compact`.
 
 ## Stat tile and vitals cell
 Label in `text-caption`, text-2. Value in `text-value` (or a display size for the lead value) with its unit.
-A status mark may follow the value. Tiles inside a card use `color-well` and `shadow-well`.
+A status mark may follow the value. Tiles inside a card are flat: `surface-2`, radius `radius-row`, padding
+10 by 14.
+
+In code: `Stats` is the list, `Stat` one label with its value. Looks: `cell` (vitals: value 16, 17 on tablet),
+`lead` (the energy: display 26, 22 on phone), `tile`.
 
 ## Vitals bar
 Desktop: floating, `surface-1`, `radius-bar`, `shadow-float`, height 78, cells separated by 1 px lines. Order:
@@ -81,6 +86,9 @@ is waiting for.
 ## Status marks
 Tick: `color-ok`, stroke 2.4. Note: exclamation mark in a circle, accent. Size 14 to 22. Each has a text
 alternative ("Fits", "Below the DC/AC target"). There is no cross and no red.
+
+In code: `StatusMark`, of the kind `fits` or `note`. It cannot be without its words (`label`): they stand
+beside the mark, or, where there is no room (`wordsShown={false}`), the mark says them to a screen reader.
 
 ## Decision card
 For a choice only the user can make. `note-surface`, accent border, 4 px accent halo, note icon, a title that
