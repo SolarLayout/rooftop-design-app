@@ -14,8 +14,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${fontVariables} h-full antialiased`}>
-      <body className="min-h-full bg-canvas font-sans text-ink">{children}</body>
+    <html lang="en" data-theme="dusk" className={`${fontVariables} h-full antialiased`}>
+      <body className="min-h-full">{children}</body>
     </html>
   );
 }
