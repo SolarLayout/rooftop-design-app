@@ -27,11 +27,14 @@ theme (`:root`).
 | `--color-surface-1` | `#12161D` | Cards, floating panels, list rows |
 | `--color-surface-2` | `#181D26` | Tiles inside a card, selected list row |
 | `--color-control` | `#151A22` | Raised secondary buttons |
+| `--color-control-hover` | `#1B212B` | Secondary button, hover |
+| `--color-control-pressed` | `#10141A` | Secondary and quiet button, pressed |
 | `--color-control-active` | `#232A36` | Active segment, active lens, active workspace |
 | `--color-well` | `#090C10` | Recessed fields, segmented control track, slider track |
 | `--color-line-subtle` | `#1C222C` | Dividers inside chrome |
 | `--color-line` | `#232A36` | Card and control borders |
 | `--color-line-strong` | `#2F3847` | Borders of secondary buttons and inputs, off switch |
+| `--color-line-hover` | `#3B4658` | Border of a secondary button, hover |
 
 ## Colour: text
 
@@ -222,6 +225,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--shadow-raised-hover` | `inset 0 1px 0 rgba(255,255,255,.09), 0 2px 4px rgba(0,0,0,.45), 0 8px 20px rgba(0,0,0,.35)` | Hover |
 | `--shadow-pressed` | `inset 0 2px 4px rgba(0,0,0,.5)` | Pressed |
 | `--shadow-primary` | `inset 0 1px 0 rgba(255,255,255,.45), inset 0 -1px 0 rgba(0,0,0,.18), 0 1px 2px rgba(0,0,0,.5), 0 8px 22px rgba(255,176,32,.24)` | Primary button |
+| `--shadow-primary-pressed` | `inset 0 2px 4px rgba(0,0,0,.3), 0 1px 1px rgba(0,0,0,.5)` | Primary, pressed |
 | `--shadow-primary-hover` | `inset 0 1px 0 rgba(255,255,255,.5), inset 0 -1px 0 rgba(0,0,0,.18), 0 2px 4px rgba(0,0,0,.5), 0 12px 30px rgba(255,176,32,.36)` | Primary, hover |
 | `--shadow-segment` | `inset 0 1px 0 rgba(255,255,255,.10), 0 1px 3px rgba(0,0,0,.55)` | Active segment |
 | `--shadow-well` | `inset 0 1px 3px rgba(0,0,0,.65), 0 1px 0 rgba(255,255,255,.04)` | Fields, segmented track |
@@ -231,6 +235,12 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--shadow-knob` | `0 1px 3px rgba(0,0,0,.5)` | Switch knob |
 | `--shadow-handle` | `0 2px 6px rgba(0,0,0,.6)` | Map and slider handles |
 | `--halo-focus` | `0 0 0 3px rgba(255,176,32,.18)` | Focused field, selected card (with an accent border) |
+
+## States
+
+| Token | Value | Use |
+|---|---|---|
+| `--opacity-disabled` | `0.45` | A control that cannot be used. It has no shadow either |
 
 ## Focus
 
@@ -254,7 +264,6 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--duration-pulse-corner` | `2000ms` | One pulse of the corner being edited |
 | `--shift-press` | `1px` | Hover raises a control by it, press lowers it by it |
 | `--scale-press` | `0.985` | Size of a control while it is pressed |
-| `--brightness-hover` | `1.14` | Brightness of a control under the pointer |
 
 Under `prefers-reduced-motion: reduce` every transition and animation is removed; state changes cut.
 
@@ -282,12 +291,26 @@ Under `prefers-reduced-motion: reduce` every transition and animation is removed
 | `--radius-*` | `rounded-` and the name | `rounded-control` |
 | `--shadow-*`, `--halo-focus` | `shadow-` and the name | `shadow-raised`, `shadow-halo-focus` |
 | `--ring-focus`, `--ring-focus-offset` | `focus-ring` | on every control |
+| `--opacity-disabled` | `opacity-disabled` | `disabled:opacity-disabled` |
 | `--ease-out`, `--duration-*` | `ease-out`, `duration-` and the name | `duration-press` |
+| `--duration-press`, `--ease-out`, `--shift-press`, `--scale-press` | `press-motion`, `raised-by-hover`, `lowered-by-press` | on every control that is pressed |
+| `--stroke-*` | `stroke-icon`, `stroke-icon-light`, `stroke-tick` | on the `svg` of an icon |
 | `--z-*` | `z-` and the name | `z-float` |
 
 Tailwind's own palette, sizes of type, radii and shadows do not exist in this app: a utility that is not made
 of a token makes no CSS.
 
+States have variants of their own, so that the kit can show a state without a pointer or a keyboard:
+`hovered:` (under a pointer that can hover, or `data-shown-as="hover"`), `pressed:` (while pressed, or
+`data-shown-as="pressed"`). `focus-ring` also answers to `data-shown-as="focus"`. None applies to a control
+that is disabled.
+
 ## Icons
-Stroke icons, 24 by 24 view box, stroke 1.7 to 2, round caps and joins, `currentColor`. Sizes 14, 16, 18, 20, 22.
-No emoji. No filled icons except the play triangle and the logo.
+Stroke icons, 24 by 24 view box, round caps and joins, `currentColor`. Sizes 14, 16, 18, 20, 22, which are
+steps of `--spacing`. No emoji. No filled icons except the play triangle and the logo.
+
+| Token | Value | Use |
+|---|---|---|
+| `--stroke-icon` | `2` | Stroke of an icon |
+| `--stroke-icon-light` | `1.7` | Stroke of the icons of the navigation, which are larger |
+| `--stroke-tick` | `2.4` | Stroke of the tick |

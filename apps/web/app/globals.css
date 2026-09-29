@@ -196,7 +196,12 @@
   --duration-pulse-corner: 2000ms;
   --shift-press: 1px;
   --scale-press: 0.985;
-  --brightness-hover: 1.14;
+
+  --opacity-disabled: 0.45;
+
+  --stroke-icon: 2;
+  --stroke-icon-light: 1.7;
+  --stroke-tick: 2.4;
 
   --z-stage: 0;
   --z-stage-overlay: 1;
@@ -213,11 +218,14 @@
   --color-surface-1: #12161D;
   --color-surface-2: #181D26;
   --color-control: #151A22;
+  --color-control-hover: #1B212B;
+  --color-control-pressed: #10141A;
   --color-control-active: #232A36;
   --color-well: #090C10;
   --color-line-subtle: #1C222C;
   --color-line: #232A36;
   --color-line-strong: #2F3847;
+  --color-line-hover: #3B4658;
 
   --color-text: #F2F4F7;
   --color-text-2: #A9B2C0;
@@ -254,6 +262,7 @@
   --shadow-primary:
     inset 0 1px 0 rgba(255,255,255,.45), inset 0 -1px 0 rgba(0,0,0,.18), 0 1px 2px rgba(0,0,0,.5),
     0 8px 22px rgba(255,176,32,.24);
+  --shadow-primary-pressed: inset 0 2px 4px rgba(0,0,0,.3), 0 1px 1px rgba(0,0,0,.5);
   --shadow-primary-hover:
     inset 0 1px 0 rgba(255,255,255,.5), inset 0 -1px 0 rgba(0,0,0,.18), 0 2px 4px rgba(0,0,0,.5),
     0 12px 30px rgba(255,176,32,.36);
@@ -325,11 +334,14 @@
   --color-surface-1: var(--color-surface-1);
   --color-surface-2: var(--color-surface-2);
   --color-control: var(--color-control);
+  --color-control-hover: var(--color-control-hover);
+  --color-control-pressed: var(--color-control-pressed);
   --color-control-active: var(--color-control-active);
   --color-well: var(--color-well);
   --color-line-subtle: var(--color-line-subtle);
   --color-line: var(--color-line);
   --color-line-strong: var(--color-line-strong);
+  --color-line-hover: var(--color-line-hover);
   --color-text: var(--color-text);
   --color-text-2: var(--color-text-2);
   --color-text-3: var(--color-text-3);
@@ -360,6 +372,7 @@
   --shadow-raised-hover: var(--shadow-raised-hover);
   --shadow-pressed: var(--shadow-pressed);
   --shadow-primary: var(--shadow-primary);
+  --shadow-primary-pressed: var(--shadow-primary-pressed);
   --shadow-primary-hover: var(--shadow-primary-hover);
   --shadow-segment: var(--shadow-segment);
   --shadow-well: var(--shadow-well);
@@ -528,12 +541,68 @@
   font-variant-numeric: tabular-nums;
 }
 
+/*
+  States. The kit shows a control in a state without a pointer or a keyboard, by `data-shown-as`.
+  `pressed` is declared after `hovered`, so that a control that is both looks pressed.
+*/
+@custom-variant hovered {
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      @slot;
+    }
+  }
+  &[data-shown-as="hover"] {
+    @slot;
+  }
+}
+@custom-variant pressed {
+  &:active:not(:disabled) {
+    @slot;
+  }
+  &[data-shown-as="pressed"] {
+    @slot;
+  }
+}
+
 /* Keyboard focus, the same on every control. */
 @utility focus-ring {
-  &:focus-visible {
+  &:focus-visible,
+  &[data-shown-as="focus"] {
     outline: var(--ring-focus);
     outline-offset: var(--ring-focus-offset);
   }
+}
+
+@utility opacity-disabled {
+  opacity: var(--opacity-disabled);
+}
+/* The lowest of the three heights: no shadow at all. */
+@utility flat {
+  box-shadow: none;
+}
+
+/* What is pressed moves: up by a pixel under the pointer, down by a pixel and a little smaller when pressed. */
+@utility press-motion {
+  transition-property: translate, scale, box-shadow, background-color, border-color, color;
+  transition-duration: var(--duration-press);
+  transition-timing-function: var(--ease-out);
+}
+@utility raised-by-hover {
+  translate: 0 calc(var(--shift-press) * -1);
+}
+@utility lowered-by-press {
+  translate: 0 var(--shift-press);
+  scale: var(--scale-press);
+}
+
+@utility stroke-icon {
+  stroke-width: var(--stroke-icon);
+}
+@utility stroke-icon-light {
+  stroke-width: var(--stroke-icon-light);
+}
+@utility stroke-tick {
+  stroke-width: var(--stroke-tick);
 }
 
 @utility duration-press {
