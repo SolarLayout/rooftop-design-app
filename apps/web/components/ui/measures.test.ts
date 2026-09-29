@@ -14,6 +14,11 @@ describe("measures", () => {
     expect(variables({ at: 0.1 + 0.2 })).toEqual({ "--at": "0.3" });
   });
 
+  test("a place on the screen is in pixels", () => {
+    expect(variables({ x: 560, y: 364 })).toEqual({ "--x": "560px", "--y": "364px" });
+    expect(variables({ x: -12.5 })).toEqual({ "--x": "-12.5px" });
+  });
+
   test("what is no number is refused: the style would be void", () => {
     expect(() => measures({ at: Number.NaN })).toThrow("at is no number");
     expect(() => measures({ span: Number.POSITIVE_INFINITY })).toThrow("span is no number");

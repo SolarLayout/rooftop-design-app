@@ -173,8 +173,10 @@
   --size-touch: 44px;
   --size-sheet-peek: 84px;
 
+  --radius-key: 4px;
   --radius-xs: 6px;
   --radius-seg: 7px;
+  --radius-item: 8px;
   --radius-seg-touch: 9px;
   --radius-control: 10px;
   --radius-row: 12px;
@@ -278,6 +280,7 @@
   --shadow-well-focus: inset 0 1px 3px rgba(0,0,0,.65), 0 0 0 3px rgba(255,176,32,.18);
   --shadow-card: inset 0 1px 0 rgba(255,255,255,.05), 0 1px 2px rgba(0,0,0,.35), 0 16px 40px rgba(0,0,0,.28);
   --shadow-float: inset 0 1px 0 rgba(255,255,255,.06), 0 1px 2px rgba(0,0,0,.45), 0 16px 40px rgba(0,0,0,.5);
+  --shadow-tooltip: 0 1px 2px rgba(0,0,0,.45), 0 8px 20px rgba(0,0,0,.35);
   --shadow-panel: inset 0 1px 0 rgba(255,255,255,.06), 0 2px 4px rgba(0,0,0,.4), 0 24px 64px rgba(0,0,0,.55);
   --shadow-track: inset 0 1px 3px rgba(0,0,0,.45);
   --shadow-knob: 0 1px 3px rgba(0,0,0,.5);
@@ -328,8 +331,10 @@
   --breakpoint-tablet: 640px;
   --breakpoint-desktop: 1101px;
 
+  --radius-key: var(--radius-key);
   --radius-xs: var(--radius-xs);
   --radius-seg: var(--radius-seg);
+  --radius-item: var(--radius-item);
   --radius-seg-touch: var(--radius-seg-touch);
   --radius-control: var(--radius-control);
   --radius-row: var(--radius-row);
@@ -391,6 +396,7 @@
   --shadow-well-focus: var(--shadow-well-focus);
   --shadow-card: var(--shadow-card);
   --shadow-float: var(--shadow-float);
+  --shadow-tooltip: var(--shadow-tooltip);
   --shadow-panel: var(--shadow-panel);
   --shadow-track: var(--shadow-track);
   --shadow-knob: var(--shadow-knob);
@@ -666,6 +672,14 @@
 }
 @utility h-span {
   height: calc(var(--span) * 100%);
+}
+/* A place on the screen, in pixels, for what floats in the top layer of the browser. */
+@utility placed {
+  position: fixed;
+  inset: auto;
+  left: var(--x);
+  top: var(--y);
+  margin: 0;
 }
 
 @utility stroke-icon {

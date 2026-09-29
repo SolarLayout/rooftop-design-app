@@ -261,11 +261,12 @@ describe("lines", () => {
 
 describe("numbers of the data", () => {
   test("a place and a width can be a share of the width around, which a component sets", async () => {
-    const made = oneLine(await utilitiesOf(["left-at", "w-span", "h-span"]));
+    const made = oneLine(await utilitiesOf(["left-at", "w-span", "h-span", "placed"]));
 
     expect(made).toContain(".left-at { left: calc(var(--at) * 100%); }");
     expect(made).toContain(".w-span { width: calc(var(--span) * 100%); }");
     expect(made).toContain(".h-span { height: calc(var(--span) * 100%); }");
+    expect(made).toContain(".placed { position: fixed; inset: auto; left: var(--x); top: var(--y); margin: 0; }");
   });
 });
 
