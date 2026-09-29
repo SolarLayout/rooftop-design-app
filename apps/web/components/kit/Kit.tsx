@@ -7,6 +7,7 @@ import { Fields } from "./Fields";
 import { KitPage } from "./Pages";
 import { Sliders } from "./Sliders";
 import { Cards, StatExamples, StatusMarks } from "./StatusCardStat";
+import { TabRows } from "./TabRows";
 
 /** The first page of the kit: what is pressed, chosen and typed into, and what shows a value. */
 export function Kit() {
@@ -25,6 +26,7 @@ export function Kit() {
           <StatusMarks />
           <Cards />
           <StatExamples />
+          <TabRows onPress={setLastPressed} />
         </div>
       </div>
     </KitPage>

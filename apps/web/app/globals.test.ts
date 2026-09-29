@@ -243,6 +243,20 @@ describe("states", () => {
     expect(made).toContain(`.pressed\\:bg-accent-pressed[data-shown-as="pressed"] ${pressed}`);
   });
 
+  test("what is inside a control can answer to the pointer over the control", async () => {
+    const made = oneLine(await utilitiesOf(["within-hovered:border-line-hover"]));
+    const line = "{ border-color: var(--color-line-hover); }";
+
+    expect(made).toContain(`@media (hover: hover) { :where(:hover:not(:disabled)) > .within-hovered\\:border-line-hover ${line} }`);
+    expect(made).toContain(`:where([data-shown-as="hover"]) > .within-hovered\\:border-line-hover ${line}`);
+  });
+
+  test("a row that scrolls sideways shows no bar", async () => {
+    const made = oneLine(await utilitiesOf(["no-scrollbar"]));
+
+    expect(made).toContain(".no-scrollbar { scrollbar-width: none; }");
+  });
+
   test("pressed comes after hover, so that it wins", async () => {
     const made = await utilitiesOf(["pressed:bg-accent-pressed", "hovered:bg-accent-hover"]);
 
@@ -256,6 +270,12 @@ describe("lines", () => {
 
     expect(made).toContain(".border-handle { border-width: var(--border-handle); }");
     expect(made).toContain(".border-handle-touch { border-width: var(--border-handle-touch); }");
+  });
+
+  test("the line under a tab is a token", async () => {
+    const made = oneLine(await utilitiesOf(["border-b-tab"]));
+
+    expect(made).toContain(".border-b-tab { border-bottom-width: var(--border-tab); border-bottom-style: solid; }");
   });
 });
 

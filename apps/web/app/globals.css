@@ -186,6 +186,7 @@
   --radius-panel: 22px;
   --radius-full: 9999px;
 
+  --border-tab: 2px;
   --border-handle: 3px;
   --border-handle-touch: 4px;
 
@@ -587,6 +588,18 @@
   }
 }
 
+/* What is directly inside a control answers to the pointer over the control: the line under a tab. */
+@custom-variant within-hovered {
+  @media (hover: hover) {
+    :where(:hover:not(:disabled)) > & {
+      @slot;
+    }
+  }
+  :where([data-shown-as="hover"]) > & {
+    @slot;
+  }
+}
+
 /* A field shows the focus that is inside it. */
 @custom-variant focused {
   &:focus-within {
@@ -604,6 +617,11 @@
     outline: var(--ring-focus);
     outline-offset: var(--ring-focus-offset);
   }
+}
+
+/* A row that scrolls sideways shows part of what comes next, and no bar. */
+@utility no-scrollbar {
+  scrollbar-width: none;
 }
 
 @utility opacity-disabled {
@@ -655,6 +673,10 @@
   scale: var(--scale-press);
 }
 
+@utility border-b-tab {
+  border-bottom-width: var(--border-tab);
+  border-bottom-style: solid;
+}
 @utility border-handle {
   border-width: var(--border-handle);
 }
