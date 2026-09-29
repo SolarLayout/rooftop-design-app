@@ -18,10 +18,10 @@ Always:
 
 | # | Phase | File | Status |
 |---|---|---|---|
-| 0 | IA and visual design (HTML mockups, approval) | `phase-00-design.md` | direction approved; more screens to draw |
+| 0 | IA and visual design (HTML mockups, approval) | `phase-00-design.md` | direction approved; two boards wait for approval; more screens to draw |
 | 1 | Monorepo, tooling, one-command dev stack | `phase-01-foundation.md` | done |
 | 2 | Engine and stateless API | `phase-02-engine-api.md` | done |
-| 3 | Design system and app shell | `phase-03-design-system-shell.md` | not started |
+| 3 | Design system and app shell | `phase-03-design-system-shell.md` | in progress: fonts, tokens, kit, nine components (PRs #24 to #29) |
 | 4 | Find the roof on the map and outline it (flagship) | `phase-04-find-and-outline.md` | not started |
 | 5 | Studio: 3D roof, Roof and Array lenses | `phase-05-studio-roof-array.md` | not started |
 | 6 | Studio: Sun lens | `phase-06-studio-sun.md` | not started |
@@ -61,6 +61,11 @@ Always:
 | D25 | DC cable is labelled by the system voltage as chosen (600, 1000 or 1500 V), not by a rating class | Owner, 2026-09-29 |
 | D26 | A change to documents only (`plan/`, `docs/`, `README.md`, `CLAUDE.md`) is committed to `main` directly. Code, tests, configuration and generated files go through a pull request, as before | Owner, 2026-09-29 |
 | D17 | The word "bankable" is not used anywhere in the product; it belongs to utility-scale ground-mount | Owner |
+| D27 | Fonts come from the repo, never from Google at build or run time: Geist and Geist Mono from the pinned package `geist`, Bricolage Grotesque as a file in `apps/web/app/fonts`. All three under the SIL Open Font License 1.1 | Tests never touch the network; session 3, as the work order asked |
+| D28 | Tailwind is made of the design tokens alone: its own theme is switched off. `docs/design/design-tokens.md` and `globals.css` are held equal by a test; a value is changed in both or in neither | Rule 9 of `CLAUDE.md`, made to hold by itself; session 3 |
+| D29 | The screens have baselines in the repo (`e2e/baselines/<platform>/<size>`), compared in the browser tests; a pull request shows them as its screenshots. A screen may differ by 50 pixels | Rule 7 of `apps/web/CLAUDE.md`; session 3 |
+| D30 | A component can be shown in a state without pointer or keyboard (`shownAs`), for `/kit` and its screenshots only | The kit board shows the states side by side; session 3 |
+| D31 | In a number field an entry outside the range goes to the nearest limit, an entry that is no number leaves the value; the field says which, in the style of a hint. The arrows step the draft and do not commit | It had no design; session 3 |
 
 ## Open for approval
 
