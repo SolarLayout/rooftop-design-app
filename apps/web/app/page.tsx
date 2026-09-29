@@ -6,7 +6,7 @@ export default function HomePage() {
 
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center gap-3 px-4 text-center">
-      <h1 className="text-2xl font-semibold tracking-tight">SolarLayout Rooftop</h1>
+      <h1 className="font-display text-2xl font-semibold tracking-tight">SolarLayout Rooftop</h1>
       {isDevelopment ? <ApiStatus /> : null}
     </main>
   );

@@ -13,6 +13,10 @@ export default defineConfig({
   // *.e2e.ts, so that `bun test` (which takes *.test.ts and *.spec.ts) never picks these up.
   testMatch: /.*\.e2e\.ts$/,
   outputDir: "./test-results",
+  // Baselines of the screens, one set for each platform (text is drawn differently on each) and size.
+  // They are in the repo: a pull request shows a changed screen as a changed picture.
+  snapshotPathTemplate: "./baselines/{platform}/{projectName}/{arg}{ext}",
+  expect: { toHaveScreenshot: { maxDiffPixels: 50 } },
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,
