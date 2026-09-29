@@ -253,6 +253,16 @@ the quiet one (44) last.
 `dialog` with its title and its text as name and description. The focus goes into it and stays in it; Escape
 and the close button close it; the focus goes back to where it was.
 
+In code: `Dialog`. It is the dialog of the browser, opened over everything; what is behind it cannot be
+used and does not scroll.
+
+- The focus goes to the first action, the quiet one, which changes nothing: Enter by mistake does no harm.
+- The actions are 40 high on desktop and 44 on tablet. On phone the primary and the secondary one are 48
+  high and as wide as the sheet, the quiet one 44.
+- On phone the handle of the sheet closes it, by a press or a drag downwards, and there is no button to
+  close.
+- A press beside the dialog leaves it open: what it asks must be answered.
+
 ## Tooltip
 The name of a control that shows an icon or one word. Height 28, padding 0 10, `control-active`, border
 `line-strong`, radius 8, text 12, shadow `0 1px 2px rgba(0,0,0,.45), 0 8px 20px rgba(0,0,0,.35)`; a key
