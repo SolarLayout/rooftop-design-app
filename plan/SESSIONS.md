@@ -14,6 +14,7 @@ previous one remembers. Everything a session needs is in the repo.
 | `plan/phase-NN-*.md` | Scope and acceptance of a phase; "As built" with deviations | While the phase is worked on |
 | `plan/reference/*` | The functional inventory, demo numbers, 3D notes, map providers | When facts change |
 | `docs/design/*` | The approved design: IA, tokens, components, guidelines, mockups | When the design changes, with approval |
+| `plan/sessions/NNN/` | The record of a past session: why things are as they are, the owner's messages word for word, how to search its full log | Written once, at the end of that session |
 | Git history and pull requests | What changed and why | Always |
 
 ## One session, one slice
@@ -27,7 +28,9 @@ previous one remembers. Everything a session needs is in the repo.
 
 ## Start of a session
 
-1. Read `CLAUDE.md`, then `plan/STATE.md`, then `plan/README.md`.
+1. Read `CLAUDE.md`, then `plan/STATE.md`, then `plan/README.md`. Read the record of the last session in
+   `plan/sessions/` when you need a reason or the owner's exact words. Its full log is searched, never read
+   whole.
 2. Read the phase file of the slice you are taking, and the references it names.
 3. For UI work read `docs/design/README.md` and the documents it names; open the mockup of the screen.
 4. Check reality against the state file:
@@ -57,8 +60,11 @@ previous one remembers. Everything a session needs is in the repo.
 1. Nothing uncommitted that matters; no branch left unexplained. Nothing running on ports 4700 to 4719.
 2. Update the phase file ("As built", deviations, what remains) and the status in `plan/README.md`.
 3. Rewrite `plan/STATE.md`: last updated, where we are, in flight, next, open items.
-4. Merge that update through a pull request.
-5. If the owner asks for a resume prompt, write it as the next file in `plan/resume/` (rules in
+4. Write the session's record in `plan/sessions/NNN/`: `record.md` (what was done, why things are as they
+   are, what was tried and dropped, where the log is) and `owner-messages.md` (the owner's messages, word for
+   word).
+5. Merge that update through a pull request.
+6. If the owner asks for a resume prompt, write it as the next file in `plan/resume/` (rules in
    `plan/resume/README.md`), add it to the index, and merge it with the state update.
 
 ## If something is unclear
