@@ -1,0 +1,33 @@
+{
+  "name": "rooftop-design-app",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "bun@1.3.14",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "e2e"
+  ],
+  "scripts": {
+    "dev": "bun tools/dev.ts start",
+    "dev:bg": "bun tools/dev.ts start --detach",
+    "stop": "bun tools/dev.ts stop",
+    "status": "bun tools/dev.ts status",
+    "check": "bun tools/check.ts",
+    "gen:api": "bun tools/gen-api.ts",
+    "build": "bun tools/with-node.ts turbo run build",
+    "typecheck": "bun tools/with-node.ts turbo run typecheck",
+    "lint": "bun tools/with-node.ts turbo run lint",
+    "typecheck:tools": "bun tools/with-node.ts tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/bun": "1.3.14",
+    "@types/node": "20.19.43",
+    "openapi-typescript": "7.13.0",
+    "turbo": "2.11.5",
+    "typescript": "5.9.3"
+  }
+}

@@ -1,0 +1,9 @@
+# bun is the only package manager in this repo.
+
+[install]
+# Exact versions in package.json, so an upgrade is always a deliberate edit.
+exact = true
+
+[test]
+# Unit tests are *.test.ts. Playwright tests are *.e2e.ts, so `bun test` never picks them up.
+timeout = 10000

@@ -16,7 +16,7 @@ stateless Python API. One file per phase. Work the phases in order; each one end
 | # | Phase | File | Status |
 |---|---|---|---|
 | 0 | IA and visual design (HTML mockups, approval) | `phase-00-design.md` | direction approved; more screens to draw |
-| 1 | Monorepo, tooling, one-command dev stack | `phase-01-foundation.md` | built, `bun check` green locally; not committed, CI not yet run |
+| 1 | Monorepo, tooling, one-command dev stack | `phase-01-foundation.md` | done |
 | 2 | Engine and stateless API | `phase-02-engine-api.md` | not started |
 | 3 | Design system and app shell | `phase-03-design-system-shell.md` | not started |
 | 4 | Find the roof on the map and outline it (flagship) | `phase-04-find-and-outline.md` | not started |
@@ -34,7 +34,7 @@ stateless Python API. One file per phase. Work the phases in order; each one end
 |---|---|---|
 | D1 | Engine stays Python (`rooftop_core` copied in, no link to the old repo) | pvlib, shapely, pyproj, ezdxf have no JS equal; numbers already validated |
 | D2 | bun + turbo monorepo: `apps/web` (Next.js App Router), `apps/api` (FastAPI, uv), `packages/api-types` | Asked for; matches solar-mms-modeller |
-| D3 | Ports: web 4700, API 4701 | Asked for |
+| D3 | Ports: dev stack web 4700, API 4701; test stack web 4710, API 4711; each falls back to the next free pair in its range of ten | Asked for |
 | D4 | Versions pinned to what solar-mms-modeller proved: next 16.2, react 19.2, three 0.185, @react-three/fiber 9.6, drei 10.7, tailwind 4, zustand 5, TypeScript 5.x | Known-good set; R3F 9 needs react < 19.3 |
 | D5 | No database, no auth. The project lives in the browser (IndexedDB) and as a `.rtd` file | Asked for |
 | D6 | API is a pure function of the request. Long runs stream progress over SSE inside the one request. An in-process LRU keyed by input hash may memoise shading; dropping it changes nothing but speed | Stateless, yet re-runs after a loss edit stay fast |
@@ -49,6 +49,9 @@ stateless Python API. One file per phase. Work the phases in order; each one end
 | D16 | Finding the roof on a satellite map and outlining it is the flagship capability | Owner |
 | D13 | Map stack decided 2026-09-29: Esri World Imagery and Esri geocoding (ArcGIS Location Platform) plus Overture building footprints. The owner creates the Esri account and supplies the API key | Owner; see `reference/map-providers.md` |
 | D18 | Legal check on the map stack: approved by the owner 2026-09-29. Closed; do not reopen | Owner |
+| D19 | Engineering standard: production grade, test-driven (failing test first). Recorded in `CLAUDE.md` | Owner, 2026-09-29 |
+| D20 | CI: the pull request check runs everything except browser tests; browser tests run locally in `bun check` and in the `e2e` workflow, started by hand | Owner, 2026-09-29: the browser install hung in CI |
+| D21 | Pull requests are merged by the agent once the check is green | Owner, 2026-09-29 |
 | D17 | The word "bankable" is not used anywhere in the product; it belongs to utility-scale ground-mount | Owner |
 
 ## Open for approval
