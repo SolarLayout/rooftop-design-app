@@ -308,6 +308,15 @@ of 16 after the number it belongs to. The row that is chosen is on `surface-2`. 
 Phone: each row is a card on `surface-2`, radius `radius-row`, padding 14: the name in `text-title` with its
 mark, then the values as a list of three columns, label in `text-caption` over the value in mono 15.
 
+In code: `Table`; a row as a card in `table-cells.ts`.
+
+- A column is a name, a text or a number. The name is the head of its row (`th` with `scope="row"`).
+- A column can be for the cards only, or for the table only: a card has room for a value more.
+- The title of a card can say more than the name in the table: "Option D" for "D".
+- The row that is chosen says so to a screen reader (`aria-current`). Its card has the line and the halo
+  of a selected card.
+- The cards are a list with the caption of the table as its name; the caption stands under them.
+
 ## Progress ring
 | Form | Size | Use |
 |---|---|---|
