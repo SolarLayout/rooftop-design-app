@@ -26,6 +26,12 @@ dev = [
     "ruff>=0.11,<1",
 ]
 
+# The Python that uv manages, never one found on the machine: the python.org build of the same
+# version runs the engine about 40 % slower. The version is in .python-version next to this file;
+# uv does not look for it above the project.
+[tool.uv]
+python-preference = "only-managed"
+
 [build-system]
 requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"

@@ -121,6 +121,21 @@ UI. Multi-user concerns. Persistence.
   stays at the middle of the hour. CSV with DNI and DHI, PVGIS and NASA weather do not pass through the
   changed line. Tests: `tests/engine/test_weather_sources.py`.
 
+- **The design run is as fast as in the desktop app.** It took about 16 s here and about 11 s there. The
+  cause was the build of Python, not numpy or scipy. Measured on the demo, same engine:
+
+  | Python | numpy, scipy | Design run |
+  |---|---|---|
+  | 3.12.8 from python.org (what this repo ran on) | 2.5.3, 1.18.1 | 16.2 s |
+  | 3.12.8 from python.org | 2.4.6, 1.17.1 | 16.3 s |
+  | 3.12.8 managed by uv | 2.5.3, 1.18.1 | 11.9 s |
+  | 3.12.13 managed by uv | 2.4.6, 1.17.1 | 12.0 s |
+  | 3.12.13 managed by uv | 2.5.3, 1.18.1 | 11.2 s |
+  | 3.11.11 managed by uv, the desktop app's environment | 2.4.6, 1.17.1 | 11.4 s |
+
+  The repo now pins Python 3.12.13 (`apps/api/.python-version`; uv does not read one above the project) and uv takes only the Python it manages
+  (`python-preference` in `apps/api/pyproject.toml`). After the change: 11.7 s. No result changed.
+
 ### Found in part 2, for the domain expert
 - **The split of Erbs is not what PVGIS has.** The Pune year given as GHI alone comes back with beam
   1,435.4 and diffuse 822.7 kWh/m2; PVGIS has 1,999.6 and 549.9 for the same hours. The model differs, not

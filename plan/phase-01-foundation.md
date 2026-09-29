@@ -16,7 +16,8 @@ rooftop-design-app/
   e2e/              Playwright tests (chromium; phone, tablet, desktop projects)
   tools/            dev.ts (start/stop/status), check.ts
   plan/             this folder
-  turbo.json  package.json  bunfig.toml  .nvmrc  .python-version  CLAUDE.md  README.md
+  turbo.json  package.json  bunfig.toml  .nvmrc  CLAUDE.md  README.md
+  (.python-version is in apps/api since phase 2: uv reads it only next to pyproject.toml)
 ```
 
 - bun workspaces + turbo. Next runs on Node (never `bun --bun next`); pin Node in `.nvmrc`.
