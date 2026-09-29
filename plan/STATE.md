@@ -3,9 +3,9 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-09-29, end of session 4. Phase 3 is in progress: every component is merged (pull
-requests #30 to #32) and is on the kit; the stores, the data flow, the routes and the shell remain. Resume
-prompt 004 is written.
+**Last updated:** 2026-09-30, during session 5, after step 12 of the rest of Phase 3. Every component is
+merged (pull requests #30 to #32). The stores, the data flow and the formats of the vitals are built, in the
+draft pull request #33; the routes, the shell and its browser tests remain.
 
 ## Where we are
 
@@ -14,12 +14,18 @@ prompt 004 is written.
 | 0 Design | Direction approved. 17 boards drawn and approved | More screens to draw, listed in `phase-00-design.md`. The board of Tabs is not on the canvas yet |
 | 1 Foundation | Done, merged (PR #1) | |
 | 2 Engine and API | Done (PR #7, PRs #11 to #23) | What exists, what was decided, what was found: `phase-02-engine-api.md`, "As built" |
-| 3 Design system and shell | In progress (PRs #24 to #32) | What exists, what remains: `phase-03-design-system-shell.md`, "As built, so far". How the rest is built: `phase-03-rest-plan.md` |
+| 3 Design system and shell | In progress (PRs #24 to #32; #33 is open) | What exists, what remains: `phase-03-design-system-shell.md`, "As built, so far". How the rest is built: `phase-03-rest-plan.md` |
 | 4 to 11 | Not started | |
 
 ## In flight
 
-No open branch and no open pull request. `main` is green.
+Branch `feat/phase-3-stores-shell`, pull request #33, a draft. It holds steps 10 to 12 of
+`phase-03-rest-plan.md`, each as a commit, each after a green `bun check`: the stores (`apps/web/lib/stores`),
+the data flow (`apps/web/lib/flow`), the formats of the vitals (`apps/web/lib/format`). Steps 13 to 16 go into
+the same pull request. `main` is green.
+
+A session that takes over: read the commits of the branch, then go on with the first step of the plan that
+is not marked as done.
 
 One thing waits for the owner, and blocks nothing: the board of Tabs is approved (decision D35) and is not on
 the design canvas, because the permission system refused the publish. See "Open items".
@@ -37,7 +43,8 @@ the design canvas, because the permission system refused the publish. See "Open 
 | The kit: every component in every state, development only | `/kit` and `/kit/part-2`; `apps/web/app/kit`, `apps/web/components/kit` |
 | The typed client of the API | `apps/web/lib/api` |
 | The home page | A placeholder |
-| Stores, data flow, routes of the workspaces, shell | Not there yet |
+| Stores, data flow, formats of the vitals | On the branch of pull request #33: `apps/web/lib/stores`, `lib/flow`, `lib/format`, `lib/clock.ts` |
+| Routes of the workspaces, shell | Not there yet |
 
 ## What the API gives today
 
@@ -106,6 +113,8 @@ Work order: `plan/resume/004-phase-3-stores-data-flow-shell.md`. Plan: `plan/pha
 | NASA POWER is asked for the year 2023 and the times of a CSV are read as UTC, as on the desktop; neither can be set in a request | Phase 8, with the weather source |
 | The report (PDF) prints the date of the server's day | Phase 9 |
 | pytest takes 157 s here and the pull request check 3 min 33 s to 6 min 43 s (sessions 3 and 4; the same code of the API took 3 min 33 s and 6 min 27 s), of the 10 it may take. Most of it is design runs of 1.5 s each; they could share their shading through a memo | When a check passes 6 min 30 s: the memo, as a pull request of its own, before anything else |
+| One browser test failed once in four full runs and passes alone, five times of five: `kit-sheet.e2e.ts`, "and by keyboard: the keyboard stops at what scrolls", on desktop. The key End was pressed and the sheet did not scroll | Watch. If it fails again: make the test wait until the content can scroll before the key, as a pull request of its own |
+| The check of pull request #33 took 6 min 28 s at its first run, two seconds under the mark | Watch the runs that follow; the row on pytest says what to do |
 | A push was refused once with "Permission denied (publickey)" and went through when tried again | Watch; nothing to do |
 | The `/api` rewrite passes the events of a design run on as they come in `next dev`. A production build (`next start`) and a proxy in front of it have not been tried | Phase 11, deployment |
 | One design run keeps a worker thread busy for 12 s and the process holds up to 576 MB of kept results. How many runs at once a server must carry is not decided | Phase 11 |
@@ -118,6 +127,7 @@ Work order: `plan/resume/004-phase-3-stores-data-flow-shell.md`. Plan: `plan/pha
 | 2 | 2026-09-29 | `plan/sessions/002/record.md`, `plan/sessions/002/owner-messages.md` |
 | 3 | 2026-09-29 | `plan/sessions/003/record.md`, `plan/sessions/003/owner-messages.md` |
 | 4 | 2026-09-29 | `plan/sessions/004/record.md`, `plan/sessions/004/owner-messages.md` |
+| 5 | 2026-09-30 | In progress; its record is written at its end |
 
 ## Closed, do not reopen
 
