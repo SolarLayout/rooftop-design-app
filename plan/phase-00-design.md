@@ -85,6 +85,14 @@ Touch targets are 44 px or more on phone and tablet.
 - The option captions "Fills the inverter" and "Lower clipping" are new copy: the engine only labels
   "Recommended" and the DC/AC verdicts, so these are derived in the web app from the option's numbers.
 
+## Drawn in round 4, waiting for approval
+For Phase 3, by session 3. Sources and previews are in `docs/design`; not yet on the canvas.
+- Controls, part 2: Select (open list), File drop, Dialog (and its bottom sheet on phone), Tooltip, Toast,
+  Table (and its cards on phone), Progress ring (turning, and with an arc that says how far), Skeleton.
+- Shell states: vitals while updating, at the first load and after a run that failed; vitals before a system
+  voltage on tablet and phone; the drawer of notes to review on desktop, tablet and phone; the project
+  switcher, open; the states of saving.
+
 ## Still to draw
 - Studio: Sun lens shade map; Strings lens MPPT loading table, custom option and "no string length fits".
 - Studio Roof, Sun and Strings lenses on phone and tablet.
