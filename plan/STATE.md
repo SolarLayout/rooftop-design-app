@@ -21,7 +21,7 @@ Nothing. `main` is green and there is no open branch or pull request.
 ## Next, in order
 
 1. Phase 2, part 2. Work order: `plan/resume/001-phase-2-engine-api.md` (it starts at its step 2).
-   - Fix CSV weather with GHI alone, test first (the expected failure in `tests/engine/test_weather_sources.py`)
+   - Done: CSV weather with GHI alone
    - `POST /weather`, `POST /design` with progress over SSE, `POST /export/{pdf,dxf,kmz,csv,sld}`
    - Memoisation (decision D6), the typed client in `apps/web/lib/api`
    - Decision D24: the demo bundles the real equipment files
@@ -64,6 +64,8 @@ Nothing. `main` is green and there is no open branch or pull request.
 | Progress of a design run has fixed shares and no progress inside the options step | Phase 2, part 2 |
 | Real PAN and OND files are in `apps/api/tests/fixtures/equipment/` with a README; no test uses them yet | Phase 2, part 2 |
 | Decision D24: the demo shows the real equipment names. The mockups already do. The engine still bundles `Test.PAN` and `Test-S.ond`; the change is in the Phase 2 work order | Phase 2, part 2 |
+| The engine places the sun at the middle of the hour for every source. The bundled PVGIS hours agree with the sun at the time stamp itself (GHI, DNI and DHI close to 0.8 W/m2 there, 43.6 W/m2 half an hour later). Not changed; a question for Prasanta | Owner and domain expert |
+| A CSV with GHI alone is split by Erbs: on the Pune year beam 1,435 and diffuse 823 kWh/m2, where PVGIS has 2,000 and 550. Say so where a CSV is loaded? | Phase 8, with the owner |
 
 ## Past sessions
 

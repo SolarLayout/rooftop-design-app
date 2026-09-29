@@ -232,8 +232,10 @@ def parse_csv(text: str, lat: float, lon: float, tz_offset_h: float = 0.0, name:
         df["dni"] = pd.to_numeric(dni, errors="coerce").fillna(0).to_numpy()
         df["dhi"] = pd.to_numeric(dhi, errors="coerce").fillna(0).to_numpy()
     else:
+        # The sun is placed at the middle of the hour; its values go in without that index, which
+        # is half an hour later than the irradiance and would not line up with it.
         sp = pvlib.solarposition.get_solarposition(idx + pd.Timedelta(minutes=30), lat, lon)
-        erbs = pvlib.irradiance.erbs(df["ghi"], sp["zenith"], idx)
+        erbs = pvlib.irradiance.erbs(df["ghi"], sp["zenith"].to_numpy(), idx)
         df["dni"], df["dhi"] = erbs["dni"].fillna(0).to_numpy(), erbs["dhi"].fillna(0).to_numpy()
     df = df.dropna(subset=["ghi"]).sort_index()
     df["temp_air"] = df["temp_air"].interpolate(limit_direction="both")

@@ -110,14 +110,25 @@ UI. Multi-user concerns. Persistence.
 11. `pypdf` is a development dependency: tests read the text of the PDF.
 
 ### Known faults, not fixed here
-- **CSV weather with GHI alone cannot be read.** The split into DNI and DHI fails (`ValueError` from pandas:
-  the sun positions are indexed half an hour later than the irradiance). Copied as it is from `bf2cb67`;
-  recorded as a strict `xfail` in `tests/engine/test_weather_sources.py`. CSV with DNI and DHI works. To fix
-  before `POST /weather` takes CSV.
 - **Heights cannot come from a DXF.** The height is read from `h=2.5` in the name, and a DXF layer name may
   hold neither `=` nor `:`. Every obstacle of a DXF gets 1.0 m and is listed as missing.
 - **Large roofs are slow.** 2 km x 1 km (inside the range of the desktop controls) takes 29 s in `/layout`
   and gives 526,070 positions. Limits belong to phase 11.
+
+### Fixed in part 2
+- **CSV weather with GHI alone is read.** The split into DNI and DHI (Erbs) failed because the sun positions
+  carried an index half an hour later than the irradiance. The values now go in without that index; the sun
+  stays at the middle of the hour. CSV with DNI and DHI, PVGIS and NASA weather do not pass through the
+  changed line. Tests: `tests/engine/test_weather_sources.py`.
+
+### Found in part 2, for the domain expert
+- **The split of Erbs is not what PVGIS has.** The Pune year given as GHI alone comes back with beam
+  1,435.4 and diffuse 822.7 kWh/m2; PVGIS has 1,999.6 and 549.9 for the same hours. The model differs, not
+  the timing. Energy from a CSV with GHI alone will differ from the same site with measured DNI and DHI.
+- **The bundled PVGIS hours agree with the sun at the time stamp, not half an hour later.** GHI, DNI and DHI
+  of `pune_weather.json` close to 0.8 W/m2 (rms) with the sun at the time stamp, and to 43.6 W/m2 with the
+  sun at the middle of the hour, where the engine places it for every source. Nothing was changed: the
+  numbers of the engine are as confirmed on the desktop app.
 
 ### What remains of this phase
 - `POST /weather` (PVGIS, NASA POWER, CSV), with the cache per D6.
