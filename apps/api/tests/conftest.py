@@ -11,6 +11,7 @@ import pytest
 if TYPE_CHECKING:
     from rooftop_core.project import Design
     from rooftop_core.weather import Weather
+    from tests.recorded import Services
 
 # Names and addresses a test may talk to. "testserver" and "testclient" are the fake hosts of the
 # FastAPI TestClient, which never opens a real socket anyway.
@@ -105,3 +106,15 @@ def pune_weather() -> "Weather":
     from rooftop_core.weather import Weather
 
     return Weather.from_json(json.loads(Path(sample_path("pune_weather.json")).read_text(encoding="utf-8")))
+
+
+@pytest.fixture
+def services(monkeypatch: pytest.MonkeyPatch) -> "Services":
+    """PVGIS and NASA POWER answer from the recordings in tests/fixtures/weather."""
+    import requests
+
+    from tests.recorded import Services
+
+    answering = Services()
+    monkeypatch.setattr(requests, "get", answering)
+    return answering

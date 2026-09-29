@@ -11,6 +11,8 @@ memory. Nothing is written to disk.
 from __future__ import annotations
 
 import io
+import json
+import threading
 from collections import OrderedDict
 from dataclasses import dataclass, field, replace
 from pathlib import Path
@@ -75,24 +77,31 @@ class WeatherCache(Protocol):
 
 
 class MemoryWeatherCache:
-    """Downloads kept in this process. When full, the entry used longest ago goes first."""
+    """Downloads kept in this process. When full, the entry used longest ago goes first.
+
+    Many threads may use it at once: a server answers several requests at a time.
+    """
 
     def __init__(self, max_entries: int = 16):
         self.max_entries = max_entries
         self._entries: OrderedDict[str, Weather] = OrderedDict()
+        self._lock = threading.Lock()
 
     def get(self, key: str) -> Weather | None:
-        found = self._entries.get(key)
-        if found is None:
-            return None
-        self._entries.move_to_end(key)
+        with self._lock:
+            found = self._entries.get(key)
+            if found is None:
+                return None
+            self._entries.move_to_end(key)
         return _copy(found)
 
     def put(self, key: str, weather: Weather) -> None:
-        self._entries[key] = _copy(weather)
-        self._entries.move_to_end(key)
-        while len(self._entries) > self.max_entries:
-            self._entries.popitem(last=False)
+        own = _copy(weather)
+        with self._lock:
+            self._entries[key] = own
+            self._entries.move_to_end(key)
+            while len(self._entries) > self.max_entries:
+                self._entries.popitem(last=False)
 
 
 def _copy(w: Weather) -> Weather:
@@ -103,11 +112,30 @@ def _copy(w: Weather) -> Weather:
 DEFAULT_CACHE = MemoryWeatherCache()
 
 
+class WeatherServiceError(RuntimeError):
+    """A weather service answered, but not with weather. *said* is its own message, when it gave one."""
+
+    def __init__(self, host: str, status: int, text: str):
+        super().__init__(f"{host} answered {status}: {text[:200]}")
+        self.host = host
+        self.status = status
+        self.said = _message_in(text)
+
+
+def _message_in(text: str) -> str:
+    """The message of an answer like {"message": "..."}; empty when there is none."""
+    try:
+        body = json.loads(text)
+    except ValueError:
+        return ""
+    message = body.get("message") if isinstance(body, dict) else None
+    return message.strip() if isinstance(message, str) else ""
+
+
 def _get_json(url: str, params: dict, timeout: float = 60.0) -> dict:
     r = requests.get(url, params=params, timeout=timeout)
     if r.status_code != 200:
-        msg = r.text[:200]
-        raise RuntimeError(f"{url.split('/')[2]} answered {r.status_code}: {msg}")
+        raise WeatherServiceError(url.split('/')[2], r.status_code, r.text)
     return r.json()
 
 
@@ -189,11 +217,36 @@ _DNI = ("dni", "gb(n)", "bn", "allsky_sfc_sw_dni")
 _DHI = ("dhi", "gd(h)", "dh", "diffuse", "allsky_sfc_sw_diff")
 _TEMP = ("temp_air", "t2m", "temp", "temperature", "tamb", "t_amb", "ambient_temp")
 _WIND = ("wind_speed", "ws10m", "wind", "ws")
+# The names a column of a CSV may bear, by what it holds.
+CSV_COLUMNS = {"time": _TIME, "ghi": _GHI, "dni": _DNI, "dhi": _DHI, "temp_air": _TEMP, "wind_speed": _WIND}
 
 
 def read_csv(path: str | Path, lat: float, lon: float, tz_offset_h: float = 0.0) -> Weather:
     """The CSV file at *path*; see parse_csv."""
     return parse_csv(Path(path).read_text(encoding="utf-8"), lat, lon, tz_offset_h, Path(path).name)
+
+
+def csv_table(text: str) -> pd.DataFrame:
+    """The rows and columns of a CSV text, whatever separates them. Lines that begin with # are left out."""
+    return pd.read_csv(io.StringIO(text), sep=None, engine="python", comment="#")
+
+
+def csv_column(raw: pd.DataFrame, names: tuple[str, ...]) -> pd.Series | None:
+    """The first column of *raw* that bears one of *names*, whatever the case; None when there is none."""
+    cols = {c.strip().lower(): c for c in raw.columns}
+    for n in names:
+        if n in cols:
+            return raw[cols[n]]
+    return None
+
+
+def csv_times(column: pd.Series, tz_offset_h: float = 0.0) -> pd.Series:
+    """The times of a column in UTC. A time that cannot be read is NaT."""
+    ts = column.astype(str).str.strip()
+    t = pd.to_datetime(ts, format="%Y%m%d:%H%M", errors="coerce")
+    if t.isna().mean() > 0.5:
+        t = pd.to_datetime(ts, errors="coerce", format="mixed")
+    return t - pd.Timedelta(hours=tz_offset_h)
 
 
 def parse_csv(text: str, lat: float, lon: float, tz_offset_h: float = 0.0, name: str = "") -> Weather:
@@ -202,22 +255,15 @@ def parse_csv(text: str, lat: float, lon: float, tz_offset_h: float = 0.0, name:
     *text* is the content of the file; *name* names it in the result and in errors.
     """
     name = name or SOURCE_LABELS["csv"]
-    raw = pd.read_csv(io.StringIO(text), sep=None, engine="python", comment="#")
-    cols = {c.strip().lower(): c for c in raw.columns}
+    raw = csv_table(text)
 
     def pick(names, required=False):
-        for n in names:
-            if n in cols:
-                return raw[cols[n]]
-        if required:
+        found = csv_column(raw, names)
+        if found is None and required:
             raise ValueError(f"{name}: no column named any of {', '.join(names)}")
-        return None
+        return found
 
-    ts = pick(_TIME, True).astype(str).str.strip()
-    t = pd.to_datetime(ts, format="%Y%m%d:%H%M", errors="coerce")
-    if t.isna().mean() > 0.5:
-        t = pd.to_datetime(ts, errors="coerce", format="mixed")
-    t = t - pd.Timedelta(hours=tz_offset_h)
+    t = csv_times(pick(_TIME, True), tz_offset_h)
     idx = pd.DatetimeIndex(t).tz_localize("UTC") if pd.DatetimeIndex(t).tz is None else pd.DatetimeIndex(t)
     ghi = pd.to_numeric(pick(_GHI, True), errors="coerce").fillna(0).clip(lower=0).to_numpy()
     temp = pick(_TEMP)

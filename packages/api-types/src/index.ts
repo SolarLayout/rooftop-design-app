@@ -144,6 +144,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/weather": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Weather
+         * @description A year of hourly weather for a site, from PVGIS, NASA POWER or the text of a CSV file.
+         *
+         *     The answer holds the weather to put into the project (weather_json), so that every later request
+         *     carries it and nothing is downloaded twice.
+         */
+        post: operations["loadWeather"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1258,6 +1281,102 @@ export interface components {
             /** Wind Speed */
             wind_speed: number[];
         };
+        /**
+         * WeatherRequest
+         * @description Which weather, and for which site. A CSV file travels as its text; its name only names it.
+         */
+        WeatherRequest: {
+            /**
+             * Csv Name
+             * @default
+             */
+            csv_name: string;
+            /**
+             * Csv Text
+             * @default
+             */
+            csv_text: string;
+            /**
+             * Lat
+             * @description Degrees, north positive
+             */
+            lat: number;
+            /**
+             * Lon
+             * @description Degrees, east positive
+             */
+            lon: number;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "pvgis" | "nasa" | "csv";
+        };
+        /**
+         * WeatherResponse
+         * @description The weather to put into a project as weather_json, its summary, and what the user should know.
+         */
+        WeatherResponse: {
+            /** Notes */
+            notes: string[];
+            summary: components["schemas"]["WeatherSummary"];
+            weather: components["schemas"]["Weather"];
+        };
+        /**
+         * WeatherSummary
+         * @description The weather in a few numbers, worked out from the hours of the answer.
+         */
+        WeatherSummary: {
+            /**
+             * Dhi Kwh M2
+             * @description Diffuse horizontal irradiation
+             */
+            dhi_kwh_m2: number;
+            /**
+             * Dni Kwh M2
+             * @description Beam irradiation on a plane that faces the sun
+             */
+            dni_kwh_m2: number;
+            /**
+             * First Hour
+             * @description Start of the first hour, UTC
+             */
+            first_hour: string;
+            /**
+             * Ghi Kwh M2
+             * @description Global horizontal irradiation over all hours
+             */
+            ghi_kwh_m2: number;
+            /**
+             * Horizon Highest Deg
+             * @description Highest point of the horizon; null when the source has no horizon
+             */
+            horizon_highest_deg: number | null;
+            /** Hours */
+            hours: number;
+            /** Label */
+            label: string;
+            /**
+             * Last Hour
+             * @description Start of the last hour, UTC
+             */
+            last_hour: string;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "pvgis" | "nasa" | "csv";
+            /**
+             * T Max C
+             * @description Highest air temperature
+             */
+            t_max_c: number;
+            /**
+             * T Min C
+             * @description Lowest air temperature
+             */
+            t_min_c: number;
+        };
     };
     responses: never;
     parameters: never;
@@ -1463,6 +1582,48 @@ export interface operations {
             };
             /** @description The request cannot be used; the message says why. */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    loadWeather: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WeatherRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeatherResponse"];
+                };
+            };
+            /** @description The request cannot be used; the message says why. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description A service this request depends on failed or could not be reached. */
+            502: {
                 headers: {
                     [name: string]: unknown;
                 };

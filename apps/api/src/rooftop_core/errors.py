@@ -25,3 +25,7 @@ class MissingEquipmentFile(EngineError):
 
 class UnsupportedProjectFormat(EngineError):
     """The project file was written in a format this version does not read."""
+
+
+class UnusableWeatherFile(EngineError):
+    """The CSV weather file is missing, is no table of hours, or has hours that cannot be used."""

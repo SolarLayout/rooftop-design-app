@@ -8,10 +8,9 @@ from rooftop_api.schemas.array import ArraySpec
 from rooftop_api.schemas.common import Compass, Input
 from rooftop_api.schemas.losses import Losses
 from rooftop_api.schemas.roof import Roof
-from rooftop_api.schemas.weather import Weather
+from rooftop_api.schemas.weather import Weather, WeatherSource
 
 SYSTEM_VOLTAGES = [600, 1000, 1500]
-WeatherSource = Literal["pvgis", "nasa", "csv"]
 SystemVoltage = Annotated[
     Literal[600, 1000, 1500],
     Field(description="Volts. There is no default: the user chooses, and nothing is sized before."),

@@ -2242,6 +2242,162 @@
         ],
         "title": "Weather",
         "type": "object"
+      },
+      "WeatherRequest": {
+        "description": "Which weather, and for which site. A CSV file travels as its text; its name only names it.",
+        "properties": {
+          "csv_name": {
+            "default": "",
+            "maxLength": 1024,
+            "title": "Csv Name",
+            "type": "string"
+          },
+          "csv_text": {
+            "default": "",
+            "maxLength": 8000000,
+            "title": "Csv Text",
+            "type": "string"
+          },
+          "lat": {
+            "description": "Degrees, north positive",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "description": "Degrees, east positive",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Lon",
+            "type": "number"
+          },
+          "source": {
+            "enum": [
+              "pvgis",
+              "nasa",
+              "csv"
+            ],
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source",
+          "lat",
+          "lon"
+        ],
+        "title": "WeatherRequest",
+        "type": "object"
+      },
+      "WeatherResponse": {
+        "description": "The weather to put into a project as weather_json, its summary, and what the user should know.",
+        "properties": {
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/WeatherSummary"
+          },
+          "weather": {
+            "$ref": "#/components/schemas/Weather"
+          }
+        },
+        "required": [
+          "weather",
+          "summary",
+          "notes"
+        ],
+        "title": "WeatherResponse",
+        "type": "object"
+      },
+      "WeatherSummary": {
+        "description": "The weather in a few numbers, worked out from the hours of the answer.",
+        "properties": {
+          "dhi_kwh_m2": {
+            "description": "Diffuse horizontal irradiation",
+            "title": "Dhi Kwh M2",
+            "type": "number"
+          },
+          "dni_kwh_m2": {
+            "description": "Beam irradiation on a plane that faces the sun",
+            "title": "Dni Kwh M2",
+            "type": "number"
+          },
+          "first_hour": {
+            "description": "Start of the first hour, UTC",
+            "title": "First Hour",
+            "type": "string"
+          },
+          "ghi_kwh_m2": {
+            "description": "Global horizontal irradiation over all hours",
+            "title": "Ghi Kwh M2",
+            "type": "number"
+          },
+          "horizon_highest_deg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Highest point of the horizon; null when the source has no horizon",
+            "title": "Horizon Highest Deg"
+          },
+          "hours": {
+            "title": "Hours",
+            "type": "integer"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "last_hour": {
+            "description": "Start of the last hour, UTC",
+            "title": "Last Hour",
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "pvgis",
+              "nasa",
+              "csv"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "t_max_c": {
+            "description": "Highest air temperature",
+            "title": "T Max C",
+            "type": "number"
+          },
+          "t_min_c": {
+            "description": "Lowest air temperature",
+            "title": "T Min C",
+            "type": "number"
+          }
+        },
+        "required": [
+          "source",
+          "label",
+          "hours",
+          "first_hour",
+          "last_hour",
+          "ghi_kwh_m2",
+          "dni_kwh_m2",
+          "dhi_kwh_m2",
+          "t_min_c",
+          "t_max_c",
+          "horizon_highest_deg"
+        ],
+        "title": "WeatherSummary",
+        "type": "object"
       }
     }
   },
@@ -2503,6 +2659,58 @@
         "summary": "Sun",
         "tags": [
           "sun"
+        ]
+      }
+    },
+    "/weather": {
+      "post": {
+        "description": "A year of hourly weather for a site, from PVGIS, NASA POWER or the text of a CSV file.\n\nThe answer holds the weather to put into the project (weather_json), so that every later request\ncarries it and nothing is downloaded twice.",
+        "operationId": "loadWeather",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WeatherRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeatherResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request cannot be used; the message says why."
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "A service this request depends on failed or could not be reached."
+          }
+        },
+        "summary": "Weather",
+        "tags": [
+          "weather"
         ]
       }
     }

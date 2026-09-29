@@ -358,3 +358,21 @@ def test_csv_weather_with_irradiance_alone_loads_into_a_design(no_download):
     assert len(weather.data) == 8
     assert sum(project.weather_json["dni"]) > 0 and sum(project.weather_json["dhi"]) > 0
     assert no_download.calls == []
+
+
+def test_the_cache_can_be_used_by_many_at_once(pune_weather):
+    from concurrent.futures import ThreadPoolExecutor
+
+    cache = wx.MemoryWeatherCache(max_entries=3)
+    small = replace(pune_weather, data=pune_weather.data.iloc[:24])
+
+    def use(number: int) -> None:
+        for turn in range(200):
+            cache.put(f"site {(number + turn) % 7}", small)
+            cache.get(f"site {(number * turn) % 7}")
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        for done in [pool.submit(use, number) for number in range(8)]:
+            done.result()
+
+    assert sum(cache.get(f"site {i}") is not None for i in range(7)) == 3
