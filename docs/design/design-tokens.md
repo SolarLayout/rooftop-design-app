@@ -35,6 +35,7 @@ theme (`:root`).
 | `--color-line` | `#232A36` | Card and control borders |
 | `--color-line-strong` | `#2F3847` | Borders of secondary buttons and inputs, off switch |
 | `--color-line-hover` | `#3B4658` | Border of a secondary button, hover |
+| `--color-dim` | `rgba(5,7,10,.72)` | Over the screen, under a dialog and under a bottom sheet that opens |
 
 ## Colour: text
 

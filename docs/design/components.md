@@ -217,6 +217,18 @@ On phone and tablet the list is a bottom sheet with rows of 52.
 `listbox` with `option`; the arrows go through the choices, Enter takes one, Escape closes and gives the focus
 back to the trigger.
 
+In code: `Select`. What floats is `FloatingPanel`, which the project switcher uses too; the keys of a list
+are in `list-keys.ts`.
+
+- The list is in the top layer of the browser, 6 under its trigger, their left edges in line; over the
+  trigger where there is no room under it. It is 320 wide.
+- On phone and tablet the panel is a bottom sheet over a dimmed screen (`color-dim`): `color-chrome`, top
+  radius `radius-panel`, the handle of 40 by 4. A press on the handle, or a drag of it downwards, closes it.
+- With the list open the focus is in it, and the choice that is taken is marked. The arrows stop at the ends
+  of the list; Home and End lead to them; a letter leads to the next choice that begins with it.
+- A press beside the list closes it. Scrolling the page or changing the size of the window closes it too.
+- A choice is taken with Enter, the space bar or a press; taking the one that is taken already changes nothing.
+
 ## File drop
 Height 88, radius `radius-row`, padding 0 18, gap 14. An icon of 20, a title in Geist 500 and one line in
 `text-caption`; at the right a secondary button of 36.
