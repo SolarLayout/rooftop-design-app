@@ -5,10 +5,14 @@ KMZ: the largest polygon is the roof; other polygons and lines are obstacles,
 with the height read from the placemark name or description ("Tank h=2.5").
 DXF: the largest closed polyline is the roof; other closed polylines and circles
 are obstacles; the user says whether the drawing is in mm or m.
+
+A file is given as a path or as its content (bytes, or the text of a KML or an
+ASCII DXF): a browser has the content, not a path.
 """
 
 from __future__ import annotations
 
+import io
 import re
 import zipfile
 from dataclasses import dataclass, field
@@ -22,6 +26,8 @@ from ..geo import local_to_lonlat, lonlat_to_local
 from ..geometry import Obstacle
 
 HEIGHT_RE = re.compile(r"\bh\s*[=:]\s*([0-9]+(?:\.[0-9]+)?)", re.I)
+MAX_KML_MB = 20
+BINARY_DXF = b"AutoCAD Binary DXF"
 
 
 @dataclass
@@ -48,17 +54,52 @@ def _coords(text: str) -> list[tuple[float, float]]:
     return pts
 
 
-def _kml_text(path: Path) -> bytes:
-    if path.suffix.lower() == ".kmz":
-        with zipfile.ZipFile(path) as z:
-            name = next(n for n in z.namelist() if n.lower().endswith(".kml"))
-            return z.read(name)
-    return path.read_bytes()
+def _label(source: str | Path | bytes, name: str) -> str:
+    """How an error names the file: the name given, else the name in the path, else "The file"."""
+    if name:
+        return name
+    if isinstance(source, Path) or (isinstance(source, str) and not _is_text(source)):
+        return Path(source).name
+    return "The file"
 
 
-def read_kmz(path: str | Path) -> ImportedRoof:
-    path = Path(path)
-    root = ET.fromstring(_kml_text(path))
+def _is_text(source: str) -> bool:
+    """A string is the text of a file, not a path, when it has several lines or starts like XML."""
+    return "\n" in source or "\r" in source or source.lstrip().startswith("<")
+
+
+def _content(source: str | Path | bytes) -> bytes:
+    if isinstance(source, bytes):
+        return source
+    if isinstance(source, str) and _is_text(source):
+        return source.encode("utf-8")
+    return Path(source).read_bytes()
+
+
+def _kml_bytes(data: bytes, label: str) -> bytes:
+    """The KML document: the data itself, or the first .kml inside when the data is a KMZ (zip)."""
+    if not zipfile.is_zipfile(io.BytesIO(data)):
+        return data
+    with zipfile.ZipFile(io.BytesIO(data)) as z:
+        inside = next((i for i in z.infolist() if i.filename.lower().endswith(".kml")), None)
+        if inside is None:
+            raise ValueError(f"{label} has no KML file inside.")
+        if inside.file_size > MAX_KML_MB * 1024 * 1024:
+            raise ValueError(f"{label}: the KML inside is larger than {MAX_KML_MB} MB. "
+                             "Export the roof and its obstacles alone.")
+        return z.read(inside)
+
+
+def read_kmz(source: str | Path | bytes, name: str = "") -> ImportedRoof:
+    """A roof from a KMZ or KML: a path, the bytes of either, or the text of a KML.
+
+    *name* names the file in errors when the content is given instead of a path.
+    """
+    label = _label(source, name)
+    try:
+        root = ET.fromstring(_kml_bytes(_content(source), label))
+    except ET.ParseError as e:
+        raise ValueError(f"{label} is not a KML file that can be read: {e}") from e
     shapes = []   # (name, desc, kind, lonlat pts)
     for pm in root.iter():
         if not pm.tag.endswith("Placemark"):
@@ -81,19 +122,50 @@ def read_kmz(path: str | Path) -> ImportedRoof:
                     shapes.append((name, desc, "line", _coords(co.text)))
     polys = [s for s in shapes if s[2] == "poly" and len(s[3]) >= 3]
     if not polys:
-        raise ValueError(f"{path.name} has no polygon to use as the roof.")
+        raise ValueError(f"{label} has no polygon to use as the roof.")
     lon0 = sum(p[0] for p in polys[0][3]) / len(polys[0][3])
     lat0 = sum(p[1] for p in polys[0][3]) / len(polys[0][3])
     local = [(n, d, k, lonlat_to_local(pts, lat0, lon0)) for n, d, k, pts in shapes]
     roof_i = max((i for i, s in enumerate(local) if s[2] == "poly"), key=lambda i: Polygon(local[i][3]).area)
-    return _assemble(local, roof_i, lat0, lon0, path.name, "kmz")
+    return _assemble(local, roof_i, lat0, lon0, label, "kmz")
 
 
-def read_dxf(path: str | Path, units: str = "m", lat: float = 0.0, lon: float = 0.0) -> ImportedRoof:
+def _dxf_from_bytes(data: bytes):
+    """What ezdxf.readfile does for a path: binary DXF as it is, ASCII DXF in the encoding it declares."""
     import ezdxf
+    from ezdxf.document import Drawing
+    from ezdxf.filemanagement import dxf_stream_info
+    from ezdxf.lldxf.tagger import binary_tags_loader
 
-    path = Path(path)
-    doc = ezdxf.readfile(path)
+    if data.startswith(BINARY_DXF):
+        return Drawing.load(binary_tags_loader(data, errors="surrogateescape"))
+    data = data.replace(b"\r\n", b"\n")
+    info = dxf_stream_info(io.StringIO(data.decode("utf-8", errors="ignore")))
+    return ezdxf.read(io.StringIO(data.decode(info.encoding, errors="surrogateescape")))
+
+
+def _dxf_document(source: str | Path | bytes, label: str):
+    import ezdxf
+    from ezdxf.lldxf.const import DXFError
+
+    try:
+        if isinstance(source, bytes):
+            return _dxf_from_bytes(source)
+        if isinstance(source, str) and _is_text(source):
+            return ezdxf.read(io.StringIO(source))
+        return ezdxf.readfile(Path(source))
+    except (OSError, DXFError) as e:
+        raise ValueError(f"{label} is not a DXF file that can be read: {e}") from e
+
+
+def read_dxf(source: str | Path | bytes, units: str = "m", lat: float = 0.0, lon: float = 0.0,
+             name: str = "") -> ImportedRoof:
+    """A roof from a DXF: a path, the bytes of the file, or the text of an ASCII DXF.
+
+    *name* names the file in errors when the content is given instead of a path.
+    """
+    label = _label(source, name)
+    doc = _dxf_document(source, label)
     k = 0.001 if units == "mm" else 1.0
     shapes = []
     for e in doc.modelspace():
@@ -110,9 +182,9 @@ def read_dxf(path: str | Path, units: str = "m", lat: float = 0.0, lon: float = 
             shapes.append((name, "", "circle", [(c.x * k, c.y * k), (r, r)]))
     polys = [i for i, s in enumerate(shapes) if s[2] == "poly" and len(s[3]) >= 3]
     if not polys:
-        raise ValueError(f"{path.name} has no closed polyline to use as the roof.")
+        raise ValueError(f"{label} has no closed polyline to use as the roof.")
     roof_i = max(polys, key=lambda i: Polygon(shapes[i][3]).area)
-    return _assemble(shapes, roof_i, lat, lon, path.name, "dxf")
+    return _assemble(shapes, roof_i, lat, lon, label, "dxf")
 
 
 def _assemble(shapes, roof_i, lat, lon, fname, source) -> ImportedRoof:
