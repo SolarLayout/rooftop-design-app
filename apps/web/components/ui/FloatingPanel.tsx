@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, type PointerEvent, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { classNames } from "./class-names";
+import { SheetGrip } from "./SheetGrip";
 import type { Floating } from "./use-floating";
 
 type Props = {
@@ -35,39 +36,9 @@ const BESIDE = classNames(
  * On phone and tablet it is a bottom sheet. A press on its handle, or a drag of it downwards, closes it.
  */
 export function FloatingPanel({ floating, width = "list", children }: Props) {
-  const pressedAt = useRef<number | null>(null);
-
-  function onPointerUp(event: PointerEvent<HTMLButtonElement>) {
-    const from = pressedAt.current;
-    pressedAt.current = null;
-    if (from !== null && event.clientY >= from) floating.close();
-  }
-
   return (
-    <div
-      {...floating.panel}
-      className={classNames(POPOVER, SHEET, BESIDE, WIDTH[width])}
-    >
-      <button
-        type="button"
-        aria-label="Close"
-        className="relative flex h-4 w-full shrink-0 cursor-pointer touch-none justify-center pt-2 focus-ring desktop:hidden"
-        onPointerDown={(event) => {
-          event.currentTarget.setPointerCapture(event.pointerId);
-          pressedAt.current = event.clientY;
-        }}
-        onPointerUp={onPointerUp}
-        onPointerCancel={() => {
-          pressedAt.current = null;
-        }}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" || event.key === " ") floating.close();
-        }}
-      >
-        {/* What takes the pointer is higher than what is seen. */}
-        <span className="absolute inset-x-0 top-0 h-touch" />
-        <span data-testid="grip" className="h-1 w-10 rounded-full bg-line-strong" />
-      </button>
+    <div {...floating.panel} className={classNames(POPOVER, SHEET, BESIDE, WIDTH[width])}>
+      <SheetGrip onClose={floating.close} className="desktop:hidden" />
       <div className="min-h-0 grow overflow-y-auto px-4 pt-2 pb-4 desktop:overflow-visible desktop:p-0">{children}</div>
     </div>
   );

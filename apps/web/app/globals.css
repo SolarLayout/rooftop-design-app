@@ -740,6 +740,11 @@
     @apply type-body-touch desktop:type-body;
   }
 
+  /* What is behind a dialog does not scroll. */
+  html:has(dialog:modal) {
+    overflow: hidden;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

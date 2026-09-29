@@ -5,8 +5,11 @@ import { classNames } from "./class-names";
 
 export type ButtonKind = "primary" | "secondary" | "quiet";
 
-/** Heights on desktop: 36, 40, 44, 56. On phone and tablet nothing is lower than 44. */
-export type ButtonSize = "s" | "m" | "l" | "xl";
+/**
+ * Heights on desktop: 36, 40, 44, 56. On phone and tablet nothing is lower than 44. `sheet` is for the
+ * actions of a dialog: 40 on desktop, 44 on tablet, and on phone 48, a quiet one 44.
+ */
+export type ButtonSize = "s" | "m" | "l" | "xl" | "sheet";
 
 /** Sides on desktop: 32, 38, 40, 44. On phone and tablet nothing is smaller than 44. */
 export type IconButtonSize = "xs" | "s" | "m" | "l";
@@ -40,7 +43,9 @@ const HEIGHT: Record<ButtonSize, string> = {
   m: "h-touch rounded-row desktop:h-10 desktop:rounded-control",
   l: "h-touch rounded-row",
   xl: "h-14 rounded-card-s text-(length:--text-title)",
+  sheet: "h-12 rounded-row tablet:h-touch desktop:h-10 desktop:rounded-control",
 };
+const HEIGHT_OF_A_QUIET_ACTION = "h-touch rounded-row desktop:h-10 desktop:rounded-control";
 
 const SIDE: Record<IconButtonSize, string> = {
   xs: "size-touch desktop:size-8",
@@ -53,7 +58,8 @@ const PADDING: Record<ButtonKind, string> = { primary: "px-4", secondary: "px-3.
 
 export function buttonLook(kind: ButtonKind, size: ButtonSize): string {
   const border = kind === "secondary" && "border-line-strong pressed:border-line-strong";
-  return classNames(PRESSABLE, "gap-inline", KIND[kind], border, HEIGHT[size], size === "xl" ? "px-5" : PADDING[kind]);
+  const height = size === "sheet" && kind === "quiet" ? HEIGHT_OF_A_QUIET_ACTION : HEIGHT[size];
+  return classNames(PRESSABLE, "gap-inline", KIND[kind], border, height, size === "xl" ? "px-5" : PADDING[kind]);
 }
 
 export function iconButtonLook(kind: ButtonKind, size: IconButtonSize, shape: "square" | "round"): string {

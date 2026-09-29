@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Dialogs } from "./Dialogs";
 import { KitPage } from "./Pages";
 import { Selects } from "./Selects";
 import { Sheets } from "./Sheets";
@@ -16,6 +17,7 @@ export function KitPartTwo() {
       <div className="grid grid-cols-1 gap-grid desktop:grid-cols-2">
         <div className="flex flex-col gap-grid">
           <Selects onPress={setLastPressed} />
+          <Dialogs onPress={setLastPressed} />
           <Sheets />
         </div>
         <div className="flex flex-col gap-grid">
