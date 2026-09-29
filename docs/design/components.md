@@ -165,3 +165,127 @@ icon (file) or a chevron (opens a view).
 ## Paper preview
 `color-paper` sheet, radius 6, `shadow-panel`, ink text. Page thumbnails at the right, 132 wide; the current one
 has an accent border.
+
+# Round 4
+
+What the boards "Controls, part 2" (`mockups/Controls2.dc.html`) and "Shell states"
+(`mockups/ShellStates.dc.html`) draw. Approved on 2026-09-29. Values that are not tokens yet become tokens
+with the component that first uses them.
+
+## Select
+Trigger: as a secondary button, border `line`, height 40 (44 on touch): label in text-2, the value in Geist
+500, a chevron of 16 in text-3. Open: the trigger looks pressed (`control-pressed`, `shadow-pressed`, border
+`line-strong`) and the chevron is turned. Cannot be used: opacity 0.45, no shadow.
+List: floating, `surface-1`, border `line-strong`, radius `radius-card-s`, `shadow-float`, padding 6, rows 2
+apart. Row: height 40, radius 8, padding 0 10; a tick of 16 in accent before the choice that is taken, which
+is in Geist 500; one fact at the right in `text-caption`, text-3. The row under the pointer or the keyboard is
+on `surface-2`.
+On phone and tablet the list is a bottom sheet with rows of 52.
+`listbox` with `option`; the arrows go through the choices, Enter takes one, Escape closes and gives the focus
+back to the trigger.
+
+## File drop
+Height 88, radius `radius-row`, padding 0 18, gap 14. An icon of 20, a title in Geist 500 and one line in
+`text-caption`; at the right a secondary button of 36.
+
+| State | Surface and line | Content |
+|---|---|---|
+| Rest | no surface, 1 px dashed `line-strong` | Upload icon in text-2; "Drop the module file here"; "A PAN file of PVsyst"; "Choose a file" |
+| A file is held over it | `note-surface`, 1 px dashed accent, `halo-selected` | Upload icon in accent; "Let go to load the file"; what it replaces |
+| Reading | `color-well`, border `line`, `shadow-well` | Ring of 20; "Reading the file"; the name of the file in mono |
+| Refused | `note-surface`, border `note-line` | Note of 20; "This file was not loaded"; the reason in the words of the engine; "Choose another" |
+
+A file that is refused leaves the equipment of before in place. A file that is read becomes the equipment
+card. The button opens the file chooser, so the control works without dragging and by keyboard.
+
+## Dialog
+Over a dimmed screen (`rgba(5,7,10,.72)`), in its middle. Panel: width 340 to 440, `surface-1`, border
+`line-strong`, radius `radius-panel`, `shadow-panel`, padding 22. Title in the display face, 22 / 28
+(`text-lens-touch`), a quiet icon button of 32 to close at its right; body in text-2; actions at the right
+with 8 between them: quiet, secondary, primary, the primary one last.
+Phone: a bottom sheet with the drag handle; the actions under each other, 48 high, the primary one on top,
+the quiet one (44) last.
+`dialog` with its title and its text as name and description. The focus goes into it and stays in it; Escape
+and the close button close it; the focus goes back to where it was.
+
+## Tooltip
+The name of a control that shows an icon or one word. Height 28, padding 0 10, `control-active`, border
+`line-strong`, radius 8, text 12, shadow `0 1px 2px rgba(0,0,0,.45), 0 8px 20px rgba(0,0,0,.35)`; a key
+may follow, in mono 11 in a box with radius 4. 8 from its control. It comes after 400 ms under the pointer
+and at once with the keyboard focus; never on touch. It is never the only place where something is said.
+
+## Toast
+`surface-1`, border `line-strong`, radius `radius-row`, `shadow-float`, 48 high or more, padding 8 8 8 14,
+gap 10. A status mark (tick 18 or note 20), the words, then an action in accent, Geist 500 (height 32), or a
+quiet icon button of 32 to close. At the bottom of the screen in its middle, 24 from the edge; above the tab
+bar on phone. `role="status"`.
+A toast of something done leaves after 5 s, and stays while the pointer is over it or the focus is in it. A
+toast with a note stays until it is closed.
+
+## Table
+Head: height 36, padding 0 8, `text-section` in text-3, a line `line` under it. Rows: height 44, padding 0 8,
+a line `line-subtle` under each. The first column in Geist 500, numbers at the right in mono 13, a status mark
+of 16 after the number it belongs to. The row that is chosen is on `surface-2`. A caption under the table in
+`text-caption`. Real `table`, `th` with `scope`.
+Phone: each row is a card on `surface-2`, radius `radius-row`, padding 14: the name in `text-title` with its
+mark, then the values as a list of three columns, label in `text-caption` over the value in mono 15.
+
+## Progress ring
+| Form | Size | Use |
+|---|---|---|
+| Turning | 16, line 2 (12, line 1.5 for the state of saving) | Beside a value that is updated; how far is not known |
+| With an arc | 20, line 2.5 | How far, from the engine; in a row with the name of the step |
+| With an arc and the number | 44, line 3, the percent in mono 11 inside | On the stage, at the first run |
+
+Track `line-strong`, arc accent with round ends, from the top, clockwise. One turn in `duration-spin`. The
+ring with an arc says its percent to a screen reader. Progress is for showing: a run is over when its
+result is there.
+A run in a row: `surface-2`, radius `radius-row`, height 52, padding 0 14: the ring of 20, the step in the
+words of the engine, the percent in mono 13, text-2.
+
+## Skeleton
+In the place of a value that was never there. Blocks on `surface-2`, radius 5 to 6: a label 10 high, a value
+18 high (22 for the lead value), lines of text 12 high and of different lengths. It breathes: opacity 1 to
+0.55 and back in 1.6 s; it stands still under reduced motion. A value that was there is never replaced by a
+skeleton: it stays, dimmed.
+
+## Vitals: states
+| State | What is shown |
+|---|---|
+| Updating | Every value at opacity 0.55. A turning ring of 16 beside the energy. The last cell, on `surface-1`, has the ring of 20 with its arc, "Updating energy" in Geist 500, 13, and the step of the engine in `text-caption` |
+| First load | Skeletons in every cell. The last cell has the ring of 20, "Opening" and the name of the project, and the step of the engine |
+| The run failed | The last good values, not dimmed. The last cell is a note: "Energy was not updated", "Values are of the design before · Try again". It opens the notes |
+| Before a system voltage, desktop | As drawn in `StringsLensNoVoltage.dc.html` |
+| Before a system voltage, tablet | Three cells in a row, 72 high: Roof, Positions, "If all were used". Under them, across the width, the note, 72 high, on `note-surface`: "Energy is waiting for the system voltage", "Choose 600, 1000 or 1500 V in the Strings lens", an arrow. It leads to the Strings lens |
+| Before a system voltage, phone | The note is the first card of the row: "Energy is waiting", "Choose a system voltage". Then Roof, Positions, "If all were used" |
+
+## Notes to review, the drawer
+Desktop and tablet: from the right, 384 wide, over the inspector, `color-chrome`, a line `line` at its left,
+shadow `-16px 0 40px rgba(0,0,0,.5)`, layer `z-sheet`. Phone: a bottom sheet.
+Head: "Notes to review" in the display face 22 / 28, the count in mono 13, a quiet icon button to close (38,
+44 on phone). Padding 20 (16 on phone); notes 10 apart.
+A note: `note-surface`, border `note-line`, radius `radius-row`, padding 14: the mark of 20, a title in Geist
+500, the reason in `text-small`, text-2, in the words of the engine; under them where it belongs, in
+`text-caption`, text-3, and a secondary button of 36 that leads there ("Open Array") or acts ("Try again").
+Nothing to review: one row on `surface-1` with a tick of 20: "Nothing to review", "Every check of the design
+fits."
+
+## Project switcher, open
+The trigger is on `surface-2` with a border `line`, its chevron turned. Panel: 340 wide, `surface-1`, border
+`line-strong`, radius `radius-card-s`, `shadow-float`, padding 6.
+"This design": the name with a tick in accent, and under it the state of saving. "On this device": the designs
+saved here, or "Designs you save appear here." Then the actions, rows of 44 with an icon of 18 in text-2 and a
+fact at the right in `text-caption`, text-3: New design (Find the roof), Open a project (.rtd), Import a
+drawing (KMZ, KML, DXF), Save a copy (.rtd), Home. Sections are divided by a line `line`; their labels are
+`text-section`.
+On phone and tablet it is a bottom sheet.
+
+## State of saving
+In the top bar on desktop, `text-small`, text-2; on tablet and phone in the project switcher only.
+
+| State | Mark | Words |
+|---|---|---|
+| Saved | A dot of 7 in `color-ok`, pulsing in `duration-pulse-saved` | Saved on this device |
+| Saving | A turning ring of 12 | Saving |
+| Not kept: the demo, and every design before Phase 10 | A hollow dot of 7, 1.5 px in text-3 | Not kept on this device |
+| Could not be saved | A note of 16 | Not saved. It is a button and opens the notes |

@@ -21,6 +21,7 @@ so far". Neither is repeated here.
 | 9 | Segmented, Switch | #28 |
 | 10 | NumberField, Stepper | #29 |
 | 11 | State, phase file, decisions D27 to D31, this record | straight to `main` |
+| 12 | After the owner's answer: the approval recorded (D32, D33), the boards written into `components.md`, the boards published to the canvas, resume prompt 003 | straight to `main` |
 
 ## Why things are the way they are
 
@@ -65,16 +66,15 @@ Reasons that are not obvious from the code or the plan.
 | `git stash` while the test stack ran | The stack lost the new files and did not find them again, even after a restart: `apps/web/.next-test` had to be deleted. Commit first, then merge |
 | `git checkout` on a file to undo a trial edit | It took the uncommitted work in the same file with it. The edit was made again before the commit |
 | A unit test that the axe check passes | It passed on the 404 page. Every kit test now holds that the page answers 200 |
-| Publishing the two boards to the design canvas | Refused by the permission system: the canvas is open to anyone with the link. Left for the owner |
+| Publishing the two boards to the design canvas before the owner was asked | Refused by the permission system. Done after the owner approved it and changed the permission |
 | Unit tests of `number-entry.ts` seen failing first | They were written in one step with the module. Said in pull request #29 |
 
 ## What the owner should look at
 
-1. **The two boards**, `docs/design/previews/controls-part-2.png` and `shell-states.png`. Nothing of them is
-   built before they are approved. The choices in them are listed in `plan/STATE.md`.
-2. **Tabs** is proposed to be dropped from the phase: no screen uses it.
-3. **The canvas** does not have the two boards.
-4. **The pull request check** took 6 min 43 s on #29, of the 7 minutes after which the shading memo is due.
+1. **The canvas was reported as private** when the boards were published. The documents say it is open to
+   anyone with the link.
+2. **Tabs** stays in the phase and has no design yet.
+3. **The pull request check** took 6 min 43 s on #29, of the 7 minutes after which the shading memo is due.
 
 ## Agents used
 

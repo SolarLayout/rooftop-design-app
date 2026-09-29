@@ -62,14 +62,20 @@ project switcher (closed), save state ("Saved on this device"), Present and Expo
 on the three sizes and before a system voltage on desktop, the cell of the notes. The routes with their
 placeholders.
 
-### What waits for the owner's approval of the two boards
+### What the two boards of round 4 draw, approved and not built yet
+
+Approved by the owner on 2026-09-29 (decision D32). Their values are written down in
+`docs/design/components.md`, "Round 4".
 
 | Board | What it draws |
 |---|---|
 | `Controls2.dc.html` | Select (open), FileDrop, Dialog, Tooltip, Toast, Table, ProgressRing, Skeleton |
 | `ShellStates.dc.html` | Vitals while updating, at the first load, after a failed run; vitals before a system voltage on tablet and phone; the drawer of notes; the project switcher, open; the states of saving |
 
-Tabs has no design and no screen that uses it. It is proposed to be dropped from the phase.
+### What has no design yet
+
+Tabs. The owner keeps it in the phase (decision D33). It is drawn first, on a board of its own or on
+"Controls, part 2", shown to the owner, and built after his approval.
 
 ### Deviations from the scope as written
 

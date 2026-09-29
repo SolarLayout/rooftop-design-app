@@ -20,6 +20,7 @@ asks for one. Paste the block inside the file into a new session started in this
 |---|---|---|---|---|
 | 001 | `001-phase-2-engine-api.md` | Phase 2: review and merge part 1, then build part 2 | 2026-09-29 | used by session 2, 2026-09-29 |
 | 002 | `002-phase-3-design-system-shell.md` | Phase 3: the design system as code and the app shell | 2026-09-29 | used by session 3, 2026-09-29. The phase is not complete: `STATE.md` says what remains |
+| 003 | `003-phase-3-components-stores-shell.md` | Phase 3, the rest: the components of round 4, stores, data flow, shell | 2026-09-29 | open |
 
 ## Shape of a prompt file
 

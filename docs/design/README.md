@@ -1,7 +1,7 @@
 # Design system: "Dusk"
 
 The approved design of SolarLayout Rooftop (web). Everything built in `apps/web` follows it.
-Approved by the owner on 2026-09-29 (decisions D14 and D15 in `plan/README.md`).
+Approved by the owner on 2026-09-29 (decisions D14, D15 and D32 in `plan/README.md`).
 
 ## Where the design lives
 
@@ -49,8 +49,8 @@ Approved by the owner on 2026-09-29 (decisions D14 and D15 in `plan/README.md`).
 | Performance | `Performance.dc.html` | `performance-desktop.png` | desktop |
 | Handover | `Handover.dc.html` | `handover-desktop.png` | desktop |
 | Controls, depth and motion | `Kit.dc.html` | `controls-depth-motion.png` | |
-| Controls, part 2 (proposal, not yet approved) | `Controls2.dc.html` | `controls-part-2.png` | |
-| Shell states (proposal, not yet approved) | `ShellStates.dc.html` | `shell-states.png` | desktop, tablet, phone in parts |
+| Controls, part 2 | `Controls2.dc.html` | `controls-part-2.png` | |
+| Shell states | `ShellStates.dc.html` | `shell-states.png` | desktop, tablet, phone in parts |
 
 Screens still to draw are listed in `plan/phase-00-design.md`.
 
@@ -63,7 +63,6 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   of strings on the roof in the Strings lens is illustrative.
 - `mockups/build_lenses.py` generated the Sun and Strings boards from the Array board. It is kept so the boards
   can be regenerated; it is not part of the product.
-- `mockups/build_phase3_boards.py` writes the two boards of Phase 3, "Controls, part 2" and "Shell states". They
-  are proposals until the owner approves them: nothing of them is built before. They are in the repo and not
-  yet on the canvas.
-- `mockups/canvas.json` is the layout of the boards on the canvas, the two proposals included.
+- `mockups/build_phase3_boards.py` writes the two boards of round 4, "Controls, part 2" and "Shell states",
+  approved on 2026-09-29 (decision D32). It is kept so that the boards can be written again.
+- `mockups/canvas.json` is the layout of the boards on the canvas.

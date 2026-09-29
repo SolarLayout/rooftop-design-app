@@ -4,13 +4,13 @@ The single place that says where the project stands. Every session reads it firs
 Keep it short and true. History belongs in git and in the phase files, not here.
 
 **Last updated:** 2026-09-29, end of session 3. Phase 3 is in progress: fonts, tokens, the kit page and nine
-components are merged; two boards wait for the owner's approval.
+components are merged; the two boards of round 4 are approved and on the canvas; resume prompt 003 is written.
 
 ## Where we are
 
 | Phase | Status | Notes |
 |---|---|---|
-| 0 Design | Direction approved. 14 boards drawn and approved; 2 more drawn, waiting for approval | More screens to draw, listed in `phase-00-design.md` |
+| 0 Design | Direction approved. 16 boards drawn and approved | More screens to draw, listed in `phase-00-design.md`; Tabs is one of them |
 | 1 Foundation | Done, merged (PR #1) | |
 | 2 Engine and API | Done (PR #7, PRs #11 to #23) | What exists, what was decided, what was found: `phase-02-engine-api.md`, "As built" |
 | 3 Design system and shell | In progress (PRs #24 to #29) | What exists, what remains: `phase-03-design-system-shell.md`, "As built, so far" |
@@ -20,22 +20,12 @@ components are merged; two boards wait for the owner's approval.
 
 No open branch and no open pull request. `main` is green.
 
-Waiting for the owner:
+Nothing waits for the owner. He approved both boards of round 4, with the choices in them (decision D32),
+and keeps Tabs in the phase (decision D33). The boards are on the canvas.
 
-| What | Where | What depends on it |
-|---|---|---|
-| Approval of the board "Controls, part 2" | `docs/design/previews/controls-part-2.png`, source `docs/design/mockups/Controls2.dc.html` | Select, FileDrop, Dialog, Tooltip, Toast, Table, ProgressRing, Skeleton |
-| Approval of the board "Shell states" | `docs/design/previews/shell-states.png`, source `docs/design/mockups/ShellStates.dc.html` | The vitals while updating, at first load, after a failed run, and before a system voltage on tablet and phone; the drawer of notes; the project switcher, open; the states of saving |
-| Whether Tabs is dropped from Phase 3 | No screen uses it | Nothing |
-| The two boards on the design canvas | The publish was refused by the permission system, because the canvas is open to anyone with the link. The files to publish are `docs/design/mockups/Controls2.dc.html`, `ShellStates.dc.html` and `canvas.json` | Nothing in the build |
-
-Choices in the boards that are the owner's:
-1. While the energy is updated, every value of the vitals is dimmed, and the last cell shows the step of the
-   engine and how far it is, in the place of the cell of the notes.
-2. The demo says "Not kept on this device": nothing is saved before Phase 10.
-3. On tablet and phone the state of saving is said in the project switcher only.
-4. A toast with a note stays until it is closed; the others leave by themselves.
-5. A file that is refused leaves the equipment of before in place, and says why in the words of the engine.
+One thing to confirm with the owner: when the boards were published, the canvas was reported as private,
+readable by its owner only. `CLAUDE.md` and the documents of the design say it is open to anyone with the
+link. Nothing was changed in them.
 
 ## What the web app has today
 
@@ -65,19 +55,19 @@ changed; an export 0.2 to 0.9 s after a run.
 
 ## Next, in order
 
-1. Phase 3, what has a design, each as its own pull request, test first:
-   Slider and RangeSlider; Sheet; the three stores; the data flow; the routes with their placeholders; the
-   shell (top bar, workspace navigation, project switcher closed, Present disabled and Export to Handover,
-   the vitals with results on the three sizes and before a system voltage on desktop, the cell of the notes);
-   the browser tests of the shell on 390, 834 and 1440 with their baselines and the axe check.
-2. Phase 3, what the two boards draw, after the owner approved them.
+Work order: `plan/resume/003-phase-3-components-stores-shell.md`.
+
+1. Phase 3, each part as its own pull request, test first:
+   the guard against raw values reads `*.ts` too; Slider and RangeSlider; Sheet; ProgressRing and Skeleton;
+   Tooltip and Toast; Select; Dialog; FileDrop; Table; the three stores; the data flow; the routes with
+   their placeholders; the shell with the vitals in all their states, the drawer of notes, the project
+   switcher and the state of saving; the browser tests of the shell on 390, 834 and 1440.
+2. Tabs: draw it, show it to the owner, build it after his approval.
 3. Close Phase 3: acceptance, "As built", status, state, record.
 4. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert". None
    blocks Phase 3.
 5. Phase 4: find the roof on the map and outline it (the flagship).
 6. In parallel with any phase: the screens still to draw (Phase 0).
-
-There is no resume prompt for the rest of Phase 3. One is written when the owner asks.
 
 ## Facts about this machine and setup
 
@@ -92,7 +82,7 @@ There is no resume prompt for the rest of Phase 3. One is written when the owner
 | Playwright | `@playwright/test` 1.52.0; its browser (chromium-1169) is already installed. `@axe-core/playwright` 4.13.0 |
 | Baselines of the screens | `e2e/baselines/darwin`, made on this machine. Renew with `bun tools/with-node.ts playwright test <name> --update-snapshots` in `e2e/`, after looking at the new picture |
 | Esri key | In `apps/web/.env.local` as `NEXT_PUBLIC_ESRI_API_KEY`. Never read, print or commit the file. Referrers: `http://localhost:4700`, `http://127.0.0.1:4700`. Expires about 28 Sep 2027 |
-| Design canvas | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy (open to anyone with the link) |
+| Design canvas | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy. 16 boards. To add a board: read `project/canvas.json` of the canvas, then publish the board and the index to it |
 | Design system | `docs/design/` |
 
 ## Open items (not blocking)

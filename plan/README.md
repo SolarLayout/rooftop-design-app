@@ -18,7 +18,7 @@ Always:
 
 | # | Phase | File | Status |
 |---|---|---|---|
-| 0 | IA and visual design (HTML mockups, approval) | `phase-00-design.md` | direction approved; two boards wait for approval; more screens to draw |
+| 0 | IA and visual design (HTML mockups, approval) | `phase-00-design.md` | direction approved; 16 boards approved; more screens to draw |
 | 1 | Monorepo, tooling, one-command dev stack | `phase-01-foundation.md` | done |
 | 2 | Engine and stateless API | `phase-02-engine-api.md` | done |
 | 3 | Design system and app shell | `phase-03-design-system-shell.md` | in progress: fonts, tokens, kit, nine components (PRs #24 to #29) |
@@ -66,6 +66,8 @@ Always:
 | D29 | The screens have baselines in the repo (`e2e/baselines/<platform>/<size>`), compared in the browser tests; a pull request shows them as its screenshots. A screen may differ by 50 pixels | Rule 7 of `apps/web/CLAUDE.md`; session 3 |
 | D30 | A component can be shown in a state without pointer or keyboard (`shownAs`), for `/kit` and its screenshots only | The kit board shows the states side by side; session 3 |
 | D31 | In a number field an entry outside the range goes to the nearest limit, an entry that is no number leaves the value; the field says which, in the style of a hint. The arrows step the draft and do not commit | It had no design; session 3 |
+| D32 | The boards "Controls, part 2" and "Shell states" are approved, with the choices in them: while the energy is updated every value of the vitals is dimmed and the last cell says the step and how far; the demo says "Not kept on this device"; on tablet and phone the state of saving is said in the project switcher only; a toast with a note stays until closed; a file that is refused leaves the equipment of before | Owner, 2026-09-29 |
+| D33 | Tabs stays in Phase 3. It has no design yet: it is drawn and approved first | Owner, 2026-09-29: "we might need it" |
 
 ## Open for approval
 

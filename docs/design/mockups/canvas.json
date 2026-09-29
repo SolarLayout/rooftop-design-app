@@ -106,14 +106,14 @@
    "y": 7054,
    "w": 1440,
    "h": 1512,
-   "title": "Controls, part 2 · proposal, not yet approved"
+   "title": "Controls, part 2"
   },
   "ShellStates.dc.html": {
    "x": 1520,
    "y": 7054,
    "w": 1440,
    "h": 1996,
-   "title": "Shell states · proposal, not yet approved"
+   "title": "Shell states"
   }
  },
  "createdOnFiles": {
@@ -168,7 +168,7 @@
   "t6": {
    "kind": "title1",
    "maxW": 2960,
-   "text": "6 · Phase 3: controls and shell states (proposal)",
+   "text": "6 · Controls, part 2, and the states of the shell",
    "w": 240,
    "x": 0,
    "y": 6754
