@@ -1,0 +1,3 @@
+# Real PVsyst files: keep every byte (CRLF line ends, byte order marks) as supplied.
+*.PAN -text
+*.OND -text

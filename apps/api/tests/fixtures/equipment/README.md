@@ -1,6 +1,8 @@
 # Equipment fixtures
 
-Real PVsyst files supplied by the owner on 2026-09-29, renamed to plain file names. Contents are unchanged.
+Real PVsyst files supplied by the owner on 2026-09-29, renamed to plain file names. Contents are unchanged,
+byte for byte: CRLF line ends throughout, and a UTF-8 byte order mark in the Emmvee and Sungrow files
+(`.gitattributes` here stops git from converting them). Readers must cope with both.
 They are test inputs. The demo keeps using the bundled `Test.PAN` and `Test-S.ond`, because every expected
 number in `plan/reference/demo-numbers.md` was produced with those two.
 
