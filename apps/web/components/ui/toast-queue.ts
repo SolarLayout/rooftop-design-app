@@ -1,6 +1,7 @@
 // The queue of toasts: a store without React. One toast is shown at a time, in the order they came. A
 // toast of something done leaves by itself; one with a note stays until it is closed (Toaster).
 
+import { CLOCK_OF_THE_BROWSER, type Clock } from "../../lib/clock";
 import { TOAST_STAYS } from "./design-numbers";
 
 export type ToastKind = "done" | "note";
@@ -13,19 +14,6 @@ export type ToastAsked = {
 };
 
 export type Toast = ToastAsked & { id: number };
-
-/** What waits for a time to pass. The real one is of the browser; a test gives its own. */
-export type Clock = {
-  /** Runs `run` after the time has passed. What comes back gives the waiting up. */
-  after: (milliseconds: number, run: () => void) => () => void;
-};
-
-const CLOCK_OF_THE_BROWSER: Clock = {
-  after(milliseconds, run) {
-    const timer = setTimeout(run, milliseconds);
-    return () => clearTimeout(timer);
-  },
-};
 
 export type Toasts = ReturnType<typeof createToasts>;
 

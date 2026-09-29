@@ -1,27 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { createToasts, type Clock } from "./toast-queue";
-
-/** A clock that goes on only when it is told to. */
-function clockOfTheTest() {
-  let now = 0;
-  let waiting: Array<{ at: number; run: () => void }> = [];
-  const clock: Clock = {
-    after(milliseconds, run) {
-      const entry = { at: now + milliseconds, run };
-      waiting.push(entry);
-      return () => {
-        waiting = waiting.filter((one) => one !== entry);
-      };
-    },
-  };
-  function pass(milliseconds: number) {
-    now += milliseconds;
-    const due = waiting.filter((one) => one.at <= now).sort((a, b) => a.at - b.at);
-    waiting = waiting.filter((one) => one.at > now);
-    due.forEach((one) => one.run());
-  }
-  return { clock, pass, waiting: () => waiting.length };
-}
+import { clockOfTheTest } from "../../lib/clock-of-the-test";
+import { createToasts } from "./toast-queue";
 
 function queue() {
   const time = clockOfTheTest();
