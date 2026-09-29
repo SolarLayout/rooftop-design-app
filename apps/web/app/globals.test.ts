@@ -198,7 +198,7 @@ describe("the tokens in Tailwind", () => {
     expect(made).toContain(".duration-press { transition-duration: var(--duration-press); }");
     expect(made).toContain(".z-float { z-index: var(--z-float); }");
     expect(made).toContain(
-      ".focus-ring:focus-visible { outline: var(--ring-focus); outline-offset: var(--ring-focus-offset); }",
+      '.focus-ring:focus-visible, .focus-ring[data-shown-as="focus"] { outline: var(--ring-focus); outline-offset: var(--ring-focus-offset); }',
     );
   });
 
@@ -225,6 +225,26 @@ describe("the tokens in Tailwind", () => {
     "max-w-md",
   ])("%s, which is not made of a token, makes no CSS", async (utility) => {
     expect(await utilitiesOf([utility])).toBe("");
+  });
+});
+
+describe("states", () => {
+  test("hover and pressed can be shown without a pointer, and never on a disabled control", async () => {
+    const made = oneLine(await utilitiesOf(["hovered:bg-accent-hover", "pressed:bg-accent-pressed"]));
+
+    const hover = "{ background-color: var(--color-accent-hover); }";
+    const pressed = "{ background-color: var(--color-accent-pressed); }";
+
+    expect(made).toContain(`@media (hover: hover) { .hovered\\:bg-accent-hover:hover:not(:disabled) ${hover} }`);
+    expect(made).toContain(`.hovered\\:bg-accent-hover[data-shown-as="hover"] ${hover}`);
+    expect(made).toContain(`.pressed\\:bg-accent-pressed:active:not(:disabled) ${pressed}`);
+    expect(made).toContain(`.pressed\\:bg-accent-pressed[data-shown-as="pressed"] ${pressed}`);
+  });
+
+  test("pressed comes after hover, so that it wins", async () => {
+    const made = await utilitiesOf(["pressed:bg-accent-pressed", "hovered:bg-accent-hover"]);
+
+    expect(made.indexOf("pressed\\:bg-accent-pressed")).toBeGreaterThan(made.indexOf("hovered\\:bg-accent-hover"));
   });
 });
 
