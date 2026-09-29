@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { components } from "@rooftop/api-types";
-
-type Health = components["schemas"]["Health"];
+import { api } from "@/lib/api";
 
 type State =
   | { kind: "checking" }
@@ -17,12 +15,9 @@ export function ApiStatus() {
   useEffect(() => {
     const controller = new AbortController();
 
-    fetch("/api/health", { signal: controller.signal, cache: "no-store" })
-      .then(async (response) => {
-        if (!response.ok) throw new Error(`status ${response.status}`);
-        const health = (await response.json()) as Health;
-        setState({ kind: "reachable", version: health.version });
-      })
+    api
+      .getHealth({ signal: controller.signal })
+      .then((health) => setState({ kind: "reachable", version: health.version }))
       .catch(() => {
         if (!controller.signal.aborted) setState({ kind: "unreachable" });
       });
