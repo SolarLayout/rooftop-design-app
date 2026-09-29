@@ -8,18 +8,20 @@ from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 
 from . import weather as wx
-from .errors import WeatherNotLoaded
+from .errors import MissingEquipmentFile, UnsupportedProjectFormat, WeatherNotLoaded
 from .geometry import Obstacle, Roof
-from .io.pvsyst import Inverter, Module, read_ond, read_pan
+from .io.pvsyst import Inverter, Module, parse_ond, parse_pan, read_ond, read_pan
 from .onediode import Coefficients, ModuleModel
 from .options import StringOption, build_options, custom_option
+from .paths import file_name
 from .placement import ArraySpec, Layout, place
 from .resources import sample_path
 from .simulation import Losses, Precomputed, precompute
 from .stringing import CELL_RISE, SeriesRange, series_range
 
 FILE_SUFFIX = ".rtd"
-FORMAT_VERSION = 1
+FORMAT_VERSION = 2          # embeds the PAN, OND and CSV text; format 1 held paths to them
+READABLE_FORMATS = (1, 2)
 
 
 @dataclass
@@ -28,8 +30,10 @@ class Project:
     roof: Roof = field(default_factory=lambda: Roof(outline=[(0, 0), (30, 0), (30, 20), (0, 20)], lat=18.52, lon=73.86))
     array: ArraySpec = field(default_factory=ArraySpec)
     losses: Losses = field(default_factory=Losses)
-    pan_path: str = ""                       # empty: the bundled sample
+    pan_path: str = ""                       # empty: the bundled sample. With pan_text: the file's name
     ond_path: str = ""
+    pan_text: str = ""                       # the content of the PAN file (format 2)
+    ond_text: str = ""
     weather_source: str = "pvgis"
     weather_csv: str = ""                    # the name of the CSV file; its content is weather_csv_text
     weather_csv_text: str = ""
@@ -54,7 +58,12 @@ class Project:
     @classmethod
     def from_json(cls, d: dict) -> Project:
         d = dict(d)
-        d.pop("format", None)
+        fmt = d.pop("format", 1)
+        if fmt not in READABLE_FORMATS:
+            raise UnsupportedProjectFormat(
+                f"This project file is format {fmt}. This version reads formats "
+                f"{' and '.join(map(str, READABLE_FORMATS))}. Open it with a newer version of the app.",
+                field="format")
         roof_d = dict(d.pop("roof"))
         obs = [Obstacle(**{k: (v if k != "points" else [tuple(p) for p in v]) for k, v in o.items()})
                for o in roof_d.pop("obstacles", [])]
@@ -82,13 +91,36 @@ def _known(cls, d: dict) -> dict:
     return {k: v for k, v in d.items() if k in names}
 
 
+def _here(path: str, what: str, kind: str, field_name: str) -> str:
+    """The path of a PAN or OND file of the project, or the error that asks for the file again."""
+    if not Path(path).is_file():
+        raise MissingEquipmentFile(
+            f"The {what} file {file_name(path)} ({kind}) is not included in this project. Choose it again.",
+            field=field_name)
+    return path
+
+
+def module_of(p: Project) -> Module:
+    """The module of the project: its embedded PAN, else the file it names, else the bundled sample."""
+    if p.pan_text:
+        return parse_pan(p.pan_text, file_name(p.pan_path))
+    return read_pan(_here(p.pan_path, "module", "PAN", "pan_path") if p.pan_path else sample_path("Test.PAN"))
+
+
+def inverter_of(p: Project) -> Inverter:
+    """The inverter of the project: its embedded OND, else the file it names, else the bundled sample."""
+    if p.ond_text:
+        return parse_ond(p.ond_text, file_name(p.ond_path))
+    return read_ond(_here(p.ond_path, "inverter", "OND", "ond_path") if p.ond_path else sample_path("Test-S.ond"))
+
+
 class Design:
     """Runs the pipeline for a project and keeps the intermediate results."""
 
     def __init__(self, project: Project):
         self.p = project
-        self.module: Module = read_pan(project.pan_path or sample_path("Test.PAN"))
-        self.inverter: Inverter = read_ond(project.ond_path or sample_path("Test-S.ond"))
+        self.module: Module = module_of(project)
+        self.inverter: Inverter = inverter_of(project)
         self.ond_imax = self.inverter.imax_mppt_a
         self._ond_iscmax = self.inverter.isc_max_mppt_a
         self.apply_imax(project.imax_mppt_override)

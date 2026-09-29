@@ -21,6 +21,8 @@ import pandas as pd
 import pvlib
 import requests
 
+from .paths import file_name
+
 PVGIS = "https://re.jrc.ec.europa.eu/api/v5_3"
 NASA = "https://power.larc.nasa.gov/api/temporal/hourly/point"
 SOURCES = ("pvgis", "nasa", "csv")
@@ -250,16 +252,11 @@ def load(source: str, lat: float, lon: float, csv_path: str | None = None, csv_t
         return fetch_nasa(lat, lon, cache=cache)
     if source == "csv":
         if csv_text:
-            return parse_csv(csv_text, lat, lon, name=_file_name(csv_path or ""))
+            return parse_csv(csv_text, lat, lon, name=file_name(csv_path or ""))
         if not csv_path:
             raise ValueError("Choose a CSV weather file.")
         return read_csv(csv_path, lat, lon)
     raise ValueError(source)
-
-
-def _file_name(path: str) -> str:
-    """The last part of a path written on any system: a project may come from a Windows machine."""
-    return path.replace("\\", "/").rsplit("/", 1)[-1]
 
 
 def solar_position(w: Weather) -> pd.DataFrame:
