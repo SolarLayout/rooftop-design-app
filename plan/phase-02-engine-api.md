@@ -179,6 +179,14 @@ UI. Multi-user concerns. Persistence.
   bear the time they were made (and the DXF two identifiers made by chance), as such files do; what they
   draw and say is the same. The PDF prints the date of the day.
 
+- **Decision D24**: the engine bundles the module and the inverter of the demo under their real names,
+  `insolation-ina-144mhc-tf-560.PAN` and `wattpower-wp-330ktl-h1.OND`, as the owner supplied them. A project
+  that names no module or inverter gets these two. `Test.PAN` and `Test-S.ond` of the desktop app are now
+  in `apps/api/tests/fixtures/equipment`; the tests copied from the desktop app run on them. The two pairs
+  differ in names only, and a run with either gives the same results to the last bit. The names are shown as
+  the files state them: "INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560" and "WattPower Systems
+  Pvt.Ltd WP-330KTL-H1". A shorter name on a screen is for the screen to make.
+
 ### Left as in the desktop app
 - NASA POWER is asked for the year 2023; the times of a CSV are read as UTC (inventory, section 5, gap 7).
   Neither can be set in a request yet.

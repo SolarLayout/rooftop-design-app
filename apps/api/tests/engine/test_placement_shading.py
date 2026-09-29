@@ -8,13 +8,13 @@ from rooftop_core.demo import demo_roof
 from rooftop_core.geometry import sun_solar_time
 from rooftop_core.io.pvsyst import read_pan
 from rooftop_core.placement import ArraySpec, place, shade_free_pitch
-from rooftop_core.resources import sample_path
 from rooftop_core.shading import electrical_rule, row_fraction
+from tests.equipment import fixture_path
 
 
 @pytest.fixture(scope="module")
 def module():
-    return read_pan(sample_path("Test.PAN"))
+    return read_pan(fixture_path("Test.PAN"))
 
 
 def test_shade_free_pitch_pune(module):

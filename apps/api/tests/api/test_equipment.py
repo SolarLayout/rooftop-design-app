@@ -5,11 +5,11 @@ from pathlib import Path
 
 import pytest
 
-from rooftop_core.resources import sample_path
 from tests.api.conftest import error_of
+from tests.equipment import fixture_path
 
-PAN = Path(sample_path("Test.PAN")).read_bytes()
-OND = Path(sample_path("Test-S.ond")).read_bytes()
+PAN = Path(fixture_path("Test.PAN")).read_bytes()
+OND = Path(fixture_path("Test-S.ond")).read_bytes()
 PAN_TEXT, OND_TEXT = PAN.decode("utf-8"), OND.decode("utf-8")
 VOC_NOTE = (
     "Voc coefficient -0.164 %/°C is outside the usual -0.35 to -0.20 %/°C for crystalline silicon. "

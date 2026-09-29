@@ -3,12 +3,12 @@ import pytest
 
 from rooftop_core.io.pvsyst import read_pan
 from rooftop_core.onediode import ModuleModel
-from rooftop_core.resources import sample_path
+from tests.equipment import fixture_path
 
 
 @pytest.fixture(scope="module")
 def mm():
-    return ModuleModel(read_pan(sample_path("Test.PAN")))
+    return ModuleModel(read_pan(fixture_path("Test.PAN")))
 
 
 def test_reproduces_stc(mm):

@@ -78,9 +78,9 @@ Tree model: trunk 0.3 m to crown start, crown disc above. The parapet shows as o
 No control on desktop: module gap 0.02 m, flush clearance 0.1 m.
 
 ### 1.4 Module (PAN) and inverter (OND)
-- PAN: empty means the bundled `Test.PAN`. Shown: file, manufacturer, model, Wp, size, Voc, Isc, bypass diodes,
+- PAN: empty means the bundled module (desktop: `Test.PAN`; web: the same data under its real name, D24). Shown: file, manufacturer, model, Wp, size, Voc, Isc, bypass diodes,
   bifaciality, twin half-cell, and "Coefficients (one-diode model | PAN file): Voc, Vmp, Pmpp in %/degC".
-- OND: empty means the bundled `Test-S.ond`. Shown: file, manufacturer, model, kW, MPPT count, inputs,
+- OND: empty means the bundled inverter (desktop: `Test-S.ond`; web: the same data under its real name, D24). Shown: file, manufacturer, model, kW, MPPT count, inputs,
   MPPT range, nominal V, max V. A new OND clears the Imax override.
 - Read errors keep the previous file and show the engine message.
 

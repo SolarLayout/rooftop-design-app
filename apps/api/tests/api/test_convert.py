@@ -14,8 +14,8 @@ from rooftop_core.keepout_parts import keepout_parts
 from rooftop_core.onediode import ModuleModel
 from rooftop_core.placement import ArraySpec, place
 from rooftop_core.project import Project
-from rooftop_core.resources import sample_path
 from rooftop_core.simulation import Losses
+from tests.equipment import fixture_path
 
 OBSTACLES = [
     Obstacle("Stair room", "box", x=22.5, y=18.0, length=5.0, width=4.0, rotation_deg=12.5, height=3.0),
@@ -33,7 +33,7 @@ OBSTACLES = [
 
 @pytest.fixture(scope="module")
 def module():
-    return read_pan(sample_path("Test.PAN"))
+    return read_pan(fixture_path("Test.PAN"))
 
 
 # ── inputs, both ways ────────────────────────────────────────────────────────
@@ -174,7 +174,7 @@ def test_coefficients_of_the_file_say_so(module):
 
 
 def test_an_inverter_carries_its_fields_curves_and_limits():
-    inverter = read_ond(sample_path("Test-S.ond"))
+    inverter = read_ond(fixture_path("Test-S.ond"))
 
     schema = convert.inverter_from_engine(inverter)
 
