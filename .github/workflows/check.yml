@@ -12,7 +12,7 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     env:
       NEXT_TELEMETRY_DISABLED: "1"
     steps:
@@ -38,20 +38,7 @@ jobs:
         working-directory: apps/api
         run: uv sync --frozen
 
-      - name: Install the Playwright browser
-        working-directory: e2e
-        run: bun x playwright install --with-deps chromium
-
-      - name: bun check
-        run: bun check
-
-      - name: Keep the logs and the Playwright report when something failed
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: check-output
-          path: |
-            .dev/*.log
-            e2e/playwright-report
-            e2e/test-results
-          if-no-files-found: ignore
+      # Browser tests are not part of this workflow: they run locally in `bun check`
+      # and, when started by hand, in the e2e workflow.
+      - name: bun check, without the browser tests
+        run: bun check --skip=e2e
