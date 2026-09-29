@@ -18,10 +18,10 @@ Always:
 
 | # | Phase | File | Status |
 |---|---|---|---|
-| 0 | IA and visual design (HTML mockups, approval) | `phase-00-design.md` | direction approved; 16 boards approved; more screens to draw |
+| 0 | IA and visual design (HTML mockups, approval) | `phase-00-design.md` | direction approved; 17 boards approved; more screens to draw |
 | 1 | Monorepo, tooling, one-command dev stack | `phase-01-foundation.md` | done |
 | 2 | Engine and stateless API | `phase-02-engine-api.md` | done |
-| 3 | Design system and app shell | `phase-03-design-system-shell.md` | in progress: fonts, tokens, kit, nine components (PRs #24 to #29) |
+| 3 | Design system and app shell | `phase-03-design-system-shell.md` | in progress: fonts, tokens, kit, every component (PRs #24 to #32). Stores, data flow, routes and shell remain (`phase-03-rest-plan.md`) |
 | 4 | Find the roof on the map and outline it (flagship) | `phase-04-find-and-outline.md` | not started |
 | 5 | Studio: 3D roof, Roof and Array lenses | `phase-05-studio-roof-array.md` | not started |
 | 6 | Studio: Sun lens | `phase-06-studio-sun.md` | not started |
@@ -88,6 +88,7 @@ plan/
   resume/                       resume prompts, one per resumption, written when the owner asks
   sessions/NNN/                 record of each past session and the owner's messages, word for word
   phase-NN-*.md                 one per phase: goal, scope, deliverables, acceptance
+  phase-03-rest-plan.md         how the rest of Phase 3 is built: steps, decisions, what was found
   reference/
     functional-inventory.md     every input, output, export and message of the desktop app
     r3f-notes.md                3D fixes already paid for in solar-mms-modeller

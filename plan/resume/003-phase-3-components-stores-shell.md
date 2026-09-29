@@ -1,6 +1,6 @@
 # 003: Phase 3, the rest: components of round 4, stores, data flow, shell
 
-Written: 2026-09-29, by session 3. Status: open.
+Written: 2026-09-29, by session 3. Status: used by session 4; what remains of it is in 004.
 
 ## Paste this
 
