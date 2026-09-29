@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { fontVariables } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,7 +14,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="en" className={`${fontVariables} h-full antialiased`}>
       <body className="min-h-full bg-canvas font-sans text-ink">{children}</body>
     </html>
   );

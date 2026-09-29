@@ -7,11 +7,19 @@
 :root {
   --canvas: #0b0e13;
   --ink: #f2f4f7;
+
+  /* The variables on the right are set on <html> by app/fonts. */
+  --font-display: var(--font-bricolage-grotesque), var(--font-geist-sans), system-ui, sans-serif;
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 @theme inline {
   --color-canvas: var(--canvas);
   --color-ink: var(--ink);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
 }
 
 html,

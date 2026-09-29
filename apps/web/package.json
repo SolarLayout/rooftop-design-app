@@ -17,6 +17,7 @@
     "@react-three/drei": "10.7.7",
     "@react-three/fiber": "9.6.1",
     "@rooftop/api-types": "workspace:*",
+    "geist": "1.7.2",
     "next": "16.2.11",
     "react": "19.2.4",
     "react-dom": "19.2.4",

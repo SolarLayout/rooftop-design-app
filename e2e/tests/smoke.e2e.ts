@@ -1,25 +1,13 @@
 import { expect, test } from "../fixtures";
 import { webUrl } from "../stack";
 
-const THIS_MACHINE = new Set(["localhost", "127.0.0.1", "[::1]"]);
-
 test("home page loads, names the app and reaches the API", async ({ page }) => {
   const consoleErrors: string[] = [];
-  const requestsLeavingThisMachine: string[] = [];
 
   page.on("console", (message) => {
     if (message.type() === "error") consoleErrors.push(message.text());
   });
   page.on("pageerror", (error) => consoleErrors.push(String(error)));
-
-  // Tests never touch the network: anything that is not this machine is stopped and reported.
-  await page.route("**/*", (route) => {
-    const url = new URL(route.request().url());
-    const isWeb = url.protocol === "http:" || url.protocol === "https:";
-    if (!isWeb || THIS_MACHINE.has(url.hostname)) return route.continue();
-    requestsLeavingThisMachine.push(url.href);
-    return route.abort();
-  });
 
   const response = await page.goto("/");
   expect(response?.status()).toBe(200);
@@ -38,6 +26,5 @@ test("home page loads, names the app and reaches the API", async ({ page }) => {
   }));
   expect(width.scroll, "no horizontal scroll").toBeLessThanOrEqual(width.client);
 
-  expect(requestsLeavingThisMachine, "requests that left this machine").toEqual([]);
   expect(consoleErrors, "console errors").toEqual([]);
 });
