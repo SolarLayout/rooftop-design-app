@@ -82,7 +82,15 @@ def test_the_kmz_comes_back_through_the_import_with_its_heights(client, exported
 
     assert zipfile.is_zipfile(io.BytesIO(exported["kmz"].content))
     heights = {obstacle["name"]: obstacle["height"] for obstacle in roof["obstacles"]}
-    assert heights["Stair room"] == 3.0 and heights["Water tank"] == 2.0 and heights["AC unit 1"] == 1.2
+    assert heights == {
+        "Stair room": 3.0,
+        "Water tank": 2.0,
+        "AC unit 1": 1.2,
+        "AC unit 2": 1.2,
+        "AC unit 3": 1.2,
+        "AC unit 4": 1.2,
+    }
+    assert roof["missing_heights"] == [] and roof["notes"] == []
     assert (roof["lat"], roof["lon"]) == (pytest.approx(18.52, abs=1e-4), pytest.approx(73.86, abs=1e-4))
 
 

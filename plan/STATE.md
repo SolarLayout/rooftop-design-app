@@ -25,7 +25,7 @@ Nothing. `main` is green and there is no open branch or pull request.
    - Done: `POST /weather`
    - Done: `POST /design` with progress over SSE
    - Done: `POST /export/{pdf,dxf,kmz,csv,sld}`
-   - A KMZ exported by the app comes back with its modules as obstacles: fix the import, test first
+   - Done: a KMZ exported by the app comes back as the roof it was
    - Done: memoisation (decision D6)
    - The typed client in `apps/web/lib/api`
    - Decision D24: the demo bundles the real equipment files
