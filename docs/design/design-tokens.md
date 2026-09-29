@@ -255,6 +255,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | Token | Value | Use |
 |---|---|---|
 | `--opacity-disabled` | `0.45` | A control that cannot be used. It has no shadow either |
+| `--opacity-updating` | `0.55` | A value of before while the new one is on its way; a skeleton at the low point of its breath |
 
 ## Focus
 
@@ -274,6 +275,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--duration-fill` | `900ms` | Modules filling the roof, row by row |
 | `--duration-tilt` | `1200ms` | Map tilting into the 3D roof |
 | `--duration-spin` | `900ms` | One turn of the ring beside a value that is updating |
+| `--duration-breathe` | `1600ms` | One breath of a skeleton |
 | `--duration-pulse-saved` | `2400ms` | One pulse of the saved dot |
 | `--duration-pulse-corner` | `2000ms` | One pulse of the corner being edited |
 | `--shift-press` | `1px` | Hover raises a control by it, press lowers it by it |
@@ -305,7 +307,8 @@ Under `prefers-reduced-motion: reduce` every transition and animation is removed
 | `--radius-*` | `rounded-` and the name | `rounded-control` |
 | `--shadow-*`, `--halo-*` | `shadow-` and the name | `shadow-raised`, `shadow-halo-focus`, `shadow-halo-selected` |
 | `--ring-focus`, `--ring-focus-offset` | `focus-ring` | on every control |
-| `--opacity-disabled` | `opacity-disabled` | `disabled:opacity-disabled` |
+| `--opacity-disabled`, `--opacity-updating` | `opacity-disabled`, `opacity-updating` | `disabled:opacity-disabled` |
+| `--duration-spin`, `--duration-breathe` | `turning`, `breathing` | on a ring that turns, on a skeleton |
 | `--ease-out`, `--duration-*` | `ease-out`, `duration-` and the name | `duration-press` |
 | `--duration-press`, `--ease-out`, `--shift-press`, `--scale-press` | `press-motion`, `raised-by-hover`, `lowered-by-press` | on every control that is pressed |
 | `--duration-panel`, `--ease-out` | `sheet-motion` | on a sheet that goes to its stop |

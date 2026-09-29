@@ -276,11 +276,20 @@ result is there.
 A run in a row: `surface-2`, radius `radius-row`, height 52, padding 0 14: the ring of 20, the step in the
 words of the engine, the percent in mono 13, text-2.
 
+In code: `ProgressRing` and `RunStep`; the arc in `ring-arc.ts`.
+
+- A ring that turns shows a quarter of the way around.
+- A ring is a `progressbar` with a name. Beside words that say the same it has none and is for the eye only.
+- The percent is whole, and 99 at the most before the run is over.
+
 ## Skeleton
-In the place of a value that was never there. Blocks on `surface-2`, radius 5 to 6: a label 10 high, a value
-18 high (22 for the lead value), lines of text 12 high and of different lengths. It breathes: opacity 1 to
-0.55 and back in 1.6 s; it stands still under reduced motion. A value that was there is never replaced by a
-skeleton: it stays, dimmed.
+In the place of a value that was never there. Blocks on `surface-2`, radius `radius-xs`: a label 10 high, a
+value 18 high (22 for the lead value), lines of text 12 high and of different lengths. It breathes: opacity
+1 to `opacity-updating` and back in `duration-breathe`; it stands still under reduced motion. A value that
+was there is never replaced by a skeleton: it stays, dimmed.
+
+In code: `Skeleton`, of the kind `label`, `value`, `lead` or `text`. Who uses it gives it its width. It says
+nothing to a screen reader: what is waited for is said in words beside it.
 
 ## Vitals: states
 | State | What is shown |
