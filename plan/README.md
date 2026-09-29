@@ -68,6 +68,7 @@ Always:
 | D31 | In a number field an entry outside the range goes to the nearest limit, an entry that is no number leaves the value; the field says which, in the style of a hint. The arrows step the draft and do not commit | It had no design; session 3 |
 | D32 | The boards "Controls, part 2" and "Shell states" are approved, with the choices in them: while the energy is updated every value of the vitals is dimmed and the last cell says the step and how far; the demo says "Not kept on this device"; on tablet and phone the state of saving is said in the project switcher only; a toast with a note stays until closed; a file that is refused leaves the equipment of before | Owner, 2026-09-29 |
 | D33 | Tabs stays in Phase 3. It has no design yet: it is drawn and approved first | Owner, 2026-09-29: "we might need it" |
+| D34 | The rest of Phase 3, after the sliders (pull request #31), goes into one pull request, each part as a commit of its own. For this phase; "one change per pull request" stands for the phases after it | Owner, 2026-09-29, session 4: "try to do it in one PR not numerous PRs" |
 
 ## Open for approval
 
