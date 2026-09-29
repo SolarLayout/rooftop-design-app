@@ -43,6 +43,10 @@ Step 2. Build part 2, each as its own pull request, test first:
     clear error.
   - Memoisation per decision D6: an in-process LRU keyed by a hash of the inputs each stage
     depends on. Dropping the cache must change nothing but speed; prove it with a test.
+  - Equipment fixtures: apps/api/tests/fixtures/equipment holds real PAN and OND files, with a
+    README that says what each covers and which variants to make. Use them to test the paths the
+    bundled samples never reach: monofacial module, a module that is not twin half-cell, a stated
+    Voc coefficient, a central inverter, missing current limits, a 1000 V equipment limit.
   - Decide what to do about the httpx deprecation warning from starlette's TestClient.
   - After each change to routes or models: `bun gen:api`, commit packages/api-types.
 
