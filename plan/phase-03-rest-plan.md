@@ -10,9 +10,9 @@ decided on the way. It is kept true while the work goes on: a step that is done 
 | Part | State |
 |---|---|
 | 1 The guard reads `*.ts` | Merged, pull request #30 |
-| 2 Slider, RangeSlider | Pull request #31, green here, merged when its check is green |
-| 3 to 16, Tabs | One pull request, branch `feat/phase-3-shell` (decision D34) |
-| Tabs, the board | Drawn, in the repo as a proposal (`docs/design/previews/tabs.png`). Waits for the owner |
+| 2 Slider, RangeSlider | Merged, pull request #31 |
+| 3 to 16, Tabs | One pull request, #32, branch `feat/phase-3-shell` (decision D34). Steps 3, 4 and 5 are done |
+| Tabs, the board | Approved by the owner (decision D35). Built as step T |
 
 ## How the work goes
 
@@ -66,7 +66,7 @@ decided on the way. It is kept true while the work goes on: a step that is done 
 
 | What | When | Blocks |
 |---|---|---|
-| Approval of the Tabs board | Any time | Step T only |
+| Approval of the Tabs board | Given, 2026-09-29 | Nothing |
 | Which name of the equipment to show | Only if a part shows equipment. None of this plan does | Nothing |
 
 ## Risks
