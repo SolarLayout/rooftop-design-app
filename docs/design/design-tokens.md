@@ -300,6 +300,7 @@ and the file equal.
 | `TOOLTIP_GAP` | `8` | Pixels between a tooltip and its control |
 | `LIST_GAP` | `6` | Pixels between a list that floats and its trigger |
 | `SCREEN_MARGIN` | `8` | Pixels that stay free between what floats and the edge of the screen |
+| `DESIGN_PAUSE` | `500` | Milliseconds between a committed edit and the design run that follows it: edits shortly after each other are one run |
 
 ## Layers
 
