@@ -451,9 +451,9 @@ def option(letter, title, line, mwh, mark, active=False):
 inverter_card = f'''<div style="display: flex; align-items: center; gap: 14px; padding: 14px; background: #12161D; border: 1px solid #232A36; border-radius: 14px; {CARD}">
 <div style="width: 44px; height: 56px; flex-shrink: 0; box-sizing: border-box; border-radius: 6px; background: #181D26; border: 2px solid #2F3847; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px"><span style="width: 22px; height: 3px; border-radius: 2px; background: #FFB020"></span><span style="width: 22px; height: 3px; border-radius: 2px; background: #2F3847"></span><span style="width: 22px; height: 3px; border-radius: 2px; background: #2F3847"></span></div>
 <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0">
-<div style="font-weight: 600">Test-S · 275 kW</div>
-<div style="font-size: 12px; color: #A9B2C0; white-space: nowrap">6 MPPT · 65.0 A each · 28 inputs</div>
-<div style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #7C8696">Test-S.ond</div>
+<div style="font-weight: 600; white-space: nowrap">WP-330KTL-H1</div>
+<div style="font-size: 12px; color: #A9B2C0; white-space: nowrap">WattPower · 275 kW · 6 MPPT</div>
+<div style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #7C8696; white-space: nowrap">65.0 A per MPPT · 28 inputs</div>
 </div>
 <button style="height: 36px; padding: 0 12px; background: #151A22; border: 1px solid #2F3847; border-radius: 9px; font-size: 13px; cursor: pointer; {RAISED}">Replace</button>
 </div>'''

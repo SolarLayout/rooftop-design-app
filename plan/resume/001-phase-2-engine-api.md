@@ -43,6 +43,12 @@ Step 2. Build part 2, each as its own pull request, test first:
     clear error.
   - Memoisation per decision D6: an in-process LRU keyed by a hash of the inputs each stage
     depends on. Dropping the cache must change nothing but speed; prove it with a test.
+  - Decision D24: the demo shows its equipment by its real names. Bundle
+    apps/api/tests/fixtures/equipment/insolation-ina-144mhc-tf-560.PAN and
+    wattpower-wp-330ktl-h1.OND as the demo's module and inverter in place of Test.PAN and
+    Test-S.ond. Test first: GET /demo names Insolation INA-144MHC-TF-560 and WattPower
+    WP-330KTL-H1, and every number in plan/reference/demo-numbers.md is unchanged. Keep Test.PAN
+    and Test-S.ond as fixtures, with a test that both pairs give identical results.
   - Equipment fixtures: apps/api/tests/fixtures/equipment holds real PAN and OND files, with a
     README that says what each covers and which variants to make. Use them to test the paths the
     bundled samples never reach: monofacial module, a module that is not twin half-cell, a stated
