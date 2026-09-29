@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Dialogs } from "./Dialogs";
+import { FileDrops } from "./FileDrops";
 import { KitPage } from "./Pages";
 import { Selects } from "./Selects";
 import { Sheets } from "./Sheets";
@@ -21,6 +22,7 @@ export function KitPartTwo() {
           <Sheets />
         </div>
         <div className="flex flex-col gap-grid">
+          <FileDrops onPress={setLastPressed} />
           <Waiting />
           <TooltipsAndToasts onPress={setLastPressed} />
         </div>

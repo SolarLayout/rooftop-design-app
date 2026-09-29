@@ -21,6 +21,7 @@ const STROKED = {
   ),
   plus: <path d="M12 5v14M5 12h14" />,
   tick: <path d="m5 12 5 5 9-10" />,
+  upload: <path d="M12 16V4m0 0-4 4m4-4 4 4M4 20h16" />,
   undo: (
     <>
       <path d="M9 14 4 9l5-5" />
