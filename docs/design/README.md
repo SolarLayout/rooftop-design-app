@@ -56,7 +56,8 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
 
 - The 3D roof in the mockups is a drawn projection of the real demo layout, not live 3D. The satellite imagery is
   an illustration. The product uses React Three Fiber and Esri World Imagery.
-- All numbers are real results of the engine for the Pune demo (`plan/reference/demo-numbers.md`). The placement
+- All numbers are real results of the engine for the Pune demo (`plan/reference/demo-numbers.md`). The
+  equipment is shown by its real names (decision D24). The placement
   of strings on the roof in the Strings lens is illustrative.
 - `mockups/build_lenses.py` generated the Sun and Strings boards from the Array board. It is kept so the boards
   can be regenerated; it is not part of the product.

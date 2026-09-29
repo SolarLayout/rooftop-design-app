@@ -13,6 +13,8 @@ every 24 modules, obstacle clearance 0.5 m, albedo 0.20.
 | AC unit 1 to 4 | box | 70.75 / 73.75 / 76.75 / 79.75, 3.5 | 1.5 x 1.0 | 1.2 |
 
 ## Equipment
+Shown in the demo by their real names (decision D24): Insolation INA-144MHC-TF-560 and WattPower
+WP-330KTL-H1. `Test.PAN` and `Test-S.ond` of the desktop app hold the same data under the name "Test".
 - Module `Test.PAN`: 560 Wp, 2.277 x 1.133 m, Voc 49.95 V, Isc 14.30 A, Vmp 41.24 V, Imp 13.58 A, twin half-cell,
   3 diodes, bifaciality 0.80, LID 0.2 %. Derived: Voc -0.164 %/degC, Vmp -0.228, Pmpp -0.212 (the Voc note fires).
 - Inverter `Test-S.ond`: 275 kW, 6 MPPT, 28 inputs, MPPT 500 to 1500 V, nominal 1080 V, IMaxDC 390 A (65 A per MPPT).

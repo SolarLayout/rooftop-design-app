@@ -60,7 +60,7 @@ If `feat/engine` exists locally with commits and no pull request, treat it as un
 | Option captions "Fills the inverter" and "Lower clipping" in the Strings mockup are derived in the web app; the engine does not produce them | Phase 7 |
 | String placement on the roof in the Strings mockup is illustrative | Phase 7 uses the engine's strings |
 | Real PAN and OND files are in `apps/api/tests/fixtures/equipment/` with a README; no test uses them yet | Phase 2, part 2 |
-| The demo shows its equipment as "Test". The real names are Insolation INA-144MHC-TF-560 and WattPower WP-330KTL-H1 (same data). Showing them is the owner's call | Owner |
+| Decision D24: the demo shows the real equipment names. The mockups already do. The engine still bundles `Test.PAN` and `Test-S.ond`; the change is in the Phase 2 work order | Phase 2, part 2 |
 
 ## Closed, do not reopen
 
