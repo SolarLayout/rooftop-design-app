@@ -187,6 +187,9 @@ UI. Multi-user concerns. Persistence.
   the files state them: "INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560" and "WattPower Systems
   Pvt.Ltd WP-330KTL-H1". A shorter name on a screen is for the screen to make.
 
+- **The test client runs on `httpx2`** (development dependency, in place of `httpx`): starlette gives up
+  `httpx` for its test client and warned in every run. The warning is now an error of the check.
+
 ### Left as in the desktop app
 - NASA POWER is asked for the year 2023; the times of a CSV are read as UTC (inventory, section 5, gap 7).
   Neither can be set in a request yet.

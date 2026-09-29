@@ -56,7 +56,6 @@ Nothing. `main` is green and there is no open branch or pull request.
 |---|---|
 | `.github/workflows/e2e.yml` has never been run | Phase 11, or when browser tests are wanted in CI |
 | A fresh clone has not been tried | Phase 11 |
-| starlette warns that httpx with its TestClient is deprecated in favour of `httpx2` | Phase 2 |
 | Esri's imagery tile host answered one request without a referrer; the key is scoped, not secret. Watch usage on the Esri dashboard | Phase 4 |
 | The key needs the production address added to its referrers when the app gets one | Deployment |
 | `tools/imagery-preview/` is a throwaway test page on port 4700; remove it when Phase 4 lands | Phase 4 |
