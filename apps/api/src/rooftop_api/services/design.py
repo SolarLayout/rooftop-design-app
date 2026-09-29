@@ -105,7 +105,7 @@ def result(run: Run, on_progress: Callable[[ProgressEvent], None] | None = None)
         options=[_option(design, option) for option in design.options],
         options_note=readouts.options_note(design) if design.options else None,
         chosen_option=design.chosen.key if design.chosen else None,
-        no_options=_no_options(design),
+        no_options=no_options(design),
     )
 
 
@@ -194,7 +194,7 @@ def _option(design: Design, option) -> schemas.Option:
     )
 
 
-def _no_options(design: Design) -> schemas.NoOptions | None:
+def no_options(design: Design) -> schemas.NoOptions | None:
     """Why there is nothing to choose from; None when there are options."""
     if design.options:
         return None

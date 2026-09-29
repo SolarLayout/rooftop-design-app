@@ -24,7 +24,8 @@ Nothing. `main` is green and there is no open branch or pull request.
    - Done: CSV weather with GHI alone; the design run at the desktop app's speed (about 11.5 s)
    - Done: `POST /weather`
    - Done: `POST /design` with progress over SSE
-   - `POST /export/{pdf,dxf,kmz,csv,sld}`
+   - Done: `POST /export/{pdf,dxf,kmz,csv,sld}`
+   - A KMZ exported by the app comes back with its modules as obstacles: fix the import, test first
    - Done: memoisation (decision D6)
    - The typed client in `apps/web/lib/api`
    - Decision D24: the demo bundles the real equipment files

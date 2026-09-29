@@ -91,6 +91,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/export/{kind}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Export
+         * @description A file of the design, for the option the project has chosen.
+         *
+         *     pdf: the report, A4 landscape. dxf: the layout, R2010 in metres, a layer for every string.
+         *     kmz: roof, obstacles and the modules in use, for Google Earth. csv: the 8,760 hours.
+         *     sld: the single-line diagram as a PNG.
+         *
+         *     The project must name its chosen option, and the design must have it.
+         */
+        post: operations["exportDesign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -2002,6 +2028,45 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ModuleResponse"];
+                };
+            };
+            /** @description The request cannot be used; the message says why. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    exportDesign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kind: "pdf" | "dxf" | "kmz" | "csv" | "sld";
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Project"];
+            };
+        };
+        responses: {
+            /** @description The file, to download under the name of the project. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string;
+                    "application/vnd.google-earth.kmz": string;
+                    "image/png": string;
+                    "image/vnd.dxf": string;
+                    "text/csv": string;
                 };
             };
             /** @description The request cannot be used; the message says why. */

@@ -7,10 +7,10 @@ from fastapi import APIRouter, Depends
 from fastapi.sse import EventSourceResponse, ServerSentEvent
 
 from rooftop_api import schemas
-from rooftop_api.errors import STREAM_ERROR_RESPONSES
+from rooftop_api.errors import JSON_ERROR_RESPONSES
 from rooftop_api.services import design as service
 
-router = APIRouter(tags=["design"], responses=STREAM_ERROR_RESPONSES)
+router = APIRouter(tags=["design"], responses=JSON_ERROR_RESPONSES)
 
 
 @router.post("/design", response_class=EventSourceResponse, operation_id="runDesign")

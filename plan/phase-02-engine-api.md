@@ -122,6 +122,7 @@ UI. Multi-user concerns. Persistence.
 |---|---|---|
 | `POST /weather` | `loadWeather` | PVGIS 5.8 s and NASA POWER 2.3 s from the services, 0.03 s from the cache; CSV 0.01 s; 477 kB |
 | `POST /design` | `runDesign` | Demo at 1500 V: 12 s, result 0.30 MB. Events arrive as they happen, also through the web app's `/api` rewrite |
+| `POST /export/{kind}` | `exportDesign` | After a design run of the same project: PDF 0.9 s (100 kB), DXF 0.2 s (260 kB), KMZ 0.2 s (20 kB), SLD 0.2 s (64 kB), CSV 0.2 s (493 kB). Without that run before: 12 s more |
 
 - **`POST /weather`** takes the source, the site and, for CSV, the text of the file. It answers with the
   weather as a project carries it (`weather_json`), a summary of those hours, and notes for the user.
@@ -170,6 +171,14 @@ UI. Multi-user concerns. Persistence.
   one after the other; each result is compared, to the last bit, with a run that has no memo. A second
   test holds, for 36 inputs, which of the two keys each one changes.
 
+- **`POST /export/{pdf,dxf,kmz,csv,sld}`** takes the project and answers with the file, named after the
+  project (`Pune-demo-report.pdf`). The project must name its chosen option and the design must have it;
+  the engine alone would take the first option in silence. Without a system voltage the answer says so.
+  Drawings (PDF, SLD) are made one at a time: matplotlib keeps its figure in one place per process.
+- **The same request gives the same content.** CSV and SLD are the same byte for byte. PDF, DXF and KMZ
+  bear the time they were made (and the DXF two identifiers made by chance), as such files do; what they
+  draw and say is the same. The PDF prints the date of the day.
+
 ### Left as in the desktop app
 - NASA POWER is asked for the year 2023; the times of a CSV are read as UTC (inventory, section 5, gap 7).
   Neither can be set in a request yet.
@@ -195,6 +204,11 @@ UI. Multi-user concerns. Persistence.
   The repo now pins Python 3.12.13 (`apps/api/.python-version`; uv does not read one above the project) and uv takes only the Python it manages
   (`python-preference` in `apps/api/pyproject.toml`). After the change: 11.7 s. No result changed.
 
+### Found in part 2, to fix
+- **A KMZ exported by the app comes back with its modules as obstacles.** The export holds the modules in
+  use as placemarks; the import takes every outline but the largest for an obstacle. The demo comes back
+  with its six obstacles and their heights, and with 638 more of 1.0 m named "Module n".
+
 ### Found in part 2, for the domain expert
 - **The split of Erbs is not what PVGIS has.** The Pune year given as GHI alone comes back with beam
   1,435.4 and diffuse 822.7 kWh/m2; PVGIS has 1,999.6 and 549.9 for the same hours. The model differs, not
@@ -205,7 +219,7 @@ UI. Multi-user concerns. Persistence.
   numbers of the engine are as confirmed on the desktop app.
 
 ### What remains of this phase
-- `POST /export/{pdf,dxf,kmz,csv,sld}` on the `*_bytes` writers.
+- The import of a KMZ that the app exported (see "Found in part 2, to fix").
 - The typed client in `apps/web/lib/api`.
 - Progress inside the two long steps: the shading (8 s on the demo) and the options (4 s) each report only
   their beginning.
