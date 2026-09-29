@@ -1658,8 +1658,16 @@
             "type": "number"
           },
           "imp_limit_a": {
-            "title": "Imp Limit A",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "null: the OND gives no limit and none was entered",
+            "title": "Imp Limit A"
           },
           "inverter": {
             "title": "Inverter",
@@ -1670,8 +1678,15 @@
             "type": "number"
           },
           "isc_limit_a": {
-            "title": "Isc Limit A",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isc Limit A"
           },
           "kwp": {
             "title": "Kwp",
@@ -1686,6 +1701,7 @@
             "type": "integer"
           },
           "ok": {
+            "description": "Within both limits. False also when a limit is not known",
             "title": "Ok",
             "type": "boolean"
           },

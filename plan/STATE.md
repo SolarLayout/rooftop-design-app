@@ -29,7 +29,7 @@ Nothing. `main` is green and there is no open branch or pull request.
    - Done: memoisation (decision D6)
    - The typed client in `apps/web/lib/api`
    - Done: decision D24, the demo bundles the real equipment files
-   - Tests with the equipment fixtures
+   - Done: tests with the equipment fixtures; the httpx warning
    - Then mark Phase 2 done
 2. Phase 3: design system as code and the app shell.
 3. Phase 4: find the roof on the map and outline it (the flagship).
@@ -64,9 +64,9 @@ Nothing. `main` is green and there is no open branch or pull request.
 | Heights cannot come from a DXF: a layer name may hold neither `=` nor `:`. Every DXF obstacle gets 1.0 m and is listed as missing | Phase 5, with the owner |
 | `/layout` has no size limit: a roof of 2 km by 1 km takes 29 s | Phase 11 |
 | Progress of a design run has fixed shares and no progress inside the options step | Phase 2, part 2 |
-| Real PAN and OND files are in `apps/api/tests/fixtures/equipment/` with a README; no test uses them yet | Phase 2, part 2 |
 | The engine places the sun at the middle of the hour for every source. The bundled PVGIS hours agree with the sun at the time stamp itself (GHI, DNI and DHI close to 0.8 W/m2 there, 43.6 W/m2 half an hour later). Not changed; a question for Prasanta | Owner and domain expert |
 | A CSV with GHI alone is split by Erbs: on the Pune year beam 1,435 and diffuse 823 kWh/m2, where PVGIS has 2,000 and 550. Say so where a CSV is loaded? | Phase 8, with the owner |
+| Strings are sized with the Voc of the one-diode model, also when the PAN states a coefficient (ABi: stated -0.286, model -0.334 %/degC). The screen shows the stated one | Owner and domain expert; Phase 7 has the field to enter a value |
 
 ## Past sessions
 

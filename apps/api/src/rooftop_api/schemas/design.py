@@ -156,11 +156,11 @@ class MpptLoad(BaseModel):
     label: str
     strings: int
     imp_a: float
-    imp_limit_a: float
+    imp_limit_a: float | None = Field(description="null: the OND gives no limit and none was entered")
     isc_a: float
-    isc_limit_a: float
+    isc_limit_a: float | None
     kwp: float
-    ok: bool
+    ok: bool = Field(description="Within both limits. False also when a limit is not known")
 
 
 class BomLine(BaseModel):

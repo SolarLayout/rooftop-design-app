@@ -36,11 +36,11 @@ class MpptLoad:
     label: str
     strings: int
     imp_a: float
-    imp_limit_a: float
+    imp_limit_a: float | None  # None: the inverter file gives no limit and the user entered none
     isc_a: float
-    isc_limit_a: float
+    isc_limit_a: float | None
     kwp: float
-    ok: bool
+    ok: bool  # within both limits; false also when a limit is not known
 
 
 def verdict(design: Design, option: StringOption | None) -> Verdict:
@@ -78,12 +78,22 @@ def options_note(design: Design) -> str:
     """The target of DC/AC, how many strings an inverter takes, and the options that miss the target."""
     module, inverter = design.module, design.inverter
     per_mppt = strings_per_mppt(module, inverter)
+    per_inverter = max_strings_per_inverter(module, inverter)
     missed = [f"{o.letter}: DC/AC {o.dcac:.2f}, {o.note}" for o in design.options if not o.ok]
+    if inverter.mppt_current_limit:
+        strings = (
+            f"At most {per_mppt} strings per MPPT ({per_mppt} × {module.imp:.2f} A ≤ "
+            f"{inverter.mppt_current_limit:.1f} A), so one inverter takes {per_inverter} strings."
+        )
+    else:
+        strings = (
+            f"The OND gives no current limit per MPPT: one string for each of its {inverter.n_inputs} "
+            f"inputs at most, {per_mppt} per MPPT, so one inverter takes {per_inverter} strings. "
+            "Enter the datasheet value of the current per MPPT."
+        )
     return (
         f"Target DC/AC {DCAC_TARGET[0]:.2f}–{DCAC_TARGET[1]:.2f}, warning above {DCAC_WARN:.2f}. "
-        f"At most {per_mppt} strings per MPPT ({per_mppt} × {module.imp:.2f} A ≤ "
-        f"{inverter.mppt_current_limit:.1f} A), so one inverter takes "
-        f"{max_strings_per_inverter(module, inverter)} strings. The least shaded strings are used first."
+        f"{strings} The least shaded strings are used first."
         + (" ! " + "; ".join(missed) + "." if missed else "")
     )
 
@@ -97,6 +107,7 @@ def far_shading_note(weather: Weather) -> str:
 def mppt_loads(design: Design, option: StringOption) -> list[MpptLoad]:
     """The current and the power on every MPPT that has strings, against the limits of the inverter."""
     module, inverter, system = design.module, design.inverter, option.system
+    imp_limit, isc_limit = inverter.mppt_current_limit or None, inverter.mppt_isc_limit or None
     places = list(zip(system.inverter_of, system.mppt_of, strict=True))
     loads = []
     for i in range(option.n_inverters):
@@ -112,15 +123,18 @@ def mppt_loads(design: Design, option: StringOption) -> list[MpptLoad]:
                     label=f"INV-{i + 1} · MPPT {j + 1}",
                     strings=strings,
                     imp_a=imp,
-                    imp_limit_a=inverter.mppt_current_limit,
+                    imp_limit_a=imp_limit,
                     isc_a=isc,
-                    isc_limit_a=inverter.mppt_isc_limit,
+                    isc_limit_a=isc_limit,
                     kwp=strings * option.n_series * module.pnom_w / 1000.0,
-                    ok=imp <= inverter.mppt_current_limit + CURRENT_TOLERANCE_A
-                    and isc <= inverter.mppt_isc_limit + CURRENT_TOLERANCE_A,
+                    ok=_within(imp, imp_limit) and _within(isc, isc_limit),
                 )
             )
     return loads
+
+
+def _within(current: float, limit: float | None) -> bool:
+    return limit is not None and current <= limit + CURRENT_TOLERANCE_A
 
 
 def bill_of_materials(design: Design, option: StringOption) -> list[BomLine]:
