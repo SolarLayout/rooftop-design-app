@@ -5,6 +5,8 @@ The key/value reading follows ``solar_core.pan_parser`` / ``solar_core.ond_parse
 in SolarLayout/PVlayout_Advance (commit 4eb6775), extended with the one-diode
 parameters, the IAM profile, the per-voltage efficiency curves and the MPPT
 input limits that rooftop string sizing and the hourly simulation need.
+
+A file is given as a path, as its text or as its bytes: a browser has the content, not a path.
 """
 
 from __future__ import annotations
@@ -12,14 +14,31 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
+ENCODINGS = ("utf-8", "latin-1", "cp1252")
 
-def _read_lines(path: str | Path) -> list[str]:
-    for enc in ("utf-8", "latin-1", "cp1252"):
+
+def decode_pvsyst(data: bytes) -> str:
+    """Text of a PAN or OND file given as bytes: UTF-8 first, then the code pages PVsyst writes."""
+    for enc in ENCODINGS:
         try:
-            return Path(path).read_text(encoding=enc).splitlines()
+            return data.decode(enc)
         except UnicodeDecodeError:
             continue
-    raise ValueError(f"Cannot decode {path}")
+    raise ValueError(f"Cannot decode the file: it is not text in any of {', '.join(ENCODINGS)}.")
+
+
+def _text_and_source(source: str | Path | bytes) -> tuple[str, str]:
+    """(text, where it came from) of a file given as a path, as its text or as its bytes."""
+    if isinstance(source, bytes):
+        return decode_pvsyst(source), ""
+    if isinstance(source, str) and ("\n" in source or "\r" in source):
+        return source, ""
+    return decode_pvsyst(Path(source).read_bytes()), str(source)
+
+
+def _label(source: str) -> str:
+    """How an error names the file."""
+    return Path(source).name if source else "The file"
 
 
 def _flat_kv(lines: list[str]) -> dict[str, str]:
@@ -141,8 +160,14 @@ class Module:
         return self.bifaciality > 0
 
 
-def read_pan(path: str | Path) -> Module:
-    lines = _read_lines(path)
+def read_pan(source: str | Path | bytes) -> Module:
+    """A module from the path of a PAN file, from its text (a string of several lines) or its bytes."""
+    return parse_pan(*_text_and_source(source))
+
+
+def parse_pan(text: str, source: str = "") -> Module:
+    """A module from the text of a PAN file. *source* names the file in the result and in errors."""
+    lines = text.splitlines()
     kv = _flat_kv(lines)
     w, h = _f(kv, "Width"), _f(kv, "Height")
     if w >= 100:  # millimetres
@@ -179,10 +204,10 @@ def read_pan(path: str | Path) -> Module:
         bifaciality=_f(kv, "BifacialityFactor"),
         lid_loss_pct=float(lid) if lid not in (None, "") else None,
         iam_profile=_profile(lines, "IAMProfile"),
-        source=str(path),
+        source=source,
     )
     if not m.pnom_w or not m.voc or not m.isc:
-        raise ValueError(f"{Path(path).name}: not a PVsyst module file (PNom, Voc or Isc missing)")
+        raise ValueError(f"{_label(source)}: not a PVsyst module file (PNom, Voc or Isc missing)")
     if not m.r_shunt_0:
         m.r_shunt_0 = 4 * m.r_shunt
     return m
@@ -229,8 +254,14 @@ class Inverter:
         return getattr(self, "_curve_euro", [])
 
 
-def read_ond(path: str | Path) -> Inverter:
-    lines = _read_lines(path)
+def read_ond(source: str | Path | bytes) -> Inverter:
+    """An inverter from the path of an OND file, from its text (a string of several lines) or its bytes."""
+    return parse_ond(*_text_and_source(source))
+
+
+def parse_ond(text: str, source: str = "") -> Inverter:
+    """An inverter from the text of an OND file. *source* names the file in the result and in errors."""
+    lines = text.splitlines()
     kv = _flat_kv(lines)
     unit = _s(kv, "UnitAffEnum").lower()
     pnom = _f(kv, "PNomConv")
@@ -257,7 +288,7 @@ def read_ond(path: str | Path) -> Inverter:
         night_loss_w=_f(kv, "Night_Loss"),
         v_out_v=_f(kv, "VOutConv"),
         i_max_ac_a=_f(kv, "IMaxAC"),
-        source=str(path),
+        source=source,
     )
     vnoms = _floats(kv, "VNomEff")
     for i, v in enumerate(vnoms[:3], start=1):
@@ -271,6 +302,6 @@ def read_ond(path: str | Path) -> Inverter:
             scale = 1000.0 if pts[-1][0] < 10 * inv.pnom_kw else 1.0
             inv.curves[inv.vmpp_nom or 0.0] = [(a * scale, b * scale) for a, b in pts]
     if not inv.pnom_kw or not inv.vmpp_max:
-        raise ValueError(f"{Path(path).name}: not a PVsyst inverter file (PNomConv or VMPPMax missing)")
+        raise ValueError(f"{_label(source)}: not a PVsyst inverter file (PNomConv or VMPPMax missing)")
     inv._curve_euro = _floats(kv, "EfficEuroV")  # type: ignore[attr-defined]
     return inv
