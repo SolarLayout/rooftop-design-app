@@ -7,6 +7,8 @@ import json
 from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 
+from . import progress
+from . import shading as shading_mod
 from . import weather as wx
 from .errors import MissingEquipmentFile, UnsupportedProjectFormat, WeatherNotLoaded
 from .geometry import Obstacle, Roof
@@ -211,21 +213,56 @@ class Design:
                                   self.cell_rise)
         return self.range
 
-    def prepare(self) -> Precomputed:
-        if self.layout is None:
-            self.generate_layout()
-        self.load_weather()
-        if self.pre is None:
-            self.pre = precompute(self.weather, self.layout, self.p.roof, self.module, self.p.array.orientation,
-                                  self.p.losses)
+    def prepare(self, on_progress: progress.ProgressCallback | None = None) -> Precomputed:
+        """Layout, weather, hourly shading and transposition, whatever of them is not there yet.
+
+        *on_progress* hears every step that runs, and at the end an event with fraction 1.
+        """
+        report = progress.Reporter(on_progress)
+        self._prepare(report, share=1.0)
+        report.finish(progress.LOSSES)
         return self.pre
 
-    def run_options(self) -> list[StringOption]:
-        self.prepare()
+    def _prepare(self, report: progress.Reporter, share: float) -> None:
+        """The steps of prepare, reported as the first *share* of the run they are part of."""
+        if self.layout is None:
+            report.begin(progress.FITTING, progress.FITTING_AT * share)
+            self.generate_layout()
+        if self.weather is None:
+            source = wx.SOURCE_LABELS.get(self.p.weather_source, self.p.weather_source)
+            report.begin(progress.loading_weather(source), progress.WEATHER_AT * share)
+            self.load_weather()
+        if self.pre is None:
+            report.begin(progress.SHADING, progress.SHADING_AT * share)
+            shading = self._shading()
+            report.begin(progress.LOSSES, progress.LOSSES_AT * share)
+            self.pre = precompute(self.weather, self.layout, self.p.roof, self.module, self.p.array.orientation,
+                                  self.p.losses, shading=shading)
+
+    def _shading(self) -> shading_mod.ShadingResult:
+        """Hourly shading of every module, with the sun where precompute puts it."""
+        sun = wx.solar_position(self.weather)
+        return shading_mod.compute(self.layout, self.p.roof, self.module, self.p.array.orientation,
+                                   sun["apparent_elevation"].to_numpy(), sun["azimuth"].to_numpy(),
+                                   self.weather.horizon)
+
+    def run_options(self, on_progress: progress.ProgressCallback | None = None) -> list[StringOption]:
+        """Prepare, size the strings and simulate the options. Without a system voltage: no options.
+
+        *on_progress* hears every step that runs, and at the end an event with fraction 1.
+        """
+        report = progress.Reporter(on_progress)
+        self._prepare(report, share=progress.OPTIONS_AT)
         rng = self.size_series()
-        if rng is None:
+        if rng is not None:
+            report.begin(progress.OPTIONS, progress.OPTIONS_AT)
+            self._build_options(rng)
+        else:
             self.options = []
-            return []
+        report.finish(progress.OPTIONS if rng is not None else progress.LOSSES)
+        return self.options
+
+    def _build_options(self, rng: SeriesRange) -> None:
         self.options = build_options(self.pre, self.layout, self.module, self.mm, self.inverter, rng,
                                      self.p.losses, self.p.roof)
         if self.p.custom:
@@ -236,7 +273,6 @@ class Design:
         keys = [o.key for o in self.options]
         if self.p.chosen_option not in keys and self.options:
             self.p.chosen_option = self.options[0].key
-        return self.options
 
     @property
     def chosen(self) -> StringOption | None:
