@@ -234,7 +234,8 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--shadow-panel` | `inset 0 1px 0 rgba(255,255,255,.06), 0 2px 4px rgba(0,0,0,.4), 0 24px 64px rgba(0,0,0,.55)` | Large floating panels |
 | `--shadow-knob` | `0 1px 3px rgba(0,0,0,.5)` | Switch knob |
 | `--shadow-handle` | `0 2px 6px rgba(0,0,0,.6)` | Map and slider handles |
-| `--halo-focus` | `0 0 0 3px rgba(255,176,32,.18)` | Focused field, selected card (with an accent border) |
+| `--halo-focus` | `0 0 0 3px rgba(255,176,32,.18)` | Focused field (with an accent border) |
+| `--halo-selected` | `0 0 0 3px rgba(255,176,32,.14)` | Selected card (with an accent border) |
 
 ## States
 
@@ -289,7 +290,7 @@ Under `prefers-reduced-motion: reduce` every transition and animation is removed
 | `--space-*`, `--size-*` | the same utilities, by name | `gap-row`, `p-panel`, `h-topbar`, `w-inspector`, `min-h-touch` |
 | `--breakpoint-*` | `tablet:`, `desktop:` | `desktop:flex` |
 | `--radius-*` | `rounded-` and the name | `rounded-control` |
-| `--shadow-*`, `--halo-focus` | `shadow-` and the name | `shadow-raised`, `shadow-halo-focus` |
+| `--shadow-*`, `--halo-*` | `shadow-` and the name | `shadow-raised`, `shadow-halo-focus`, `shadow-halo-selected` |
 | `--ring-focus`, `--ring-focus-offset` | `focus-ring` | on every control |
 | `--opacity-disabled` | `opacity-disabled` | `disabled:opacity-disabled` |
 | `--ease-out`, `--duration-*` | `ease-out`, `duration-` and the name | `duration-press` |
