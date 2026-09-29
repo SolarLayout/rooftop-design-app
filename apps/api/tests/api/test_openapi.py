@@ -13,6 +13,7 @@ OPERATIONS = {
     ("post", "/layout"): "computeLayout",
     ("post", "/sun"): "computeSun",
     ("post", "/weather"): "loadWeather",
+    ("post", "/design"): "runDesign",
 }
 
 
@@ -64,3 +65,21 @@ def test_the_weather_route_says_that_a_service_elsewhere_can_fail(document):
     answer = document["paths"]["/weather"]["post"]["responses"]["502"]
 
     assert answer["content"]["application/json"]["schema"] == {"$ref": "#/components/schemas/ErrorResponse"}
+
+
+def test_the_design_run_is_a_stream_of_three_kinds_of_events(document):
+    answer = document["paths"]["/design"]["post"]["responses"]["200"]["content"]
+
+    assert list(answer) == ["text/event-stream"]
+    data = answer["text/event-stream"]["itemSchema"]["properties"]["data"]
+    assert data["contentMediaType"] == "application/json"
+    assert data["contentSchema"]["discriminator"]["mapping"] == {
+        "progress": "#/components/schemas/DesignProgress",
+        "result": "#/components/schemas/DesignDone",
+        "error": "#/components/schemas/DesignFailed",
+    }
+    assert "DesignResult" in document["components"]["schemas"]
+
+
+def test_the_result_of_a_design_run_has_no_hours(document):
+    assert "hourly" not in document["components"]["schemas"]["Energy"]["properties"]

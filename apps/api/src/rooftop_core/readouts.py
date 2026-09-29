@@ -1,0 +1,166 @@
+"""Read-outs of a design in words and tables: the verdict, the notes, the load of every MPPT.
+
+The desktop app built these in its window. The wording is kept as it was (functional inventory,
+section 2.8), so that every screen and every export says the same.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from .bom import BomLine, CableRow, bom, cable_schedule
+from .export.files import structure_label, summary_rows
+from .options import StringOption
+from .project import Design
+from .stringing import DCAC_TARGET, DCAC_WARN, max_strings_per_inverter, strings_per_mppt
+from .weather import Weather
+
+CHOOSE_VOLTAGE = "Choose a system voltage to size the strings"
+CHOOSE_VOLTAGE_DETAIL = "600, 1000 or 1500 V. Nothing is sized until you choose."
+NO_LENGTH_FITS = "No string length fits this inverter"
+LOSSES_ROW = 9  # where the desktop app put the row "Losses" among the rows of the summary
+CURRENT_TOLERANCE_A = 1e-6
+
+
+@dataclass(frozen=True)
+class Verdict:
+    ok: bool  # a tick when true, an exclamation mark when not
+    title: str
+    detail: str
+
+
+@dataclass(frozen=True)
+class MpptLoad:
+    inverter: int  # from 1
+    mppt: int  # from 1, within its inverter
+    label: str
+    strings: int
+    imp_a: float
+    imp_limit_a: float
+    isc_a: float
+    isc_limit_a: float
+    kwp: float
+    ok: bool
+
+
+def verdict(design: Design, option: StringOption | None) -> Verdict:
+    """Whether the series length of *option* fits, in the words of the desktop app.
+
+    Without an option the design has none: no string length fits the inverter. The series range
+    of the design must be there (Design.size_series, with a system voltage).
+    """
+    rng, inverter = design.range, design.inverter
+    if option is None:
+        return Verdict(False, NO_LENGTH_FITS, rng.message)
+    n = option.n_series
+    nominal = f", inverter nominal {inverter.vmpp_nom:,.0f} V" if inverter.vmpp_nom else ""
+    return Verdict(
+        ok=option.ok,
+        title=f"{n} in series fits: Vmp {n * rng.vmp_stc:,.0f} V at STC{nominal}",
+        detail=(
+            f"Voc at {rng.t_min:.1f} °C is {n * rng.voc_cold:,.0f} V (limit {rng.limit_v:.0f} V); "
+            f"Vmp at {rng.t_cell_hot:.1f} °C cell is {n * rng.vmp_hot:,.0f} V (MPPT minimum "
+            f"{inverter.vmpp_min:.0f} V). {option.n_strings} strings on {option.n_inverters} inverter(s), "
+            f"DC/AC {option.dcac:.2f}" + ("" if option.ok else f" ({option.note})") + "."
+        ),
+    )
+
+
+def limit_note(design: Design) -> str:
+    """Which voltage limits the strings. Needs the series range of the design."""
+    return (
+        f"Limit {design.range.limit_v:.0f} V: the lowest of the system, module "
+        f"({design.module.v_max_iec:.0f} V) and inverter ({design.inverter.vabs_max:.0f} V) ratings."
+    )
+
+
+def options_note(design: Design) -> str:
+    """The target of DC/AC, how many strings an inverter takes, and the options that miss the target."""
+    module, inverter = design.module, design.inverter
+    per_mppt = strings_per_mppt(module, inverter)
+    missed = [f"{o.letter}: DC/AC {o.dcac:.2f}, {o.note}" for o in design.options if not o.ok]
+    return (
+        f"Target DC/AC {DCAC_TARGET[0]:.2f}–{DCAC_TARGET[1]:.2f}, warning above {DCAC_WARN:.2f}. "
+        f"At most {per_mppt} strings per MPPT ({per_mppt} × {module.imp:.2f} A ≤ "
+        f"{inverter.mppt_current_limit:.1f} A), so one inverter takes "
+        f"{max_strings_per_inverter(module, inverter)} strings. The least shaded strings are used first."
+        + (" ! " + "; ".join(missed) + "." if missed else "")
+    )
+
+
+def far_shading_note(weather: Weather) -> str:
+    if not weather.horizon:
+        return "Far shading: no horizon profile for this weather source"
+    return f"Far shading: PVGIS horizon, highest {max(height for _, height in weather.horizon):.1f}°"
+
+
+def mppt_loads(design: Design, option: StringOption) -> list[MpptLoad]:
+    """The current and the power on every MPPT that has strings, against the limits of the inverter."""
+    module, inverter, system = design.module, design.inverter, option.system
+    places = list(zip(system.inverter_of, system.mppt_of, strict=True))
+    loads = []
+    for i in range(option.n_inverters):
+        for j in range(inverter.n_mppt):
+            strings = places.count((i, j))
+            if not strings:
+                continue
+            imp, isc = strings * module.imp, strings * module.isc
+            loads.append(
+                MpptLoad(
+                    inverter=i + 1,
+                    mppt=j + 1,
+                    label=f"INV-{i + 1} · MPPT {j + 1}",
+                    strings=strings,
+                    imp_a=imp,
+                    imp_limit_a=inverter.mppt_current_limit,
+                    isc_a=isc,
+                    isc_limit_a=inverter.mppt_isc_limit,
+                    kwp=strings * option.n_series * module.pnom_w / 1000.0,
+                    ok=imp <= inverter.mppt_current_limit + CURRENT_TOLERANCE_A
+                    and isc <= inverter.mppt_isc_limit + CURRENT_TOLERANCE_A,
+                )
+            )
+    return loads
+
+
+def bill_of_materials(design: Design, option: StringOption) -> list[BomLine]:
+    d = design
+    return bom(
+        d.layout,
+        option.system,
+        d.module,
+        d.inverter,
+        d.mm,
+        d.t_min,
+        structure_label(d),
+        d.p.ac_cable_m,
+        d.p.system_voltage,
+    )
+
+
+def cables(design: Design, option: StringOption) -> list[CableRow]:
+    d = design
+    return cable_schedule(d.layout, option.system, d.module, d.mm, d.t_min, d.p.system_voltage)
+
+
+def summary(design: Design, option: StringOption) -> list[tuple[str, str]]:
+    """The rows of the summary for *option*, whichever option the design has as the chosen one."""
+    rows = summary_rows(_Seen(design, option))
+    result = option.result
+    losses = (
+        f"Clipping {result.clipping_pct:.1f} % · LID {result.lid_pct:.2f} % · uncertainty σ "
+        f"{result.sigma_pct:.2f} %"
+    )
+    rows.insert(LOSSES_ROW, ("Losses", losses))
+    return rows
+
+
+class _Seen:
+    """A design as it looks with *option* chosen. The design itself is not touched."""
+
+    def __init__(self, design: Design, option: StringOption):
+        self._design = design
+        self.chosen = option
+
+    def __getattr__(self, name: str):
+        return getattr(self._design, name)

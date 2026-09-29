@@ -24,6 +24,33 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/design": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Design
+         * @description Run the whole design of a project and tell how far it is on the way.
+         *
+         *     The answer is a stream of events. "progress" names the step and the fraction of the run, as often
+         *     as a step begins. The last event is "result", or "error" when the run failed. A project that cannot
+         *     be run at all is refused with 422 before the stream begins.
+         *
+         *     Without a system voltage the run stops after the shading: the result has the layout and the
+         *     shading, no options, nothing chosen, and no_options says what it waits for.
+         */
+        post: operations["runDesign"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/equipment/inverter": {
         parameters: {
             query?: never;
@@ -243,6 +270,36 @@ export interface components {
              */
             window_start_h: number;
         };
+        /** BomLine */
+        BomLine: {
+            /** Item */
+            item: string;
+            /** Qty */
+            qty: number;
+            /** Spec */
+            spec: string;
+            /** Unit */
+            unit: string;
+        };
+        /** CableRow */
+        CableRow: {
+            /** Inverter */
+            inverter: string;
+            /** Isc A */
+            isc_a: number;
+            /** Length M */
+            length_m: number;
+            /** Modules */
+            modules: number;
+            /** Mppt */
+            mppt: number;
+            /** Size */
+            size: string;
+            /** String */
+            string: string;
+            /** Voc Cold V */
+            voc_cold_v: number;
+        };
         /**
          * Coefficients
          * @description Temperature coefficients, and whether the file gave them or the one-diode model.
@@ -277,6 +334,66 @@ export interface components {
             /** Value A */
             value_a: number | null;
         };
+        /** DesignDone */
+        DesignDone: {
+            result: components["schemas"]["DesignResult"];
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "result";
+        };
+        /** DesignFailed */
+        DesignFailed: {
+            error: components["schemas"]["ErrorDetail"];
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "error";
+        };
+        /** DesignProgress */
+        DesignProgress: {
+            /**
+             * Fraction
+             * @description 0 to 1 of the whole run; 1 only when the run is over
+             */
+            fraction: number;
+            /**
+             * Step
+             * @description What the engine is doing, in words for the user
+             */
+            step: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            type: "progress";
+        };
+        /**
+         * DesignResult
+         * @description Everything a run gives. Without options, no_options says why and nothing is chosen.
+         */
+        DesignResult: {
+            /** Chosen Option */
+            chosen_option: string | null;
+            equipment: components["schemas"]["Equipment"];
+            /** Far Shading Note */
+            far_shading_note: string;
+            layout: components["schemas"]["Layout"];
+            no_options: components["schemas"]["NoOptions"] | null;
+            /** Options */
+            options: components["schemas"]["Option"][];
+            /** Options Note */
+            options_note: string | null;
+            readouts: components["schemas"]["LayoutReadouts"];
+            series_range: components["schemas"]["SeriesRange"] | null;
+            shading: components["schemas"]["Shading"];
+            sizing: components["schemas"]["Sizing"];
+            weather: components["schemas"]["WeatherSummary"];
+            /** Weather Notes */
+            weather_notes: string[];
+        };
         /**
          * EfficiencyCurve
          * @description Input power against output power, in watts, at one DC voltage.
@@ -289,6 +406,69 @@ export interface components {
             ][];
             /** Voltage */
             voltage: number;
+        };
+        /**
+         * Energy
+         * @description The result of the simulation of a year. The hours themselves are the CSV export.
+         */
+        Energy: {
+            /** Ac Kw */
+            ac_kw: number;
+            /** Clipping Pct */
+            clipping_pct: number;
+            /** Co2 T */
+            co2_t: number;
+            /** Cuf Ac Pct */
+            cuf_ac_pct: number;
+            /** Cuf Dc Pct */
+            cuf_dc_pct: number;
+            /** Dc Kwp */
+            dc_kwp: number;
+            /** Energy Mwh */
+            energy_mwh: number;
+            /** Ghi Kwh M2 */
+            ghi_kwh_m2: number;
+            /** Lid Pct */
+            lid_pct: number;
+            /** Monthly Mwh */
+            monthly_mwh: number[];
+            /** P Values */
+            p_values: components["schemas"]["PValue"][];
+            /** Poa Kwh M2 */
+            poa_kwh_m2: number;
+            /**
+             * Pr
+             * @description Performance ratio as a fraction
+             */
+            pr: number;
+            /** Sigma Pct */
+            sigma_pct: number;
+            /**
+             * Specific Yield
+             * @description kWh/kWp
+             */
+            specific_yield: number;
+            /** Steps */
+            steps: components["schemas"]["LossStep"][];
+            /** Total 25 Years Mwh */
+            total_25_years_mwh: number;
+            /**
+             * Years Mwh
+             * @description Year 1 to year 25
+             */
+            years_mwh: number[];
+        };
+        /**
+         * Equipment
+         * @description The module and the inverter of the run, as read from the project.
+         */
+        Equipment: {
+            coefficients: components["schemas"]["Coefficients"];
+            inverter: components["schemas"]["Inverter"];
+            max_current_per_mppt: components["schemas"]["CurrentPerMppt"];
+            module: components["schemas"]["Module"];
+            /** Module Notes */
+            module_notes: string[];
         };
         /**
          * EquipmentFile
@@ -425,6 +605,16 @@ export interface components {
             /** Vmpp Nom */
             vmpp_nom: number;
         };
+        /** InverterPlace */
+        InverterPlace: {
+            /** Label */
+            label: string;
+            /** Position */
+            position: [
+                number,
+                number
+            ];
+        };
         /**
          * InverterResponse
          * @description An inverter read from an OND file.
@@ -557,6 +747,26 @@ export interface components {
         LayoutResponse: {
             layout: components["schemas"]["Layout"];
             readouts: components["schemas"]["LayoutReadouts"];
+        };
+        /** LossStep */
+        LossStep: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "irr_total" | "irr" | "energy_total" | "energy" | "result";
+            /** Label */
+            label: string;
+            /**
+             * Pct
+             * @description Change against the step before; 0 for totals
+             */
+            pct: number;
+            /**
+             * Value
+             * @description kWh/m2 for steps of irradiance, MWh for steps of energy
+             */
+            value: number;
         };
         /**
          * Losses
@@ -744,6 +954,44 @@ export interface components {
              */
             text: string;
         };
+        /** MpptLoad */
+        MpptLoad: {
+            /** Imp A */
+            imp_a: number;
+            /** Imp Limit A */
+            imp_limit_a: number;
+            /** Inverter */
+            inverter: number;
+            /** Isc A */
+            isc_a: number;
+            /** Isc Limit A */
+            isc_limit_a: number;
+            /** Kwp */
+            kwp: number;
+            /** Label */
+            label: string;
+            /** Mppt */
+            mppt: number;
+            /** Ok */
+            ok: boolean;
+            /** Strings */
+            strings: number;
+        };
+        /**
+         * NoOptions
+         * @description Why the run has no options, in words for the user.
+         */
+        NoOptions: {
+            /**
+             * Code
+             * @enum {string}
+             */
+            code: "no_positions" | "system_voltage_missing" | "no_string_length_fits" | "too_few_positions";
+            /** Message */
+            message: string;
+            /** Title */
+            title: string;
+        };
         /**
          * Obstacle
          * @description Something that casts a shadow. Heights are above the roof surface.
@@ -819,6 +1067,110 @@ export interface components {
              * @default 0
              */
             y: number;
+        };
+        /**
+         * Option
+         * @description A stringing the user may choose, with its full results.
+         */
+        Option: {
+            /** Available Strings */
+            available_strings: number;
+            /** Bom */
+            bom: components["schemas"]["BomLine"][];
+            /** Cable Schedule */
+            cable_schedule: components["schemas"]["CableRow"][];
+            /** Custom */
+            custom: boolean;
+            /** Dc Kwp */
+            dc_kwp: number;
+            /** Dcac */
+            dcac: number;
+            energy: components["schemas"]["Energy"];
+            /**
+             * Key
+             * @description series x strings x inverters, as in 29x22x1
+             */
+            key: string;
+            /** Letter */
+            letter: string;
+            /** Module Area M2 */
+            module_area_m2: number;
+            /** Mppt Loads */
+            mppt_loads: components["schemas"]["MpptLoad"][];
+            /** N Inverters */
+            n_inverters: number;
+            /** N Modules */
+            n_modules: number;
+            /** N Series */
+            n_series: number;
+            /** N Strings */
+            n_strings: number;
+            /** Note */
+            note: string;
+            /**
+             * Ok
+             * @description DC/AC is inside the target
+             */
+            ok: boolean;
+            /** Recommended */
+            recommended: boolean;
+            /** Roof Covered Pct */
+            roof_covered_pct: number;
+            /** Summary */
+            summary: components["schemas"]["SummaryRow"][];
+            system: components["schemas"]["System"];
+            /** Title */
+            title: string;
+            verdict: components["schemas"]["Verdict"];
+        };
+        /**
+         * PVString
+         * @description One string: its modules in the order they are wired, and where it is connected.
+         */
+        PVString: {
+            /** Azimuth */
+            azimuth: number;
+            /** Extent M */
+            extent_m: number;
+            /**
+             * Inverter
+             * @description From 1
+             */
+            inverter: number;
+            /** Label */
+            label: string;
+            /**
+             * Modules
+             * @description idx of the positions in the layout
+             */
+            modules: number[];
+            /**
+             * Mppt
+             * @description From 1, within its inverter
+             */
+            mppt: number;
+            /** Row */
+            row: number;
+            /**
+             * Shade Pct
+             * @description Beam lost over the year to electrical shading of the string
+             */
+            shade_pct: number;
+            /** Start */
+            start: [
+                number,
+                number
+            ];
+        };
+        /** PValue */
+        PValue: {
+            /**
+             * Level
+             * @description Exceedance probability, as in P90
+             */
+            level: number;
+            /** Mwh */
+            mwh: number;
         };
         /**
          * PlacedModule
@@ -1151,6 +1503,84 @@ export interface components {
             width: number;
         };
         /**
+         * SeriesRange
+         * @description How many modules may be in series, and what sets the limits.
+         */
+        SeriesRange: {
+            /** Limit Note */
+            limit_note: string;
+            /** Limit V */
+            limit_v: number;
+            /** Message */
+            message: string;
+            /** N Max */
+            n_max: number;
+            /** N Max Mppt */
+            n_max_mppt: number;
+            /** N Max Voc */
+            n_max_voc: number;
+            /** N Min */
+            n_min: number;
+            /** N Nominal */
+            n_nominal: number;
+            /**
+             * Ok
+             * @description False when no length fits; the message then says why
+             */
+            ok: boolean;
+            /** System V */
+            system_v: number;
+            /** T Cell Hot */
+            t_cell_hot: number;
+            /** T Min */
+            t_min: number;
+            /**
+             * Upper Limit
+             * @description What sets n_max
+             * @enum {string}
+             */
+            upper_limit: "Voc limit" | "MPPT max";
+            /** Vmp Cold */
+            vmp_cold: number;
+            /** Vmp Hot */
+            vmp_hot: number;
+            /** Vmp Stc */
+            vmp_stc: number;
+            /**
+             * Voc Cold
+             * @description Of one module, at the lowest ambient temperature
+             */
+            voc_cold: number;
+        };
+        /**
+         * Shading
+         * @description What shading costs over the year, counted over every position of the layout.
+         *
+         *     The loss chain of an option has the same figures for the modules that option uses.
+         */
+        Shading: {
+            /**
+             * Far Pct
+             * @description Irradiation lost to the horizon
+             */
+            far_pct: number;
+            /**
+             * Keepout Area M2
+             * @description Left empty inside the setback because of shadows
+             */
+            keepout_area_m2: number;
+            /**
+             * Near Pct
+             * @description Irradiation lost to near shading, all positions together
+             */
+            near_pct: number;
+            /**
+             * Near Pct By Module
+             * @description Near shading of every position, by its idx
+             */
+            near_pct_by_module: number[];
+        };
+        /**
          * ShadowRequest
          * @description Shadows of the parapet and the obstacles of a project at one solar hour.
          */
@@ -1183,6 +1613,59 @@ export interface components {
             plane_height_m: number;
             /** Polygons */
             polygons: components["schemas"]["Polygon"][];
+        };
+        /**
+         * Sizing
+         * @description The temperatures the strings are sized with, and where each comes from.
+         */
+        Sizing: {
+            /**
+             * Cell Rise C
+             * @description Cell temperature above ambient, for the hot end
+             */
+            cell_rise_c: number;
+            /**
+             * Cell Rise From
+             * @enum {string}
+             */
+            cell_rise_from: "roof type" | "entered";
+            /**
+             * T Max C
+             * @description Highest ambient temperature
+             */
+            t_max_c: number;
+            /**
+             * T Max From
+             * @enum {string}
+             */
+            t_max_from: "weather" | "entered";
+            /**
+             * T Min C
+             * @description Lowest ambient temperature
+             */
+            t_min_c: number;
+            /**
+             * T Min From
+             * @enum {string}
+             */
+            t_min_from: "weather" | "entered";
+            /**
+             * Uc
+             * @description Thermal loss factor, W/m2K
+             */
+            uc: number;
+            /**
+             * Uc From
+             * @enum {string}
+             */
+            uc_from: "roof type" | "entered";
+        };
+        /** SummaryRow */
+        SummaryRow: {
+            /** Label */
+            label: string;
+            /** Value */
+            value: string;
         };
         /** SunPosition */
         SunPosition: {
@@ -1239,6 +1722,33 @@ export interface components {
             sunrise_h: number | null;
             /** Sunset H */
             sunset_h: number | null;
+        };
+        /** System */
+        System: {
+            /** Inverters */
+            inverters: components["schemas"]["InverterPlace"][];
+            /** N Inverters */
+            n_inverters: number;
+            /** N Modules */
+            n_modules: number;
+            /** N Series */
+            n_series: number;
+            /** N Strings */
+            n_strings: number;
+            /** Strings */
+            strings: components["schemas"]["PVString"][];
+        };
+        /**
+         * Verdict
+         * @description Shown with a tick when ok, with an exclamation mark when not. Never with a cross.
+         */
+        Verdict: {
+            /** Detail */
+            detail: string;
+            /** Ok */
+            ok: boolean;
+            /** Title */
+            title: string;
         };
         /**
          * Weather
@@ -1402,6 +1912,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Project"];
+                };
+            };
+        };
+    };
+    runDesign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Project"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": unknown;
+                };
+            };
+            /** @description The request cannot be used; the message says why. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };

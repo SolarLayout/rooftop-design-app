@@ -121,6 +121,7 @@ UI. Multi-user concerns. Persistence.
 | Method and path | Operation | Measured |
 |---|---|---|
 | `POST /weather` | `loadWeather` | PVGIS 5.8 s and NASA POWER 2.3 s from the services, 0.03 s from the cache; CSV 0.01 s; 477 kB |
+| `POST /design` | `runDesign` | Demo at 1500 V: 12 s, result 0.30 MB. Events arrive as they happen, also through the web app's `/api` rewrite |
 
 - **`POST /weather`** takes the source, the site and, for CSV, the text of the file. It answers with the
   weather as a project carries it (`weather_json`), a summary of those hours, and notes for the user.
@@ -134,6 +135,23 @@ UI. Multi-user concerns. Persistence.
 - **Recorded answers** of PVGIS and NASA POWER for Pune are in `apps/api/tests/fixtures/weather`. The
   recorded PVGIS answer, read by the engine, is the bundled `pune_weather.json`, hour by hour.
 - The weather cache of the engine takes a lock: a server answers several requests at a time.
+
+- **`POST /design`** answers with a stream of server-sent events: `progress` (step and fraction) as often as
+  a step begins, then `result`, or `error` when the run failed. Each event carries its `type` in its data, so
+  the generated types tell them apart. A project that cannot be run (no weather, a file not included, a roof
+  that crosses itself, an unusable CSV) is refused with 422 as JSON before the stream begins.
+- **The result** has the layout and its read-outs, the weather summary, the shading over all positions and
+  per position, the equipment with its notes, the sizing temperatures and where they come from, the series
+  range, and every option with its full results: energy, loss chain, monthly, P-values, 25 years, strings
+  with inverter and MPPT, load of every MPPT, bill of materials, cable schedule, summary, verdict. Choosing
+  another option needs no request. The 8,760 hours are not in it: they are the CSV export.
+- **Without options the result says why** (`no_options`): no system voltage, no string length fits, no
+  position on the roof, too few positions for a string. Without a system voltage nothing is chosen, also
+  when the project names an option.
+- **New in the engine**: `readouts.py` (verdict, notes, load of every MPPT, summary for any option; the
+  wording of the desktop window, which built them itself) and `shade_summary.py` (near and far shading for
+  any positions). The shading summary gives the figures of the loss chain for the modules of each of the
+  five options of the demo to 0.001 %.
 
 ### Left as in the desktop app
 - NASA POWER is asked for the year 2023; the times of a CSV are read as UTC (inventory, section 5, gap 7).
@@ -170,9 +188,8 @@ UI. Multi-user concerns. Persistence.
   numbers of the engine are as confirmed on the desktop app.
 
 ### What remains of this phase
-- `POST /design` over SSE: progress events, then layout, shading summary, series range and options.
 - `POST /export/{pdf,dxf,kmz,csv,sld}` on the `*_bytes` writers.
 - Memoisation per D6 (layout, weather, shading).
 - The typed client in `apps/web/lib/api`.
-- The acceptance test "two identical requests to a freshly started server give identical results" for
-  `/design`; for `/demo` and `/layout` it is tested.
+- Progress inside the two long steps: the shading (8 s on the demo) and the options (4 s) each report only
+  their beginning.

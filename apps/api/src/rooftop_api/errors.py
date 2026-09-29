@@ -37,6 +37,14 @@ ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
         "description": "The request cannot be used; the message says why.",
     }
 }
+# The same for a route that answers with a stream: its faults are JSON all the same, and the
+# document must say so by itself, or it would put them under the media type of the stream.
+STREAM_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
+    UNPROCESSABLE: {
+        "description": ERROR_RESPONSES[UNPROCESSABLE]["description"],
+        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}},
+    }
+}
 # What a route can answer when it depends on a service elsewhere.
 SERVICE_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
     **ERROR_RESPONSES,
@@ -93,8 +101,16 @@ async def _api_error(_: Request, error: ApiError) -> JSONResponse:
     return _answer(error.status, error.code, error.message, error.field)
 
 
+def error_detail(error: EngineError) -> ErrorDetail:
+    """An error of the engine as the API tells it: its code, its own words, the field it is about."""
+    return ErrorDetail(
+        code=ENGINE_CODES.get(type(error), "engine_error"), message=str(error), field=error.field
+    )
+
+
 async def _engine_error(_: Request, error: EngineError) -> JSONResponse:
-    return _answer(UNPROCESSABLE, ENGINE_CODES.get(type(error), "engine_error"), str(error), error.field)
+    detail = error_detail(error)
+    return _answer(UNPROCESSABLE, detail.code, detail.message, detail.field)
 
 
 async def _invalid_request(_: Request, error: RequestValidationError) -> JSONResponse:
