@@ -114,6 +114,13 @@
    "w": 1440,
    "h": 1996,
    "title": "Shell states"
+  },
+  "Tabs.dc.html": {
+   "x": 0,
+   "y": 8646,
+   "w": 1440,
+   "h": 908,
+   "title": "Tabs"
   }
  },
  "createdOnFiles": {
@@ -190,7 +197,8 @@
   "Performance.dc.html",
   "Handover.dc.html",
   "Controls2.dc.html",
-  "ShellStates.dc.html"
+  "ShellStates.dc.html",
+  "Tabs.dc.html"
  ],
  "pages": [],
  "title": "SolarLayout Rooftop — Web Design"

@@ -1,4 +1,4 @@
-"""Writes the two boards of Phase 3: Controls2.dc.html and ShellStates.dc.html.
+"""Writes the boards of Phase 3: Controls2.dc.html, ShellStates.dc.html and Tabs.dc.html.
 
 The boards show what Phase 3 needs and the first fourteen boards do not: the controls that had no
 design, and the states of the shell. Every value is one of docs/design/design-tokens.md. The words of
@@ -15,9 +15,10 @@ HERE = Path(__file__).parent
 # Tokens, by the names of docs/design/design-tokens.md.
 GROUND, CHROME, SURFACE_1, SURFACE_2 = "#0B0E13", "#0E1218", "#12161D", "#181D26"
 CONTROL, CONTROL_ACTIVE, WELL = "#151A22", "#232A36", "#090C10"
-LINE_SUBTLE, LINE, LINE_STRONG = "#1C222C", "#232A36", "#2F3847"
+LINE_SUBTLE, LINE, LINE_STRONG, LINE_HOVER = "#1C222C", "#232A36", "#2F3847", "#3B4658"
 TEXT, TEXT_2, TEXT_3 = "#F2F4F7", "#A9B2C0", "#7C8696"
 ACCENT, ACCENT_INK, NOTE_SURFACE, NOTE_LINE, OK = "#FFB020", "#1A1204", "#1E1A10", "#3A3220", "#3DD6A0"
+DATA_GAIN = "#3987E5"
 
 SHADOW_RAISED = "inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(0,0,0,0.45), 0 4px 12px rgba(0,0,0,0.25)"
 SHADOW_PRIMARY = (
@@ -33,6 +34,7 @@ HALO_SELECTED = "0 0 0 3px rgba(255,176,32,0.14)"
 # The boards are as high as what is on them.
 CONTROLS_HEIGHT = 1512
 SHELL_HEIGHT = 1996
+TABS_HEIGHT = 908
 
 DISPLAY = "font-family: 'Bricolage Grotesque', Geist, sans-serif; font-weight: 600"
 MONO = "font-family: 'Geist Mono', monospace"
@@ -795,7 +797,183 @@ def shell_board() -> str:
     )
 
 
+# ---------------------------------------------------------------------------------------------------
+# Board 3: tabs
+# ---------------------------------------------------------------------------------------------------
+
+RING = f"outline: 2px solid {ACCENT}; outline-offset: 2px"
+
+
+def tab(
+    label: str,
+    taken: bool = False,
+    under_pointer: bool = False,
+    focus: bool = False,
+    disabled: bool = False,
+    count: str = "",
+    touch: bool = False,
+) -> str:
+    """One tab. The line under it lies on the line of the row."""
+    height, size, side = (44, 15, 16) if touch else (40, 13, 14)
+    colour = TEXT if taken or under_pointer else TEXT_2
+    weight = "font-weight: 500; " if taken else ""
+    line = ACCENT if taken else LINE_HOVER if under_pointer else ""
+    under = (
+        f'<span style="position: absolute; left: {side}px; right: {side}px; bottom: -1px; height: 2px; border-radius: 1px; background: {line}"></span>'
+        if line
+        else ""
+    )
+    number = (
+        f'<span style="display: flex; align-items: center; height: 18px; padding: 0 6px; border-radius: 9px; background: {SURFACE_2}; '
+        f'{MONO}; font-size: 12px; font-weight: 400; color: {TEXT_2}">{count}</span>'
+        if count
+        else ""
+    )
+    return (
+        f'<button role="tab" aria-selected="{"true" if taken else "false"}"{" disabled" if disabled else ""} '
+        f'style="position: relative; flex-shrink: 0; display: flex; align-items: center; gap: 6px; height: {height}px; padding: 0 {side}px; '
+        f"background: transparent; border: 0; border-radius: 6px; white-space: nowrap; font-size: {size}px; {weight}color: {colour}; "
+        f'cursor: {"default" if disabled else "pointer"}{"; opacity: 0.45" if disabled else ""}{"; " + RING if focus else ""}">'
+        f"{label}{number}{under}</button>"
+    )
+
+
+def tab_row(tabs: str, label: str, extra: str = "") -> str:
+    return (
+        f'<div role="tablist" aria-label="{label}" style="display: flex; gap: 4px; border-bottom: 1px solid {LINE}{extra}">{tabs}</div>'
+    )
+
+
+MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+MONTHLY_MWH = [62.0, 58.8, 68.4, 64.1, 54.9, 46.9, 31.5, 38.5, 37.5, 53.4, 53.5, 48.5]
+
+
+def monthly_chart() -> str:
+    highest, lowest = max(MONTHLY_MWH), min(MONTHLY_MWH)
+    bars = ""
+    for month, energy in zip(MONTHS, MONTHLY_MWH):
+        said = (
+            f'<span style="{MONO}; font-size: 11px; color: {TEXT_2}">{energy:.1f}</span>'
+            if energy in (highest, lowest)
+            else ""
+        )
+        bars += (
+            '<div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 2px">'
+            f'{said}<div style="width: 100%; height: {round(energy / highest * 104)}px; border-radius: 4px 4px 0 0; background: {DATA_GAIN}"></div>'
+            f'<span style="{MONO}; font-size: 11px; color: {TEXT_3}">{month}</span></div>'
+        )
+    return f'<div style="display: flex; align-items: flex-end; gap: 2px; height: 156px">{bars}</div>'
+
+
+def monthly_table() -> str:
+    head = f"padding: 0 8px; height: 36px; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: {TEXT_3}; border-bottom: 1px solid {LINE}"
+    cell = f"padding: 0 8px; height: 44px; border-bottom: 1px solid {LINE_SUBTLE}"
+    rows = "".join(
+        f'<tr><th scope="row" style="{cell}; text-align: left; font-weight: 500">{month}</th>'
+        f'<td style="{cell}; text-align: right; {MONO}; font-size: 13px">{energy:.1f}</td></tr>'
+        for month, energy in list(zip(MONTHS, MONTHLY_MWH))[:3]
+    )
+    return (
+        f'<table style="width: 100%"><thead><tr><th scope="col" style="{head}; text-align: left">Month</th>'
+        f'<th scope="col" style="{head}; text-align: right">MWh</th></tr></thead><tbody>{rows}</tbody></table>'
+    )
+
+
+def panel_card(taken: str) -> str:
+    """A card of Performance whose content has two parts: the chart, and the same numbers as a table."""
+    tabs = tab("Chart", taken=taken == "Chart") + tab("Table", taken=taken == "Table")
+    inside = monthly_chart() if taken == "Chart" else monthly_table()
+    return (
+        f'<div style="display: flex; flex-direction: column; gap: 16px; padding: 14px; background: {SURFACE_2}; border-radius: 12px">'
+        f'<div style="display: flex; align-items: baseline; gap: 10px"><span style="font-weight: 600; font-size: 16px">Monthly energy</span>'
+        f'<span style="font-size: 12px; color: {TEXT_2}">617.8 MWh in year 1</span></div>'
+        + tab_row(tabs, "Monthly energy")
+        + f'<div role="tabpanel" aria-label="{taken}">{inside}</div></div>'
+    )
+
+
+def tabs_card() -> str:
+    states = (
+        '<div style="display: flex; gap: 28px; flex-wrap: wrap">'
+        + state("Rest: the first is taken", tab_row(tab("Losses", taken=True) + tab("Monthly") + tab("25 years"), "Rest"))
+        + state("The pointer on the second", tab_row(tab("Losses", taken=True) + tab("Monthly", under_pointer=True) + tab("25 years"), "Pointer"))
+        + "</div>"
+        '<div style="display: flex; gap: 28px; flex-wrap: wrap">'
+        + state("The keyboard focus on the one that is taken", tab_row(tab("Losses", taken=True, focus=True) + tab("Monthly") + tab("25 years"), "Focus"))
+        + state("One cannot be taken", tab_row(tab("Losses", taken=True) + tab("Monthly") + tab("25 years", disabled=True), "Disabled"))
+        + "</div>"
+        + state("With a count, in mono 12 on surface 2", tab_row(tab("Notes", taken=True, count="2") + tab("Assumptions", count="14") + tab("Weather"), "Count"))
+    )
+    facts = (
+        f'<p style="margin: 0; font-size: 12px; color: {TEXT_2}">Height 40, padding 0 14, 4 apart, text 13 in text-2. The one that is taken: text, '
+        "Geist 500, a line of 2 in accent on the line of the row. Under the pointer: text, the line in line-hover. "
+        "Cannot be taken: opacity 0.45. The panel begins 16 under the row.</p>"
+    )
+    return card("Tabs", states + facts, gap=18)
+
+
+def tabs_in_use_card() -> str:
+    body = (
+        state("In a card of Performance: the chart, and its numbers as a table", panel_card("Chart"), gap=8)
+        + state("The second tab is taken: the panel is another, the card is the same", panel_card("Table"), gap=8)
+    )
+    return card("In use", body, gap=18)
+
+
+def tabs_touch_card() -> str:
+    names = ["Summary", "Losses", "Monthly", "25 years", "Assumptions", "Weather"]
+    row = "".join(tab(name, taken=name == "Losses", touch=True) for name in names)
+    phone = (
+        f'<div style="width: 358px; overflow: hidden; border-radius: 12px; background: {GROUND}; border: 1px solid {LINE}">'
+        + tab_row(row, "Performance", extra="; padding: 0 0 0 4px")
+        + f'<div role="tabpanel" aria-label="Losses" style="display: flex; flex-direction: column; gap: 8px; padding: 16px">'
+        + bone(120, 12)
+        + bone(300, 12)
+        + bone(260, 12)
+        + "</div></div>"
+    )
+    body = (
+        state("Phone 390: height 44, text 15, padding 0 16. A row that is too long scrolls sideways; part of the next tab is seen", phone, gap=8)
+        + section("When tabs, when a segmented control", top=6)
+        + f'<p style="margin: 0; color: {TEXT_2}">Tabs divide the content of one card or one panel into parts: two to six of them, '
+        "named by what is in them. Every part is there at once; a tab shows one. "
+        "A segmented control sets a value of the design or the view of the stage: 3D or Plan, Portrait or Landscape.</p>"
+        + section("Keyboard and names", top=6)
+        + f'<p style="margin: 0; color: {TEXT_2}">The keyboard stops at the row once, at the tab that is taken. The arrows left and right '
+        "go to the neighbour and around the ends, Home and End to the first and the last; each takes the tab it goes to, and a tab that "
+        "cannot be taken is passed over. Tab leads into the panel. To a screen reader: "
+        f'<code style="font-size: 13px; color: {TEXT}">tablist</code>, <code style="font-size: 13px; color: {TEXT}">tab</code>, '
+        f'<code style="font-size: 13px; color: {TEXT}">tabpanel</code>, the panel named by its tab.</p>'
+    )
+    return card("On phone and tablet", body, gap=14)
+
+
+def tabs_board() -> str:
+    width, height = 1440, TABS_HEIGHT
+    column = '<div style="display: flex; flex-direction: column; gap: 16px">\n'
+    grid = (
+        '<div style="flex-grow: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start">\n'
+        + column + tabs_card() + "</div>\n"
+        + column + tabs_in_use_card() + "</div>\n"
+        + column + tabs_touch_card() + "</div>\n"
+        + "</div>\n"
+    )
+    return (
+        HEAD.format(
+            title="Tabs",
+            width=width,
+            height=height,
+            display=DISPLAY,
+            heading="Tabs",
+            lead="Parts of one card or one panel, of which one is shown. Flat, on a line: what is taken carries the accent.",
+        )
+        + grid
+        + FOOT.format(width=width, height=height)
+    )
+
+
 if __name__ == "__main__":
     (HERE / "Controls2.dc.html").write_text(controls_board(), encoding="utf-8")
     (HERE / "ShellStates.dc.html").write_text(shell_board(), encoding="utf-8")
-    print("Controls2.dc.html, ShellStates.dc.html")
+    (HERE / "Tabs.dc.html").write_text(tabs_board(), encoding="utf-8")
+    print("Controls2.dc.html, ShellStates.dc.html, Tabs.dc.html")

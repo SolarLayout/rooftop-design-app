@@ -51,6 +51,7 @@ Approved by the owner on 2026-09-29 (decisions D14, D15 and D32 in `plan/README.
 | Controls, depth and motion | `Kit.dc.html` | `controls-depth-motion.png` | |
 | Controls, part 2 | `Controls2.dc.html` | `controls-part-2.png` | |
 | Shell states | `ShellStates.dc.html` | `shell-states.png` | desktop, tablet, phone in parts |
+| Tabs (proposal, not yet approved) | `Tabs.dc.html` | `tabs.png` | desktop, phone in parts |
 
 Screens still to draw are listed in `plan/phase-00-design.md`.
 
@@ -64,5 +65,8 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
 - `mockups/build_lenses.py` generated the Sun and Strings boards from the Array board. It is kept so the boards
   can be regenerated; it is not part of the product.
 - `mockups/build_phase3_boards.py` writes the two boards of round 4, "Controls, part 2" and "Shell states",
-  approved on 2026-09-29 (decision D32). It is kept so that the boards can be written again.
-- `mockups/canvas.json` is the layout of the boards on the canvas.
+  approved on 2026-09-29 (decision D32), and the board "Tabs". It is kept so that the boards can be written
+  again.
+- "Tabs" is a proposal until the owner approves it: it is not built before, and it is in the repo and not
+  yet on the canvas.
+- `mockups/canvas.json` is the layout of the boards on the canvas, the proposal included.
