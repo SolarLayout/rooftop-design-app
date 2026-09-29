@@ -85,7 +85,7 @@ can be up at the same time.
 | `bun dev:bg --profile test` | The same for the test profile; logs in `.dev/test/`. This is the one for agents and scripts |
 | `bun stop --profile test`, `bun stop --all` | Stops the test profile, or both |
 | `bun status` | Shows both profiles: the ports in use, the processes, and other programs inside the two ranges |
-| `bun gen:api` | Writes `packages/api-types/openapi.json` and `src/index.ts` from the API, without starting a server. Run it after every change to the API's routes or models, and commit the result |
+| `bun gen:api` | Writes `packages/api-types/openapi.json`, `src/index.ts` (the shapes as the API hands them out) and `src/requests.ts` (as it takes them) from the API, without starting a server. Run it after every change to the API's routes or models, and commit the result |
 | `bun check --only=pytest,unit` | Runs some steps. Ids: `typecheck`, `eslint`, `ruff`, `imports`, `pytest`, `unit`, `e2e` |
 | `bun check --skip=e2e` | Runs everything but some steps |
 | `bun run build` | Production build of the web app, through turbo |

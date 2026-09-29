@@ -209,6 +209,17 @@ UI. Multi-user concerns. Persistence.
   report but its beginning, so a run that finds its results kept sends fewer events; its result is the same.
   `shading.compute` and `options.build_options` take a listener; no calculation changed.
 
+- **The typed client** is `apps/web/lib/api`: one function for every operation of the API, `runDesign` with
+  the progress on the way, `exportDesign` with the file and its name. Every fault is an `ApiError` with
+  the code, the message and the field of the API; an API that cannot be reached and an answer that cannot
+  be read have codes of their own. The event stream is read from the body of the answer, because the
+  browser's `EventSource` cannot send a request body.
+- **Two sets of generated types** (`bun gen:api`): `@rooftop/api-types` has the shapes as the API hands
+  them out, with every field; `@rooftop/api-types/requests` has them as the API takes them, where a field
+  with a default may be left out. With the first alone a new obstacle would have needed all 13 fields.
+- The client is tested by `bun test` with a stand-in for `fetch`, and in the browser tests against the
+  real API through the `/api` rewrite (project `api`, one run, no page).
+
 ### Left as in the desktop app
 - NASA POWER is asked for the year 2023; the times of a CSV are read as UTC (inventory, section 5, gap 7).
   Neither can be set in a request yet.
@@ -255,4 +266,3 @@ UI. Multi-user concerns. Persistence.
   numbers of the engine are as confirmed on the desktop app.
 
 ### What remains of this phase
-- The typed client in `apps/web/lib/api`.

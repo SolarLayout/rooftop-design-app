@@ -27,7 +27,7 @@ Nothing. `main` is green and there is no open branch or pull request.
    - Done: `POST /export/{pdf,dxf,kmz,csv,sld}`
    - Done: a KMZ exported by the app comes back as the roof it was
    - Done: memoisation (decision D6)
-   - The typed client in `apps/web/lib/api`
+   - Done: the typed client in `apps/web/lib/api`
    - Done: decision D24, the demo bundles the real equipment files
    - Done: tests with the equipment fixtures; the httpx warning
    - Then mark Phase 2 done

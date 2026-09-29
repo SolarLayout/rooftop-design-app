@@ -2,13 +2,17 @@
   "name": "@rooftop/api-types",
   "version": "0.1.0",
   "private": true,
-  "description": "TypeScript types generated from the API's OpenAPI document. Do not edit src/index.ts by hand; run `bun gen:api`.",
+  "description": "TypeScript types generated from the API's OpenAPI document. src/index.ts has the shapes as the API hands them out, src/requests.ts as it takes them. Do not edit them by hand; run `bun gen:api`.",
   "type": "module",
   "types": "./src/index.ts",
   "exports": {
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./requests": {
+      "types": "./src/requests.ts",
+      "default": "./src/requests.ts"
     },
     "./openapi.json": "./openapi.json"
   },
