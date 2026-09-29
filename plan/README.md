@@ -69,6 +69,7 @@ Always:
 | D32 | The boards "Controls, part 2" and "Shell states" are approved, with the choices in them: while the energy is updated every value of the vitals is dimmed and the last cell says the step and how far; the demo says "Not kept on this device"; on tablet and phone the state of saving is said in the project switcher only; a toast with a note stays until closed; a file that is refused leaves the equipment of before | Owner, 2026-09-29 |
 | D33 | Tabs stays in Phase 3. It has no design yet: it is drawn and approved first | Owner, 2026-09-29: "we might need it" |
 | D34 | The rest of Phase 3, after the sliders (pull request #31), goes into one pull request, each part as a commit of its own. For this phase; "one change per pull request" stands for the phases after it | Owner, 2026-09-29, session 4: "try to do it in one PR not numerous PRs" |
+| D35 | The board "Tabs" is approved as drawn: flat, on a line, the tab that is taken with a line of 2 px in accent; 40 high, 44 on touch; a row that is too long scrolls sideways; tabs divide the content of one card or panel, a segmented control sets a value or a view. With it the plan of the rest of the phase and its decisions (`phase-03-rest-plan.md`) | Owner, 2026-09-29, session 4: "all approved" |
 
 ## Open for approval
 

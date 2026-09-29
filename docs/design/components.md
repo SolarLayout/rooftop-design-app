@@ -151,8 +151,21 @@ Rail item 56 by 56, radius 12, icon 20 over a label of 11. Active: `control-acti
 control in the sheet.
 
 ## Bottom sheet (phone)
-`color-chrome`, top radius `radius-panel`, top border `line`, drag handle 40 by 4. Holds the lens switch and the
-inspector as a list of rows 64 to 68 high divided by `line-subtle`. Three stops: peek, half, full.
+`color-chrome`, top radius `radius-panel`, top border `line`, drag handle 40 by 4 in `line-strong`, 8 over it
+and 4 under it. Holds the lens switch and the inspector as a list of rows 64 to 68 high divided by
+`line-subtle`. Three stops: peek, half, full.
+
+In code: `Sheet`; its stops in `sheet-stops.ts`. It stands at the bottom of the room it is put into.
+
+- Peek is `size-sheet-peek` high: the handle and the lens switch. Half is half the room, full all of it.
+- The sheet follows a drag of its handle. Let go, it goes to the nearest stop, and to the next one in the
+  direction of the drag when the drag went a quarter of the way there. It goes in `duration-panel`.
+- A press on the handle opens the sheet one stop further, and closes it from full.
+- The handle takes the pointer 44 high. To a screen reader it is a `separator` that can be moved, with the
+  stop in words: "Closed", "Half open", "Open".
+- Keys on the handle: arrow up and down to the next stop, Home to peek, End to full, Enter and the space bar
+  as a press.
+- What is in the sheet scrolls inside it.
 
 ## Option card (stringing options)
 Row 52 high, radius `radius-row`. Letter badge 26, title (Recommended, or the verdict), one mono line

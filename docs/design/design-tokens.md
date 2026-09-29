@@ -198,6 +198,7 @@ Base 2 px. Steps in use: 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48,
 | `--size-vitals` | `78px` | Vitals bar height on desktop |
 | `--size-tabbar` | `72px` | Bottom tab bar height |
 | `--size-touch` | `44px` | Touch target, the least on phone and tablet, both ways |
+| `--size-sheet-peek` | `84px` | What is seen of the bottom sheet at its lowest stop: the handle and the lens switch |
 
 Reference widths: 390, 834, 1440.
 
@@ -307,6 +308,7 @@ Under `prefers-reduced-motion: reduce` every transition and animation is removed
 | `--opacity-disabled` | `opacity-disabled` | `disabled:opacity-disabled` |
 | `--ease-out`, `--duration-*` | `ease-out`, `duration-` and the name | `duration-press` |
 | `--duration-press`, `--ease-out`, `--shift-press`, `--scale-press` | `press-motion`, `raised-by-hover`, `lowered-by-press` | on every control that is pressed |
+| `--duration-panel`, `--ease-out` | `sheet-motion` | on a sheet that goes to its stop |
 | `--stroke-*` | `stroke-icon`, `stroke-icon-light`, `stroke-tick` | on the `svg` of an icon |
 | `--z-*` | `z-` and the name | `z-float` |
 | `--border-*` | `border-` and the name | `border-handle-touch desktop:border-handle` |
@@ -316,8 +318,8 @@ of a token makes no CSS.
 
 A place or a width that follows the data (the handle of a slider at its value) is a share of the width
 around it, from 0 to 1. The component sets it with `measures()` (`apps/web/components/ui/measures.ts`), which
-is the only inline style there is, and a utility reads it: `left-at` (`--at`), `w-span` (`--span`). A size, a
-colour or a shadow is never set this way.
+is the only inline style there is, and a utility reads it: `left-at` (`--at`), `w-span` and `h-span`
+(`--span`). A size, a colour or a shadow is never set this way.
 
 States have variants of their own, so that the kit can show a state without a pointer or a keyboard:
 `hovered:` (under a pointer that can hover, or `data-shown-as="hover"`), `pressed:` (while pressed, or
