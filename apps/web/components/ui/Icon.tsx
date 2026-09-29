@@ -9,6 +9,7 @@ const STROKED = {
   "chevron-down": <path d="m6 9 6 6 6-6" />,
   "chevron-left": <path d="m15 6-6 6 6 6" />,
   "chevron-right": <path d="m9 6 6 6-6 6" />,
+  "chevron-up": <path d="m6 15 6-6 6 6" />,
   close: <path d="M6 6l12 12M18 6 6 18" />,
   download: <path d="M12 3v12m0 0-4-4m4 4 4-4M4 19h16" />,
   minus: <path d="M5 12h14" />,

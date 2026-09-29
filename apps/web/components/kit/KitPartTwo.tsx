@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { KitPage } from "./Pages";
+import { Selects } from "./Selects";
 import { Sheets } from "./Sheets";
 import { TooltipsAndToasts } from "./TooltipsAndToasts";
 import { Waiting } from "./Waiting";
@@ -14,6 +15,7 @@ export function KitPartTwo() {
     <KitPage path="/kit/part-2" lastPressed={lastPressed}>
       <div className="grid grid-cols-1 gap-grid desktop:grid-cols-2">
         <div className="flex flex-col gap-grid">
+          <Selects onPress={setLastPressed} />
           <Sheets />
         </div>
         <div className="flex flex-col gap-grid">

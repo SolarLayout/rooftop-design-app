@@ -235,6 +235,7 @@
   --color-line: #232A36;
   --color-line-strong: #2F3847;
   --color-line-hover: #3B4658;
+  --color-dim: rgba(5,7,10,.72);
 
   --color-text: #F2F4F7;
   --color-text-2: #A9B2C0;
@@ -359,6 +360,7 @@
   --color-line: var(--color-line);
   --color-line-strong: var(--color-line-strong);
   --color-line-hover: var(--color-line-hover);
+  --color-dim: var(--color-dim);
   --color-text: var(--color-text);
   --color-text-2: var(--color-text-2);
   --color-text-3: var(--color-text-3);
