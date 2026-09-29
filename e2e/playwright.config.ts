@@ -1,4 +1,5 @@
 import { defineConfig } from "@playwright/test";
+import { webUrl } from "./stack";
 
 // Software WebGL, so the 3D scene of later phases renders the same on every machine and in CI.
 const launchOptions = {
@@ -14,10 +15,12 @@ export default defineConfig({
   forbidOnly: Boolean(process.env.CI),
   retries: 0,
   reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : [["list"]],
-  // Starts the dev stack when it is not running, and stops it afterwards only in that case.
+  // Starts the test stack (web 4710, api 4711, or the next free pair) when it is not running, and stops
+  // it afterwards only in that case. The developer's stack on 4700 is never used.
   globalSetup: "./global-setup.ts",
   use: {
-    baseURL: "http://localhost:4700",
+    // The real port comes from e2e/fixtures.ts when a test begins; this is the value before that.
+    baseURL: webUrl(),
     browserName: "chromium",
     launchOptions,
     trace: "retain-on-failure",

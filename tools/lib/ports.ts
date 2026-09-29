@@ -16,17 +16,21 @@ export type PortHolder = {
 };
 
 /**
- * Reads the field output of `lsof -nP -iTCP:<port> -Fpcn` (one field per line: p<pid>, c<command>,
- * f<fd>, n<address>) and returns the processes that hold the port, in the order lsof listed them.
+ * Reads the field output of `lsof -nP -iTCP:<ports> -Fpcn` (one field per line: p<pid>, c<command>,
+ * f<fd>, n<address>) and returns, for each of the wanted ports that is held, the processes that hold
+ * it, in the order lsof listed them. Ports nobody holds are not in the map.
  *
- * A process holds the port when the local side of one of its sockets is on it: "127.0.0.1:4701",
+ * A process holds a port when the local side of one of its sockets is on it: "127.0.0.1:4701",
  * "*:4700", "[::1]:4700", or the server side of a connection, "127.0.0.1:4701->127.0.0.1:55687".
  * Sockets that are bound but not listening yet count too: they block the port just the same.
  * A client connected to the port ("127.0.0.1:55687->127.0.0.1:4701") does not hold it.
  */
-export function parseLsofFields(output: string, port: number): { pid: number; name: string }[] {
-  const holders: { pid: number; name: string; holds: boolean }[] = [];
-  let current: { pid: number; name: string; holds: boolean } | null = null;
+export function parseLsofPorts(
+  output: string,
+  wanted: ReadonlySet<number>,
+): Map<number, { pid: number; name: string }[]> {
+  const held = new Map<number, { pid: number; name: string }[]>();
+  let current: { pid: number; name: string } | null = null;
 
   for (const line of output.split("\n")) {
     if (line.length < 2) continue;
@@ -34,23 +38,25 @@ export function parseLsofFields(output: string, port: number): { pid: number; na
     const value = line.slice(1);
     if (field === "p") {
       const pid = Number(value);
-      if (!Number.isInteger(pid) || pid <= 0) {
-        current = null;
-        continue;
-      }
-      current = holders.find((holder) => holder.pid === pid) ?? null;
-      if (!current) {
-        current = { pid, name: "", holds: false };
-        holders.push(current);
-      }
+      current = Number.isInteger(pid) && pid > 0 ? { pid, name: "" } : null;
     } else if (field === "c" && current) {
       current.name = value;
     } else if (field === "n" && current) {
       const local = value.split("->")[0] ?? "";
-      if (local.endsWith(`:${port}`)) current.holds = true;
+      const port = Number(/:(\d+)$/.exec(local)?.[1]);
+      if (!wanted.has(port)) continue;
+      const holders = held.get(port) ?? [];
+      const pid = current.pid;
+      if (!holders.some((holder) => holder.pid === pid)) holders.push(current);
+      held.set(port, holders);
     }
   }
-  return holders.filter((holder) => holder.holds).map(({ pid, name }) => ({ pid, name }));
+  return held;
+}
+
+/** The holders of one port; see parseLsofPorts. */
+export function parseLsofFields(output: string, port: number): { pid: number; name: string }[] {
+  return (parseLsofPorts(output, new Set([port])).get(port) ?? []).map(({ pid, name }) => ({ pid, name }));
 }
 
 /** Reads the working directory from `lsof -a -p <pid> -d cwd -Fn`. */
@@ -142,6 +148,29 @@ export class LsofMissingError extends Error {
   constructor() {
     super("lsof was not found. It is needed to see which process holds a port.");
   }
+}
+
+/**
+ * Every process holding a TCP port from `first` to `last`, listening or only bound, in one call of
+ * lsof. Ports nobody holds are not in the map.
+ */
+export function holdersInRange(first: number, last: number): Map<number, PortHolder[]> {
+  const result = run("lsof", ["-nP", `-iTCP:${first}-${last}`, "-Fpcn"]);
+  if (result.missing) throw new LsofMissingError();
+  const wanted = new Set(Array.from({ length: last - first + 1 }, (_, index) => first + index));
+  const known = new Map<number, PortHolder>();
+  const held = new Map<number, PortHolder[]>();
+  for (const [port, holders] of parseLsofPorts(result.stdout, wanted)) {
+    held.set(
+      port,
+      holders.map(({ pid, name }) => {
+        const holder = known.get(pid) ?? describe(pid, name);
+        known.set(pid, holder);
+        return holder;
+      }),
+    );
+  }
+  return held;
 }
 
 /** Every process holding the TCP port, listening or only bound. Empty when the port is free. */

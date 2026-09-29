@@ -1,6 +1,6 @@
 # Phase 1: monorepo, tooling, one-command dev stack
 
-**Status:** built and green locally on 2026-09-29; not committed, no branch or PR yet, CI workflow written but never run. **Depends on:** nothing (can start while phase 0 is in review).
+**Status:** done 2026-09-29. Merged through PR #1 on SolarLayout/rooftop-design-app; CI check green (browser tests excluded from CI, decision D20). **Depends on:** nothing (can start while phase 0 is in review).
 
 ## Goal
 An empty but fully wired repo: one command starts web and API, one stops them, one checks everything.
@@ -90,3 +90,42 @@ Deviations and things to know:
 - starlette 1.7 warns that httpx with its TestClient is deprecated in favour of `httpx2`. httpx was kept as
   planned; the warning shows in the pytest output. To decide in phase 2.
 - The minimal tokens in `apps/web/app/globals.css` (`canvas`, `ink`) are placeholders for phase 3.
+
+### Ports and profiles (2026-09-29)
+
+Why: a `bun check` or `bun dev:bg` run by an agent held 4700 and 4701, so the owner's `bun dev` was refused,
+and the other way round. Decision D3 was reworded for this.
+
+- Two profiles in `tools/lib/profiles.ts`, each with its own ports, pid file, logs and Next build directory:
+  `dev` (web 4700, API 4701, `.dev/dev/`, `.next`) and `test` (web 4710, API 4711, `.dev/test/`,
+  `.next-test`). `--profile test` or `ROOFTOP_PROFILE=test` selects; the flag wins.
+- A preferred port held by another program is no longer a refusal. The stack takes the next pair of which
+  both ports are free, stepping by two inside its range of ten (dev 4700 to 4709, test 4710 to 4719), names
+  the holder and the ports used instead. It refuses only when all five pairs are taken.
+- Still a refusal: our own stack of the same profile holds a port but does not answer as a whole stack
+  (a leftover, or one that is still starting). The message names `bun stop` for that profile. It does not
+  fall back in this case, because a second `next dev` on the same build directory would meet Next's lock.
+- "Ours" is still decided by command and working directory; which profile a process belongs to follows
+  from the range its port is in. `bun stop` looks for leftovers in the whole range of the profile.
+- `bun stop` no longer fails because another program sits inside the range; it lists it and succeeds.
+  It fails only when something of ours could not be stopped.
+- `apps/web/next.config.ts` reads `ROOFTOP_API_PORT` (default 4701) and `ROOFTOP_DIST_DIR` (default
+  `.next`). `apps/web/tsconfig.json` lists the type paths of `.next-test` next to those of `.next`; without
+  them Next rewrites and reformats `tsconfig.json` on the first start of the test profile.
+- Playwright always uses the test profile. The port is read from `.dev/test/pids.json` when a test begins
+  (`e2e/fixtures.ts`), because it is not known yet when the configuration is read.
+- The dev profile prints a note about the Esri key whenever its web port is not 4700. The env file is not
+  read for this.
+- The old files `.dev/pids.json`, `.dev/web.log` and `.dev/api.log` are still understood by `bun stop` and
+  removed by it.
+- Checked: dev stack up, then `bun check` green on 4710/4711 with the dev stack untouched; test stack up,
+  then dev on 4700/4701; 4700 held by another program, dev on 4702/4703 with the rewrite working; 4711
+  held, `bun check` green on 4712/4713; whole range held, refusal naming every holder; leftovers on a
+  fallback pair stopped by `bun stop`.
+- Not covered: two starts of the same profile at the same moment can pick the same pair; the second one
+  fails at start and says why. CLAUDE.md was not changed in this step.
+
+### CI, same day
+- First CI run hung for over nine minutes in `playwright install --with-deps chromium`; it was cancelled.
+- `check.yml` now runs `bun check --skip=e2e`. `e2e.yml` runs the browser tests, started by hand only, with the
+  browser cached by the version of `@playwright/test`. `e2e.yml` has not been run yet.

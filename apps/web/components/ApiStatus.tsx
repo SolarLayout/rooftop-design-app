@@ -34,7 +34,7 @@ export function ApiStatus() {
     <p data-testid="api-status" data-state={state.kind} className="text-sm opacity-70">
       {state.kind === "checking" && "API: checking"}
       {state.kind === "reachable" && `API reachable (version ${state.version})`}
-      {state.kind === "unreachable" && "API not reachable on port 4701"}
+      {state.kind === "unreachable" && "API not reachable"}
     </p>
   );
 }

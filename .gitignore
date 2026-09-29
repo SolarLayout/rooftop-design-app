@@ -6,6 +6,7 @@
 # dependencies and builds
 node_modules/
 .next/
+.next-test/
 .turbo/
 dist/
 out/

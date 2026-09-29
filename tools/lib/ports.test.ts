@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { isOurs, parseLsofCwd, parseLsofFields } from "./ports.ts";
+import { isOurs, parseLsofCwd, parseLsofFields, parseLsofPorts } from "./ports.ts";
 
 const REPO = "/Users/someone/code/rooftop-design-app";
 
@@ -48,6 +48,36 @@ describe("parseLsofFields", () => {
   test("ignores lines it does not know and pids that are not numbers", () => {
     const output = "garbage\npabc\ncghost\nn127.0.0.1:4701\np12\ncuv\nf3\nn127.0.0.1:4701\n";
     expect(parseLsofFields(output, 4701)).toEqual([{ pid: 12, name: "uv" }]);
+  });
+});
+
+describe("parseLsofPorts", () => {
+  const range = new Set([4700, 4701, 4702, 4703]);
+
+  test("sorts the holders of a range by port", () => {
+    const output = [
+      "p50", "cPython", "f3", "n127.0.0.1:4700",
+      "p61", "cnode", "f13", "n*:4702",
+      "p62", "cPython", "f3", "n127.0.0.1:4703",
+      "p63", "cPython", "f3", "n127.0.0.1:4703",
+    ].join("\n");
+    const held = parseLsofPorts(output, range);
+    expect([...held.keys()].sort()).toEqual([4700, 4702, 4703]);
+    expect(held.get(4700)).toEqual([{ pid: 50, name: "Python" }]);
+    expect(held.get(4702)).toEqual([{ pid: 61, name: "node" }]);
+    expect(held.get(4703)?.map((holder) => holder.pid)).toEqual([62, 63]);
+    expect(held.has(4701)).toBe(false);
+  });
+
+  test("one process may hold several ports", () => {
+    const held = parseLsofPorts("p9\ncnode\nf3\nn*:4700\nf4\nn*:4702\n", range);
+    expect(held.get(4700)).toEqual([{ pid: 9, name: "node" }]);
+    expect(held.get(4702)).toEqual([{ pid: 9, name: "node" }]);
+  });
+
+  test("ports outside the wanted set and clients of a port are left out", () => {
+    const output = "p9\ncnode\nf3\nn*:4704\np10\nccurl\nf5\nn127.0.0.1:50000->127.0.0.1:4700\n";
+    expect(parseLsofPorts(output, range).size).toBe(0);
   });
 });
 

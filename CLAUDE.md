@@ -19,10 +19,29 @@ first, then the first phase that is not done. Ask the owner domain questions one
 9. Style only through design tokens (`apps/web/app/globals.css`). No raw colour, size or shadow value in
    a component.
 
+## Engineering standard
+This is production software, not a prototype. The owner's words: "this is not throwaway code".
+- Test-driven: write the failing test first, make it pass, then tidy. No behaviour lands without a test
+  that would fail without it. A bug fix starts with the test that reproduces it.
+- Small units with one job, named for what they do. Pure logic apart from I/O, so it can be tested
+  without a server, a browser or the network.
+- Types at every boundary: Pydantic models in the API, generated types in the web app. No `any`, no
+  untyped dict passed across a module boundary.
+- Errors are handled where they can be acted on, and say what happened and what to do. Nothing is
+  swallowed.
+- No dead code, no commented-out code, no TODO without an entry in the plan.
+- One change per pull request, described by what it does and how it was checked. Merge only on a green
+  check.
+- Browser tests run locally in `bun check`. In CI they live in the `e2e` workflow, started by hand.
+
 ## Working rules
 - Next.js runs on Node, never on the bun runtime (never `bun --bun next`). Tools find Node through
   `tools/lib/node.ts`; run Node tools with `bun tools/with-node.ts <tool>`.
-- Ports: web 4700, API 4701. The browser reaches the API only through the Next rewrite `/api/*`.
+- Ports: dev profile web 4700, API 4701; test profile web 4710, API 4711. Each falls back to the next
+  free pair in its range of ten (4700 to 4709, 4710 to 4719). The browser reaches the API only through
+  the Next rewrite `/api/*`. Never hard-code a port: read `ports` from `.dev/<profile>/pids.json`.
+- Agents and tests use the test profile: `bun dev:bg --profile test`, `bun stop --profile test`. Never
+  start or stop the dev profile, so the owner's `bun dev` is never blocked or stopped.
 - `reactStrictMode` stays `false` in `apps/web/next.config.ts` (see `plan/reference/r3f-notes.md`, fix 1).
 - Versions are pinned exactly (decision D4 in `plan/README.md`). React stays below 19.3; TypeScript on 5.x.
 - After a change to the API's routes or models: `bun gen:api`, and commit `packages/api-types`.
@@ -34,8 +53,8 @@ first, then the first phase that is not done. Ask the owner domain questions one
 | Command | Use |
 |---|---|
 | `bun dev` | Start web and API in the terminal |
-| `bun dev:bg` | Start both in the background and return when they answer (for agents and tests) |
-| `bun stop` | Stop both |
-| `bun status` | What holds the two ports |
+| `bun dev:bg --profile test` | Start the test stack in the background (agents and tests) |
+| `bun stop` | Stop the dev stack (`--profile test` for the test stack, `--all` for both) |
+| `bun status` | Both stacks, their real ports, and anything else in their ranges |
 | `bun check` | Every check, in order, stopping at the first failure |
 | `bun gen:api` | Regenerate `packages/api-types` from the API |

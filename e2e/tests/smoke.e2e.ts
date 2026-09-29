@@ -1,4 +1,5 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../fixtures";
+import { webUrl } from "../stack";
 
 const THIS_MACHINE = new Set(["localhost", "127.0.0.1", "[::1]"]);
 
@@ -22,6 +23,7 @@ test("home page loads, names the app and reaches the API", async ({ page }) => {
 
   const response = await page.goto("/");
   expect(response?.status()).toBe(200);
+  expect(new URL(page.url()).origin, "the tests run against the test stack").toBe(webUrl());
 
   await expect(page.getByRole("heading", { level: 1, name: "SolarLayout Rooftop" })).toBeVisible();
   await expect(page).toHaveTitle("SolarLayout Rooftop");
