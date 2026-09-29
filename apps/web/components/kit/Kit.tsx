@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Buttons } from "./Buttons";
+import { Choices } from "./Choices";
 import { Cards, StatExamples, StatusMarks } from "./StatusCardStat";
 
 /** The page of /kit: every component of components/ui in every state. */
@@ -21,7 +22,10 @@ export function Kit() {
       </header>
 
       <div className="grid grid-cols-1 gap-grid desktop:grid-cols-2">
-        <Buttons onPress={setLastPressed} />
+        <div className="flex flex-col gap-grid">
+          <Buttons onPress={setLastPressed} />
+          <Choices onPress={setLastPressed} />
+        </div>
         <div className="flex flex-col gap-grid">
           <StatusMarks />
           <Cards />
