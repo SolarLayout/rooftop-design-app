@@ -22,7 +22,7 @@ guidelines, mockup sources and previews are in `docs/design/` (start at `docs/de
 | [bun](https://bun.sh) | 1.3.14 | The only package manager and script runner here |
 | Node.js | 26.10.0 (`.nvmrc`); 20.9 or newer works | Next.js runs on Node, never on the bun runtime |
 | [uv](https://docs.astral.sh/uv/) | any recent | Manages Python and the API's packages |
-| Python | 3.12.13 (`.python-version`), the build that uv manages | uv installs it; a Python found on the machine is not used |
+| Python | 3.12.13 (`apps/api/.python-version`), the build that uv manages | uv installs it; a Python found on the machine is not used |
 
 Node does not have to be on your `PATH`. The tools look for it on `PATH` and in the usual places of
 Homebrew, nvm, fnm, volta, mise and asdf, and take the one closest to `.nvmrc`. To name one yourself, set

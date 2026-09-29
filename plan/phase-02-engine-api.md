@@ -133,7 +133,7 @@ UI. Multi-user concerns. Persistence.
   | 3.12.13 managed by uv | 2.5.3, 1.18.1 | 11.2 s |
   | 3.11.11 managed by uv, the desktop app's environment | 2.4.6, 1.17.1 | 11.4 s |
 
-  The repo now pins Python 3.12.13 (`.python-version`) and uv takes only the Python it manages
+  The repo now pins Python 3.12.13 (`apps/api/.python-version`; uv does not read one above the project) and uv takes only the Python it manages
   (`python-preference` in `apps/api/pyproject.toml`). After the change: 11.7 s. No result changed.
 
 ### Found in part 2, for the domain expert
