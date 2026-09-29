@@ -28,7 +28,7 @@ Nothing. `main` is green and there is no open branch or pull request.
    - Done: a KMZ exported by the app comes back as the roof it was
    - Done: memoisation (decision D6)
    - The typed client in `apps/web/lib/api`
-   - Decision D24: the demo bundles the real equipment files
+   - Done: decision D24, the demo bundles the real equipment files
    - Tests with the equipment fixtures
    - Then mark Phase 2 done
 2. Phase 3: design system as code and the app shell.
@@ -66,7 +66,6 @@ Nothing. `main` is green and there is no open branch or pull request.
 | `/layout` has no size limit: a roof of 2 km by 1 km takes 29 s | Phase 11 |
 | Progress of a design run has fixed shares and no progress inside the options step | Phase 2, part 2 |
 | Real PAN and OND files are in `apps/api/tests/fixtures/equipment/` with a README; no test uses them yet | Phase 2, part 2 |
-| Decision D24: the demo shows the real equipment names. The mockups already do. The engine still bundles `Test.PAN` and `Test-S.ond`; the change is in the Phase 2 work order | Phase 2, part 2 |
 | The engine places the sun at the middle of the hour for every source. The bundled PVGIS hours agree with the sun at the time stamp itself (GHI, DNI and DHI close to 0.8 W/m2 there, 43.6 W/m2 half an hour later). Not changed; a question for Prasanta | Owner and domain expert |
 | A CSV with GHI alone is split by Erbs: on the Pune year beam 1,435 and diffuse 823 kWh/m2, where PVGIS has 2,000 and 550. Say so where a CSV is loaded? | Phase 8, with the owner |
 

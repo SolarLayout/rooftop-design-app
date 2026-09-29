@@ -4,6 +4,7 @@ import pytest
 from pvlib import irradiance, solarposition
 
 from rooftop_core.simulation import Losses
+from tests.equipment import fixture_path
 
 
 def test_perez_matches_pvgis_in_plane(pune_weather):
@@ -47,8 +48,7 @@ def test_loss_chain_is_consistent(demo_design):
 
 def test_lid_from_pan_by_default():
     from rooftop_core.io.pvsyst import read_pan
-    from rooftop_core.resources import sample_path
 
-    m = read_pan(sample_path("Test.PAN"))
+    m = read_pan(fixture_path("Test.PAN"))
     assert Losses().lid(m) == 0.2
     assert Losses(lid_pct=1.5).lid(m) == 1.5

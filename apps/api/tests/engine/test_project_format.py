@@ -10,10 +10,11 @@ import pytest
 from rooftop_core.demo import demo_project
 from rooftop_core.errors import MissingEquipmentFile, UnsupportedProjectFormat, WeatherNotLoaded
 from rooftop_core.project import FORMAT_VERSION, Design, Project
-from rooftop_core.resources import sample_path
+from rooftop_core.resources import SAMPLE_OND, SAMPLE_PAN, sample_path
+from tests.equipment import fixture_path
 
-PAN_TEXT = Path(sample_path("Test.PAN")).read_text(encoding="utf-8")
-OND_TEXT = Path(sample_path("Test-S.ond")).read_text(encoding="utf-8")
+PAN_TEXT = Path(fixture_path("Test.PAN")).read_text(encoding="utf-8")
+OND_TEXT = Path(fixture_path("Test-S.ond")).read_text(encoding="utf-8")
 ADDED_IN_FORMAT_2 = ("pan_text", "ond_text", "weather_csv_text")
 
 
@@ -189,8 +190,8 @@ def test_nothing_is_put_in_the_place_of_a_missing_file():
 def test_empty_paths_mean_the_bundled_samples():
     design = Design(_light_project())
 
-    assert design.module.pnom_w == 560 and design.module.source == sample_path("Test.PAN")
-    assert design.inverter.pnom_kw == 275 and design.inverter.source == sample_path("Test-S.ond")
+    assert design.module.pnom_w == 560 and design.module.source == sample_path(SAMPLE_PAN)
+    assert design.inverter.pnom_kw == 275 and design.inverter.source == sample_path(SAMPLE_OND)
 
 
 def test_embedded_text_is_used_and_the_path_only_names_it():
@@ -211,7 +212,7 @@ def test_embedded_text_is_used_and_the_path_only_names_it():
 
 def test_embedded_text_wins_over_a_file_that_is_here(tmp_path):
     here = tmp_path / "Test.PAN"
-    shutil.copy(sample_path("Test.PAN"), here)
+    shutil.copy(fixture_path("Test.PAN"), here)
     project = _light_project(pan_path=str(here), pan_text=PAN_TEXT.replace("PNom=560", "PNom=565"))
 
     assert Design(project).module.pnom_w == 565
@@ -219,7 +220,7 @@ def test_embedded_text_wins_over_a_file_that_is_here(tmp_path):
 
 def test_a_path_that_is_here_is_read_as_on_the_desktop(tmp_path):
     here = tmp_path / "Test.PAN"
-    shutil.copy(sample_path("Test.PAN"), here)
+    shutil.copy(fixture_path("Test.PAN"), here)
 
     design = Design(_light_project(pan_path=str(here)))
 
@@ -229,7 +230,7 @@ def test_a_path_that_is_here_is_read_as_on_the_desktop(tmp_path):
 # ── a server reads no files of its own machine ───────────────────────────────
 def test_a_server_does_not_read_a_pan_from_its_own_disk(tmp_path):
     here = tmp_path / "Test.PAN"
-    shutil.copy(sample_path("Test.PAN"), here)
+    shutil.copy(fixture_path("Test.PAN"), here)
 
     with pytest.raises(MissingEquipmentFile) as error:
         Design(_light_project(pan_path=str(here)), local_files=False)
@@ -242,7 +243,7 @@ def test_a_server_does_not_read_a_pan_from_its_own_disk(tmp_path):
 
 def test_a_server_does_not_read_an_ond_from_its_own_disk(tmp_path):
     here = tmp_path / "Test-S.ond"
-    shutil.copy(sample_path("Test-S.ond"), here)
+    shutil.copy(fixture_path("Test-S.ond"), here)
 
     with pytest.raises(MissingEquipmentFile) as error:
         Design(_light_project(ond_path=str(here)), local_files=False)

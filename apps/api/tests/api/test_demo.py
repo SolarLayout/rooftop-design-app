@@ -40,10 +40,25 @@ def test_the_weather_is_embedded(demo):
     assert max(elevation for _, elevation in weather["horizon"]) == 2.7
 
 
-def test_the_sample_equipment_is_embedded_under_its_name(demo):
-    assert (demo["pan_path"], demo["ond_path"]) == ("Test.PAN", "Test-S.ond")
-    assert demo["pan_text"] == Path(sample_path("Test.PAN")).read_bytes().decode("utf-8")
-    assert demo["ond_text"] == Path(sample_path("Test-S.ond")).read_bytes().decode("utf-8")
+def test_the_equipment_is_embedded_under_the_names_of_its_files(demo):
+    assert demo["pan_path"] == "insolation-ina-144mhc-tf-560.PAN"
+    assert demo["ond_path"] == "wattpower-wp-330ktl-h1.OND"
+    assert demo["pan_text"] == Path(sample_path(demo["pan_path"])).read_bytes().decode("utf-8")
+    assert demo["ond_text"] == Path(sample_path(demo["ond_path"])).read_bytes().decode("utf-8")
+
+
+def test_the_demo_shows_its_equipment_by_its_real_names(client, demo):
+    """Decision D24."""
+    module = client.post("/equipment/module", json={"name": demo["pan_path"], "text": demo["pan_text"]})
+    inverter = client.post("/equipment/inverter", json={"name": demo["ond_path"], "text": demo["ond_text"]})
+
+    module, inverter = module.json()["module"], inverter.json()["inverter"]
+    assert (module["manufacturer"], module["model"]) == (
+        "INSOLATION GREEN ENERGY PVT. LTD.",
+        "INA-144MHC-TF-560",
+    )
+    assert (inverter["manufacturer"], inverter["model"]) == ("WattPower Systems Pvt.Ltd", "WP-330KTL-H1")
+    assert "Test" not in demo["pan_text"] + demo["ond_text"]
 
 
 def test_nothing_is_chosen_beyond_what_the_desktop_demo_chose(demo):

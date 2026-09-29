@@ -6,10 +6,10 @@ from pathlib import Path
 import pytest
 
 from rooftop_core.io.pvsyst import decode_pvsyst, parse_ond, parse_pan, read_ond, read_pan
-from rooftop_core.resources import sample_path
+from tests.equipment import fixture_path
 
-PAN_PATH = Path(sample_path("Test.PAN"))
-OND_PATH = Path(sample_path("Test-S.ond"))
+PAN_PATH = Path(fixture_path("Test.PAN"))
+OND_PATH = Path(fixture_path("Test-S.ond"))
 
 
 def test_parse_pan_gives_what_read_pan_gives():

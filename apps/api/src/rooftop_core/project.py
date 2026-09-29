@@ -18,7 +18,7 @@ from .onediode import Coefficients, ModuleModel
 from .options import StringOption, build_options, custom_option
 from .paths import file_name
 from .placement import ArraySpec, Layout, place
-from .resources import sample_path
+from .resources import SAMPLE_OND, SAMPLE_PAN, sample_path
 from .simulation import Losses, Precomputed, precompute
 from .stringing import CELL_RISE, SeriesRange, series_range
 
@@ -115,7 +115,7 @@ def module_of(p: Project, local_files: bool = True) -> Module:
     if p.pan_text:
         return parse_pan(p.pan_text, file_name(p.pan_path))
     if not p.pan_path:
-        return read_pan(sample_path("Test.PAN"))
+        return read_pan(sample_path(SAMPLE_PAN))
     return read_pan(_here(p.pan_path, "module", "PAN", "pan_path", local_files))
 
 
@@ -124,7 +124,7 @@ def inverter_of(p: Project, local_files: bool = True) -> Inverter:
     if p.ond_text:
         return parse_ond(p.ond_text, file_name(p.ond_path))
     if not p.ond_path:
-        return read_ond(sample_path("Test-S.ond"))
+        return read_ond(sample_path(SAMPLE_OND))
     return read_ond(_here(p.ond_path, "inverter", "OND", "ond_path", local_files))
 
 

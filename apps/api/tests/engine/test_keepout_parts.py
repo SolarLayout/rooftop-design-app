@@ -7,12 +7,12 @@ from rooftop_core.demo import demo_roof
 from rooftop_core.io.pvsyst import read_pan
 from rooftop_core.keepout_parts import KeepoutPart, keepout_parts
 from rooftop_core.placement import ArraySpec, place
-from rooftop_core.resources import sample_path
+from tests.equipment import fixture_path
 
 
 @pytest.fixture(scope="module")
 def module():
-    return read_pan(sample_path("Test.PAN"))
+    return read_pan(fixture_path("Test.PAN"))
 
 
 @pytest.fixture(scope="module")

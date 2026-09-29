@@ -6,8 +6,8 @@ import pytest
 from shapely.geometry import Polygon
 from shapely.ops import unary_union
 
-from rooftop_core.resources import sample_path
 from tests.api.conftest import error_of
+from tests.equipment import fixture_path
 
 pytestmark = pytest.mark.slow
 
@@ -171,7 +171,7 @@ def test_a_module_file_of_another_machine_must_be_chosen_again(client, light_dem
 
 
 def test_a_path_on_the_server_is_not_opened(client, light_demo):
-    light_demo.update(pan_path=sample_path("Test.PAN"), pan_text="")
+    light_demo.update(pan_path=fixture_path("Test.PAN"), pan_text="")
 
     response = client.post("/layout", json=light_demo)
 

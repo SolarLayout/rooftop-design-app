@@ -1,13 +1,13 @@
 # Copied from rooftop-design (SolarLayout/rooftop-design) at commit bf2cb67.
 from rooftop_core.io.pvsyst import read_ond, read_pan
 from rooftop_core.onediode import ModuleModel
-from rooftop_core.resources import sample_path
 from rooftop_core.stringing import max_strings_per_inverter, series_range, strings_per_mppt
+from tests.equipment import fixture_path
 
 
 def _parts():
-    m = read_pan(sample_path("Test.PAN"))
-    return m, read_ond(sample_path("Test-S.ond")), ModuleModel(m)
+    m = read_pan(fixture_path("Test.PAN"))
+    return m, read_ond(fixture_path("Test-S.ond")), ModuleModel(m)
 
 
 def test_series_range_pune_1500v():

@@ -14,10 +14,11 @@ every 24 modules, obstacle clearance 0.5 m, albedo 0.20.
 
 ## Equipment
 Shown in the demo by their real names (decision D24): Insolation INA-144MHC-TF-560 and WattPower
-WP-330KTL-H1. `Test.PAN` and `Test-S.ond` of the desktop app hold the same data under the name "Test".
-- Module `Test.PAN`: 560 Wp, 2.277 x 1.133 m, Voc 49.95 V, Isc 14.30 A, Vmp 41.24 V, Imp 13.58 A, twin half-cell,
+WP-330KTL-H1, bundled as `insolation-ina-144mhc-tf-560.PAN` and `wattpower-wp-330ktl-h1.OND`. `Test.PAN` and
+`Test-S.ond` of the desktop app hold the same data under the name "Test"; they are test fixtures here.
+- Module: 560 Wp, 2.277 x 1.133 m, Voc 49.95 V, Isc 14.30 A, Vmp 41.24 V, Imp 13.58 A, twin half-cell,
   3 diodes, bifaciality 0.80, LID 0.2 %. Derived: Voc -0.164 %/degC, Vmp -0.228, Pmpp -0.212 (the Voc note fires).
-- Inverter `Test-S.ond`: 275 kW, 6 MPPT, 28 inputs, MPPT 500 to 1500 V, nominal 1080 V, IMaxDC 390 A (65 A per MPPT).
+- Inverter: 275 kW, 6 MPPT, 28 inputs, MPPT 500 to 1500 V, nominal 1080 V, IMaxDC 390 A (65 A per MPPT).
 
 ## Weather
 PVGIS TMY: GHI 1,822.9 kWh/m2, ambient 11.93 to 39.26 degC, horizon highest 2.7 deg.

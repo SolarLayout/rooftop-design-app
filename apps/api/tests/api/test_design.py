@@ -508,7 +508,8 @@ def test_a_file_that_is_named_but_not_included_is_asked_for_again(client, demo):
     assert response.status_code == 422
     assert error_of(response) == {
         "code": "equipment_file_missing",
-        "message": "The inverter file Test-S.ond (OND) is not included in this project. Choose it again.",
+        "message": "The inverter file wattpower-wp-330ktl-h1.OND (OND) is not included in this project. "
+        "Choose it again.",
         "field": "ond_path",
     }
 
