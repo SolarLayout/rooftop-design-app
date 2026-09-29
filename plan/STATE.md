@@ -52,6 +52,8 @@ changed; an export 0.2 to 0.9 s after a run.
 ## Next, in order
 
 Work order: `plan/resume/003-phase-3-components-stores-shell.md`.
+Plan of the rest of Phase 3, by session 4: `plan/phase-03-rest-plan.md`. Part 1 is merged (#30), part 2 is
+pull request #31, the rest goes into one pull request (decision D34).
 
 1. Phase 3, each part as its own pull request, test first:
    the guard against raw values reads `*.ts` too; Slider and RangeSlider; Sheet; ProgressRing and Skeleton;
