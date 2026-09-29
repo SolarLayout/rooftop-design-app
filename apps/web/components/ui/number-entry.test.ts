@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { committed, numberOf, saidOf, shown, stepped, type Range } from "./number-entry";
+import { committed, numberOf, saidOf, shown, stepped, withUnit, type Range } from "./number-entry";
 
 const SETBACK: Range = { min: 0, max: 5, decimals: 2 };
 const MODULES_IN_TILT: Range = { min: 1, max: 4, decimals: 0, step: 1 };
@@ -123,5 +123,20 @@ describe("saidOf: what the field says after it changed the entry", () => {
     expect(saidOf("not-a-number", { min: 0, decimals: 1 }, "m")).toBe("Enter a number, 0.0 m or more.");
     expect(saidOf("not-a-number", { max: 60, decimals: 0 }, "°")).toBe("Enter a number, 60° or less.");
     expect(saidOf("not-a-number", { decimals: 1 })).toBe("Enter a number.");
+  });
+});
+
+describe("withUnit: a number with its unit", () => {
+  test("a space between the number and the unit", () => {
+    expect(withUnit("0.50", "m")).toBe("0.50 m");
+    expect(withUnit("86.6", "%")).toBe("86.6 %");
+  });
+
+  test("none before the degree sign", () => {
+    expect(withUnit("15", "°")).toBe("15°");
+  });
+
+  test("without a unit, the number alone", () => {
+    expect(withUnit("2", undefined)).toBe("2");
   });
 });
