@@ -27,6 +27,7 @@ from ..geometry import Obstacle
 
 HEIGHT_RE = re.compile(r"\bh\s*[=:]\s*([0-9]+(?:\.[0-9]+)?)", re.I)
 MAX_KML_MB = 20
+MODULES_FOLDER = re.compile(r"Modules \(\d+\)")   # as export_kmz_bytes names it
 BINARY_DXF = b"AutoCAD Binary DXF"
 
 
@@ -90,6 +91,21 @@ def _kml_bytes(data: bytes, label: str) -> bytes:
         return z.read(inside)
 
 
+def _exported_modules(root: ET.Element) -> set[ET.Element]:
+    """The placemarks of the modules in a KMZ that this app exported: they are no obstacles.
+
+    The export puts them in a folder of their own, named "Modules" with their number.
+    """
+    found: set[ET.Element] = set()
+    for folder in root.iter():
+        if not folder.tag.endswith("Folder"):
+            continue
+        name = next((ch.text or "" for ch in folder if ch.tag.endswith("name")), "")
+        if MODULES_FOLDER.fullmatch(name.strip()):
+            found.update(pm for pm in folder.iter() if pm.tag.endswith("Placemark"))
+    return found
+
+
 def read_kmz(source: str | Path | bytes, name: str = "") -> ImportedRoof:
     """A roof from a KMZ or KML: a path, the bytes of either, or the text of a KML.
 
@@ -100,9 +116,10 @@ def read_kmz(source: str | Path | bytes, name: str = "") -> ImportedRoof:
         root = ET.fromstring(_kml_bytes(_content(source), label))
     except ET.ParseError as e:
         raise ValueError(f"{label} is not a KML file that can be read: {e}") from e
+    modules = _exported_modules(root)
     shapes = []   # (name, desc, kind, lonlat pts)
     for pm in root.iter():
-        if not pm.tag.endswith("Placemark"):
+        if not pm.tag.endswith("Placemark") or pm in modules:
             continue
         name = desc = ""
         for ch in pm:

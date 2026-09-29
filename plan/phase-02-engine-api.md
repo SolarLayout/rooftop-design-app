@@ -204,10 +204,10 @@ UI. Multi-user concerns. Persistence.
   The repo now pins Python 3.12.13 (`apps/api/.python-version`; uv does not read one above the project) and uv takes only the Python it manages
   (`python-preference` in `apps/api/pyproject.toml`). After the change: 11.7 s. No result changed.
 
-### Found in part 2, to fix
-- **A KMZ exported by the app comes back with its modules as obstacles.** The export holds the modules in
-  use as placemarks; the import takes every outline but the largest for an obstacle. The demo comes back
-  with its six obstacles and their heights, and with 638 more of 1.0 m named "Module n".
+- **A KMZ exported by the app comes back as the roof it was.** The export holds the modules in use as
+  placemarks, and the import took every outline but the largest for an obstacle: the demo came back with
+  638 obstacles of 1.0 m named "Module n". The import now leaves out the folder the export puts them in
+  ("Modules" with their number). An outline named "Module" anywhere else is an obstacle as before.
 
 ### Found in part 2, for the domain expert
 - **The split of Erbs is not what PVGIS has.** The Pune year given as GHI alone comes back with beam
@@ -219,7 +219,6 @@ UI. Multi-user concerns. Persistence.
   numbers of the engine are as confirmed on the desktop app.
 
 ### What remains of this phase
-- The import of a KMZ that the app exported (see "Found in part 2, to fix").
 - The typed client in `apps/web/lib/api`.
 - Progress inside the two long steps: the shading (8 s on the demo) and the options (4 s) each report only
   their beginning.

@@ -86,6 +86,14 @@ def test_kmz_bytes_come_back_as_the_roof(demo_design):
     assert any(o.name == "Stair room" and o.height == 3.0 for o in roof.obstacles)
 
 
+def test_kmz_bytes_come_back_without_the_modules_as_obstacles(demo_design):
+    roof = read_kmz(files.export_kmz_bytes(demo_design))
+
+    assert [o.name for o in roof.obstacles] == [o.name for o in demo_design.p.roof.obstacles]
+    assert [o.height for o in roof.obstacles] == [o.height for o in demo_design.p.roof.obstacles]
+    assert roof.missing_heights == []
+
+
 def test_dxf_bytes_come_back_as_the_roof(demo_design):
     roof = read_dxf(files.export_dxf_bytes(demo_design), "m", 18.52, 73.86)
 

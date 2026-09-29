@@ -196,3 +196,49 @@ def test_content_without_a_name_is_called_the_file():
         read_kmz(kml.encode())
 
     assert str(error.value) == "The file has no polygon to use as the roof."
+
+
+# ── a KMZ that the app exported ──────────────────────────────────────────────
+def _placemark(name: str, west: float, south: float, size: float) -> str:
+    east, north = west + size, south + size
+    ring = f"{west},{south},0 {east},{south},0 {east},{north},0 {west},{north},0 {west},{south},0"
+    return (
+        f"<Placemark><name>{name}</name><Polygon><outerBoundaryIs><LinearRing><coordinates>{ring}"
+        "</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>"
+    )
+
+
+def _document(*folders: str) -> str:
+    return (
+        "<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>"
+        + "".join(folders)
+        + "</Document></kml>"
+    )
+
+
+def _folder(name: str, *placemarks: str) -> str:
+    return f"<Folder><name>{name}</name>{''.join(placemarks)}</Folder>"
+
+
+ROOF = _placemark("Roof", 73.8600, 18.5200, 0.0004)
+TANK = _placemark("Tank h=2.5", 73.8601, 18.5201, 0.00002)
+MODULES = [_placemark(f"Module {n}", 73.8602 + n * 0.00003, 18.5202, 0.00002) for n in (1, 2)]
+
+
+def test_the_modules_of_an_exported_kmz_are_not_obstacles():
+    roof = read_kmz(_document(_folder("Roof", ROOF, TANK), _folder("Modules (2)", *MODULES)))
+
+    assert [o.name for o in roof.obstacles] == ["Tank"]
+    assert roof.missing_heights == []
+
+
+def test_an_outline_named_module_elsewhere_is_an_obstacle_as_any_other():
+    roof = read_kmz(_document(_folder("Roof", ROOF, TANK, MODULES[0]), _folder("Plant", MODULES[1])))
+
+    assert sorted(o.name for o in roof.obstacles) == ["Module 1", "Module 2", "Tank"]
+    assert sorted(roof.missing_heights) == ["Module 1", "Module 2"]
+
+
+def test_a_folder_of_modules_alone_has_no_roof():
+    with pytest.raises(ValueError, match="has no polygon to use as the roof"):
+        read_kmz(_document(_folder("Modules (2)", *MODULES)), name="modules.kml")
