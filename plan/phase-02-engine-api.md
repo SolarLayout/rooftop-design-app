@@ -153,6 +153,23 @@ UI. Multi-user concerns. Persistence.
   any positions). The shading summary gives the figures of the loss chain for the modules of each of the
   five options of the demo to 0.001 %.
 
+- **Memoisation (D6)**, `rooftop_core/memo.py`. Two stages are kept per process: the hourly shading (two
+  thirds of a run; up to 512 MB, the demo takes 55 MB) and the options with their simulations (up to
+  64 MB, the demo takes 4 MB). The layout is not kept: it takes 0.06 s. A key is the fingerprint of what
+  its stage depends on. The shading does not depend on irradiance, losses, albedo, inverter or voltage, so
+  an edit of those reuses it. What is kept is handed out read-only.
+
+  | Request on the demo | Time |
+  |---|---|
+  | Without a system voltage, nothing kept | 8.1 s |
+  | Then 1500 V chosen | 4.1 s |
+  | The same request again | 0.2 s |
+  | Soiling changed from 2 to 3 % | 4.0 s |
+
+  Proof that dropping it changes nothing but speed: `tests/engine/test_memo.py`. One memo sees eleven edits
+  one after the other; each result is compared, to the last bit, with a run that has no memo. A second
+  test holds, for 36 inputs, which of the two keys each one changes.
+
 ### Left as in the desktop app
 - NASA POWER is asked for the year 2023; the times of a CSV are read as UTC (inventory, section 5, gap 7).
   Neither can be set in a request yet.
@@ -189,7 +206,6 @@ UI. Multi-user concerns. Persistence.
 
 ### What remains of this phase
 - `POST /export/{pdf,dxf,kmz,csv,sld}` on the `*_bytes` writers.
-- Memoisation per D6 (layout, weather, shading).
 - The typed client in `apps/web/lib/api`.
 - Progress inside the two long steps: the shading (8 s on the demo) and the options (4 s) each report only
   their beginning.

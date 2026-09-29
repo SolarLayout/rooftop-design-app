@@ -339,6 +339,66 @@ def test_the_same_request_gives_the_same_answer(client, demo):
     assert len(result_of(first)["options"]) > 0
 
 
+# ── what is kept between requests (decision D6) ──────────────────────────────
+@pytest.fixture
+def nothing_kept(monkeypatch):
+    """The server as it is freshly started: no result of an earlier request is there."""
+    from rooftop_api.services import design as service
+
+    monkeypatch.setattr(service, "MEMO", service.new_memo())
+
+
+@pytest.fixture
+def shading_runs(monkeypatch):
+    from rooftop_core import shading
+
+    calls = []
+    real = shading.compute
+
+    def counted(*args, **kwargs):
+        calls.append(1)
+        return real(*args, **kwargs)
+
+    monkeypatch.setattr(shading, "compute", counted)
+    return calls
+
+
+def test_a_freshly_started_server_answers_the_same_twice(client, demo, nothing_kept, shading_runs):
+    first = events_of(client.post("/design", json=small(demo)))
+    second = events_of(client.post("/design", json=small(demo)))
+
+    assert first == second
+    assert len(shading_runs) == 1, "the second answer came from what the first had worked out"
+
+
+def test_dropping_what_is_kept_changes_nothing_in_the_answer(client, demo, monkeypatch, shading_runs):
+    from rooftop_api.services import design as service
+
+    monkeypatch.setattr(service, "MEMO", service.new_memo())
+    first = events_of(client.post("/design", json=small(demo)))
+    kept = events_of(client.post("/design", json=small(demo)))
+
+    monkeypatch.setattr(service, "MEMO", service.new_memo())
+    dropped = events_of(client.post("/design", json=small(demo)))
+
+    assert kept == first and dropped == first
+    assert len(shading_runs) == 2
+
+
+def test_a_change_of_a_loss_is_answered_without_working_out_the_shading(
+    client, demo, nothing_kept, shading_runs
+):
+    project = small(demo)
+    before = result_of(client.post("/design", json=project))
+    project["losses"]["soiling_pct"] = 3.0
+
+    after = result_of(client.post("/design", json=project))
+
+    assert len(shading_runs) == 1
+    assert after["shading"] == before["shading"] and after["layout"] == before["layout"]
+    assert after["options"][0]["energy"]["energy_mwh"] < before["options"][0]["energy"]["energy_mwh"]
+
+
 def test_at_1000_v_at_most_19_modules_are_in_series(client, demo):
     result = result_of(client.post("/design", json=small(demo, system_voltage=1000)))
 
