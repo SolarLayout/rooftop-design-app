@@ -26,7 +26,7 @@ export function ApiStatus() {
   }, []);
 
   return (
-    <p data-testid="api-status" data-state={state.kind} className="text-sm opacity-70">
+    <p data-testid="api-status" data-state={state.kind} className="type-small text-text-2">
       {state.kind === "checking" && "API: checking"}
       {state.kind === "reachable" && `API reachable (version ${state.version})`}
       {state.kind === "unreachable" && "API not reachable"}
