@@ -21,6 +21,8 @@ SHADING_AT = 0.02
 LOSSES_AT = 0.98
 # Where the options begin, as a fraction of Design.run_options; prepare fills what comes before.
 OPTIONS_AT = 0.67
+# Inside a step a report is sent when the run has come this much further: fifty in a run at most.
+SMALLEST_STEP = 0.02
 
 
 def loading_weather(source_label: str) -> str:
@@ -35,6 +37,8 @@ class ProgressEvent:
 
 
 ProgressCallback = Callable[[ProgressEvent], None]
+# Hears how far a step is: so many of its parts are over, of so many.
+PartCallback = Callable[[int, int], None]
 
 
 class Reporter:
@@ -43,10 +47,26 @@ class Reporter:
     def __init__(self, on_progress: ProgressCallback | None):
         self._on_progress = on_progress
         self._step = ""
+        self._from = self._until = self._told = 0.0
 
-    def begin(self, step: str, fraction: float) -> None:
+    def begin(self, step: str, fraction: float, until: float | None = None) -> None:
+        """A step begins at *fraction* of the run. With *until*, where it ends, its parts can be told."""
         self._step = step
+        self._from = self._told = fraction
+        self._until = fraction if until is None else until
         self._send(step, fraction)
+
+    def part(self, done: int, total: int) -> None:
+        """*done* of the *total* parts of the step that began last are over.
+
+        Told only when the run has come further by SMALLEST_STEP, and never as the end of the run.
+        """
+        if total <= 0:
+            return
+        fraction = self._from + (self._until - self._from) * min(done, total) / total
+        if fraction - self._told >= SMALLEST_STEP - 1e-12 and fraction < 1.0:
+            self._told = fraction
+            self._send(self._step, fraction)
 
     def finish(self, step_when_nothing_ran: str) -> None:
         """The run is over. Named after the last step that ran, or the one given when all was there."""

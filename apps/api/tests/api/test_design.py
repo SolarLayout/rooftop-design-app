@@ -67,11 +67,17 @@ def test_the_answer_is_a_stream_of_events_that_ends_with_the_result(demo_run):
     assert list(events[-1].data) == ["type", "result"] and events[-1].data["type"] == "result"
 
 
+def steps_of(response) -> list[str]:
+    """The steps of a run in the order they began: a step that reports again is named once."""
+    steps = [event.data["step"] for event in events_of(response) if event.name == "progress"]
+    return [step for n, step in enumerate(steps) if n == 0 or step != steps[n - 1]]
+
+
 def test_progress_names_the_steps_of_the_engine_in_order(demo_run):
     progress = [event.data for event in events_of(demo_run) if event.name == "progress"]
 
     assert all(list(event) == ["type", "step", "fraction"] for event in progress)
-    assert [event["step"] for event in progress] == [FITTING, SHADING, LOSSES, OPTIONS, OPTIONS]
+    assert steps_of(demo_run) == [FITTING, SHADING, LOSSES, OPTIONS]
     fractions = [event["fraction"] for event in progress]
     assert fractions == sorted(fractions) and fractions[0] == 0.0 and fractions[-1] == 1.0
     assert all(fraction < 1.0 for fraction in fractions[:-1])
@@ -318,9 +324,8 @@ def test_without_a_system_voltage_the_answer_says_what_it_waits_for(waiting_resu
 
 
 def test_without_a_system_voltage_the_options_are_not_a_step(waiting_run):
-    steps = [event.data["step"] for event in events_of(waiting_run) if event.name == "progress"]
-
-    assert steps == [FITTING, SHADING, LOSSES, LOSSES]
+    assert steps_of(waiting_run) == [FITTING, SHADING, LOSSES]
+    assert events_of(waiting_run)[-2].data == {"type": "progress", "step": LOSSES, "fraction": 1.0}
 
 
 def test_a_chosen_option_of_before_is_not_kept_without_a_system_voltage(client, demo):
@@ -335,8 +340,19 @@ def test_the_same_request_gives_the_same_answer(client, demo):
     first = client.post("/design", json=small(demo))
     second = client.post("/design", json=small(demo))
 
-    assert events_of(first) == events_of(second)
+    assert result_of(first) == result_of(second)
+    assert steps_of(first) == steps_of(second)
     assert len(result_of(first)["options"]) > 0
+
+
+def test_a_run_tells_how_far_the_shading_and_the_options_are(client, demo, nothing_kept):
+    progress = [e.data for e in events_of(client.post("/design", json=small(demo))) if e.name == "progress"]
+
+    shading = [event["fraction"] for event in progress if event["step"] == SHADING]
+    options = [event["fraction"] for event in progress if event["step"] == OPTIONS]
+    assert len(shading) >= 10 and shading == sorted(set(shading))
+    assert len(options) >= 4 and options == sorted(set(options)) and options[-1] == 1.0
+    assert len(progress) <= 60
 
 
 # ── what is kept between requests (decision D6) ──────────────────────────────
@@ -364,24 +380,27 @@ def shading_runs(monkeypatch):
 
 
 def test_a_freshly_started_server_answers_the_same_twice(client, demo, nothing_kept, shading_runs):
-    first = events_of(client.post("/design", json=small(demo)))
-    second = events_of(client.post("/design", json=small(demo)))
+    first = client.post("/design", json=small(demo))
+    second = client.post("/design", json=small(demo))
 
-    assert first == second
+    assert result_of(first) == result_of(second)
+    assert steps_of(first) == steps_of(second)
     assert len(shading_runs) == 1, "the second answer came from what the first had worked out"
+    assert len(events_of(second)) < len(events_of(first)), "and had less to tell on the way"
 
 
 def test_dropping_what_is_kept_changes_nothing_in_the_answer(client, demo, monkeypatch, shading_runs):
     from rooftop_api.services import design as service
 
     monkeypatch.setattr(service, "MEMO", service.new_memo())
-    first = events_of(client.post("/design", json=small(demo)))
-    kept = events_of(client.post("/design", json=small(demo)))
+    first = client.post("/design", json=small(demo))
+    kept = client.post("/design", json=small(demo))
 
     monkeypatch.setattr(service, "MEMO", service.new_memo())
-    dropped = events_of(client.post("/design", json=small(demo)))
+    dropped = client.post("/design", json=small(demo))
 
-    assert kept == first and dropped == first
+    assert result_of(kept) == result_of(first) and result_of(dropped) == result_of(first)
+    assert events_of(dropped) == events_of(first), "two runs that keep nothing tell the same on the way"
     assert len(shading_runs) == 2
 
 

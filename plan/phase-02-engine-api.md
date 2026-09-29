@@ -203,6 +203,12 @@ UI. Multi-user concerns. Persistence.
 - **Decision D25 is pinned** for 600, 1000 and 1500 V on the cable schedule and the bill of materials, and
   with equipment rated below the system voltage: the label names the system voltage as chosen.
 
+- **Progress inside the two long steps.** The shading reports after every fiftieth of the run it has come
+  further (it counts the distinct positions of the sun it has worked out: 1,097 on the demo); the options
+  report after every simulation. A run sends 60 events at most. Shading that was kept has nothing to
+  report but its beginning, so a run that finds its results kept sends fewer events; its result is the same.
+  `shading.compute` and `options.build_options` take a listener; no calculation changed.
+
 ### Left as in the desktop app
 - NASA POWER is asked for the year 2023; the times of a CSV are read as UTC (inventory, section 5, gap 7).
   Neither can be set in a request yet.
@@ -250,5 +256,3 @@ UI. Multi-user concerns. Persistence.
 
 ### What remains of this phase
 - The typed client in `apps/web/lib/api`.
-- Progress inside the two long steps: the shading (8 s on the demo) and the options (4 s) each report only
-  their beginning.
