@@ -3,7 +3,7 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-09-29, end of session 1.
+**Last updated:** 2026-09-29, end of session 1, after Phase 2 part 1 was merged.
 
 ## Where we are
 
@@ -11,27 +11,25 @@ Keep it short and true. History belongs in git and in the phase files, not here.
 |---|---|---|
 | 0 Design | Direction approved. 14 boards drawn | More screens to draw, listed in `phase-00-design.md` |
 | 1 Foundation | Done, merged (PR #1) | |
-| 2 Engine and API | Part 1 in progress on branch `feat/engine` | See "In flight" |
+| 2 Engine and API | Part 1 done, merged (PR #7). Part 2 not started | What exists and what remains: `phase-02-engine-api.md`, "As built, part 1" |
 | 3 to 11 | Not started | |
 
 ## In flight
 
-| Branch | What | State | Next action |
-|---|---|---|---|
-| `feat/engine` | Phase 2, part 1: engine copied in, engine usable without a filesystem, first endpoints (`/demo`, `/equipment/module`, `/equipment/inverter`, `/roof/import`, `/layout`, `/sun`) | Being built by an agent of session 1. Local only, not pushed. Not yet reviewed | Review against the brief in `phase-02-engine-api.md`, run `bun check`, push, open a pull request, merge on green |
-
-If `feat/engine` exists locally with commits and no pull request, treat it as unreviewed work: read its
-`git log main..feat/engine`, read the "As built, part 1" section the agent was told to write in
-`phase-02-engine-api.md`, run `bun check`, and verify the demo numbers yourself before merging.
+Nothing. `main` is green and there is no open branch or pull request.
 
 ## Next, in order
 
-1. Finish and merge Phase 2, part 1 (above).
-2. Phase 2, part 2: `POST /weather`, `POST /design` with progress over SSE, `POST /export/{pdf,dxf,kmz,csv,sld}`,
-   memoisation (decision D6), then mark Phase 2 done.
-3. Phase 3: design system as code and the app shell.
-4. Phase 4: find the roof on the map and outline it (the flagship).
-5. In parallel with any phase: the screens still to draw (Phase 0).
+1. Phase 2, part 2. Work order: `plan/resume/001-phase-2-engine-api.md` (it starts at its step 2).
+   - Fix CSV weather with GHI alone, test first (the expected failure in `tests/engine/test_weather_sources.py`)
+   - `POST /weather`, `POST /design` with progress over SSE, `POST /export/{pdf,dxf,kmz,csv,sld}`
+   - Memoisation (decision D6), the typed client in `apps/web/lib/api`
+   - Decision D24: the demo bundles the real equipment files
+   - Tests with the equipment fixtures
+   - Then mark Phase 2 done
+2. Phase 3: design system as code and the app shell.
+3. Phase 4: find the roof on the map and outline it (the flagship).
+4. In parallel with any phase: the screens still to draw (Phase 0).
 
 ## Facts about this machine and setup
 
@@ -59,6 +57,11 @@ If `feat/engine` exists locally with commits and no pull request, treat it as un
 | `tools/imagery-preview/` is a throwaway test page on port 4700; remove it when Phase 4 lands | Phase 4 |
 | Option captions "Fills the inverter" and "Lower clipping" in the Strings mockup are derived in the web app; the engine does not produce them | Phase 7 |
 | String placement on the roof in the Strings mockup is illustrative | Phase 7 uses the engine's strings |
+| The design run takes about 16 s here, about 11 s in the desktop app's own environment. The engine code is the same; this repo runs Python 3.12.8 from python.org with numpy 2.5 and scipy 1.18, the desktop app a uv-managed Python 3.11 with numpy 2.4 and scipy 1.17. Try a uv-managed Python 3.12 and compare | Phase 2, part 2 |
+| Heights cannot come from a DXF: a layer name may hold neither `=` nor `:`. Every DXF obstacle gets 1.0 m and is listed as missing | Phase 5, with the owner |
+| DC cable label at 600 V reads "600 V DC". Whether cable is labelled by its rating class is a question for Prasanta | Owner, one question |
+| `/layout` has no size limit: a roof of 2 km by 1 km takes 29 s | Phase 11 |
+| Progress of a design run has fixed shares and no progress inside the options step | Phase 2, part 2 |
 | Real PAN and OND files are in `apps/api/tests/fixtures/equipment/` with a README; no test uses them yet | Phase 2, part 2 |
 | Decision D24: the demo shows the real equipment names. The mockups already do. The engine still bundles `Test.PAN` and `Test-S.ond`; the change is in the Phase 2 work order | Phase 2, part 2 |
 
