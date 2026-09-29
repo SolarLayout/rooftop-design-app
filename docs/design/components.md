@@ -243,6 +243,13 @@ Height 88, radius `radius-row`, padding 0 18, gap 14. An icon of 20, a title in 
 A file that is refused leaves the equipment of before in place. A file that is read becomes the equipment
 card. The button opens the file chooser, so the control works without dragging and by keyboard.
 
+In code: `FileDrop`. It gives the file to who uses it, and is told what becomes of it: reading, and refused
+with the reason. It takes one file, the first of several. What is no file of the device (a piece of text, a
+link) is not taken, and while a file is read no other is. The words of the field are a `status`, so that a
+screen reader hears that a file is read or was refused.
+On phone the button stands under the words and is as wide as the field, 44 high; the field is then higher
+than 88.
+
 ## Dialog
 Over a dimmed screen (`rgba(5,7,10,.72)`), in its middle. Panel: width 340 to 440, `surface-1`, border
 `line-strong`, radius `radius-panel`, `shadow-panel`, padding 22. Title in the display face, 22 / 28
