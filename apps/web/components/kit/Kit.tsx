@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Buttons } from "./Buttons";
 import { Choices } from "./Choices";
+import { Fields } from "./Fields";
 import { Cards, StatExamples, StatusMarks } from "./StatusCardStat";
 
 /** The page of /kit: every component of components/ui in every state. */
@@ -27,6 +28,7 @@ export function Kit() {
           <Choices onPress={setLastPressed} />
         </div>
         <div className="flex flex-col gap-grid">
+          <Fields onPress={setLastPressed} />
           <StatusMarks />
           <Cards />
           <StatExamples />

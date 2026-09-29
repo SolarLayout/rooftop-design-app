@@ -68,6 +68,24 @@ the loss chain). Label left in text-2, value right in `text-value`, unit after t
 Focus: accent border and `halo-focus`. The value commits on Enter or blur, not on every key.
 A stepper is a number field with minus and plus buttons of 30 (44 on touch).
 
+In code: `NumberField` and `Stepper`; their numbers in `number-entry.ts`.
+
+| Form | Height on desktop | On phone and tablet | Use |
+|---|---|---|---|
+| The label inside, at the left | 44 | 44 | A field of its own, as on the kit board |
+| The label before the field | 36, radius control | 48, radius row | A row of the inspector |
+| Stepper | 38: buttons of 30 in a well with padding 3 | 52: buttons of 44 | A few whole steps |
+
+- What is typed is a draft. Enter or leaving the field commits it; Escape gives it up. The arrows up and down
+  step the draft and do not commit. Plus and minus of a stepper commit at once, and cannot be pressed at the
+  end of the range.
+- A number outside the range is brought to the nearest limit. What is no number leaves the value as it was.
+  In both cases the field says under itself what happened, in `text-caption`: "5.00 m is the highest that can
+  be set.", "Enter a number, from 0.00 to 5.00 m.". The next good entry takes the words away.
+- The field shows its number with the decimals of the quantity, a comma between thousands and a true minus
+  sign; it reads either minus sign and the comma.
+- With the focus inside: accent border and `shadow-well-focus`. The input has no ring of its own.
+
 ## Cards
 `surface-1`, border `line`, radius `radius-card`, `shadow-card`, padding `space-card`.
 Equipment card (module, inverter): glyph 44 by 56 to 60, name in Geist 600, one or two lines of facts in
