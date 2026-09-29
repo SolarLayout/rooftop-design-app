@@ -1,8 +1,13 @@
 # Copied from rooftop-design (SolarLayout/rooftop-design) at commit bf2cb67.
-"""Exports: PDF report, DXF layout, KMZ, hourly CSV and the SLD (decision 18)."""
+"""Exports: PDF report, DXF layout, KMZ, hourly CSV and the SLD (decision 18).
+
+Every export comes in two forms: ``export_x_bytes(design)`` returns the file as
+bytes, ``export_x(design, path)`` writes those bytes to a file.
+"""
 
 from __future__ import annotations
 
+import io
 import zipfile
 from datetime import date
 from pathlib import Path
@@ -15,12 +20,16 @@ import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.backends.backend_pdf import PdfPages  # noqa: E402
 
 from .. import plots  # noqa: E402
-from ..bom import bom, cable_schedule  # noqa: E402
+from ..bom import CableRow, bom, cable_schedule  # noqa: E402
 from ..geo import local_to_lonlat  # noqa: E402
 from ..geometry import ROOF_TYPE_LABELS  # noqa: E402
 from ..project import Design  # noqa: E402
 
 A4_L = (11.69, 8.27)
+SCHEDULE_ROWS_WITH_BOM = 28      # the first page of the schedule also holds the bill of materials
+SCHEDULE_ROWS_PER_PAGE = 40      # a page with the schedule alone
+SCHEDULE_WIDTHS = [0.07, 0.09, 0.07, 0.09, 0.14, 0.1, 0.12, 0.32]
+SCHEDULE_HEADER = ["String", "Inverter", "MPPT", "Modules", "Voc cold, V", "Isc, A", "DC cable, m", "Cable"]
 
 
 def _need(d: Design):
@@ -78,11 +87,39 @@ def _table(ax, rows, col_widths, fs=8, header=None):
     return t
 
 
+def schedule_pages(rows: list[CableRow]) -> list[list[CableRow]]:
+    """The cable schedule cut into pages: the first shares its page with the bill of materials."""
+    pages = [rows[:SCHEDULE_ROWS_WITH_BOM]]
+    rest = rows[SCHEDULE_ROWS_WITH_BOM:]
+    pages += [rest[i:i + SCHEDULE_ROWS_PER_PAGE] for i in range(0, len(rest), SCHEDULE_ROWS_PER_PAGE)]
+    return pages
+
+
+def _schedule_table(ax, rows: list[CableRow]) -> None:
+    cells = [[c.string, c.inverter, c.mppt, c.modules, f"{c.voc_cold_v:,.0f}", f"{c.isc_a:.2f}", f"{c.length_m:,.1f}", c.size]
+             for c in rows]
+    _table(ax, cells, SCHEDULE_WIDTHS, fs=7, header=SCHEDULE_HEADER)
+
+
+def _schedule_continued(pdf: PdfPages, rows: list[CableRow]) -> None:
+    fig = plt.figure(figsize=A4_L)
+    fig.text(0.05, 0.94, f"String schedule, continued: {rows[0].string} to {rows[-1].string}", fontsize=14,
+             color=plots.TEXT, fontweight="bold")
+    _schedule_table(fig.add_axes([0.05, 0.05, 0.9, 0.85]), rows)
+    pdf.savefig(fig)
+    plt.close(fig)
+
+
 def export_pdf(d: Design, path: str | Path) -> None:
+    Path(path).write_bytes(export_pdf_bytes(d))
+
+
+def export_pdf_bytes(d: Design) -> bytes:
     o = _need(d)
     r = o.result
     p = d.p
-    with PdfPages(path) as pdf:
+    out = io.BytesIO()
+    with PdfPages(out) as pdf:
         # 1 · summary
         fig = plt.figure(figsize=A4_L)
         fig.text(0.05, 0.93, f"{p.name} · rooftop PV design", fontsize=18, color=plots.TEXT, fontweight="bold")
@@ -133,18 +170,17 @@ def export_pdf(d: Design, path: str | Path) -> None:
         # 5 · strings + BOM
         fig = plt.figure(figsize=A4_L)
         fig.text(0.05, 0.94, "String schedule and bill of materials", fontsize=14, color=plots.TEXT, fontweight="bold")
-        cs = cable_schedule(d.layout, o.system, d.module, d.mm, d.t_min)
-        ax = fig.add_axes([0.05, 0.40, 0.9, 0.5])
-        rows = [[c.string, c.inverter, c.mppt, c.modules, f"{c.voc_cold_v:,.0f}", f"{c.isc_a:.2f}", f"{c.length_m:,.1f}", c.size]
-                for c in cs[:28]]
-        _table(ax, rows, [0.07, 0.09, 0.07, 0.09, 0.14, 0.1, 0.12, 0.32], fs=7,
-               header=["String", "Inverter", "MPPT", "Modules", "Voc cold, V", "Isc, A", "DC cable, m", "Cable"])
+        first, *more = schedule_pages(cable_schedule(d.layout, o.system, d.module, d.mm, d.t_min, p.system_voltage))
+        _schedule_table(fig.add_axes([0.05, 0.40, 0.9, 0.5]), first)
         ax = fig.add_axes([0.05, 0.03, 0.9, 0.33])
-        b = bom(d.layout, o.system, d.module, d.inverter, d.mm, d.t_min, structure_label(d), p.ac_cable_m)
+        b = bom(d.layout, o.system, d.module, d.inverter, d.mm, d.t_min, structure_label(d), p.ac_cable_m,
+                p.system_voltage)
         _table(ax, [[x.item, x.spec, f"{x.qty:,.0f}", x.unit] for x in b], [0.2, 0.58, 0.1, 0.12], fs=8,
                header=["Item", "Specification", "Qty", "Unit"])
         pdf.savefig(fig)
         plt.close(fig)
+        for rows in more:
+            _schedule_continued(pdf, rows)
         # 6 · SLD
         fig = plt.figure(figsize=A4_L)
         ax = fig.add_axes([0.03, 0.05, 0.94, 0.88])
@@ -152,26 +188,42 @@ def export_pdf(d: Design, path: str | Path) -> None:
                        d.inverter.n_mppt)
         pdf.savefig(fig)
         plt.close(fig)
+    return out.getvalue()
 
 
 def export_sld(d: Design, path: str | Path) -> None:
+    Path(path).write_bytes(export_sld_bytes(d))
+
+
+def export_sld_bytes(d: Design) -> bytes:
+    """The single-line diagram as a PNG, A4 landscape at 200 dpi."""
     o = _need(d)
     fig = plt.figure(figsize=A4_L)
     ax = fig.add_axes([0.03, 0.05, 0.94, 0.88])
     plots.draw_sld(ax, o.system, f"{d.module.pnom_w:g} Wp", f"{d.inverter.pnom_kw:g} kW · {d.inverter.n_mppt} MPPT",
                    d.inverter.n_mppt)
-    fig.savefig(path, dpi=200)
+    out = io.BytesIO()
+    fig.savefig(out, dpi=200, format="png")
     plt.close(fig)
+    return out.getvalue()
 
 
 def export_csv(d: Design, path: str | Path) -> None:
+    Path(path).write_bytes(export_csv_bytes(d))
+
+
+def export_csv_bytes(d: Design) -> bytes:
     o = _need(d)
     df = o.result.hourly.copy()
     df.index.name = "time_utc_hour_start"
-    df.round(3).to_csv(path)
+    return df.round(3).to_csv(lineterminator="\n").encode("utf-8")
 
 
 def export_dxf(d: Design, path: str | Path) -> None:
+    Path(path).write_bytes(export_dxf_bytes(d))
+
+
+def export_dxf_bytes(d: Design) -> bytes:
     import ezdxf
 
     o = _need(d)
@@ -208,10 +260,16 @@ def export_dxf(d: Design, path: str | Path) -> None:
     for i, (x, y) in enumerate(o.system.inverter_xy):
         poly([(x - 1, y - 0.6), (x + 1, y - 0.6), (x + 1, y + 0.6), (x - 1, y + 0.6)], "INVERTERS")
         msp.add_text(f"INV-{i + 1}", height=0.5, dxfattribs={"layer": "TEXT"}).set_placement((x, y + 0.8))
-    doc.saveas(path)
+    text = io.StringIO()
+    doc.write(text)
+    return doc.encode(text.getvalue())
 
 
 def export_kmz(d: Design, path: str | Path) -> None:
+    Path(path).write_bytes(export_kmz_bytes(d))
+
+
+def export_kmz_bytes(d: Design) -> bytes:
     o = _need(d)
     roof = d.p.roof
     c = roof.polygon.centroid
@@ -235,5 +293,7 @@ def export_kmz(d: Design, path: str | Path) -> None:
     kml = ("<?xml version='1.0' encoding='UTF-8'?><kml xmlns='http://www.opengis.net/kml/2.2'><Document>"
            f"<name>{escape(d.p.name)}</name>{styles}<Folder><name>Roof</name>{''.join(parts)}</Folder>"
            f"<Folder><name>Modules ({len(mods)})</name>{''.join(mods)}</Folder></Document></kml>")
-    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
+    out = io.BytesIO()
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
         z.writestr("doc.kml", kml)
+    return out.getvalue()

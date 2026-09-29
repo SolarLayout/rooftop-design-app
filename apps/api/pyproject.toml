@@ -21,6 +21,7 @@ dependencies = [
 dev = [
     "httpx>=0.28,<1",
     "import-linter>=2.3,<3",
+    "pypdf>=6,<7",
     "pytest>=8.3,<10",
     "ruff>=0.11,<1",
 ]

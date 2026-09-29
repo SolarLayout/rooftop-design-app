@@ -48,17 +48,23 @@ def used_tables(layout: Layout, system: System) -> int:
     return count
 
 
-def cable_schedule(layout: Layout, system: System, module: Module, mm: ModuleModel, t_min: float) -> list[CableRow]:
+def dc_cable_label(system_voltage: float) -> str:
+    """The DC cable of the design: its cross-section, and the system voltage it is rated for."""
+    return f"{DC_CABLE_MM2:g} mm² Cu, {system_voltage:.0f} V DC"
+
+
+def cable_schedule(layout: Layout, system: System, module: Module, mm: ModuleModel, t_min: float,
+                   system_voltage: float) -> list[CableRow]:
     lengths = dc_cable_m(system, layout)
     voc = float(mm.voc(1000.0, t_min)[0]) * system.n_series
     return [CableRow(f"S{i + 1}", f"INV-{system.inverter_of[i] + 1}", system.mppt_of[i] + 1, system.n_series,
-                     voc, module.isc, round(lengths[i], 1), f"{DC_CABLE_MM2:g} mm² Cu, 1500 V DC")
+                     voc, module.isc, round(lengths[i], 1), dc_cable_label(system_voltage))
             for i in range(system.n_strings)]
 
 
 def bom(layout: Layout, system: System, module: Module, inv: Inverter, mm: ModuleModel, t_min: float,
-        tilt_label: str, ac_cable_m: float) -> list[BomLine]:
-    cables = cable_schedule(layout, system, module, mm, t_min)
+        tilt_label: str, ac_cable_m: float, system_voltage: float) -> list[BomLine]:
+    cables = cable_schedule(layout, system, module, mm, t_min, system_voltage)
     dc_total = sum(c.length_m for c in cables)
     lines = [
         BomLine("PV module", f"{module.manufacturer} {module.model}, {module.pnom_w:g} Wp"
@@ -67,7 +73,7 @@ def bom(layout: Layout, system: System, module: Module, inv: Inverter, mm: Modul
         BomLine("String inverter", f"{inv.manufacturer} {inv.model}, {inv.pnom_kw:g} kW, {inv.n_mppt} MPPT",
                 system.n_inverters, "pcs"),
         BomLine("Mounting structure", tilt_label, used_tables(layout, system), "tables"),
-        BomLine("DC cable", f"{DC_CABLE_MM2:g} mm² Cu, 1500 V DC, red + black", round(dc_total), "m"),
+        BomLine("DC cable", f"{dc_cable_label(system_voltage)}, red + black", round(dc_total), "m"),
         BomLine("DC connector pair", "MC4-compatible, matched to the module", system.n_strings * 2, "pairs"),
         BomLine("AC cable", f"Inverter to ACDB, sized for {_i_ac(inv):.0f} A at {inv.v_out_v or 415:.0f} V AC",
                 round(ac_cable_m * system.n_inverters), "m"),
