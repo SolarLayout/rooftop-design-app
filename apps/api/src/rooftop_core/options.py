@@ -92,7 +92,9 @@ def make_option(pre, layout, module, mm, inv, losses, roof, n, s, k, ranked, cus
 
 
 def build_options(pre: Precomputed, layout: Layout, module: Module, mm: ModuleModel, inv: Inverter,
-                  rng: SeriesRange, losses: Losses, roof: Roof, max_options: int = 5) -> list[StringOption]:
+                  rng: SeriesRange, losses: Losses, roof: Roof, max_options: int = 5,
+                  on_option=None) -> list[StringOption]:
+    """*on_option* hears (done, total) after every option that is simulated."""
     if not rng.ok:
         return []
     candidates = sorted({rng.n_nominal, rng.n_max, max(rng.n_min, rng.n_max - 1)}, reverse=True)
@@ -120,12 +122,15 @@ def build_options(pre: Precomputed, layout: Layout, module: Module, mm: ModuleMo
         combos.append((n, avail, k_all))
     seen, opts = set(), []
     ranked_cache: dict[int, list[PVString]] = {}
+    total = len({c for c in combos if c[1] >= 1})
     for n, s, k in combos:
         if (n, s, k) in seen or s < 1:
             continue
         seen.add((n, s, k))
         ranked = ranked_cache.setdefault(n, ranked_strings(pre, layout, n))
         opts.append(make_option(pre, layout, module, mm, inv, losses, roof, n, s, k, ranked))
+        if on_option:
+            on_option(len(opts), total)
     opts.sort(key=lambda o: (not o.ok, -o.result.energy_mwh))
     opts = opts[:max_options]
     for i, o in enumerate(opts):

@@ -76,7 +76,11 @@ def row_fraction(layout: Layout, elev: np.ndarray, az: np.ndarray) -> np.ndarray
     return out
 
 
-def object_fraction(layout: Layout, roof: Roof, elev: np.ndarray, az: np.ndarray) -> np.ndarray:
+def object_fraction(layout: Layout, roof: Roof, elev: np.ndarray, az: np.ndarray, on_part=None) -> np.ndarray:
+    """(hours, modules) beam fraction shaded by the obstacles and the parapet.
+
+    *on_part* hears (done, total) after every distinct position of the sun that is worked out.
+    """
     mods = layout.modules
     n_h, n_m = len(elev), len(mods)
     out = np.zeros((n_h, n_m), dtype=np.float32)
@@ -92,6 +96,7 @@ def object_fraction(layout: Layout, roof: Roof, elev: np.ndarray, az: np.ndarray
     eb = np.round(elev / EL_BIN).astype(int)
     ab = np.round(az / AZ_BIN).astype(int)
     cache: dict[tuple[int, int], np.ndarray] = {}
+    total = len(set(zip(eb[day].tolist(), ab[day].tolist(), strict=True))) if on_part else 0
     for h in np.where(day)[0]:
         key = (eb[h], ab[h])
         row = cache.get(key)
@@ -108,16 +113,20 @@ def object_fraction(layout: Layout, roof: Roof, elev: np.ndarray, az: np.ndarray
                     inter = shapely.area(shapely.intersection(polys[cand], sh))
                     row[cand] = inter / areas[cand]
             cache[key] = row
+            if on_part:
+                on_part(len(cache), total)
         out[h] = row
     return out
 
 
 def compute(layout: Layout, roof: Roof, module: Module, orientation: str,
-            elev: np.ndarray, az: np.ndarray, horizon: list[tuple[float, float]] | None = None) -> ShadingResult:
+            elev: np.ndarray, az: np.ndarray, horizon: list[tuple[float, float]] | None = None,
+            on_part=None) -> ShadingResult:
+    """*on_part* hears (done, total) while the shadows of the obstacles are worked out: nearly all of the time."""
     elev = np.asarray(elev, dtype=float)
     az = np.asarray(az, dtype=float)
     f_row = row_fraction(layout, elev, az)
-    f_obj = object_fraction(layout, roof, elev, az)
+    f_obj = object_fraction(layout, roof, elev, az, on_part)
     f_lin = 1.0 - (1.0 - f_row) * (1.0 - f_obj)
     e_row = electrical_rule(f_row, orientation, module.half_cell, module.n_diodes)
     e_obj = electrical_rule(f_obj, orientation, module.half_cell, module.n_diodes)

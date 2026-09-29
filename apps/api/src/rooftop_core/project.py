@@ -254,19 +254,19 @@ class Design:
             report.begin(progress.loading_weather(source), progress.WEATHER_AT * share)
             self.load_weather()
         if self.pre is None:
-            report.begin(progress.SHADING, progress.SHADING_AT * share)
-            shading = self._shading()
+            report.begin(progress.SHADING, progress.SHADING_AT * share, until=progress.LOSSES_AT * share)
+            shading = self._shading(report.part)
             report.begin(progress.LOSSES, progress.LOSSES_AT * share)
             self.pre = precompute(self.weather, self.layout, self.p.roof, self.module, self.p.array.orientation,
                                   self.p.losses, shading=shading)
 
-    def _shading(self) -> shading_mod.ShadingResult:
+    def _shading(self, on_part: progress.PartCallback | None = None) -> shading_mod.ShadingResult:
         """Hourly shading of every module, with the sun where precompute puts it."""
         def compute() -> shading_mod.ShadingResult:
             sun = wx.solar_position(self.weather)
             return shading_mod.compute(self.layout, self.p.roof, self.module, self.p.array.orientation,
                                        sun["apparent_elevation"].to_numpy(), sun["azimuth"].to_numpy(),
-                                       self.weather.horizon)
+                                       self.weather.horizon, on_part=on_part)
 
         if self.memo is None:
             return compute()
@@ -281,17 +281,19 @@ class Design:
         self._prepare(report, share=progress.OPTIONS_AT)
         rng = self.size_series()
         if rng is not None:
-            report.begin(progress.OPTIONS, progress.OPTIONS_AT)
-            self._build_options(rng)
+            report.begin(progress.OPTIONS, progress.OPTIONS_AT, until=1.0)
+            self._build_options(rng, report.part)
         else:
             self.options = []
         report.finish(progress.OPTIONS if rng is not None else progress.LOSSES)
         return self.options
 
-    def _build_options(self, rng: SeriesRange) -> None:
+    def _build_options(self, rng: SeriesRange, on_part: progress.PartCallback | None = None) -> None:
         def build() -> list[StringOption]:
+            more = 1 if self.p.custom else 0       # the custom option is simulated after the others
+            heard = (lambda done, total: on_part(done, total + more)) if on_part else None
             options = build_options(self.pre, self.layout, self.module, self.mm, self.inverter, rng,
-                                    self.p.losses, self.p.roof)
+                                    self.p.losses, self.p.roof, on_option=heard)
             if self.p.custom:
                 n, s, k = self.p.custom
                 options.append(custom_option(self.pre, self.layout, self.module, self.mm, self.inverter,
