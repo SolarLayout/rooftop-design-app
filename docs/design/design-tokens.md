@@ -1,11 +1,22 @@
 # Design tokens
 
-The values of the approved mockups, named. Phase 3 implements them as CSS variables in
-`apps/web/app/globals.css` (mapped into Tailwind 4 with `@theme inline`) and, for the 3D scene, as a TypeScript
-palette. Components use the names, never the values.
+The values of the approved mockups, named. They are CSS variables in `apps/web/app/globals.css`, mapped into
+Tailwind 4 with `@theme inline`. Components use the names, never the values.
 
 Theme: "Dusk" (dark) is the only theme filled in. Names are theme-neutral so a light theme is a second set of
-values.
+values. Colours and shadows belong to the theme (`[data-theme="dusk"]`); everything else is the same in every
+theme (`:root`).
+
+## How this document and the code are held together
+
+`apps/web/app/globals.test.ts` reads this document and `globals.css` and fails when they differ.
+
+- A row whose first cell is a name in code that begins with `--` is a token. Its second cell is the value,
+  exactly as it is written in the CSS.
+- In the table of type styles a row is five variables: the size under the name itself, and `--line-height`,
+  `--letter-spacing`, `--font-weight` and `--font-family` after it (`--text-page--line-height`).
+- Every token is in the CSS with the same value. Every variable of the CSS is a token here.
+- A value that is missing is added here first, then to the CSS, in the same pull request as its first use.
 
 ## Colour: surfaces and lines
 
@@ -53,21 +64,30 @@ the reason.
 | `--color-data-gain` | `#3987E5` | Gains in the loss chain; single-series bars and lines |
 | `--color-data-loss` | `#D95926` | Losses in the loss chain |
 | `--color-data-zero` | `#7C8696` | A step of zero |
-| `--color-series-1` to `--color-series-6` | `#3987E5`, `#D95926`, `#199E70`, `#C98500`, `#D55181`, `#008300` | Categories in this fixed order: MPPT 1 to 6, inverters |
+| `--color-series-1` | `#3987E5` | First category: MPPT 1, inverter 1 |
+| `--color-series-2` | `#D95926` | Second category |
+| `--color-series-3` | `#199E70` | Third category |
+| `--color-series-4` | `#C98500` | Fourth category |
+| `--color-series-5` | `#D55181` | Fifth category |
+| `--color-series-6` | `#008300` | Sixth category |
 | `--color-series-unused` | `#8C93A0` | Positions not used |
 
-Text never takes a series colour. A coloured mark beside the text carries identity.
+Categories take the series colours in this fixed order. Text never takes a series colour. A coloured mark
+beside the text carries identity.
 
 ## Colour: paper (report preview)
 
-| Token | Value |
-|---|---|
-| `--color-paper` | `#FBFAF7` |
-| `--color-paper-ink` | `#15171A` |
-| `--color-paper-muted` | `#4A4F57` |
-| `--color-paper-line` | `#DDD9CF` |
+| Token | Value | Use |
+|---|---|---|
+| `--color-paper` | `#FBFAF7` | The sheet |
+| `--color-paper-ink` | `#15171A` | Text on the sheet |
+| `--color-paper-muted` | `#4A4F57` | Secondary text on the sheet |
+| `--color-paper-line` | `#DDD9CF` | Lines on the sheet |
 
 ## 3D scene palette (TypeScript, `apps/web/lib/scene-palette.ts`)
+
+Not CSS: the 3D scene takes its colours from a TypeScript palette. It is written with the first 3D scene
+(Phase 5).
 
 | Name | Value | Use |
 |---|---|---|
@@ -87,34 +107,58 @@ Text never takes a series colour. A coloured mark beside the text carries identi
 
 ## Typography
 
-| Family | Weights | Use |
+### Families
+
+The font files are in the repo or in a pinned package (`apps/web/app/fonts`); nothing is fetched from another
+machine. Licence of all three: SIL Open Font License 1.1.
+
+| Token | Value | Use |
 |---|---|---|
-| Bricolage Grotesque | 600 | Display: page titles, lens titles, hero numbers |
-| Geist | 400, 500, 600 | Everything else |
-| Geist Mono | 400, 500 | Numbers, coordinates, file names, axis ticks |
+| `--font-display` | `var(--font-bricolage-grotesque), var(--font-geist-sans), system-ui, sans-serif` | Bricolage Grotesque: page titles, lens titles, lead numbers |
+| `--font-sans` | `var(--font-geist-sans), system-ui, sans-serif` | Geist: everything else |
+| `--font-mono` | `var(--font-geist-mono), ui-monospace, monospace` | Geist Mono: numbers, coordinates, file names, axis ticks |
 
-Loaded with `next/font/google`. Fallbacks: `system-ui, sans-serif` and `ui-monospace, monospace`.
+### Weights
 
-| Token | Family, weight | Size / line | Tracking | Use |
-|---|---|---|---|---|
-| `text-hero` | Bricolage 600 | 72 / 74 | -0.035em | Home headline |
-| `text-number-hero` | Bricolage 600 | 76 / 80 | -0.03em | Energy on Performance |
-| `text-page` | Bricolage 600 | 30 / 36 | -0.02em | Page title (44 / 48 on the IA and kit boards) |
-| `text-lens` | Bricolage 600 | 26 / 32 | -0.02em | Lens title, panel title (22 / 28 on phone) |
-| `text-number-tile` | Bricolage 600 | 34 / 38 | -0.02em | KPI tiles |
-| `text-number-vital` | Bricolage 600 | 26 / 30 | -0.02em | Energy in the vitals bar (22 / 26 on phone) |
-| `text-title` | Geist 600 | 16 / 22 | 0 | Card titles |
-| `text-body` | Geist 400 | 14 / 20 | 0 | Body on desktop |
-| `text-body-touch` | Geist 400 | 15 / 20 | 0 | Body on phone and tablet |
-| `text-strong` | Geist 500 or 600 | as body | 0 | Emphasis, button labels |
-| `text-small` | Geist 400 | 13 / 18 | 0 | Secondary lines |
-| `text-caption` | Geist 400 | 12 / 16 | 0 | Hints, labels of values |
-| `text-section` | Geist 500 | 12 / 16 | 0.06em, uppercase | Section labels in panels, colour text-3 |
-| `text-value` | Geist Mono 500 | 15 or 16 | 0 | Values in fields and vitals |
-| `text-value-small` | Geist Mono 400 or 500 | 12 or 13 | 0 | Table values, chips |
-| `text-tick` | Geist Mono 400 | 11 | 0 | Axis ticks, slider ticks |
+| Token | Value | Use |
+|---|---|---|
+| `--font-weight-regular` | `400` | Text |
+| `--font-weight-medium` | `500` | Emphasis, labels of secondary buttons, the active item |
+| `--font-weight-semibold` | `600` | Titles, labels of primary buttons |
 
-A unit follows its number in Geist 400, 12 px, colour text-2, separated by a space.
+### Type styles
+
+Each style is one utility, `type-` and its name (`type-page`, `type-value`). It sets family, weight, size, line
+height and tracking together.
+
+| Token | Family | Weight | Size | Line height | Tracking | Use |
+|---|---|---|---|---|---|---|
+| `--text-hero` | `--font-display` | `600` | `72px` | `74px` | `-0.035em` | Home headline |
+| `--text-number-hero` | `--font-display` | `600` | `76px` | `80px` | `-0.03em` | Energy on Performance |
+| `--text-page` | `--font-display` | `600` | `30px` | `36px` | `-0.02em` | Page title |
+| `--text-lens` | `--font-display` | `600` | `26px` | `32px` | `-0.02em` | Lens title, panel title |
+| `--text-lens-touch` | `--font-display` | `600` | `22px` | `28px` | `-0.02em` | Lens title, panel title on phone |
+| `--text-number-tile` | `--font-display` | `600` | `34px` | `38px` | `-0.02em` | KPI tiles |
+| `--text-number-vital` | `--font-display` | `600` | `26px` | `30px` | `-0.02em` | Energy in the vitals on desktop and tablet |
+| `--text-number-vital-touch` | `--font-display` | `600` | `22px` | `26px` | `-0.02em` | Energy in the vitals on phone |
+| `--text-title` | `--font-sans` | `600` | `16px` | `20px` | `0` | Card titles |
+| `--text-body` | `--font-sans` | `400` | `14px` | `20px` | `0` | Body on desktop |
+| `--text-body-touch` | `--font-sans` | `400` | `15px` | `20px` | `0` | Body on phone and tablet |
+| `--text-small` | `--font-sans` | `400` | `13px` | `20px` | `0` | Secondary lines |
+| `--text-caption` | `--font-sans` | `400` | `12px` | `20px` | `0` | Hints, labels of values, units |
+| `--text-section` | `--font-sans` | `500` | `12px` | `20px` | `0.06em` | Section labels in panels, uppercase, colour text-3 |
+| `--text-value-l` | `--font-mono` | `500` | `17px` | `20px` | `0` | Values in the vitals on tablet |
+| `--text-value` | `--font-mono` | `500` | `16px` | `20px` | `0` | Values in the vitals on desktop and phone |
+| `--text-value-s` | `--font-mono` | `500` | `15px` | `20px` | `0` | A value beside its label; the choices of a decision card |
+| `--text-value-field` | `--font-mono` | `500` | `14px` | `20px` | `0` | The value inside a field on desktop (`--text-value-s` on touch) |
+| `--text-value-small` | `--font-mono` | `400` | `13px` | `20px` | `0` | Table values, chips, the time of the time control |
+| `--text-value-xs` | `--font-mono` | `400` | `12px` | `20px` | `0` | Coordinates, file names, facts in mono |
+| `--text-tick` | `--font-mono` | `400` | `11px` | `20px` | `0` | Axis ticks, slider ticks, format badges |
+
+The line height is 20 px wherever the mockups state none: they set it once, on the page.
+Emphasis inside a style is a weight utility beside it (`type-body font-medium`).
+A unit follows its number in `type-caption`, colour text-2, separated by a space.
+Numbers are set with tabular figures.
 
 ## Spacing
 
@@ -122,44 +166,51 @@ Base 2 px. Steps in use: 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48,
 
 | Token | Value | Use |
 |---|---|---|
-| `--space-inline` | 8 | Icon to label |
-| `--space-field` | 8 | Between fields in a grid |
-| `--space-row` | 12 | Between rows in a section |
-| `--space-section` | 18 to 22 | Between sections in the inspector |
-| `--space-card` | 22 to 24 | Card padding (14 for compact cards) |
-| `--space-panel` | 20 | Inspector padding; inset of floating elements from the stage edge |
-| `--space-page-x` | 40 desktop, 20 tablet, 16 phone | Page side padding |
-| `--space-page-y` | 28 | Page top padding |
-| `--space-grid` | 16 | Gap between cards |
+| `--spacing` | `4px` | The unit of the spacing and size utilities: `gap-2` is 8 px, `h-10` is 40 px, a half step is 2 px |
+| `--space-inline` | `8px` | Icon to label |
+| `--space-field` | `8px` | Between fields in a grid |
+| `--space-row` | `12px` | Between rows in a section |
+| `--space-section` | `22px` | Between sections in the inspector |
+| `--space-card` | `24px` | Card padding |
+| `--space-card-compact` | `14px` | Padding of compact cards |
+| `--space-panel` | `20px` | Inspector padding; inset of floating elements from the stage edge |
+| `--space-page-x-phone` | `16px` | Page side padding on phone |
+| `--space-page-x-tablet` | `20px` | Page side padding on tablet |
+| `--space-page-x-desktop` | `40px` | Page side padding on desktop |
+| `--space-page-y` | `28px` | Page top padding |
+| `--space-grid` | `16px` | Gap between cards |
 
 ## Layout
 
-| Token | Value |
-|---|---|
-| Top bar height | 56 desktop and phone, 60 tablet |
-| Lens rail width | 72 |
-| Inspector width | 384 |
-| Handover list width | 440 |
-| Find and outline panel width | 380 |
-| Vitals bar height | 78 |
-| Bottom tab bar height | 72 |
-| Touch target, minimum | 44 by 44 on phone and tablet |
-| Breakpoints | phone under 640, tablet 640 to 1100, desktop over 1100 |
-| Reference widths | 390, 834, 1440 |
+| Token | Value | Use |
+|---|---|---|
+| `--breakpoint-tablet` | `640px` | Tablet from this width; phone below it |
+| `--breakpoint-desktop` | `1101px` | Desktop from this width: over 1100 |
+| `--size-topbar` | `56px` | Top bar height on desktop and phone |
+| `--size-topbar-tablet` | `60px` | Top bar height on tablet |
+| `--size-rail` | `72px` | Lens rail width |
+| `--size-inspector` | `384px` | Inspector width |
+| `--size-handover-list` | `440px` | Handover list width |
+| `--size-find-panel` | `380px` | Find and outline panel width |
+| `--size-vitals` | `78px` | Vitals bar height on desktop |
+| `--size-tabbar` | `72px` | Bottom tab bar height |
+| `--size-touch` | `44px` | Touch target, the least on phone and tablet, both ways |
+
+Reference widths: 390, 834, 1440.
 
 ## Radius
 
 | Token | Value | Use |
 |---|---|---|
-| `--radius-xs` | 6 | Inputs inside tables and the loss chain, format badges |
-| `--radius-seg` | 7 | Item inside a segmented control (9 to 10 on touch) |
-| `--radius-control` | 10 | Buttons, fields, segmented track |
-| `--radius-row` | 12 | List rows, option cards, stat tiles |
-| `--radius-card-s` | 14 | Compact cards, floating controls |
-| `--radius-bar` | 16 | Vitals bar, Home action cards, timeline |
-| `--radius-card` | 18 | Cards |
-| `--radius-panel` | 22 | Floating panels, top corners of the bottom sheet |
-| `--radius-full` | 9999 | Pills, switches, round buttons |
+| `--radius-xs` | `6px` | Inputs inside tables and the loss chain, format badges |
+| `--radius-seg` | `7px` | Item inside a segmented control |
+| `--radius-control` | `10px` | Buttons, fields, segmented track |
+| `--radius-row` | `12px` | List rows, option cards, stat tiles |
+| `--radius-card-s` | `14px` | Compact cards, floating controls |
+| `--radius-bar` | `16px` | Vitals bar, Home action cards, timeline |
+| `--radius-card` | `18px` | Cards |
+| `--radius-panel` | `22px` | Floating panels, top corners of the bottom sheet |
+| `--radius-full` | `9999px` | Pills, switches, round buttons |
 
 ## Elevation
 
@@ -179,34 +230,63 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--shadow-panel` | `inset 0 1px 0 rgba(255,255,255,.06), 0 2px 4px rgba(0,0,0,.4), 0 24px 64px rgba(0,0,0,.55)` | Large floating panels |
 | `--shadow-knob` | `0 1px 3px rgba(0,0,0,.5)` | Switch knob |
 | `--shadow-handle` | `0 2px 6px rgba(0,0,0,.6)` | Map and slider handles |
-| `--ring-focus` | `2px solid` accent, offset 2 px | Keyboard focus on any control |
 | `--halo-focus` | `0 0 0 3px rgba(255,176,32,.18)` | Focused field, selected card (with an accent border) |
+
+## Focus
+
+| Token | Value | Use |
+|---|---|---|
+| `--ring-focus` | `2px solid var(--color-accent)` | Outline of any control that has the keyboard focus |
+| `--ring-focus-offset` | `2px` | Its distance from the control |
 
 ## Motion
 
 | Token | Value | Use |
 |---|---|---|
 | `--ease-out` | `cubic-bezier(.2,.8,.2,1)` | Default easing |
-| `--duration-press` | 160 ms | Hover, press, focus |
-| `--duration-panel` | 240 ms | Panels, sheets, drawers |
-| `--duration-number` | 600 ms | A number rolling to a new result |
-| `--duration-fill` | 900 ms | Modules filling the roof, row by row |
-| `--duration-tilt` | 1200 ms | Map tilting into the 3D roof |
-| `--duration-pulse` | 2000 to 2400 ms, infinite | Saved dot, the corner being edited |
+| `--duration-press` | `160ms` | Hover, press, focus |
+| `--duration-panel` | `240ms` | Panels, sheets, drawers |
+| `--duration-number` | `600ms` | A number rolling to a new result |
+| `--duration-fill` | `900ms` | Modules filling the roof, row by row |
+| `--duration-tilt` | `1200ms` | Map tilting into the 3D roof |
+| `--duration-spin` | `900ms` | One turn of the ring beside a value that is updating |
+| `--duration-pulse-saved` | `2400ms` | One pulse of the saved dot |
+| `--duration-pulse-corner` | `2000ms` | One pulse of the corner being edited |
+| `--shift-press` | `1px` | Hover raises a control by it, press lowers it by it |
+| `--scale-press` | `0.985` | Size of a control while it is pressed |
+| `--brightness-hover` | `1.14` | Brightness of a control under the pointer |
 
-Hover raises a control by 1 px and brightens it. Press lowers it by 1 px and scales it to 0.985.
 Under `prefers-reduced-motion: reduce` every transition and animation is removed; state changes cut.
 
 ## Layers
 
 | Token | Value | Use |
 |---|---|---|
-| `--z-stage` | 0 | 3D canvas, map |
-| `--z-stage-overlay` | 1 | Titles, labels and callouts over the stage |
-| `--z-float` | 10 | Floating controls, vitals |
-| `--z-sheet` | 20 | Bottom sheet, drawers |
-| `--z-dialog` | 30 | Dialogs |
-| `--z-toast` | 40 | Toasts |
+| `--z-stage` | `0` | 3D canvas, map |
+| `--z-stage-overlay` | `1` | Titles, labels and callouts over the stage |
+| `--z-float` | `10` | Floating controls, vitals |
+| `--z-sheet` | `20` | Bottom sheet, drawers |
+| `--z-dialog` | `30` | Dialogs |
+| `--z-toast` | `40` | Toasts |
+
+## In code
+
+| Tokens | Utilities | Example |
+|---|---|---|
+| `--color-*` | every colour utility, by the name after `--color-` | `bg-surface-1`, `text-text-2`, `border-line` |
+| Type styles | `type-` and the name | `type-page`, `type-value` |
+| `--font-weight-*` | `font-regular`, `font-medium`, `font-semibold` | |
+| `--spacing` | every spacing and size utility, in steps | `gap-2`, `h-10`, `px-3.5` |
+| `--space-*`, `--size-*` | the same utilities, by name | `gap-row`, `p-panel`, `h-topbar`, `w-inspector`, `min-h-touch` |
+| `--breakpoint-*` | `tablet:`, `desktop:` | `desktop:flex` |
+| `--radius-*` | `rounded-` and the name | `rounded-control` |
+| `--shadow-*`, `--halo-focus` | `shadow-` and the name | `shadow-raised`, `shadow-halo-focus` |
+| `--ring-focus`, `--ring-focus-offset` | `focus-ring` | on every control |
+| `--ease-out`, `--duration-*` | `ease-out`, `duration-` and the name | `duration-press` |
+| `--z-*` | `z-` and the name | `z-float` |
+
+Tailwind's own palette, sizes of type, radii and shadows do not exist in this app: a utility that is not made
+of a token makes no CSS.
 
 ## Icons
 Stroke icons, 24 by 24 view box, stroke 1.7 to 2, round caps and joins, `currentColor`. Sizes 14, 16, 18, 20, 22.
