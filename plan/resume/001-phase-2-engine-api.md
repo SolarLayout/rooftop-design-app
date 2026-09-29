@@ -10,6 +10,7 @@ Continue the SolarLayout Rooftop web rebuild in this repo. This session: Phase 2
 You have no memory of earlier sessions. Everything you need is in the repo.
 
 Read first, in this order: CLAUDE.md, plan/STATE.md, plan/SESSIONS.md, plan/README.md,
+plan/sessions/001/record.md,
 plan/phase-02-engine-api.md, plan/reference/functional-inventory.md, plan/reference/demo-numbers.md.
 Then follow "Start of a session" in plan/SESSIONS.md, including the checks of git, open pull
 requests, the running stacks and a green `bun check`.

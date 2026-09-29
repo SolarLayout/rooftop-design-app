@@ -75,6 +75,7 @@ plan/
   STATE.md                      where the work stands today; read first, update last
   SESSIONS.md                   how a session starts, works and ends
   resume/                       resume prompts, one per resumption, written when the owner asks
+  sessions/NNN/                 record of each past session and the owner's messages, word for word
   phase-NN-*.md                 one per phase: goal, scope, deliverables, acceptance
   reference/
     functional-inventory.md     every input, output, export and message of the desktop app

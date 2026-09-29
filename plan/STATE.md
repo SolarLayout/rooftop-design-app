@@ -65,6 +65,12 @@ Nothing. `main` is green and there is no open branch or pull request.
 | Real PAN and OND files are in `apps/api/tests/fixtures/equipment/` with a README; no test uses them yet | Phase 2, part 2 |
 | Decision D24: the demo shows the real equipment names. The mockups already do. The engine still bundles `Test.PAN` and `Test-S.ond`; the change is in the Phase 2 work order | Phase 2, part 2 |
 
+## Past sessions
+
+| # | Date | Record |
+|---|---|---|
+| 1 | 2026-09-29 | `plan/sessions/001/record.md`, `plan/sessions/001/owner-messages.md` |
+
 ## Closed, do not reopen
 
 - Legal check on the map stack: approved by the owner (D18).
