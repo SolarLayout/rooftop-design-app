@@ -59,6 +59,8 @@ Step 2. Build part 2, each as its own pull request, test first:
     README that says what each covers and which variants to make. Use them to test the paths the
     bundled samples never reach: monofacial module, a module that is not twin half-cell, a stated
     Voc coefficient, a central inverter, missing current limits, a 1000 V equipment limit.
+  - Decision D25: DC cable is labelled by the system voltage as chosen. That is what the code
+    does; make sure a test pins 600, 1000 and 1500 V.
   - Decide what to do about the httpx deprecation warning from starlette's TestClient.
   - After each change to routes or models: `bun gen:api`, commit packages/api-types.
 
@@ -76,6 +78,9 @@ Start by telling me which case of step 1 you found and what you will do.
 ```
 
 ## Notes for the owner
+
+- Before pasting, add the desktop app to the session so it can be read for comparison:
+  `/add-dir /Users/arunkpatra/codebase/rooftop-design`. The 3D reference project is not needed in this phase.
 
 - Part 1 was reviewed and merged by session 1 (PR #7). The session will find case a in step 1 and go on to
   step 2.
