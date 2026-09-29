@@ -6,6 +6,7 @@ import { FileDrops } from "./FileDrops";
 import { KitPage } from "./Pages";
 import { Selects } from "./Selects";
 import { Sheets } from "./Sheets";
+import { Tables } from "./Tables";
 import { TooltipsAndToasts } from "./TooltipsAndToasts";
 import { Waiting } from "./Waiting";
 
@@ -23,6 +24,7 @@ export function KitPartTwo() {
         </div>
         <div className="flex flex-col gap-grid">
           <FileDrops onPress={setLastPressed} />
+          <Tables />
           <Waiting />
           <TooltipsAndToasts onPress={setLastPressed} />
         </div>
