@@ -198,6 +198,54 @@ def test_a_pan_in_the_project_that_is_none_is_refused(client, light_demo):
     }
 
 
+def test_a_pan_without_the_size_of_the_module_cannot_be_laid_out(client, light_demo):
+    lines = light_demo["pan_text"].splitlines()
+    without = [line for line in lines if not line.strip().startswith(("Width=", "Height="))]
+    assert len(without) == len(lines) - 2
+    light_demo.update(pan_path="NoSize.PAN", pan_text="\r\n".join(without))
+
+    response = client.post("/layout", json=light_demo)
+
+    assert response.status_code == 422
+    assert error_of(response) == {
+        "code": "module_without_size",
+        "message": "NoSize.PAN gives no size of the module (Width and Height). "
+        "The layout needs it: choose a PAN file that has it.",
+        "field": "pan_text",
+    }
+
+
+def test_an_outline_that_crosses_itself_is_refused(client, light_demo):
+    light_demo["roof"]["outline"] = [[0, 0], [90, 40], [90, 0], [0, 40]]
+
+    response = client.post("/layout", json=light_demo)
+
+    assert response.status_code == 422
+    assert error_of(response) == {
+        "code": "roof_outline_crosses_itself",
+        "message": "The roof outline crosses itself. Give the corners in order around the roof.",
+        "field": "roof.outline",
+    }
+
+
+@pytest.mark.parametrize(
+    "outline",
+    [
+        [[0, 0], [0, 40], [90, 40], [90, 0]],
+        [[0, 0], [90, 0], [90, 40], [0, 40], [0, 0]],
+        [[0, 0], [90, 0], [90, 0], [90, 40], [0, 40]],
+    ],
+    ids=["clockwise", "closed", "corner given twice"],
+)
+def test_an_outline_in_any_usual_form_is_the_same_roof(client, light_demo, outline):
+    light_demo["roof"]["outline"] = outline
+
+    response = client.post("/layout", json=light_demo)
+
+    assert response.status_code == 200
+    assert response.json()["readouts"]["positions"] == 790
+
+
 def test_an_outline_without_area_is_refused(client, light_demo):
     light_demo["roof"]["outline"] = [[0, 0], [10, 0], [20, 0]]
 

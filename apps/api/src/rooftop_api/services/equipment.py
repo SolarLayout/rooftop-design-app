@@ -3,13 +3,30 @@
 from rooftop_api import convert, schemas
 from rooftop_api.errors import UNPROCESSABLE, ApiError
 from rooftop_api.services.uploads import bytes_of, file_name
-from rooftop_core.io.pvsyst import Inverter, decode_pvsyst, parse_ond, parse_pan
+from rooftop_core.io.pvsyst import Inverter, Module, decode_pvsyst, parse_ond, parse_pan
 from rooftop_core.onediode import ModuleModel
 
 FROM_THE_OND = "From the OND file."
 NO_CURRENT_AT_ALL = (
     "Not in the OND, and the OND has no IMaxDC to work it out from. Enter the datasheet value."
 )
+
+
+def has_size(module: Module) -> bool:
+    return module.length_m > 0 and module.width_m > 0
+
+
+def no_size_message(name: str) -> str:
+    return (
+        f"{name} gives no size of the module (Width and Height). "
+        "The layout needs it: choose a PAN file that has it."
+    )
+
+
+def module_notes(module: Module, warning: str, name: str) -> list[str]:
+    """What the user should know about a module: the note on its Voc coefficient, and a missing size."""
+    notes = [warning] if warning else []
+    return notes if has_size(module) else [*notes, no_size_message(name)]
 
 
 def content_of(file: schemas.EquipmentFile) -> tuple[str, str]:
@@ -31,7 +48,7 @@ def read_module(file: schemas.EquipmentFile) -> schemas.ModuleResponse:
         file=name,
         module=convert.module_from_engine(module),
         coefficients=convert.coefficients_from_engine(coefficients),
-        notes=[coefficients.warning] if coefficients.warning else [],
+        notes=module_notes(module, coefficients.warning, name),
         text=text,
     )
 

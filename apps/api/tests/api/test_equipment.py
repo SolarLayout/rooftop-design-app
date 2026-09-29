@@ -88,6 +88,21 @@ def test_a_voc_coefficient_in_the_file_is_used_and_needs_no_note(client):
     assert body["notes"] == []
 
 
+def test_a_pan_without_the_size_of_the_module_is_read_with_a_note(client):
+    without = [line for line in PAN_TEXT.splitlines() if not line.strip().startswith(("Width=", "Height="))]
+
+    response = client.post("/equipment/module", json={"name": "NoSize.PAN", "text": "\r\n".join(without)})
+
+    assert response.status_code == 200
+    body = response.json()
+    assert (body["module"]["length_m"], body["module"]["width_m"]) == (0, 0)
+    assert body["notes"] == [
+        VOC_NOTE,
+        "NoSize.PAN gives no size of the module (Width and Height). "
+        "The layout needs it: choose a PAN file that has it.",
+    ]
+
+
 def test_only_the_name_of_the_file_is_kept_of_a_path(client):
     body = client.post(
         "/equipment/module", json={"name": "C:\\Users\\p\\PAN\\Test.PAN", "text": PAN_TEXT}
