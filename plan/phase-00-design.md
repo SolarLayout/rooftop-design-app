@@ -1,7 +1,7 @@
 # Phase 0: IA and visual design
 
 **Status:** direction approved 2026-09-29 (IA and look); remaining screens still to draw. **Mockups:** https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy (private to the owner).
-PNG renders are in `design-previews/`.
+The design system, mockup sources and previews are in `docs/design/`.
 
 ## Goal
 Agree the information architecture and the look before any app code is written. The app is then built to the

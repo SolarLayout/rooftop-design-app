@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Controls: depth and motion</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:Geist,system-ui,sans-serif;background:#0B0E13;color:#F2F4F7}
+a{color:#A9B2C0;text-decoration:none}a:hover{color:#F2F4F7}
+button,input{font:inherit;color:inherit}
+code{font-family:'Geist Mono',ui-monospace,monospace}
+button,a,input{transition:transform .16s cubic-bezier(.2,.8,.2,1),box-shadow .16s ease,background-color .16s ease,filter .16s ease}
+button:hover{filter:brightness(1.14)}
+button:active{transform:translateY(1px) scale(.985)}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #FFB020;outline-offset:2px}
+@keyframes live{0%,100%{box-shadow:0 0 0 0 rgba(61,214,160,.5)}50%{box-shadow:0 0 0 5px rgba(61,214,160,0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</helmet>
+<div style="width: 1440px; height: 640px; box-sizing: border-box; display: flex; flex-direction: column; gap: 28px; padding: 48px 56px; background: #0B0E13; color: #F2F4F7; overflow: hidden; font-size: 14px; line-height: 20px">
+<div style="display: flex; align-items: flex-end; gap: 40px">
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', Geist, sans-serif; font-weight: 600; font-size: 44px; line-height: 48px; letter-spacing: -0.03em">Controls, depth and motion</h1>
+<p style="margin: 0 0 4px; max-width: 520px; color: #A9B2C0">Light comes from above. What you press is raised. What you type into is recessed. Hover and press these in Play.</p>
+</div>
+
+<div style="flex-grow: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px">
+
+<section style="display: flex; flex-direction: column; gap: 18px; padding: 24px; background: #12161D; border: 1px solid #232A36; border-radius: 18px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 1px 2px rgba(0,0,0,0.35), 0 16px 40px rgba(0,0,0,0.28)">
+<h2 style="margin: 0; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #7C8696">Raised: buttons</h2>
+<div style="display: grid; grid-template-columns: 84px repeat(3, minmax(0, 1fr)); gap: 12px; align-items: center">
+<span></span><span style="font-size: 12px; color: #A9B2C0">Rest</span><span style="font-size: 12px; color: #A9B2C0">Hover</span><span style="font-size: 12px; color: #A9B2C0">Pressed</span>
+<span style="color: #A9B2C0">Primary</span>
+<button style="height: 40px; background: #FFB020; color: #1A1204; border: 0; border-radius: 10px; font-weight: 600; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(0,0,0,0.18), 0 1px 2px rgba(0,0,0,0.5), 0 8px 22px rgba(255,176,32,0.24)">Export</button>
+<button style="height: 40px; background: #FFBE47; color: #1A1204; border: 0; border-radius: 10px; font-weight: 600; cursor: pointer; transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(0,0,0,0.18), 0 2px 4px rgba(0,0,0,0.5), 0 12px 30px rgba(255,176,32,0.36)">Export</button>
+<button style="height: 40px; background: #E99C12; color: #1A1204; border: 0; border-radius: 10px; font-weight: 600; cursor: pointer; transform: translateY(1px); box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 1px 1px rgba(0,0,0,0.5)">Export</button>
+<span style="color: #A9B2C0">Secondary</span>
+<button style="height: 40px; background: #151A22; border: 1px solid #2F3847; border-radius: 10px; font-weight: 500; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(0,0,0,0.45), 0 4px 12px rgba(0,0,0,0.25)">Replace</button>
+<button style="height: 40px; background: #1B212B; border: 1px solid #3B4658; border-radius: 10px; font-weight: 500; cursor: pointer; transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.09), 0 2px 4px rgba(0,0,0,0.45), 0 8px 20px rgba(0,0,0,0.35)">Replace</button>
+<button style="height: 40px; background: #10141A; border: 1px solid #2F3847; border-radius: 10px; font-weight: 500; cursor: pointer; transform: translateY(1px); box-shadow: inset 0 2px 4px rgba(0,0,0,0.5)">Replace</button>
+<span style="color: #A9B2C0">Quiet</span>
+<button style="height: 40px; background: transparent; border: 0; border-radius: 10px; color: #A9B2C0; cursor: pointer">Undo</button>
+<button style="height: 40px; background: #181D26; border: 0; border-radius: 10px; color: #F2F4F7; cursor: pointer">Undo</button>
+<button style="height: 40px; background: #10141A; border: 0; border-radius: 10px; color: #F2F4F7; cursor: pointer; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5)">Undo</button>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #7C8696">Choice</h2>
+<div style="display: flex; align-items: center; gap: 16px">
+<div style="display: flex; gap: 2px; padding: 3px; background: #090C10; border: 1px solid #232A36; border-radius: 10px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.65), 0 1px 0 rgba(255,255,255,0.04)">
+<button aria-pressed="true" style="height: 30px; padding: 0 14px; background: #232A36; border: 0; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 1px 3px rgba(0,0,0,0.55)">Portrait</button>
+<button style="height: 30px; padding: 0 14px; background: transparent; border: 0; border-radius: 7px; color: #A9B2C0; font-size: 13px; cursor: pointer">Landscape</button>
+</div>
+<button role="switch" aria-checked="true" aria-label="Example switch, on" style="width: 44px; height: 26px; padding: 3px; display: flex; justify-content: flex-end; background: #FFB020; border: 0; border-radius: 13px; cursor: pointer; box-shadow: inset 0 1px 3px rgba(0,0,0,0.45)"><span style="width: 20px; height: 20px; border-radius: 50%; background: #1A1204; box-shadow: 0 1px 3px rgba(0,0,0,0.5)"></span></button>
+<button role="switch" aria-checked="false" aria-label="Example switch, off" style="width: 44px; height: 26px; padding: 3px; display: flex; justify-content: flex-start; background: #2F3847; border: 0; border-radius: 13px; cursor: pointer; box-shadow: inset 0 1px 3px rgba(0,0,0,0.45)"><span style="width: 20px; height: 20px; border-radius: 50%; background: #A9B2C0; box-shadow: 0 1px 3px rgba(0,0,0,0.5)"></span></button>
+</div>
+<label for="k-sl" style="color: #A9B2C0">Slider</label>
+<input id="k-sl" type="range" min="0" max="45" value="15" style="width: 100%; accent-color: #FFB020">
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: #12161D; border: 1px solid #232A36; border-radius: 18px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 1px 2px rgba(0,0,0,0.35), 0 16px 40px rgba(0,0,0,0.28)">
+<h2 style="margin: 0; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #7C8696">Recessed: fields</h2>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 12px; color: #A9B2C0">Rest</span>
+<div style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px; background: #090C10; border: 1px solid #232A36; border-radius: 10px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.65), 0 1px 0 rgba(255,255,255,0.04)"><label for="k-a" style="flex-grow: 1; color: #A9B2C0">Setback</label><input id="k-a" value="1.00" style="width: 64px; background: transparent; border: 0; outline: 0; text-align: right; font-family: 'Geist Mono', monospace; font-weight: 500"><span style="color: #A9B2C0; font-size: 12px">m</span></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 12px; color: #A9B2C0">Focus</span>
+<div style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px; background: #090C10; border: 1px solid #FFB020; border-radius: 10px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.65), 0 0 0 3px rgba(255,176,32,0.18)"><label for="k-b" style="flex-grow: 1; color: #A9B2C0">Setback</label><input id="k-b" value="1.25" style="width: 64px; background: transparent; border: 0; outline: 0; text-align: right; font-family: 'Geist Mono', monospace; font-weight: 500"><span style="color: #A9B2C0; font-size: 12px">m</span></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 12px; color: #A9B2C0">Needs your decision</span>
+<div style="display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 12px; background: #1E1A10; border: 1px solid #3A3220; border-radius: 10px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05)">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFB020" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg>
+<span style="flex-grow: 1">System voltage</span>
+<div role="group" aria-label="System voltage" style="display: flex; gap: 2px; padding: 3px; background: #090C10; border: 1px solid #232A36; border-radius: 10px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.65)">
+<button style="height: 30px; padding: 0 10px; background: transparent; border: 0; border-radius: 7px; font-family: 'Geist Mono', monospace; font-size: 13px; cursor: pointer">600</button>
+<button style="height: 30px; padding: 0 10px; background: transparent; border: 0; border-radius: 7px; font-family: 'Geist Mono', monospace; font-size: 13px; cursor: pointer">1000</button>
+<button style="height: 30px; padding: 0 10px; background: transparent; border: 0; border-radius: 7px; font-family: 'Geist Mono', monospace; font-size: 13px; cursor: pointer">1500 V</button>
+</div>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #7C8696">Status marks</h2>
+<div style="display: flex; align-items: center; gap: 20px">
+<span style="display: flex; align-items: center; gap: 8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3DD6A0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>Fits</span>
+<span style="display: flex; align-items: center; gap: 8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFB020" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg>Does not fit, with the reason</span>
+</div>
+<div style="display: flex; align-items: center; gap: 20px">
+<span style="display: flex; align-items: center; gap: 8px"><span style="width: 7px; height: 7px; border-radius: 50%; background: #3DD6A0; animation: live 2.4s ease-in-out infinite"></span>Saved</span>
+<span style="display: flex; align-items: center; gap: 8px"><span style="width: 16px; height: 16px; box-sizing: border-box; border-radius: 50%; border: 2px solid #2F3847; border-top-color: #FFB020; animation: spin 0.9s linear infinite"></span>Updating energy</span>
+</div>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 14px; padding: 24px; background: #12161D; border: 1px solid #232A36; border-radius: 18px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 1px 2px rgba(0,0,0,0.35), 0 16px 40px rgba(0,0,0,0.28)">
+<h2 style="margin: 0; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #7C8696">Three heights</h2>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px">
+<div style="display: flex; flex-direction: column; justify-content: flex-end; height: 84px; box-sizing: border-box; padding: 12px; background: #181D26; border-radius: 12px"><span style="font-weight: 500">Flat</span><span style="font-size: 12px; color: #A9B2C0">Rows, tiles</span></div>
+<div style="display: flex; flex-direction: column; justify-content: flex-end; height: 84px; box-sizing: border-box; padding: 12px; background: #181D26; border: 1px solid #2A313D; border-radius: 12px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 1px 2px rgba(0,0,0,0.35), 0 10px 24px rgba(0,0,0,0.35)"><span style="font-weight: 500">Raised</span><span style="font-size: 12px; color: #A9B2C0">Cards</span></div>
+<div style="display: flex; flex-direction: column; justify-content: flex-end; height: 84px; box-sizing: border-box; padding: 12px; background: #181D26; border: 1px solid #2A313D; border-radius: 12px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 2px 4px rgba(0,0,0,0.4), 0 24px 56px rgba(0,0,0,0.6)"><span style="font-weight: 500">Floating</span><span style="font-size: 12px; color: #A9B2C0">Over the roof</span></div>
+</div>
+<h2 style="margin: 8px 0 0; font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #7C8696">Motion</h2>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 80px; row-gap: 0; font-size: 13px">
+<span style="padding: 9px 0; border-top: 1px solid #232A36">Hover and press</span><code style="padding: 9px 0; border-top: 1px solid #232A36; text-align: right; color: #A9B2C0">160 ms</code>
+<span style="padding: 9px 0; border-top: 1px solid #232A36">Panels and sheets slide</span><code style="padding: 9px 0; border-top: 1px solid #232A36; text-align: right; color: #A9B2C0">240 ms</code>
+<span style="padding: 9px 0; border-top: 1px solid #232A36">Numbers roll to a new result</span><code style="padding: 9px 0; border-top: 1px solid #232A36; text-align: right; color: #A9B2C0">600 ms</code>
+<span style="padding: 9px 0; border-top: 1px solid #232A36">Map tilts into the 3D roof</span><code style="padding: 9px 0; border-top: 1px solid #232A36; text-align: right; color: #A9B2C0">1.2 s</code>
+<span style="padding: 9px 0; border-top: 1px solid #232A36">Modules fill the roof, row by row</span><code style="padding: 9px 0; border-top: 1px solid #232A36; text-align: right; color: #A9B2C0">0.9 s</code>
+<span style="padding: 9px 0; border-top: 1px solid #232A36; border-bottom: 1px solid #232A36">Reduced motion: cuts, no movement</span><code style="padding: 9px 0; border-top: 1px solid #232A36; border-bottom: 1px solid #232A36; text-align: right; color: #A9B2C0">0 ms</code>
+</div>
+</section>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":640}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

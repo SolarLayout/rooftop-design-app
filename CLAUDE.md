@@ -19,6 +19,14 @@ first, then the first phase that is not done. Ask the owner domain questions one
 9. Style only through design tokens (`apps/web/app/globals.css`). No raw colour, size or shadow value in
    a component.
 
+## Design
+The design is approved and is the specification for every screen. Read `docs/design/README.md` before any UI
+work, and `apps/web/CLAUDE.md` for the rules of the web app.
+- Design canvas: https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy (private to the owner unless shared)
+- In the repo: `docs/design/` holds the information architecture, the tokens, the components, the UX and
+  visual guidelines, the mockup sources and their previews.
+- A screen or state without a mockup is designed and approved first, then built.
+
 ## Engineering standard
 This is production software, not a prototype. The owner's words: "this is not throwaway code".
 - Test-driven: write the failing test first, make it pass, then tidy. No behaviour lands without a test

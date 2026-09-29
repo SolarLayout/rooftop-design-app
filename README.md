@@ -11,6 +11,10 @@ Rooftop PV design in the browser. A Next.js front end and a stateless Python API
 | `tools` | `dev.ts`, `check.ts`, `gen-api.ts` | |
 | `plan` | The build plan, one file per phase | |
 
+## Design
+The approved design is the specification for every screen: information architecture, tokens, components,
+guidelines, mockup sources and previews are in `docs/design/` (start at `docs/design/README.md`).
+
 ## Prerequisites
 
 | Tool | Version | Note |
