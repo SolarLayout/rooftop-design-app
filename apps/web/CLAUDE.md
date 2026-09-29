@@ -15,8 +15,8 @@ The browser app. Read the root `CLAUDE.md` first; its rules apply here.
 | Mockup sources with every exact value | `docs/design/mockups/*.dc.html` |
 | Previews | `docs/design/previews/*.png` |
 
-The canvas is private to the owner unless he has shared it. The mockup sources and previews in the repo show the
-same screens.
+The canvas is open to anyone with the link. The mockup sources and previews in the repo show the same
+screens, and hold the exact values.
 
 ## Before you write UI code
 1. Find the screen in `docs/design/README.md`. Open its preview and its mockup source.
