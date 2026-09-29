@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from rooftop_core.demo import demo_project
-from rooftop_core.errors import MissingEquipmentFile, UnsupportedProjectFormat
+from rooftop_core.errors import MissingEquipmentFile, UnsupportedProjectFormat, WeatherNotLoaded
 from rooftop_core.project import FORMAT_VERSION, Design, Project
 from rooftop_core.resources import sample_path
 
@@ -224,3 +224,57 @@ def test_a_path_that_is_here_is_read_as_on_the_desktop(tmp_path):
     design = Design(_light_project(pan_path=str(here)))
 
     assert design.module.pnom_w == 560 and design.module.source == str(here)
+
+
+# ── a server reads no files of its own machine ───────────────────────────────
+def test_a_server_does_not_read_a_pan_from_its_own_disk(tmp_path):
+    here = tmp_path / "Test.PAN"
+    shutil.copy(sample_path("Test.PAN"), here)
+
+    with pytest.raises(MissingEquipmentFile) as error:
+        Design(_light_project(pan_path=str(here)), local_files=False)
+
+    assert (
+        str(error.value) == "The module file Test.PAN (PAN) is not included in this project. Choose it again."
+    )
+    assert error.value.field == "pan_path"
+
+
+def test_a_server_does_not_read_an_ond_from_its_own_disk(tmp_path):
+    here = tmp_path / "Test-S.ond"
+    shutil.copy(sample_path("Test-S.ond"), here)
+
+    with pytest.raises(MissingEquipmentFile) as error:
+        Design(_light_project(ond_path=str(here)), local_files=False)
+
+    assert error.value.field == "ond_path"
+
+
+def test_a_server_still_has_the_bundled_samples_and_the_embedded_text():
+    sample = Design(_light_project(), local_files=False)
+    embedded = Design(_light_project(pan_path="Big.PAN", pan_text=PAN_TEXT), local_files=False)
+
+    assert sample.module.pnom_w == 560
+    assert embedded.module.source == "Big.PAN"
+
+
+def test_a_server_does_not_read_csv_weather_from_its_own_disk(tmp_path):
+    here = tmp_path / "site.csv"
+    here.write_text("time,GHI,DNI,DHI\n2023-01-01 00:00,0,0,0\n", encoding="utf-8")
+    project = _light_project(weather_source="csv", weather_csv=str(here))
+
+    with pytest.raises(WeatherNotLoaded) as error:
+        Design(project, local_files=False).load_weather()
+
+    assert str(error.value) == (
+        "The CSV weather file site.csv is not included in this project. Choose it again."
+    )
+    assert error.value.field == "weather_csv"
+
+
+def test_on_the_desktop_csv_weather_is_read_from_its_path(tmp_path):
+    here = tmp_path / "site.csv"
+    here.write_text("time,GHI,DNI,DHI\n2023-01-01 00:00,0,0,0\n", encoding="utf-8")
+    project = _light_project(weather_source="csv", weather_csv=str(here))
+
+    assert Design(project).load_weather().label == "site.csv"

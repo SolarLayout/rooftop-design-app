@@ -93,36 +93,49 @@ def _known(cls, d: dict) -> dict:
     return {k: v for k, v in d.items() if k in names}
 
 
-def _here(path: str, what: str, kind: str, field_name: str) -> str:
+def _not_included(what: str, path: str, kind: str = "") -> str:
+    name = file_name(path) + (f" ({kind})" if kind else "")
+    return f"The {what} file {name} is not included in this project. Choose it again."
+
+
+def _here(path: str, what: str, kind: str, field_name: str, local_files: bool) -> str:
     """The path of a PAN or OND file of the project, or the error that asks for the file again."""
-    if not Path(path).is_file():
-        raise MissingEquipmentFile(
-            f"The {what} file {file_name(path)} ({kind}) is not included in this project. Choose it again.",
-            field=field_name)
+    if not local_files or not Path(path).is_file():
+        raise MissingEquipmentFile(_not_included(what, path, kind), field=field_name)
     return path
 
 
-def module_of(p: Project) -> Module:
-    """The module of the project: its embedded PAN, else the file it names, else the bundled sample."""
+def module_of(p: Project, local_files: bool = True) -> Module:
+    """The module of the project: its embedded PAN, else the file it names, else the bundled sample.
+
+    With *local_files* false a named file is never read from this machine: a server has no business
+    with paths that arrive in a request.
+    """
     if p.pan_text:
         return parse_pan(p.pan_text, file_name(p.pan_path))
-    return read_pan(_here(p.pan_path, "module", "PAN", "pan_path") if p.pan_path else sample_path("Test.PAN"))
+    if not p.pan_path:
+        return read_pan(sample_path("Test.PAN"))
+    return read_pan(_here(p.pan_path, "module", "PAN", "pan_path", local_files))
 
 
-def inverter_of(p: Project) -> Inverter:
+def inverter_of(p: Project, local_files: bool = True) -> Inverter:
     """The inverter of the project: its embedded OND, else the file it names, else the bundled sample."""
     if p.ond_text:
         return parse_ond(p.ond_text, file_name(p.ond_path))
-    return read_ond(_here(p.ond_path, "inverter", "OND", "ond_path") if p.ond_path else sample_path("Test-S.ond"))
+    if not p.ond_path:
+        return read_ond(sample_path("Test-S.ond"))
+    return read_ond(_here(p.ond_path, "inverter", "OND", "ond_path", local_files))
 
 
 class Design:
     """Runs the pipeline for a project and keeps the intermediate results."""
 
-    def __init__(self, project: Project):
+    def __init__(self, project: Project, local_files: bool = True):
+        """*local_files* false: files named by the project are never read from this machine."""
         self.p = project
-        self.module: Module = module_of(project)
-        self.inverter: Inverter = inverter_of(project)
+        self.local_files = local_files
+        self.module: Module = module_of(project, local_files)
+        self.inverter: Inverter = inverter_of(project, local_files)
         self.ond_imax = self.inverter.imax_mppt_a
         self._ond_iscmax = self.inverter.isc_max_mppt_a
         self.apply_imax(project.imax_mppt_override)
@@ -163,6 +176,8 @@ class Design:
         else:
             if p.weather_source != "csv" and not download:
                 raise WeatherNotLoaded(self._weather_missing_message(), field="weather_json")
+            if p.weather_source == "csv" and p.weather_csv and not p.weather_csv_text and not self.local_files:
+                raise WeatherNotLoaded(_not_included("CSV weather", p.weather_csv), field="weather_csv")
             self.weather = wx.load(p.weather_source, p.roof.lat, p.roof.lon, p.weather_csv or None,
                                    p.weather_csv_text, cache)
             p.weather_json = self.weather.to_json()
