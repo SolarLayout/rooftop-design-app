@@ -19,6 +19,24 @@ first, then the first phase that is not done. Ask the owner domain questions one
 9. Style only through design tokens (`apps/web/app/globals.css`). No raw colour, size or shadow value in
    a component.
 
+## Start here
+Read `plan/STATE.md` first: it says where the work stands and what is next. `plan/SESSIONS.md` says how a
+session starts, works and ends. Update `plan/STATE.md` before you stop. Resume prompts are in
+`plan/resume/`; write a new one only when the owner asks.
+
+## Working with the owner
+- Be brief. No chatter.
+- Decide small and medium things yourself and say what you decided. Ask only for major decisions, one
+  question at a time.
+- Build in logical parts and show each one. No long silent stretches.
+- Verify your own work before showing it: run it, test it, look at it. Report what you ran and what you
+  did not.
+- You may commit, push and merge pull requests in this repo once the check is green. Never push to `main`
+  directly.
+- Decisions marked closed in `plan/STATE.md` are not reopened.
+- For setup the owner must do himself (accounts, keys), give him one step at a time and check each
+  result before the next.
+
 ## Design
 The design is approved and is the specification for every screen. Read `docs/design/README.md` before any UI
 work, and `apps/web/CLAUDE.md` for the rules of the web app.
