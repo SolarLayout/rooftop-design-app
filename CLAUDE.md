@@ -21,7 +21,8 @@ first, then the first phase that is not done. Ask the owner domain questions one
 
 ## Start here
 Read `plan/STATE.md` first: it says where the work stands and what is next. `plan/SESSIONS.md` says how a
-session starts, works and ends. Update `plan/STATE.md` before you stop.
+session starts, works and ends. Update `plan/STATE.md` before you stop. Resume prompts are in
+`plan/resume/`; write a new one only when the owner asks.
 
 ## Working with the owner
 - Be brief. No chatter.

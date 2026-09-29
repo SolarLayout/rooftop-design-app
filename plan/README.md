@@ -5,8 +5,8 @@ stateless Python API. One file per phase. Work the phases in order; each one end
 
 ## How to resume in a new session
 
-Paste the prompt in `RESUME-PROMPT.md`. It sends the session to `STATE.md` (where the work stands) and
-`SESSIONS.md` (how a session starts, works and ends).
+Paste the resume prompt written for the work, from `resume/` (index in `resume/README.md`). Each one sends
+the session to `STATE.md` (where the work stands) and `SESSIONS.md` (how a session starts, works and ends).
 
 Always:
 1. Read `reference/functional-inventory.md` before touching any feature: it is the contract for
@@ -56,7 +56,7 @@ Always:
 | D20 | CI: the pull request check runs everything except browser tests; browser tests run locally in `bun check` and in the `e2e` workflow, started by hand | Owner, 2026-09-29: the browser install hung in CI |
 | D21 | Pull requests are merged by the agent once the check is green | Owner, 2026-09-29 |
 | D22 | The design system is documented in `docs/design/` and linked from `CLAUDE.md` and `apps/web/CLAUDE.md`; all UI work complies with it | Owner, 2026-09-29 |
-| D23 | The work is done in sessions of one slice each. The repo carries the context: `STATE.md`, `SESSIONS.md`, `RESUME-PROMPT.md` | Owner, 2026-09-29 |
+| D23 | The work is done in sessions of one slice each. The repo carries the context: `STATE.md`, `SESSIONS.md`, and resume prompts in `resume/`, each specific to the work resumed and written when the owner asks | Owner, 2026-09-29 |
 | D17 | The word "bankable" is not used anywhere in the product; it belongs to utility-scale ground-mount | Owner |
 
 ## Open for approval
@@ -72,7 +72,7 @@ plan/
   README.md                     this file: phases and decisions
   STATE.md                      where the work stands today; read first, update last
   SESSIONS.md                   how a session starts, works and ends
-  RESUME-PROMPT.md              the prompt that starts a new session
+  resume/                       resume prompts, one per resumption, written when the owner asks
   phase-NN-*.md                 one per phase: goal, scope, deliverables, acceptance
   reference/
     functional-inventory.md     every input, output, export and message of the desktop app

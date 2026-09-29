@@ -9,6 +9,7 @@ previous one remembers. Everything a session needs is in the repo.
 |---|---|---|
 | `CLAUDE.md` (root) and `apps/web/CLAUDE.md` | Rules that always apply; how to work with the owner | Rarely |
 | `plan/STATE.md` | Where the work stands today: done, in flight, next, open items | Every session |
+| `plan/resume/*` | Resume prompts: one work order per resumption, specific to the work | When the owner asks for one |
 | `plan/README.md` | Phases and their status; every decision, numbered | When a decision is taken or a phase changes status |
 | `plan/phase-NN-*.md` | Scope and acceptance of a phase; "As built" with deviations | While the phase is worked on |
 | `plan/reference/*` | The functional inventory, demo numbers, 3D notes, map providers | When facts change |
@@ -53,7 +54,8 @@ previous one remembers. Everything a session needs is in the repo.
 2. Update the phase file ("As built", deviations, what remains) and the status in `plan/README.md`.
 3. Rewrite `plan/STATE.md`: last updated, where we are, in flight, next, open items.
 4. Merge that update through a pull request.
-5. Give the owner the resume prompt from `plan/RESUME-PROMPT.md`.
+5. If the owner asks for a resume prompt, write it as the next file in `plan/resume/` (rules in
+   `plan/resume/README.md`), add it to the index, and merge it with the state update.
 
 ## If something is unclear
 
