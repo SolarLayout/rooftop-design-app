@@ -25,7 +25,8 @@ Nothing. `main` is green and there is no open branch or pull request.
    - Done: `POST /weather`
    - Done: `POST /design` with progress over SSE
    - `POST /export/{pdf,dxf,kmz,csv,sld}`
-   - Memoisation (decision D6), the typed client in `apps/web/lib/api`
+   - Done: memoisation (decision D6)
+   - The typed client in `apps/web/lib/api`
    - Decision D24: the demo bundles the real equipment files
    - Tests with the equipment fixtures
    - Then mark Phase 2 done

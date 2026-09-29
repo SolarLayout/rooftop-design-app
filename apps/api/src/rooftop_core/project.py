@@ -7,6 +7,7 @@ import json
 from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 
+from . import memo as memo_mod
 from . import progress
 from . import shading as shading_mod
 from . import weather as wx
@@ -130,10 +131,15 @@ def inverter_of(p: Project, local_files: bool = True) -> Inverter:
 class Design:
     """Runs the pipeline for a project and keeps the intermediate results."""
 
-    def __init__(self, project: Project, local_files: bool = True):
-        """*local_files* false: files named by the project are never read from this machine."""
+    def __init__(self, project: Project, local_files: bool = True, memo: memo_mod.Memo | None = None):
+        """*local_files* false: files named by the project are never read from this machine.
+
+        *memo* keeps the hourly shading and the options between runs. The results are the same
+        without it.
+        """
         self.p = project
         self.local_files = local_files
+        self.memo = memo
         self.module: Module = module_of(project, local_files)
         self.inverter: Inverter = inverter_of(project, local_files)
         self.ond_imax = self.inverter.imax_mppt_a
@@ -256,10 +262,15 @@ class Design:
 
     def _shading(self) -> shading_mod.ShadingResult:
         """Hourly shading of every module, with the sun where precompute puts it."""
-        sun = wx.solar_position(self.weather)
-        return shading_mod.compute(self.layout, self.p.roof, self.module, self.p.array.orientation,
-                                   sun["apparent_elevation"].to_numpy(), sun["azimuth"].to_numpy(),
-                                   self.weather.horizon)
+        def compute() -> shading_mod.ShadingResult:
+            sun = wx.solar_position(self.weather)
+            return shading_mod.compute(self.layout, self.p.roof, self.module, self.p.array.orientation,
+                                       sun["apparent_elevation"].to_numpy(), sun["azimuth"].to_numpy(),
+                                       self.weather.horizon)
+
+        if self.memo is None:
+            return compute()
+        return self.memo.shading(memo_mod.shading_key(self), compute)
 
     def run_options(self, on_progress: progress.ProgressCallback | None = None) -> list[StringOption]:
         """Prepare, size the strings and simulate the options. Without a system voltage: no options.
@@ -278,13 +289,17 @@ class Design:
         return self.options
 
     def _build_options(self, rng: SeriesRange) -> None:
-        self.options = build_options(self.pre, self.layout, self.module, self.mm, self.inverter, rng,
-                                     self.p.losses, self.p.roof)
-        if self.p.custom:
-            n, s, k = self.p.custom
-            self.options.append(custom_option(self.pre, self.layout, self.module, self.mm, self.inverter,
-                                              self.p.losses, self.p.roof, n, s, k,
-                                              "ABCDEFGH"[len(self.options)]))
+        def build() -> list[StringOption]:
+            options = build_options(self.pre, self.layout, self.module, self.mm, self.inverter, rng,
+                                    self.p.losses, self.p.roof)
+            if self.p.custom:
+                n, s, k = self.p.custom
+                options.append(custom_option(self.pre, self.layout, self.module, self.mm, self.inverter,
+                                             self.p.losses, self.p.roof, n, s, k,
+                                             "ABCDEFGH"[len(options)]))
+            return options
+
+        self.options = build() if self.memo is None else self.memo.options(memo_mod.options_key(self), build)
         keys = [o.key for o in self.options]
         if self.p.chosen_option not in keys and self.options:
             self.p.chosen_option = self.options[0].key

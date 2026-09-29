@@ -3,7 +3,8 @@
 import pytest
 
 from rooftop_core import readouts
-from rooftop_core.demo import demo_project
+from rooftop_core.demo import demo_project, rectangle
+from rooftop_core.geometry import Roof
 from rooftop_core.project import Design
 
 pytestmark = pytest.mark.slow
@@ -49,6 +50,7 @@ def test_the_verdict_of_an_option_below_target_says_so(demo_design, option_d):
 
 def test_the_verdict_when_no_length_fits():
     project = demo_project()
+    project.roof = Roof(outline=rectangle(30.0, 14.0), lat=project.roof.lat, lon=project.roof.lon)
     project.system_voltage = 600.0
     project.t_max_override = 60.0
     project.ond_path, project.ond_text = "", ""

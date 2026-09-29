@@ -13,7 +13,7 @@ from rooftop_api.services import layouts
 from rooftop_api.services import weather as weather_service
 from rooftop_api.services.equipment import current_per_mppt, module_notes
 from rooftop_api.services.uploads import file_name
-from rooftop_core import csv_weather, readouts, shade_summary
+from rooftop_core import csv_weather, memo, readouts, shade_summary
 from rooftop_core.errors import EngineError
 from rooftop_core.keepout_parts import keepout_parts
 from rooftop_core.progress import ProgressEvent
@@ -32,6 +32,15 @@ NO_POSITIONS = schemas.NoOptions(
 NO_VOLTAGE = schemas.NoOptions(
     code="system_voltage_missing", title=readouts.CHOOSE_VOLTAGE, message=readouts.CHOOSE_VOLTAGE_DETAIL
 )
+
+
+def new_memo() -> memo.MemoryMemo:
+    return memo.MemoryMemo()
+
+
+# The shadings and the options of this process (decision D6). Without them every answer is the
+# same, only slower.
+MEMO = new_memo()
 
 
 class Run:
@@ -102,7 +111,7 @@ def result(run: Run, on_progress: Callable[[ProgressEvent], None] | None = None)
 
 def _design(p: Project) -> Design:
     try:
-        return Design(p, local_files=False)
+        return Design(p, local_files=False, memo=MEMO)
     except ValueError as error:
         raise ApiError(UNPROCESSABLE, "not_an_ond_file", str(error), "ond_text") from error
 
