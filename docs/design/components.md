@@ -20,6 +20,21 @@ States: rest; hover (raised 1 px, brighter, `shadow-*-hover`); pressed (lowered 
 0.985); focus (focus ring); disabled (opacity 0.45, no shadow, no pointer). Radius `radius-control`
 (12 to 14 for the 56 px action).
 
+In code (`apps/web/components/ui`): `Button`, `ButtonLink` (a link that looks like a button) and `IconButton`.
+
+| Size | Button, height on desktop | Icon button, side on desktop | Radius | On phone and tablet |
+|---|---|---|---|---|
+| `xs` | | 32 | control | 44, radius row |
+| `s` | 36 | 38 | control | 44, radius row |
+| `m` | 40 | 40 | control | 44, radius row |
+| `l` | 44 | 44 | row | the same |
+| `xl` | 56, label in the size of `text-title` | | card-s | the same |
+
+Padding at the sides: 16 primary, 14 secondary and quiet, 20 for `xl`. Icon to label: `space-inline`.
+The border of a secondary button is `line-strong`; of a secondary icon button `line`.
+An icon button takes its name from `label`, which it cannot be without.
+The kit shows a state without a pointer or a keyboard by `shownAs`; a screen never sets it.
+
 ## Segmented control
 Track: `color-well`, border `line`, `shadow-well`, padding 3, radius `radius-control`.
 Items: height 30 (34 to 36 in panels, 44 on touch); active item `control-active`, `shadow-segment`, text, Geist
