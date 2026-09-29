@@ -3,7 +3,7 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-09-29, end of session 2, after Phase 2 was closed.
+**Last updated:** 2026-09-29, end of session 2, after Phase 2 was closed and the resume prompt for Phase 3 was written.
 
 ## Where we are
 
@@ -37,7 +37,7 @@ changed; an export 0.2 to 0.9 s after a run.
 
 1. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert". None
    blocks Phase 3.
-2. Phase 3: design system as code and the app shell. No resume prompt is written yet; the owner asks for one.
+2. Phase 3: design system as code and the app shell. Work order: `plan/resume/002-phase-3-design-system-shell.md`.
 3. Phase 4: find the roof on the map and outline it (the flagship).
 4. In parallel with any phase: the screens still to draw (Phase 0).
 
@@ -88,6 +88,7 @@ changed; an export 0.2 to 0.9 s after a run.
 
 ## Closed, do not reopen
 
+- Documents alone go to `main` directly; code goes through a pull request (D26).
 - Legal check on the map stack: approved by the owner (D18).
 - Map provider: Esri plus Overture (D13).
 - The old desktop app's layout and look: rejected. Never a reference.

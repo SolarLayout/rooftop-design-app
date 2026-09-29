@@ -50,6 +50,7 @@ previous one remembers. Everything a session needs is in the repo.
 ## During a session
 
 - Branch from `main`. One change per pull request. Test first.
+- A change to documents only goes to `main` directly (decision D26): commit, push, no pull request.
 - Use the test stack only (`bun dev:bg --profile test`); the dev stack is the owner's.
 - `bun check` before every commit. Push, open a pull request with `gh`, merge when the check is green.
 - A new decision gets a number in `plan/README.md` in the same pull request that acts on it.
@@ -63,9 +64,9 @@ previous one remembers. Everything a session needs is in the repo.
 4. Write the session's record in `plan/sessions/NNN/`: `record.md` (what was done, why things are as they
    are, what was tried and dropped, where the log is) and `owner-messages.md` (the owner's messages, word for
    word).
-5. Merge that update through a pull request.
+5. Commit that update to `main` and push it (documents only, decision D26).
 6. If the owner asks for a resume prompt, write it as the next file in `plan/resume/` (rules in
-   `plan/resume/README.md`), add it to the index, and merge it with the state update.
+   `plan/resume/README.md`), add it to the index, and commit it with the state update.
 
 ## If something is unclear
 

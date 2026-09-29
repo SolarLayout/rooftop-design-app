@@ -22,6 +22,7 @@ built is in `plan/phase-02-engine-api.md`, "As built, part 2". Neither is repeat
 | 12 | Progress inside the shading and the options | #21 |
 | 13 | The typed client in `apps/web/lib/api`; request types beside the answer types | #22 |
 | 14 | Phase 2 closed; this record | #23 |
+| 15 | Resume prompt 002 for Phase 3; documents go to `main` directly from here on (D26) | straight to `main` |
 
 ## Why things are the way they are
 

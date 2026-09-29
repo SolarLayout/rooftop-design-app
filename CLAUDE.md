@@ -31,8 +31,10 @@ session starts, works and ends. Update `plan/STATE.md` before you stop. Resume p
 - Build in logical parts and show each one. No long silent stretches.
 - Verify your own work before showing it: run it, test it, look at it. Report what you ran and what you
   did not.
-- You may commit, push and merge pull requests in this repo once the check is green. Never push to `main`
-  directly.
+- You may commit, push and merge pull requests in this repo once the check is green. Code never goes to
+  `main` directly.
+- A change to documents only (`plan/`, `docs/`, `README.md`, `CLAUDE.md`) is committed and pushed to `main`
+  directly, without a pull request (decision D26). Never mixed with code in one commit.
 - Decisions marked closed in `plan/STATE.md` are not reopened.
 - For setup the owner must do himself (accounts, keys), give him one step at a time and check each
   result before the next.
@@ -57,7 +59,7 @@ This is production software, not a prototype. The owner's words: "this is not th
   swallowed.
 - No dead code, no commented-out code, no TODO without an entry in the plan.
 - One change per pull request, described by what it does and how it was checked. Merge only on a green
-  check.
+  check. Documents alone need no pull request (decision D26).
 - Browser tests run locally in `bun check`. In CI they live in the `e2e` workflow, started by hand.
 
 ## Working rules

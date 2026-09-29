@@ -59,6 +59,7 @@ Always:
 | D23 | The work is done in sessions of one slice each. The repo carries the context: `STATE.md`, `SESSIONS.md`, and resume prompts in `resume/`, each specific to the work resumed and written when the owner asks | Owner, 2026-09-29 |
 | D24 | The demo shows its equipment by its real names: module Insolation INA-144MHC-TF-560, inverter WattPower WP-330KTL-H1. Same data as the desktop app's `Test.PAN` and `Test-S.ond`, so no number changes | Owner, 2026-09-29 |
 | D25 | DC cable is labelled by the system voltage as chosen (600, 1000 or 1500 V), not by a rating class | Owner, 2026-09-29 |
+| D26 | A change to documents only (`plan/`, `docs/`, `README.md`, `CLAUDE.md`) is committed to `main` directly. Code, tests, configuration and generated files go through a pull request, as before | Owner, 2026-09-29 |
 | D17 | The word "bankable" is not used anywhere in the product; it belongs to utility-scale ground-mount | Owner |
 
 ## Open for approval

@@ -12,13 +12,14 @@ asks for one. Paste the block inside the file into a new session started in this
    `plan/STATE.md`, which the prompt tells the session to read and to check against reality.
 3. Every prompt carries the standing instructions (read `CLAUDE.md`, follow `plan/SESSIONS.md`, test first,
    update `plan/STATE.md` before stopping), so it works even for a session that knows nothing.
-4. The session that uses a prompt sets its status in the table below in its last pull request.
+4. The session that uses a prompt sets its status in the table below when it closes its work.
 
 ## Index
 
 | # | File | For | Written | Status |
 |---|---|---|---|---|
 | 001 | `001-phase-2-engine-api.md` | Phase 2: review and merge part 1, then build part 2 | 2026-09-29 | used by session 2, 2026-09-29 |
+| 002 | `002-phase-3-design-system-shell.md` | Phase 3: the design system as code and the app shell | 2026-09-29 | open |
 
 ## Shape of a prompt file
 
