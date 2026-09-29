@@ -15,3 +15,9 @@ STart work with instructions from @plan/resume/002-phase-3-design-system-shell.m
 ````
 design approved - both boards. keep the tabs - we might need it. publish to the canvas; i changed perm. aproved. create resume prompt
 ````
+
+## 03. after 14:58 UTC
+
+````
+i have renabled share. will start new session now with resume prompt. do i need to add the two dirs to the session?
+````

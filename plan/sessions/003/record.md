@@ -71,8 +71,8 @@ Reasons that are not obvious from the code or the plan.
 
 ## What the owner should look at
 
-1. **The canvas was reported as private** when the boards were published. The documents say it is open to
-   anyone with the link.
+1. **The canvas was reported as private** when the boards were published. The owner shared it again the
+   same day; it is open to anyone with the link, as the documents say.
 2. **Tabs** stays in the phase and has no design yet.
 3. **The pull request check** took 6 min 43 s on #29, of the 7 minutes after which the shading memo is due.
 

@@ -126,7 +126,5 @@ Start by telling me what you found at the start of the session, and the order yo
 - The work is large: sixteen parts. Expect the session to hand over once or twice before the phase is
   closed; `plan/STATE.md` will say where it stands, and you can paste this prompt again, as the session
   reads the state first.
-- The design canvas was reported as private when the two boards were published. If it should be open to
-  anyone with the link, as the documents say, set it in the Share menu of the canvas.
 - Still open for you and Prasanta, not blocking this phase: the three questions in `plan/STATE.md`,
   "Open items", marked "Owner and domain expert".

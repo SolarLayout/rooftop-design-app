@@ -23,10 +23,6 @@ No open branch and no open pull request. `main` is green.
 Nothing waits for the owner. He approved both boards of round 4, with the choices in them (decision D32),
 and keeps Tabs in the phase (decision D33). The boards are on the canvas.
 
-One thing to confirm with the owner: when the boards were published, the canvas was reported as private,
-readable by its owner only. `CLAUDE.md` and the documents of the design say it is open to anyone with the
-link. Nothing was changed in them.
-
 ## What the web app has today
 
 | Thing | Where |
@@ -82,7 +78,7 @@ Work order: `plan/resume/003-phase-3-components-stores-shell.md`.
 | Playwright | `@playwright/test` 1.52.0; its browser (chromium-1169) is already installed. `@axe-core/playwright` 4.13.0 |
 | Baselines of the screens | `e2e/baselines/darwin`, made on this machine. Renew with `bun tools/with-node.ts playwright test <name> --update-snapshots` in `e2e/`, after looking at the new picture |
 | Esri key | In `apps/web/.env.local` as `NEXT_PUBLIC_ESRI_API_KEY`. Never read, print or commit the file. Referrers: `http://localhost:4700`, `http://127.0.0.1:4700`. Expires about 28 Sep 2027 |
-| Design canvas | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy. 16 boards. To add a board: read `project/canvas.json` of the canvas, then publish the board and the index to it |
+| Design canvas | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy (open to anyone with the link; the owner shared it again on 2026-09-29, after the boards of round 4 were published). 16 boards. To add a board: read `project/canvas.json` of the canvas, then publish the board and the index to it |
 | Design system | `docs/design/` |
 
 ## Open items (not blocking)
