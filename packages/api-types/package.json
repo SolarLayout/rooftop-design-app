@@ -1,0 +1,21 @@
+{
+  "name": "@rooftop/api-types",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TypeScript types generated from the API's OpenAPI document. Do not edit src/index.ts by hand; run `bun gen:api`.",
+  "type": "module",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./openapi.json": "./openapi.json"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}

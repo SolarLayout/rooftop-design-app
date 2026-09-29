@@ -1,0 +1,30 @@
+import { defineConfig } from "@playwright/test";
+
+// Software WebGL, so the 3D scene of later phases renders the same on every machine and in CI.
+const launchOptions = {
+  args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"],
+};
+
+export default defineConfig({
+  testDir: "./tests",
+  // *.e2e.ts, so that `bun test` (which takes *.test.ts and *.spec.ts) never picks these up.
+  testMatch: /.*\.e2e\.ts$/,
+  outputDir: "./test-results",
+  fullyParallel: true,
+  forbidOnly: Boolean(process.env.CI),
+  retries: 0,
+  reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : [["list"]],
+  // Starts the dev stack when it is not running, and stops it afterwards only in that case.
+  globalSetup: "./global-setup.ts",
+  use: {
+    baseURL: "http://localhost:4700",
+    browserName: "chromium",
+    launchOptions,
+    trace: "retain-on-failure",
+  },
+  projects: [
+    { name: "phone", use: { viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true } },
+    { name: "tablet", use: { viewport: { width: 834, height: 1194 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true } },
+    { name: "desktop", use: { viewport: { width: 1440, height: 900 } } },
+  ],
+});

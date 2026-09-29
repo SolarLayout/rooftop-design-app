@@ -1,0 +1,13 @@
+{
+  "name": "@rooftop/api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Python API. This file only gives the workspace a name and scripts; dependencies live in pyproject.toml.",
+  "scripts": {
+    "dev": "uv run uvicorn rooftop_api.main:app --host 127.0.0.1 --port 4701 --reload --reload-dir src",
+    "lint": "uv run --locked ruff check . && uv run --locked ruff format --check .",
+    "format": "uv run ruff check --fix . && uv run ruff format .",
+    "imports": "uv run --locked lint-imports",
+    "test": "uv run --locked pytest"
+  }
+}

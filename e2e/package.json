@@ -1,0 +1,15 @@
+{
+  "name": "@rooftop/e2e",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Playwright tests. Playwright runs on Node; from the root use `bun check`, or `bun tools/with-node.ts playwright test` here.",
+  "scripts": {
+    "test": "playwright test",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.52.0",
+    "@types/node": "20.19.43",
+    "typescript": "5.9.3"
+  }
+}

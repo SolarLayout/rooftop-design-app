@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+/*
+  Design tokens. Every colour used in the app comes from here; components never carry a raw value.
+  Phase 3 replaces this minimal set with the full "Dusk" tokens.
+*/
+:root {
+  --canvas: #0b0e13;
+  --ink: #f2f4f7;
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-ink: var(--ink);
+}
+
+html,
+body {
+  background: var(--canvas);
+  color: var(--ink);
+}
