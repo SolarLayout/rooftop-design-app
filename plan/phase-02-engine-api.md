@@ -1,7 +1,7 @@
 # Phase 2: engine and stateless API
 
-**Status:** in progress. Part 1 is merged (PR #7, 2026-09-29: engine, format 2, first endpoints);
-weather, `/design` over SSE, exports and memoisation remain. **Depends on:** phase 1.
+**Status:** done, 2026-09-29. Part 1: PR #7. Part 2: PRs #11 to #22. What was built, what was decided and
+what was found is under "As built", parts 1 and 2. **Depends on:** phase 1.
 
 ## Goal
 Every calculation of the desktop app is reachable over HTTP, with the same numbers, and no server state.
@@ -242,21 +242,22 @@ UI. Multi-user concerns. Persistence.
   | 3.12.13 managed by uv | 2.5.3, 1.18.1 | 11.2 s |
   | 3.11.11 managed by uv, the desktop app's environment | 2.4.6, 1.17.1 | 11.4 s |
 
-  The repo now pins Python 3.12.13 (`apps/api/.python-version`; uv does not read one above the project) and uv takes only the Python it manages
-  (`python-preference` in `apps/api/pyproject.toml`). After the change: 11.7 s. No result changed.
+  The repo now pins Python 3.12.13 (`apps/api/.python-version`; uv does not read one above the project)
+  and uv takes only the Python it manages (`python-preference` in `apps/api/pyproject.toml`). After the
+  change: 11.7 s. No result changed.
 
 - **A KMZ exported by the app comes back as the roof it was.** The export holds the modules in use as
   placemarks, and the import took every outline but the largest for an obstacle: the demo came back with
   638 obstacles of 1.0 m named "Module n". The import now leaves out the folder the export puts them in
   ("Modules" with their number). An outline named "Module" anywhere else is an obstacle as before.
 
-### Found in part 2, for the domain expert (continued below)
+### Found in part 2, for the domain expert
+Nothing was changed for any of the three: the numbers of the engine are as confirmed on the desktop app.
+
 - **The strings are sized with the Voc of the one-diode model, also when the PAN states a coefficient.**
   ABi AB340-72PHC states -0.286 %/degC; the model gives -0.334 %/degC. At 11.9 degC: Voc 47.85 V by the
   model, 47.57 V by the stated coefficient. The screen shows the stated one. Here the model is the more
-  careful. For Emmvee both agree (-0.224 and -0.225). As in the desktop app; not changed.
-
-### Found in part 2, for the domain expert
+  careful. For Emmvee both agree (-0.224 and -0.225).
 - **The split of Erbs is not what PVGIS has.** The Pune year given as GHI alone comes back with beam
   1,435.4 and diffuse 822.7 kWh/m2; PVGIS has 1,999.6 and 549.9 for the same hours. The model differs, not
   the timing. Energy from a CSV with GHI alone will differ from the same site with measured DNI and DHI.
@@ -265,4 +266,27 @@ UI. Multi-user concerns. Persistence.
   sun at the middle of the hour, where the engine places it for every source. Nothing was changed: the
   numbers of the engine are as confirmed on the desktop app.
 
-### What remains of this phase
+### Deviations from the scope
+1. "Copy the engine tests; they must pass unchanged": they pass, and since D24 they read `Test.PAN` and
+   `Test-S.ond` from `tests/fixtures/equipment`. One line of import changed in each; no assertion.
+2. Memoisation keeps the shading and the options, not the layout (0.06 s) as the scope named it.
+3. Copied engine modules changed in part 2, none in a calculation: `weather.py` (the GHI fix, the reading of
+   a CSV cut into parts, the error of a service, the lock of the cache), `project.py` (memo, progress,
+   bundled equipment), `shading.py` and `options.py` (a listener for progress), `io/roof_import.py` (the
+   folder of modules), `resources.py` (the names of the bundled files).
+4. PDF, DXF and KMZ bear the time they were made, so the bytes of two identical requests differ; what the
+   files draw and say is the same. Every other answer is the same byte for byte.
+
+### Acceptance, as met
+| Acceptance | Held by |
+|---|---|
+| `pytest` green, no network | 537 tests; `tests/conftest.py` blocks every connection that leaves the machine; the services answer from recordings |
+| `rooftop_core` imports neither FastAPI nor any web code | import-linter, in `bun check` and in CI |
+| `/design` on the demo: option A = 29 x 22 x 1, 357.28 kWp, 617.8 MWh, PR 86.6 % | `tests/api/test_design.py`, with the five options, the loss chain, monthly, P-values, 25 years and the bill of materials |
+| Without `system_voltage`: layout and shading, no options, and the reason | `tests/api/test_design.py`, "without a system voltage" |
+| Two identical requests to a freshly started server give identical results | `tests/api/test_design.py`, "a freshly started server answers the same twice"; for the files `tests/api/test_export.py` |
+| `reference/demo-numbers.md` asserted in an API test | `tests/api/test_design.py`, `tests/api/test_layout.py`, `tests/api/test_weather.py`, `tests/api/test_export.py` |
+| Generated types used by a typed client in `apps/web/lib/api` | `apps/web/lib/api`, tested by `bun test` and against the real API in the browser tests |
+
+### What remains
+Nothing of this phase. What was found and belongs elsewhere is in `plan/STATE.md`, "Open items".
