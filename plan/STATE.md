@@ -23,7 +23,8 @@ Nothing. `main` is green and there is no open branch or pull request.
 1. Phase 2, part 2. Work order: `plan/resume/001-phase-2-engine-api.md` (it starts at its step 2).
    - Done: CSV weather with GHI alone; the design run at the desktop app's speed (about 11.5 s)
    - Done: `POST /weather`
-   - `POST /design` with progress over SSE, `POST /export/{pdf,dxf,kmz,csv,sld}`
+   - Done: `POST /design` with progress over SSE
+   - `POST /export/{pdf,dxf,kmz,csv,sld}`
    - Memoisation (decision D6), the typed client in `apps/web/lib/api`
    - Decision D24: the demo bundles the real equipment files
    - Tests with the equipment fixtures

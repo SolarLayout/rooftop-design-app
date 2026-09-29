@@ -14,7 +14,7 @@ from shapely.geometry import Polygon as ShapelyPolygon
 from shapely.geometry.base import BaseGeometry
 
 from rooftop_api import schemas
-from rooftop_core import geometry, onediode, placement, project, simulation
+from rooftop_core import bom, geometry, onediode, options, placement, project, readouts, simulation, stringing
 from rooftop_core.io import pvsyst, roof_import
 from rooftop_core.keepout_parts import KeepoutPart
 from rooftop_core.sunpath import SunPosition
@@ -199,6 +199,110 @@ def layout_from_engine(layout: placement.Layout, keepout: list[KeepoutPart]) -> 
         usable=polygons_from_shape(layout.usable),
         obstacle_zone=polygons_from_shape(layout.obstacle_zone),
         keepout=[keepout_from_engine(part) for part in keepout],
+    )
+
+
+# ── design ───────────────────────────────────────────────────────────────────
+def series_range_from_engine(rng: stringing.SeriesRange, limit_note: str) -> schemas.SeriesRange:
+    return schemas.SeriesRange.model_construct(
+        **asdict(rng),
+        ok=rng.ok,
+        upper_limit="Voc limit" if rng.n_max_voc <= rng.n_max_mppt else "MPPT max",
+        limit_note=limit_note,
+    )
+
+
+def system_from_engine(system: stringing.System, shade_by_string: Any) -> schemas.System:
+    strings = [
+        schemas.PVString.model_construct(
+            label=f"S{number + 1}",
+            modules=[int(index) for index in string.modules],
+            row=string.row,
+            azimuth=string.azimuth,
+            start=_point(string.start_xy),
+            extent_m=string.extent_m,
+            inverter=system.inverter_of[number] + 1,
+            mppt=system.mppt_of[number] + 1,
+            shade_pct=float(shade_by_string[number]) * 100.0,
+        )
+        for number, string in enumerate(system.strings)
+    ]
+    inverters = [
+        schemas.InverterPlace.model_construct(label=f"INV-{number + 1}", position=_point(place))
+        for number, place in enumerate(system.inverter_xy)
+    ]
+    return schemas.System.model_construct(
+        n_series=system.n_series,
+        n_strings=system.n_strings,
+        n_inverters=system.n_inverters,
+        n_modules=system.n_modules,
+        strings=strings,
+        inverters=inverters,
+    )
+
+
+def energy_from_engine(result: simulation.SimResult) -> schemas.Energy:
+    """The result of a simulation without its hours, which are an export of their own."""
+    return schemas.Energy.model_construct(
+        energy_mwh=result.energy_mwh,
+        dc_kwp=result.dc_kwp,
+        ac_kw=result.ac_kw,
+        pr=result.pr,
+        specific_yield=result.specific_yield,
+        cuf_ac_pct=result.cuf_ac_pct,
+        cuf_dc_pct=result.cuf_dc_pct,
+        poa_kwh_m2=result.poa_kwh_m2,
+        ghi_kwh_m2=result.ghi_kwh_m2,
+        clipping_pct=result.clipping_pct,
+        sigma_pct=result.sigma_pct,
+        lid_pct=result.lid_pct,
+        co2_t=result.co2_t,
+        steps=[schemas.LossStep.model_construct(**asdict(step)) for step in result.steps],
+        monthly_mwh=list(result.monthly_mwh),
+        p_values=[
+            schemas.PValue.model_construct(level=level, mwh=mwh) for level, mwh in result.p_values.items()
+        ],
+        years_mwh=list(result.years),
+        total_25_years_mwh=sum(result.years),
+    )
+
+
+def option_from_engine(
+    option: options.StringOption,
+    module_area_m2: float,
+    roof_area_m2: float,
+    verdict: readouts.Verdict,
+    loads: list[readouts.MpptLoad],
+    bill: list[bom.BomLine],
+    cables: list[bom.CableRow],
+    summary: list[tuple[str, str]],
+) -> schemas.Option:
+    """An option with its read-outs. *module_area_m2* is that of one module."""
+    area = option.n_modules * module_area_m2
+    return schemas.Option.model_construct(
+        key=option.key,
+        letter=option.letter,
+        title=option.title,
+        n_series=option.n_series,
+        n_strings=option.n_strings,
+        n_inverters=option.n_inverters,
+        n_modules=option.n_modules,
+        available_strings=option.available_strings,
+        dc_kwp=option.dc_kwp,
+        dcac=option.dcac,
+        ok=option.ok,
+        note=option.note,
+        recommended=option.recommended,
+        custom=option.custom,
+        module_area_m2=area,
+        roof_covered_pct=area / roof_area_m2 * 100.0,
+        verdict=schemas.Verdict.model_construct(**asdict(verdict)),
+        system=system_from_engine(option.system, option.result.per_string_shade),
+        energy=energy_from_engine(option.result),
+        mppt_loads=[schemas.MpptLoad.model_construct(**asdict(load)) for load in loads],
+        bom=[schemas.BomLine.model_construct(**asdict(line)) for line in bill],
+        cable_schedule=[schemas.CableRow.model_construct(**asdict(row)) for row in cables],
+        summary=[schemas.SummaryRow.model_construct(label=label, value=value) for label, value in summary],
     )
 
 

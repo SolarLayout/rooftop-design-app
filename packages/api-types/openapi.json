@@ -123,6 +123,82 @@
         "title": "ArraySpec",
         "type": "object"
       },
+      "BomLine": {
+        "properties": {
+          "item": {
+            "title": "Item",
+            "type": "string"
+          },
+          "qty": {
+            "title": "Qty",
+            "type": "number"
+          },
+          "spec": {
+            "title": "Spec",
+            "type": "string"
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "item",
+          "spec",
+          "qty",
+          "unit"
+        ],
+        "title": "BomLine",
+        "type": "object"
+      },
+      "CableRow": {
+        "properties": {
+          "inverter": {
+            "title": "Inverter",
+            "type": "string"
+          },
+          "isc_a": {
+            "title": "Isc A",
+            "type": "number"
+          },
+          "length_m": {
+            "title": "Length M",
+            "type": "number"
+          },
+          "modules": {
+            "title": "Modules",
+            "type": "integer"
+          },
+          "mppt": {
+            "title": "Mppt",
+            "type": "integer"
+          },
+          "size": {
+            "title": "Size",
+            "type": "string"
+          },
+          "string": {
+            "title": "String",
+            "type": "string"
+          },
+          "voc_cold_v": {
+            "title": "Voc Cold V",
+            "type": "number"
+          }
+        },
+        "required": [
+          "string",
+          "inverter",
+          "mppt",
+          "modules",
+          "voc_cold_v",
+          "isc_a",
+          "length_m",
+          "size"
+        ],
+        "title": "CableRow",
+        "type": "object"
+      },
       "Coefficients": {
         "description": "Temperature coefficients, and whether the file gave them or the one-diode model.",
         "properties": {
@@ -197,6 +273,168 @@
         "title": "CurrentPerMppt",
         "type": "object"
       },
+      "DesignDone": {
+        "properties": {
+          "result": {
+            "$ref": "#/components/schemas/DesignResult"
+          },
+          "type": {
+            "const": "result",
+            "default": "result",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "DesignDone",
+        "type": "object"
+      },
+      "DesignFailed": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorDetail"
+          },
+          "type": {
+            "const": "error",
+            "default": "error",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "DesignFailed",
+        "type": "object"
+      },
+      "DesignProgress": {
+        "properties": {
+          "fraction": {
+            "description": "0 to 1 of the whole run; 1 only when the run is over",
+            "title": "Fraction",
+            "type": "number"
+          },
+          "step": {
+            "description": "What the engine is doing, in words for the user",
+            "title": "Step",
+            "type": "string"
+          },
+          "type": {
+            "const": "progress",
+            "default": "progress",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "step",
+          "fraction"
+        ],
+        "title": "DesignProgress",
+        "type": "object"
+      },
+      "DesignResult": {
+        "description": "Everything a run gives. Without options, no_options says why and nothing is chosen.",
+        "properties": {
+          "chosen_option": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chosen Option"
+          },
+          "equipment": {
+            "$ref": "#/components/schemas/Equipment"
+          },
+          "far_shading_note": {
+            "title": "Far Shading Note",
+            "type": "string"
+          },
+          "layout": {
+            "$ref": "#/components/schemas/Layout"
+          },
+          "no_options": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoOptions"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/Option"
+            },
+            "title": "Options",
+            "type": "array"
+          },
+          "options_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Options Note"
+          },
+          "readouts": {
+            "$ref": "#/components/schemas/LayoutReadouts"
+          },
+          "series_range": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SeriesRange"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "shading": {
+            "$ref": "#/components/schemas/Shading"
+          },
+          "sizing": {
+            "$ref": "#/components/schemas/Sizing"
+          },
+          "weather": {
+            "$ref": "#/components/schemas/WeatherSummary"
+          },
+          "weather_notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Weather Notes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "layout",
+          "readouts",
+          "weather",
+          "weather_notes",
+          "far_shading_note",
+          "shading",
+          "equipment",
+          "sizing",
+          "series_range",
+          "options",
+          "options_note",
+          "chosen_option",
+          "no_options"
+        ],
+        "title": "DesignResult",
+        "type": "object"
+      },
       "EfficiencyCurve": {
         "description": "Input power against output power, in watts, at one DC voltage.",
         "properties": {
@@ -227,6 +465,153 @@
           "points"
         ],
         "title": "EfficiencyCurve",
+        "type": "object"
+      },
+      "Energy": {
+        "description": "The result of the simulation of a year. The hours themselves are the CSV export.",
+        "properties": {
+          "ac_kw": {
+            "title": "Ac Kw",
+            "type": "number"
+          },
+          "clipping_pct": {
+            "title": "Clipping Pct",
+            "type": "number"
+          },
+          "co2_t": {
+            "title": "Co2 T",
+            "type": "number"
+          },
+          "cuf_ac_pct": {
+            "title": "Cuf Ac Pct",
+            "type": "number"
+          },
+          "cuf_dc_pct": {
+            "title": "Cuf Dc Pct",
+            "type": "number"
+          },
+          "dc_kwp": {
+            "title": "Dc Kwp",
+            "type": "number"
+          },
+          "energy_mwh": {
+            "title": "Energy Mwh",
+            "type": "number"
+          },
+          "ghi_kwh_m2": {
+            "title": "Ghi Kwh M2",
+            "type": "number"
+          },
+          "lid_pct": {
+            "title": "Lid Pct",
+            "type": "number"
+          },
+          "monthly_mwh": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Monthly Mwh",
+            "type": "array"
+          },
+          "p_values": {
+            "items": {
+              "$ref": "#/components/schemas/PValue"
+            },
+            "title": "P Values",
+            "type": "array"
+          },
+          "poa_kwh_m2": {
+            "title": "Poa Kwh M2",
+            "type": "number"
+          },
+          "pr": {
+            "description": "Performance ratio as a fraction",
+            "title": "Pr",
+            "type": "number"
+          },
+          "sigma_pct": {
+            "title": "Sigma Pct",
+            "type": "number"
+          },
+          "specific_yield": {
+            "description": "kWh/kWp",
+            "title": "Specific Yield",
+            "type": "number"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/LossStep"
+            },
+            "title": "Steps",
+            "type": "array"
+          },
+          "total_25_years_mwh": {
+            "title": "Total 25 Years Mwh",
+            "type": "number"
+          },
+          "years_mwh": {
+            "description": "Year 1 to year 25",
+            "items": {
+              "type": "number"
+            },
+            "title": "Years Mwh",
+            "type": "array"
+          }
+        },
+        "required": [
+          "energy_mwh",
+          "dc_kwp",
+          "ac_kw",
+          "pr",
+          "specific_yield",
+          "cuf_ac_pct",
+          "cuf_dc_pct",
+          "poa_kwh_m2",
+          "ghi_kwh_m2",
+          "clipping_pct",
+          "sigma_pct",
+          "lid_pct",
+          "co2_t",
+          "steps",
+          "monthly_mwh",
+          "p_values",
+          "years_mwh",
+          "total_25_years_mwh"
+        ],
+        "title": "Energy",
+        "type": "object"
+      },
+      "Equipment": {
+        "description": "The module and the inverter of the run, as read from the project.",
+        "properties": {
+          "coefficients": {
+            "$ref": "#/components/schemas/Coefficients"
+          },
+          "inverter": {
+            "$ref": "#/components/schemas/Inverter"
+          },
+          "max_current_per_mppt": {
+            "$ref": "#/components/schemas/CurrentPerMppt"
+          },
+          "module": {
+            "$ref": "#/components/schemas/Module"
+          },
+          "module_notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Module Notes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "module",
+          "inverter",
+          "coefficients",
+          "module_notes",
+          "max_current_per_mppt"
+        ],
+        "title": "Equipment",
         "type": "object"
       },
       "EquipmentFile": {
@@ -545,6 +930,34 @@
         "title": "Inverter",
         "type": "object"
       },
+      "InverterPlace": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "position": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Position",
+            "type": "array"
+          }
+        },
+        "required": [
+          "label",
+          "position"
+        ],
+        "title": "InverterPlace",
+        "type": "object"
+      },
       "InverterResponse": {
         "description": "An inverter read from an OND file.",
         "properties": {
@@ -836,6 +1249,43 @@
           "readouts"
         ],
         "title": "LayoutResponse",
+        "type": "object"
+      },
+      "LossStep": {
+        "properties": {
+          "kind": {
+            "enum": [
+              "irr_total",
+              "irr",
+              "energy_total",
+              "energy",
+              "result"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "pct": {
+            "description": "Change against the step before; 0 for totals",
+            "title": "Pct",
+            "type": "number"
+          },
+          "value": {
+            "description": "kWh/m2 for steps of irradiance, MWh for steps of energy",
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "label",
+          "value",
+          "kind",
+          "pct"
+        ],
+        "title": "LossStep",
         "type": "object"
       },
       "Losses": {
@@ -1201,6 +1651,94 @@
         "title": "ModuleResponse",
         "type": "object"
       },
+      "MpptLoad": {
+        "properties": {
+          "imp_a": {
+            "title": "Imp A",
+            "type": "number"
+          },
+          "imp_limit_a": {
+            "title": "Imp Limit A",
+            "type": "number"
+          },
+          "inverter": {
+            "title": "Inverter",
+            "type": "integer"
+          },
+          "isc_a": {
+            "title": "Isc A",
+            "type": "number"
+          },
+          "isc_limit_a": {
+            "title": "Isc Limit A",
+            "type": "number"
+          },
+          "kwp": {
+            "title": "Kwp",
+            "type": "number"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "mppt": {
+            "title": "Mppt",
+            "type": "integer"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "strings": {
+            "title": "Strings",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "inverter",
+          "mppt",
+          "label",
+          "strings",
+          "imp_a",
+          "imp_limit_a",
+          "isc_a",
+          "isc_limit_a",
+          "kwp",
+          "ok"
+        ],
+        "title": "MpptLoad",
+        "type": "object"
+      },
+      "NoOptions": {
+        "description": "Why the run has no options, in words for the user.",
+        "properties": {
+          "code": {
+            "enum": [
+              "no_positions",
+              "system_voltage_missing",
+              "no_string_length_fits",
+              "too_few_positions"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "title",
+          "message"
+        ],
+        "title": "NoOptions",
+        "type": "object"
+      },
       "Obstacle": {
         "description": "Something that casts a shadow. Heights are above the roof surface.",
         "properties": {
@@ -1304,6 +1842,231 @@
           "name"
         ],
         "title": "Obstacle",
+        "type": "object"
+      },
+      "Option": {
+        "description": "A stringing the user may choose, with its full results.",
+        "properties": {
+          "available_strings": {
+            "title": "Available Strings",
+            "type": "integer"
+          },
+          "bom": {
+            "items": {
+              "$ref": "#/components/schemas/BomLine"
+            },
+            "title": "Bom",
+            "type": "array"
+          },
+          "cable_schedule": {
+            "items": {
+              "$ref": "#/components/schemas/CableRow"
+            },
+            "title": "Cable Schedule",
+            "type": "array"
+          },
+          "custom": {
+            "title": "Custom",
+            "type": "boolean"
+          },
+          "dc_kwp": {
+            "title": "Dc Kwp",
+            "type": "number"
+          },
+          "dcac": {
+            "title": "Dcac",
+            "type": "number"
+          },
+          "energy": {
+            "$ref": "#/components/schemas/Energy"
+          },
+          "key": {
+            "description": "series x strings x inverters, as in 29x22x1",
+            "title": "Key",
+            "type": "string"
+          },
+          "letter": {
+            "title": "Letter",
+            "type": "string"
+          },
+          "module_area_m2": {
+            "title": "Module Area M2",
+            "type": "number"
+          },
+          "mppt_loads": {
+            "items": {
+              "$ref": "#/components/schemas/MpptLoad"
+            },
+            "title": "Mppt Loads",
+            "type": "array"
+          },
+          "n_inverters": {
+            "title": "N Inverters",
+            "type": "integer"
+          },
+          "n_modules": {
+            "title": "N Modules",
+            "type": "integer"
+          },
+          "n_series": {
+            "title": "N Series",
+            "type": "integer"
+          },
+          "n_strings": {
+            "title": "N Strings",
+            "type": "integer"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "ok": {
+            "description": "DC/AC is inside the target",
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "recommended": {
+            "title": "Recommended",
+            "type": "boolean"
+          },
+          "roof_covered_pct": {
+            "title": "Roof Covered Pct",
+            "type": "number"
+          },
+          "summary": {
+            "items": {
+              "$ref": "#/components/schemas/SummaryRow"
+            },
+            "title": "Summary",
+            "type": "array"
+          },
+          "system": {
+            "$ref": "#/components/schemas/System"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "verdict": {
+            "$ref": "#/components/schemas/Verdict"
+          }
+        },
+        "required": [
+          "key",
+          "letter",
+          "title",
+          "n_series",
+          "n_strings",
+          "n_inverters",
+          "n_modules",
+          "available_strings",
+          "dc_kwp",
+          "dcac",
+          "ok",
+          "note",
+          "recommended",
+          "custom",
+          "module_area_m2",
+          "roof_covered_pct",
+          "verdict",
+          "system",
+          "energy",
+          "mppt_loads",
+          "bom",
+          "cable_schedule",
+          "summary"
+        ],
+        "title": "Option",
+        "type": "object"
+      },
+      "PVString": {
+        "description": "One string: its modules in the order they are wired, and where it is connected.",
+        "properties": {
+          "azimuth": {
+            "title": "Azimuth",
+            "type": "number"
+          },
+          "extent_m": {
+            "title": "Extent M",
+            "type": "number"
+          },
+          "inverter": {
+            "description": "From 1",
+            "title": "Inverter",
+            "type": "integer"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "modules": {
+            "description": "idx of the positions in the layout",
+            "items": {
+              "type": "integer"
+            },
+            "title": "Modules",
+            "type": "array"
+          },
+          "mppt": {
+            "description": "From 1, within its inverter",
+            "title": "Mppt",
+            "type": "integer"
+          },
+          "row": {
+            "title": "Row",
+            "type": "integer"
+          },
+          "shade_pct": {
+            "description": "Beam lost over the year to electrical shading of the string",
+            "title": "Shade Pct",
+            "type": "number"
+          },
+          "start": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Start",
+            "type": "array"
+          }
+        },
+        "required": [
+          "label",
+          "modules",
+          "row",
+          "azimuth",
+          "start",
+          "extent_m",
+          "inverter",
+          "mppt",
+          "shade_pct"
+        ],
+        "title": "PVString",
+        "type": "object"
+      },
+      "PValue": {
+        "properties": {
+          "level": {
+            "description": "Exceedance probability, as in P90",
+            "title": "Level",
+            "type": "integer"
+          },
+          "mwh": {
+            "title": "Mwh",
+            "type": "number"
+          }
+        },
+        "required": [
+          "level",
+          "mwh"
+        ],
+        "title": "PValue",
         "type": "object"
       },
       "PlacedModule": {
@@ -1904,6 +2667,143 @@
         "title": "RoofInput",
         "type": "object"
       },
+      "SeriesRange": {
+        "description": "How many modules may be in series, and what sets the limits.",
+        "properties": {
+          "limit_note": {
+            "title": "Limit Note",
+            "type": "string"
+          },
+          "limit_v": {
+            "title": "Limit V",
+            "type": "number"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "n_max": {
+            "title": "N Max",
+            "type": "integer"
+          },
+          "n_max_mppt": {
+            "title": "N Max Mppt",
+            "type": "integer"
+          },
+          "n_max_voc": {
+            "title": "N Max Voc",
+            "type": "integer"
+          },
+          "n_min": {
+            "title": "N Min",
+            "type": "integer"
+          },
+          "n_nominal": {
+            "title": "N Nominal",
+            "type": "integer"
+          },
+          "ok": {
+            "description": "False when no length fits; the message then says why",
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "system_v": {
+            "title": "System V",
+            "type": "number"
+          },
+          "t_cell_hot": {
+            "title": "T Cell Hot",
+            "type": "number"
+          },
+          "t_min": {
+            "title": "T Min",
+            "type": "number"
+          },
+          "upper_limit": {
+            "description": "What sets n_max",
+            "enum": [
+              "Voc limit",
+              "MPPT max"
+            ],
+            "title": "Upper Limit",
+            "type": "string"
+          },
+          "vmp_cold": {
+            "title": "Vmp Cold",
+            "type": "number"
+          },
+          "vmp_hot": {
+            "title": "Vmp Hot",
+            "type": "number"
+          },
+          "vmp_stc": {
+            "title": "Vmp Stc",
+            "type": "number"
+          },
+          "voc_cold": {
+            "description": "Of one module, at the lowest ambient temperature",
+            "title": "Voc Cold",
+            "type": "number"
+          }
+        },
+        "required": [
+          "system_v",
+          "t_min",
+          "t_cell_hot",
+          "voc_cold",
+          "vmp_cold",
+          "vmp_hot",
+          "vmp_stc",
+          "n_min",
+          "n_max_voc",
+          "n_max_mppt",
+          "n_max",
+          "n_nominal",
+          "limit_v",
+          "ok",
+          "message",
+          "upper_limit",
+          "limit_note"
+        ],
+        "title": "SeriesRange",
+        "type": "object"
+      },
+      "Shading": {
+        "description": "What shading costs over the year, counted over every position of the layout.\n\nThe loss chain of an option has the same figures for the modules that option uses.",
+        "properties": {
+          "far_pct": {
+            "description": "Irradiation lost to the horizon",
+            "title": "Far Pct",
+            "type": "number"
+          },
+          "keepout_area_m2": {
+            "description": "Left empty inside the setback because of shadows",
+            "title": "Keepout Area M2",
+            "type": "number"
+          },
+          "near_pct": {
+            "description": "Irradiation lost to near shading, all positions together",
+            "title": "Near Pct",
+            "type": "number"
+          },
+          "near_pct_by_module": {
+            "description": "Near shading of every position, by its idx",
+            "items": {
+              "type": "number"
+            },
+            "title": "Near Pct By Module",
+            "type": "array"
+          }
+        },
+        "required": [
+          "near_pct",
+          "far_pct",
+          "near_pct_by_module",
+          "keepout_area_m2"
+        ],
+        "title": "Shading",
+        "type": "object"
+      },
       "ShadowRequest": {
         "description": "Shadows of the parapet and the obstacles of a project at one solar hour.",
         "properties": {
@@ -1967,6 +2867,93 @@
           "polygons"
         ],
         "title": "Shadows",
+        "type": "object"
+      },
+      "Sizing": {
+        "description": "The temperatures the strings are sized with, and where each comes from.",
+        "properties": {
+          "cell_rise_c": {
+            "description": "Cell temperature above ambient, for the hot end",
+            "title": "Cell Rise C",
+            "type": "number"
+          },
+          "cell_rise_from": {
+            "enum": [
+              "roof type",
+              "entered"
+            ],
+            "title": "Cell Rise From",
+            "type": "string"
+          },
+          "t_max_c": {
+            "description": "Highest ambient temperature",
+            "title": "T Max C",
+            "type": "number"
+          },
+          "t_max_from": {
+            "enum": [
+              "weather",
+              "entered"
+            ],
+            "title": "T Max From",
+            "type": "string"
+          },
+          "t_min_c": {
+            "description": "Lowest ambient temperature",
+            "title": "T Min C",
+            "type": "number"
+          },
+          "t_min_from": {
+            "enum": [
+              "weather",
+              "entered"
+            ],
+            "title": "T Min From",
+            "type": "string"
+          },
+          "uc": {
+            "description": "Thermal loss factor, W/m2K",
+            "title": "Uc",
+            "type": "number"
+          },
+          "uc_from": {
+            "enum": [
+              "roof type",
+              "entered"
+            ],
+            "title": "Uc From",
+            "type": "string"
+          }
+        },
+        "required": [
+          "t_min_c",
+          "t_max_c",
+          "t_min_from",
+          "t_max_from",
+          "cell_rise_c",
+          "cell_rise_from",
+          "uc",
+          "uc_from"
+        ],
+        "title": "Sizing",
+        "type": "object"
+      },
+      "SummaryRow": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "value"
+        ],
+        "title": "SummaryRow",
         "type": "object"
       },
       "SunPosition": {
@@ -2132,6 +3119,74 @@
           "shadows"
         ],
         "title": "SunResponse",
+        "type": "object"
+      },
+      "System": {
+        "properties": {
+          "inverters": {
+            "items": {
+              "$ref": "#/components/schemas/InverterPlace"
+            },
+            "title": "Inverters",
+            "type": "array"
+          },
+          "n_inverters": {
+            "title": "N Inverters",
+            "type": "integer"
+          },
+          "n_modules": {
+            "title": "N Modules",
+            "type": "integer"
+          },
+          "n_series": {
+            "title": "N Series",
+            "type": "integer"
+          },
+          "n_strings": {
+            "title": "N Strings",
+            "type": "integer"
+          },
+          "strings": {
+            "items": {
+              "$ref": "#/components/schemas/PVString"
+            },
+            "title": "Strings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "n_series",
+          "n_strings",
+          "n_inverters",
+          "n_modules",
+          "strings",
+          "inverters"
+        ],
+        "title": "System",
+        "type": "object"
+      },
+      "Verdict": {
+        "description": "Shown with a tick when ok, with an exclamation mark when not. Never with a cross.",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ok",
+          "title",
+          "detail"
+        ],
+        "title": "Verdict",
         "type": "object"
       },
       "Weather": {
@@ -2427,6 +3482,89 @@
         "summary": "Demo",
         "tags": [
           "project"
+        ]
+      }
+    },
+    "/design": {
+      "post": {
+        "description": "Run the whole design of a project and tell how far it is on the way.\n\nThe answer is a stream of events. \"progress\" names the step and the fraction of the run, as often\nas a step begins. The last event is \"result\", or \"error\" when the run failed. A project that cannot\nbe run at all is refused with 422 before the stream begins.\n\nWithout a system voltage the run stops after the shading: the result has the layout and the\nshading, no options, nothing chosen, and no_options says what it waits for.",
+        "operationId": "runDesign",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Project"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "text/event-stream": {
+                "itemSchema": {
+                  "properties": {
+                    "data": {
+                      "contentMediaType": "application/json",
+                      "contentSchema": {
+                        "discriminator": {
+                          "mapping": {
+                            "error": "#/components/schemas/DesignFailed",
+                            "progress": "#/components/schemas/DesignProgress",
+                            "result": "#/components/schemas/DesignDone"
+                          },
+                          "propertyName": "type"
+                        },
+                        "oneOf": [
+                          {
+                            "$ref": "#/components/schemas/DesignProgress"
+                          },
+                          {
+                            "$ref": "#/components/schemas/DesignDone"
+                          },
+                          {
+                            "$ref": "#/components/schemas/DesignFailed"
+                          }
+                        ],
+                        "title": "Streamitem Rundesign"
+                      },
+                      "type": "string"
+                    },
+                    "event": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "retry": {
+                      "minimum": 0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request cannot be used; the message says why."
+          }
+        },
+        "summary": "Design",
+        "tags": [
+          "design"
         ]
       }
     },
