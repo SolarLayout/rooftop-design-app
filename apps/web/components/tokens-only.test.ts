@@ -22,6 +22,13 @@ function rawValuesIn(source: string): string[] {
   );
 }
 
+const isTest = (file: string) => /\.test\.tsx?$/.test(file);
+
+/** Every file of a page or a component, tests left out. */
+function guardedFiles(): string[] {
+  return [...new Glob("{app,components}/**/*.{ts,tsx}").scanSync(WEB)].filter((file) => !isTest(file)).sort();
+}
+
 describe("what counts as a raw value", () => {
   test.each([
     ['<div className="bg-[#FFB020]" />', "a colour as a number"],
@@ -48,11 +55,26 @@ describe("what counts as a raw value", () => {
   });
 });
 
-test("no component and no page carries a raw value", () => {
-  const files = [...new Glob("{app,components}/**/*.tsx").scanSync(WEB)].sort();
-  expect(files.length).toBeGreaterThan(5);
+describe("what the guard reads", () => {
+  const files = guardedFiles();
 
-  const found = files.flatMap((file) =>
+  test("components and pages", () => {
+    expect(files).toContain("components/ui/Button.tsx");
+    expect(files).toContain("app/kit/page.tsx");
+  });
+
+  test("the files that keep classes without a component", () => {
+    expect(files).toContain("components/ui/button-look.ts");
+    expect(files).toContain("components/ui/field-look.ts");
+  });
+
+  test("no test: a test of the guard names raw values to tell what one is", () => {
+    expect(files.filter(isTest)).toEqual([]);
+  });
+});
+
+test("no component and no page carries a raw value", () => {
+  const found = guardedFiles().flatMap((file) =>
     rawValuesIn(readFileSync(path.join(WEB, file), "utf8")).map((raw) => `${file}, ${raw}`),
   );
   expect(found).toEqual([]);
