@@ -14,6 +14,7 @@ OPERATIONS = {
     ("post", "/sun"): "computeSun",
     ("post", "/weather"): "loadWeather",
     ("post", "/design"): "runDesign",
+    ("post", "/export/{kind}"): "exportDesign",
 }
 
 
@@ -83,3 +84,19 @@ def test_the_design_run_is_a_stream_of_three_kinds_of_events(document):
 
 def test_the_result_of_a_design_run_has_no_hours(document):
     assert "hourly" not in document["components"]["schemas"]["Energy"]["properties"]
+
+
+def test_an_export_is_a_file_of_one_of_five_types(document):
+    operation = document["paths"]["/export/{kind}"]["post"]
+
+    assert operation["parameters"][0]["schema"]["enum"] == ["pdf", "dxf", "kmz", "csv", "sld"]
+    assert operation["responses"]["200"]["content"] == {
+        media_type: {"schema": {"type": "string", "format": "binary"}}
+        for media_type in (
+            "application/pdf",
+            "image/vnd.dxf",
+            "application/vnd.google-earth.kmz",
+            "text/csv",
+            "image/png",
+        )
+    }

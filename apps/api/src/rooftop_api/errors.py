@@ -37,9 +37,9 @@ ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
         "description": "The request cannot be used; the message says why.",
     }
 }
-# The same for a route that answers with a stream: its faults are JSON all the same, and the
-# document must say so by itself, or it would put them under the media type of the stream.
-STREAM_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
+# The same for a route that answers with a stream or a file: its faults are JSON all the same, and
+# the document must say so by itself, or it would put them under the media type of the answer.
+JSON_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
     UNPROCESSABLE: {
         "description": ERROR_RESPONSES[UNPROCESSABLE]["description"],
         "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}},
@@ -71,9 +71,17 @@ def _answer(status: int, code: str, message: str, field: str | None = None) -> J
     return JSONResponse(status_code=status, content=body.model_dump())
 
 
+WHERE_A_VALUE_CAME_IN = ("body", "path", "query")
+
+
 def field_path(location: Sequence[str | int]) -> str | None:
-    """The path of a field in the request, as in roof.obstacles.2.height; None for the body itself."""
-    parts = [str(part) for part in location if part != "body"]
+    """The path of a field in the request, as in roof.obstacles.2.height; None for the body itself.
+
+    A value of the address is named alone: kind for /export/{kind}.
+    """
+    parts = [str(part) for part in location if part not in WHERE_A_VALUE_CAME_IN[:1]]
+    if parts and parts[0] in WHERE_A_VALUE_CAME_IN[1:]:
+        parts = parts[1:]
     return ".".join(parts) if parts and not parts[0].isdigit() else None
 
 

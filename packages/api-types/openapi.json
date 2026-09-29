@@ -3652,6 +3652,91 @@
         ]
       }
     },
+    "/export/{kind}": {
+      "post": {
+        "description": "A file of the design, for the option the project has chosen.\n\npdf: the report, A4 landscape. dxf: the layout, R2010 in metres, a layer for every string.\nkmz: roof, obstacles and the modules in use, for Google Earth. csv: the 8,760 hours.\nsld: the single-line diagram as a PNG.\n\nThe project must name its chosen option, and the design must have it.",
+        "operationId": "exportDesign",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "kind",
+            "required": true,
+            "schema": {
+              "enum": [
+                "pdf",
+                "dxf",
+                "kmz",
+                "csv",
+                "sld"
+              ],
+              "title": "Kind",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Project"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              },
+              "application/vnd.google-earth.kmz": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              },
+              "image/png": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              },
+              "image/vnd.dxf": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "The file, to download under the name of the project."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request cannot be used; the message says why."
+          }
+        },
+        "summary": "Export",
+        "tags": [
+          "export"
+        ]
+      }
+    },
     "/health": {
       "get": {
         "description": "Tell the caller that the API is up, and which version it is.",
