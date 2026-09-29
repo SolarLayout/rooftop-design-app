@@ -67,4 +67,6 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
 - `mockups/build_phase3_boards.py` writes the two boards of round 4, "Controls, part 2" and "Shell states",
   approved on 2026-09-29 (decision D32), and the board "Tabs", approved the same day (decision D35). It is
   kept so that the boards can be written again.
-- `mockups/canvas.json` is the layout of the boards on the canvas.
+- `mockups/canvas.json` is the layout of the boards on the canvas. It has the board "Tabs" already; the
+  canvas has not: the permission system refused the publish on 2026-09-29. Until the board is published,
+  the repo is where it is seen (`previews/tabs.png`).

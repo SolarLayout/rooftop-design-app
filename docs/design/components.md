@@ -50,6 +50,28 @@ End to the first and the last; each takes the choice it goes to. A choice that c
 passed over. On phone and tablet the track has radius `radius-row`, the items `radius-seg-touch` and the size
 of body text. With `fill` the choices share the width in equal parts (the lens switch on phone).
 
+## Tabs
+The board "Tabs" (`mockups/Tabs.dc.html`), approved on 2026-09-29 (decision D35).
+Row: on a line `line`, tabs 4 apart. Tab: height 40 (44 on touch), padding 0 14 (0 16 on touch), radius
+`radius-xs`, `text-small` (body text on touch) in text-2, no surface. The tab that is taken: text, Geist 500,
+a line of `border-tab` in accent that lies on the line of the row and is as wide as the words. Under the
+pointer: text, the line in `line-hover`. Cannot be taken: opacity 0.45. A count may follow the words: mono 12
+in text-2 on `surface-2`, 18 high, radius full. The panel begins 16 under the row.
+
+Tabs divide the content of one card or one panel into parts, two to six of them, named by what is in them.
+A segmented control sets a value of the design or the view of the stage.
+
+In code: `Tabs`. It shares the keys of `Segmented` (`choice-keys.ts`).
+
+- `tablist`, `tab`, `tabpanel`; the panel is named by its tab. One panel is in the page: that of the tab
+  that is taken.
+- The keyboard stops at the row once, at the tab that is taken. The arrows left and right go to the
+  neighbour and around the ends, Home and End to the first and the last; each takes the tab it goes to, and
+  a tab that cannot be taken is passed over. The arrows up and down are left to the page. Tab leads into
+  the panel.
+- A row that is too long scrolls sideways and shows no bar; part of the next tab is seen. The tab that is
+  taken is brought into view.
+
 ## Switch
 44 by 26, radius full. On: accent track, knob accent-ink. Off: line-strong track, knob text-2. Knob 20, inset 3,
 `shadow-knob`. On touch the hit area is 52 by 44 around a 52 by 30 switch. Always beside a label and, where it

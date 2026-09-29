@@ -222,10 +222,11 @@ Reference widths: 390, 834, 1440.
 
 ## Lines
 
-A line is 1 px wide. The two that are wider have a token.
+A line is 1 px wide. Those that are wider have a token.
 
 | Token | Value | Use |
 |---|---|---|
+| `--border-tab` | `2px` | The line under a tab |
 | `--border-handle` | `3px` | The accent line around the handle of a slider, on desktop |
 | `--border-handle-touch` | `4px` | The same on phone and tablet |
 
@@ -335,7 +336,7 @@ layer of their own.
 | `--duration-panel`, `--ease-out` | `sheet-motion` | on a sheet that goes to its stop |
 | `--stroke-*` | `stroke-icon`, `stroke-icon-light`, `stroke-tick` | on the `svg` of an icon |
 | `--z-*` | `z-` and the name | `z-float` |
-| `--border-*` | `border-` and the name | `border-handle-touch desktop:border-handle` |
+| `--border-*` | `border-` and the name; `border-b-tab` for the line under a tab | `border-handle-touch desktop:border-handle` |
 
 Tailwind's own palette, sizes of type, radii and shadows do not exist in this app: a utility that is not made
 of a token makes no CSS.
@@ -348,7 +349,8 @@ way, in pixels: `placed` (`--x`, `--y`). A size, a colour or a shadow is never s
 
 States have variants of their own, so that the kit can show a state without a pointer or a keyboard:
 `hovered:` (under a pointer that can hover, or `data-shown-as="hover"`), `pressed:` (while pressed, or
-`data-shown-as="pressed"`), `focused:` (the focus is inside, or `data-shown-as="focus"`). `focus-ring` also
+`data-shown-as="pressed"`), `focused:` (the focus is inside, or `data-shown-as="focus"`), and `within-hovered:` for what is directly inside
+a control that is under the pointer (the line under a tab). `focus-ring` also
 answers to `data-shown-as="focus"`. None applies to a control
 that is disabled.
 
