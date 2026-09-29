@@ -21,7 +21,7 @@ Nothing. `main` is green and there is no open branch or pull request.
 ## Next, in order
 
 1. Phase 2, part 2. Work order: `plan/resume/001-phase-2-engine-api.md` (it starts at its step 2).
-   - Done: CSV weather with GHI alone
+   - Done: CSV weather with GHI alone; the design run at the desktop app's speed (about 11.5 s)
    - `POST /weather`, `POST /design` with progress over SSE, `POST /export/{pdf,dxf,kmz,csv,sld}`
    - Memoisation (decision D6), the typed client in `apps/web/lib/api`
    - Decision D24: the demo bundles the real equipment files
@@ -40,7 +40,7 @@ Nothing. `main` is green and there is no open branch or pull request.
 | 3D reference project (read-only) | `/Users/arunkpatra/codebase/solar-mms-modeller`. GitHub `SolarLayout/solar-mms-modeller` |
 | Access to those two | They are outside this repo. A session can read them only after the owner adds them with `/add-dir`. Ask for that when the slice needs them |
 | Node | 26.10.0 at `/opt/homebrew/bin/node` (`.nvmrc`) |
-| bun, uv, Python | bun 1.3.14; uv; Python 3.12.8 |
+| bun, uv, Python | bun 1.3.14; uv; Python 3.12.13, the build that uv manages (`.python-version`, `apps/api/pyproject.toml`) |
 | Playwright | `@playwright/test` 1.52.0; its browser (chromium-1169) is already installed |
 | Esri key | In `apps/web/.env.local` as `NEXT_PUBLIC_ESRI_API_KEY`. Never read, print or commit the file. Referrers: `http://localhost:4700`, `http://127.0.0.1:4700`. Expires about 28 Sep 2027 |
 | Design canvas | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy (open to anyone with the link) |
@@ -58,7 +58,6 @@ Nothing. `main` is green and there is no open branch or pull request.
 | `tools/imagery-preview/` is a throwaway test page on port 4700; remove it when Phase 4 lands | Phase 4 |
 | Option captions "Fills the inverter" and "Lower clipping" in the Strings mockup are derived in the web app; the engine does not produce them | Phase 7 |
 | String placement on the roof in the Strings mockup is illustrative | Phase 7 uses the engine's strings |
-| The design run takes about 16 s here, about 11 s in the desktop app's own environment. The engine code is the same; this repo runs Python 3.12.8 from python.org with numpy 2.5 and scipy 1.18, the desktop app a uv-managed Python 3.11 with numpy 2.4 and scipy 1.17. Try a uv-managed Python 3.12 and compare | Phase 2, part 2 |
 | Heights cannot come from a DXF: a layer name may hold neither `=` nor `:`. Every DXF obstacle gets 1.0 m and is listed as missing | Phase 5, with the owner |
 | `/layout` has no size limit: a roof of 2 km by 1 km takes 29 s | Phase 11 |
 | Progress of a design run has fixed shares and no progress inside the options step | Phase 2, part 2 |
