@@ -207,6 +207,7 @@ Reference widths: 390, 834, 1440.
 |---|---|---|
 | `--radius-xs` | `6px` | Inputs inside tables and the loss chain, format badges |
 | `--radius-seg` | `7px` | Item inside a segmented control |
+| `--radius-seg-touch` | `9px` | The same on phone and tablet |
 | `--radius-control` | `10px` | Buttons, fields, segmented track |
 | `--radius-row` | `12px` | List rows, option cards, stat tiles |
 | `--radius-card-s` | `14px` | Compact cards, floating controls |
@@ -232,6 +233,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--shadow-card` | `inset 0 1px 0 rgba(255,255,255,.05), 0 1px 2px rgba(0,0,0,.35), 0 16px 40px rgba(0,0,0,.28)` | Cards |
 | `--shadow-float` | `inset 0 1px 0 rgba(255,255,255,.06), 0 1px 2px rgba(0,0,0,.45), 0 16px 40px rgba(0,0,0,.5)` | Anything over the 3D or the map |
 | `--shadow-panel` | `inset 0 1px 0 rgba(255,255,255,.06), 0 2px 4px rgba(0,0,0,.4), 0 24px 64px rgba(0,0,0,.55)` | Large floating panels |
+| `--shadow-track` | `inset 0 1px 3px rgba(0,0,0,.45)` | Track of a switch |
 | `--shadow-knob` | `0 1px 3px rgba(0,0,0,.5)` | Switch knob |
 | `--shadow-handle` | `0 2px 6px rgba(0,0,0,.6)` | Map and slider handles |
 | `--halo-focus` | `0 0 0 3px rgba(255,176,32,.18)` | Focused field (with an accent border) |
