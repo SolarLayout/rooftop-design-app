@@ -33,6 +33,12 @@ Step 1. Part 1 may be unfinished. Find out which of these is true and act on it:
      plan/phase-02-engine-api.md, test first, starting by porting the desktop app's tests.
 
 Step 2. Build part 2, each as its own pull request, test first:
+  - First: CSV weather with GHI alone fails in the split into DNI and DHI (sun positions are
+    indexed half an hour later than the irradiance). The expected failure is in
+    apps/api/tests/engine/test_weather_sources.py. Make it pass without changing any result for
+    CSV that has DNI and DHI, or for PVGIS and NASA weather.
+  - The design run takes about 16 s here and about 11 s in the desktop app's environment. Find
+    out why (Python build, numpy, scipy) and close the gap if it is ours to close.
   - POST /weather: PVGIS, NASA POWER and CSV text; returns the 8,760 hours, the horizon and a
     summary. Tests use apps/api's bundled pune_weather.json and never touch the network; the
     fetch functions are covered with recorded responses.
@@ -71,8 +77,10 @@ Start by telling me which case of step 1 you found and what you will do.
 
 ## Notes for the owner
 
-- Session 1 started part 1 with an agent on branch `feat/engine`. If session 1 is still open when that agent
-  reports, session 1 reviews and merges part 1, and this prompt starts at step 2.
+- Part 1 was reviewed and merged by session 1 (PR #7). The session will find case a in step 1 and go on to
+  step 2.
+- Part 1 found a fault in the desktop engine: CSV weather with GHI alone cannot be read. It is the first thing
+  to fix in part 2, test first.
 - The full design run takes about 10 seconds on the demo; that is the engine, not a fault.
 - No decision is expected from you in this phase, unless an engine test from the desktop app fails after the
   copy. That would be reported to you at once, not worked around.

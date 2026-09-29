@@ -1,6 +1,6 @@
 # Phase 2: engine and stateless API
 
-**Status:** in progress. Part 1 is built on branch `feat/engine` (engine, format 2, first endpoints);
+**Status:** in progress. Part 1 is merged (PR #7, 2026-09-29: engine, format 2, first endpoints);
 weather, `/design` over SSE, exports and memoisation remain. **Depends on:** phase 1.
 
 ## Goal
