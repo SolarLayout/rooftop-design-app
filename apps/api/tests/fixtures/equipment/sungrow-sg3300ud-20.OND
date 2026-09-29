@@ -1,0 +1,141 @@
+﻿PVObject_=pvGInverter
+  Comment=Sungrow	SG3300UD-20	Manufacturer 2023
+  Version=6.86
+  ParObj1=2019
+  Flags=$001C1460
+
+  PVObject_Commercial=pvCommercial
+    Flags=$0041
+    Manufacturer=Sungrow
+    Model=SG3300UD-20
+    DataSource=Manufacturer 2023
+    YearBeg=2019
+    NPieces=100
+    PriceDate=23/02/21 08:47
+    Remarks, Count=3
+      Str_1=Technology:
+      Str_2=Protection:
+      Str_3=Control:
+    End of Remarks=Control:
+  End of PVObject pvCommercial
+  Transfo=Without
+
+  Converter=TConverter
+    PNomConv=3300.000
+    PMaxOUT=3960.000
+    VOutConv=660.0
+    VMppMin=938
+    VMPPMax=1500
+    VmppNom=1100.0
+    VAbsMax=1500
+    PSeuil=16500.0
+    EfficMax=97.00
+    EfficEuro=95.00
+    FResNorm=3.00
+    ModeOper=MPPT
+    CompPMax=Lim
+    CompVMax=Lim
+    MonoTri=Tri
+    ModeAffEnum=Efficf_POut
+    UnitAffEnum=kW
+    IDCMax=0.0
+    INomAC=2886.0
+    IMaxAC=3465.0
+    TPNom=51.0
+    TPMax=23.0
+    TPLim1=55.0
+    TPLimAbs=60.0
+    PLim1=1980.000
+    PLimAbs=330.000
+    PInEffMax =1800.000
+    PThreshEff=49.9
+    HasdefaultPThresh=False
+
+    ProfilPIO=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$8085
+      Mode=1
+      Point_1=60,0
+      Point_2=90,41
+      Point_3=150,103
+      Point_4=300,257
+      Point_5=600,562
+      Point_6=900,863
+      Point_7=1800,1746
+      Point_8=3000,2872
+      Point_9=0,0
+      Point_10=0,0
+      Point_11=0,0
+    End of TCubicProfile
+    VNomEff=938.0,1100.0,1300.0,
+    EfficMaxV=99.010,98.970,98.830,
+    EfficEuroV=98.761,98.595,98.505,
+
+    ProfilPIOV1=TCubicProfile
+      NPtsMax=11
+      NPtsEff=9
+      LastCompile=$8089
+      Mode=1
+      Point_1=16500.0,0.0
+      Point_2=168556.5,165000.0
+      Point_3=334414.3,330000.0
+      Point_4=667070.9,660000.0
+      Point_5=833670.2,825000.0
+      Point_6=999899.0,990000.0
+      Point_7=1669195.8,1650000.0
+      Point_8=2508869.7,2475000.0
+      Point_9=3351614.9,3300000.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+
+    ProfilPIOV2=TCubicProfile
+      NPtsMax=11
+      NPtsEff=9
+      LastCompile=$8089
+      Mode=1
+      Point_1=16500.0,0.0
+      Point_2=171321.8,165000.0
+      Point_3=336322.9,330000.0
+      Point_4=667340.7,660000.0
+      Point_5=833838.7,825000.0
+      Point_6=1000303.1,990000.0
+      Point_7=1670716.9,1650000.0
+      Point_8=2509378.6,2475000.0
+      Point_9=3357070.1,3300000.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+
+    ProfilPIOV3=TCubicProfile
+      NPtsMax=11
+      NPtsEff=9
+      LastCompile=$8089
+      Mode=1
+      Point_1=16500.0,0.0
+      Point_2=171964.6,165000.0
+      Point_3=336975.4,330000.0
+      Point_4=668286.7,660000.0
+      Point_5=835273.9,825000.0
+      Point_6=1001720.1,990000.0
+      Point_7=1671901.9,1650000.0
+      Point_8=2510396.7,2475000.0
+      Point_9=3357411.7,3300000.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+  End of TConverter
+  NbInputs=5
+  NbMPPT=3
+  TanPhiMin=-0.750
+  TanPhiMax=0.750
+  NbMSInterne=2
+  MasterSlave=No_M_S
+  IsolSurvey =Yes
+  DC_Switch=Yes
+  AC_Switch=Yes
+  DiscAdjust=Yes
+  MS_Thresh=0.8
+  Night_Loss=90.00
+End of PVObject pvGInverter

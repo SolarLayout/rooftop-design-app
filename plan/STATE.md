@@ -59,7 +59,8 @@ If `feat/engine` exists locally with commits and no pull request, treat it as un
 | `tools/imagery-preview/` is a throwaway test page on port 4700; remove it when Phase 4 lands | Phase 4 |
 | Option captions "Fills the inverter" and "Lower clipping" in the Strings mockup are derived in the web app; the engine does not produce them | Phase 7 |
 | String placement on the roof in the Strings mockup is illustrative | Phase 7 uses the engine's strings |
-| Remote branches `feat/foundation` and `docs/design-system` may still exist after their merge; delete if so | Housekeeping |
+| Real PAN and OND files are in `apps/api/tests/fixtures/equipment/` with a README; no test uses them yet | Phase 2, part 2 |
+| The demo shows its equipment as "Test". The real names are Insolation INA-144MHC-TF-560 and WattPower WP-330KTL-H1 (same data). Showing them is the owner's call | Owner |
 
 ## Closed, do not reopen
 
