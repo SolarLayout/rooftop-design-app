@@ -11,6 +11,16 @@ test("the kit names itself", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1, name: "Controls, depth and motion" })).toBeVisible();
 });
 
+test("nothing scrolls sideways, from 360 px up", async ({ page }) => {
+  const widths = [360, page.viewportSize()?.width ?? 360];
+
+  for (const width of widths) {
+    await page.setViewportSize({ width, height: 800 });
+    const beyond = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(beyond, `at ${width} px`).toBeLessThanOrEqual(0);
+  }
+});
+
 test("axe finds nothing serious or critical", async ({ page }) => {
   const found = await new AxeBuilder({ page }).analyze();
   const grave = found.violations

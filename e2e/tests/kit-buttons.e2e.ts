@@ -171,12 +171,3 @@ test.describe("IconButton", () => {
     }
   });
 });
-
-test("every example is inside the page: nothing scrolls sideways", async ({ page }) => {
-  await expect(example(page, "button-primary-rest")).toBeVisible();
-  const width = await page.evaluate(() => ({
-    scroll: document.documentElement.scrollWidth,
-    client: document.documentElement.clientWidth,
-  }));
-  expect(width.scroll).toBeLessThanOrEqual(width.client);
-});
