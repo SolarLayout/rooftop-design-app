@@ -278,6 +278,19 @@ describe("motion", () => {
     expect(made).toContain("transition-timing-function: var(--ease-out);");
   });
 
+  test("a ring turns and a skeleton breathes, in the times of the tokens", async () => {
+    const made = oneLine(await utilitiesOf(["turning", "breathing"]));
+
+    expect(made).toContain(".turning { animation: turn var(--duration-spin) linear infinite; }");
+    expect(made).toContain(".breathing { animation: breathe var(--duration-breathe) ease-in-out infinite; }");
+    expect(oneLine(css)).toContain("@keyframes turn { to { rotate: 360deg; } }");
+    expect(oneLine(css)).toContain("@keyframes breathe { 50% { opacity: var(--opacity-updating); } }");
+  });
+
+  test("a value that is updated is dimmed by a token", async () => {
+    expect(oneLine(await utilitiesOf(["opacity-updating"]))).toContain(".opacity-updating { opacity: var(--opacity-updating); }");
+  });
+
   test("is removed for those who ask for less of it", () => {
     const reduced = oneLine(css.slice(css.indexOf("@media (prefers-reduced-motion: reduce)")));
     expect(reduced).toContain("transition: none !important;");

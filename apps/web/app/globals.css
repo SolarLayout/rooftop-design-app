@@ -197,12 +197,14 @@
   --duration-fill: 900ms;
   --duration-tilt: 1200ms;
   --duration-spin: 900ms;
+  --duration-breathe: 1600ms;
   --duration-pulse-saved: 2400ms;
   --duration-pulse-corner: 2000ms;
   --shift-press: 1px;
   --scale-press: 0.985;
 
   --opacity-disabled: 0.45;
+  --opacity-updating: 0.55;
 
   --stroke-icon: 2;
   --stroke-icon-light: 1.7;
@@ -598,6 +600,27 @@
 
 @utility opacity-disabled {
   opacity: var(--opacity-disabled);
+}
+@utility opacity-updating {
+  opacity: var(--opacity-updating);
+}
+
+/* What waits: a ring turns, a skeleton breathes. Both stand still for those who ask for less motion. */
+@keyframes turn {
+  to {
+    rotate: 360deg;
+  }
+}
+@keyframes breathe {
+  50% {
+    opacity: var(--opacity-updating);
+  }
+}
+@utility turning {
+  animation: turn var(--duration-spin) linear infinite;
+}
+@utility breathing {
+  animation: breathe var(--duration-breathe) ease-in-out infinite;
 }
 /* The lowest of the three heights: no shadow at all. */
 @utility flat {

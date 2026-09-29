@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { KitPage } from "./Pages";
 import { Sheets } from "./Sheets";
+import { Waiting } from "./Waiting";
 
 /** The second page of the kit: what opens, what waits and what answers. */
 export function KitPartTwo() {
@@ -13,6 +14,9 @@ export function KitPartTwo() {
       <div className="grid grid-cols-1 gap-grid desktop:grid-cols-2">
         <div className="flex flex-col gap-grid">
           <Sheets />
+        </div>
+        <div className="flex flex-col gap-grid">
+          <Waiting />
         </div>
       </div>
     </KitPage>
