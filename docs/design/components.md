@@ -58,9 +58,29 @@ helps, one line of hint. `role="switch"` with `aria-checked`. The track has `sha
 In code: `Switch`. Its name is its `label`. The knob slides in `duration-press`.
 
 ## Slider and range slider
-Track 4 to 6 high, `color-well`; filled part accent; handle 18 to 22 round, white with a 3 to 4 px accent border,
-`shadow-handle` (26 on touch). The value is shown above the track in `text-value`, never only on the handle.
-Ticks in `text-tick`. The range slider (shade-free window) has two handles and fills between them.
+Track 4 high, `color-line`, radius full; the filled part accent. Handle 18 round (26 on touch), `color-text`
+with an accent border of `border-handle` (3; `border-handle-touch`, 4, on touch), `shadow-handle`. The value
+is shown above the track in `text-value-s` (`text-value` on touch) with its unit, never only on the handle;
+a slider has its label at the left of the value. One line of hint may follow under the track, in
+`text-caption`, text-3. Ticks in `text-tick`, text-3, each under its value. The range slider (shade-free
+window) has two handles and fills between them; its two values stand at the left, a note ("solar time") at
+the right.
+
+In code: `Slider` and `RangeSlider`; their numbers in `slider-steps.ts`.
+
+- The slider is 20 high on desktop and 44 on touch, and all of it takes the pointer: a press brings the
+  nearest handle there, and a drag goes on from it.
+- The middle of a handle stays half a handle away from the ends of the track: a handle never stands out
+  over them.
+- A drag or a key changes what is shown. The value is committed when the drag ends, when the key is
+  released, or when the focus leaves. A drag that is broken off is given up.
+- Keys: the arrows one step, Page Up and Page Down a tenth of the scale in whole steps, Home and End to the
+  ends.
+- The two handles of a range never pass each other: one step stays between them, or what `apart` says.
+  Home and End of a handle lead as far as the other lets it.
+- `role="slider"` with its value in words ("15°", "09:00 solar time"); the handles of a range are a group
+  and are named "from" and "to".
+- Cannot be used: opacity 0.45, and neither pointer nor key moves it.
 
 ## Number field
 Recessed: `color-well`, border `line`, `shadow-well`, radius `radius-control`, height 40 (44 on touch, 22 inside
