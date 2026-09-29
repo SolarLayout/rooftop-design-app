@@ -3,8 +3,8 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-09-29, end of session 3. Phase 3 is in progress: fonts, tokens, the kit page and nine
-components are merged; the two boards of round 4 are approved and on the canvas; resume prompt 003 is written.
+**Last updated:** 2026-09-29, during session 4. Phase 3 is in progress: parts 1 and 2 are merged, steps 3 to 5 of the
+rest are in the draft pull request #32, the plan of the rest is `plan/phase-03-rest-plan.md`.
 
 ## Where we are
 
@@ -13,15 +13,21 @@ components are merged; the two boards of round 4 are approved and on the canvas;
 | 0 Design | Direction approved. 16 boards drawn and approved | More screens to draw, listed in `phase-00-design.md`; Tabs is one of them |
 | 1 Foundation | Done, merged (PR #1) | |
 | 2 Engine and API | Done (PR #7, PRs #11 to #23) | What exists, what was decided, what was found: `phase-02-engine-api.md`, "As built" |
-| 3 Design system and shell | In progress (PRs #24 to #29) | What exists, what remains: `phase-03-design-system-shell.md`, "As built, so far" |
+| 3 Design system and shell | In progress (PRs #24 to #31; #32 open) | What exists, what remains: `phase-03-design-system-shell.md`, "As built, so far" |
 | 4 to 11 | Not started | |
 
 ## In flight
 
-No open branch and no open pull request. `main` is green.
+Branch `feat/phase-3-shell`, draft pull request #32: the rest of Phase 3 in one pull request (decision D34,
+recorded in that branch), each step a commit. Done in it: step 3 Sheet, step 4 ProgressRing and Skeleton,
+step 5 Tooltip and Toast. Next in it: step 6 Select and the list that floats. The steps and the decisions
+are in `plan/phase-03-rest-plan.md`.
 
-Nothing waits for the owner. He approved both boards of round 4, with the choices in them (decision D32),
-and keeps Tabs in the phase (decision D33). The boards are on the canvas.
+Nothing waits for the owner. He approved the plan and the board of Tabs on 2026-09-29 ("all approved",
+decision D35, recorded in the branch). The board is not on the canvas yet: it is published with step T.
+
+A session that takes this over: check out the branch, read the plan, run `bun check`, go on with the
+next step.
 
 ## What the web app has today
 
