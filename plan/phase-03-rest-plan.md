@@ -53,7 +53,7 @@ decided on the way. It is kept true while the work goes on: a step that is done 
 | # | Decision | Why |
 |---|---|---|
 | 1 | The kit gets a second page, `/kit/part-2`, for the components of round 4, and a third, `/kit/shell`, for the states of the shell | One page with everything is 20 screens high on phone; its baseline is slow to compare and heavy in the repo |
-| 2 | What opens over the screen (list, tooltip, toast, dialog) is in the top layer of the browser (`popover`, `dialog`), not in a layer of our own with z-index | The inspector scrolls and would cut a list off; the browser keeps the focus in a modal dialog by itself |
+| 2 | What opens over the screen (list, tooltip, dialog) is in the top layer of the browser (`popover`, `dialog`), not in a layer of our own with z-index. The toasts are not: their place is in the page from the start, in the layer `z-toast`, so that a screen reader hears what comes into it | The inspector scrolls and would cut a list off; the browser keeps the focus in a modal dialog by itself |
 | 3 | A place in pixels that follows the data (where a list floats) is set with `measures()` too, as the share of a slider is | One way through the guard, not two |
 | 4 | One toast is shown at a time, in the order they came | The design shows one; a pile over the vitals hides them |
 | 5 | The pause before a design run is 500 ms | A run takes 4 to 12 s; two edits shortly after each other are one run |

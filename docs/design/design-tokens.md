@@ -206,8 +206,10 @@ Reference widths: 390, 834, 1440.
 
 | Token | Value | Use |
 |---|---|---|
+| `--radius-key` | `4px` | The box around a key in a tooltip |
 | `--radius-xs` | `6px` | Inputs inside tables and the loss chain, format badges |
 | `--radius-seg` | `7px` | Item inside a segmented control |
+| `--radius-item` | `8px` | Rows of a list that floats, tooltips, the action of a toast |
 | `--radius-seg-touch` | `9px` | The same on phone and tablet |
 | `--radius-control` | `10px` | Buttons, fields, segmented track |
 | `--radius-row` | `12px` | List rows, option cards, stat tiles |
@@ -243,6 +245,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--shadow-well-focus` | `inset 0 1px 3px rgba(0,0,0,.65), 0 0 0 3px rgba(255,176,32,.18)` | A field that has the focus: the well and the halo (with an accent border) |
 | `--shadow-card` | `inset 0 1px 0 rgba(255,255,255,.05), 0 1px 2px rgba(0,0,0,.35), 0 16px 40px rgba(0,0,0,.28)` | Cards |
 | `--shadow-float` | `inset 0 1px 0 rgba(255,255,255,.06), 0 1px 2px rgba(0,0,0,.45), 0 16px 40px rgba(0,0,0,.5)` | Anything over the 3D or the map |
+| `--shadow-tooltip` | `0 1px 2px rgba(0,0,0,.45), 0 8px 20px rgba(0,0,0,.35)` | Tooltips |
 | `--shadow-panel` | `inset 0 1px 0 rgba(255,255,255,.06), 0 2px 4px rgba(0,0,0,.4), 0 24px 64px rgba(0,0,0,.55)` | Large floating panels |
 | `--shadow-track` | `inset 0 1px 3px rgba(0,0,0,.45)` | Track of a switch |
 | `--shadow-knob` | `0 1px 3px rgba(0,0,0,.5)` | Switch knob |
@@ -283,7 +286,24 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 
 Under `prefers-reduced-motion: reduce` every transition and animation is removed; state changes cut.
 
+## Numbers in code (TypeScript, `apps/web/components/ui/design-numbers.ts`)
+
+Not CSS: times that a clock waits and distances that a place is worked out with. A test holds this table
+and the file equal.
+
+| Name | Value | Use |
+|---|---|---|
+| `TOOLTIP_DELAY` | `400` | Milliseconds between the pointer coming over a control and its tooltip |
+| `TOAST_STAYS` | `5000` | Milliseconds that a toast of something done stays |
+| `TOOLTIP_GAP` | `8` | Pixels between a tooltip and its control |
+| `LIST_GAP` | `6` | Pixels between a list that floats and its trigger |
+| `SCREEN_MARGIN` | `8` | Pixels that stay free between what floats and the edge of the screen |
+
 ## Layers
+
+What floats beside a control (a tooltip, a list) and a dialog are in the top layer of the browser and need no
+layer of their own.
+
 
 | Token | Value | Use |
 |---|---|---|
@@ -322,7 +342,8 @@ of a token makes no CSS.
 A place or a width that follows the data (the handle of a slider at its value) is a share of the width
 around it, from 0 to 1. The component sets it with `measures()` (`apps/web/components/ui/measures.ts`), which
 is the only inline style there is, and a utility reads it: `left-at` (`--at`), `w-span` and `h-span`
-(`--span`). A size, a colour or a shadow is never set this way.
+(`--span`). A place on the screen that is worked out (where a tooltip or a list floats) is set the same
+way, in pixels: `placed` (`--x`, `--y`). A size, a colour or a shadow is never set this way.
 
 States have variants of their own, so that the kit can show a state without a pointer or a keyboard:
 `hovered:` (under a pointer that can hover, or `data-shown-as="hover"`), `pressed:` (while pressed, or

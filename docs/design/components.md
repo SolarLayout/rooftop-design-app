@@ -247,6 +247,14 @@ The name of a control that shows an icon or one word. Height 28, padding 0 10, `
 may follow, in mono 11 in a box with radius 4. 8 from its control. It comes after 400 ms under the pointer
 and at once with the keyboard focus; never on touch. It is never the only place where something is said.
 
+In code: `Tooltip`, around its control. Radius `radius-item`, the key in `radius-key`, shadow
+`shadow-tooltip`; the times and the gap in `design-numbers.ts`.
+
+- It is over its control, its middle over the middle of the control; under it where there is no room
+  over it. It never leaves the screen (`place-floating.ts`).
+- It goes when the pointer leaves, when the focus leaves, when the control is pressed, and with Escape.
+- The control is described by it (`aria-describedby`); its name is its own.
+
 ## Toast
 `surface-1`, border `line-strong`, radius `radius-row`, `shadow-float`, 48 high or more, padding 8 8 8 14,
 gap 10. A status mark (tick 18 or note 20), the words, then an action in accent, Geist 500 (height 32), or a
@@ -254,6 +262,14 @@ quiet icon button of 32 to close. At the bottom of the screen in its middle, 24 
 bar on phone. `role="status"`.
 A toast of something done leaves after 5 s, and stays while the pointer is over it or the focus is in it. A
 toast with a note stays until it is closed.
+
+In code: `Toast` is the look, `Toaster` the place where toasts are shown, `toast-queue.ts` their queue, a
+store without React.
+
+- One toast is shown at a time, in the order they came. The 5 s of a toast begin when it is shown.
+- The action of a toast (Undo) closes it. On phone and tablet the action and the close button are 44 high.
+- The place of the toasts is in the page from the start, so that a screen reader hears what comes into it.
+  It is in the layer `z-toast`.
 
 ## Table
 Head: height 36, padding 0 8, `text-section` in text-3, a line `line` under it. Rows: height 44, padding 0 8,
