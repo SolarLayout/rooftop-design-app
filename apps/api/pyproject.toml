@@ -4,7 +4,16 @@ version = "0.1.0"
 description = "SolarLayout Rooftop: stateless API (rooftop_api) and engine (rooftop_core)"
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "ezdxf>=1.1",
     "fastapi>=0.115,<1",
+    "matplotlib>=3.8",
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "pvlib>=0.11",
+    "pyproj>=3.6",
+    "requests>=2.31",
+    "scipy>=1.11",
+    "shapely>=2.0",
     "uvicorn[standard]>=0.34,<1",
 ]
 
@@ -12,6 +21,7 @@ dependencies = [
 dev = [
     "httpx>=0.28,<1",
     "import-linter>=2.3,<3",
+    "pypdf>=6,<7",
     "pytest>=8.3,<10",
     "ruff>=0.11,<1",
 ]
@@ -25,7 +35,8 @@ packages = ["src/rooftop_api", "src/rooftop_core"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-q"
+addopts = "-q --strict-markers"
+markers = ["slow: takes seconds, not milliseconds; still part of every run of the check"]
 
 [tool.ruff]
 line-length = 110
@@ -35,12 +46,56 @@ src = ["src", "tests"]
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP"]
 
+# The engine and its tests were copied from the desktop app (rooftop-design, commit bf2cb67) and keep
+# its layout, so a diff against the source shows only what was changed here. The desktop app did not
+# limit the line length and used its own layout; every other rule holds for these files too.
+# A module written in this repository is not listed: it is formatted and checked in full.
+[tool.ruff.lint.per-file-ignores]
+"src/rooftop_core/bom.py" = ["E501"]
+"src/rooftop_core/demo.py" = ["E501"]
+"src/rooftop_core/export/files.py" = ["E501"]
+"src/rooftop_core/options.py" = ["E501"]
+"src/rooftop_core/placement.py" = ["E501"]
+"src/rooftop_core/plots.py" = ["E501"]
+"src/rooftop_core/project.py" = ["E501"]
+"src/rooftop_core/shading.py" = ["E501"]
+"src/rooftop_core/simulation.py" = ["E501"]
+"src/rooftop_core/weather.py" = ["E501"]
+"tests/engine/test_placement_shading.py" = ["E501"]
+"tests/engine/test_simulation.py" = ["E501"]
+
+[tool.ruff.format]
+exclude = [
+    "src/rooftop_core/bom.py",
+    "src/rooftop_core/demo.py",
+    "src/rooftop_core/export/files.py",
+    "src/rooftop_core/geo.py",
+    "src/rooftop_core/geometry.py",
+    "src/rooftop_core/io/pvsyst.py",
+    "src/rooftop_core/io/roof_import.py",
+    "src/rooftop_core/onediode.py",
+    "src/rooftop_core/options.py",
+    "src/rooftop_core/placement.py",
+    "src/rooftop_core/plots.py",
+    "src/rooftop_core/project.py",
+    "src/rooftop_core/shading.py",
+    "src/rooftop_core/simulation.py",
+    "src/rooftop_core/stringing.py",
+    "src/rooftop_core/weather.py",
+    "tests/engine/test_onediode.py",
+    "tests/engine/test_placement_shading.py",
+    "tests/engine/test_project_exports.py",
+    "tests/engine/test_pvsyst_files.py",
+    "tests/engine/test_simulation.py",
+    "tests/engine/test_stringing.py",
+]
+
 [tool.importlinter]
 root_packages = ["rooftop_core", "rooftop_api"]
 include_external_packages = true
 
 [[tool.importlinter.contracts]]
-name = "rooftop_core never imports fastapi, starlette, uvicorn or rooftop_api"
+name = "rooftop_core never imports fastapi, starlette, uvicorn, rooftop_api or PyQt5"
 type = "forbidden"
 source_modules = ["rooftop_core"]
-forbidden_modules = ["fastapi", "starlette", "uvicorn", "rooftop_api"]
+forbidden_modules = ["fastapi", "starlette", "uvicorn", "rooftop_api", "PyQt5"]

@@ -4,6 +4,66 @@
  */
 
 export interface paths {
+    "/demo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Demo
+         * @description The Pune demo: a 90 x 40 m flat roof with its weather, its module and its inverter, at 1500 V.
+         */
+        get: operations["getDemo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/equipment/inverter": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Inverter
+         * @description Read an OND file: the inverter, and the default of the largest current per MPPT.
+         */
+        post: operations["parseInverter"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/equipment/module": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Module
+         * @description Read a PAN file: the module, its temperature coefficients and where they come from, and notes.
+         */
+        post: operations["parseModule"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -24,10 +84,220 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/layout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Layout
+         * @description Fit the modules on the roof of the project. Needs no weather and no system voltage.
+         */
+        post: operations["computeLayout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/roof/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Import Roof
+         * @description Read a KMZ, KML or DXF: the largest outline is the roof, the other shapes are obstacles.
+         */
+        post: operations["importRoof"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sun": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sun
+         * @description Sun positions in solar time for a day, sunrise and sunset, and the shadows at one hour if asked.
+         */
+        post: operations["computeSun"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * ArraySpec
+         * @description Tilt, orientation, spacing and the shade-free window. None means: let the engine decide.
+         */
+        ArraySpec: {
+            /**
+             * Allow Shaded
+             * @default false
+             */
+            allow_shaded: boolean;
+            /** Azimuth Deg */
+            azimuth_deg?: number | null;
+            /**
+             * Clearance M
+             * @default 0.5
+             */
+            clearance_m: number;
+            /** Design Doy */
+            design_doy?: number | null;
+            /**
+             * Ew Ridge Gap M
+             * @default 0.3
+             */
+            ew_ridge_gap_m: number;
+            /**
+             * Ew Tilt Deg
+             * @description Degrees from the horizontal
+             * @default 10
+             */
+            ew_tilt_deg: number;
+            /**
+             * Flush Clearance M
+             * @default 0.1
+             */
+            flush_clearance_m: number;
+            /**
+             * Module Gap M
+             * @default 0.02
+             */
+            module_gap_m: number;
+            /**
+             * Modules In Tilt
+             * @default 2
+             */
+            modules_in_tilt: number;
+            /**
+             * Orientation
+             * @default portrait
+             * @enum {string}
+             */
+            orientation: "portrait" | "landscape";
+            /** Row Pitch M */
+            row_pitch_m?: number | null;
+            /**
+             * Tilt Deg
+             * @description Degrees from the horizontal
+             * @default 15
+             */
+            tilt_deg: number;
+            /**
+             * Window End H
+             * @description Hour of the day in solar time
+             * @default 16
+             */
+            window_end_h: number;
+            /**
+             * Window Start H
+             * @description Hour of the day in solar time
+             * @default 9
+             */
+            window_start_h: number;
+        };
+        /**
+         * Coefficients
+         * @description Temperature coefficients, and whether the file gave them or the one-diode model.
+         */
+        Coefficients: {
+            /** Mu Pmpp Pct */
+            mu_pmpp_pct: number;
+            /** Mu Vmp Pct */
+            mu_vmp_pct: number;
+            /** Mu Voc Mv */
+            mu_voc_mv: number;
+            /** Mu Voc Pct */
+            mu_voc_pct: number;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "one-diode model" | "PAN file";
+        };
+        /**
+         * CurrentPerMppt
+         * @description The default of the largest current per MPPT, and where it comes from.
+         */
+        CurrentPerMppt: {
+            /** Note */
+            note: string;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "OND file" | "IMaxDC over the MPPT count" | "not in the OND";
+            /** Value A */
+            value_a: number | null;
+        };
+        /**
+         * EfficiencyCurve
+         * @description Input power against output power, in watts, at one DC voltage.
+         */
+        EfficiencyCurve: {
+            /** Points */
+            points: [
+                number,
+                number
+            ][];
+            /** Voltage */
+            voltage: number;
+        };
+        /**
+         * EquipmentFile
+         * @description A PAN or OND file: its name, and its content either as text or as base64 of its bytes.
+         */
+        EquipmentFile: {
+            /** Base64 */
+            base64?: string | null;
+            /** Name */
+            name: string;
+            /** Text */
+            text?: string | null;
+        };
+        /**
+         * ErrorDetail
+         * @description What went wrong, in words for the user, and where.
+         */
+        ErrorDetail: {
+            /** Code */
+            code: string;
+            /** Field */
+            field?: string | null;
+            /** Message */
+            message: string;
+        };
+        /**
+         * ErrorResponse
+         * @description The body of every answer that is not a success.
+         */
+        ErrorResponse: {
+            error: components["schemas"]["ErrorDetail"];
+        };
         /**
          * Health
          * @description Answer of the health check.
@@ -41,6 +311,953 @@ export interface components {
             /** Version */
             version: string;
         };
+        /**
+         * ImportedRoof
+         * @description The outline and the obstacles, in local metres around the centre of the roof at (lat, lon).
+         */
+        ImportedRoof: {
+            /** File */
+            file: string;
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /**
+             * Missing Heights
+             * @description Names of the obstacles that got the height of 1.0 m
+             */
+            missing_heights: string[];
+            /** Notes */
+            notes: string[];
+            /** Obstacles */
+            obstacles: components["schemas"]["Obstacle"][];
+            /** Outline */
+            outline: [
+                number,
+                number
+            ][];
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "kmz" | "dxf";
+        };
+        /**
+         * Inverter
+         * @description A string inverter as its OND file describes it.
+         */
+        Inverter: {
+            /** Curve Euro Pct */
+            curve_euro_pct: number[];
+            /** Curves */
+            curves: components["schemas"]["EfficiencyCurve"][];
+            /** Effic Euro Pct */
+            effic_euro_pct: number;
+            /** Effic Max Pct */
+            effic_max_pct: number;
+            /** I Max Ac A */
+            i_max_ac_a: number;
+            /** Idc Max A */
+            idc_max_a: number;
+            /**
+             * Imax Mppt A
+             * @description Per MPPT; 0 when the file does not give it
+             */
+            imax_mppt_a: number;
+            /**
+             * Isc Max Mppt A
+             * @description Per MPPT; 0 when the file does not give it
+             */
+            isc_max_mppt_a: number;
+            /** Manufacturer */
+            manufacturer: string;
+            /** Model */
+            model: string;
+            /** Mppt Current Limit */
+            mppt_current_limit: number;
+            /** Mppt Isc Limit */
+            mppt_isc_limit: number;
+            /** N Inputs */
+            n_inputs: number;
+            /** N Mppt */
+            n_mppt: number;
+            /** Night Loss W */
+            night_loss_w: number;
+            /** Pmax Kw */
+            pmax_kw: number;
+            /** Pnom Kw */
+            pnom_kw: number;
+            /** Pseuil W */
+            pseuil_w: number;
+            /** Source */
+            source: string;
+            /** V Out V */
+            v_out_v: number;
+            /** Vabs Max */
+            vabs_max: number;
+            /** Vmpp Max */
+            vmpp_max: number;
+            /** Vmpp Min */
+            vmpp_min: number;
+            /** Vmpp Nom */
+            vmpp_nom: number;
+        };
+        /**
+         * InverterResponse
+         * @description An inverter read from an OND file.
+         */
+        InverterResponse: {
+            /** File */
+            file: string;
+            inverter: components["schemas"]["Inverter"];
+            max_current_per_mppt: components["schemas"]["CurrentPerMppt"];
+            /**
+             * Text
+             * @description The content of the file as text, to embed in the project as ond_text
+             */
+            text: string;
+        };
+        /**
+         * Keepout
+         * @description Positions left empty because something shades them in the window, and what that is.
+         */
+        Keepout: {
+            /**
+             * Cause
+             * @enum {string}
+             */
+            cause: "parapet" | "obstacle";
+            /**
+             * Obstacle
+             * @description Name of the obstacle; null for the parapet
+             */
+            obstacle: string | null;
+            /**
+             * Obstacle Index
+             * @description Its place in roof.obstacles; null for the parapet
+             */
+            obstacle_index: number | null;
+            /** Polygons */
+            polygons: components["schemas"]["Polygon"][];
+        };
+        /**
+         * Layout
+         * @description Every position, and the areas that led to them.
+         */
+        Layout: {
+            /** Azimuth */
+            azimuth: number;
+            /** Design Doy */
+            design_doy: number;
+            /** Gcr */
+            gcr: number;
+            /**
+             * Inner
+             * @description The roof inside the edge setback
+             */
+            inner: components["schemas"]["Polygon"][];
+            /** Keepout */
+            keepout: components["schemas"]["Keepout"][];
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "flat_tilted" | "flat_ew" | "sloped_flush";
+            /** Modules */
+            modules: components["schemas"]["PlacedModule"][];
+            /** N Rows */
+            n_rows: number;
+            /** Notes */
+            notes: string[];
+            /**
+             * Obstacle Zone
+             * @description Obstacles with their clearance
+             */
+            obstacle_zone: components["schemas"]["Polygon"][];
+            /** Pitch */
+            pitch: number;
+            /** Psi Min Deg */
+            psi_min_deg: number | null;
+            /** Slope Len */
+            slope_len: number;
+            /** Table Count */
+            table_count: number;
+            /** Tilt */
+            tilt: number;
+            /**
+             * Usable
+             * @description Where modules may stand
+             */
+            usable: components["schemas"]["Polygon"][];
+        };
+        /**
+         * LayoutReadouts
+         * @description The figures shown next to the plan.
+         */
+        LayoutReadouts: {
+            /** Gcr */
+            gcr: number;
+            /** Inside Setback Area M2 */
+            inside_setback_area_m2: number;
+            /**
+             * Keepout Area M2
+             * @description Left empty inside the setback because of shadows
+             */
+            keepout_area_m2: number;
+            /**
+             * Module Area M2
+             * @description All positions together
+             */
+            module_area_m2: number;
+            /** Pitch M */
+            pitch_m: number;
+            /** Positions */
+            positions: number;
+            /**
+             * Profile Angle Deg
+             * @description Lowest sun in the window; null when the pitch was given
+             */
+            profile_angle_deg: number | null;
+            /** Roof Area M2 */
+            roof_area_m2: number;
+            /** Rows */
+            rows: number;
+            /** Tables */
+            tables: number;
+            /** Usable Area M2 */
+            usable_area_m2: number;
+        };
+        /**
+         * LayoutResponse
+         * @description The layout of a project and its read-outs.
+         */
+        LayoutResponse: {
+            layout: components["schemas"]["Layout"];
+            readouts: components["schemas"]["LayoutReadouts"];
+        };
+        /**
+         * Losses
+         * @description Percentages unless the name says otherwise. None means: from the PAN file or the roof type.
+         */
+        Losses: {
+            /**
+             * Ac Ohmic Pct
+             * @default 1
+             */
+            ac_ohmic_pct: number;
+            /**
+             * Availability Pct
+             * @default 99.5
+             */
+            availability_pct: number;
+            /**
+             * Bifacial
+             * @default true
+             */
+            bifacial: boolean;
+            /**
+             * Co2 T Per Mwh
+             * @default 0.716
+             */
+            co2_t_per_mwh: number;
+            /**
+             * Dc Ohmic Pct
+             * @default 1.5
+             */
+            dc_ohmic_pct: number;
+            /**
+             * Degradation Pct
+             * @default 0.5
+             */
+            degradation_pct: number;
+            /**
+             * Iam B0
+             * @default 0.05
+             */
+            iam_b0: number;
+            /** Lid Pct */
+            lid_pct?: number | null;
+            /**
+             * Mismatch Pct
+             * @default 1
+             */
+            mismatch_pct: number;
+            /**
+             * Model Sigma Pct
+             * @default 3
+             */
+            model_sigma_pct: number;
+            /**
+             * P Levels
+             * @default [
+             *       50,
+             *       75,
+             *       90
+             *     ]
+             */
+            p_levels: number[];
+            /**
+             * Quality Pct
+             * @default 0
+             */
+            quality_pct: number;
+            /**
+             * Rear Loss Pct
+             * @default 10
+             */
+            rear_loss_pct: number;
+            /**
+             * Soiling Pct
+             * @default 2
+             */
+            soiling_pct: number;
+            /** Uc */
+            uc?: number | null;
+            /**
+             * Uv
+             * @default 0
+             */
+            uv: number;
+            /**
+             * Weather Sigma Pct
+             * @default 3
+             */
+            weather_sigma_pct: number;
+        };
+        /**
+         * Module
+         * @description A PV module as its PAN file describes it.
+         */
+        Module: {
+            /** Area M2 */
+            area_m2: number;
+            /** Bifaciality */
+            bifaciality: number;
+            /** Efficiency */
+            efficiency: number;
+            /** Gamma */
+            gamma: number;
+            /** Half Cell */
+            half_cell: boolean;
+            /**
+             * Iam Profile
+             * @description (angle of incidence in degrees, factor)
+             */
+            iam_profile: [
+                number,
+                number
+            ][];
+            /** Imp */
+            imp: number;
+            /** Is Bifacial */
+            is_bifacial: boolean;
+            /** Isc */
+            isc: number;
+            /** Length M */
+            length_m: number;
+            /** Lid Loss Pct */
+            lid_loss_pct: number | null;
+            /** Manufacturer */
+            manufacturer: string;
+            /** Model */
+            model: string;
+            /** Mu Gamma */
+            mu_gamma: number;
+            /** Mu Isc Ma */
+            mu_isc_ma: number;
+            /**
+             * Mu Pmpp Pct
+             * @description %/degC; 0 when the file does not give it
+             */
+            mu_pmpp_pct: number;
+            /**
+             * Mu Voc Mv
+             * @description mV/degC; 0 when the file does not give it
+             */
+            mu_voc_mv: number;
+            /** N Cells Parallel */
+            n_cells_parallel: number;
+            /** N Cells Series */
+            n_cells_series: number;
+            /** N Diodes */
+            n_diodes: number;
+            /** Pnom W */
+            pnom_w: number;
+            /** R Series */
+            r_series: number;
+            /** R Shunt */
+            r_shunt: number;
+            /** R Shunt 0 */
+            r_shunt_0: number;
+            /** R Shunt Exp */
+            r_shunt_exp: number;
+            /** Source */
+            source: string;
+            /** Technology */
+            technology: string;
+            /** V Max Iec */
+            v_max_iec: number;
+            /** Vmp */
+            vmp: number;
+            /** Voc */
+            voc: number;
+            /** Width M */
+            width_m: number;
+        };
+        /**
+         * ModuleResponse
+         * @description A module read from a PAN file.
+         */
+        ModuleResponse: {
+            coefficients: components["schemas"]["Coefficients"];
+            /** File */
+            file: string;
+            module: components["schemas"]["Module"];
+            /** Notes */
+            notes: string[];
+            /**
+             * Text
+             * @description The content of the file as text, to embed in the project as pan_text
+             */
+            text: string;
+        };
+        /**
+         * Obstacle
+         * @description Something that casts a shadow. Heights are above the roof surface.
+         */
+        Obstacle: {
+            /**
+             * Auto
+             * @default false
+             */
+            auto: boolean;
+            /**
+             * Diameter
+             * @description Metres, more than nothing
+             * @default 1
+             */
+            diameter: number;
+            /**
+             * Height
+             * @default 1
+             */
+            height: number;
+            /**
+             * Kind
+             * @default box
+             * @enum {string}
+             */
+            kind: "box" | "cylinder" | "wall" | "tree" | "building";
+            /**
+             * Length
+             * @description Metres, more than nothing
+             * @default 1
+             */
+            length: number;
+            /** Name */
+            name: string;
+            /**
+             * Points
+             * @default []
+             */
+            points: [
+                number,
+                number
+            ][];
+            /**
+             * Rotation Deg
+             * @default 0
+             */
+            rotation_deg: number;
+            /**
+             * Thickness
+             * @description Metres, more than nothing
+             * @default 0.2
+             */
+            thickness: number;
+            /**
+             * Trunk Height
+             * @default 2
+             */
+            trunk_height: number;
+            /**
+             * Width
+             * @description Metres, more than nothing
+             * @default 1
+             */
+            width: number;
+            /**
+             * X
+             * @default 0
+             */
+            x: number;
+            /**
+             * Y
+             * @default 0
+             */
+            y: number;
+        };
+        /**
+         * PlacedModule
+         * @description One position. The outline is its footprint seen from above.
+         */
+        PlacedModule: {
+            /** Azimuth */
+            azimuth: number;
+            /** Col */
+            col: number;
+            /** Idx */
+            idx: number;
+            /**
+             * Line
+             * @description 0 is the lowest line of the table; on east-west the side
+             */
+            line: number;
+            /** Outline */
+            outline: [
+                number,
+                number
+            ][];
+            /**
+             * Row
+             * @description Table row, or unit on an east-west roof
+             */
+            row: number;
+            /** Tilt */
+            tilt: number;
+            /** Z High */
+            z_high: number;
+            /** Z Low */
+            z_low: number;
+        };
+        /**
+         * Polygon
+         * @description An area in local roof metres. The rings are not closed: the last point joins the first.
+         */
+        Polygon: {
+            /** Exterior */
+            exterior: [
+                number,
+                number
+            ][];
+            /**
+             * Holes
+             * @default []
+             */
+            holes: [
+                number,
+                number
+            ][][];
+        };
+        /**
+         * Project
+         * @description A whole project. It is also the content of a .rtd file, format 2 (format 1 is accepted).
+         *
+         *     A PAN or OND travels as text (pan_text, ond_text); the path then only names the file. Empty path and
+         *     empty text mean the bundled sample. A path without text names a file that must be chosen again.
+         */
+        Project: {
+            /**
+             * Ac Cable M
+             * @default 30
+             */
+            ac_cable_m: number;
+            /**
+             * @default {
+             *       "allow_shaded": false,
+             *       "clearance_m": 0.5,
+             *       "ew_ridge_gap_m": 0.3,
+             *       "ew_tilt_deg": 10,
+             *       "flush_clearance_m": 0.1,
+             *       "module_gap_m": 0.02,
+             *       "modules_in_tilt": 2,
+             *       "orientation": "portrait",
+             *       "tilt_deg": 15,
+             *       "window_end_h": 16,
+             *       "window_start_h": 9
+             *     }
+             */
+            array: components["schemas"]["ArraySpec"];
+            /** Cell Rise C */
+            cell_rise_c?: number | null;
+            /**
+             * Chosen Option
+             * @default
+             */
+            chosen_option: string;
+            /** Custom */
+            custom?: [
+                number,
+                number,
+                number
+            ] | null;
+            /**
+             * Format
+             * @default 2
+             * @enum {integer}
+             */
+            format: 1 | 2;
+            /** Imax Mppt Override */
+            imax_mppt_override?: number | null;
+            /**
+             * @default {
+             *       "ac_ohmic_pct": 1,
+             *       "availability_pct": 99.5,
+             *       "bifacial": true,
+             *       "co2_t_per_mwh": 0.716,
+             *       "dc_ohmic_pct": 1.5,
+             *       "degradation_pct": 0.5,
+             *       "iam_b0": 0.05,
+             *       "mismatch_pct": 1,
+             *       "model_sigma_pct": 3,
+             *       "p_levels": [
+             *         50,
+             *         75,
+             *         90
+             *       ],
+             *       "quality_pct": 0,
+             *       "rear_loss_pct": 10,
+             *       "soiling_pct": 2,
+             *       "uv": 0,
+             *       "weather_sigma_pct": 3
+             *     }
+             */
+            losses: components["schemas"]["Losses"];
+            /**
+             * Name
+             * @default Untitled roof
+             */
+            name: string;
+            /**
+             * Ond Path
+             * @default
+             */
+            ond_path: string;
+            /**
+             * Ond Text
+             * @default
+             */
+            ond_text: string;
+            /**
+             * Pan Path
+             * @default
+             */
+            pan_path: string;
+            /**
+             * Pan Text
+             * @default
+             */
+            pan_text: string;
+            roof: components["schemas"]["Roof"];
+            /**
+             * @default {
+             *       "dxf_units": "m",
+             *       "facing": 180,
+             *       "file": "",
+             *       "length": 30,
+             *       "mode": "rect",
+             *       "width": 20
+             *     }
+             */
+            roof_input: components["schemas"]["RoofInput"];
+            /** System Voltage */
+            system_voltage?: (600 | 1000 | 1500) | null;
+            /** T Max Override */
+            t_max_override?: number | null;
+            /** T Min Override */
+            t_min_override?: number | null;
+            /**
+             * Weather Csv
+             * @default
+             */
+            weather_csv: string;
+            /**
+             * Weather Csv Text
+             * @default
+             */
+            weather_csv_text: string;
+            weather_json?: components["schemas"]["Weather"] | null;
+            /**
+             * Weather Source
+             * @default pvgis
+             * @enum {string}
+             */
+            weather_source: "pvgis" | "nasa" | "csv";
+        };
+        /**
+         * Roof
+         * @description The roof outline in local metres around its reference point (lat, lon), and its obstacles.
+         */
+        Roof: {
+            /**
+             * Albedo
+             * @default 0.2
+             */
+            albedo: number;
+            /**
+             * Lat
+             * @description Degrees, north positive
+             */
+            lat: number;
+            /**
+             * Lon
+             * @description Degrees, east positive
+             */
+            lon: number;
+            /**
+             * Obstacle Clearance M
+             * @default 0.5
+             */
+            obstacle_clearance_m: number;
+            /**
+             * Obstacles
+             * @default []
+             */
+            obstacles: components["schemas"]["Obstacle"][];
+            /** Outline */
+            outline: [
+                number,
+                number
+            ][];
+            /**
+             * Parapet H
+             * @default 0.9
+             */
+            parapet_h: number;
+            /**
+             * Roof Type
+             * @default flat_tilted
+             * @enum {string}
+             */
+            roof_type: "flat_tilted" | "flat_ew" | "sloped_flush";
+            /**
+             * Setback M
+             * @default 1
+             */
+            setback_m: number;
+            /**
+             * Slope Azimuth Deg
+             * @description Degrees clockwise from north
+             * @default 180
+             */
+            slope_azimuth_deg: number;
+            /**
+             * Slope Deg
+             * @default 0
+             */
+            slope_deg: number;
+            /**
+             * Source
+             * @default coordinates
+             * @enum {string}
+             */
+            source: "coordinates" | "kmz" | "dxf";
+            /**
+             * Walkway Every Modules
+             * @default 24
+             */
+            walkway_every_modules: number;
+            /**
+             * Walkway Every Rows
+             * @default 4
+             */
+            walkway_every_rows: number;
+            /**
+             * Walkway M
+             * @default 0.6
+             */
+            walkway_m: number;
+        };
+        /**
+         * RoofFile
+         * @description The file as base64 of its bytes. A DXF also needs its units and the place of the roof.
+         */
+        RoofFile: {
+            /** Base64 */
+            base64: string;
+            /** Lat */
+            lat?: number | null;
+            /** Lon */
+            lon?: number | null;
+            /** Name */
+            name: string;
+            /**
+             * Units
+             * @default m
+             * @enum {string}
+             */
+            units: "m" | "mm";
+        };
+        /**
+         * RoofInput
+         * @description How the roof was entered, so the same controls can show it again.
+         */
+        RoofInput: {
+            /**
+             * Dxf Units
+             * @default m
+             * @enum {string}
+             */
+            dxf_units: "m" | "mm";
+            /**
+             * Facing
+             * @description Degrees clockwise from north
+             * @default 180
+             */
+            facing: number;
+            /**
+             * File
+             * @default
+             */
+            file: string;
+            /**
+             * Length
+             * @default 30
+             */
+            length: number;
+            /**
+             * Mode
+             * @default rect
+             * @enum {string}
+             */
+            mode: "rect" | "corners";
+            /**
+             * Width
+             * @default 20
+             */
+            width: number;
+        };
+        /**
+         * ShadowRequest
+         * @description Shadows of the parapet and the obstacles of a project at one solar hour.
+         */
+        ShadowRequest: {
+            /**
+             * Hour
+             * @description Hour of the day in solar time
+             */
+            hour: number;
+            /**
+             * Plane Height M
+             * @description Height above the roof of the plane they fall on
+             * @default 0
+             */
+            plane_height_m: number;
+            project: components["schemas"]["Project"];
+        };
+        /**
+         * Shadows
+         * @description The shadows at one hour. No polygons while the sun is down.
+         */
+        Shadows: {
+            /** Azimuth Deg */
+            azimuth_deg: number;
+            /** Elevation Deg */
+            elevation_deg: number;
+            /** Hour */
+            hour: number;
+            /** Plane Height M */
+            plane_height_m: number;
+            /** Polygons */
+            polygons: components["schemas"]["Polygon"][];
+        };
+        /** SunPosition */
+        SunPosition: {
+            /**
+             * Azimuth Deg
+             * @description Clockwise from north
+             */
+            azimuth_deg: number;
+            /**
+             * Elevation Deg
+             * @description Above the horizon; negative at night
+             */
+            elevation_deg: number;
+            /** Hour */
+            hour: number;
+        };
+        /**
+         * SunRequest
+         * @description A place, a day, and the hours wanted: either a list or a step from midnight to midnight.
+         */
+        SunRequest: {
+            /**
+             * Day
+             * @description Day of the year, or design_day: the winter solstice of the hemisphere (355 or 172)
+             */
+            day: number | "design_day";
+            /** Hours */
+            hours?: number[] | null;
+            /**
+             * Lat
+             * @description Degrees, north positive
+             */
+            lat: number;
+            /**
+             * Lon
+             * @description Degrees, east positive
+             */
+            lon: number;
+            shadows?: components["schemas"]["ShadowRequest"] | null;
+            /** Step H */
+            step_h?: number | null;
+        };
+        /**
+         * SunResponse
+         * @description Sun positions in the order asked. Sunrise and sunset are null where the sun stays up or down.
+         */
+        SunResponse: {
+            /** Day Of Year */
+            day_of_year: number;
+            /** Positions */
+            positions: components["schemas"]["SunPosition"][];
+            shadows: components["schemas"]["Shadows"] | null;
+            /** Sunrise H */
+            sunrise_h: number | null;
+            /** Sunset H */
+            sunset_h: number | null;
+        };
+        /**
+         * Weather
+         * @description One value per hour, named by its start in UTC. Irradiance in W/m2, air in degC, wind in m/s.
+         */
+        Weather: {
+            /** Dhi */
+            dhi: number[];
+            /** Dni */
+            dni: number[];
+            /** Ghi */
+            ghi: number[];
+            /**
+             * Horizon
+             * @description (azimuth from north, elevation) in degrees
+             * @default []
+             */
+            horizon: [
+                number,
+                number
+            ][];
+            /** Label */
+            label: string;
+            /**
+             * Lat
+             * @description Degrees, north positive
+             */
+            lat: number;
+            /**
+             * Lon
+             * @description Degrees, east positive
+             */
+            lon: number;
+            /** Source */
+            source: string;
+            /** Temp Air */
+            temp_air: number[];
+            /** Time */
+            time: string[];
+            /** Wind Speed */
+            wind_speed: number[];
+        };
     };
     responses: never;
     parameters: never;
@@ -50,6 +1267,92 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    getDemo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Project"];
+                };
+            };
+        };
+    };
+    parseInverter: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EquipmentFile"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InverterResponse"];
+                };
+            };
+            /** @description The request cannot be used; the message says why. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    parseModule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EquipmentFile"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModuleResponse"];
+                };
+            };
+            /** @description The request cannot be used; the message says why. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     getHealth: {
         parameters: {
             query?: never;
@@ -66,6 +1369,105 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Health"];
+                };
+            };
+        };
+    };
+    computeLayout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Project"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutResponse"];
+                };
+            };
+            /** @description The request cannot be used; the message says why. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    importRoof: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RoofFile"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportedRoof"];
+                };
+            };
+            /** @description The request cannot be used; the message says why. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    computeSun: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SunRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SunResponse"];
+                };
+            };
+            /** @description The request cannot be used; the message says why. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };

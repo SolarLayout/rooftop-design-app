@@ -1,6 +1,317 @@
 {
   "components": {
     "schemas": {
+      "ArraySpec": {
+        "description": "Tilt, orientation, spacing and the shade-free window. None means: let the engine decide.",
+        "properties": {
+          "allow_shaded": {
+            "default": false,
+            "title": "Allow Shaded",
+            "type": "boolean"
+          },
+          "azimuth_deg": {
+            "anyOf": [
+              {
+                "description": "Degrees clockwise from north",
+                "maximum": 360.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Azimuth Deg"
+          },
+          "clearance_m": {
+            "default": 0.5,
+            "minimum": 0.0,
+            "title": "Clearance M",
+            "type": "number"
+          },
+          "design_doy": {
+            "anyOf": [
+              {
+                "maximum": 366.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Design Doy"
+          },
+          "ew_ridge_gap_m": {
+            "default": 0.3,
+            "minimum": 0.0,
+            "title": "Ew Ridge Gap M",
+            "type": "number"
+          },
+          "ew_tilt_deg": {
+            "default": 10.0,
+            "description": "Degrees from the horizontal",
+            "maximum": 90.0,
+            "minimum": 0.0,
+            "title": "Ew Tilt Deg",
+            "type": "number"
+          },
+          "flush_clearance_m": {
+            "default": 0.1,
+            "minimum": 0.0,
+            "title": "Flush Clearance M",
+            "type": "number"
+          },
+          "module_gap_m": {
+            "default": 0.02,
+            "minimum": 0.0,
+            "title": "Module Gap M",
+            "type": "number"
+          },
+          "modules_in_tilt": {
+            "default": 2,
+            "minimum": 1.0,
+            "title": "Modules In Tilt",
+            "type": "integer"
+          },
+          "orientation": {
+            "default": "portrait",
+            "enum": [
+              "portrait",
+              "landscape"
+            ],
+            "title": "Orientation",
+            "type": "string"
+          },
+          "row_pitch_m": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Row Pitch M"
+          },
+          "tilt_deg": {
+            "default": 15.0,
+            "description": "Degrees from the horizontal",
+            "maximum": 90.0,
+            "minimum": 0.0,
+            "title": "Tilt Deg",
+            "type": "number"
+          },
+          "window_end_h": {
+            "default": 16.0,
+            "description": "Hour of the day in solar time",
+            "maximum": 24.0,
+            "minimum": 0.0,
+            "title": "Window End H",
+            "type": "number"
+          },
+          "window_start_h": {
+            "default": 9.0,
+            "description": "Hour of the day in solar time",
+            "maximum": 24.0,
+            "minimum": 0.0,
+            "title": "Window Start H",
+            "type": "number"
+          }
+        },
+        "title": "ArraySpec",
+        "type": "object"
+      },
+      "Coefficients": {
+        "description": "Temperature coefficients, and whether the file gave them or the one-diode model.",
+        "properties": {
+          "mu_pmpp_pct": {
+            "title": "Mu Pmpp Pct",
+            "type": "number"
+          },
+          "mu_vmp_pct": {
+            "title": "Mu Vmp Pct",
+            "type": "number"
+          },
+          "mu_voc_mv": {
+            "title": "Mu Voc Mv",
+            "type": "number"
+          },
+          "mu_voc_pct": {
+            "title": "Mu Voc Pct",
+            "type": "number"
+          },
+          "source": {
+            "enum": [
+              "one-diode model",
+              "PAN file"
+            ],
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "mu_voc_mv",
+          "mu_voc_pct",
+          "mu_vmp_pct",
+          "mu_pmpp_pct",
+          "source"
+        ],
+        "title": "Coefficients",
+        "type": "object"
+      },
+      "CurrentPerMppt": {
+        "description": "The default of the largest current per MPPT, and where it comes from.",
+        "properties": {
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "OND file",
+              "IMaxDC over the MPPT count",
+              "not in the OND"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "value_a": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value A"
+          }
+        },
+        "required": [
+          "value_a",
+          "source",
+          "note"
+        ],
+        "title": "CurrentPerMppt",
+        "type": "object"
+      },
+      "EfficiencyCurve": {
+        "description": "Input power against output power, in watts, at one DC voltage.",
+        "properties": {
+          "points": {
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            "title": "Points",
+            "type": "array"
+          },
+          "voltage": {
+            "title": "Voltage",
+            "type": "number"
+          }
+        },
+        "required": [
+          "voltage",
+          "points"
+        ],
+        "title": "EfficiencyCurve",
+        "type": "object"
+      },
+      "EquipmentFile": {
+        "description": "A PAN or OND file: its name, and its content either as text or as base64 of its bytes.",
+        "properties": {
+          "base64": {
+            "anyOf": [
+              {
+                "maxLength": 2800000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base64"
+          },
+          "name": {
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "maxLength": 2000000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "EquipmentFile",
+        "type": "object"
+      },
+      "ErrorDetail": {
+        "description": "What went wrong, in words for the user, and where.",
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "field": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ErrorDetail",
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "description": "The body of every answer that is not a success.",
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorDetail"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse",
+        "type": "object"
+      },
       "Health": {
         "description": "Answer of the health check.",
         "properties": {
@@ -20,6 +331,1917 @@
         ],
         "title": "Health",
         "type": "object"
+      },
+      "ImportedRoof": {
+        "description": "The outline and the obstacles, in local metres around the centre of the roof at (lat, lon).",
+        "properties": {
+          "file": {
+            "title": "File",
+            "type": "string"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "missing_heights": {
+            "description": "Names of the obstacles that got the height of 1.0 m",
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Heights",
+            "type": "array"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "obstacles": {
+            "items": {
+              "$ref": "#/components/schemas/Obstacle"
+            },
+            "title": "Obstacles",
+            "type": "array"
+          },
+          "outline": {
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            "title": "Outline",
+            "type": "array"
+          },
+          "source": {
+            "enum": [
+              "kmz",
+              "dxf"
+            ],
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source",
+          "file",
+          "outline",
+          "lat",
+          "lon",
+          "obstacles",
+          "missing_heights",
+          "notes"
+        ],
+        "title": "ImportedRoof",
+        "type": "object"
+      },
+      "Inverter": {
+        "description": "A string inverter as its OND file describes it.",
+        "properties": {
+          "curve_euro_pct": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Curve Euro Pct",
+            "type": "array"
+          },
+          "curves": {
+            "items": {
+              "$ref": "#/components/schemas/EfficiencyCurve"
+            },
+            "title": "Curves",
+            "type": "array"
+          },
+          "effic_euro_pct": {
+            "title": "Effic Euro Pct",
+            "type": "number"
+          },
+          "effic_max_pct": {
+            "title": "Effic Max Pct",
+            "type": "number"
+          },
+          "i_max_ac_a": {
+            "title": "I Max Ac A",
+            "type": "number"
+          },
+          "idc_max_a": {
+            "title": "Idc Max A",
+            "type": "number"
+          },
+          "imax_mppt_a": {
+            "description": "Per MPPT; 0 when the file does not give it",
+            "title": "Imax Mppt A",
+            "type": "number"
+          },
+          "isc_max_mppt_a": {
+            "description": "Per MPPT; 0 when the file does not give it",
+            "title": "Isc Max Mppt A",
+            "type": "number"
+          },
+          "manufacturer": {
+            "title": "Manufacturer",
+            "type": "string"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "mppt_current_limit": {
+            "title": "Mppt Current Limit",
+            "type": "number"
+          },
+          "mppt_isc_limit": {
+            "title": "Mppt Isc Limit",
+            "type": "number"
+          },
+          "n_inputs": {
+            "title": "N Inputs",
+            "type": "integer"
+          },
+          "n_mppt": {
+            "title": "N Mppt",
+            "type": "integer"
+          },
+          "night_loss_w": {
+            "title": "Night Loss W",
+            "type": "number"
+          },
+          "pmax_kw": {
+            "title": "Pmax Kw",
+            "type": "number"
+          },
+          "pnom_kw": {
+            "title": "Pnom Kw",
+            "type": "number"
+          },
+          "pseuil_w": {
+            "title": "Pseuil W",
+            "type": "number"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "v_out_v": {
+            "title": "V Out V",
+            "type": "number"
+          },
+          "vabs_max": {
+            "title": "Vabs Max",
+            "type": "number"
+          },
+          "vmpp_max": {
+            "title": "Vmpp Max",
+            "type": "number"
+          },
+          "vmpp_min": {
+            "title": "Vmpp Min",
+            "type": "number"
+          },
+          "vmpp_nom": {
+            "title": "Vmpp Nom",
+            "type": "number"
+          }
+        },
+        "required": [
+          "manufacturer",
+          "model",
+          "pnom_kw",
+          "pmax_kw",
+          "vmpp_min",
+          "vmpp_max",
+          "vmpp_nom",
+          "vabs_max",
+          "pseuil_w",
+          "idc_max_a",
+          "n_mppt",
+          "n_inputs",
+          "imax_mppt_a",
+          "isc_max_mppt_a",
+          "effic_max_pct",
+          "effic_euro_pct",
+          "night_loss_w",
+          "v_out_v",
+          "i_max_ac_a",
+          "curves",
+          "curve_euro_pct",
+          "source",
+          "mppt_current_limit",
+          "mppt_isc_limit"
+        ],
+        "title": "Inverter",
+        "type": "object"
+      },
+      "InverterResponse": {
+        "description": "An inverter read from an OND file.",
+        "properties": {
+          "file": {
+            "title": "File",
+            "type": "string"
+          },
+          "inverter": {
+            "$ref": "#/components/schemas/Inverter"
+          },
+          "max_current_per_mppt": {
+            "$ref": "#/components/schemas/CurrentPerMppt"
+          },
+          "text": {
+            "description": "The content of the file as text, to embed in the project as ond_text",
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file",
+          "inverter",
+          "max_current_per_mppt",
+          "text"
+        ],
+        "title": "InverterResponse",
+        "type": "object"
+      },
+      "Keepout": {
+        "description": "Positions left empty because something shades them in the window, and what that is.",
+        "properties": {
+          "cause": {
+            "enum": [
+              "parapet",
+              "obstacle"
+            ],
+            "title": "Cause",
+            "type": "string"
+          },
+          "obstacle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Name of the obstacle; null for the parapet",
+            "title": "Obstacle"
+          },
+          "obstacle_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Its place in roof.obstacles; null for the parapet",
+            "title": "Obstacle Index"
+          },
+          "polygons": {
+            "items": {
+              "$ref": "#/components/schemas/Polygon"
+            },
+            "title": "Polygons",
+            "type": "array"
+          }
+        },
+        "required": [
+          "cause",
+          "obstacle",
+          "obstacle_index",
+          "polygons"
+        ],
+        "title": "Keepout",
+        "type": "object"
+      },
+      "Layout": {
+        "description": "Every position, and the areas that led to them.",
+        "properties": {
+          "azimuth": {
+            "title": "Azimuth",
+            "type": "number"
+          },
+          "design_doy": {
+            "title": "Design Doy",
+            "type": "integer"
+          },
+          "gcr": {
+            "title": "Gcr",
+            "type": "number"
+          },
+          "inner": {
+            "description": "The roof inside the edge setback",
+            "items": {
+              "$ref": "#/components/schemas/Polygon"
+            },
+            "title": "Inner",
+            "type": "array"
+          },
+          "keepout": {
+            "items": {
+              "$ref": "#/components/schemas/Keepout"
+            },
+            "title": "Keepout",
+            "type": "array"
+          },
+          "kind": {
+            "enum": [
+              "flat_tilted",
+              "flat_ew",
+              "sloped_flush"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "modules": {
+            "items": {
+              "$ref": "#/components/schemas/PlacedModule"
+            },
+            "title": "Modules",
+            "type": "array"
+          },
+          "n_rows": {
+            "title": "N Rows",
+            "type": "integer"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "obstacle_zone": {
+            "description": "Obstacles with their clearance",
+            "items": {
+              "$ref": "#/components/schemas/Polygon"
+            },
+            "title": "Obstacle Zone",
+            "type": "array"
+          },
+          "pitch": {
+            "title": "Pitch",
+            "type": "number"
+          },
+          "psi_min_deg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Psi Min Deg"
+          },
+          "slope_len": {
+            "title": "Slope Len",
+            "type": "number"
+          },
+          "table_count": {
+            "title": "Table Count",
+            "type": "integer"
+          },
+          "tilt": {
+            "title": "Tilt",
+            "type": "number"
+          },
+          "usable": {
+            "description": "Where modules may stand",
+            "items": {
+              "$ref": "#/components/schemas/Polygon"
+            },
+            "title": "Usable",
+            "type": "array"
+          }
+        },
+        "required": [
+          "kind",
+          "azimuth",
+          "tilt",
+          "pitch",
+          "gcr",
+          "slope_len",
+          "table_count",
+          "n_rows",
+          "design_doy",
+          "psi_min_deg",
+          "notes",
+          "modules",
+          "inner",
+          "usable",
+          "obstacle_zone",
+          "keepout"
+        ],
+        "title": "Layout",
+        "type": "object"
+      },
+      "LayoutReadouts": {
+        "description": "The figures shown next to the plan.",
+        "properties": {
+          "gcr": {
+            "title": "Gcr",
+            "type": "number"
+          },
+          "inside_setback_area_m2": {
+            "title": "Inside Setback Area M2",
+            "type": "number"
+          },
+          "keepout_area_m2": {
+            "description": "Left empty inside the setback because of shadows",
+            "title": "Keepout Area M2",
+            "type": "number"
+          },
+          "module_area_m2": {
+            "description": "All positions together",
+            "title": "Module Area M2",
+            "type": "number"
+          },
+          "pitch_m": {
+            "title": "Pitch M",
+            "type": "number"
+          },
+          "positions": {
+            "title": "Positions",
+            "type": "integer"
+          },
+          "profile_angle_deg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Lowest sun in the window; null when the pitch was given",
+            "title": "Profile Angle Deg"
+          },
+          "roof_area_m2": {
+            "title": "Roof Area M2",
+            "type": "number"
+          },
+          "rows": {
+            "title": "Rows",
+            "type": "integer"
+          },
+          "tables": {
+            "title": "Tables",
+            "type": "integer"
+          },
+          "usable_area_m2": {
+            "title": "Usable Area M2",
+            "type": "number"
+          }
+        },
+        "required": [
+          "positions",
+          "tables",
+          "rows",
+          "pitch_m",
+          "gcr",
+          "profile_angle_deg",
+          "roof_area_m2",
+          "inside_setback_area_m2",
+          "usable_area_m2",
+          "keepout_area_m2",
+          "module_area_m2"
+        ],
+        "title": "LayoutReadouts",
+        "type": "object"
+      },
+      "LayoutResponse": {
+        "description": "The layout of a project and its read-outs.",
+        "properties": {
+          "layout": {
+            "$ref": "#/components/schemas/Layout"
+          },
+          "readouts": {
+            "$ref": "#/components/schemas/LayoutReadouts"
+          }
+        },
+        "required": [
+          "layout",
+          "readouts"
+        ],
+        "title": "LayoutResponse",
+        "type": "object"
+      },
+      "Losses": {
+        "description": "Percentages unless the name says otherwise. None means: from the PAN file or the roof type.",
+        "properties": {
+          "ac_ohmic_pct": {
+            "default": 1.0,
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Ac Ohmic Pct",
+            "type": "number"
+          },
+          "availability_pct": {
+            "default": 99.5,
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Availability Pct",
+            "type": "number"
+          },
+          "bifacial": {
+            "default": true,
+            "title": "Bifacial",
+            "type": "boolean"
+          },
+          "co2_t_per_mwh": {
+            "default": 0.716,
+            "minimum": 0.0,
+            "title": "Co2 T Per Mwh",
+            "type": "number"
+          },
+          "dc_ohmic_pct": {
+            "default": 1.5,
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Dc Ohmic Pct",
+            "type": "number"
+          },
+          "degradation_pct": {
+            "default": 0.5,
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Degradation Pct",
+            "type": "number"
+          },
+          "iam_b0": {
+            "default": 0.05,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Iam B0",
+            "type": "number"
+          },
+          "lid_pct": {
+            "anyOf": [
+              {
+                "maximum": 100.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lid Pct"
+          },
+          "mismatch_pct": {
+            "default": 1.0,
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Mismatch Pct",
+            "type": "number"
+          },
+          "model_sigma_pct": {
+            "default": 3.0,
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Model Sigma Pct",
+            "type": "number"
+          },
+          "p_levels": {
+            "default": [
+              50,
+              75,
+              90
+            ],
+            "items": {
+              "maximum": 99.0,
+              "minimum": 1.0,
+              "type": "integer"
+            },
+            "title": "P Levels",
+            "type": "array"
+          },
+          "quality_pct": {
+            "default": 0.0,
+            "maximum": 100.0,
+            "minimum": -100.0,
+            "title": "Quality Pct",
+            "type": "number"
+          },
+          "rear_loss_pct": {
+            "default": 10.0,
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Rear Loss Pct",
+            "type": "number"
+          },
+          "soiling_pct": {
+            "default": 2.0,
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Soiling Pct",
+            "type": "number"
+          },
+          "uc": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uc"
+          },
+          "uv": {
+            "default": 0.0,
+            "minimum": 0.0,
+            "title": "Uv",
+            "type": "number"
+          },
+          "weather_sigma_pct": {
+            "default": 3.0,
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Weather Sigma Pct",
+            "type": "number"
+          }
+        },
+        "title": "Losses",
+        "type": "object"
+      },
+      "Module": {
+        "description": "A PV module as its PAN file describes it.",
+        "properties": {
+          "area_m2": {
+            "title": "Area M2",
+            "type": "number"
+          },
+          "bifaciality": {
+            "title": "Bifaciality",
+            "type": "number"
+          },
+          "efficiency": {
+            "title": "Efficiency",
+            "type": "number"
+          },
+          "gamma": {
+            "title": "Gamma",
+            "type": "number"
+          },
+          "half_cell": {
+            "title": "Half Cell",
+            "type": "boolean"
+          },
+          "iam_profile": {
+            "description": "(angle of incidence in degrees, factor)",
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            "title": "Iam Profile",
+            "type": "array"
+          },
+          "imp": {
+            "title": "Imp",
+            "type": "number"
+          },
+          "is_bifacial": {
+            "title": "Is Bifacial",
+            "type": "boolean"
+          },
+          "isc": {
+            "title": "Isc",
+            "type": "number"
+          },
+          "length_m": {
+            "title": "Length M",
+            "type": "number"
+          },
+          "lid_loss_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lid Loss Pct"
+          },
+          "manufacturer": {
+            "title": "Manufacturer",
+            "type": "string"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "mu_gamma": {
+            "title": "Mu Gamma",
+            "type": "number"
+          },
+          "mu_isc_ma": {
+            "title": "Mu Isc Ma",
+            "type": "number"
+          },
+          "mu_pmpp_pct": {
+            "description": "%/degC; 0 when the file does not give it",
+            "title": "Mu Pmpp Pct",
+            "type": "number"
+          },
+          "mu_voc_mv": {
+            "description": "mV/degC; 0 when the file does not give it",
+            "title": "Mu Voc Mv",
+            "type": "number"
+          },
+          "n_cells_parallel": {
+            "title": "N Cells Parallel",
+            "type": "integer"
+          },
+          "n_cells_series": {
+            "title": "N Cells Series",
+            "type": "integer"
+          },
+          "n_diodes": {
+            "title": "N Diodes",
+            "type": "integer"
+          },
+          "pnom_w": {
+            "title": "Pnom W",
+            "type": "number"
+          },
+          "r_series": {
+            "title": "R Series",
+            "type": "number"
+          },
+          "r_shunt": {
+            "title": "R Shunt",
+            "type": "number"
+          },
+          "r_shunt_0": {
+            "title": "R Shunt 0",
+            "type": "number"
+          },
+          "r_shunt_exp": {
+            "title": "R Shunt Exp",
+            "type": "number"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "technology": {
+            "title": "Technology",
+            "type": "string"
+          },
+          "v_max_iec": {
+            "title": "V Max Iec",
+            "type": "number"
+          },
+          "vmp": {
+            "title": "Vmp",
+            "type": "number"
+          },
+          "voc": {
+            "title": "Voc",
+            "type": "number"
+          },
+          "width_m": {
+            "title": "Width M",
+            "type": "number"
+          }
+        },
+        "required": [
+          "manufacturer",
+          "model",
+          "pnom_w",
+          "length_m",
+          "width_m",
+          "technology",
+          "n_cells_series",
+          "n_cells_parallel",
+          "n_diodes",
+          "half_cell",
+          "isc",
+          "voc",
+          "imp",
+          "vmp",
+          "mu_isc_ma",
+          "mu_voc_mv",
+          "mu_pmpp_pct",
+          "r_shunt",
+          "r_shunt_0",
+          "r_shunt_exp",
+          "r_series",
+          "gamma",
+          "mu_gamma",
+          "v_max_iec",
+          "bifaciality",
+          "lid_loss_pct",
+          "iam_profile",
+          "source",
+          "area_m2",
+          "efficiency",
+          "is_bifacial"
+        ],
+        "title": "Module",
+        "type": "object"
+      },
+      "ModuleResponse": {
+        "description": "A module read from a PAN file.",
+        "properties": {
+          "coefficients": {
+            "$ref": "#/components/schemas/Coefficients"
+          },
+          "file": {
+            "title": "File",
+            "type": "string"
+          },
+          "module": {
+            "$ref": "#/components/schemas/Module"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "text": {
+            "description": "The content of the file as text, to embed in the project as pan_text",
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file",
+          "module",
+          "coefficients",
+          "notes",
+          "text"
+        ],
+        "title": "ModuleResponse",
+        "type": "object"
+      },
+      "Obstacle": {
+        "description": "Something that casts a shadow. Heights are above the roof surface.",
+        "properties": {
+          "auto": {
+            "default": false,
+            "title": "Auto",
+            "type": "boolean"
+          },
+          "diameter": {
+            "default": 1.0,
+            "description": "Metres, more than nothing",
+            "exclusiveMinimum": 0.0,
+            "title": "Diameter",
+            "type": "number"
+          },
+          "height": {
+            "default": 1.0,
+            "minimum": 0.0,
+            "title": "Height",
+            "type": "number"
+          },
+          "kind": {
+            "default": "box",
+            "enum": [
+              "box",
+              "cylinder",
+              "wall",
+              "tree",
+              "building"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "length": {
+            "default": 1.0,
+            "description": "Metres, more than nothing",
+            "exclusiveMinimum": 0.0,
+            "title": "Length",
+            "type": "number"
+          },
+          "name": {
+            "maxLength": 200,
+            "title": "Name",
+            "type": "string"
+          },
+          "points": {
+            "default": [],
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            "title": "Points",
+            "type": "array"
+          },
+          "rotation_deg": {
+            "default": 0.0,
+            "title": "Rotation Deg",
+            "type": "number"
+          },
+          "thickness": {
+            "default": 0.2,
+            "description": "Metres, more than nothing",
+            "exclusiveMinimum": 0.0,
+            "title": "Thickness",
+            "type": "number"
+          },
+          "trunk_height": {
+            "default": 2.0,
+            "minimum": 0.0,
+            "title": "Trunk Height",
+            "type": "number"
+          },
+          "width": {
+            "default": 1.0,
+            "description": "Metres, more than nothing",
+            "exclusiveMinimum": 0.0,
+            "title": "Width",
+            "type": "number"
+          },
+          "x": {
+            "default": 0.0,
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "default": 0.0,
+            "title": "Y",
+            "type": "number"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "Obstacle",
+        "type": "object"
+      },
+      "PlacedModule": {
+        "description": "One position. The outline is its footprint seen from above.",
+        "properties": {
+          "azimuth": {
+            "title": "Azimuth",
+            "type": "number"
+          },
+          "col": {
+            "title": "Col",
+            "type": "integer"
+          },
+          "idx": {
+            "title": "Idx",
+            "type": "integer"
+          },
+          "line": {
+            "description": "0 is the lowest line of the table; on east-west the side",
+            "title": "Line",
+            "type": "integer"
+          },
+          "outline": {
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            "title": "Outline",
+            "type": "array"
+          },
+          "row": {
+            "description": "Table row, or unit on an east-west roof",
+            "title": "Row",
+            "type": "integer"
+          },
+          "tilt": {
+            "title": "Tilt",
+            "type": "number"
+          },
+          "z_high": {
+            "title": "Z High",
+            "type": "number"
+          },
+          "z_low": {
+            "title": "Z Low",
+            "type": "number"
+          }
+        },
+        "required": [
+          "idx",
+          "outline",
+          "row",
+          "col",
+          "line",
+          "tilt",
+          "azimuth",
+          "z_low",
+          "z_high"
+        ],
+        "title": "PlacedModule",
+        "type": "object"
+      },
+      "Polygon": {
+        "description": "An area in local roof metres. The rings are not closed: the last point joins the first.",
+        "properties": {
+          "exterior": {
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            "title": "Exterior",
+            "type": "array"
+          },
+          "holes": {
+            "default": [],
+            "items": {
+              "items": {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array"
+              },
+              "type": "array"
+            },
+            "title": "Holes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "exterior"
+        ],
+        "title": "Polygon",
+        "type": "object"
+      },
+      "Project": {
+        "description": "A whole project. It is also the content of a .rtd file, format 2 (format 1 is accepted).\n\nA PAN or OND travels as text (pan_text, ond_text); the path then only names the file. Empty path and\nempty text mean the bundled sample. A path without text names a file that must be chosen again.",
+        "properties": {
+          "ac_cable_m": {
+            "default": 30.0,
+            "minimum": 0.0,
+            "title": "Ac Cable M",
+            "type": "number"
+          },
+          "array": {
+            "$ref": "#/components/schemas/ArraySpec",
+            "default": {
+              "allow_shaded": false,
+              "clearance_m": 0.5,
+              "ew_ridge_gap_m": 0.3,
+              "ew_tilt_deg": 10.0,
+              "flush_clearance_m": 0.1,
+              "module_gap_m": 0.02,
+              "modules_in_tilt": 2,
+              "orientation": "portrait",
+              "tilt_deg": 15.0,
+              "window_end_h": 16.0,
+              "window_start_h": 9.0
+            }
+          },
+          "cell_rise_c": {
+            "anyOf": [
+              {
+                "maximum": 100.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cell Rise C"
+          },
+          "chosen_option": {
+            "default": "",
+            "maxLength": 40,
+            "title": "Chosen Option",
+            "type": "string"
+          },
+          "custom": {
+            "anyOf": [
+              {
+                "maxItems": 3,
+                "minItems": 3,
+                "prefixItems": [
+                  {
+                    "exclusiveMinimum": 0.0,
+                    "type": "integer"
+                  },
+                  {
+                    "exclusiveMinimum": 0.0,
+                    "type": "integer"
+                  },
+                  {
+                    "exclusiveMinimum": 0.0,
+                    "type": "integer"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom"
+          },
+          "format": {
+            "default": 2,
+            "enum": [
+              1,
+              2
+            ],
+            "title": "Format",
+            "type": "integer"
+          },
+          "imax_mppt_override": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Imax Mppt Override"
+          },
+          "losses": {
+            "$ref": "#/components/schemas/Losses",
+            "default": {
+              "ac_ohmic_pct": 1.0,
+              "availability_pct": 99.5,
+              "bifacial": true,
+              "co2_t_per_mwh": 0.716,
+              "dc_ohmic_pct": 1.5,
+              "degradation_pct": 0.5,
+              "iam_b0": 0.05,
+              "mismatch_pct": 1.0,
+              "model_sigma_pct": 3.0,
+              "p_levels": [
+                50,
+                75,
+                90
+              ],
+              "quality_pct": 0.0,
+              "rear_loss_pct": 10.0,
+              "soiling_pct": 2.0,
+              "uv": 0.0,
+              "weather_sigma_pct": 3.0
+            }
+          },
+          "name": {
+            "default": "Untitled roof",
+            "maxLength": 200,
+            "title": "Name",
+            "type": "string"
+          },
+          "ond_path": {
+            "default": "",
+            "maxLength": 1024,
+            "title": "Ond Path",
+            "type": "string"
+          },
+          "ond_text": {
+            "default": "",
+            "maxLength": 2000000,
+            "title": "Ond Text",
+            "type": "string"
+          },
+          "pan_path": {
+            "default": "",
+            "maxLength": 1024,
+            "title": "Pan Path",
+            "type": "string"
+          },
+          "pan_text": {
+            "default": "",
+            "maxLength": 2000000,
+            "title": "Pan Text",
+            "type": "string"
+          },
+          "roof": {
+            "$ref": "#/components/schemas/Roof"
+          },
+          "roof_input": {
+            "$ref": "#/components/schemas/RoofInput",
+            "default": {
+              "dxf_units": "m",
+              "facing": 180.0,
+              "file": "",
+              "length": 30.0,
+              "mode": "rect",
+              "width": 20.0
+            }
+          },
+          "system_voltage": {
+            "anyOf": [
+              {
+                "description": "Volts. There is no default: the user chooses, and nothing is sized before.",
+                "enum": [
+                  600,
+                  1000,
+                  1500
+                ],
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "System Voltage"
+          },
+          "t_max_override": {
+            "anyOf": [
+              {
+                "maximum": 70.0,
+                "minimum": -90.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "T Max Override"
+          },
+          "t_min_override": {
+            "anyOf": [
+              {
+                "maximum": 60.0,
+                "minimum": -90.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "T Min Override"
+          },
+          "weather_csv": {
+            "default": "",
+            "maxLength": 1024,
+            "title": "Weather Csv",
+            "type": "string"
+          },
+          "weather_csv_text": {
+            "default": "",
+            "maxLength": 8000000,
+            "title": "Weather Csv Text",
+            "type": "string"
+          },
+          "weather_json": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Weather"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "weather_source": {
+            "default": "pvgis",
+            "enum": [
+              "pvgis",
+              "nasa",
+              "csv"
+            ],
+            "title": "Weather Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "roof"
+        ],
+        "title": "Project",
+        "type": "object"
+      },
+      "Roof": {
+        "description": "The roof outline in local metres around its reference point (lat, lon), and its obstacles.",
+        "properties": {
+          "albedo": {
+            "default": 0.2,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Albedo",
+            "type": "number"
+          },
+          "lat": {
+            "description": "Degrees, north positive",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "description": "Degrees, east positive",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Lon",
+            "type": "number"
+          },
+          "obstacle_clearance_m": {
+            "default": 0.5,
+            "minimum": 0.0,
+            "title": "Obstacle Clearance M",
+            "type": "number"
+          },
+          "obstacles": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Obstacle"
+            },
+            "title": "Obstacles",
+            "type": "array"
+          },
+          "outline": {
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            "minItems": 3,
+            "title": "Outline",
+            "type": "array"
+          },
+          "parapet_h": {
+            "default": 0.9,
+            "minimum": 0.0,
+            "title": "Parapet H",
+            "type": "number"
+          },
+          "roof_type": {
+            "default": "flat_tilted",
+            "enum": [
+              "flat_tilted",
+              "flat_ew",
+              "sloped_flush"
+            ],
+            "title": "Roof Type",
+            "type": "string"
+          },
+          "setback_m": {
+            "default": 1.0,
+            "minimum": 0.0,
+            "title": "Setback M",
+            "type": "number"
+          },
+          "slope_azimuth_deg": {
+            "default": 180.0,
+            "description": "Degrees clockwise from north",
+            "maximum": 360.0,
+            "minimum": 0.0,
+            "title": "Slope Azimuth Deg",
+            "type": "number"
+          },
+          "slope_deg": {
+            "default": 0.0,
+            "exclusiveMaximum": 90.0,
+            "minimum": 0.0,
+            "title": "Slope Deg",
+            "type": "number"
+          },
+          "source": {
+            "default": "coordinates",
+            "enum": [
+              "coordinates",
+              "kmz",
+              "dxf"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "walkway_every_modules": {
+            "default": 24,
+            "minimum": 0.0,
+            "title": "Walkway Every Modules",
+            "type": "integer"
+          },
+          "walkway_every_rows": {
+            "default": 4,
+            "minimum": 0.0,
+            "title": "Walkway Every Rows",
+            "type": "integer"
+          },
+          "walkway_m": {
+            "default": 0.6,
+            "minimum": 0.0,
+            "title": "Walkway M",
+            "type": "number"
+          }
+        },
+        "required": [
+          "outline",
+          "lat",
+          "lon"
+        ],
+        "title": "Roof",
+        "type": "object"
+      },
+      "RoofFile": {
+        "description": "The file as base64 of its bytes. A DXF also needs its units and the place of the roof.",
+        "properties": {
+          "base64": {
+            "maxLength": 28000000,
+            "minLength": 1,
+            "title": "Base64",
+            "type": "string"
+          },
+          "lat": {
+            "anyOf": [
+              {
+                "description": "Degrees, north positive",
+                "maximum": 90.0,
+                "minimum": -90.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lat"
+          },
+          "lon": {
+            "anyOf": [
+              {
+                "description": "Degrees, east positive",
+                "maximum": 180.0,
+                "minimum": -180.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lon"
+          },
+          "name": {
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "units": {
+            "default": "m",
+            "enum": [
+              "m",
+              "mm"
+            ],
+            "title": "Units",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "base64"
+        ],
+        "title": "RoofFile",
+        "type": "object"
+      },
+      "RoofInput": {
+        "description": "How the roof was entered, so the same controls can show it again.",
+        "properties": {
+          "dxf_units": {
+            "default": "m",
+            "enum": [
+              "m",
+              "mm"
+            ],
+            "title": "Dxf Units",
+            "type": "string"
+          },
+          "facing": {
+            "default": 180.0,
+            "description": "Degrees clockwise from north",
+            "maximum": 360.0,
+            "minimum": 0.0,
+            "title": "Facing",
+            "type": "number"
+          },
+          "file": {
+            "default": "",
+            "maxLength": 1024,
+            "title": "File",
+            "type": "string"
+          },
+          "length": {
+            "default": 30.0,
+            "title": "Length",
+            "type": "number"
+          },
+          "mode": {
+            "default": "rect",
+            "enum": [
+              "rect",
+              "corners"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "width": {
+            "default": 20.0,
+            "title": "Width",
+            "type": "number"
+          }
+        },
+        "title": "RoofInput",
+        "type": "object"
+      },
+      "ShadowRequest": {
+        "description": "Shadows of the parapet and the obstacles of a project at one solar hour.",
+        "properties": {
+          "hour": {
+            "description": "Hour of the day in solar time",
+            "maximum": 24.0,
+            "minimum": 0.0,
+            "title": "Hour",
+            "type": "number"
+          },
+          "plane_height_m": {
+            "default": 0.0,
+            "description": "Height above the roof of the plane they fall on",
+            "minimum": 0.0,
+            "title": "Plane Height M",
+            "type": "number"
+          },
+          "project": {
+            "$ref": "#/components/schemas/Project"
+          }
+        },
+        "required": [
+          "project",
+          "hour"
+        ],
+        "title": "ShadowRequest",
+        "type": "object"
+      },
+      "Shadows": {
+        "description": "The shadows at one hour. No polygons while the sun is down.",
+        "properties": {
+          "azimuth_deg": {
+            "title": "Azimuth Deg",
+            "type": "number"
+          },
+          "elevation_deg": {
+            "title": "Elevation Deg",
+            "type": "number"
+          },
+          "hour": {
+            "title": "Hour",
+            "type": "number"
+          },
+          "plane_height_m": {
+            "title": "Plane Height M",
+            "type": "number"
+          },
+          "polygons": {
+            "items": {
+              "$ref": "#/components/schemas/Polygon"
+            },
+            "title": "Polygons",
+            "type": "array"
+          }
+        },
+        "required": [
+          "hour",
+          "elevation_deg",
+          "azimuth_deg",
+          "plane_height_m",
+          "polygons"
+        ],
+        "title": "Shadows",
+        "type": "object"
+      },
+      "SunPosition": {
+        "properties": {
+          "azimuth_deg": {
+            "description": "Clockwise from north",
+            "title": "Azimuth Deg",
+            "type": "number"
+          },
+          "elevation_deg": {
+            "description": "Above the horizon; negative at night",
+            "title": "Elevation Deg",
+            "type": "number"
+          },
+          "hour": {
+            "title": "Hour",
+            "type": "number"
+          }
+        },
+        "required": [
+          "hour",
+          "elevation_deg",
+          "azimuth_deg"
+        ],
+        "title": "SunPosition",
+        "type": "object"
+      },
+      "SunRequest": {
+        "description": "A place, a day, and the hours wanted: either a list or a step from midnight to midnight.",
+        "properties": {
+          "day": {
+            "anyOf": [
+              {
+                "maximum": 366.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "const": "design_day",
+                "type": "string"
+              }
+            ],
+            "description": "Day of the year, or design_day: the winter solstice of the hemisphere (355 or 172)",
+            "title": "Day"
+          },
+          "hours": {
+            "anyOf": [
+              {
+                "items": {
+                  "description": "Hour of the day in solar time",
+                  "maximum": 24.0,
+                  "minimum": 0.0,
+                  "type": "number"
+                },
+                "maxItems": 1500,
+                "minItems": 1,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hours"
+          },
+          "lat": {
+            "description": "Degrees, north positive",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "description": "Degrees, east positive",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Lon",
+            "type": "number"
+          },
+          "shadows": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ShadowRequest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "step_h": {
+            "anyOf": [
+              {
+                "maximum": 24.0,
+                "minimum": 0.016666666666666666,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Step H"
+          }
+        },
+        "required": [
+          "lat",
+          "lon",
+          "day"
+        ],
+        "title": "SunRequest",
+        "type": "object"
+      },
+      "SunResponse": {
+        "description": "Sun positions in the order asked. Sunrise and sunset are null where the sun stays up or down.",
+        "properties": {
+          "day_of_year": {
+            "title": "Day Of Year",
+            "type": "integer"
+          },
+          "positions": {
+            "items": {
+              "$ref": "#/components/schemas/SunPosition"
+            },
+            "title": "Positions",
+            "type": "array"
+          },
+          "shadows": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Shadows"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sunrise_h": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sunrise H"
+          },
+          "sunset_h": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sunset H"
+          }
+        },
+        "required": [
+          "day_of_year",
+          "positions",
+          "sunrise_h",
+          "sunset_h",
+          "shadows"
+        ],
+        "title": "SunResponse",
+        "type": "object"
+      },
+      "Weather": {
+        "description": "One value per hour, named by its start in UTC. Irradiance in W/m2, air in degC, wind in m/s.",
+        "properties": {
+          "dhi": {
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 8784,
+            "title": "Dhi",
+            "type": "array"
+          },
+          "dni": {
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 8784,
+            "title": "Dni",
+            "type": "array"
+          },
+          "ghi": {
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 8784,
+            "title": "Ghi",
+            "type": "array"
+          },
+          "horizon": {
+            "default": [],
+            "description": "(azimuth from north, elevation) in degrees",
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            "title": "Horizon",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "lat": {
+            "description": "Degrees, north positive",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "description": "Degrees, east positive",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Lon",
+            "type": "number"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "temp_air": {
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 8784,
+            "title": "Temp Air",
+            "type": "array"
+          },
+          "time": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 8784,
+            "minItems": 1,
+            "title": "Time",
+            "type": "array"
+          },
+          "wind_speed": {
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 8784,
+            "title": "Wind Speed",
+            "type": "array"
+          }
+        },
+        "required": [
+          "lat",
+          "lon",
+          "source",
+          "label",
+          "time",
+          "ghi",
+          "dni",
+          "dhi",
+          "temp_air",
+          "wind_speed"
+        ],
+        "title": "Weather",
+        "type": "object"
       }
     }
   },
@@ -30,6 +2252,112 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/demo": {
+      "get": {
+        "description": "The Pune demo: a 90 x 40 m flat roof with its weather, its module and its inverter, at 1500 V.",
+        "operationId": "getDemo",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Demo",
+        "tags": [
+          "project"
+        ]
+      }
+    },
+    "/equipment/inverter": {
+      "post": {
+        "description": "Read an OND file: the inverter, and the default of the largest current per MPPT.",
+        "operationId": "parseInverter",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EquipmentFile"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InverterResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request cannot be used; the message says why."
+          }
+        },
+        "summary": "Inverter",
+        "tags": [
+          "equipment"
+        ]
+      }
+    },
+    "/equipment/module": {
+      "post": {
+        "description": "Read a PAN file: the module, its temperature coefficients and where they come from, and notes.",
+        "operationId": "parseModule",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EquipmentFile"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModuleResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request cannot be used; the message says why."
+          }
+        },
+        "summary": "Module",
+        "tags": [
+          "equipment"
+        ]
+      }
+    },
     "/health": {
       "get": {
         "description": "Tell the caller that the API is up, and which version it is.",
@@ -49,6 +2377,132 @@
         "summary": "Health",
         "tags": [
           "meta"
+        ]
+      }
+    },
+    "/layout": {
+      "post": {
+        "description": "Fit the modules on the roof of the project. Needs no weather and no system voltage.",
+        "operationId": "computeLayout",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Project"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LayoutResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request cannot be used; the message says why."
+          }
+        },
+        "summary": "Layout",
+        "tags": [
+          "layout"
+        ]
+      }
+    },
+    "/roof/import": {
+      "post": {
+        "description": "Read a KMZ, KML or DXF: the largest outline is the roof, the other shapes are obstacles.",
+        "operationId": "importRoof",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoofFile"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportedRoof"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request cannot be used; the message says why."
+          }
+        },
+        "summary": "Import Roof",
+        "tags": [
+          "roof"
+        ]
+      }
+    },
+    "/sun": {
+      "post": {
+        "description": "Sun positions in solar time for a day, sunrise and sunset, and the shadows at one hour if asked.",
+        "operationId": "computeSun",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SunRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SunResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request cannot be used; the message says why."
+          }
+        },
+        "summary": "Sun",
+        "tags": [
+          "sun"
         ]
       }
     }
