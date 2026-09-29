@@ -115,6 +115,30 @@ UI. Multi-user concerns. Persistence.
 - **Large roofs are slow.** 2 km x 1 km (inside the range of the desktop controls) takes 29 s in `/layout`
   and gives 526,070 positions. Limits belong to phase 11.
 
+## As built, part 2
+
+### What exists
+| Method and path | Operation | Measured |
+|---|---|---|
+| `POST /weather` | `loadWeather` | PVGIS 5.8 s and NASA POWER 2.3 s from the services, 0.03 s from the cache; CSV 0.01 s; 477 kB |
+
+- **`POST /weather`** takes the source, the site and, for CSV, the text of the file. It answers with the
+  weather as a project carries it (`weather_json`), a summary of those hours, and notes for the user.
+  Downloads are kept per process for 64 sites (D6); the answer is the same with and without them, tested.
+- **CSV weather is checked** (`rooftop_core/csv_weather.py`) before the reader runs. The reader lets through
+  a time it cannot read, a gap in the wind, an hour that is there twice and a file without rows; each is
+  now refused with the row and what to do. Notes, not refusals: fewer hours than a year; beam and diffuse
+  worked out from GHI.
+- **Errors of the services**: a refusal of the site (PVGIS over the sea) is 422 `no_weather_for_site` with
+  the words of the service; a service that fails or cannot be reached is 502, in the one error shape.
+- **Recorded answers** of PVGIS and NASA POWER for Pune are in `apps/api/tests/fixtures/weather`. The
+  recorded PVGIS answer, read by the engine, is the bundled `pune_weather.json`, hour by hour.
+- The weather cache of the engine takes a lock: a server answers several requests at a time.
+
+### Left as in the desktop app
+- NASA POWER is asked for the year 2023; the times of a CSV are read as UTC (inventory, section 5, gap 7).
+  Neither can be set in a request yet.
+
 ### Fixed in part 2
 - **CSV weather with GHI alone is read.** The split into DNI and DHI (Erbs) failed because the sun positions
   carried an index half an hour later than the irradiance. The values now go in without that index; the sun
@@ -146,7 +170,6 @@ UI. Multi-user concerns. Persistence.
   numbers of the engine are as confirmed on the desktop app.
 
 ### What remains of this phase
-- `POST /weather` (PVGIS, NASA POWER, CSV), with the cache per D6.
 - `POST /design` over SSE: progress events, then layout, shading summary, series range and options.
 - `POST /export/{pdf,dxf,kmz,csv,sld}` on the `*_bytes` writers.
 - Memoisation per D6 (layout, weather, shading).

@@ -20,7 +20,7 @@ from rooftop_api.schemas.project import Project, RoofInput
 from rooftop_api.schemas.roof import Obstacle, Roof
 from rooftop_api.schemas.roof_import import ImportedRoof, RoofFile
 from rooftop_api.schemas.sun import ShadowRequest, Shadows, SunPosition, SunRequest, SunResponse
-from rooftop_api.schemas.weather import Weather
+from rooftop_api.schemas.weather import Weather, WeatherRequest, WeatherResponse, WeatherSummary
 
 __all__ = [
     "ArraySpec",
@@ -55,4 +55,7 @@ __all__ = [
     "SunRequest",
     "SunResponse",
     "Weather",
+    "WeatherRequest",
+    "WeatherResponse",
+    "WeatherSummary",
 ]

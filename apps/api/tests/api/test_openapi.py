@@ -12,6 +12,7 @@ OPERATIONS = {
     ("post", "/roof/import"): "importRoof",
     ("post", "/layout"): "computeLayout",
     ("post", "/sun"): "computeSun",
+    ("post", "/weather"): "loadWeather",
 }
 
 
@@ -57,3 +58,9 @@ def test_a_point_is_a_pair_of_numbers(document):
 
     assert outline["items"]["prefixItems"] == [{"type": "number"}, {"type": "number"}]
     assert (outline["items"]["minItems"], outline["items"]["maxItems"]) == (2, 2)
+
+
+def test_the_weather_route_says_that_a_service_elsewhere_can_fail(document):
+    answer = document["paths"]["/weather"]["post"]["responses"]["502"]
+
+    assert answer["content"]["application/json"]["schema"] == {"$ref": "#/components/schemas/ErrorResponse"}

@@ -11,16 +11,24 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException
 
 from rooftop_api.schemas.errors import ErrorDetail, ErrorResponse
-from rooftop_core.errors import EngineError, MissingEquipmentFile, UnsupportedProjectFormat, WeatherNotLoaded
+from rooftop_core.errors import (
+    EngineError,
+    MissingEquipmentFile,
+    UnsupportedProjectFormat,
+    UnusableWeatherFile,
+    WeatherNotLoaded,
+)
 
 logger = logging.getLogger("rooftop_api")
 
 UNPROCESSABLE = 422
+BAD_GATEWAY = 502
 INTERNAL_MESSAGE = "The server could not finish this request. Try again; if it fails again, report it."
 ENGINE_CODES: dict[type[EngineError], str] = {
     MissingEquipmentFile: "equipment_file_missing",
     WeatherNotLoaded: "weather_not_loaded",
     UnsupportedProjectFormat: "unsupported_project_format",
+    UnusableWeatherFile: "not_a_weather_csv",
 }
 # What every route can answer besides its success, for the OpenAPI document.
 ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
@@ -28,6 +36,14 @@ ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
         "model": ErrorResponse,
         "description": "The request cannot be used; the message says why.",
     }
+}
+# What a route can answer when it depends on a service elsewhere.
+SERVICE_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
+    **ERROR_RESPONSES,
+    BAD_GATEWAY: {
+        "model": ErrorResponse,
+        "description": "A service this request depends on failed or could not be reached.",
+    },
 }
 
 
