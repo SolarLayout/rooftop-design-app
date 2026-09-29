@@ -44,10 +44,18 @@ Landscape, design day, roof type, system voltage once chosen, colour by.
 A choice that the user must make (system voltage before it is chosen) is not a segmented control with nothing
 selected. It is the decision card below.
 
+In code: `Segmented`. It is a group of radio buttons to a screen reader (`radiogroup`, `radio`). The keyboard
+stops at it once, at the choice that is taken; the arrows go through the choices and around the ends, Home and
+End to the first and the last; each takes the choice it goes to. A choice that cannot be taken is dim and is
+passed over. On phone and tablet the track has radius `radius-row`, the items `radius-seg-touch` and the size
+of body text. With `fill` the choices share the width in equal parts (the lens switch on phone).
+
 ## Switch
 44 by 26, radius full. On: accent track, knob accent-ink. Off: line-strong track, knob text-2. Knob 20, inset 3,
 `shadow-knob`. On touch the hit area is 52 by 44 around a 52 by 30 switch. Always beside a label and, where it
-helps, one line of hint. `role="switch"` with `aria-checked`.
+helps, one line of hint. `role="switch"` with `aria-checked`. The track has `shadow-track`.
+
+In code: `Switch`. Its name is its `label`. The knob slides in `duration-press`.
 
 ## Slider and range slider
 Track 4 to 6 high, `color-well`; filled part accent; handle 18 to 22 round, white with a 3 to 4 px accent border,
