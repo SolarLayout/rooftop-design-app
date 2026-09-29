@@ -1,0 +1,167 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-09-29T11:30:00Z"
+ },
+ "title": "SolarLayout Rooftop — Web Design",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "Map.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 900,
+   "title": "Information architecture"
+  },
+  "Home.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 900,
+   "title": "Home · desktop 1440"
+  },
+  "Kit.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 640,
+   "title": "Controls, depth and motion",
+   "is_interactive": true
+  },
+  "Locate.dc.html": {
+   "x": 0,
+   "y": 1300,
+   "w": 1440,
+   "h": 900,
+   "title": "Find and outline · desktop 1440"
+  },
+  "LocatePhone.dc.html": {
+   "x": 1520,
+   "y": 1300,
+   "w": 390,
+   "h": 844,
+   "title": "Find and outline · phone 390"
+  },
+  "RoofLens.dc.html": {
+   "x": 1990,
+   "y": 1300,
+   "w": 1440,
+   "h": 900,
+   "title": "Studio, Roof lens · desktop 1440"
+  },
+  "Main.dc.html": {
+   "x": 0,
+   "y": 2600,
+   "w": 1440,
+   "h": 900,
+   "title": "Studio, Array lens · desktop 1440"
+  },
+  "StudioTablet.dc.html": {
+   "x": 1520,
+   "y": 2600,
+   "w": 834,
+   "h": 1194,
+   "title": "Studio, Array lens · tablet 834"
+  },
+  "StudioPhone.dc.html": {
+   "x": 2434,
+   "y": 2600,
+   "w": 390,
+   "h": 844,
+   "title": "Studio, Array lens · phone 390"
+  },
+  "Performance.dc.html": {
+   "x": 0,
+   "y": 5494,
+   "w": 1440,
+   "h": 1160,
+   "title": "Performance · desktop 1440"
+  },
+  "Handover.dc.html": {
+   "x": 1520,
+   "y": 5494,
+   "w": 1440,
+   "h": 900,
+   "title": "Handover · desktop 1440"
+  },
+  "SunLens.dc.html": {
+   "x": 0,
+   "y": 4194,
+   "w": 1440,
+   "h": 900,
+   "title": "Studio, Sun lens · desktop 1440"
+  },
+  "StringsLens.dc.html": {
+   "x": 1520,
+   "y": 4194,
+   "w": 1440,
+   "h": 900,
+   "title": "Studio, Strings lens · desktop 1440"
+  },
+  "StringsLensNoVoltage.dc.html": {
+   "x": 3040,
+   "y": 4194,
+   "w": 1440,
+   "h": 900,
+   "title": "Studio, Strings lens · no system voltage yet"
+  }
+ },
+ "order": [
+  "Map.dc.html",
+  "Home.dc.html",
+  "Kit.dc.html",
+  "Locate.dc.html",
+  "LocatePhone.dc.html",
+  "RoofLens.dc.html",
+  "Main.dc.html",
+  "StudioTablet.dc.html",
+  "StudioPhone.dc.html",
+  "SunLens.dc.html",
+  "StringsLens.dc.html",
+  "StringsLensNoVoltage.dc.html",
+  "Performance.dc.html",
+  "Handover.dc.html"
+ ],
+ "notes": {
+  "t1": {
+   "x": 0,
+   "y": -300,
+   "text": "1 · Structure, entry and controls",
+   "kind": "title1",
+   "maxW": 4480
+  },
+  "t4": {
+   "x": 0,
+   "y": 1000,
+   "text": "2 · Find your roof: map to 3D",
+   "kind": "title1",
+   "maxW": 3430
+  },
+  "t2": {
+   "x": 0,
+   "y": 2300,
+   "text": "3 · Studio, Array lens — one roof, three screen sizes",
+   "kind": "title1",
+   "maxW": 2824
+  },
+  "t3": {
+   "x": 0,
+   "y": 5194,
+   "text": "5 · Performance and Handover",
+   "kind": "title1",
+   "maxW": 2960
+  },
+  "t5": {
+   "x": 0,
+   "y": 3894,
+   "text": "4 · Studio — Sun and Strings lenses",
+   "kind": "title1",
+   "maxW": 4480
+  }
+ },
+ "designSystems": []
+}

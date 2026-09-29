@@ -52,6 +52,7 @@ stateless Python API. One file per phase. Work the phases in order; each one end
 | D19 | Engineering standard: production grade, test-driven (failing test first). Recorded in `CLAUDE.md` | Owner, 2026-09-29 |
 | D20 | CI: the pull request check runs everything except browser tests; browser tests run locally in `bun check` and in the `e2e` workflow, started by hand | Owner, 2026-09-29: the browser install hung in CI |
 | D21 | Pull requests are merged by the agent once the check is green | Owner, 2026-09-29 |
+| D22 | The design system is documented in `docs/design/` and linked from `CLAUDE.md` and `apps/web/CLAUDE.md`; all UI work complies with it | Owner, 2026-09-29 |
 | D17 | The word "bankable" is not used anywhere in the product; it belongs to utility-scale ground-mount | Owner |
 
 ## Open for approval
@@ -71,5 +72,6 @@ plan/
     r3f-notes.md                3D fixes already paid for in solar-mms-modeller
     map-providers.md            imagery and search providers: terms, cost, recommendation
     demo-numbers.md             expected results of the Pune demo, for tests
-  design-previews/              PNG renders of the approved mockups
 ```
+
+The design system is in `docs/design/` (index: `docs/design/README.md`), with the mockup sources and previews.
