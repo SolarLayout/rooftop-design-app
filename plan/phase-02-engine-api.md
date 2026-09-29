@@ -106,7 +106,7 @@ UI. Multi-user concerns. Persistence.
 9. `/layout` refuses a roof outline that crosses itself and a PAN without the size of the module. The engine
    lays out part of such a roof in silence (130 positions on the demo roof drawn as a bow tie), and 448,220
    positions of no area for a module without size.
-10. The DC cable label names the system voltage as it is, also at 600 V.
+10. The DC cable label names the system voltage as it is, also at 600 V. Confirmed by the owner (D25).
 11. `pypdf` is a development dependency: tests read the text of the PDF.
 
 ### Known faults, not fixed here

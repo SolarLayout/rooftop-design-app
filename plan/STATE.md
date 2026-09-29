@@ -36,8 +36,9 @@ Nothing. `main` is green and there is no open branch or pull request.
 | Thing | Value |
 |---|---|
 | Repo | `/Users/arunkpatra/codebase/rooftop-design-app`, GitHub `SolarLayout/rooftop-design-app` (private) |
-| Desktop app to copy from (read-only) | `/Users/arunkpatra/codebase/rooftop-design`, commit `bf2cb67` |
-| 3D reference project (read-only) | `/Users/arunkpatra/codebase/solar-mms-modeller` |
+| Desktop app to copy from (read-only) | `/Users/arunkpatra/codebase/rooftop-design`, commit `bf2cb67`. GitHub `SolarLayout/rooftop-design` |
+| 3D reference project (read-only) | `/Users/arunkpatra/codebase/solar-mms-modeller`. GitHub `SolarLayout/solar-mms-modeller` |
+| Access to those two | They are outside this repo. A session can read them only after the owner adds them with `/add-dir`. Ask for that when the slice needs them |
 | Node | 26.10.0 at `/opt/homebrew/bin/node` (`.nvmrc`) |
 | bun, uv, Python | bun 1.3.14; uv; Python 3.12.8 |
 | Playwright | `@playwright/test` 1.52.0; its browser (chromium-1169) is already installed |
@@ -59,7 +60,6 @@ Nothing. `main` is green and there is no open branch or pull request.
 | String placement on the roof in the Strings mockup is illustrative | Phase 7 uses the engine's strings |
 | The design run takes about 16 s here, about 11 s in the desktop app's own environment. The engine code is the same; this repo runs Python 3.12.8 from python.org with numpy 2.5 and scipy 1.18, the desktop app a uv-managed Python 3.11 with numpy 2.4 and scipy 1.17. Try a uv-managed Python 3.12 and compare | Phase 2, part 2 |
 | Heights cannot come from a DXF: a layer name may hold neither `=` nor `:`. Every DXF obstacle gets 1.0 m and is listed as missing | Phase 5, with the owner |
-| DC cable label at 600 V reads "600 V DC". Whether cable is labelled by its rating class is a question for Prasanta | Owner, one question |
 | `/layout` has no size limit: a roof of 2 km by 1 km takes 29 s | Phase 11 |
 | Progress of a design run has fixed shares and no progress inside the options step | Phase 2, part 2 |
 | Real PAN and OND files are in `apps/api/tests/fixtures/equipment/` with a README; no test uses them yet | Phase 2, part 2 |
@@ -70,3 +70,4 @@ Nothing. `main` is green and there is no open branch or pull request.
 - Legal check on the map stack: approved by the owner (D18).
 - Map provider: Esri plus Overture (D13).
 - The old desktop app's layout and look: rejected. Never a reference.
+- DC cable label: by the system voltage as chosen (D25).

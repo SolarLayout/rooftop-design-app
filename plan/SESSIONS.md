@@ -37,8 +37,12 @@ previous one remembers. Everything a session needs is in the repo.
    bun status
    ```
    If they disagree with `STATE.md`, reality wins: fix `STATE.md` first and say so to the owner.
-5. Run `bun install`, `uv sync` in `apps/api`, then `bun check`. Start only from green.
-6. Tell the owner in a few lines what you found and what you will do. Then do it.
+5. If the slice needs the desktop app or the 3D reference project (paths in `plan/STATE.md`), check that you
+   can read them. They are outside this repo: if you cannot, ask the owner to add each with `/add-dir`. If one
+   is missing from the disk, it can be cloned from the SolarLayout organisation on GitHub, next to this repo.
+   Never change anything in them.
+6. Run `bun install`, `uv sync` in `apps/api`, then `bun check`. Start only from green.
+7. Tell the owner in a few lines what you found and what you will do. Then do it.
 
 ## During a session
 
