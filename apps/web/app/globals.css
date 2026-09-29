@@ -171,9 +171,12 @@
   --size-vitals: 78px;
   --size-tabbar: 72px;
   --size-touch: 44px;
+  --size-sheet-peek: 84px;
 
+  --radius-key: 4px;
   --radius-xs: 6px;
   --radius-seg: 7px;
+  --radius-item: 8px;
   --radius-seg-touch: 9px;
   --radius-control: 10px;
   --radius-row: 12px;
@@ -183,6 +186,7 @@
   --radius-panel: 22px;
   --radius-full: 9999px;
 
+  --border-tab: 2px;
   --border-handle: 3px;
   --border-handle-touch: 4px;
 
@@ -196,12 +200,14 @@
   --duration-fill: 900ms;
   --duration-tilt: 1200ms;
   --duration-spin: 900ms;
+  --duration-breathe: 1600ms;
   --duration-pulse-saved: 2400ms;
   --duration-pulse-corner: 2000ms;
   --shift-press: 1px;
   --scale-press: 0.985;
 
   --opacity-disabled: 0.45;
+  --opacity-updating: 0.55;
 
   --stroke-icon: 2;
   --stroke-icon-light: 1.7;
@@ -230,6 +236,7 @@
   --color-line: #232A36;
   --color-line-strong: #2F3847;
   --color-line-hover: #3B4658;
+  --color-dim: rgba(5,7,10,.72);
 
   --color-text: #F2F4F7;
   --color-text-2: #A9B2C0;
@@ -275,6 +282,7 @@
   --shadow-well-focus: inset 0 1px 3px rgba(0,0,0,.65), 0 0 0 3px rgba(255,176,32,.18);
   --shadow-card: inset 0 1px 0 rgba(255,255,255,.05), 0 1px 2px rgba(0,0,0,.35), 0 16px 40px rgba(0,0,0,.28);
   --shadow-float: inset 0 1px 0 rgba(255,255,255,.06), 0 1px 2px rgba(0,0,0,.45), 0 16px 40px rgba(0,0,0,.5);
+  --shadow-tooltip: 0 1px 2px rgba(0,0,0,.45), 0 8px 20px rgba(0,0,0,.35);
   --shadow-panel: inset 0 1px 0 rgba(255,255,255,.06), 0 2px 4px rgba(0,0,0,.4), 0 24px 64px rgba(0,0,0,.55);
   --shadow-track: inset 0 1px 3px rgba(0,0,0,.45);
   --shadow-knob: 0 1px 3px rgba(0,0,0,.5);
@@ -320,12 +328,15 @@
   --spacing-vitals: var(--size-vitals);
   --spacing-tabbar: var(--size-tabbar);
   --spacing-touch: var(--size-touch);
+  --spacing-sheet-peek: var(--size-sheet-peek);
 
   --breakpoint-tablet: 640px;
   --breakpoint-desktop: 1101px;
 
+  --radius-key: var(--radius-key);
   --radius-xs: var(--radius-xs);
   --radius-seg: var(--radius-seg);
+  --radius-item: var(--radius-item);
   --radius-seg-touch: var(--radius-seg-touch);
   --radius-control: var(--radius-control);
   --radius-row: var(--radius-row);
@@ -350,6 +361,7 @@
   --color-line: var(--color-line);
   --color-line-strong: var(--color-line-strong);
   --color-line-hover: var(--color-line-hover);
+  --color-dim: var(--color-dim);
   --color-text: var(--color-text);
   --color-text-2: var(--color-text-2);
   --color-text-3: var(--color-text-3);
@@ -387,6 +399,7 @@
   --shadow-well-focus: var(--shadow-well-focus);
   --shadow-card: var(--shadow-card);
   --shadow-float: var(--shadow-float);
+  --shadow-tooltip: var(--shadow-tooltip);
   --shadow-panel: var(--shadow-panel);
   --shadow-track: var(--shadow-track);
   --shadow-knob: var(--shadow-knob);
@@ -575,6 +588,18 @@
   }
 }
 
+/* What is directly inside a control answers to the pointer over the control: the line under a tab. */
+@custom-variant within-hovered {
+  @media (hover: hover) {
+    :where(:hover:not(:disabled)) > & {
+      @slot;
+    }
+  }
+  :where([data-shown-as="hover"]) > & {
+    @slot;
+  }
+}
+
 /* A field shows the focus that is inside it. */
 @custom-variant focused {
   &:focus-within {
@@ -594,8 +619,34 @@
   }
 }
 
+/* A row that scrolls sideways shows part of what comes next, and no bar. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+}
+
 @utility opacity-disabled {
   opacity: var(--opacity-disabled);
+}
+@utility opacity-updating {
+  opacity: var(--opacity-updating);
+}
+
+/* What waits: a ring turns, a skeleton breathes. Both stand still for those who ask for less motion. */
+@keyframes turn {
+  to {
+    rotate: 360deg;
+  }
+}
+@keyframes breathe {
+  50% {
+    opacity: var(--opacity-updating);
+  }
+}
+@utility turning {
+  animation: turn var(--duration-spin) linear infinite;
+}
+@utility breathing {
+  animation: breathe var(--duration-breathe) ease-in-out infinite;
 }
 /* The lowest of the three heights: no shadow at all. */
 @utility flat {
@@ -608,6 +659,12 @@
   transition-duration: var(--duration-press);
   transition-timing-function: var(--ease-out);
 }
+/* A sheet goes to its stop; while it is dragged it follows the pointer at once. */
+@utility sheet-motion {
+  transition-property: height;
+  transition-duration: var(--duration-panel);
+  transition-timing-function: var(--ease-out);
+}
 @utility raised-by-hover {
   translate: 0 calc(var(--shift-press) * -1);
 }
@@ -616,6 +673,10 @@
   scale: var(--scale-press);
 }
 
+@utility border-b-tab {
+  border-bottom-width: var(--border-tab);
+  border-bottom-style: solid;
+}
 @utility border-handle {
   border-width: var(--border-handle);
 }
@@ -632,6 +693,17 @@
 }
 @utility w-span {
   width: calc(var(--span) * 100%);
+}
+@utility h-span {
+  height: calc(var(--span) * 100%);
+}
+/* A place on the screen, in pixels, for what floats in the top layer of the browser. */
+@utility placed {
+  position: fixed;
+  inset: auto;
+  left: var(--x);
+  top: var(--y);
+  margin: 0;
 }
 
 @utility stroke-icon {
@@ -688,6 +760,11 @@
 
   body {
     @apply type-body-touch desktop:type-body;
+  }
+
+  /* What is behind a dialog does not scroll. */
+  html:has(dialog:modal) {
+    overflow: hidden;
   }
 
   @media (prefers-reduced-motion: reduce) {

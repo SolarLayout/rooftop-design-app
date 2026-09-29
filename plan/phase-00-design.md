@@ -93,8 +93,8 @@ For Phase 3, by session 3. Approved by the owner on 2026-09-29 (decision D32). O
   voltage on tablet and phone; the drawer of notes to review on desktop, tablet and phone; the project
   switcher, open; the states of saving.
 
-## Drawn in round 5, waiting for approval
-For Phase 3, by session 4. Source and preview are in `docs/design`; not yet on the canvas.
+## Delivered in round 5
+For Phase 3, by session 4. Approved by the owner on 2026-09-29 (decision D35).
 - Tabs (decision D33): the row and its states, with a count, in a card of Performance (chart and table), on
   phone, the keyboard, and when tabs are used and when a segmented control.
 

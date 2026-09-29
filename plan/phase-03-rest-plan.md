@@ -16,16 +16,18 @@ decided on the way. It is kept true while the work goes on: a step that is done 
 
 ## How the work goes
 
-- One branch, one pull request. Each step below is one commit, or two when a token is new: the document
-  first, in a commit of its own.
+- Two pull requests (decision D36). The first, #32, branch `feat/phase-3-shell`, holds the components: steps 3
+  to 9 and Tabs. It is built and merged by session 4. The second holds steps 10 to 16 and is built by the
+  session after it, from a branch of its own.
+- Each step below is one commit, or two when a token is new: the document first, in a commit of its own.
 - Test first, seen failing. Logic is a pure function or a store without React, tested with `bun test`.
   What is seen is tested in the browser on 390, 834 and 1440.
 - `bun check` green before every commit. The owner hears after each step what is there and what was decided.
 - Every new component is on the kit in every state; the baselines are renewed after they were looked at.
 - `plan/STATE.md` is brought up to date on `main` after steps 5, 9, 12 and 14, so that a session that is
   cut off loses nothing.
-- The pull request is opened after step 3 as a draft, so that its check runs on every push. It is merged
-  after step 16, or after Tabs when the approval is there by then.
+- A pull request is opened as a draft after its first step, so that its check runs on every push. It is
+  merged after its last step.
 
 ## Steps
 
@@ -53,7 +55,7 @@ decided on the way. It is kept true while the work goes on: a step that is done 
 | # | Decision | Why |
 |---|---|---|
 | 1 | The kit gets a second page, `/kit/part-2`, for the components of round 4, and a third, `/kit/shell`, for the states of the shell | One page with everything is 20 screens high on phone; its baseline is slow to compare and heavy in the repo |
-| 2 | What opens over the screen (list, tooltip, toast, dialog) is in the top layer of the browser (`popover`, `dialog`), not in a layer of our own with z-index | The inspector scrolls and would cut a list off; the browser keeps the focus in a modal dialog by itself |
+| 2 | What opens over the screen (list, tooltip, dialog) is in the top layer of the browser (`popover`, `dialog`), not in a layer of our own with z-index. The toasts are not: their place is in the page from the start, in the layer `z-toast`, so that a screen reader hears what comes into it | The inspector scrolls and would cut a list off; the browser keeps the focus in a modal dialog by itself |
 | 3 | A place in pixels that follows the data (where a list floats) is set with `measures()` too, as the share of a slider is | One way through the guard, not two |
 | 4 | One toast is shown at a time, in the order they came | The design shows one; a pile over the vitals hides them |
 | 5 | The pause before a design run is 500 ms | A run takes 4 to 12 s; two edits shortly after each other are one run |

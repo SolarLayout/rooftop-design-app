@@ -5,9 +5,12 @@ import { classNames } from "./class-names";
 // (docs/design/design-tokens.md, "Icons"). The paths are those of the approved mockups.
 const STROKED = {
   "arrow-left": <path d="M19 12H5m0 0 6-6m-6 6 6 6" />,
+  "arrow-up": <path d="M12 19V5m0 0-6 6m6-6 6 6" />,
   "chevron-down": <path d="m6 9 6 6 6-6" />,
   "chevron-left": <path d="m15 6-6 6 6 6" />,
   "chevron-right": <path d="m9 6 6 6-6 6" />,
+  "chevron-up": <path d="m6 15 6-6 6 6" />,
+  close: <path d="M6 6l12 12M18 6 6 18" />,
   download: <path d="M12 3v12m0 0-4-4m4 4 4-4M4 19h16" />,
   minus: <path d="M5 12h14" />,
   note: (
@@ -18,6 +21,7 @@ const STROKED = {
   ),
   plus: <path d="M12 5v14M5 12h14" />,
   tick: <path d="m5 12 5 5 9-10" />,
+  upload: <path d="M12 16V4m0 0-4 4m4-4 4 4M4 20h16" />,
   undo: (
     <>
       <path d="M9 14 4 9l5-5" />

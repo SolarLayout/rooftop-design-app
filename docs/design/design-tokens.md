@@ -35,6 +35,7 @@ theme (`:root`).
 | `--color-line` | `#232A36` | Card and control borders |
 | `--color-line-strong` | `#2F3847` | Borders of secondary buttons and inputs, off switch |
 | `--color-line-hover` | `#3B4658` | Border of a secondary button, hover |
+| `--color-dim` | `rgba(5,7,10,.72)` | Over the screen, under a dialog and under a bottom sheet that opens |
 
 ## Colour: text
 
@@ -198,6 +199,7 @@ Base 2 px. Steps in use: 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48,
 | `--size-vitals` | `78px` | Vitals bar height on desktop |
 | `--size-tabbar` | `72px` | Bottom tab bar height |
 | `--size-touch` | `44px` | Touch target, the least on phone and tablet, both ways |
+| `--size-sheet-peek` | `84px` | What is seen of the bottom sheet at its lowest stop: the handle and the lens switch |
 
 Reference widths: 390, 834, 1440.
 
@@ -205,8 +207,10 @@ Reference widths: 390, 834, 1440.
 
 | Token | Value | Use |
 |---|---|---|
+| `--radius-key` | `4px` | The box around a key in a tooltip |
 | `--radius-xs` | `6px` | Inputs inside tables and the loss chain, format badges |
 | `--radius-seg` | `7px` | Item inside a segmented control |
+| `--radius-item` | `8px` | Rows of a list that floats, tooltips, the action of a toast |
 | `--radius-seg-touch` | `9px` | The same on phone and tablet |
 | `--radius-control` | `10px` | Buttons, fields, segmented track |
 | `--radius-row` | `12px` | List rows, option cards, stat tiles |
@@ -218,10 +222,11 @@ Reference widths: 390, 834, 1440.
 
 ## Lines
 
-A line is 1 px wide. The two that are wider have a token.
+A line is 1 px wide. Those that are wider have a token.
 
 | Token | Value | Use |
 |---|---|---|
+| `--border-tab` | `2px` | The line under a tab |
 | `--border-handle` | `3px` | The accent line around the handle of a slider, on desktop |
 | `--border-handle-touch` | `4px` | The same on phone and tablet |
 
@@ -242,6 +247,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--shadow-well-focus` | `inset 0 1px 3px rgba(0,0,0,.65), 0 0 0 3px rgba(255,176,32,.18)` | A field that has the focus: the well and the halo (with an accent border) |
 | `--shadow-card` | `inset 0 1px 0 rgba(255,255,255,.05), 0 1px 2px rgba(0,0,0,.35), 0 16px 40px rgba(0,0,0,.28)` | Cards |
 | `--shadow-float` | `inset 0 1px 0 rgba(255,255,255,.06), 0 1px 2px rgba(0,0,0,.45), 0 16px 40px rgba(0,0,0,.5)` | Anything over the 3D or the map |
+| `--shadow-tooltip` | `0 1px 2px rgba(0,0,0,.45), 0 8px 20px rgba(0,0,0,.35)` | Tooltips |
 | `--shadow-panel` | `inset 0 1px 0 rgba(255,255,255,.06), 0 2px 4px rgba(0,0,0,.4), 0 24px 64px rgba(0,0,0,.55)` | Large floating panels |
 | `--shadow-track` | `inset 0 1px 3px rgba(0,0,0,.45)` | Track of a switch |
 | `--shadow-knob` | `0 1px 3px rgba(0,0,0,.5)` | Switch knob |
@@ -254,6 +260,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | Token | Value | Use |
 |---|---|---|
 | `--opacity-disabled` | `0.45` | A control that cannot be used. It has no shadow either |
+| `--opacity-updating` | `0.55` | A value of before while the new one is on its way; a skeleton at the low point of its breath |
 
 ## Focus
 
@@ -273,6 +280,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--duration-fill` | `900ms` | Modules filling the roof, row by row |
 | `--duration-tilt` | `1200ms` | Map tilting into the 3D roof |
 | `--duration-spin` | `900ms` | One turn of the ring beside a value that is updating |
+| `--duration-breathe` | `1600ms` | One breath of a skeleton |
 | `--duration-pulse-saved` | `2400ms` | One pulse of the saved dot |
 | `--duration-pulse-corner` | `2000ms` | One pulse of the corner being edited |
 | `--shift-press` | `1px` | Hover raises a control by it, press lowers it by it |
@@ -280,7 +288,24 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 
 Under `prefers-reduced-motion: reduce` every transition and animation is removed; state changes cut.
 
+## Numbers in code (TypeScript, `apps/web/components/ui/design-numbers.ts`)
+
+Not CSS: times that a clock waits and distances that a place is worked out with. A test holds this table
+and the file equal.
+
+| Name | Value | Use |
+|---|---|---|
+| `TOOLTIP_DELAY` | `400` | Milliseconds between the pointer coming over a control and its tooltip |
+| `TOAST_STAYS` | `5000` | Milliseconds that a toast of something done stays |
+| `TOOLTIP_GAP` | `8` | Pixels between a tooltip and its control |
+| `LIST_GAP` | `6` | Pixels between a list that floats and its trigger |
+| `SCREEN_MARGIN` | `8` | Pixels that stay free between what floats and the edge of the screen |
+
 ## Layers
+
+What floats beside a control (a tooltip, a list) and a dialog are in the top layer of the browser and need no
+layer of their own.
+
 
 | Token | Value | Use |
 |---|---|---|
@@ -304,24 +329,28 @@ Under `prefers-reduced-motion: reduce` every transition and animation is removed
 | `--radius-*` | `rounded-` and the name | `rounded-control` |
 | `--shadow-*`, `--halo-*` | `shadow-` and the name | `shadow-raised`, `shadow-halo-focus`, `shadow-halo-selected` |
 | `--ring-focus`, `--ring-focus-offset` | `focus-ring` | on every control |
-| `--opacity-disabled` | `opacity-disabled` | `disabled:opacity-disabled` |
+| `--opacity-disabled`, `--opacity-updating` | `opacity-disabled`, `opacity-updating` | `disabled:opacity-disabled` |
+| `--duration-spin`, `--duration-breathe` | `turning`, `breathing` | on a ring that turns, on a skeleton |
 | `--ease-out`, `--duration-*` | `ease-out`, `duration-` and the name | `duration-press` |
 | `--duration-press`, `--ease-out`, `--shift-press`, `--scale-press` | `press-motion`, `raised-by-hover`, `lowered-by-press` | on every control that is pressed |
+| `--duration-panel`, `--ease-out` | `sheet-motion` | on a sheet that goes to its stop |
 | `--stroke-*` | `stroke-icon`, `stroke-icon-light`, `stroke-tick` | on the `svg` of an icon |
 | `--z-*` | `z-` and the name | `z-float` |
-| `--border-*` | `border-` and the name | `border-handle-touch desktop:border-handle` |
+| `--border-*` | `border-` and the name; `border-b-tab` for the line under a tab | `border-handle-touch desktop:border-handle` |
 
 Tailwind's own palette, sizes of type, radii and shadows do not exist in this app: a utility that is not made
 of a token makes no CSS.
 
 A place or a width that follows the data (the handle of a slider at its value) is a share of the width
 around it, from 0 to 1. The component sets it with `measures()` (`apps/web/components/ui/measures.ts`), which
-is the only inline style there is, and a utility reads it: `left-at` (`--at`), `w-span` (`--span`). A size, a
-colour or a shadow is never set this way.
+is the only inline style there is, and a utility reads it: `left-at` (`--at`), `w-span` and `h-span`
+(`--span`). A place on the screen that is worked out (where a tooltip or a list floats) is set the same
+way, in pixels: `placed` (`--x`, `--y`). A size, a colour or a shadow is never set this way.
 
 States have variants of their own, so that the kit can show a state without a pointer or a keyboard:
 `hovered:` (under a pointer that can hover, or `data-shown-as="hover"`), `pressed:` (while pressed, or
-`data-shown-as="pressed"`), `focused:` (the focus is inside, or `data-shown-as="focus"`). `focus-ring` also
+`data-shown-as="pressed"`), `focused:` (the focus is inside, or `data-shown-as="focus"`), and `within-hovered:` for what is directly inside
+a control that is under the pointer (the line under a tab). `focus-ring` also
 answers to `data-shown-as="focus"`. None applies to a control
 that is disabled.
 

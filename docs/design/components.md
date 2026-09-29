@@ -50,6 +50,28 @@ End to the first and the last; each takes the choice it goes to. A choice that c
 passed over. On phone and tablet the track has radius `radius-row`, the items `radius-seg-touch` and the size
 of body text. With `fill` the choices share the width in equal parts (the lens switch on phone).
 
+## Tabs
+The board "Tabs" (`mockups/Tabs.dc.html`), approved on 2026-09-29 (decision D35).
+Row: on a line `line`, tabs 4 apart. Tab: height 40 (44 on touch), padding 0 14 (0 16 on touch), radius
+`radius-xs`, `text-small` (body text on touch) in text-2, no surface. The tab that is taken: text, Geist 500,
+a line of `border-tab` in accent that lies on the line of the row and is as wide as the words. Under the
+pointer: text, the line in `line-hover`. Cannot be taken: opacity 0.45. A count may follow the words: mono 12
+in text-2 on `surface-2`, 18 high, radius full. The panel begins 16 under the row.
+
+Tabs divide the content of one card or one panel into parts, two to six of them, named by what is in them.
+A segmented control sets a value of the design or the view of the stage.
+
+In code: `Tabs`. It shares the keys of `Segmented` (`choice-keys.ts`).
+
+- `tablist`, `tab`, `tabpanel`; the panel is named by its tab. One panel is in the page: that of the tab
+  that is taken.
+- The keyboard stops at the row once, at the tab that is taken. The arrows left and right go to the
+  neighbour and around the ends, Home and End to the first and the last; each takes the tab it goes to, and
+  a tab that cannot be taken is passed over. The arrows up and down are left to the page. Tab leads into
+  the panel.
+- A row that is too long scrolls sideways and shows no bar; part of the next tab is seen. The tab that is
+  taken is brought into view.
+
 ## Switch
 44 by 26, radius full. On: accent track, knob accent-ink. Off: line-strong track, knob text-2. Knob 20, inset 3,
 `shadow-knob`. On touch the hit area is 52 by 44 around a 52 by 30 switch. Always beside a label and, where it
@@ -151,8 +173,21 @@ Rail item 56 by 56, radius 12, icon 20 over a label of 11. Active: `control-acti
 control in the sheet.
 
 ## Bottom sheet (phone)
-`color-chrome`, top radius `radius-panel`, top border `line`, drag handle 40 by 4. Holds the lens switch and the
-inspector as a list of rows 64 to 68 high divided by `line-subtle`. Three stops: peek, half, full.
+`color-chrome`, top radius `radius-panel`, top border `line`, drag handle 40 by 4 in `line-strong`, 8 over it
+and 4 under it. Holds the lens switch and the inspector as a list of rows 64 to 68 high divided by
+`line-subtle`. Three stops: peek, half, full.
+
+In code: `Sheet`; its stops in `sheet-stops.ts`. It stands at the bottom of the room it is put into.
+
+- Peek is `size-sheet-peek` high: the handle and the lens switch. Half is half the room, full all of it.
+- The sheet follows a drag of its handle. Let go, it goes to the nearest stop, and to the next one in the
+  direction of the drag when the drag went a quarter of the way there. It goes in `duration-panel`.
+- A press on the handle opens the sheet one stop further, and closes it from full.
+- The handle takes the pointer 44 high. To a screen reader it is a `separator` that can be moved, with the
+  stop in words: "Closed", "Half open", "Open".
+- Keys on the handle: arrow up and down to the next stop, Home to peek, End to full, Enter and the space bar
+  as a press.
+- What is in the sheet scrolls inside it.
 
 ## Option card (stringing options)
 Row 52 high, radius `radius-row`. Letter badge 26, title (Recommended, or the verdict), one mono line
@@ -204,6 +239,18 @@ On phone and tablet the list is a bottom sheet with rows of 52.
 `listbox` with `option`; the arrows go through the choices, Enter takes one, Escape closes and gives the focus
 back to the trigger.
 
+In code: `Select`. What floats is `FloatingPanel`, which the project switcher uses too; the keys of a list
+are in `list-keys.ts`.
+
+- The list is in the top layer of the browser, 6 under its trigger, their left edges in line; over the
+  trigger where there is no room under it. It is 320 wide.
+- On phone and tablet the panel is a bottom sheet over a dimmed screen (`color-dim`): `color-chrome`, top
+  radius `radius-panel`, the handle of 40 by 4. A press on the handle, or a drag of it downwards, closes it.
+- With the list open the focus is in it, and the choice that is taken is marked. The arrows stop at the ends
+  of the list; Home and End lead to them; a letter leads to the next choice that begins with it.
+- A press beside the list closes it. Scrolling the page or changing the size of the window closes it too.
+- A choice is taken with Enter, the space bar or a press; taking the one that is taken already changes nothing.
+
 ## File drop
 Height 88, radius `radius-row`, padding 0 18, gap 14. An icon of 20, a title in Geist 500 and one line in
 `text-caption`; at the right a secondary button of 36.
@@ -218,6 +265,13 @@ Height 88, radius `radius-row`, padding 0 18, gap 14. An icon of 20, a title in 
 A file that is refused leaves the equipment of before in place. A file that is read becomes the equipment
 card. The button opens the file chooser, so the control works without dragging and by keyboard.
 
+In code: `FileDrop`. It gives the file to who uses it, and is told what becomes of it: reading, and refused
+with the reason. It takes one file, the first of several. What is no file of the device (a piece of text, a
+link) is not taken, and while a file is read no other is. The words of the field are a `status`, so that a
+screen reader hears that a file is read or was refused.
+On phone the button stands under the words and is as wide as the field, 44 high; the field is then higher
+than 88.
+
 ## Dialog
 Over a dimmed screen (`rgba(5,7,10,.72)`), in its middle. Panel: width 340 to 440, `surface-1`, border
 `line-strong`, radius `radius-panel`, `shadow-panel`, padding 22. Title in the display face, 22 / 28
@@ -228,11 +282,29 @@ the quiet one (44) last.
 `dialog` with its title and its text as name and description. The focus goes into it and stays in it; Escape
 and the close button close it; the focus goes back to where it was.
 
+In code: `Dialog`. It is the dialog of the browser, opened over everything; what is behind it cannot be
+used and does not scroll.
+
+- The focus goes to the first action, the quiet one, which changes nothing: Enter by mistake does no harm.
+- The actions are 40 high on desktop and 44 on tablet. On phone the primary and the secondary one are 48
+  high and as wide as the sheet, the quiet one 44.
+- On phone the handle of the sheet closes it, by a press or a drag downwards, and there is no button to
+  close.
+- A press beside the dialog leaves it open: what it asks must be answered.
+
 ## Tooltip
 The name of a control that shows an icon or one word. Height 28, padding 0 10, `control-active`, border
 `line-strong`, radius 8, text 12, shadow `0 1px 2px rgba(0,0,0,.45), 0 8px 20px rgba(0,0,0,.35)`; a key
 may follow, in mono 11 in a box with radius 4. 8 from its control. It comes after 400 ms under the pointer
 and at once with the keyboard focus; never on touch. It is never the only place where something is said.
+
+In code: `Tooltip`, around its control. Radius `radius-item`, the key in `radius-key`, shadow
+`shadow-tooltip`; the times and the gap in `design-numbers.ts`.
+
+- It is over its control, its middle over the middle of the control; under it where there is no room
+  over it. It never leaves the screen (`place-floating.ts`).
+- It goes when the pointer leaves, when the focus leaves, when the control is pressed, and with Escape.
+- The control is described by it (`aria-describedby`); its name is its own.
 
 ## Toast
 `surface-1`, border `line-strong`, radius `radius-row`, `shadow-float`, 48 high or more, padding 8 8 8 14,
@@ -242,6 +314,14 @@ bar on phone. `role="status"`.
 A toast of something done leaves after 5 s, and stays while the pointer is over it or the focus is in it. A
 toast with a note stays until it is closed.
 
+In code: `Toast` is the look, `Toaster` the place where toasts are shown, `toast-queue.ts` their queue, a
+store without React.
+
+- One toast is shown at a time, in the order they came. The 5 s of a toast begin when it is shown.
+- The action of a toast (Undo) closes it. On phone and tablet the action and the close button are 44 high.
+- The place of the toasts is in the page from the start, so that a screen reader hears what comes into it.
+  It is in the layer `z-toast`.
+
 ## Table
 Head: height 36, padding 0 8, `text-section` in text-3, a line `line` under it. Rows: height 44, padding 0 8,
 a line `line-subtle` under each. The first column in Geist 500, numbers at the right in mono 13, a status mark
@@ -249,6 +329,15 @@ of 16 after the number it belongs to. The row that is chosen is on `surface-2`. 
 `text-caption`. Real `table`, `th` with `scope`.
 Phone: each row is a card on `surface-2`, radius `radius-row`, padding 14: the name in `text-title` with its
 mark, then the values as a list of three columns, label in `text-caption` over the value in mono 15.
+
+In code: `Table`; a row as a card in `table-cells.ts`.
+
+- A column is a name, a text or a number. The name is the head of its row (`th` with `scope="row"`).
+- A column can be for the cards only, or for the table only: a card has room for a value more.
+- The title of a card can say more than the name in the table: "Option D" for "D".
+- The row that is chosen says so to a screen reader (`aria-current`). Its card has the line and the halo
+  of a selected card.
+- The cards are a list with the caption of the table as its name; the caption stands under them.
 
 ## Progress ring
 | Form | Size | Use |
@@ -263,11 +352,20 @@ result is there.
 A run in a row: `surface-2`, radius `radius-row`, height 52, padding 0 14: the ring of 20, the step in the
 words of the engine, the percent in mono 13, text-2.
 
+In code: `ProgressRing` and `RunStep`; the arc in `ring-arc.ts`.
+
+- A ring that turns shows a quarter of the way around.
+- A ring is a `progressbar` with a name. Beside words that say the same it has none and is for the eye only.
+- The percent is whole, and 99 at the most before the run is over.
+
 ## Skeleton
-In the place of a value that was never there. Blocks on `surface-2`, radius 5 to 6: a label 10 high, a value
-18 high (22 for the lead value), lines of text 12 high and of different lengths. It breathes: opacity 1 to
-0.55 and back in 1.6 s; it stands still under reduced motion. A value that was there is never replaced by a
-skeleton: it stays, dimmed.
+In the place of a value that was never there. Blocks on `surface-2`, radius `radius-xs`: a label 10 high, a
+value 18 high (22 for the lead value), lines of text 12 high and of different lengths. It breathes: opacity
+1 to `opacity-updating` and back in `duration-breathe`; it stands still under reduced motion. A value that
+was there is never replaced by a skeleton: it stays, dimmed.
+
+In code: `Skeleton`, of the kind `label`, `value`, `lead` or `text`. Who uses it gives it its width. It says
+nothing to a screen reader: what is waited for is said in words beside it.
 
 ## Vitals: states
 | State | What is shown |

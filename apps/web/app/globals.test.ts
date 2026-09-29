@@ -171,6 +171,7 @@ describe("the tokens in Tailwind", () => {
         "shadow-halo-focus",
         "gap-row",
         "h-topbar",
+        "h-sheet-peek",
         "min-h-touch",
         "p-2",
         "font-medium",
@@ -190,6 +191,7 @@ describe("the tokens in Tailwind", () => {
     expect(made).toContain("--tw-shadow: var(--halo-focus);");
     expect(made).toContain(".gap-row { gap: var(--space-row); }");
     expect(made).toContain(".h-topbar { height: var(--size-topbar); }");
+    expect(made).toContain(".h-sheet-peek { height: var(--size-sheet-peek); }");
     expect(made).toContain(".min-h-touch { min-height: var(--size-touch); }");
     expect(made).toContain(".p-2 { padding: calc(var(--spacing) * 2); }");
     expect(made).toContain("font-weight: var(--font-weight-medium);");
@@ -241,6 +243,20 @@ describe("states", () => {
     expect(made).toContain(`.pressed\\:bg-accent-pressed[data-shown-as="pressed"] ${pressed}`);
   });
 
+  test("what is inside a control can answer to the pointer over the control", async () => {
+    const made = oneLine(await utilitiesOf(["within-hovered:border-line-hover"]));
+    const line = "{ border-color: var(--color-line-hover); }";
+
+    expect(made).toContain(`@media (hover: hover) { :where(:hover:not(:disabled)) > .within-hovered\\:border-line-hover ${line} }`);
+    expect(made).toContain(`:where([data-shown-as="hover"]) > .within-hovered\\:border-line-hover ${line}`);
+  });
+
+  test("a row that scrolls sideways shows no bar", async () => {
+    const made = oneLine(await utilitiesOf(["no-scrollbar"]));
+
+    expect(made).toContain(".no-scrollbar { scrollbar-width: none; }");
+  });
+
   test("pressed comes after hover, so that it wins", async () => {
     const made = await utilitiesOf(["pressed:bg-accent-pressed", "hovered:bg-accent-hover"]);
 
@@ -255,18 +271,47 @@ describe("lines", () => {
     expect(made).toContain(".border-handle { border-width: var(--border-handle); }");
     expect(made).toContain(".border-handle-touch { border-width: var(--border-handle-touch); }");
   });
+
+  test("the line under a tab is a token", async () => {
+    const made = oneLine(await utilitiesOf(["border-b-tab"]));
+
+    expect(made).toContain(".border-b-tab { border-bottom-width: var(--border-tab); border-bottom-style: solid; }");
+  });
 });
 
 describe("numbers of the data", () => {
   test("a place and a width can be a share of the width around, which a component sets", async () => {
-    const made = oneLine(await utilitiesOf(["left-at", "w-span"]));
+    const made = oneLine(await utilitiesOf(["left-at", "w-span", "h-span", "placed"]));
 
     expect(made).toContain(".left-at { left: calc(var(--at) * 100%); }");
     expect(made).toContain(".w-span { width: calc(var(--span) * 100%); }");
+    expect(made).toContain(".h-span { height: calc(var(--span) * 100%); }");
+    expect(made).toContain(".placed { position: fixed; inset: auto; left: var(--x); top: var(--y); margin: 0; }");
   });
 });
 
 describe("motion", () => {
+  test("a sheet goes to its stop in the time of a panel", async () => {
+    const made = oneLine(await utilitiesOf(["sheet-motion"]));
+
+    expect(made).toContain("transition-property: height;");
+    expect(made).toContain("transition-duration: var(--duration-panel);");
+    expect(made).toContain("transition-timing-function: var(--ease-out);");
+  });
+
+  test("a ring turns and a skeleton breathes, in the times of the tokens", async () => {
+    const made = oneLine(await utilitiesOf(["turning", "breathing"]));
+
+    expect(made).toContain(".turning { animation: turn var(--duration-spin) linear infinite; }");
+    expect(made).toContain(".breathing { animation: breathe var(--duration-breathe) ease-in-out infinite; }");
+    expect(oneLine(css)).toContain("@keyframes turn { to { rotate: 360deg; } }");
+    expect(oneLine(css)).toContain("@keyframes breathe { 50% { opacity: var(--opacity-updating); } }");
+  });
+
+  test("a value that is updated is dimmed by a token", async () => {
+    expect(oneLine(await utilitiesOf(["opacity-updating"]))).toContain(".opacity-updating { opacity: var(--opacity-updating); }");
+  });
+
   test("is removed for those who ask for less of it", () => {
     const reduced = oneLine(css.slice(css.indexOf("@media (prefers-reduced-motion: reduce)")));
     expect(reduced).toContain("transition: none !important;");
