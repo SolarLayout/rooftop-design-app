@@ -269,6 +269,7 @@
     0 12px 30px rgba(255,176,32,.36);
   --shadow-segment: inset 0 1px 0 rgba(255,255,255,.10), 0 1px 3px rgba(0,0,0,.55);
   --shadow-well: inset 0 1px 3px rgba(0,0,0,.65), 0 1px 0 rgba(255,255,255,.04);
+  --shadow-well-focus: inset 0 1px 3px rgba(0,0,0,.65), 0 0 0 3px rgba(255,176,32,.18);
   --shadow-card: inset 0 1px 0 rgba(255,255,255,.05), 0 1px 2px rgba(0,0,0,.35), 0 16px 40px rgba(0,0,0,.28);
   --shadow-float: inset 0 1px 0 rgba(255,255,255,.06), 0 1px 2px rgba(0,0,0,.45), 0 16px 40px rgba(0,0,0,.5);
   --shadow-panel: inset 0 1px 0 rgba(255,255,255,.06), 0 2px 4px rgba(0,0,0,.4), 0 24px 64px rgba(0,0,0,.55);
@@ -380,6 +381,7 @@
   --shadow-primary-hover: var(--shadow-primary-hover);
   --shadow-segment: var(--shadow-segment);
   --shadow-well: var(--shadow-well);
+  --shadow-well-focus: var(--shadow-well-focus);
   --shadow-card: var(--shadow-card);
   --shadow-float: var(--shadow-float);
   --shadow-panel: var(--shadow-panel);
@@ -566,6 +568,16 @@
     @slot;
   }
   &[data-shown-as="pressed"] {
+    @slot;
+  }
+}
+
+/* A field shows the focus that is inside it. */
+@custom-variant focused {
+  &:focus-within {
+    @slot;
+  }
+  &[data-shown-as="focus"] {
     @slot;
   }
 }

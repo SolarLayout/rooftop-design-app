@@ -12,7 +12,7 @@ type Props = {
 /** One component in one state, with its caption. */
 export function Example({ name, caption, children }: Props) {
   return (
-    <div data-testid={`kit-${name}`} className="flex flex-col items-start gap-1.5">
+    <div data-testid={`kit-${name}`} className="flex min-w-0 flex-col items-start gap-1.5">
       {children}
       <span className="type-caption text-text-2">{caption}</span>
     </div>
