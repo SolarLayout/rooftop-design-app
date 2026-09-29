@@ -20,7 +20,7 @@ Always:
 |---|---|---|---|
 | 0 | IA and visual design (HTML mockups, approval) | `phase-00-design.md` | direction approved; more screens to draw |
 | 1 | Monorepo, tooling, one-command dev stack | `phase-01-foundation.md` | done |
-| 2 | Engine and stateless API | `phase-02-engine-api.md` | part 1 done (PR #7); part 2 not started |
+| 2 | Engine and stateless API | `phase-02-engine-api.md` | done |
 | 3 | Design system and app shell | `phase-03-design-system-shell.md` | not started |
 | 4 | Find the roof on the map and outline it (flagship) | `phase-04-find-and-outline.md` | not started |
 | 5 | Studio: 3D roof, Roof and Array lenses | `phase-05-studio-roof-array.md` | not started |

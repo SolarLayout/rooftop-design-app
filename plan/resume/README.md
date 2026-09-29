@@ -18,7 +18,7 @@ asks for one. Paste the block inside the file into a new session started in this
 
 | # | File | For | Written | Status |
 |---|---|---|---|---|
-| 001 | `001-phase-2-engine-api.md` | Phase 2: review and merge part 1, then build part 2 | 2026-09-29 | open |
+| 001 | `001-phase-2-engine-api.md` | Phase 2: review and merge part 1, then build part 2 | 2026-09-29 | used by session 2, 2026-09-29 |
 
 ## Shape of a prompt file
 
