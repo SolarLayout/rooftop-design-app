@@ -1,6 +1,6 @@
 # Phase 0: IA and visual design
 
-**Status:** direction approved 2026-09-29 (IA and look); remaining screens still to draw. **Mockups:** https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy (private to the owner).
+**Status:** direction approved 2026-09-29 (IA and look); remaining screens still to draw. **Mockups:** https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy (open to anyone with the link).
 The design system, mockup sources and previews are in `docs/design/`.
 
 ## Goal

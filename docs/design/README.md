@@ -7,7 +7,7 @@ Approved by the owner on 2026-09-29 (decisions D14 and D15 in `plan/README.md`).
 
 | What | Where | Use it for |
 |---|---|---|
-| The design canvas (live, zoomable, playable) | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy | Looking at the screens as designed. Private to the owner until shared from the page's Share menu |
+| The design canvas (live, zoomable, playable) | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy | Looking at the screens as designed. Open to anyone with the link |
 | Mockup sources | `docs/design/mockups/*.dc.html` | Exact values: every size, colour, radius and shadow is an inline style. Open a file in a browser to see it |
 | Previews | `docs/design/previews/*.png` | Quick reference; what each screen looks like |
 | Information architecture | `information-architecture.md` | Routes, what lives where, navigation, responsive structure |
