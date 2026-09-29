@@ -75,6 +75,8 @@ test.describe("Button", () => {
     const button = control(page, "button-primary-rest");
     const pressed = page.getByTestId("kit-last-pressed");
 
+    // It is the first control after the way to the other pages of the kit.
+    await page.getByRole("navigation", { name: "Pages of the kit" }).getByRole("link").last().focus();
     await page.keyboard.press("Tab");
     await expect(button).toBeFocused();
     await expect(button).toHaveCSS("outline-style", "solid");

@@ -171,6 +171,7 @@
   --size-vitals: 78px;
   --size-tabbar: 72px;
   --size-touch: 44px;
+  --size-sheet-peek: 84px;
 
   --radius-xs: 6px;
   --radius-seg: 7px;
@@ -320,6 +321,7 @@
   --spacing-vitals: var(--size-vitals);
   --spacing-tabbar: var(--size-tabbar);
   --spacing-touch: var(--size-touch);
+  --spacing-sheet-peek: var(--size-sheet-peek);
 
   --breakpoint-tablet: 640px;
   --breakpoint-desktop: 1101px;
@@ -608,6 +610,12 @@
   transition-duration: var(--duration-press);
   transition-timing-function: var(--ease-out);
 }
+/* A sheet goes to its stop; while it is dragged it follows the pointer at once. */
+@utility sheet-motion {
+  transition-property: height;
+  transition-duration: var(--duration-panel);
+  transition-timing-function: var(--ease-out);
+}
 @utility raised-by-hover {
   translate: 0 calc(var(--shift-press) * -1);
 }
@@ -632,6 +640,9 @@
 }
 @utility w-span {
   width: calc(var(--span) * 100%);
+}
+@utility h-span {
+  height: calc(var(--span) * 100%);
 }
 
 @utility stroke-icon {

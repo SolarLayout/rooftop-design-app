@@ -171,6 +171,7 @@ describe("the tokens in Tailwind", () => {
         "shadow-halo-focus",
         "gap-row",
         "h-topbar",
+        "h-sheet-peek",
         "min-h-touch",
         "p-2",
         "font-medium",
@@ -190,6 +191,7 @@ describe("the tokens in Tailwind", () => {
     expect(made).toContain("--tw-shadow: var(--halo-focus);");
     expect(made).toContain(".gap-row { gap: var(--space-row); }");
     expect(made).toContain(".h-topbar { height: var(--size-topbar); }");
+    expect(made).toContain(".h-sheet-peek { height: var(--size-sheet-peek); }");
     expect(made).toContain(".min-h-touch { min-height: var(--size-touch); }");
     expect(made).toContain(".p-2 { padding: calc(var(--spacing) * 2); }");
     expect(made).toContain("font-weight: var(--font-weight-medium);");
@@ -259,14 +261,23 @@ describe("lines", () => {
 
 describe("numbers of the data", () => {
   test("a place and a width can be a share of the width around, which a component sets", async () => {
-    const made = oneLine(await utilitiesOf(["left-at", "w-span"]));
+    const made = oneLine(await utilitiesOf(["left-at", "w-span", "h-span"]));
 
     expect(made).toContain(".left-at { left: calc(var(--at) * 100%); }");
     expect(made).toContain(".w-span { width: calc(var(--span) * 100%); }");
+    expect(made).toContain(".h-span { height: calc(var(--span) * 100%); }");
   });
 });
 
 describe("motion", () => {
+  test("a sheet goes to its stop in the time of a panel", async () => {
+    const made = oneLine(await utilitiesOf(["sheet-motion"]));
+
+    expect(made).toContain("transition-property: height;");
+    expect(made).toContain("transition-duration: var(--duration-panel);");
+    expect(made).toContain("transition-timing-function: var(--ease-out);");
+  });
+
   test("is removed for those who ask for less of it", () => {
     const reduced = oneLine(css.slice(css.indexOf("@media (prefers-reduced-motion: reduce)")));
     expect(reduced).toContain("transition: none !important;");
