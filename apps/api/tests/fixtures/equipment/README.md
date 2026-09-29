@@ -28,11 +28,11 @@ that both pairs give the same results.
 
 ## Not covered by a real file
 
-Write a variant for these when the test needs one: copy a real file, change only the lines named, and say so
-in the first line of this table.
+A variant is made in the test, in memory, from a real file with the lines named changed
+(`variant` in `tests/engine/test_real_equipment.py`). No variant is kept as a file.
 
 | Case | Variant to make |
 |---|---|
-| Inverter that states its current per MPPT | From `Test-S.ond`, add `IMaxMPPT` |
-| Voltage limit below 1500 V set by the equipment | From a module or inverter file, set the maximum voltage to 1000 V |
+| Inverter that states its current per MPPT | From `Test-S.ond`, `IMaxMPPT=40.0` added after `IMaxDC` |
+| Voltage limit below 1500 V set by the equipment | From `Test.PAN`, `VMaxIEC=1000`; from `Test-S.ond`, `VAbsMax=1000` |
 | A file that is not a PAN or an OND | Any text without `PNom`, `Voc`, `Isc` (module) or `PNomConv`, `VMPPMax` (inverter) |

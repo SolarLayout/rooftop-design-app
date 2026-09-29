@@ -594,3 +594,42 @@ def test_a_fault_in_the_run_travels_in_the_stream(client, demo, monkeypatch):
             },
         )
     ]
+
+
+# ── equipment that the demo does not have ────────────────────────────────────
+def test_an_inverter_without_a_current_limit_says_so_and_shows_no_limit_of_zero(client, demo):
+    from tests.equipment import fixture_text
+
+    project = small(demo)
+    project["ond_path"] = "sungrow-sg3300ud-20.OND"
+    project["ond_text"] = fixture_text("sungrow-sg3300ud-20.OND")
+
+    result = result_of(client.post("/design", json=project))
+
+    assert result["equipment"]["max_current_per_mppt"] == {
+        "value_a": None,
+        "source": "not in the OND",
+        "note": "Not in the OND, and the OND has no IMaxDC to work it out from. Enter the datasheet value.",
+    }
+    loads = result["options"][0]["mppt_loads"]
+    assert [(load["imp_limit_a"], load["isc_limit_a"], load["ok"]) for load in loads] == [
+        (None, None, False)
+    ] * len(loads)
+    assert "The OND gives no current limit per MPPT" in result["options_note"]
+    assert [option["ok"] for option in result["options"]] == [False] * len(result["options"])
+
+
+def test_a_monofacial_module_with_a_stated_coefficient_has_no_note_and_no_rear_gain(client, demo):
+    from tests.equipment import fixture_text
+
+    project = small(demo)
+    project["pan_path"] = "abi-ab340-72phc.PAN"
+    project["pan_text"] = fixture_text("abi-ab340-72phc.PAN")
+
+    result = result_of(client.post("/design", json=project))
+
+    assert result["equipment"]["module"]["is_bifacial"] is False
+    assert result["equipment"]["coefficients"]["source"] == "PAN file"
+    assert result["equipment"]["module_notes"] == []
+    rear = next(s for s in result["options"][0]["energy"]["steps"] if s["label"] == "Bifacial rear gain")
+    assert rear["pct"] == 0.0

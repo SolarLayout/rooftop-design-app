@@ -163,13 +163,14 @@ def test_the_cable_schedule_names_the_system_voltage(demo_design, volts):
     assert {row.size for row in rows} == {f"4 mm² Cu, {volts:.0f} V DC"}
 
 
-def test_the_bill_of_materials_names_the_system_voltage(demo_design):
+@pytest.mark.parametrize("volts", [600.0, 1000.0, 1500.0])
+def test_the_bill_of_materials_names_the_system_voltage(demo_design, volts):
     d = demo_design
 
-    lines = bom(d.layout, d.chosen.system, d.module, d.inverter, d.mm, d.t_min, "Fixed tilt", 30.0, 1000.0)
+    lines = bom(d.layout, d.chosen.system, d.module, d.inverter, d.mm, d.t_min, "Fixed tilt", 30.0, volts)
 
     cable = next(line for line in lines if line.item == "DC cable")
-    assert cable.spec == "4 mm² Cu, 1000 V DC, red + black"
+    assert cable.spec == f"4 mm² Cu, {volts:.0f} V DC, red + black"
 
 
 def test_the_pdf_names_the_system_voltage_of_the_project(design_at_1000_v):

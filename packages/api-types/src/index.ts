@@ -984,21 +984,27 @@ export interface components {
         MpptLoad: {
             /** Imp A */
             imp_a: number;
-            /** Imp Limit A */
-            imp_limit_a: number;
+            /**
+             * Imp Limit A
+             * @description null: the OND gives no limit and none was entered
+             */
+            imp_limit_a: number | null;
             /** Inverter */
             inverter: number;
             /** Isc A */
             isc_a: number;
             /** Isc Limit A */
-            isc_limit_a: number;
+            isc_limit_a: number | null;
             /** Kwp */
             kwp: number;
             /** Label */
             label: string;
             /** Mppt */
             mppt: number;
-            /** Ok */
+            /**
+             * Ok
+             * @description Within both limits. False also when a limit is not known
+             */
             ok: boolean;
             /** Strings */
             strings: number;

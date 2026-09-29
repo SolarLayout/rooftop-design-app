@@ -190,6 +190,19 @@ UI. Multi-user concerns. Persistence.
 - **The test client runs on `httpx2`** (development dependency, in place of `httpx`): starlette gives up
   `httpx` for its test client and warned in every run. The warning is now an error of the check.
 
+- **Designs with the real equipment files** (`tests/engine/test_real_equipment.py`): a monofacial module
+  (no rear gain), a module that is not twin half-cell (a shaded module is lost whole), a Voc coefficient
+  that the file states, a module without a LID value (1.5 %), a central inverter (series range 25 to 29 by
+  its MPPT minimum of 938 V; every option far below target), an inverter without any current limit, an
+  inverter that states its current per MPPT, and a module or an inverter rated for 1000 V in a 1500 V
+  system. Variants are made in the test from a real file with one line changed.
+- **A current limit that is not known is not shown as zero.** With an OND that has neither a current per
+  MPPT nor `IMaxDC`, the desktop wording said "1 × 13.58 A ≤ 0.0 A" and the table showed a limit of 0.0 A.
+  The note now says that the OND gives no limit and asks for the datasheet value; the limit in the table is
+  empty, with an exclamation mark.
+- **Decision D25 is pinned** for 600, 1000 and 1500 V on the cable schedule and the bill of materials, and
+  with equipment rated below the system voltage: the label names the system voltage as chosen.
+
 ### Left as in the desktop app
 - NASA POWER is asked for the year 2023; the times of a CSV are read as UTC (inventory, section 5, gap 7).
   Neither can be set in a request yet.
@@ -219,6 +232,12 @@ UI. Multi-user concerns. Persistence.
   placemarks, and the import took every outline but the largest for an obstacle: the demo came back with
   638 obstacles of 1.0 m named "Module n". The import now leaves out the folder the export puts them in
   ("Modules" with their number). An outline named "Module" anywhere else is an obstacle as before.
+
+### Found in part 2, for the domain expert (continued below)
+- **The strings are sized with the Voc of the one-diode model, also when the PAN states a coefficient.**
+  ABi AB340-72PHC states -0.286 %/degC; the model gives -0.334 %/degC. At 11.9 degC: Voc 47.85 V by the
+  model, 47.57 V by the stated coefficient. The screen shows the stated one. Here the model is the more
+  careful. For Emmvee both agree (-0.224 and -0.225). As in the desktop app; not changed.
 
 ### Found in part 2, for the domain expert
 - **The split of Erbs is not what PVGIS has.** The Pune year given as GHI alone comes back with beam
