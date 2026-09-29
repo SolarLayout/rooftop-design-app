@@ -64,22 +64,22 @@ export function stepped(value: number, direction: "up" | "down", range: Range): 
   return rounded(inside, Math.max(range.decimals, 6));
 }
 
-/** A number with its unit: a space between them, none before the degree sign. */
-function withUnit(value: number, range: Range, unit: string | undefined): string {
-  if (!unit) return shown(value, range.decimals);
-  return `${shown(value, range.decimals)}${unit === "°" ? "" : " "}${unit}`;
+/** A number as it is shown, with its unit: a space between them, none before the degree sign. */
+export function withUnit(number: string, unit: string | undefined): string {
+  if (!unit) return number;
+  return `${number}${unit === "°" ? "" : " "}${unit}`;
 }
 
 /** What the field says after it changed the entry: what happened and what can be entered. */
 export function saidOf(correction: Correction | null, range: Range, unit?: string): string | null {
   const { min, max } = range;
   if (correction === null) return null;
-  if (correction === "highest" && max !== undefined) return `${withUnit(max, range, unit)} is the highest that can be set.`;
-  if (correction === "lowest" && min !== undefined) return `${withUnit(min, range, unit)} is the lowest that can be set.`;
+  if (correction === "highest" && max !== undefined) return `${withUnit(shown(max, range.decimals), unit)} is the highest that can be set.`;
+  if (correction === "lowest" && min !== undefined) return `${withUnit(shown(min, range.decimals), unit)} is the lowest that can be set.`;
   if (min !== undefined && max !== undefined) {
-    return `Enter a number, from ${shown(min, range.decimals)} to ${withUnit(max, range, unit)}.`;
+    return `Enter a number, from ${shown(min, range.decimals)} to ${withUnit(shown(max, range.decimals), unit)}.`;
   }
-  if (min !== undefined) return `Enter a number, ${withUnit(min, range, unit)} or more.`;
-  if (max !== undefined) return `Enter a number, ${withUnit(max, range, unit)} or less.`;
+  if (min !== undefined) return `Enter a number, ${withUnit(shown(min, range.decimals), unit)} or more.`;
+  if (max !== undefined) return `Enter a number, ${withUnit(shown(max, range.decimals), unit)} or less.`;
   return "Enter a number.";
 }

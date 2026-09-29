@@ -248,6 +248,24 @@ describe("states", () => {
   });
 });
 
+describe("lines", () => {
+  test("the width of a line that is not 1 px is a token", async () => {
+    const made = oneLine(await utilitiesOf(["border-handle", "border-handle-touch"]));
+
+    expect(made).toContain(".border-handle { border-width: var(--border-handle); }");
+    expect(made).toContain(".border-handle-touch { border-width: var(--border-handle-touch); }");
+  });
+});
+
+describe("numbers of the data", () => {
+  test("a place and a width can be a share of the width around, which a component sets", async () => {
+    const made = oneLine(await utilitiesOf(["left-at", "w-span"]));
+
+    expect(made).toContain(".left-at { left: calc(var(--at) * 100%); }");
+    expect(made).toContain(".w-span { width: calc(var(--span) * 100%); }");
+  });
+});
+
 describe("motion", () => {
   test("is removed for those who ask for less of it", () => {
     const reduced = oneLine(css.slice(css.indexOf("@media (prefers-reduced-motion: reduce)")));

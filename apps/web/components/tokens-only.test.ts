@@ -11,8 +11,10 @@ const WEB = path.resolve(import.meta.dir, "..");
 const RAW: Array<{ what: string; pattern: RegExp }> = [
   { what: "a colour as a number", pattern: /#[0-9a-fA-F]{3,8}\b|\b(?:rgb|rgba|hsl|hsla|oklch)\(/ },
   { what: "a value in square brackets", pattern: /(?<=[\w-])-\[[^\]]+\]/ },
-  { what: "an inline style", pattern: /\bstyle=\{/ },
+  // A style may carry numbers of the data, through measures() and nothing else (components/ui/measures.ts).
+  { what: "an inline style", pattern: /\bstyle=\{(?!measures\()/ },
   { what: "a number where a token belongs", pattern: /(?<![\w-])(?:opacity|z|duration|delay|scale|rotate|blur|brightness)-\d/ },
+  { what: "a width of a line as a number", pattern: /(?<![\w-])(?:border|outline|ring)(?:-[xytblrse])?-[1-9]/ },
 ];
 
 /** What in the source of a component is a raw value, line by line. */
@@ -39,6 +41,9 @@ describe("what counts as a raw value", () => {
     ['<div className="z-10 flex" />', "a number where a token belongs"],
     ['<div className="hover:duration-150" />', "a number where a token belongs"],
     ['const glow = "rgba(255,176,32,.24)";', "a colour as a number"],
+    ['<div className="border-3 border-accent" />', "a width of a line as a number"],
+    ['<div className="hovered:border-t-2" />', "a width of a line as a number"],
+    ['<div style={{ ...measures({ at: 0.5 }), left: 4 }} />', "an inline style"],
   ])("%s", (source, what) => {
     expect(rawValuesIn(source).join("\n")).toContain(what);
   });
@@ -50,6 +55,8 @@ describe("what counts as a raw value", () => {
     '<div className="disabled:opacity-disabled z-float duration-press" />',
     '<path d="M12 3v12m0 0-4-4m4 4 4-4M4 19h16" />',
     "const [first] = items[0];",
+    '<div className="border border-0 border-line border-handle" />',
+    '<div className="left-at" style={measures({ at: 0.5 })} />',
   ])("%s is made of tokens", (source) => {
     expect(rawValuesIn(source)).toEqual([]);
   });
