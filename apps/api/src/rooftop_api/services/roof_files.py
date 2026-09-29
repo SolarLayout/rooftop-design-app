@@ -1,0 +1,44 @@
+"""A roof read from a KMZ, KML or DXF file of the user."""
+
+from rooftop_api import convert, schemas
+from rooftop_api.errors import UNPROCESSABLE, ApiError
+from rooftop_api.services.uploads import bytes_of, file_name
+from rooftop_core.io import roof_import
+
+KML_ENDINGS = (".kmz", ".kml")
+DXF_ENDING = ".dxf"
+HEIGHTS_SET = "These obstacles have no height in the file and were set to 1.0 m."
+
+
+def import_roof(file: schemas.RoofFile) -> schemas.ImportedRoof:
+    name = file_name(file.name)
+    ending = name[name.rfind(".") :].lower() if "." in name else ""
+    if ending not in (*KML_ENDINGS, DXF_ENDING):
+        raise ApiError(
+            UNPROCESSABLE,
+            "unsupported_file",
+            f"{name} is not a KMZ, KML or DXF file. Choose a file with one of these endings.",
+            "name",
+        )
+    try:
+        roof = (
+            _from_dxf(file, name) if ending == DXF_ENDING else roof_import.read_kmz(_bytes(file, name), name)
+        )
+    except ValueError as error:
+        raise ApiError(UNPROCESSABLE, "roof_file_unreadable", str(error), "base64") from error
+    return convert.imported_roof_from_engine(roof, name, [HEIGHTS_SET] if roof.missing_heights else [])
+
+
+def _bytes(file: schemas.RoofFile, name: str) -> bytes:
+    return bytes_of(file.base64, name)
+
+
+def _from_dxf(file: schemas.RoofFile, name: str) -> roof_import.ImportedRoof:
+    if file.lat is None or file.lon is None:
+        raise ApiError(
+            UNPROCESSABLE,
+            "site_missing",
+            "A DXF drawing does not say where the roof is. Give its latitude and longitude.",
+            "lat" if file.lat is None else "lon",
+        )
+    return roof_import.read_dxf(_bytes(file, name), file.units, file.lat, file.lon, name)
