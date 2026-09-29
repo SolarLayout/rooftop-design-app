@@ -3,7 +3,9 @@
 from dataclasses import replace
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
+import pvlib
 import pytest
 
 from rooftop_core import weather as wx
@@ -102,17 +104,61 @@ def test_csv_text_keeps_the_beam_and_diffuse_columns_it_has():
     assert list(data["dhi"])[2:4] == [50, 90]
 
 
-@pytest.mark.xfail(
-    strict=True,
-    raises=ValueError,
-    reason="Known fault copied with the engine (bf2cb67): the split of GHI into DNI and DHI fails when the "
-    "CSV has neither. Listed in plan/phase-02-engine-api.md; remove this marker with the fix.",
-)
 def test_csv_text_with_irradiance_alone_is_split_into_beam_and_diffuse():
     data = wx.parse_csv(CSV_WITHOUT_DNI_AND_DHI, 18.52, 73.86).data
 
+    assert list(data.columns) == ["ghi", "dni", "dhi", "temp_air", "wind_speed"]
     assert len(data) == 8
     assert (data["dni"] >= 0).all() and (data["dhi"] >= 0).all()
+    assert (data["dhi"] <= data["ghi"]).all()
+    assert list(data["dni"])[:2] == [0, 0] and list(data["dhi"])[:2] == [0, 0]
+    assert (data["dni"].iloc[2:] > 0).all() and (data["dhi"].iloc[2:] > 0).all()
+
+
+def test_the_split_places_the_sun_at_the_middle_of_the_hour():
+    data = wx.parse_csv(CSV_WITHOUT_DNI_AND_DHI, 18.52, 73.86).data
+
+    middle = data.index + pd.Timedelta(minutes=30)
+    zenith = pvlib.solarposition.get_solarposition(middle, 18.52, 73.86)["zenith"].to_numpy()
+    rebuilt = data["dhi"].to_numpy() + data["dni"].to_numpy() * np.cos(np.radians(zenith))
+
+    assert rebuilt == pytest.approx(data["ghi"].to_numpy(), abs=1e-6)
+
+
+def test_the_split_leaves_the_other_columns_as_the_file_has_them():
+    whole = wx.parse_csv(CSV, 18.52, 73.86)
+    split = wx.parse_csv(CSV_WITHOUT_DNI_AND_DHI, 18.52, 73.86)
+
+    pd.testing.assert_frame_equal(
+        split.data[["ghi", "temp_air", "wind_speed"]], whole.data[["ghi", "temp_air", "wind_speed"]]
+    )
+    assert replace(split, data=None) == replace(whole, data=None)
+
+
+def test_a_year_of_irradiance_alone_is_split_hour_by_hour(pune_weather):
+    hours = pune_weather.data
+    text = "time,ghi,temp_air,wind_speed\n" + "\n".join(
+        f"{t:%Y-%m-%d %H:%M},{row.ghi},{row.temp_air},{row.wind_speed}" for t, row in hours.iterrows()
+    )
+
+    split = wx.parse_csv(text, pune_weather.lat, pune_weather.lon).data
+
+    assert list(split.index) == list(hours.index)
+    assert split["ghi"].to_numpy() == pytest.approx(hours["ghi"].to_numpy())
+    assert (split["dni"] >= 0).all() and (split["dhi"] >= 0).all()
+    assert (split["dhi"] <= split["ghi"] + 1e-9).all()
+
+    middle = split.index + pd.Timedelta(minutes=30)
+    zenith = pvlib.solarposition.get_solarposition(middle, pune_weather.lat, pune_weather.lon)["zenith"]
+    sun_up = (zenith < 85).to_numpy()
+    rebuilt = split["dhi"] + split["dni"] * np.cos(np.radians(zenith.to_numpy()))
+    assert rebuilt[sun_up].to_numpy() == pytest.approx(split["ghi"][sun_up].to_numpy(), abs=1e-6)
+    assert (split["dni"][(zenith > 87).to_numpy()] == 0).all()
+
+    # The split of Erbs as the engine gives it today, kept so that it cannot change unnoticed. It is
+    # not what PVGIS has for the same hours (beam 1,999.6, diffuse 549.9 kWh/m2): the model differs.
+    assert split["dni"].sum() / 1000 == pytest.approx(1435.4, abs=0.1)
+    assert split["dhi"].sum() / 1000 == pytest.approx(822.7, abs=0.1)
 
 
 def test_csv_text_without_a_name_is_labelled_as_a_csv_file():
@@ -296,4 +342,19 @@ def test_csv_weather_embedded_as_text_is_read_without_a_file(no_download):
 
     assert (weather.source, weather.label) == ("csv", "site.csv")
     assert project.weather_json["label"] == "site.csv"
+    assert no_download.calls == []
+
+
+def test_csv_weather_with_irradiance_alone_loads_into_a_design(no_download):
+    project = demo_project()
+    project.weather_json = None
+    project.weather_source = "csv"
+    project.weather_csv = "site.csv"
+    project.weather_csv_text = CSV_WITHOUT_DNI_AND_DHI
+    design = Design(project)
+
+    weather = design.load_weather()
+
+    assert len(weather.data) == 8
+    assert sum(project.weather_json["dni"]) > 0 and sum(project.weather_json["dhi"]) > 0
     assert no_download.calls == []
