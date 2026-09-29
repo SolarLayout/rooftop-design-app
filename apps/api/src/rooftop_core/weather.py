@@ -4,15 +4,17 @@
 Every source ends up as the same table, indexed by the hour's start in UTC, with
 ghi, dni, dhi (W/m²), temp_air (°C) and wind_speed (m/s). Values are treated as
 averages over the hour, so the sun is placed at the middle of each hour.
-Downloads are cached on disk so a project opens again without the network.
+Downloads are kept in a cache the caller can replace; the default one lives in
+memory. Nothing is written to disk.
 """
 
 from __future__ import annotations
 
-import hashlib
-import json
-from dataclasses import dataclass, field
+import io
+from collections import OrderedDict
+from dataclasses import dataclass, field, replace
 from pathlib import Path
+from typing import Protocol
 
 import numpy as np
 import pandas as pd
@@ -21,7 +23,6 @@ import requests
 
 PVGIS = "https://re.jrc.ec.europa.eu/api/v5_3"
 NASA = "https://power.larc.nasa.gov/api/temporal/hourly/point"
-CACHE_DIR = Path.home() / ".rooftop_design" / "weather"
 SOURCES = ("pvgis", "nasa", "csv")
 SOURCE_LABELS = {"pvgis": "PVGIS TMY", "nasa": "NASA POWER", "csv": "CSV file"}
 
@@ -63,9 +64,41 @@ class Weather:
         return cls(df, j["lat"], j["lon"], j["source"], j["label"], [tuple(h) for h in j.get("horizon", [])])
 
 
-def _cache(key: str) -> Path:
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    return CACHE_DIR / (hashlib.sha1(key.encode()).hexdigest()[:16] + ".json")
+class WeatherCache(Protocol):
+    """Where downloads are kept. Anything with these two methods can stand in for the default."""
+
+    def get(self, key: str) -> Weather | None: ...
+
+    def put(self, key: str, weather: Weather) -> None: ...
+
+
+class MemoryWeatherCache:
+    """Downloads kept in this process. When full, the entry used longest ago goes first."""
+
+    def __init__(self, max_entries: int = 16):
+        self.max_entries = max_entries
+        self._entries: OrderedDict[str, Weather] = OrderedDict()
+
+    def get(self, key: str) -> Weather | None:
+        found = self._entries.get(key)
+        if found is None:
+            return None
+        self._entries.move_to_end(key)
+        return _copy(found)
+
+    def put(self, key: str, weather: Weather) -> None:
+        self._entries[key] = _copy(weather)
+        self._entries.move_to_end(key)
+        while len(self._entries) > self.max_entries:
+            self._entries.popitem(last=False)
+
+
+def _copy(w: Weather) -> Weather:
+    """A weather of its own, so a change to it never reaches the cache."""
+    return replace(w, data=w.data.copy(), horizon=list(w.horizon))
+
+
+DEFAULT_CACHE = MemoryWeatherCache()
 
 
 def _get_json(url: str, params: dict, timeout: float = 60.0) -> dict:
@@ -96,24 +129,33 @@ def parse_pvgis_tmy(j: dict, lat: float, lon: float, horizon=None) -> Weather:
     return Weather(df, lat, lon, "pvgis", "PVGIS TMY", horizon or [])
 
 
-def fetch_pvgis(lat: float, lon: float, use_cache: bool = True) -> Weather:
-    path = _cache(f"pvgis:{lat:.4f}:{lon:.4f}")
-    if use_cache and path.exists():
-        return Weather.from_json(json.loads(path.read_text()))
+def _cached(cache: WeatherCache, key: str, use_cache: bool) -> Weather | None:
+    return cache.get(key) if use_cache else None
+
+
+def fetch_pvgis(lat: float, lon: float, use_cache: bool = True, cache: WeatherCache | None = None) -> Weather:
+    cache = DEFAULT_CACHE if cache is None else cache
+    key = f"pvgis:{lat:.4f}:{lon:.4f}"
+    hit = _cached(cache, key, use_cache)
+    if hit is not None:
+        return hit
     j = _get_json(f"{PVGIS}/tmy", {"lat": lat, "lon": lon, "outputformat": "json"})
     try:
         hz = pvgis_horizon(lat, lon)
     except Exception:  # horizon is optional
         hz = []
     w = parse_pvgis_tmy(j, lat, lon, hz)
-    path.write_text(json.dumps(w.to_json()))
+    cache.put(key, w)
     return w
 
 
-def fetch_nasa(lat: float, lon: float, year: int = 2023, use_cache: bool = True) -> Weather:
-    path = _cache(f"nasa:{lat:.4f}:{lon:.4f}:{year}")
-    if use_cache and path.exists():
-        return Weather.from_json(json.loads(path.read_text()))
+def fetch_nasa(lat: float, lon: float, year: int = 2023, use_cache: bool = True,
+               cache: WeatherCache | None = None) -> Weather:
+    cache = DEFAULT_CACHE if cache is None else cache
+    key = f"nasa:{lat:.4f}:{lon:.4f}:{year}"
+    hit = _cached(cache, key, use_cache)
+    if hit is not None:
+        return hit
     params = {
         "parameters": "ALLSKY_SFC_SW_DWN,ALLSKY_SFC_SW_DNI,ALLSKY_SFC_SW_DIFF,T2M,WS10M",
         "community": "RE", "longitude": lon, "latitude": lat,
@@ -135,7 +177,7 @@ def fetch_nasa(lat: float, lon: float, year: int = 2023, use_cache: bool = True)
     df = df.interpolate(limit_direction="both").clip(lower=-60)
     df[["ghi", "dni", "dhi"]] = df[["ghi", "dni", "dhi"]].clip(lower=0)
     w = Weather(df, lat, lon, "nasa", f"NASA POWER {year}")
-    path.write_text(json.dumps(w.to_json()))
+    cache.put(key, w)
     return w
 
 
@@ -148,8 +190,17 @@ _WIND = ("wind_speed", "ws10m", "wind", "ws")
 
 
 def read_csv(path: str | Path, lat: float, lon: float, tz_offset_h: float = 0.0) -> Weather:
-    """Any hourly CSV with a time and a GHI column; DNI/DHI are split from GHI when missing."""
-    raw = pd.read_csv(path, sep=None, engine="python", comment="#")
+    """The CSV file at *path*; see parse_csv."""
+    return parse_csv(Path(path).read_text(encoding="utf-8"), lat, lon, tz_offset_h, Path(path).name)
+
+
+def parse_csv(text: str, lat: float, lon: float, tz_offset_h: float = 0.0, name: str = "") -> Weather:
+    """Any hourly CSV with a time and a GHI column; DNI/DHI are split from GHI when missing.
+
+    *text* is the content of the file; *name* names it in the result and in errors.
+    """
+    name = name or SOURCE_LABELS["csv"]
+    raw = pd.read_csv(io.StringIO(text), sep=None, engine="python", comment="#")
     cols = {c.strip().lower(): c for c in raw.columns}
 
     def pick(names, required=False):
@@ -157,7 +208,7 @@ def read_csv(path: str | Path, lat: float, lon: float, tz_offset_h: float = 0.0)
             if n in cols:
                 return raw[cols[n]]
         if required:
-            raise ValueError(f"{Path(path).name}: no column named any of {', '.join(names)}")
+            raise ValueError(f"{name}: no column named any of {', '.join(names)}")
         return None
 
     ts = pick(_TIME, True).astype(str).str.strip()
@@ -184,19 +235,31 @@ def read_csv(path: str | Path, lat: float, lon: float, tz_offset_h: float = 0.0)
         df["dni"], df["dhi"] = erbs["dni"].fillna(0).to_numpy(), erbs["dhi"].fillna(0).to_numpy()
     df = df.dropna(subset=["ghi"]).sort_index()
     df["temp_air"] = df["temp_air"].interpolate(limit_direction="both")
-    return Weather(df[["ghi", "dni", "dhi", "temp_air", "wind_speed"]], lat, lon, "csv", Path(path).name)
+    return Weather(df[["ghi", "dni", "dhi", "temp_air", "wind_speed"]], lat, lon, "csv", name)
 
 
-def load(source: str, lat: float, lon: float, csv_path: str | None = None) -> Weather:
+def load(source: str, lat: float, lon: float, csv_path: str | None = None, csv_text: str = "",
+         cache: WeatherCache | None = None) -> Weather:
+    """Weather from a source. "pvgis" and "nasa" download unless the cache has the site.
+
+    CSV weather comes from *csv_text* when given (*csv_path* then only names it), else from the file.
+    """
     if source == "pvgis":
-        return fetch_pvgis(lat, lon)
+        return fetch_pvgis(lat, lon, cache=cache)
     if source == "nasa":
-        return fetch_nasa(lat, lon)
+        return fetch_nasa(lat, lon, cache=cache)
     if source == "csv":
+        if csv_text:
+            return parse_csv(csv_text, lat, lon, name=_file_name(csv_path or ""))
         if not csv_path:
             raise ValueError("Choose a CSV weather file.")
         return read_csv(csv_path, lat, lon)
     raise ValueError(source)
+
+
+def _file_name(path: str) -> str:
+    """The last part of a path written on any system: a project may come from a Windows machine."""
+    return path.replace("\\", "/").rsplit("/", 1)[-1]
 
 
 def solar_position(w: Weather) -> pd.DataFrame:

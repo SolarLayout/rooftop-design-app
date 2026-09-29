@@ -8,6 +8,7 @@ from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 
 from . import weather as wx
+from .errors import WeatherNotLoaded
 from .geometry import Obstacle, Roof
 from .io.pvsyst import Inverter, Module, read_ond, read_pan
 from .onediode import Coefficients, ModuleModel
@@ -30,7 +31,8 @@ class Project:
     pan_path: str = ""                       # empty: the bundled sample
     ond_path: str = ""
     weather_source: str = "pvgis"
-    weather_csv: str = ""
+    weather_csv: str = ""                    # the name of the CSV file; its content is weather_csv_text
+    weather_csv_text: str = ""
     system_voltage: float | None = None      # decision F7: the user must choose
     cell_rise_c: float | None = None         # None: by roof type (decision 14)
     t_min_override: float | None = None
@@ -110,19 +112,42 @@ class Design:
         self.inverter.isc_max_mppt_a = value or self._ond_iscmax
 
     # ── steps ────────────────────────────────────────────────────────────
-    def load_weather(self, force: bool = False) -> wx.Weather:
+    def load_weather(self, force: bool = False, download: bool = False,
+                     cache: wx.WeatherCache | None = None) -> wx.Weather:
+        """The weather of the project: the one embedded in it, or its CSV, or a download.
+
+        PVGIS and NASA POWER are only asked when *download* is true. Without it, a project that has
+        no weather for its site and source raises WeatherNotLoaded. *force* sets the embedded
+        weather aside and reads the source again.
+        """
         p = self.p
         if self.weather is not None and not force:
             return self.weather
         j = p.weather_json
-        if j and not force and j.get("source") == p.weather_source and \
-                abs(j["lat"] - p.roof.lat) < 1e-3 and abs(j["lon"] - p.roof.lon) < 1e-3:
+        if j and not force and self._embedded_weather_fits():
             self.weather = wx.Weather.from_json(j)
         else:
-            self.weather = wx.load(p.weather_source, p.roof.lat, p.roof.lon, p.weather_csv or None)
+            if p.weather_source != "csv" and not download:
+                raise WeatherNotLoaded(self._weather_missing_message(), field="weather_json")
+            self.weather = wx.load(p.weather_source, p.roof.lat, p.roof.lon, p.weather_csv or None,
+                                   p.weather_csv_text, cache)
             p.weather_json = self.weather.to_json()
         self.pre = None
         return self.weather
+
+    def _embedded_weather_fits(self) -> bool:
+        j, p = self.p.weather_json, self.p
+        return j.get("source") == p.weather_source and \
+            abs(j["lat"] - p.roof.lat) < 1e-3 and abs(j["lon"] - p.roof.lon) < 1e-3
+
+    def _weather_missing_message(self) -> str:
+        j, p = self.p.weather_json, self.p
+        wanted = wx.SOURCE_LABELS.get(p.weather_source, p.weather_source)
+        here = f"{p.roof.lat:.4f}, {p.roof.lon:.4f}"
+        if not j:
+            return f"This project has no weather for {here} yet. Load the {wanted} weather first."
+        return (f"The weather in this project is {j['label']} for {j['lat']:.4f}, {j['lon']:.4f}, not for "
+                f"this site or source. Load the {wanted} weather for {here}.")
 
     def generate_layout(self) -> Layout:
         self.layout = place(self.p.roof, self.p.array, self.module)
