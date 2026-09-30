@@ -2,7 +2,7 @@
 
 Every message the owner gave in session 5 (2026-09-29 and 2026-09-30), in order, unedited. Times are UTC;
 the owner's clock is 5 h 30 min ahead. Message 01 started the session; message 02 is the answer to a
-question that the session put to him with its choices; message 03 came after the close of the phase.
+question that the session put to him with its choices; messages 03 and 04 came after the close of the phase.
 
 ## 01. 2026-09-29, 23:24 UTC
 
@@ -23,4 +23,10 @@ The API's words (Recommended)
 
 ````
 fix the boards for parity
+````
+
+## 04. 2026-09-30, about 01:56 UTC
+
+````
+D38, D39 - ok. Create the resume prompt, update state, session info as needed per process
 ````

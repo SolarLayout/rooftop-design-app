@@ -22,15 +22,17 @@ pull request (#33), and closed the phase. The state of the project is in `plan/S
 | 11 | The previews of the two boards that D37 changed | #33, `0c24a20` |
 | 12 | The close of the phase: "As built", status, state, this record | straight to `main` |
 | 13 | The three boards to the canvas, at the owner's word: Tabs, and the two corrected for D37 | the canvas; the documents straight to `main` |
+| 14 | D38 and D39 approved by the owner; resume prompt 005 for Phase 4; the state | straight to `main` |
 
 ## How the owner steered the session
 
-The owner wrote three times (`owner-messages.md`): the work order, one answer, and one order after the close.
+The owner wrote four times (`owner-messages.md`): the work order, one answer, and two orders after the close.
 
 | He was asked | He said | What was done |
 |---|---|---|
 | Which words the vitals show before a system voltage: the API's, the board's, or the board's first line over the API's title. Asked with the three side by side, after the question had stood in the report of step 11 | The API's words | Decision D37. The two boards and their previews were corrected |
 | (not asked) | "fix the boards for parity" | The three boards that the canvas lacked were published to it, with the index. The permission system let it through this time |
+| D38 and D39, taken by the session; a resume prompt | "D38, D39 - ok. Create the resume prompt, update state, session info as needed per process" | Both marked approved in `plan/README.md`. Resume prompt 005 written: Phase 4, the plan first |
 
 ## Why things are the way they are
 
@@ -83,8 +85,7 @@ Reasons that are not obvious from the code or the plan.
 
 1. **The shell**: `bun dev`, then `/studio/array`, `/performance`, `/handover/report`; and `/kit/shell` for
    every state. Or the baselines in `e2e/baselines/darwin/<size>/`.
-2. **Decisions D38 and D39** were taken by the session and can be overruled: the vitals bar in the Studio
-   only; the two widths where the top bar gives way.
+2. **Decisions D38 and D39** were taken by the session and approved by the owner at its end.
 3. **What is shown and cannot be used**: Present, and four of the five actions of the project switcher (New
    design, Open a project, Import a drawing, Save a copy). Each waits for its phase.
 4. **The check of a pull request** took 4 min 27 s to 6 min 29 s in this session; the mark is 6 min 30 s.

@@ -4,8 +4,8 @@ The single place that says where the project stands. Every session reads it firs
 Keep it short and true. History belongs in git and in the phase files, not here.
 
 **Last updated:** 2026-09-30, end of session 5. Phase 3 is done: the design system as code, the stores, the
-data flow, the routes and the shell are merged (pull requests #24 to #33). Phase 4 is next. No resume prompt
-is written for it: the owner asks for one when he wants it.
+data flow, the routes and the shell are merged (pull requests #24 to #33). Phase 4 is next; its work order is
+resume prompt 005, which asks for a plan first.
 
 ## Where we are
 
@@ -19,10 +19,7 @@ is written for it: the owner asks for one when he wants it.
 
 ## In flight
 
-No open branch and no open pull request. `main` is green.
-
-One thing waits for the owner, and blocks nothing: a look at decisions D38 and D39, which session 5 took
-itself. See "Open items".
+No open branch and no open pull request. `main` is green. Nothing waits for the owner.
 
 ## What the web app has today
 
@@ -63,8 +60,10 @@ changed; an export 0.2 to 0.9 s after a run.
 
 ## Next, in order
 
-1. Phase 4: find the roof on the map and outline it (the flagship). `plan/phase-04-find-and-outline.md`.
-   Before it: the memo for the shading, if a check of a pull request passes 6 min 30 s (see "Open items").
+1. Phase 4: find the roof on the map and outline it (the flagship). Work order:
+   `plan/resume/005-phase-4-find-and-outline.md`: the plan first (`plan/phase-04-plan.md`), the owner's word,
+   then the build. Scope: `plan/phase-04-find-and-outline.md`. Before it: the memo for the shading, if a
+   check of a pull request passes 6 min 30 s (see "Open items").
 2. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
 3. In parallel with any phase: the screens still to draw (Phase 0).
 
@@ -89,7 +88,6 @@ changed; an export 0.2 to 0.9 s after a run.
 
 | Item | Where it belongs |
 |---|---|
-| Decisions D38 (the vitals bar is in the Studio only) and D39 (two widths where the top bar gives way) were taken by session 5, not by the owner | The owner, when he looks at the shell. If he overrules one, it is changed in `plan/README.md` and in the shell |
 | Shown and cannot be used, each until its phase: Present (Phase 10); in the project switcher New design and Import a drawing (Phase 4), Open a project and Save a copy (Phase 9 or 10) | The phase that builds each makes it a link or a button |
 | The shell has no toaster: nothing says anything yet. `Toaster` takes a `className`; on phone the toasts stand above the tab bar (`bottom-tabbar`) | The first phase that has something to say |
 | The drawer of the notes comes and goes without motion; the tokens have 240 ms for panels | Phase 11, or when the owner asks |
@@ -139,3 +137,4 @@ changed; an export 0.2 to 0.9 s after a run.
 - The design of Tabs (D35).
 - The rest of Phase 3 was two pull requests, split after the components; inside each, every step a commit (D34, D36).
 - Before a system voltage the vitals speak in the words of the API (D37).
+- The vitals bar is in the Studio only (D38); the two widths where the top bar gives way (D39).

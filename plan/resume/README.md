@@ -22,6 +22,7 @@ asks for one. Paste the block inside the file into a new session started in this
 | 002 | `002-phase-3-design-system-shell.md` | Phase 3: the design system as code and the app shell | 2026-09-29 | used by session 3, 2026-09-29. The phase is not complete: `STATE.md` says what remains |
 | 003 | `003-phase-3-components-stores-shell.md` | Phase 3, the rest: the components of round 4, stores, data flow, shell | 2026-09-29 | used by session 4, 2026-09-29. It built parts 1 to 9 and Tabs; parts 10 to 16 are the work of 004 |
 | 004 | `004-phase-3-stores-data-flow-shell.md` | Phase 3, the second half: stores, data flow, formats, routes, shell, and the close of the phase | 2026-09-29 | used by session 5, 2026-09-29 and 2026-09-30. The phase is closed |
+| 005 | `005-phase-4-find-and-outline.md` | Phase 4: the plan first, then find the roof on the map and outline it | 2026-09-30 | open |
 
 ## Shape of a prompt file
 
