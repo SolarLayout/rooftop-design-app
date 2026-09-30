@@ -1,0 +1,26 @@
+{
+  "spatialReference": { "wkid": 4326, "latestWkid": 4326 },
+  "candidates": [
+    {
+      "address": "Hinjewadi Phase 2, Pune, Maharashtra",
+      "location": { "x": 73.7124, "y": 18.5954 },
+      "score": 100,
+      "attributes": { "Match_addr": "Hinjewadi Phase 2, Pune, Maharashtra", "Type": "Locality" },
+      "extent": { "xmin": 73.7024, "ymin": 18.5854, "xmax": 73.7224, "ymax": 18.6054 }
+    },
+    {
+      "address": "Hinjewadi Phase 2 Rd, Hinjewadi, Pune, Maharashtra",
+      "location": { "x": 73.7101, "y": 18.5921 },
+      "score": 98,
+      "attributes": { "Match_addr": "Hinjewadi Phase 2 Rd, Hinjewadi, Pune, Maharashtra", "Type": "Street" },
+      "extent": { "xmin": 73.7001, "ymin": 18.5821, "xmax": 73.7201, "ymax": 18.6021 }
+    },
+    {
+      "address": "Phase 2, Rajiv Gandhi Infotech Park, Hinjewadi, Pune, Maharashtra",
+      "location": { "x": 73.7059, "y": 18.5889 },
+      "score": 95,
+      "attributes": { "Match_addr": "Phase 2, Rajiv Gandhi Infotech Park, Hinjewadi, Pune, Maharashtra", "Type": "Place" },
+      "extent": { "xmin": 73.6959, "ymin": 18.5789, "xmax": 73.7159, "ymax": 18.5989 }
+    }
+  ]
+}

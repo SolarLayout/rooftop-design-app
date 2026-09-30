@@ -27,7 +27,20 @@ const STROKED = {
     </>
   ),
   home: <path d="m4 11 8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z" />,
+  locate: (
+    <>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+      <circle cx="12" cy="12" r="8" />
+    </>
+  ),
   minus: <path d="M5 12h14" />,
+  pin: (
+    <>
+      <path d="M12 21s6-5.7 6-11a6 6 0 0 0-12 0c0 5.3 6 11 6 11z" />
+      <circle cx="12" cy="10" r="2.2" />
+    </>
+  ),
   note: (
     <>
       <circle cx="12" cy="12" r="9" />
@@ -40,6 +53,12 @@ const STROKED = {
     <>
       <path d="M3 11 12 4l9 7" />
       <path d="M5 10v9h14v-9" />
+    </>
+  ),
+  search: (
+    <>
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-3.5-3.5" />
     </>
   ),
   strings: <path d="M13 2 4 14h7l-1 8 9-12h-7z" />,

@@ -19,3 +19,9 @@ export const SCREEN_MARGIN = 8;
 
 /** A design run begins this long after a committed edit, in milliseconds: edits shortly after each other are one run. */
 export const DESIGN_PAUSE = 500;
+
+/** The zoom of the map at a roof that was found: the native limit of the imagery, about 0.3 m per pixel. */
+export const ROOF_ZOOM = 19;
+
+/** How wide the scale bar of the map may be at most, in pixels; it shows the largest round length that fits. */
+export const SCALE_BAR_MAX = 124;

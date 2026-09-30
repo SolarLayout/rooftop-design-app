@@ -1428,6 +1428,78 @@
         "title": "Losses",
         "type": "object"
       },
+      "MapShape": {
+        "description": "An obstacle as it is drawn on the map: a box by its four corners, a cylinder or a tree by its\ncentre and its diameter, a wall by the points of its line, a building by the corners of its outline.\nThe height is asked for: imagery cannot give it.",
+        "properties": {
+          "diameter": {
+            "anyOf": [
+              {
+                "description": "Metres, more than nothing",
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Metres; a cylinder or a tree needs it",
+            "title": "Diameter"
+          },
+          "height": {
+            "minimum": 0.0,
+            "title": "Height",
+            "type": "number"
+          },
+          "kind": {
+            "default": "box",
+            "enum": [
+              "box",
+              "cylinder",
+              "wall",
+              "tree",
+              "building"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "maxLength": 200,
+            "title": "Name",
+            "type": "string"
+          },
+          "points": {
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "description": "Degrees, east positive",
+                  "maximum": 180.0,
+                  "minimum": -180.0,
+                  "type": "number"
+                },
+                {
+                  "description": "Degrees, north positive",
+                  "maximum": 90.0,
+                  "minimum": -90.0,
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            "minItems": 1,
+            "title": "Points",
+            "type": "array"
+          }
+        },
+        "required": [
+          "points",
+          "height"
+        ],
+        "title": "MapShape",
+        "type": "object"
+      },
       "Module": {
         "description": "A PV module as its PAN file describes it.",
         "properties": {
@@ -1995,6 +2067,71 @@
         "title": "Option",
         "type": "object"
       },
+      "OutlineOnMap": {
+        "description": "What was drawn on the map: the corners of the roof, the obstacles, the roof type, a name.",
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The name of the new design; the API's default when left out",
+            "title": "Name"
+          },
+          "obstacles": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/MapShape"
+            },
+            "title": "Obstacles",
+            "type": "array"
+          },
+          "outline": {
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "description": "Degrees, east positive",
+                  "maximum": 180.0,
+                  "minimum": -180.0,
+                  "type": "number"
+                },
+                {
+                  "description": "Degrees, north positive",
+                  "maximum": 90.0,
+                  "minimum": -90.0,
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            "minItems": 3,
+            "title": "Outline",
+            "type": "array"
+          },
+          "roof_type": {
+            "default": "flat_tilted",
+            "enum": [
+              "flat_tilted",
+              "flat_ew",
+              "sloped_flush"
+            ],
+            "title": "Roof Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "outline"
+        ],
+        "title": "OutlineOnMap",
+        "type": "object"
+      },
       "PVString": {
         "description": "One string: its modules in the order they are wired, and where it is connected.",
         "properties": {
@@ -2542,7 +2679,8 @@
             "enum": [
               "coordinates",
               "kmz",
-              "dxf"
+              "dxf",
+              "map"
             ],
             "title": "Source",
             "type": "string"
@@ -2681,6 +2819,47 @@
           }
         },
         "title": "RoofInput",
+        "type": "object"
+      },
+      "RoofOnMap": {
+        "description": "A roof of a project, in WGS84, so that the map shows it where it is.",
+        "properties": {
+          "obstacles": {
+            "items": {
+              "$ref": "#/components/schemas/MapShape"
+            },
+            "title": "Obstacles",
+            "type": "array"
+          },
+          "outline": {
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "description": "Degrees, east positive",
+                  "maximum": 180.0,
+                  "minimum": -180.0,
+                  "type": "number"
+                },
+                {
+                  "description": "Degrees, north positive",
+                  "maximum": 90.0,
+                  "minimum": -90.0,
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            "title": "Outline",
+            "type": "array"
+          }
+        },
+        "required": [
+          "outline",
+          "obstacles"
+        ],
+        "title": "RoofOnMap",
         "type": "object"
       },
       "SeriesRange": {
@@ -3817,6 +3996,48 @@
         ]
       }
     },
+    "/roof/from-map": {
+      "post": {
+        "description": "A new project from a roof outlined on the map: the outline and the obstacles in local metres around\nthe roof's centroid, through the engine's projection; everything else at its default.",
+        "operationId": "roofFromMap",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OutlineOnMap"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request cannot be used; the message says why."
+          }
+        },
+        "summary": "Roof From Map",
+        "tags": [
+          "roof"
+        ]
+      }
+    },
     "/roof/import": {
       "post": {
         "description": "Read a KMZ, KML or DXF: the largest outline is the roof, the other shapes are obstacles.",
@@ -3854,6 +4075,48 @@
           }
         },
         "summary": "Import Roof",
+        "tags": [
+          "roof"
+        ]
+      }
+    },
+    "/roof/on-map": {
+      "post": {
+        "description": "Where a roof and its obstacles are on the map, so that they can be shown and outlined again.",
+        "operationId": "roofOnMap",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Roof"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoofOnMap"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request cannot be used; the message says why."
+          }
+        },
+        "summary": "Roof On Map",
         "tags": [
           "roof"
         ]

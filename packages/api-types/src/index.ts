@@ -157,6 +157,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/roof/from-map": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Roof From Map
+         * @description A new project from a roof outlined on the map: the outline and the obstacles in local metres around
+         *     the roof's centroid, through the engine's projection; everything else at its default.
+         */
+        post: operations["roofFromMap"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/roof/import": {
         parameters: {
             query?: never;
@@ -171,6 +192,26 @@ export interface paths {
          * @description Read a KMZ, KML or DXF: the largest outline is the roof, the other shapes are obstacles.
          */
         post: operations["importRoof"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/roof/on-map": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Roof On Map
+         * @description Where a roof and its obstacles are on the map, so that they can be shown and outlined again.
+         */
+        post: operations["roofOnMap"];
         delete?: never;
         options?: never;
         head?: never;
@@ -884,6 +925,37 @@ export interface components {
             weather_sigma_pct: number;
         };
         /**
+         * MapShape
+         * @description An obstacle as it is drawn on the map: a box by its four corners, a cylinder or a tree by its
+         *     centre and its diameter, a wall by the points of its line, a building by the corners of its outline.
+         *     The height is asked for: imagery cannot give it.
+         */
+        MapShape: {
+            /**
+             * Diameter
+             * @description Metres; a cylinder or a tree needs it
+             */
+            diameter?: number | null;
+            /** Height */
+            height: number;
+            /**
+             * Kind
+             * @default box
+             * @enum {string}
+             */
+            kind: "box" | "cylinder" | "wall" | "tree" | "building";
+            /**
+             * Name
+             * @default
+             */
+            name: string;
+            /** Points */
+            points: [
+                number,
+                number
+            ][];
+        };
+        /**
          * Module
          * @description A PV module as its PAN file describes it.
          */
@@ -1154,6 +1226,33 @@ export interface components {
             /** Title */
             title: string;
             verdict: components["schemas"]["Verdict"];
+        };
+        /**
+         * OutlineOnMap
+         * @description What was drawn on the map: the corners of the roof, the obstacles, the roof type, a name.
+         */
+        OutlineOnMap: {
+            /**
+             * Name
+             * @description The name of the new design; the API's default when left out
+             */
+            name?: string | null;
+            /**
+             * Obstacles
+             * @default []
+             */
+            obstacles: components["schemas"]["MapShape"][];
+            /** Outline */
+            outline: [
+                number,
+                number
+            ][];
+            /**
+             * Roof Type
+             * @default flat_tilted
+             * @enum {string}
+             */
+            roof_type: "flat_tilted" | "flat_ew" | "sloped_flush";
         };
         /**
          * PVString
@@ -1458,7 +1557,7 @@ export interface components {
              * @default coordinates
              * @enum {string}
              */
-            source: "coordinates" | "kmz" | "dxf";
+            source: "coordinates" | "kmz" | "dxf" | "map";
             /**
              * Walkway Every Modules
              * @default 24
@@ -1533,6 +1632,19 @@ export interface components {
              * @default 20
              */
             width: number;
+        };
+        /**
+         * RoofOnMap
+         * @description A roof of a project, in WGS84, so that the map shows it where it is.
+         */
+        RoofOnMap: {
+            /** Obstacles */
+            obstacles: components["schemas"]["MapShape"][];
+            /** Outline */
+            outline: [
+                number,
+                number
+            ][];
         };
         /**
          * SeriesRange
@@ -2139,6 +2251,39 @@ export interface operations {
             };
         };
     };
+    roofFromMap: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OutlineOnMap"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Project"];
+                };
+            };
+            /** @description The request cannot be used; the message says why. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     importRoof: {
         parameters: {
             query?: never;
@@ -2159,6 +2304,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ImportedRoof"];
+                };
+            };
+            /** @description The request cannot be used; the message says why. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    roofOnMap: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Roof"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoofOnMap"];
                 };
             };
             /** @description The request cannot be used; the message says why. */

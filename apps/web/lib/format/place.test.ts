@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { placeInShort } from "./place";
+import { placeInFull, placeInShort } from "./place";
 
 // The place of a design beside its name, as the top bar has it: "18.52° N · 73.86° E".
 
@@ -18,5 +18,16 @@ describe("the place of a design, in short", () => {
 
   test("what rounds to nothing has no side of its own", () => {
     expect(placeInShort(-0.001, -0.004)).toBe("0.00° N · 0.00° E");
+  });
+});
+
+// Where a roof is, in full: five decimals with N, S, E, W (docs/design/guidelines.md, "Coordinates").
+describe("the place of a roof, in full", () => {
+  test("five decimals, north and east, a comma between", () => {
+    expect(placeInFull(18.52, 73.86)).toBe("18.52000° N, 73.86000° E");
+  });
+
+  test("south and west", () => {
+    expect(placeInFull(-33.8688, -70.6693)).toBe("33.86880° S, 70.66930° W");
   });
 });

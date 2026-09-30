@@ -1,6 +1,7 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "../fixtures";
 import { expectScreen } from "../screens";
+import { findOpened } from "../find";
 
 // Each screen against its baseline in e2e/baselines. After a change that is meant, look at the new
 // picture beside the preview in docs/design/previews, then renew the baseline:
@@ -11,6 +12,13 @@ test("home", async ({ page }) => {
   await expect(page.getByTestId("api-status")).toHaveAttribute("data-state", "reachable");
 
   await expectScreen(page, "home");
+});
+
+// Find and outline, with the imagery from the fixture tile.
+test("find", async ({ page }) => {
+  await findOpened(page);
+
+  await expectScreen(page, "find");
 });
 
 // The shell, with the demo from the API of the test stack. A picture is taken once the result is there.

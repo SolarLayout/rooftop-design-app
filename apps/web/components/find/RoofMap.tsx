@@ -1,0 +1,142 @@
+"use client";
+
+import { Map as MapLibre, setWorkerUrl, type ErrorEvent } from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
+import { useEffect, useRef, useState } from "react";
+import { classNames } from "@/components/ui/class-names";
+import { measures } from "@/components/ui/measures";
+import { SCALE_BAR_MAX } from "@/components/ui/design-numbers";
+import type { Imagery } from "@/lib/map/provider";
+import { metresPerPixel, scaleBarOf, type ScaleBar } from "@/lib/map/scale-bar";
+
+/** Where the map looks. */
+export type MapView = { lon: number; lat: number; zoom: number };
+
+type Props = {
+  imagery: Imagery;
+  /** Where the map looks. When another view is given, the map flies to it. */
+  view: MapView;
+  /** The map is there, or the tiles do not come. */
+  onState: (state: "ready" | "failed") => void;
+  /** The map behind this component, once it is there: for what draws on it. */
+  onMap?: (map: MapLibre) => void;
+  className?: string;
+};
+
+const IMAGERY = "imagery";
+const MAX_ZOOM = 21.5;
+
+// The worker of MapLibre is served by the app (tools/vendor-maplibre.ts): under Next's bundler it cannot
+// find its own file. Set once, before the first map.
+setWorkerUrl("/maplibre-gl/maplibre-gl-worker.mjs");
+const SCALE_BAR = "flex flex-col gap-0.75";
+
+/**
+ * The satellite map (MapLibre), with the scale bar and the attribution of the imagery on it. Its zoom
+ * and north buttons are placed by the screen (`MapButtons`). The colours of what it draws come from
+ * the tokens of its container.
+ */
+export function RoofMap({ imagery, view, onState, onMap, className }: Props) {
+  const container = useRef<HTMLDivElement>(null);
+  const map = useRef<MapLibre | null>(null);
+  const [scale, setScale] = useState<ScaleBar | null>(null);
+  const [state, setState] = useState<"loading" | "ready" | "failed">("loading");
+  const tell = useRef(onState);
+  const hand = useRef(onMap);
+  useEffect(() => {
+    tell.current = onState;
+    hand.current = onMap;
+  });
+
+  useEffect(() => {
+    const element = container.current;
+    if (!element) return;
+    const made = new MapLibre({
+      container: element,
+      center: [view.lon, view.lat],
+      zoom: view.zoom,
+      maxZoom: MAX_ZOOM,
+      attributionControl: false,
+      style: {
+        version: 8,
+        sources: {
+          [IMAGERY]: {
+            type: "raster",
+            tiles: [...imagery.tiles],
+            tileSize: imagery.tileSize,
+            maxzoom: imagery.maxNativeZoom,
+            attribution: imagery.attribution,
+          },
+        },
+        layers: [{ id: IMAGERY, type: "raster", source: IMAGERY }],
+      },
+    });
+    map.current = made;
+    let hasShownTiles = false;
+
+    function onScale() {
+      setScale(scaleBarOf(metresPerPixel(made.getCenter().lat, made.getZoom(), imagery.tileSize), SCALE_BAR_MAX));
+    }
+    function onIdle() {
+      if (hasShownTiles || !made.areTilesLoaded()) return;
+      hasShownTiles = true;
+      setState("ready");
+      tell.current("ready");
+    }
+    function onError({ error }: ErrorEvent) {
+      // A tile that does not come before any has: the imagery does not load.
+      if (hasShownTiles || !isTileFault(error)) return;
+      setState("failed");
+      tell.current("failed");
+    }
+    made.on("move", onScale);
+    made.on("idle", onIdle);
+    made.on("error", onError);
+    made.once("load", () => hand.current?.(made));
+    onScale();
+
+    return () => {
+      map.current = null;
+      made.remove();
+    };
+    // The map is made once; a view that changes later is flown to below.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imagery]);
+
+  useEffect(() => {
+    const made = map.current;
+    if (!made) return;
+    const at = made.getCenter();
+    if (at.lng === view.lon && at.lat === view.lat && made.getZoom() === view.zoom) return;
+    made.flyTo({ center: [view.lon, view.lat], zoom: view.zoom });
+  }, [view]);
+
+  return (
+    <div className={classNames("relative bg-ground", className)}>
+      <div
+        ref={container}
+        data-testid="roof-map"
+        data-state={state}
+        role="img"
+        aria-label="Satellite map"
+        // MapLibre's stylesheet makes its container `relative`, and wins over `absolute`: it is sized, not placed.
+        className="size-full"
+      />
+      <div className="pointer-events-none absolute bottom-7 left-5 flex flex-col gap-2 text-text">
+        {scale ? (
+          <div data-testid="scale-bar" className={SCALE_BAR}>
+            <code className="type-value-xs on-imagery">{scale.label}</code>
+            <div className="w-31">
+              <div className="h-1.25 w-span border-x border-b border-text" style={measures({ span: scale.widthPx / SCALE_BAR_MAX })} />
+            </div>
+          </div>
+        ) : null}
+        <p className="type-label-s text-text-on-imagery on-imagery">{imagery.attribution}</p>
+      </div>
+    </div>
+  );
+}
+
+function isTileFault(error: unknown): boolean {
+  return error instanceof Error && (error.name === "AJAXError" || /fetch|network|tile/i.test(error.message));
+}
