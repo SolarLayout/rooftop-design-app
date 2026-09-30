@@ -120,7 +120,7 @@ test.describe("without a map", () => {
     const said = page.getByRole("status");
     await expect(said).toContainText("This browser cannot draw the map");
     await expect(said).toContainText("It has no WebGL. Try another browser, or enter the roof by its measurements.");
-    await expect(said.getByRole("button", { name: "Enter dimensions by hand instead" })).toHaveAttribute("aria-disabled", "true");
+    await expect(said.getByRole("button", { name: "Enter dimensions by hand instead" })).toBeEnabled();
     await expect(map(page)).toHaveCount(0);
   });
 

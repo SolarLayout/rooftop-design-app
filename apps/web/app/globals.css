@@ -274,6 +274,8 @@
   --color-note-line: #3A3220;
   --color-ok: #3DD6A0;
   --color-outline-fill: rgba(255,176,32,.09);
+  --color-obstacle-line: #FFFFFF;
+  --color-obstacle-fill: rgba(11,14,19,.55);
 
   --color-data-gain: #3987E5;
   --color-data-loss: #D95926;
@@ -411,6 +413,8 @@
   --color-note-line: var(--color-note-line);
   --color-ok: var(--color-ok);
   --color-outline-fill: var(--color-outline-fill);
+  --color-obstacle-line: var(--color-obstacle-line);
+  --color-obstacle-fill: var(--color-obstacle-fill);
   --color-data-gain: var(--color-data-gain);
   --color-data-loss: var(--color-data-loss);
   --color-data-zero: var(--color-data-zero);
@@ -720,6 +724,12 @@
 @utility pulsing {
   animation: pulse-saved var(--duration-pulse-saved) ease-in-out infinite;
 }
+/* The map's canvas takes the keyboard focus (a dialog gives it back there): the ring of every control, inside its edge. */
+.maplibregl-canvas:focus-visible {
+  outline: var(--ring-focus);
+  outline-offset: calc(-1 * var(--ring-focus-offset));
+}
+
 /* The corner being edited on the map pulses, over the shadow every handle has. */
 @keyframes pulse-corner {
   0%,
@@ -773,6 +783,10 @@
 }
 @utility border-outline {
   border-width: var(--border-outline);
+}
+/* The outline of the roof drawn as a plan, without a map. */
+@utility stroke-outline {
+  stroke-width: var(--border-outline);
 }
 @utility border-corner {
   border-width: var(--border-corner);

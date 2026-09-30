@@ -1,5 +1,5 @@
-"""A roof outlined on the map. The projection is the engine's (rooftop_core.geo), and it is the only one:
-the browser draws in WGS84 and receives metres."""
+"""A roof outlined on the map, or entered by hand about a place. The projection is the engine's
+(rooftop_core.geo), and it is the only one: the browser draws in WGS84 and receives metres."""
 
 import math
 
@@ -31,7 +31,12 @@ def from_map(drawn: schemas.OutlineOnMap) -> schemas.Project:
     counts: dict[str, int] = {}
     obstacles = [_obstacle(shape, index, lat, lon, counts) for index, shape in enumerate(drawn.obstacles)]
     roof = geometry.Roof(
-        outline=outline, lat=lat, lon=lon, roof_type=drawn.roof_type, source="map", obstacles=obstacles
+        outline=outline,
+        lat=lat,
+        lon=lon,
+        roof_type=drawn.roof_type,
+        source=drawn.source,
+        obstacles=obstacles,
     )
     new = project.Project(name=drawn.name or UNTITLED, roof=roof)
     new.roof_input["mode"] = "corners"

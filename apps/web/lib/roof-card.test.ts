@@ -42,6 +42,13 @@ describe("the card of the roof in the Roof lens", () => {
     expect(roofCardOf(roof({ source: "dxf" })).how).toBe("From a file · 4 corners");
   });
 
+  test("the obstacles are counted, when there are any", () => {
+    const tank: Roof["obstacles"][number] = { name: "Tank 1", kind: "cylinder", x: 30, y: 10, length: 2, width: 2, rotation_deg: 0, diameter: 2.5, height: 2, thickness: 0.2, trunk_height: 2, points: [], auto: false };
+
+    expect(roofCardOf(roof({ obstacles: [tank] })).how).toBe("Outlined on satellite · 4 corners · 1 obstacle");
+    expect(roofCardOf(roof({ obstacles: [tank, { ...tank, name: "Tank 2" }] })).how).toBe("Outlined on satellite · 4 corners · 2 obstacles");
+  });
+
   test("a roof that is no rectangle is said by its area", () => {
     const five = roof({
       outline: [

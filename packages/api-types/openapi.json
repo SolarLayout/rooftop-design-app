@@ -2068,7 +2068,7 @@
         "type": "object"
       },
       "OutlineOnMap": {
-        "description": "What was drawn on the map: the corners of the roof, the obstacles, the roof type, a name.",
+        "description": "What was drawn on the map, or entered by hand about a place: the corners of the roof, the\nobstacles, the roof type, a name.",
         "properties": {
           "name": {
             "anyOf": [
@@ -2123,6 +2123,16 @@
               "sloped_flush"
             ],
             "title": "Roof Type",
+            "type": "string"
+          },
+          "source": {
+            "default": "map",
+            "description": "How the roof was entered: outlined on the map, or by its measurements",
+            "enum": [
+              "map",
+              "coordinates"
+            ],
+            "title": "Source",
             "type": "string"
           }
         },

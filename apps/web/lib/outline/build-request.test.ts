@@ -49,6 +49,22 @@ describe("the request of Build", () => {
     expect(request.obstacles).toEqual([]);
   });
 
+  test("the obstacles drawn go with the roof, as shapes in WGS84 with their heights", () => {
+    const state = [
+      { type: "shapeDragged", kind: "cylinder", from: { x: 30, y: 10 }, to: { x: 31.25, y: 10 } } as OutlineEvent,
+      { type: "shapeDropped" } as OutlineEvent,
+      { type: "heightGiven", height: 2, name: "" } as OutlineEvent,
+    ].reduce(outlineAfter, drawn());
+
+    const request = buildRequestOf(state, "flat_tilted", null)!;
+
+    expect(request.obstacles).toHaveLength(1);
+    expect(request.obstacles?.[0]).toMatchObject({ kind: "cylinder", name: "Tank 1", diameter: 2.5, height: 2 });
+    const back = toMetres(frameAt(PUNE), { lon: request.obstacles![0].points[0][0], lat: request.obstacles![0].points[0][1] });
+    expect(back.x).toBeCloseTo(30, 3);
+    expect(back.y).toBeCloseTo(10, 3);
+  });
+
   test("a place typed as coordinates gives no name: the API's default stands", () => {
     expect(buildRequestOf(drawn(), "flat_tilted", { label: "18.52000° N, 73.86000° E", byWords: false })!.name).toBeUndefined();
     expect(buildRequestOf(drawn(), "flat_tilted", null)!.name).toBeUndefined();

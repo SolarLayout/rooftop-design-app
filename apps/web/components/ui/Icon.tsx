@@ -14,6 +14,13 @@ const STROKED = {
   "arrow-right": <path d="M5 12h14m0 0-6-6m6 6-6 6" />,
   "arrow-up": <path d="M12 19V5m0 0-6 6m6-6 6 6" />,
   bin: <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />,
+  box: (
+    <>
+      <path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z" />
+      <path d="m4 7.5 8 4.5 8-4.5M12 12v9" />
+    </>
+  ),
+  building: <path d="M4 20V9l8-5 8 5v11M4 20h16M9 20v-5h6v5" />,
   "chevron-down": <path d="m6 9 6 6 6-6" />,
   corners: (
     <>
@@ -66,6 +73,12 @@ const STROKED = {
   performance: <path d="M5 20V10M12 20V4M19 20v-7" />,
   plus: <path d="M12 5v14M5 12h14" />,
   rectangle: <rect x="3.5" y="6.5" width="17" height="11" rx="1" />,
+  tank: (
+    <>
+      <ellipse cx="12" cy="6.5" rx="7" ry="3" />
+      <path d="M5 6.5v11c0 1.7 3.1 3 7 3s7-1.3 7-3v-11" />
+    </>
+  ),
   redo: (
     <>
       <path d="m15 14 5-5-5-5" />
@@ -99,6 +112,7 @@ const STROKED = {
   ),
   tick: <path d="m5 12 5 5 9-10" />,
   upload: <path d="M12 16V4m0 0-4 4m4-4 4 4M4 20h16" />,
+  wall: <path d="M3 6h18v12H3zM3 12h18M9 6v6M15 12v6" />,
   undo: (
     <>
       <path d="M9 14 4 9l5-5" />

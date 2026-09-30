@@ -22,7 +22,7 @@ Always:
 | 1 | Monorepo, tooling, one-command dev stack | `phase-01-foundation.md` | done |
 | 2 | Engine and stateless API | `phase-02-engine-api.md` | done |
 | 3 | Design system and app shell | `phase-03-design-system-shell.md` | done |
-| 4 | Find the roof on the map and outline it (flagship) | `phase-04-find-and-outline.md` | in progress: the map, the search, the outline three ways and Build are merged (#35, #36); obstacles on the map and entry by hand remain |
+| 4 | Find the roof on the map and outline it (flagship) | `phase-04-find-and-outline.md` | done (#35, #36, #38) |
 | 5 | Studio: 3D roof, Roof and Array lenses | `phase-05-studio-roof-array.md` | not started |
 | 6 | Studio: Sun lens | `phase-06-studio-sun.md` | not started |
 | 7 | Studio: Strings lens | `phase-07-studio-strings.md` | not started |
@@ -84,6 +84,9 @@ Always:
 | D47 | In the browser tests the imagery is one fixture tile for every address (`e2e/fixtures/imagery-tile.png`, served by `page.route`); the geocoder, the footprints and the location come from fixtures the same way. No stand-in server | Session 6, plan decision 9 |
 | D48 | Detect building reads Overture's buildings of the pinned release `2026-09-23.1` (`lib/map/overture.ts`), one archive read by ranges through the pmtiles protocol, and shows "© Overture Maps Foundation, ODbL" while they are on the map. The tiles end at zoom 14: a building cut by a tile edge is proposed as the piece under the press, and the UI says a footprint is approximate. `tools/footprints.ts` takes the tiles of a box out of the release into an archive of its own: the fixture of the browser tests now, a mirror of what the app needs when it is deployed (Phase 11) | Session 6, plan decisions 11 and 12 |
 | D49 | The name of a new design is the label of the place the roof was found by, when it was found by words ("Hinjewadi Phase 2, Pune, Maharashtra"); for coordinates, a link or the device's location it is the API's "Untitled roof". Renaming comes with the project switcher (Phase 10) | Session 6, plan decision 6 |
+| D50 | The toolbar of the map follows the roof: while the outline is open it holds the ways to outline; once it is closed (and no drag is going on) it holds the four obstacles, Box, Tank, Wall and Building, with Box in hand. Obstacles are drawn light over dark, so that the roof stays the amber thing on the screen; the selected one is accent. Trees are entered in the Roof lens (Phase 5), not on the map | Session 7, the board "Obstacles on the map and their heights", approved by the owner |
+| D51 | The height of a shape drawn on the map is asked in a dialog right after the shape is done (a sheet on phone), with the name of its kind suggested and the height empty: nothing is preselected, the desktop app's defaults of 1.5, 2, 6 and 8 m are its own. The primary action waits for a number and can still be pressed, so that the press commits the field. A number field may have no value yet | Session 7, the same board; `docs/design/components.md`, "Number field" and "Dialog" |
+| D52 | Entering the roof by hand is another way to set the same outline: the fields (the place, then a rectangle by length, width and where its long side faces, or a table of corners) are the truth of it, and everything after is as for a roof drawn. With a map the roof stands on the imagery at the place and its corners are shown, not dragged; without one the stage draws the plan north up. Build sends the source `coordinates` and the API keeps it (`OutlineOnMap.source`): the Roof lens says "Entered by hand" | Session 7, the board "Enter dimensions by hand", approved by the owner |
 
 ## Open for approval
 

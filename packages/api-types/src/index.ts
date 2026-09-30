@@ -1229,7 +1229,8 @@ export interface components {
         };
         /**
          * OutlineOnMap
-         * @description What was drawn on the map: the corners of the roof, the obstacles, the roof type, a name.
+         * @description What was drawn on the map, or entered by hand about a place: the corners of the roof, the
+         *     obstacles, the roof type, a name.
          */
         OutlineOnMap: {
             /**
@@ -1253,6 +1254,13 @@ export interface components {
              * @enum {string}
              */
             roof_type: "flat_tilted" | "flat_ew" | "sloped_flush";
+            /**
+             * Source
+             * @description How the roof was entered: outlined on the map, or by its measurements
+             * @default map
+             * @enum {string}
+             */
+            source: "map" | "coordinates";
         };
         /**
          * PVString

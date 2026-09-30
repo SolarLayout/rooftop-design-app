@@ -2,6 +2,7 @@
 // and the name of the place when the roof was found by words (decision of the plan, 6).
 import type { OutlineOnMap, Roof } from "../api";
 import { toLonLat } from "./frame";
+import { mapShapesOf } from "./obstacles";
 import type { OutlineState } from "./outline-state";
 
 export type FoundBy = { label: string; byWords: boolean };
@@ -16,13 +17,17 @@ export function cornersOnMap(state: OutlineState): [number, number][] | null {
   });
 }
 
-export function buildRequestOf(state: OutlineState, roofType: Roof["roof_type"], foundBy: FoundBy | null): OutlineOnMap | null {
+/** How the roof was entered: outlined on the map, or typed by its measurements ("coordinates", as the desktop app's). */
+export type EnteredBy = "map" | "coordinates";
+
+export function buildRequestOf(state: OutlineState, roofType: Roof["roof_type"], foundBy: FoundBy | null, source: EnteredBy = "map"): OutlineOnMap | null {
   const outline = cornersOnMap(state);
-  if (!outline) return null;
+  if (!outline || !state.frame) return null;
   return {
     outline,
-    obstacles: [],
+    obstacles: mapShapesOf(state.obstacles, state.frame),
     roof_type: roofType,
+    source,
     ...(foundBy?.byWords ? { name: foundBy.label } : {}),
   };
 }

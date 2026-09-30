@@ -9,7 +9,6 @@ import { useProject, useStores } from "@/components/shell/stores";
 import { Button } from "@/components/ui/Button";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { StatusMark } from "@/components/ui/StatusMark";
-import { Tooltip } from "@/components/ui/Tooltip";
 import { iconButtonLook } from "@/components/ui/button-look";
 import { classNames } from "@/components/ui/class-names";
 import { ROOF_ZOOM } from "@/components/ui/design-numbers";
@@ -19,18 +18,23 @@ import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
 import { FOOTPRINTS_ATTRIBUTION } from "@/lib/map/overture";
 import { mapStateOf } from "@/lib/map/map-state";
 import { buildRequestOf } from "@/lib/outline/build-request";
+import { isEntered, NOTHING_ENTERED, type ByHand } from "@/lib/outline/by-hand";
 import { frameAt, toMetres } from "@/lib/outline/frame";
-import { outlineAfter, START } from "@/lib/outline/outline-state";
+import { nameOf, obstaclesOfMap } from "@/lib/outline/obstacles";
+import { isClosedAndSettled, outlineAfter, START } from "@/lib/outline/outline-state";
 import { pathOfLens } from "@/lib/routes";
 import { latitudeOf, longitudeOf, projectOf } from "@/lib/stores/project-store";
 import { MapButtons } from "./MapButtons";
+import { ByHandPanel } from "./ByHandPanel";
 import { DetectedCallout } from "./DetectedCallout";
+import { HeightDialog } from "./HeightDialog";
 import { NoMap } from "./NoMap";
+import { ObstacleList } from "./ObstacleList";
 import type { Detected, Tool } from "./OutlineLayer";
 import { OutlinePanel } from "./OutlinePanel";
-import { OutlineTools } from "./OutlineTools";
+import { isObstacleTool, OutlineTools, toolFor } from "./OutlineTools";
+import { PlanView } from "./PlanView";
 import { RoofTypeChoice, type RoofType } from "./RoofTypeChoice";
-import { WHY_NOT_BY_HAND } from "./NoMap";
 import type { MapView } from "./RoofMap";
 import { Search, type FoundPlace } from "./Search";
 import { Steps, type Step } from "./Steps";
@@ -45,12 +49,17 @@ const PROVIDER = esriProvider(KEY_OF_THE_APP);
 /** Before a roof is found the map shows India, where the first users are, from far. */
 const FROM_FAR: MapView = { lon: 78.5, lat: 21.5, zoom: 4 };
 
-const WORDS: Record<Step | "rectangle" | "detect", { title: string; lead: string }> = {
+const WORDS: Record<Step | Exclude<Tool, "corners"> | "hand", { title: string; lead: string }> = {
   find: { title: "Find the roof", lead: "Search an address or a place, or paste coordinates or a maps link. The map flies to it." },
   outline: { title: "Outline the roof", lead: "Click each corner. Drag a corner to adjust it, or type a length you have measured." },
   rectangle: { title: "Outline the roof", lead: "Drag a box across the roof, then turn it to the building by its handle. Drag a corner to adjust it." },
   detect: { title: "Outline the roof", lead: "Click inside the building. Where its footprint is known, it is proposed as the outline, to accept or adjust." },
+  box: { title: "Outline the roof", lead: "Drag a box across the thing on the roof, then turn it by its handle. Its height is asked right after." },
+  tank: { title: "Outline the roof", lead: "Drag from the middle of the tank to its edge. Its height is asked right after." },
+  wall: { title: "Outline the roof", lead: "Click each point of the wall; click the last again, or press Enter, to end it. Its height is asked right after." },
+  building: { title: "Outline the roof", lead: "Click the corners of the building beside the roof; click the first again to close it. Its height is asked right after." },
   build: { title: "Build the roof", lead: "The roof rises in the Studio; the array fills it at once." },
+  hand: { title: "Enter the roof by hand", lead: "Type what you have measured. The roof is drawn as you type; Faces is where its long side looks." },
 };
 
 // On phone and tablet the panel is a sheet of 384 at the bottom; the map ends above it.
@@ -59,6 +68,9 @@ const OVER_THE_STAGE = "pointer-events-none absolute inset-x-0 top-0 bottom-96 d
 const FLOATING_BUTTON = classNames(iconButtonLook("secondary", "l", "square"), "size-12 rounded-card-s bg-surface-1 shadow-float");
 
 type Building = { kind: "idle" } | { kind: "building" } | { kind: "failed"; message: string };
+
+/** How the roof is entered: drawn on the map, or typed by its measurements. */
+type Entry = "map" | "hand";
 
 /** Find the roof on the map and outline it: the flagship (plan/phase-04-find-and-outline.md). */
 export function Find() {
@@ -74,10 +86,15 @@ export function Find() {
   const [step, setStep] = useState<Step>("find");
   const [foundAt, setFoundAt] = useState<FoundPlace | null>(null);
   const [outline, on] = useReducer(outlineAfter, START);
-  const [tool, setTool] = useState<Tool>("corners");
+  const [toolTaken, setTool] = useState<Tool>("corners");
+  // The toolbar follows the roof: closed (and no drag going on), an obstacle is drawn; opened again, the outline is.
+  const roofClosed = isClosedAndSettled(outline);
+  const tool: Tool = roofClosed === isObstacleTool(toolTaken) ? toolTaken : toolFor(roofClosed);
   const [detected, setDetected] = useState<Detected | null>(null);
   const [roofType, setRoofType] = useState<RoofType>("flat_tilted");
   const [building, setBuilding] = useState<Building>({ kind: "idle" });
+  const [entry, setEntry] = useState<Entry>("map");
+  const [hand, setHand] = useState<ByHand>(NOTHING_ENTERED);
   const loaded = useRef(false);
   // The map begins at the roof of the design that is open; without one, from far.
   const [view, setView] = useState<MapView>(() =>
@@ -88,8 +105,26 @@ export function Find() {
     () => mapStateOf({ hasKey: PROVIDER !== null, hasWebGL: webGL ?? true, tilesFailed }),
     [webGL, tilesFailed],
   );
-  const words = WORDS[step === "outline" && tool !== "corners" ? tool : step];
-  useOutlineKeys(step === "outline", on);
+  const words = WORDS[step === "outline" ? (entry === "hand" ? "hand" : tool !== "corners" ? tool : step) : step];
+  const hasMap = state.kind === "ready" && PROVIDER !== null && Boolean(webGL);
+  useOutlineKeys(step === "outline" && entry === "map" && outline.pending === null, on);
+
+  /** What is entered by hand changes: the roof follows it, at the place, once enough is there. */
+  function changeHand(change: Partial<ByHand>, mode: Entry = entry) {
+    const next = { ...hand, ...change };
+    setHand(next);
+    if (mode !== "hand" || next.lat === null || next.lon === null) return;
+    on({ type: "entered", at: { lat: next.lat, lon: next.lon }, corners: isEntered(next)?.corners ?? [] });
+  }
+
+  /** The roof by its measurements: the place is the one found, or where the roof drawn stands. */
+  function enterByHand() {
+    setEntry("hand");
+    setStep("outline");
+    setDetected(null);
+    const at = foundAt ?? (outline.frame ? { lat: outline.frame.centre.lat, lon: outline.frame.centre.lon } : null);
+    changeHand({ lat: hand.lat ?? at?.lat ?? null, lon: hand.lon ?? at?.lon ?? null }, "hand");
+  }
 
   // Edit from the Roof lens: the outline of the design that is open is shown on the map, where it is.
   useEffect(() => {
@@ -100,7 +135,7 @@ export function Find() {
       (onMap) => {
         const at = { lon: project.roof.lon, lat: project.roof.lat };
         const frame = frameAt(at);
-        on({ type: "loaded", at, corners: onMap.outline.map(([lon, lat]) => toMetres(frame, { lon, lat })) });
+        on({ type: "loaded", at, corners: onMap.outline.map(([lon, lat]) => toMetres(frame, { lon, lat })), obstacles: obstaclesOfMap(onMap.obstacles, frame) });
         setRoofType(project.roof.roof_type);
         setView({ lon: at.lon, lat: at.lat, zoom: ROOF_ZOOM });
         setStep("outline");
@@ -116,7 +151,7 @@ export function Find() {
 
   /** Build this roof: the document from the API, opened as the design, or its roof put into the design that is edited. */
   async function build() {
-    const request = buildRequestOf(outline, roofType, foundAt);
+    const request = buildRequestOf(outline, roofType, foundAt, entry === "hand" ? "coordinates" : "map");
     if (!request) return;
     setBuilding({ kind: "building" });
     try {
@@ -138,6 +173,7 @@ export function Find() {
     setFoundAt(place);
     setView({ lon: place.lon, lat: place.lat, zoom: ROOF_ZOOM });
     setStep("outline");
+    changeHand({ lat: place.lat, lon: place.lon });
   }
 
   function near() {
@@ -155,12 +191,14 @@ export function Find() {
             view={view}
             onState={(at) => setTilesFailed(at === "failed")}
             onMap={setMap}
-            outline={{ state: outline, tool: step === "outline" ? tool : null, on, onDetected: setDetected }}
-            moreAttribution={step === "outline" && tool === "detect" ? FOOTPRINTS_ATTRIBUTION : null}
+            outline={{ state: outline, tool: step === "outline" && entry === "map" ? tool : null, on, onDetected: setDetected }}
+            moreAttribution={step === "outline" && entry === "map" && tool === "detect" ? FOOTPRINTS_ATTRIBUTION : null}
             className="h-full"
           />
+        ) : entry === "hand" ? (
+          <PlanView corners={outline.corners} reason={state.kind === "ready" ? null : state.reason} />
         ) : state.kind !== "ready" ? (
-          <NoMap state={state} />
+          <NoMap state={state} onByHand={enterByHand} />
         ) : null}
       </div>
 
@@ -172,9 +210,9 @@ export function Find() {
           <Search provider={PROVIDER} near={near} onPlace={onPlace} found={foundAt?.label ?? null} className="min-w-0 grow desktop:w-100 desktop:grow-0" />
           <Steps current={step} className="hidden tablet:flex" />
         </div>
-        {/* The phone has no buttons: the map is pinched and turned by hand. */}
-        <MapButtons map={map} className="pointer-events-auto absolute right-5 bottom-7 hidden tablet:flex desktop:right-0" />
-        {step === "outline" ? (
+        {/* The phone has no buttons: the map is pinched and turned by hand. Without a map there is nothing to turn or zoom. */}
+        {map ? <MapButtons map={map} className="pointer-events-auto absolute right-5 bottom-7 hidden tablet:flex desktop:right-0" /> : null}
+        {step === "outline" && entry === "map" ? (
           <OutlineTools
             state={outline}
             tool={tool}
@@ -191,15 +229,23 @@ export function Find() {
             <DetectedCallout
               detected={detected}
               onUse={() => setDetected(null)}
-              onAdjust={() => {
-                setDetected(null);
-                setTool("corners");
-              }}
+              // The footprint stays and its corners drag, as the corners of any closed roof do.
+              onAdjust={() => setDetected(null)}
               onClose={() => setDetected(null)}
             />
           </div>
         ) : null}
       </div>
+
+      {/* Outside the layer over the stage, which lets pointer events through: a dialog inherits that. */}
+      {step === "outline" ? (
+        <HeightDialog
+          shape={outline.pending}
+          suggestedName={outline.pending ? nameOf(outline.pending.kind, outline.obstacles) : ""}
+          onAdd={(name, height) => on({ type: "heightGiven", name, height })}
+          onDiscard={() => on({ type: "pendingDiscarded" })}
+        />
+      ) : null}
 
       <aside
         aria-label={words.title}
@@ -217,7 +263,14 @@ export function Find() {
         </div>
         {step === "outline" ? (
           <>
-            <OutlinePanel state={outline} on={on} />
+            {entry === "hand" ? (
+              <ByHandPanel hand={hand} onChange={changeHand} state={outline} />
+            ) : (
+              <>
+                <OutlinePanel state={outline} on={on} />
+                {outline.closed ? <ObstacleList state={outline} on={on} /> : null}
+              </>
+            )}
             <section className="flex flex-col gap-2.5">
               <h2 className="hidden type-section text-text-3 uppercase desktop:block">Roof type</h2>
               <RoofTypeChoice value={roofType} onChange={setRoofType} />
@@ -239,11 +292,15 @@ export function Find() {
                   "Build this roof"
                 )}
               </Button>
-              <Tooltip words={WHY_NOT_BY_HAND}>
-                <Button kind="quiet" size="l" aria-disabled="true" className="w-full">
+              {entry === "map" ? (
+                <Button kind="quiet" size="l" onClick={enterByHand} className="w-full">
                   Enter dimensions by hand instead
                 </Button>
-              </Tooltip>
+              ) : hasMap ? (
+                <Button kind="quiet" size="l" onClick={() => setEntry("map")} className="w-full">
+                  Draw on the map instead
+                </Button>
+              ) : null}
             </div>
           </>
         ) : null}

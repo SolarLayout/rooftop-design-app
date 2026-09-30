@@ -23,9 +23,11 @@ export function roofCardOf(roof: Roof): RoofCard {
   const size = isRectangle(corners)
     ? `${shown(Math.max(edges[0], edges[1]), 1)} × ${shown(Math.min(edges[0], edges[1]), 1)} m`
     : `${shown(Math.round(areaOf(corners)), 0)} m²`;
+  const obstacles = roof.obstacles.length;
+  const counted = obstacles === 0 ? "" : ` · ${obstacles} ${obstacles === 1 ? "obstacle" : "obstacles"}`;
   return {
     place: placeInFull(roof.lat, roof.lon),
-    how: `${HOW[roof.source]} · ${corners.length} corners`,
+    how: `${HOW[roof.source]} · ${corners.length} corners${counted}`,
     size: `${size}${faces}`,
   };
 }
