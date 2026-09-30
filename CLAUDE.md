@@ -76,6 +76,10 @@ This is production software, not a prototype. The owner's words: "this is not th
 - Never read, print or commit `apps/web/.env.local`. New settings go into `apps/web/.env.example`
   without values.
 - Unit tests are `*.test.ts` (bun test). Playwright tests are `*.e2e.ts` in `e2e/tests`.
+- The check's steps are turbo tasks (`turbo.json`), keyed on their inputs, the lockfile and the toolchain
+  (`ROOFTOP_TOOLCHAIN`, set by the check). The cache is `.turbo/`, never committed. A change to the check's own
+  code (`tools/check.ts`, `tools/check/**`) runs everything. The proofs of the caching run last, in a worktree
+  under the system's temporary directory, never in the working tree.
 
 ## Commands
 | Command | Use |
@@ -84,5 +88,6 @@ This is production software, not a prototype. The owner's words: "this is not th
 | `bun dev:bg --profile test` | Start the test stack in the background (agents and tests) |
 | `bun stop` | Stop the dev stack (`--profile test` for the test stack, `--all` for both) |
 | `bun status` | Both stacks, their real ports, and anything else in their ranges |
-| `bun check` | Every check, in order, stopping at the first failure |
+| `bun check` | Every check, in order, stopping at the first failure. A step whose inputs have not changed since it was last green is skipped, and the summary says so |
+| `bun check --fresh` | Every check, ignoring the caches and rebuilding them |
 | `bun gen:api` | Regenerate `packages/api-types` from the API |
