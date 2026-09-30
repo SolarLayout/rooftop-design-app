@@ -1,14 +1,14 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { placeInShort } from "@/lib/format/place";
 import { workspaceOf } from "@/lib/routes";
-import { latitudeOf, longitudeOf, nameOf } from "@/lib/stores/project-store";
+import { latitudeOf, longitudeOf, nameOf, projectOf } from "@/lib/stores/project-store";
 import { lensOf } from "@/lib/stores/view-store";
 import { NotesDrawer } from "./NotesDrawer";
 import type { Note } from "./notes-view";
-import { StoresProvider, useNotes, useProject, useStores, useView } from "./stores";
+import { useNotes, useProject, useStores, useView } from "./stores";
 import { TopBar } from "./TopBar";
 import { TabBar } from "./WorkspaceNav";
 
@@ -25,13 +25,18 @@ export function useNotesOfTheShell(): Notes {
 
 function Frame({ children }: { children: ReactNode }) {
   const workspace = workspaceOf(usePathname());
-  const { flow } = useStores();
+  const { flow, project } = useStores();
   const name = useProject(nameOf);
   const latitude = useProject(latitudeOf);
   const longitude = useProject(longitudeOf);
   const lens = useView(lensOf);
   const notes = useNotes();
   const [areNotesOpen, setNotesOpen] = useState(false);
+
+  // A workspace without a design opens the demo. From Phase 10 on the designs of the device come first.
+  useEffect(() => {
+    if (projectOf(project.getState()) === null) flow.openDemo();
+  }, [flow, project]);
 
   const place = latitude === null || longitude === null ? null : placeInShort(latitude, longitude);
   const ofTheShell = useMemo(() => ({ notes, open: () => setNotesOpen(true) }), [notes]);
@@ -59,9 +64,5 @@ function Frame({ children }: { children: ReactNode }) {
 
 /** What the three workspaces share: one design, the top bar, the navigation, the notes. */
 export function Shell({ children }: { children: ReactNode }) {
-  return (
-    <StoresProvider>
-      <Frame>{children}</Frame>
-    </StoresProvider>
-  );
+  return <Frame>{children}</Frame>;
 }

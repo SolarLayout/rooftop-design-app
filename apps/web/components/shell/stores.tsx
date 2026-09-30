@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useStore } from "zustand";
 import { createDesignFlow, type DesignFlow } from "@/lib/flow/design-flow";
-import { createProjectStore, nameOf, projectOf, type ProjectState, type ProjectStore } from "@/lib/stores/project-store";
+import { createProjectStore, nameOf, type ProjectState, type ProjectStore } from "@/lib/stores/project-store";
 import {
   createResultsStore,
   designFailureOf,
@@ -35,14 +35,16 @@ function createStores(): Stores {
   return { project, results, view: createViewStore(), flow: createDesignFlow({ project, results }) };
 }
 
-/** The stores of the design that is open, for everything inside the shell. The flow runs while the shell is there. */
+/**
+ * The stores of the design that is open, for the whole app: a roof outlined on the map is the design the
+ * workspaces show. The flow runs while the app is there. Nothing is opened here: the shell opens the demo
+ * when a workspace has no design, and Find opens what was built.
+ */
 export function StoresProvider({ children }: { children: ReactNode }) {
   const [stores] = useState(createStores);
 
   useEffect(() => {
     stores.flow.start();
-    // A workspace without a design opens the demo. From Phase 10 on the designs of the device come first.
-    if (projectOf(stores.project.getState()) === null) stores.flow.openDemo();
     return () => stores.flow.stop();
   }, [stores]);
 
