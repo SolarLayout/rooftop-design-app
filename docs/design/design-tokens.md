@@ -36,6 +36,7 @@ theme (`:root`).
 | `--color-line-strong` | `#2F3847` | Borders of secondary buttons and inputs, off switch |
 | `--color-line-hover` | `#3B4658` | Border of a secondary button, hover |
 | `--color-dim` | `rgba(5,7,10,.72)` | Over the screen, under a dialog and under a bottom sheet that opens |
+| `--color-handle-fill` | `#FFFFFF` | The handle of a corner on the map: white, so that it reads on any imagery, with an accent line |
 
 ## Colour: text
 
@@ -57,6 +58,7 @@ theme (`:root`).
 | `--color-note-surface` | `#1E1A10` | Background of a note or of a selected card |
 | `--color-note-line` | `#3A3220` | Border of a note |
 | `--color-ok` | `#3DD6A0` | Tick, saved dot, feasible band |
+| `--color-outline-fill` | `rgba(255,176,32,.09)` | The fill of the outline on the map: accent at 9 % |
 
 There is no error red. A result that does not fit is a note: exclamation mark in a circle, accent colour, with
 the reason.
@@ -237,6 +239,9 @@ A line is 1 px wide. Those that are wider have a token.
 | `--border-dot` | `1.5px` | The line of the hollow dot of a design that is not kept |
 | `--border-handle` | `3px` | The accent line around the handle of a slider, on desktop |
 | `--border-handle-touch` | `4px` | The same on phone and tablet |
+| `--border-outline` | `2px` | The line of the outline on the map |
+| `--border-corner` | `4px` | The accent line of a corner handle on the map (5 on touch: `--border-corner-touch`) |
+| `--border-corner-touch` | `5px` | The same on phone and tablet |
 
 ## Elevation
 
@@ -266,6 +271,8 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--halo-selected` | `0 0 0 3px rgba(255,176,32,.14)` | Selected card (with an accent border) |
 | `--halo-saved` | `0 0 0 0 rgba(61,214,160,.5)` | Around the saved dot, where its pulse begins and ends |
 | `--halo-saved-out` | `0 0 0 5px rgba(61,214,160,0)` | Around the saved dot, at the middle of its pulse |
+| `--halo-corner` | `0 0 0 0 rgba(255,176,32,.55)` | Around the corner being edited, where its pulse begins and ends |
+| `--halo-corner-out` | `0 0 0 9px rgba(255,176,32,0)` | Around the corner being edited, at the middle of its pulse |
 
 ## States
 
@@ -315,6 +322,11 @@ and the file equal.
 | `DESIGN_PAUSE` | `500` | Milliseconds between a committed edit and the design run that follows it: edits shortly after each other are one run |
 | `ROOF_ZOOM` | `19` | The zoom of the map at a roof that was found: the native limit of the imagery, about 0.3 m per pixel |
 | `SCALE_BAR_MAX` | `124` | Pixels that the scale bar of the map may be wide at most; it shows the largest round length that fits |
+| `SNAP_DEGREES` | `3` | Degrees within which a corner snaps to a right angle or to a parallel, and the rectangle's turn to north |
+| `CLOSE_WITHIN` | `12` | Pixels within which a press on the first corner closes the outline |
+| `CLOSE_WITHIN_TOUCH` | `20` | The same on phone and tablet |
+| `NUDGE_MM` | `100` | Millimetres a selected corner moves by an arrow key |
+| `NUDGE_SHIFT_MM` | `1000` | The same with Shift held |
 
 ## Layers
 
@@ -347,13 +359,14 @@ layer of their own.
 | `--opacity-disabled`, `--opacity-updating` | `opacity-disabled`, `opacity-updating` | `disabled:opacity-disabled` |
 | `--duration-spin`, `--duration-breathe` | `turning`, `breathing` | on a ring that turns, on a skeleton |
 | `--duration-pulse-saved`, `--halo-saved`, `--halo-saved-out` | `pulsing` | on the saved dot |
+| `--duration-pulse-corner`, `--halo-corner`, `--halo-corner-out` | `pulsing-corner` | on the corner being edited |
 | `--columns-*` | `grid-cols-` and the name | `desktop:grid-cols-vitals` |
 | `--ease-out`, `--duration-*` | `ease-out`, `duration-` and the name | `duration-press` |
 | `--duration-press`, `--ease-out`, `--shift-press`, `--scale-press` | `press-motion`, `raised-by-hover`, `lowered-by-press` | on every control that is pressed |
 | `--duration-panel`, `--ease-out` | `sheet-motion` | on a sheet that goes to its stop |
 | `--stroke-*` | `stroke-icon`, `stroke-icon-light`, `stroke-tick` | on the `svg` of an icon |
 | `--z-*` | `z-` and the name | `z-float` |
-| `--border-*` | `border-` and the name; `border-b-tab` for the line under a tab | `border-handle-touch desktop:border-handle`, `border-dot` |
+| `--border-*` | `border-` and the name; `border-b-tab` for the line under a tab | `border-handle-touch desktop:border-handle`, `border-dot`, `border-corner` |
 | `--shadow-text-on-imagery` | `on-imagery` | on text that stands on the satellite imagery |
 
 Tailwind's own palette, sizes of type, radii and shadows do not exist in this app: a utility that is not made

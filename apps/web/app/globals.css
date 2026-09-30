@@ -207,6 +207,9 @@
   --border-dot: 1.5px;
   --border-handle: 3px;
   --border-handle-touch: 4px;
+  --border-outline: 2px;
+  --border-corner: 4px;
+  --border-corner-touch: 5px;
 
   --ring-focus: 2px solid var(--color-accent);
   --ring-focus-offset: 2px;
@@ -255,6 +258,7 @@
   --color-line-strong: #2F3847;
   --color-line-hover: #3B4658;
   --color-dim: rgba(5,7,10,.72);
+  --color-handle-fill: #FFFFFF;
 
   --color-text: #F2F4F7;
   --color-text-2: #A9B2C0;
@@ -268,6 +272,7 @@
   --color-note-surface: #1E1A10;
   --color-note-line: #3A3220;
   --color-ok: #3DD6A0;
+  --color-outline-fill: rgba(255,176,32,.09);
 
   --color-data-gain: #3987E5;
   --color-data-loss: #D95926;
@@ -311,6 +316,8 @@
   --halo-selected: 0 0 0 3px rgba(255,176,32,.14);
   --halo-saved: 0 0 0 0 rgba(61,214,160,.5);
   --halo-saved-out: 0 0 0 5px rgba(61,214,160,0);
+  --halo-corner: 0 0 0 0 rgba(255,176,32,.55);
+  --halo-corner-out: 0 0 0 9px rgba(255,176,32,0);
 }
 
 /*
@@ -390,6 +397,7 @@
   --color-line-strong: var(--color-line-strong);
   --color-line-hover: var(--color-line-hover);
   --color-dim: var(--color-dim);
+  --color-handle-fill: var(--color-handle-fill);
   --color-text: var(--color-text);
   --color-text-2: var(--color-text-2);
   --color-text-3: var(--color-text-3);
@@ -401,6 +409,7 @@
   --color-note-surface: var(--color-note-surface);
   --color-note-line: var(--color-note-line);
   --color-ok: var(--color-ok);
+  --color-outline-fill: var(--color-outline-fill);
   --color-data-gain: var(--color-data-gain);
   --color-data-loss: var(--color-data-loss);
   --color-data-zero: var(--color-data-zero);
@@ -438,6 +447,8 @@
   --shadow-halo-selected: var(--halo-selected);
   --shadow-halo-saved: var(--halo-saved);
   --shadow-halo-saved-out: var(--halo-saved-out);
+  --shadow-halo-corner: var(--halo-corner);
+  --shadow-halo-corner-out: var(--halo-corner-out);
 }
 
 /* Type styles: family, weight, size, line height and tracking together. */
@@ -708,6 +719,19 @@
 @utility pulsing {
   animation: pulse-saved var(--duration-pulse-saved) ease-in-out infinite;
 }
+/* The corner being edited on the map pulses, over the shadow every handle has. */
+@keyframes pulse-corner {
+  0%,
+  100% {
+    box-shadow: var(--halo-corner), var(--shadow-handle);
+  }
+  50% {
+    box-shadow: var(--halo-corner-out), var(--shadow-handle);
+  }
+}
+@utility pulsing-corner {
+  animation: pulse-corner var(--duration-pulse-corner) ease-in-out infinite;
+}
 /* The lowest of the three heights: no shadow at all. */
 @utility flat {
   box-shadow: none;
@@ -745,6 +769,12 @@
 }
 @utility border-dot {
   border-width: var(--border-dot);
+}
+@utility border-corner {
+  border-width: var(--border-corner);
+}
+@utility border-corner-touch {
+  border-width: var(--border-corner-touch);
 }
 
 /*
