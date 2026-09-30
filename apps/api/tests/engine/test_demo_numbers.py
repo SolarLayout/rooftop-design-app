@@ -4,6 +4,7 @@ import pytest
 
 from rooftop_core.demo import demo_project
 from rooftop_core.project import Design
+from tests.kept import KEPT
 
 pytestmark = pytest.mark.slow
 
@@ -67,7 +68,7 @@ def test_exceedance_values_of_option_a(demo_design):
 def test_without_a_system_voltage_nothing_is_sized_or_chosen():
     project = demo_project()
     project.system_voltage = None
-    design = Design(project)
+    design = Design(project, memo=KEPT)
 
     layout = design.generate_layout()
     precomputed = design.prepare()
