@@ -8,7 +8,10 @@ import type { ArraySpec, LayoutResponse, Roof } from "../api";
 export type MountingId = "tilt_deg" | "orientation" | "modules_in_tilt" | "clearance_m" | "ew_tilt_deg" | "ew_ridge_gap_m";
 export type SpacingId = "row_pitch_m" | "azimuth_deg";
 
-export const ARRAY_RANGES: Record<"tilt_deg" | "modules_in_tilt" | "clearance_m" | "azimuth_deg" | "ew_tilt_deg" | "ew_ridge_gap_m" | "row_pitch_m", Range> = {
+/** A range with both ends: a slider and a stepper stop at them. */
+export type Bounded = Range & { min: number; max: number };
+
+export const ARRAY_RANGES: Record<"tilt_deg" | "modules_in_tilt" | "clearance_m" | "azimuth_deg" | "ew_tilt_deg" | "ew_ridge_gap_m" | "row_pitch_m", Bounded> = {
   tilt_deg: { min: 0, max: 45, decimals: 0 },
   modules_in_tilt: { min: 1, max: 4, decimals: 0 },
   clearance_m: { min: 0, max: 3, decimals: 2 },

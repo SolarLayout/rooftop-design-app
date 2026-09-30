@@ -5,6 +5,7 @@ import { Sheet } from "@/components/ui/Sheet";
 import type { Stop } from "@/components/ui/sheet-stops";
 import { LENSES, type Lens } from "@/lib/routes";
 import { LensNav } from "./LensNav";
+import { ArrayInspector } from "@/components/studio/ArrayInspector";
 import { RoofInspector } from "@/components/studio/RoofInspector";
 import { Stage } from "@/components/studio/Stage";
 import { useSize } from "@/components/studio/use-size";
@@ -28,7 +29,7 @@ export function Studio({ lens }: Props) {
   const size = useSize();
   const [stop, setStop] = useState<Stop>("half");
   const name = LENSES.find((one) => one.id === lens)?.name ?? "";
-  const inspector = size === null ? null : lens === "roof" ? <RoofInspector size={size} /> : <NotBuiltYet />;
+  const inspector = size === null ? null : lens === "array" ? <ArrayInspector /> : lens === "roof" ? <RoofInspector size={size} /> : <NotBuiltYet />;
 
   // The Studio comes back to the lens that was opened last.
   useEffect(() => view.getState().showLens(lens), [view, lens]);
