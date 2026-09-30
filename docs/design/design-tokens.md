@@ -280,6 +280,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 |---|---|---|
 | `--opacity-disabled` | `0.45` | A control that cannot be used. It has no shadow either |
 | `--opacity-updating` | `0.55` | A value of before while the new one is on its way; a skeleton at the low point of its breath |
+| `--opacity-hint` | `0.35` | A hint on the map: the footprints that are known, while Detect building is the tool |
 
 ## Focus
 
