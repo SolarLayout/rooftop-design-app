@@ -74,5 +74,5 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   states and tools", drawn on 2026-09-30 by session 6 (`plan/phase-04-plan.md`, step 0).
 - `mockups/build_phase4_obstacles_by_hand.py` writes the two boards of the third pull request of Phase 4, "Obstacles on the
   map and their heights" and "Enter dimensions by hand", drawn on 2026-09-30 by session 7 (`plan/phase-04-plan.md`, step 13).
-- `mockups/canvas.json` is the layout of the boards on the canvas. The repo holds 19 boards; the canvas holds the first
-  17 (2026-09-30). The two boards of session 7 are published to it when the owner asks.
+- `mockups/canvas.json` is the layout of the boards on the canvas. The canvas and the repo hold the same 21 boards
+  since 2026-09-30 (session 7 published the four of Phase 4 that the canvas lacked).

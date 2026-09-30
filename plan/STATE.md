@@ -23,8 +23,7 @@ The two boards of step 13 are drawn and on `main`; they wait for the owner's yes
 ## In flight
 
 No open branch and no open pull request. `main` is green. Waiting for the owner: a yes to the two boards of step 13
-(`docs/design/previews/find-obstacles.png`, `find-by-hand.png`), and the permission to publish to the canvas, which holds
-17 boards: the two of session 6 (tablet; states and tools) and the two of session 7 are in the repo and not yet there.
+(`docs/design/previews/find-obstacles.png`, `find-by-hand.png`; on the canvas too).
 
 ## What the web app has today
 
@@ -77,9 +76,8 @@ changed; an export 0.2 to 0.9 s after a run.
 1. Phase 4, pull request 3: steps 14 and 15 to the boards of step 13, once the owner says yes to them, then the
    close of the phase (`plan/phase-04-plan.md`, "Done means"). Work order: `plan/resume/006-shading-memo-and-phase-4-rest.md`,
    second slice.
-2. Publish the four boards that the canvas lacks, when the owner allows it (see "In flight").
-3. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
-4. In parallel with any phase: the screens still to draw (Phase 0).
+2. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
+3. In parallel with any phase: the screens still to draw (Phase 0).
 
 ## Facts about this machine and setup
 
@@ -95,7 +93,7 @@ changed; an export 0.2 to 0.9 s after a run.
 | Baselines of the screens | `e2e/baselines/darwin`, made on this machine. Renew with `bun tools/with-node.ts playwright test <name> --update-snapshots` in `e2e/`, after looking at the new picture |
 | `bun check` | About 6 minutes here: pytest 119 s, the browser tests 330 s (1,152 of them) |
 | Esri key | In `apps/web/.env.local` as `NEXT_PUBLIC_ESRI_API_KEY`. Never read, print or commit the file. Referrers: `http://localhost:4700`, `http://127.0.0.1:4700`. Expires about 28 Sep 2027 |
-| Design canvas | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy (open to anyone with the link). 17 boards; `docs/design/mockups` holds 21. To add or change a board: read `project/canvas.json` of the canvas, then publish the board files and `canvas.json` to it with `root` on the mockups folder and the paths `project/<name>`. The publish is refused by the permission system until the owner allows it; it went through once on 2026-09-30 |
+| Design canvas | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy. 21 boards, the same as `docs/design/mockups`. To add or change a board: read the canvas itself (not only a file of it), then publish from a folder shaped `project/<name>` in the scratchpad: `root` that folder, `file_path` its `project/canvas.json`, the boards in `files` by their `project/` paths. A `file_path` outside such a folder lands at the root of the artifact, not under `project/`. The publish is refused by the permission system while the canvas is shared with the link; the owner made it private for the publishes of 2026-09-30 and shares it again after |
 | Design system | `docs/design/` |
 
 ## Open items (not blocking)
