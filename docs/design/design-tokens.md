@@ -391,6 +391,7 @@ layer of their own.
 | `--z-*` | `z-` and the name | `z-float` |
 | `--border-*` | `border-` and the name; `border-b-tab` for the line under a tab | `border-handle-touch desktop:border-handle`, `border-dot`, `border-corner`, `border-outline` |
 | `--shadow-text-on-imagery` | `on-imagery` | on text that stands on the satellite imagery |
+| `--x`, `--y`, `--turn` (numbers of the data, set with `measures()`) | `placed`, `turned` | a label of the stage where its point of the scene falls; the needle of the north control |
 
 Tailwind's own palette, sizes of type, radii and shadows do not exist in this app: a utility that is not made
 of a token makes no CSS.
@@ -399,7 +400,9 @@ A place or a width that follows the data (the handle of a slider at its value) i
 around it, from 0 to 1. The component sets it with `measures()` (`apps/web/components/ui/measures.ts`), which
 is the only inline style there is, and a utility reads it: `left-at` (`--at`), `w-span` and `h-span`
 (`--span`). A place on the screen that is worked out (where a tooltip or a list floats) is set the same
-way, in pixels: `placed` (`--x`, `--y`). A size, a colour or a shadow is never set this way.
+way, in pixels: `placed` (`--x`, `--y`); a turn that is worked out (the needle of the north control, by the
+camera's bearing) the same way, in degrees clockwise: `turned` (`--turn`). A size, a colour or a shadow is
+never set this way.
 
 States have variants of their own, so that the kit can show a state without a pointer or a keyboard:
 `hovered:` (under a pointer that can hover, or `data-shown-as="hover"`), `pressed:` (while pressed, or

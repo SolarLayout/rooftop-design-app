@@ -20,16 +20,19 @@ export type ViewState = {
   camera: CameraPreset;
   /** How many times a preset was asked for: the camera frames on each request, also of the same preset (Fit). */
   cameraRequest: number;
+  /** How many times north up was asked for: the camera turns on each request. */
+  northRequest: number;
   sunTime: SunTime;
   showLens: (lens: Lens) => void;
   setCamera: (camera: CameraPreset) => void;
+  turnNorthUp: () => void;
   setSunTime: (sunTime: SunTime) => void;
 };
 
 export type ViewStore = ReturnType<typeof createViewStore>;
 
 // As the approved mockups open: the first lens, in 3D, the design day at 10:30.
-const AT_THE_START = { lens: "roof", camera: "3d", cameraRequest: 0, sunTime: { day: "design_day", hour: 10.5 } } as const;
+const AT_THE_START = { lens: "roof", camera: "3d", cameraRequest: 0, northRequest: 0, sunTime: { day: "design_day", hour: 10.5 } } as const;
 
 function refuseWhatIsNoTime({ day, hour }: SunTime): void {
   if (!(hour >= 0 && hour <= 24)) throw new RangeError(`${hour} is no hour of a day: from 0 to 24.`);
@@ -43,6 +46,7 @@ export function createViewStore() {
     ...AT_THE_START,
     showLens: (lens) => set({ lens }),
     setCamera: (camera) => set((state) => ({ camera, cameraRequest: state.cameraRequest + 1 })),
+    turnNorthUp: () => set((state) => ({ northRequest: state.northRequest + 1 })),
     setSunTime(sunTime) {
       refuseWhatIsNoTime(sunTime);
       set({ sunTime });
@@ -53,4 +57,5 @@ export function createViewStore() {
 export const lensOf = (state: ViewState) => state.lens;
 export const cameraOf = (state: ViewState) => state.camera;
 export const cameraRequestOf = (state: ViewState) => state.cameraRequest;
+export const northRequestOf = (state: ViewState) => state.northRequest;
 export const sunTimeOf = (state: ViewState) => state.sunTime;

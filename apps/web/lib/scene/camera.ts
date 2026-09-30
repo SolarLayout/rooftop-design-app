@@ -19,6 +19,9 @@ export function sunDirectionOf({ elevationDeg, azimuthDeg }: Sun): SceneXYZ {
 /** The distance of the 3D view: the whole roof in the frame with room around it. */
 const fitDistance = (radius: number) => radius * 2.4;
 
+/** The room around the roof in the plan, as a share of its diameter. */
+const PLAN_ROOM = 1.15;
+
 /** The least height of the sun's eye, as a share of its distance: a sun on the horizon still looks down. */
 const LOWEST_SUN_EYE = 0.15;
 
@@ -44,4 +47,14 @@ export function nearAndFarOf(radius: number): { near: number; far: number } {
 /** How near and how far the orbit may go. */
 export function distanceLimitsOf(radius: number): { min: number; max: number } {
   return { min: Math.max(2, radius * 0.2), max: radius * 12 };
+}
+
+/** The zoom of the plan's camera, in pixels per metre: the roof's diameter with room around it fills the shorter side. */
+export function planZoomOf(radius: number, width: number, height: number): number {
+  return Math.min(width, height) / (2 * radius * PLAN_ROOM);
+}
+
+/** How near and how far the plan may zoom, about the zoom that fits: the orbit's range, in zoom. */
+export function zoomLimitsOf(fit: number): { min: number; max: number } {
+  return { min: fit / 12, max: fit * 5 };
 }

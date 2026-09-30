@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { distanceLimitsOf, nearAndFarOf, presetPositionOf } from "./camera";
+import { distanceLimitsOf, nearAndFarOf, planZoomOf, presetPositionOf, zoomLimitsOf } from "./camera";
 
 // Where the camera stands for each preset, from the roof's radius (plan decision 17, r3f-notes fixes 9
 // and 13). In three's metres: x east, y up, z south.
@@ -51,5 +51,17 @@ describe("the limits", () => {
   test("the orbit may come no nearer than a fifth of the radius and no farther than twelve times it", () => {
     expect(distanceLimitsOf(RADIUS)).toEqual({ min: RADIUS * 0.2, max: RADIUS * 12 });
     expect(distanceLimitsOf(1).min).toBe(2);
+  });
+});
+
+describe("the plan", () => {
+  test("its zoom fits the roof's diameter, with room around it, into the shorter side of the canvas", () => {
+    // 2 × 49.24 m with a fifteenth around, into 600 px: pixels per metre.
+    expect(planZoomOf(RADIUS, 1200, 600)).toBeCloseTo(600 / (2 * RADIUS * 1.15), 9);
+    expect(planZoomOf(RADIUS, 400, 900)).toBeCloseTo(400 / (2 * RADIUS * 1.15), 9);
+  });
+
+  test("the zoom may go no nearer than a fifth of the fit and no farther than twelve times it, as the orbit's distances", () => {
+    expect(zoomLimitsOf(5)).toEqual({ min: 5 / 12, max: 5 * 5 });
   });
 });

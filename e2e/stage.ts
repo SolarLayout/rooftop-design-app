@@ -13,15 +13,19 @@ export const STAGE: Pixel = [11, 14, 19];
 export const stage = (page: Page) => page.getByTestId("stage");
 export const sceneCanvas = (page: Page) => stage(page).locator("canvas");
 
+/** A place on the canvas as shares of its width and height, from its top left. */
+export type Share = readonly [xShare: number, yShare: number];
+
 /**
- * The colour of the canvas at a share of its width and height, from its top left: a picture of the canvas
- * as the screen shows it, read back through the page (a 2D canvas), so that no drawing buffer need be kept.
+ * The colours of the canvas at places given as shares of its width and height, from its top left: one
+ * picture of the canvas as the screen shows it, read back through the page (a 2D canvas), so that no
+ * drawing buffer need be kept. What stands over the canvas in the DOM is in the picture too.
  */
-export async function pixelAt(page: Page, xShare: number, yShare: number): Promise<Pixel> {
+export async function pixelsAt(page: Page, places: readonly Share[]): Promise<Pixel[]> {
   const picture = await sceneCanvas(page).screenshot({ type: "png" });
   return page.evaluate(
-    ([data, xShare, yShare]) =>
-      new Promise<[number, number, number]>((resolve, reject) => {
+    ([data, places]) =>
+      new Promise<[number, number, number][]>((resolve, reject) => {
         const image = new Image();
         image.onload = () => {
           const canvas = document.createElement("canvas");
@@ -30,14 +34,24 @@ export async function pixelAt(page: Page, xShare: number, yShare: number): Promi
           const context = canvas.getContext("2d");
           if (!context) return reject(new Error("No 2D context to read the picture with."));
           context.drawImage(image, 0, 0);
-          const [red, green, blue] = context.getImageData(Math.round((image.width - 1) * xShare), Math.round((image.height - 1) * yShare), 1, 1).data;
-          resolve([red, green, blue]);
+          resolve(
+            places.map(([xShare, yShare]) => {
+              const [red, green, blue] = context.getImageData(Math.round((image.width - 1) * xShare), Math.round((image.height - 1) * yShare), 1, 1).data;
+              return [red, green, blue];
+            }),
+          );
         };
         image.onerror = () => reject(new Error("The picture of the canvas could not be read."));
         image.src = `data:image/png;base64,${data}`;
       }),
-    [picture.toString("base64"), xShare, yShare] as const,
+    [picture.toString("base64"), places] as const,
   );
+}
+
+/** The colour of the canvas at a share of its width and height, from its top left. */
+export async function pixelAt(page: Page, xShare: number, yShare: number): Promise<Pixel> {
+  const [pixel] = await pixelsAt(page, [[xShare, yShare]]);
+  return pixel;
 }
 
 /** The colour at a place of the canvas once it satisfies `wanted`; the last read when it never does. */
@@ -53,6 +67,9 @@ export async function pixelOnce(page: Page, xShare: number, yShare: number, want
 
 /** Whether two colours are the same, give or take the rounding of a display. */
 export const isNear = ([r1, g1, b1]: Pixel, [r2, g2, b2]: Pixel, within = 6) => Math.abs(r1 - r2) <= within && Math.abs(g1 - g2) <= within && Math.abs(b1 - b2) <= within;
+
+/** The roof is the brightest thing on the stage; until the first frame is drawn the pixels are black. */
+export const isBright = ([red, green, blue]: Pixel) => Math.min(red, green, blue) > 120;
 
 /** The stage drawn with the roof on it: its text equivalent names the roof and the canvas is there. */
 export async function sceneShown(page: Page): Promise<void> {
