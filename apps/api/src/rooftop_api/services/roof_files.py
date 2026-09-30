@@ -3,6 +3,7 @@
 from rooftop_api import convert, schemas
 from rooftop_api.errors import UNPROCESSABLE, ApiError
 from rooftop_api.services.uploads import bytes_of, file_name
+from rooftop_core import geometry, project
 from rooftop_core.io import roof_import
 
 KML_ENDINGS = (".kmz", ".kml")
@@ -26,7 +27,28 @@ def import_roof(file: schemas.RoofFile) -> schemas.ImportedRoof:
         )
     except ValueError as error:
         raise ApiError(UNPROCESSABLE, "roof_file_unreadable", str(error), "base64") from error
-    return convert.imported_roof_from_engine(roof, name, [HEIGHTS_SET] if roof.missing_heights else [])
+    return convert.imported_roof_from_engine(
+        roof, name, [HEIGHTS_SET] if roof.missing_heights else [], _project_of(roof, name, file)
+    )
+
+
+def _project_of(roof: roof_import.ImportedRoof, name: str, file: schemas.RoofFile) -> schemas.Project:
+    """The whole document of the import, as /roof/from-map makes one: the roof from the file, everything
+    else at its default, named after the file (plan/phase-05-plan.md, decision 13)."""
+    whole = project.Project(
+        name=name[: name.rfind(".")] if "." in name else name,
+        roof=geometry.Roof(
+            outline=list(roof.outline),
+            lat=roof.lat,
+            lon=roof.lon,
+            source=roof.source,
+            obstacles=list(roof.obstacles),
+        ),
+    )
+    whole.roof_input["mode"] = "corners"
+    whole.roof_input["file"] = name
+    whole.roof_input["dxf_units"] = file.units
+    return convert.project_from_engine(whole)
 
 
 def _bytes(file: schemas.RoofFile, name: str) -> bytes:

@@ -48,9 +48,10 @@ def roof_from_engine(roof: geometry.Roof) -> schemas.Roof:
 
 
 def imported_roof_from_engine(
-    roof: roof_import.ImportedRoof, file: str, notes: list[str]
+    roof: roof_import.ImportedRoof, file: str, notes: list[str], whole: schemas.Project
 ) -> schemas.ImportedRoof:
     return schemas.ImportedRoof.model_construct(
+        project=whole,
         source=roof.source,
         file=file,
         outline=[_point(p) for p in roof.outline],

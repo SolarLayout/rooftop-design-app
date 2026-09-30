@@ -76,7 +76,8 @@ def test_a_kmz_gives_what_its_kml_gives(client):
     from_kml = client.post("/roof/import", json={"name": "roof.kml", "base64": _b64(KML.encode())}).json()
     from_kmz = client.post("/roof/import", json={"name": "roof.kmz", "base64": _b64(_kmz(KML))}).json()
 
-    assert from_kmz == {**from_kml, "file": "roof.kmz"}
+    project = {**from_kml["project"], "roof_input": {**from_kml["project"]["roof_input"], "file": "roof.kmz"}}
+    assert from_kmz == {**from_kml, "file": "roof.kmz", "project": project}
 
 
 def test_the_place_of_a_kml_comes_from_the_file_not_from_the_request(client):
@@ -192,6 +193,33 @@ def test_an_imported_roof_can_be_laid_out(client, light_demo):
     }
 
     response = client.post("/layout", json={**light_demo, "roof": roof})
+
+    assert response.status_code == 200
+    assert response.json()["readouts"]["positions"] > 50
+
+
+# The whole document of an imported roof (plan/phase-05-plan.md, decision 13), made as /roof/from-map makes
+# one: the roof from the file, everything else at the API's defaults, named after the file.
+def test_an_import_answers_the_whole_project_named_after_the_file(client):
+    body = client.post(
+        "/roof/import", json={"name": "warehouse-roof.kml", "base64": _b64(KML.encode())}
+    ).json()
+
+    project = body["project"]
+    assert project["name"] == "warehouse-roof"
+    assert project["roof"]["outline"] == body["outline"]
+    assert (project["roof"]["lat"], project["roof"]["lon"]) == (body["lat"], body["lon"])
+    assert project["roof"]["source"] == "kmz"
+    assert [o["name"] for o in project["roof"]["obstacles"]] == ["Tank", "Vent"]
+    assert project["system_voltage"] is None
+    assert project["roof_input"]["mode"] == "corners"
+    assert project["roof_input"]["file"] == "warehouse-roof.kml"
+
+
+def test_the_project_of_an_import_can_be_laid_out_as_it_is(client):
+    body = client.post("/roof/import", json={"name": "roof.kml", "base64": _b64(KML.encode())}).json()
+
+    response = client.post("/layout", json=body["project"])
 
     assert response.status_code == 200
     assert response.json()["readouts"]["positions"] > 50

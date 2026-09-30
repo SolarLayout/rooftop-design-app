@@ -5,6 +5,7 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, Field
 
 from rooftop_api.schemas.common import Input, Latitude, Longitude, Point
+from rooftop_api.schemas.project import Project
 from rooftop_api.schemas.roof import Obstacle
 
 MAX_BASE64 = 28_000_000
@@ -31,3 +32,6 @@ class ImportedRoof(BaseModel):
     obstacles: list[Obstacle]
     missing_heights: list[str] = Field(description="Names of the obstacles that got the height of 1.0 m")
     notes: list[str]
+    project: Project = Field(
+        description="The whole document: this roof, everything else at its default, named after the file"
+    )
