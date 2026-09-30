@@ -52,7 +52,9 @@ previous one remembers. Everything a session needs is in the repo.
 - Branch from `main`. One change per pull request. Test first.
 - A change to documents only goes to `main` directly (decision D26): commit, push, no pull request.
 - Use the test stack only (`bun dev:bg --profile test`); the dev stack is the owner's.
-- `bun check` before every commit. Push, open a pull request with `gh`, merge when the check is green.
+- `bun check` before every commit. A step whose inputs have not changed since it was last green is skipped and
+  the summary says so; `bun check --fresh` runs everything and rebuilds the caches. Push, open a pull request
+  with `gh`, merge when the check is green.
 - A new decision gets a number in `plan/README.md` in the same pull request that acts on it.
 - Show the owner each finished part with what was built, what was decided, and what needs approval.
 
