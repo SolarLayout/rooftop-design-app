@@ -213,6 +213,22 @@ Corner handle 18 (22 on touch), white with accent border; the corner being edite
 accent. Edge label: mono 13 on `color-ground`, radius 7. Outline: 2 px accent, fill accent at 9 %.
 Toolbar: floating, radius 18, the active tool is a primary button.
 
+In code (`apps/web/components/find`): `OutlineLayer` draws on the map (MapLibre layers painted in the tokens of
+the container; handles, midpoints and labels as markers), `OutlineTools` is the toolbar, `OutlinePanel` the
+edges, the switch and the tiles, `RoofTypeChoice` the roof type (cards on desktop, a segmented control on
+touch), `DetectedCallout` the callout of Detect building. Every rule of drawing is in
+`apps/web/lib/outline/outline-state.ts`, a reducer.
+- Every handle takes a press of 44 by 44 around it; the tools have one name on every size, the word shown may
+  be shorter on phone. The phone has no zoom buttons and no scale bar; its toolbar shows Corners, Rectangle,
+  Detect and Undo.
+- The handle that turns a rectangle stands 44 px above the middle of its top edge, on a stem; the turn snaps to
+  north within 3°.
+- On a coarse pointer a corner dragged has a loupe of 104 px, 92 above the finger, twice the imagery, a cross at
+  the corner.
+- The footprints that are known show at `--opacity-hint` while Detect building is the tool, with "© Overture
+  Maps Foundation, ODbL" under the imagery's attribution; the callout stands at the press.
+- The map says `aria-busy` while it moves; the panel's title and lead follow the step and the tool.
+
 ## Deliverable row (Handover)
 Row 64 high: format badge 44 by 28 (accent for the selected row), title, one line of facts, then a download
 icon (file) or a chevron (opens a view).
