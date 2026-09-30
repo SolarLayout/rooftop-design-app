@@ -31,7 +31,7 @@
 ## Writing
 
 - Sentence case everywhere. Section labels are uppercase by style, written in sentence case.
-- Plain words. Say what happens: "Kept clear", "Positions not used", "Energy is waiting for the system voltage".
+- Plain words. Say what happens: "Kept clear", "Positions not used", "Energy was not updated".
 - Buttons say what they do: "Build this roof", "Find my roof", "Download PDF". Not "OK", not "Submit".
 - A note says what is wrong and what to do: "Voc coefficient -0.164 %/°C is outside the usual -0.35 to
   -0.20 %/°C. Check the datasheet."
@@ -82,6 +82,9 @@
 | 640 to 1100 | Tablet | 834 by 1194 | Top bar | 3D on top, vitals grid, inspector in two columns |
 | over 1100 | Desktop | 1440 by 900 | Top bar | Rail, stage, inspector |
 
+- Inside a size nothing is laid out anew. Where the top bar is short of room, what is said elsewhere goes
+  first: under 820 Present and the word of Export, under 1360 the place of the design and the state of
+  saving. The name of the design is cut short last.
 - Touch targets are at least 44 by 44 on phone and tablet.
 - No horizontal page scroll at any width from 360 up. A row that must scroll sideways (vitals on phone) shows
   part of the next item so it is seen to scroll.

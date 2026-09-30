@@ -373,9 +373,27 @@ nothing to a screen reader: what is waited for is said in words beside it.
 | Updating | Every value at opacity 0.55. A turning ring of 16 beside the energy. The last cell, on `surface-1`, has the ring of 20 with its arc, "Updating energy" in Geist 500, 13, and the step of the engine in `text-caption` |
 | First load | Skeletons in every cell. The last cell has the ring of 20, "Opening" and the name of the project, and the step of the engine |
 | The run failed | The last good values, not dimmed. The last cell is a note: "Energy was not updated", "Values are of the design before · Try again". It opens the notes |
-| Before a system voltage, desktop | As drawn in `StringsLensNoVoltage.dc.html` |
-| Before a system voltage, tablet | Three cells in a row, 72 high: Roof, Positions, "If all were used". Under them, across the width, the note, 72 high, on `note-surface`: "Energy is waiting for the system voltage", "Choose 600, 1000 or 1500 V in the Strings lens", an arrow. It leads to the Strings lens |
-| Before a system voltage, phone | The note is the first card of the row: "Energy is waiting", "Choose a system voltage". Then Roof, Positions, "If all were used" |
+| Before a system voltage, desktop | Three cells, Roof, Positions, "If all were used", and the note on `note-surface`, in the words of the API: "Choose a system voltage to size the strings", "600, 1000 or 1500 V. Nothing is sized until you choose." It leads to the Strings lens |
+| Before a system voltage, tablet | The three cells in a row, 72 high. Under them, across the width, the note, 72 high, with the same words and an arrow |
+| Before a system voltage, phone | The note is the first card of the row, with the title of the API alone, on two lines. Then Roof, Positions, "If all were used" |
+
+In code: `Vitals` draws what `vitalsOf` (`components/shell/vitals-view.ts`) makes of the results and their
+status. It is one element, laid out for each size.
+
+- The words of what is waited for are the title and the message of `no_options` of the API, for each of its
+  reasons (decision D37). The web app writes none of its own.
+- The mark of DC/AC says what the engine says of the option: "In target", "Below the DC/AC target", "Above
+  the DC/AC target", "Heavy clipping".
+- No notes: the last cell has a tick of 20, "Nothing to review", "Every check of the design fits.", on the
+  surface of the bar. It opens the notes all the same.
+- In the last cell the first line may take two lines; the second is cut short with an ellipsis.
+- While the design itself is opened, before its name is known, the last cell says "Opening the design".
+- The run failed at the first load: the roof and the positions if the layout gave them, and the note "Energy
+  was not computed", "There are no values yet · Try again".
+- Phone: the row is Energy, DC capacity, DC/AC, Modules, AC capacity, PR, Yield, as `StudioPhone.dc.html`
+  begins it. The notes are a button of the top bar, not a card of the row. What is updated, what failed and
+  what is waited for is the first card of the row, 240 wide at the most.
+- Tablet: what is updated and what failed stand in the last place of the grid, as the notes do.
 
 ## Notes to review, the drawer
 Desktop and tablet: from the right, 384 wide, over the inspector, `color-chrome`, a line `line` at its left,
@@ -388,6 +406,23 @@ A note: `note-surface`, border `note-line`, radius `radius-row`, padding 14: the
 Nothing to review: one row on `surface-1` with a tick of 20: "Nothing to review", "Every check of the design
 fits."
 
+In code: `NotesDrawer`, and `NotesPanel` for what is seen of it; the notes are made by `notesOf`
+(`components/shell/notes-view.ts`).
+
+- It is the dialog of the browser, opened over everything (the top layer, not `z-sheet`): the focus goes to
+  the button that closes, stays inside, and goes back. Escape closes it, and a press beside it. On tablet and
+  desktop the screen behind it is not dimmed; on phone it is.
+- A note is there because the API gave it: the notes of the module, of the layout and of the weather, the
+  chosen option when its DC/AC is not in target, a call that failed. Its reason is in the words of the API,
+  with the true minus sign before a number.
+- The API gives no title. The title is what the note is about: its words before its first number or its verb
+  ("Voc coefficient", "Unit gap"), four at the most. A note that begins otherwise is named by where it came
+  from: "Module", "Layout", "Weather".
+- Where a note leads: module and layout to the Array lens, weather to Performance, the option to the Strings
+  lens. A call that failed has "Try again".
+- An action of a note closes the drawer.
+- It comes and goes without motion in this phase.
+
 ## Project switcher, open
 The trigger is on `surface-2` with a border `line`, its chevron turned. Panel: 340 wide, `surface-1`, border
 `line-strong`, radius `radius-card-s`, `shadow-float`, padding 6.
@@ -398,6 +433,17 @@ drawing (KMZ, KML, DXF), Save a copy (.rtd), Home. Sections are divided by a lin
 `text-section`.
 On phone and tablet it is a bottom sheet.
 
+In code: `ProjectSwitcher`; `ProjectTrigger` and `ProjectMenu` for what is seen of it.
+
+- The actions are a `menu`: the arrows go through its rows, Home and End to its ends. Open, the focus is on
+  its first row.
+- An action that comes with a later phase is shown and cannot be used (`aria-disabled`, opacity
+  `opacity-disabled`). It takes the focus, so that it is found. Today that is every action but Home.
+- The icons of the rows have the stroke of the navigation, 1.7; the board draws 1.8.
+- The place of the design, "18.52° N · 73.86° E", has two decimals, as the mockups have it. It is shown on
+  desktop from 1360 wide.
+- While no design is open, a skeleton stands in the place of the name.
+
 ## State of saving
 In the top bar on desktop, `text-small`, text-2; on tablet and phone in the project switcher only.
 
@@ -407,3 +453,25 @@ In the top bar on desktop, `text-small`, text-2; on tablet and phone in the proj
 | Saving | A turning ring of 12 | Saving |
 | Not kept: the demo, and every design before Phase 10 | A hollow dot of 7, 1.5 px in text-3 | Not kept on this device |
 | Could not be saved | A note of 16 | Not saved. It is a button and opens the notes |
+
+In code: `SaveState`. Before Phase 10 the shell shows "Not kept on this device" for every design. In the
+project switcher the words are `text-caption`.
+
+## Top bar and navigation
+As `Main.dc.html`, `StudioTablet.dc.html` and `StudioPhone.dc.html` draw them.
+
+In code: `TopBar`, `WorkspaceNav`, `TabBar`, `LensNav`, `Shell`, `Studio` (`components/shell`).
+
+- The shell is as high as the screen. The top bar and the tab bar stay; what is between them scrolls.
+- The workspaces and the lenses are places with an address, so they are links in a `nav`, and the one that is
+  open says so (`aria-current`). They look as the segmented control and the rail of the mockups.
+- The Studio is entered at the lens that was opened last.
+- On tablet a link of the workspaces is 36 high and takes the pointer 44 high.
+- Present comes with Phase 10. Until then it is shown and cannot be used: dimmed, without shadow, and its
+  tooltip says "Comes with Home and projects". It takes the focus. The phone has no Present.
+- Export is a link to Handover. It shows its icon alone on phone, and on tablet under 820 wide.
+- Where the top bar is short of room: `guidelines.md`, "Responsive rules".
+- The Layers button of the rail, the view controls and the time control belong to the stage and come with it
+  (Phase 5).
+- The inspector is a placeholder. It stands three times in the page, once for each size; how the real one is
+  mounted is decided with it (Phase 5).

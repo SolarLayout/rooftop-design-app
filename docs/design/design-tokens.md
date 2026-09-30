@@ -192,6 +192,8 @@ Base 2 px. Steps in use: 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48,
 |---|---|---|
 | `--breakpoint-tablet` | `640px` | Tablet from this width; phone below it |
 | `--breakpoint-desktop` | `1101px` | Desktop from this width: over 1100 |
+| `--breakpoint-tablet-wide` | `820px` | Inside tablet: from this width the top bar has room for Present and for the word of Export |
+| `--breakpoint-desktop-wide` | `1360px` | Inside desktop: from this width the top bar has room for the place of the design and for the state of saving |
 | `--size-topbar` | `56px` | Top bar height on desktop and phone |
 | `--size-topbar-tablet` | `60px` | Top bar height on tablet |
 | `--size-rail` | `72px` | Lens rail width |
@@ -334,7 +336,7 @@ layer of their own.
 | `--font-weight-*` | `font-regular`, `font-medium`, `font-semibold` | |
 | `--spacing` | every spacing and size utility, in steps | `gap-2`, `h-10`, `px-3.5` |
 | `--space-*`, `--size-*` | the same utilities, by name | `gap-row`, `p-panel`, `h-topbar`, `w-inspector`, `min-h-touch` |
-| `--breakpoint-*` | `tablet:`, `desktop:` | `desktop:flex` |
+| `--breakpoint-*` | `tablet:`, `desktop:`; inside them `tablet-wide:`, `desktop-wide:`, for the top bar | `desktop:flex` |
 | `--radius-*` | `rounded-` and the name | `rounded-control` |
 | `--shadow-*`, `--halo-*` | `shadow-` and the name | `shadow-raised`, `shadow-halo-focus`, `shadow-halo-selected` |
 | `--ring-focus`, `--ring-focus-offset` | `focus-ring` | on every control |

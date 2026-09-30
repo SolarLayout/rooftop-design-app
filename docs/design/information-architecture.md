@@ -16,14 +16,14 @@ separate screens, and there is no Run button.
 
 Studio, Performance and Handover are the three **workspaces**. They share one project and one top bar.
 
-## Always present (in the three workspaces)
+## What the three workspaces share
 
 | Element | Content | Behaviour |
 |---|---|---|
 | Top bar | Logo, project switcher with coordinates, workspace navigation, save state, Present, Export | Fixed. 56 px desktop, 60 px tablet, 56 px phone |
 | Workspace navigation | Studio, Performance, Handover | Segmented control in the top bar on desktop and tablet; bottom tab bar on phone |
-| Vitals | Energy year 1, DC capacity, AC capacity, DC/AC, modules used of positions, PR, yield, notes to review | Same values on every screen. Updates as results arrive |
-| Notes to review | Count and first note; opens the list | Exclamation mark, amber. Never a red cross |
+| Vitals | Energy year 1, DC capacity, AC capacity, DC/AC, modules used of positions, PR, yield, notes to review | In the Studio, as a bar of their own. Performance and Handover show the same values in their own places, as their mockups draw them. Updates as results arrive |
+| Notes to review | Count and first note; opens the list | In the vitals on desktop and tablet, a button of the top bar on phone. Exclamation mark, amber. Never a red cross |
 
 ## Studio
 
