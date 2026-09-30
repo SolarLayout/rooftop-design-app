@@ -12,6 +12,7 @@ from rooftop_core.project import Design, Project
 from rooftop_core.resources import SAMPLE_OND, SAMPLE_PAN, sample_path
 from tests.engine.same import assert_same_results
 from tests.equipment import fixture_path, fixture_text
+from tests.kept import KEPT
 
 pytestmark = pytest.mark.slow
 
@@ -58,11 +59,11 @@ def test_the_inverter_is_that_of_the_desktop_app_but_for_its_names():
 
 
 def test_both_pairs_give_the_same_results():
-    bundled = Design(small_project())
+    bundled = Design(small_project(), memo=KEPT)
     project = small_project()
     project.pan_path, project.pan_text = "Test.PAN", fixture_text("Test.PAN")
     project.ond_path, project.ond_text = "Test-S.ond", fixture_text("Test-S.ond")
-    desktop = Design(project)
+    desktop = Design(project, memo=KEPT)
 
     bundled.run_options()
     desktop.run_options()

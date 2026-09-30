@@ -87,13 +87,27 @@ def _no_network(monkeypatch: pytest.MonkeyPatch) -> None:
     _block_network(monkeypatch)
 
 
+@pytest.fixture(scope="session", autouse=True)
+def _the_api_keeps_its_results_with_the_tests() -> Iterator[None]:
+    """The API keeps its shadings and options in the memo of the session (tests/kept.py), so that a
+    design the engine tests ran is not worked out again for an API test of the same inputs, nor the
+    other way round. A test of a freshly started server gives the API a memo of its own."""
+    from rooftop_api.services import design as service
+    from tests.kept import KEPT
+
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setattr(service, "MEMO", KEPT)
+        yield
+
+
 @pytest.fixture(scope="session")
 def demo_design() -> "Design":
     """The Pune demo run once: layout, bundled weather, shading, options. Read only: never change it."""
     from rooftop_core.demo import demo_project
     from rooftop_core.project import Design
+    from tests.kept import KEPT
 
-    design = Design(demo_project())
+    design = Design(demo_project(), memo=KEPT)
     design.generate_layout()
     design.run_options()
     return design

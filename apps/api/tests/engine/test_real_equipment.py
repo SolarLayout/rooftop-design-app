@@ -13,6 +13,7 @@ from rooftop_core.geometry import Obstacle, Roof
 from rooftop_core.project import Design
 from rooftop_core.stringing import max_strings_per_inverter, strings_per_mppt
 from tests.equipment import fixture_text
+from tests.kept import KEPT
 
 pytestmark = pytest.mark.slow
 
@@ -30,7 +31,8 @@ def variant(name: str, line: str, changed: str) -> str:
 
 
 def design(pan: str | None = None, ond: str | None = None, volts: float = 1500.0, **texts: str) -> Design:
-    """The small roof at the site of the demo with the equipment named, run to the end."""
+    """The small roof at the site of the demo with the equipment named, run to the end. Its shading and
+    options are kept for the session: the same roof with the same equipment is not worked out again."""
     project = demo_project()
     project.roof = Roof(outline=rectangle(30.0, 14.0), lat=project.roof.lat, lon=project.roof.lon)
     project.roof.obstacles = [Obstacle("Tank", "cylinder", x=8.0, y=7.0, diameter=2.0, height=2.0)]
@@ -39,7 +41,7 @@ def design(pan: str | None = None, ond: str | None = None, volts: float = 1500.0
         project.pan_path, project.pan_text = pan, texts.get("pan_text") or fixture_text(pan)
     if ond:
         project.ond_path, project.ond_text = ond, texts.get("ond_text") or fixture_text(ond)
-    run = Design(project)
+    run = Design(project, memo=KEPT)
     run.run_options()
     return run
 
@@ -84,7 +86,7 @@ def test_a_bifacial_module_gains_by_its_own_factor(bifacial, bundled):
 def test_switching_the_rear_gain_off_gives_a_bifacial_module_none():
     project_off = design(pan=BIFACIAL).p
     project_off.losses.bifacial = False
-    off = Design(project_off)
+    off = Design(project_off, memo=KEPT)
     off.run_options()
 
     assert step(off.options[0], "Bifacial rear gain").pct == 0.0
@@ -192,7 +194,7 @@ def test_the_note_on_the_options_says_that_the_limit_is_not_known(central):
 def test_a_limit_entered_by_the_user_takes_the_place_of_the_missing_one():
     project = design(ond=CENTRAL).p
     project.imax_mppt_override = 30.0
-    run = Design(project)
+    run = Design(project, memo=KEPT)
     run.run_options()
 
     loads = readouts.mppt_loads(run, run.options[0])
