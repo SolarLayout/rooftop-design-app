@@ -219,9 +219,9 @@ test.describe("the run fails", () => {
 
     await expect(failed).toBeVisible({ timeout: RUN });
     await expect(failed).toContainText("There are no values yet · Try again");
-    // The layout answers in its own time.
+    // The layout answers in its own time, which is long while the server runs designs for other tests.
     await expect
-      .poll(() => valuesOf(vitals))
+      .poll(() => valuesOf(vitals), { timeout: RUN })
       .toEqual([
         ["Roof", "3,600 m²"],
         ["Positions", "790 modules"],

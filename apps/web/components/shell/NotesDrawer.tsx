@@ -20,7 +20,7 @@ type PanelProps = {
 // Phone: a bottom sheet. Tablet and desktop: from the right, as wide as the inspector, over it.
 const PANEL = classNames(
   "flex max-h-3/4 w-full flex-col rounded-t-panel border border-b-0 border-line bg-chrome",
-  "tablet:h-full tablet:max-h-none tablet:w-inspector tablet:rounded-none tablet:border-0 tablet:border-l tablet:shadow-drawer",
+  "tablet:max-h-none tablet:w-inspector tablet:rounded-none tablet:border-0 tablet:border-l tablet:shadow-drawer",
 );
 
 function NoteRow({ note, onClose, onTryAgain }: { note: Note } & Pick<PanelProps, "onClose" | "onTryAgain">) {
@@ -122,7 +122,8 @@ export function NotesDrawer({ open, onClose, ...panel }: Props) {
       }}
       className={classNames(
         "fixed inset-0 size-full max-h-none max-w-none items-end justify-end bg-transparent text-text outline-none",
-        "backdrop:bg-dim open:flex tablet:items-stretch tablet:backdrop:bg-transparent",
+        // On tablet and desktop it stands over the inspector, under the top bar.
+        "backdrop:bg-dim open:flex tablet:items-stretch tablet:pt-topbar-tablet tablet:backdrop:bg-transparent desktop:pt-topbar",
       )}
     >
       {open ? <NotesPanel {...panel} onClose={onClose} titleId={titleId} /> : null}

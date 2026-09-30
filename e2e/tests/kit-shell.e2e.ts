@@ -393,16 +393,17 @@ test.describe("Notes to review, the drawer", () => {
     return { opener, drawer, panel: drawer.getByTestId("notes-panel") };
   }
 
-  test("desktop and tablet: from the right, 384 wide, as high as the screen", async ({ page }, testInfo) => {
+  test("desktop and tablet: from the right, 384 wide, from under the top bar to the bottom", async ({ page }, testInfo) => {
     test.skip(isPhone(testInfo.project.name), "On phone it is a bottom sheet.");
     const { panel } = await opened(page);
     const box = await boxOf(panel);
     const screen = page.viewportSize()!;
+    const topBar = isDesktop(testInfo.project.name) ? 56 : 60;
 
     expect(box.width).toBe(384);
     expect(box.x + box.width).toBe(screen.width);
-    expect(box.y).toBe(0);
-    expect(box.height).toBe(screen.height);
+    expect(box.y).toBe(topBar);
+    expect(box.height).toBe(screen.height - topBar);
     await expect(panel).toHaveCSS("background-color", CHROME);
     await expect(panel).toHaveCSS("border-left-color", COLOUR.line);
     await expect(panel).toHaveCSS("box-shadow", /rgba\(0, 0, 0, 0\.5\) -16px 0px 40px/);
