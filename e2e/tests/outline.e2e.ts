@@ -1,5 +1,5 @@
 import type { Locator, Page } from "@playwright/test";
-import { A_MAP, findOpened, scaleLabel, searchField } from "../find";
+import { A_MAP, findOpened, scaleLabel, searchField, withTheFootprints } from "../find";
 import { expect, test } from "../fixtures";
 
 // Outlining the roof by corners (plan/phase-04-plan.md, step 7), on three sizes: the acceptance's 90.0 by
@@ -295,5 +295,80 @@ test.describe("by rectangle", () => {
 
     await expect(page.getByRole("button", { name: "Turn the rectangle" })).toHaveCount(0);
     await expect(tile(page, "Corners")).toHaveText("4");
+  });
+});
+
+test.describe("by Detect building", () => {
+  // A building of the fixture (one tile of Overture's release around Pune, tools/footprints.ts), a few
+  // metres west of the demo's place: four corners, 84 m².
+  const A_BUILDING = { east: -34, north: -11.3 };
+  // A yard of the fixture with no footprint over it.
+  const NOWHERE = { east: -22.6, north: 2.8 };
+
+  /** Detect building in hand, its tile there: a press on the building proposes its footprint. */
+  async function proposed(page: Page, centre: { cx: number; cy: number }) {
+    await page.getByRole("button", { name: "Detect building" }).click();
+    await expect(page.getByText("© Overture Maps Foundation, ODbL")).toBeVisible();
+    const callout = page.getByTestId("detected");
+    // The footprints are drawn once their tile is there: a press before that finds nothing and is pressed again.
+    await expect
+      .poll(
+        async () => {
+          await press(page, centre, A_BUILDING.east, A_BUILDING.north);
+          return (await callout.textContent().catch(() => "")) ?? "";
+        },
+        { timeout: A_MAP, intervals: [500, 1000] },
+      )
+      .toContain("Footprint found");
+    return callout;
+  }
+
+  test("the footprints that are known show while the tool is in hand, with their attribution; a press inside a building proposes its outline", async ({ page }) => {
+    const asked = await withTheFootprints(page);
+    const centre = await atTheRoof(page);
+
+    const callout = await proposed(page, centre);
+
+    await expect(callout).toContainText("Footprint found · 4 corners · 84 m²");
+    expect(asked.length).toBeGreaterThan(1);
+    await expect(callout).toContainText("From Overture Maps · approximate, about 0.6 m.");
+    await expect(corners(page)).toHaveCount(4);
+    await expect(tile(page, "Area")).toHaveText("84 m²");
+    await expect(tile(page, "Corners")).toHaveText("4");
+    // Every request of the archive was a range: the whole is never asked for.
+    expect(asked.every((range) => range.startsWith("bytes="))).toBe(true);
+
+    await callout.getByRole("button", { name: "Use this outline" }).click();
+
+    await expect(callout).toHaveCount(0);
+    await expect(corners(page)).toHaveCount(4);
+  });
+
+  test("Adjust keeps the footprint and takes the corners tool", async ({ page }) => {
+    await withTheFootprints(page);
+    const centre = await atTheRoof(page);
+    const callout = await proposed(page, centre);
+
+    await callout.getByRole("button", { name: "Adjust" }).click();
+
+    await expect(callout).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Corners" })).toHaveAttribute("aria-pressed", "true");
+    await expect(corners(page)).toHaveCount(4);
+    await expect(page.getByText("© Overture Maps Foundation, ODbL")).toHaveCount(0);
+  });
+
+  test("a press where nothing is known says so", async ({ page }) => {
+    await withTheFootprints(page);
+    const centre = await atTheRoof(page);
+    await proposed(page, centre);
+    await page.keyboard.press(process.platform === "darwin" ? "Meta+z" : "Control+z");
+    await expect(corners(page)).toHaveCount(0);
+
+    await press(page, centre, NOWHERE.east, NOWHERE.north);
+
+    const callout = page.getByTestId("detected");
+    await expect(callout).toContainText("No footprint known here");
+    await expect(callout).toContainText("Outline the roof by corners or by a rectangle instead.");
+    await expect(corners(page)).toHaveCount(0);
   });
 });

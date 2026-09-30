@@ -10,12 +10,14 @@ import { classNames } from "@/components/ui/class-names";
 import { ROOF_ZOOM } from "@/components/ui/design-numbers";
 import { Icon } from "@/components/ui/Icon";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
+import { FOOTPRINTS_ATTRIBUTION } from "@/lib/map/overture";
 import { mapStateOf } from "@/lib/map/map-state";
 import { outlineAfter, START } from "@/lib/outline/outline-state";
 import { latitudeOf, longitudeOf } from "@/lib/stores/project-store";
 import { MapButtons } from "./MapButtons";
+import { DetectedCallout } from "./DetectedCallout";
 import { NoMap } from "./NoMap";
-import type { Tool } from "./OutlineLayer";
+import type { Detected, Tool } from "./OutlineLayer";
 import { OutlinePanel } from "./OutlinePanel";
 import { OutlineTools } from "./OutlineTools";
 import type { MapView } from "./RoofMap";
@@ -32,10 +34,11 @@ const PROVIDER = esriProvider(KEY_OF_THE_APP);
 /** Before a roof is found the map shows India, where the first users are, from far. */
 const FROM_FAR: MapView = { lon: 78.5, lat: 21.5, zoom: 4 };
 
-const WORDS: Record<Step | "rectangle", { title: string; lead: string }> = {
+const WORDS: Record<Step | "rectangle" | "detect", { title: string; lead: string }> = {
   find: { title: "Find the roof", lead: "Search an address or a place, or paste coordinates or a maps link. The map flies to it." },
   outline: { title: "Outline the roof", lead: "Click each corner. Drag a corner to adjust it, or type a length you have measured." },
   rectangle: { title: "Outline the roof", lead: "Drag a box across the roof, then turn it to the building by its handle. Drag a corner to adjust it." },
+  detect: { title: "Outline the roof", lead: "Click inside the building. Where its footprint is known, it is proposed as the outline, to accept or adjust." },
   build: { title: "Build the roof", lead: "The roof rises in the Studio." },
 };
 
@@ -55,6 +58,7 @@ export function Find() {
   const [foundAt, setFoundAt] = useState<FoundPlace | null>(null);
   const [outline, on] = useReducer(outlineAfter, START);
   const [tool, setTool] = useState<Tool>("corners");
+  const [detected, setDetected] = useState<Detected | null>(null);
   // The map begins at the roof of the design that is open; without one, from far.
   const [view, setView] = useState<MapView>(() =>
     latitude === null || longitude === null ? FROM_FAR : { lon: longitude, lat: latitude, zoom: ROOF_ZOOM },
@@ -64,7 +68,7 @@ export function Find() {
     () => mapStateOf({ hasKey: PROVIDER !== null, hasWebGL: webGL ?? true, tilesFailed }),
     [webGL, tilesFailed],
   );
-  const words = WORDS[step === "outline" && tool === "rectangle" ? "rectangle" : step];
+  const words = WORDS[step === "outline" && tool !== "corners" ? tool : step];
   useOutlineKeys(step === "outline", on);
 
   /** A place was found: the map flies to it at roof zoom, and the outline can begin. */
@@ -89,7 +93,8 @@ export function Find() {
             view={view}
             onState={(at) => setTilesFailed(at === "failed")}
             onMap={setMap}
-            outline={{ state: outline, tool: step === "outline" ? tool : null, on }}
+            outline={{ state: outline, tool: step === "outline" ? tool : null, on, onDetected: setDetected }}
+            moreAttribution={step === "outline" && tool === "detect" ? FOOTPRINTS_ATTRIBUTION : null}
             className="h-full"
           />
         ) : state.kind !== "ready" ? (
@@ -108,7 +113,29 @@ export function Find() {
         {/* The phone has no buttons: the map is pinched and turned by hand. */}
         <MapButtons map={map} className="pointer-events-auto absolute right-5 bottom-7 hidden tablet:flex desktop:right-0" />
         {step === "outline" ? (
-          <OutlineTools state={outline} tool={tool} onTool={setTool} on={on} className="pointer-events-auto absolute bottom-16 left-1/2 -translate-x-1/2 tablet:bottom-22 desktop:bottom-7" />
+          <OutlineTools
+            state={outline}
+            tool={tool}
+            onTool={(taken) => {
+              setTool(taken);
+              setDetected(null);
+            }}
+            on={on}
+            className="pointer-events-auto absolute bottom-16 left-1/2 -translate-x-1/2 tablet:bottom-22 desktop:bottom-7"
+          />
+        ) : null}
+        {detected ? (
+          <div className="pointer-events-auto">
+            <DetectedCallout
+              detected={detected}
+              onUse={() => setDetected(null)}
+              onAdjust={() => {
+                setDetected(null);
+                setTool("corners");
+              }}
+              onClose={() => setDetected(null)}
+            />
+          </div>
         ) : null}
       </div>
 

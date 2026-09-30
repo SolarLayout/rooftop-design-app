@@ -5,19 +5,24 @@ import { Marker, type Map as MapLibre, type MapMouseEvent, type MapTouchEvent } 
 import { useEffect, useRef } from "react";
 import { classNames } from "@/components/ui/class-names";
 import { shown } from "@/components/ui/number-entry";
+import { footprintOutline, FOOTPRINTS_LAYER, FOOTPRINTS_URL, FOOTPRINTS_ZOOM } from "@/lib/map/overture";
 import { metresPerPixel } from "@/lib/map/scale-bar";
 import { frameAt, toLonLat, toMetres, type Frame, type LonLat } from "@/lib/outline/frame";
-import { centroidOf, midpointsOf, type XY } from "@/lib/outline/measure";
+import { areaOf, centroidOf, midpointsOf, type XY } from "@/lib/outline/measure";
 import { turnedAbout } from "@/lib/outline/rectangle";
 import type { OutlineEvent, OutlineState } from "@/lib/outline/outline-state";
 
 export type Tool = "corners" | "rectangle" | "detect";
+
+/** What a press with Detect building found, and where on the screen it was. */
+export type Detected = { at: { x: number; y: number } } & ({ found: true; corners: number; area: number } | { found: false });
 
 export type OutlineProps = {
   state: OutlineState;
   /** The tool in hand; null while there is none, before a roof is found. */
   tool: Tool | null;
   on: (event: OutlineEvent) => void;
+  onDetected?: (detected: Detected) => void;
 };
 
 type Props = OutlineProps & { map: MapLibre };
@@ -25,6 +30,11 @@ type Props = OutlineProps & { map: MapLibre };
 const SOURCE = "outline";
 const FILL = "outline-fill";
 const LINE = "outline-line";
+const FOOTPRINTS = "footprints";
+const FOOTPRINTS_FILL = "footprints-fill";
+const FOOTPRINTS_LINE = "footprints-line";
+// The dashes of a footprint's line, in widths of the line.
+const FOOTPRINT_DASHES = [3, 2];
 
 // The handle of a corner: 18 (22 on touch) inside a target of 44, white with an accent line.
 const TARGET = "flex size-touch cursor-grab items-center justify-center rounded-full focus-ring";
@@ -91,15 +101,15 @@ function lonLatOf(frame: Frame, point: XY): [number, number] {
  * the handles of the corners and the midpoints, the labels of the edges (markers), and what a press on
  * the map does. Every rule of drawing is in the reducer; this only draws and reports.
  */
-export function OutlineLayer({ map, state, tool, on }: Props) {
+export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
   const corners = useRef<Marker[]>([]);
   const midpoints = useRef<Marker[]>([]);
   const labels = useRef<Marker[]>([]);
   const turn = useRef<Marker | null>(null);
   const isDragging = useRef(false);
-  const latest = useRef({ state, tool, on });
+  const latest = useRef({ state, tool, on, onDetected });
   useEffect(() => {
-    latest.current = { state, tool, on };
+    latest.current = { state, tool, on, onDetected };
   });
 
   // The layers, once.
@@ -126,12 +136,54 @@ export function OutlineLayer({ map, state, tool, on }: Props) {
     if (source && "setData" in source) (source as { setData: (data: FeatureCollection) => void }).setData(geoJsonOf(state.frame, state.corners, state.closed, stem));
   }, [map, state]);
 
-  // A press on the map places a corner; the first press begins the frame where it is.
+  // While Detect building is the tool, the footprints that are known show faintly.
+  useEffect(() => {
+    if (tool !== "detect") return;
+    map.addSource(FOOTPRINTS, { type: "vector", url: `pmtiles://${FOOTPRINTS_URL}`, minzoom: FOOTPRINTS_ZOOM, maxzoom: FOOTPRINTS_ZOOM });
+    const accent = tokenOf(map, "--color-accent");
+    const opacity = parseFloat(tokenOf(map, "--opacity-hint"));
+    map.addLayer(
+      { id: FOOTPRINTS_FILL, type: "fill", source: FOOTPRINTS, "source-layer": FOOTPRINTS_LAYER, paint: { "fill-color": accent, "fill-opacity": opacity / 2 } },
+      FILL,
+    );
+    map.addLayer(
+      {
+        id: FOOTPRINTS_LINE,
+        type: "line",
+        source: FOOTPRINTS,
+        "source-layer": FOOTPRINTS_LAYER,
+        paint: { "line-color": accent, "line-opacity": opacity, "line-width": parseFloat(tokenOf(map, "--border-dot")), "line-dasharray": FOOTPRINT_DASHES },
+      },
+      FILL,
+    );
+    return () => {
+      if (map.getLayer(FOOTPRINTS_LINE)) map.removeLayer(FOOTPRINTS_LINE);
+      if (map.getLayer(FOOTPRINTS_FILL)) map.removeLayer(FOOTPRINTS_FILL);
+      if (map.getSource(FOOTPRINTS)) map.removeSource(FOOTPRINTS);
+    };
+  }, [map, tool]);
+
+  // A press on the map places a corner, or proposes the footprint under it; the first press begins the frame where it is.
   useEffect(() => {
     function onClick(event: MapMouseEvent) {
-      const { state: now, tool: inHand, on: tell } = latest.current;
-      if (inHand !== "corners" || now.closed) return;
+      const { state: now, tool: inHand, on: tell, onDetected: found } = latest.current;
       const at: LonLat = { lon: event.lngLat.lng, lat: event.lngLat.lat };
+      if (inHand === "detect") {
+        const [feature] = map.getLayer(FOOTPRINTS_FILL) ? map.queryRenderedFeatures(event.point, { layers: [FOOTPRINTS_FILL] }) : [];
+        const footprint = feature ? footprintOutline(feature.geometry) : null;
+        if (!footprint) {
+          found?.({ found: false, at: { x: event.point.x, y: event.point.y } });
+          return;
+        }
+        // The frame of an outline is one: a footprint joins the frame that is, or begins one at its centre.
+        const frame = now.frame ?? footprint.frame;
+        if (!now.frame) tell({ type: "began", at: frame.centre });
+        const corners = now.frame ? footprint.corners.map((corner) => toMetres(frame, toLonLat(footprint.frame, corner))) : footprint.corners;
+        tell({ type: "footprintTaken", corners });
+        found?.({ found: true, corners: corners.length, area: areaOf(corners), at: { x: event.point.x, y: event.point.y } });
+        return;
+      }
+      if (inHand !== "corners" || now.closed) return;
       const frame = now.frame ?? frameAt(at);
       if (!now.frame) tell({ type: "began", at });
       tell({ type: "placed", at: toMetres(frame, at), metresPerPx: metresPerPixel(map.getCenter().lat, map.getZoom()), touch: isCoarse() });
@@ -194,7 +246,7 @@ export function OutlineLayer({ map, state, tool, on }: Props) {
 
   // The cursor says what a press does.
   useEffect(() => {
-    const draws = (tool === "corners" && !state.closed) || (tool === "rectangle" && state.corners.length === 0);
+    const draws = (tool === "corners" && !state.closed) || (tool === "rectangle" && state.corners.length === 0) || tool === "detect";
     map.getCanvas().style.cursor = draws ? "crosshair" : "";
   }, [map, tool, state.closed, state.corners.length]);
 

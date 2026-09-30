@@ -1,6 +1,7 @@
 "use client";
 
-import { Map as MapLibre, setWorkerUrl, type ErrorEvent } from "maplibre-gl";
+import { addProtocol, Map as MapLibre, setWorkerUrl, type ErrorEvent } from "maplibre-gl";
+import { Protocol } from "pmtiles";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef, useState } from "react";
 import { classNames } from "@/components/ui/class-names";
@@ -23,6 +24,8 @@ type Props = {
   onMap?: (map: MapLibre) => void;
   /** The outline drawn on the map, and the tool in hand. */
   outline?: OutlineProps;
+  /** A second line of attribution, for what else is shown on the map. */
+  moreAttribution?: string | null;
   className?: string;
 };
 
@@ -32,6 +35,8 @@ const MAX_ZOOM = 21.5;
 // The worker of MapLibre is served by the app (tools/vendor-maplibre.ts): under Next's bundler it cannot
 // find its own file. Set once, before the first map.
 setWorkerUrl("/maplibre-gl/maplibre-gl-worker.mjs");
+// The footprints come as one archive read by ranges (lib/map/overture.ts): the protocol that reads it.
+addProtocol("pmtiles", new Protocol().tile);
 // The phone board has no scale bar; the toolbar takes its room there.
 const SCALE_BAR = "hidden flex-col gap-0.75 tablet:flex";
 
@@ -40,7 +45,7 @@ const SCALE_BAR = "hidden flex-col gap-0.75 tablet:flex";
  * and north buttons are placed by the screen (`MapButtons`). The colours of what it draws come from
  * the tokens of its container.
  */
-export function RoofMap({ imagery, view, onState, onMap, outline, className }: Props) {
+export function RoofMap({ imagery, view, onState, onMap, outline, moreAttribution, className }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<MapLibre | null>(null);
   const [scale, setScale] = useState<ScaleBar | null>(null);
@@ -148,7 +153,10 @@ export function RoofMap({ imagery, view, onState, onMap, outline, className }: P
           </div>
         ) : null}
         {/* On desktop the toolbar stands beside it: the words wrap into a narrow column. */}
-        <p className="type-label-s text-text-on-imagery on-imagery desktop:max-w-44">{imagery.attribution}</p>
+        <p className="type-label-s text-text-on-imagery on-imagery desktop:max-w-44">
+          {imagery.attribution}
+          {moreAttribution ? <span className="block">{moreAttribution}</span> : null}
+        </p>
       </div>
     </div>
   );

@@ -20,7 +20,7 @@ type Props = {
 const TOOLS: { id: Tool; name: string; short: string; icon: IconName; comesWith: string | null }[] = [
   { id: "corners", name: "Corners", short: "Corners", icon: "corners", comesWith: null },
   { id: "rectangle", name: "Rectangle", short: "Rectangle", icon: "rectangle", comesWith: null },
-  { id: "detect", name: "Detect building", short: "Detect", icon: "detect", comesWith: "Comes with step 10 of the phase" },
+  { id: "detect", name: "Detect building", short: "Detect", icon: "detect", comesWith: null },
 ];
 
 const BAR = "flex items-center gap-1 rounded-card border border-line bg-surface-1 p-1.5 whitespace-nowrap shadow-float";
@@ -36,6 +36,8 @@ export function OutlineTools({ state, tool, onTool, on, className }: Props) {
             key={id}
             kind={id === tool ? "primary" : "quiet"}
             size="l"
+            // The phone shows a shorter word; the name is the same on every size.
+            aria-label={name}
             aria-pressed={id === tool}
             aria-disabled={comesWith ? "true" : undefined}
             onClick={() => (comesWith ? undefined : onTool(id))}

@@ -251,6 +251,27 @@ describe("the rectangle tool", () => {
   });
 });
 
+describe("a footprint detected", () => {
+  test("taken as the outline: closed, a step, a polygon like any other", () => {
+    const corners: XY[] = [{ x: -30, y: -10 }, { x: 30, y: -12 }, { x: 31, y: 15 }, { x: 0, y: 20 }, { x: -29, y: 14 }];
+
+    const taken = after(START, { type: "began", at: PUNE }, { type: "footprintTaken", corners });
+
+    expect(taken.corners).toEqual(corners);
+    expect(taken.closed).toBe(true);
+    expect(taken.rectangle).toBeNull();
+    expect(taken.history.past).toHaveLength(1);
+    expect(measurementsOf(taken).corners).toBe(5);
+    expect(outlineAfter(taken, { type: "undone" }).corners).toEqual([]);
+  });
+
+  test("fewer than three corners are no footprint", () => {
+    const state = after(START, { type: "began", at: PUNE });
+
+    expect(outlineAfter(state, { type: "footprintTaken", corners: [{ x: 0, y: 0 }, { x: 1, y: 1 }] })).toBe(state);
+  });
+});
+
 describe("typed lengths", () => {
   test("a length typed into an edge corrects the outline; squared, the rectangle stays one", () => {
     const state = outlineAfter(placed(...RECTANGLE), { type: "close" });
