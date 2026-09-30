@@ -11,7 +11,7 @@ is written for it: the owner asks for one when he wants it.
 
 | Phase | Status | Notes |
 |---|---|---|
-| 0 Design | Direction approved. 17 boards drawn and approved | More screens to draw, listed in `phase-00-design.md`. The canvas is behind the repo by three boards, see "Open items" |
+| 0 Design | Direction approved. 17 boards drawn and approved | More screens to draw, listed in `phase-00-design.md`. The canvas and the repo hold the same boards |
 | 1 Foundation | Done, merged (PR #1) | |
 | 2 Engine and API | Done (PR #7, PRs #11 to #23) | What exists, what was decided, what was found: `phase-02-engine-api.md`, "As built" |
 | 3 Design system and shell | Done (PRs #24 to #33) | What exists, what was decided, what was found: `phase-03-design-system-shell.md`, "As built". How its second half was built: `phase-03-rest-plan.md` |
@@ -21,8 +21,8 @@ is written for it: the owner asks for one when he wants it.
 
 No open branch and no open pull request. `main` is green.
 
-Two things wait for the owner, and block nothing: the design canvas (three boards behind the repo), and a
-look at decisions D38 and D39, which session 5 took itself. See "Open items".
+One thing waits for the owner, and blocks nothing: a look at decisions D38 and D39, which session 5 took
+itself. See "Open items".
 
 ## What the web app has today
 
@@ -82,14 +82,13 @@ changed; an export 0.2 to 0.9 s after a run.
 | Baselines of the screens | `e2e/baselines/darwin`, made on this machine. Renew with `bun tools/with-node.ts playwright test <name> --update-snapshots` in `e2e/`, after looking at the new picture |
 | `bun check` | About 7 minutes here: pytest 152 s, the browser tests 240 s (1,025 of them) |
 | Esri key | In `apps/web/.env.local` as `NEXT_PUBLIC_ESRI_API_KEY`. Never read, print or commit the file. Referrers: `http://localhost:4700`, `http://127.0.0.1:4700`. Expires about 28 Sep 2027 |
-| Design canvas | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy (open to anyone with the link). 16 boards. To add or change a board: read `project/canvas.json` of the canvas, then publish the board and the index to it. A publish needs the owner's permission |
+| Design canvas | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy (open to anyone with the link). 17 boards, the same as `docs/design/mockups`. To add or change a board: read `project/canvas.json` of the canvas, then publish the board and the index to it, from a folder shaped as `project/<name>`. The publish went through on 2026-09-30 when the owner asked for it |
 | Design system | `docs/design/` |
 
 ## Open items (not blocking)
 
 | Item | Where it belongs |
 |---|---|
-| The design canvas is behind the repo by three boards. The board of Tabs is approved (D35) and missing: the permission system refused the publish on 2026-09-29 ("Expose Local Services"). The boards "Shell states" and "Strings lens, no system voltage yet" have the words of before decision D37. Four files go to the canvas: `docs/design/mockups/Tabs.dc.html`, `ShellStates.dc.html` and `StringsLensNoVoltage.dc.html`, each as `project/<name>`, and `docs/design/mockups/canvas.json` as `project/canvas.json`. After it, the owner shares the canvas again if it became private, and the note in `docs/design/README.md` is taken out | The owner: he allows the publish to the artifact and tells a session to do it, or publishes it himself |
 | Decisions D38 (the vitals bar is in the Studio only) and D39 (two widths where the top bar gives way) were taken by session 5, not by the owner | The owner, when he looks at the shell. If he overrules one, it is changed in `plan/README.md` and in the shell |
 | Shown and cannot be used, each until its phase: Present (Phase 10); in the project switcher New design and Import a drawing (Phase 4), Open a project and Save a copy (Phase 9 or 10) | The phase that builds each makes it a link or a button |
 | The shell has no toaster: nothing says anything yet. `Toaster` takes a `className`; on phone the toasts stand above the tab bar (`bottom-tabbar`) | The first phase that has something to say |

@@ -21,14 +21,16 @@ pull request (#33), and closed the phase. The state of the project is in `plan/S
 | 10 | Step 16, the browser tests of the shell and its baselines | #33, `4484739`, `3faa653` |
 | 11 | The previews of the two boards that D37 changed | #33, `0c24a20` |
 | 12 | The close of the phase: "As built", status, state, this record | straight to `main` |
+| 13 | The three boards to the canvas, at the owner's word: Tabs, and the two corrected for D37 | the canvas; the documents straight to `main` |
 
 ## How the owner steered the session
 
-The owner wrote twice (`owner-messages.md`): the work order, and one answer.
+The owner wrote three times (`owner-messages.md`): the work order, one answer, and one order after the close.
 
 | He was asked | He said | What was done |
 |---|---|---|
 | Which words the vitals show before a system voltage: the API's, the board's, or the board's first line over the API's title. Asked with the three side by side, after the question had stood in the report of step 11 | The API's words | Decision D37. The two boards and their previews were corrected |
+| (not asked) | "fix the boards for parity" | The three boards that the canvas lacked were published to it, with the index. The permission system let it through this time |
 
 ## Why things are the way they are
 
@@ -87,9 +89,8 @@ Reasons that are not obvious from the code or the plan.
    design, Open a project, Import a drawing, Save a copy). Each waits for its phase.
 4. **The check of a pull request** took 4 min 27 s to 6 min 29 s in this session; the mark is 6 min 30 s.
    See `plan/STATE.md`, "Open items".
-5. **The design canvas** shows three things of before: the board of Tabs is missing, and the boards "Shell
-   states" and "Strings lens, no system voltage yet" have the words of before D37. A publish needs the
-   owner's permission.
+5. **The design canvas** holds the same 17 boards as the repo, since the owner asked for it at the end of
+   the session.
 
 ## Agents used
 
