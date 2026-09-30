@@ -42,6 +42,12 @@ const STROKED = {
       <path d="M5 10v9h14v-9" />
     </>
   ),
+  search: (
+    <>
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-3.5-3.5" />
+    </>
+  ),
   strings: <path d="M13 2 4 14h7l-1 8 9-12h-7z" />,
   studio: (
     <>

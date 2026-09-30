@@ -520,11 +520,12 @@ test.describe("Project switcher", () => {
     await expect(menu.getByRole("menuitem").first().locator("svg")).toHaveCSS("width", "18px");
   });
 
-  test("Home leads home; what comes with a later phase is shown and cannot be used", async ({ page }) => {
+  test("Home leads home, New design to the map; what comes with a later phase is shown and cannot be used", async ({ page }) => {
     const menu = example(page, "switcher-open").getByTestId("project-menu");
 
     await expect(menu.getByRole("menuitem", { name: "Home" })).toHaveAttribute("href", "/");
-    for (const name of ["New design", "Open a project", "Import a drawing", "Save a copy"]) {
+    await expect(menu.getByRole("menuitem", { name: "New design" })).toHaveAttribute("href", "/find");
+    for (const name of ["Open a project", "Import a drawing", "Save a copy"]) {
       const row = menu.getByRole("menuitem", { name });
       await expect(row).toHaveAttribute("aria-disabled", "true");
       await expect(row).toHaveCSS("opacity", "0.45");
@@ -572,6 +573,8 @@ test.describe("Project switcher", () => {
     await trigger.click();
     const menu = page.getByRole("menu", { name: "Project" }).and(page.locator("[popover] *"));
 
+    // The second row, Open a project, comes with a later phase.
+    await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
 
     await expect(menu).toBeVisible();

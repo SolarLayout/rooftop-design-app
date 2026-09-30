@@ -54,7 +54,7 @@ type Action = { name: string; icon: IconName; fact?: string; href?: string };
 
 // What has no address comes with a later phase: it is shown and cannot be used.
 const ACTIONS: Action[] = [
-  { name: "New design", icon: "plus", fact: "Find the roof" },
+  { name: "New design", icon: "plus", fact: "Find the roof", href: "/find" },
   { name: "Open a project", icon: "folder", fact: ".rtd" },
   { name: "Import a drawing", icon: "upload", fact: "KMZ, KML, DXF" },
   { name: "Save a copy", icon: "download", fact: ".rtd" },

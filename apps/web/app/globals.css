@@ -182,6 +182,7 @@
   --size-inspector: 384px;
   --size-handover-list: 440px;
   --size-find-panel: 380px;
+  --size-find-stage-inset: 424px;
   --size-vitals: 78px;
   --size-tabbar: 72px;
   --size-touch: 44px;
@@ -305,6 +306,7 @@
   --shadow-track: inset 0 1px 3px rgba(0,0,0,.45);
   --shadow-knob: 0 1px 3px rgba(0,0,0,.5);
   --shadow-handle: 0 2px 6px rgba(0,0,0,.6);
+  --shadow-text-on-imagery: 0 1px 3px rgba(0,0,0,.9);
   --halo-focus: 0 0 0 3px rgba(255,176,32,.18);
   --halo-selected: 0 0 0 3px rgba(255,176,32,.14);
   --halo-saved: 0 0 0 0 rgba(61,214,160,.5);
@@ -345,6 +347,7 @@
   --spacing-inspector: var(--size-inspector);
   --spacing-handover-list: var(--size-handover-list);
   --spacing-find-panel: var(--size-find-panel);
+  --spacing-find-stage-inset: var(--size-find-stage-inset);
   --spacing-vitals: var(--size-vitals);
   --spacing-tabbar: var(--size-tabbar);
   --spacing-touch: var(--size-touch);
@@ -430,6 +433,7 @@
   --shadow-track: var(--shadow-track);
   --shadow-knob: var(--shadow-knob);
   --shadow-handle: var(--shadow-handle);
+  --shadow-text-on-imagery: var(--shadow-text-on-imagery);
   --shadow-halo-focus: var(--halo-focus);
   --shadow-halo-selected: var(--halo-selected);
   --shadow-halo-saved: var(--halo-saved);
@@ -763,6 +767,11 @@
   left: var(--x);
   top: var(--y);
   margin: 0;
+}
+
+/* Text that stands on the satellite imagery is read against whatever is under it. */
+@utility on-imagery {
+  text-shadow: var(--shadow-text-on-imagery);
 }
 
 @utility stroke-icon {
