@@ -31,6 +31,9 @@ export type SunRequest = Requests["SunRequest"];
 export type WeatherRequest = Requests["WeatherRequest"];
 
 export type ModuleResponse = Answers["ModuleResponse"];
+export type Module = Answers["Module"];
+export type Coefficients = Answers["Coefficients"];
+export type Equipment = Answers["Equipment"];
 export type InverterResponse = Answers["InverterResponse"];
 export type ImportedRoof = Answers["ImportedRoof"];
 export type RoofOnMap = Answers["RoofOnMap"];
