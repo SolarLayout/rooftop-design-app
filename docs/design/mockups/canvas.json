@@ -121,6 +121,20 @@
    "w": 1440,
    "h": 908,
    "title": "Tabs"
+  },
+  "LocateTablet.dc.html": {
+   "h": 1194,
+   "title": "Find and outline · tablet 834",
+   "w": 834,
+   "x": 3510,
+   "y": 1300
+  },
+  "LocateStates.dc.html": {
+   "h": 2320,
+   "title": "Find and outline, states and tools",
+   "w": 1440,
+   "x": 1520,
+   "y": 8646
   }
  },
  "createdOnFiles": {
@@ -198,7 +212,9 @@
   "Handover.dc.html",
   "Controls2.dc.html",
   "ShellStates.dc.html",
-  "Tabs.dc.html"
+  "Tabs.dc.html",
+  "LocateTablet.dc.html",
+  "LocateStates.dc.html"
  ],
  "pages": [],
  "title": "SolarLayout Rooftop — Web Design"

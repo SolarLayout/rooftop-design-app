@@ -40,7 +40,8 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 |---|---|---|---|
 | Information architecture | `Map.dc.html` | `ia-map.png` | |
 | Home | `Home.dc.html` | `home-desktop.png` | desktop |
-| Find and outline | `Locate.dc.html`, `LocatePhone.dc.html` | `find-outline-desktop.png`, `find-outline-phone.png` | desktop, phone |
+| Find and outline | `Locate.dc.html`, `LocatePhone.dc.html`, `LocateTablet.dc.html` | `find-outline-desktop.png`, `find-outline-phone.png`, `find-outline-tablet.png` | desktop, phone, tablet |
+| Find and outline, states and tools | `LocateStates.dc.html` | `find-outline-states.png` | |
 | Studio, Roof lens | `RoofLens.dc.html` | `studio-roof-lens-desktop.png` | desktop |
 | Studio, Array lens | `Main.dc.html`, `StudioTablet.dc.html`, `StudioPhone.dc.html` | `studio-desktop.png`, `studio-tablet.png`, `studio-phone.png` | desktop, tablet, phone |
 | Studio, Sun lens | `SunLens.dc.html` | `studio-sun-lens-desktop.png` | desktop |
@@ -67,5 +68,7 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
 - `mockups/build_phase3_boards.py` writes the two boards of round 4, "Controls, part 2" and "Shell states",
   approved on 2026-09-29 (decision D32), and the board "Tabs", approved the same day (decision D35). It is
   kept so that the boards can be written again.
+- `mockups/build_phase4_boards.py` writes the two boards of Phase 4, "Find and outline" on tablet and "Find and outline,
+  states and tools", drawn on 2026-09-30 by session 6 (`plan/phase-04-plan.md`, step 0).
 - `mockups/canvas.json` is the layout of the boards on the canvas. The canvas and the repo hold the same
   17 boards since 2026-09-30.
