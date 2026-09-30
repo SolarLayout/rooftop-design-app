@@ -1,0 +1,47 @@
+// Where the camera stands and how far it may go, from the roof's radius (plan/phase-05-plan.md,
+// decision 17; plan/reference/r3f-notes.md, fixes 9 and 13). In three's metres: x east, y up, z south.
+import type { CameraPreset } from "../stores/view-store";
+import type { SceneXYZ } from "./adapter";
+
+/** The sun as the API gives it: above the horizon, clockwise from north. */
+export type Sun = { elevationDeg: number; azimuthDeg: number };
+
+const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
+
+/** The unit vector toward the sun, in three's metres. */
+export function sunDirectionOf({ elevationDeg, azimuthDeg }: Sun): SceneXYZ {
+  const elevation = toRadians(elevationDeg);
+  const azimuth = toRadians(azimuthDeg);
+  // East is sin of the azimuth, north its cos; north is minus z.
+  return [Math.cos(elevation) * Math.sin(azimuth), Math.sin(elevation), -Math.cos(elevation) * Math.cos(azimuth)];
+}
+
+/** The distance of the 3D view: the whole roof in the frame with room around it. */
+const fitDistance = (radius: number) => radius * 2.4;
+
+/** The least height of the sun's eye, as a share of its distance: a sun on the horizon still looks down. */
+const LOWEST_SUN_EYE = 0.15;
+
+export function presetPositionOf(preset: CameraPreset, radius: number, sun: Sun | null): SceneXYZ {
+  const distance = fitDistance(radius);
+  if (preset === "plan") return [0, distance * 1.2, 0];
+  if (preset === "sun-eye" && sun) {
+    const [x, y, z] = sunDirectionOf(sun);
+    const lifted = Math.max(LOWEST_SUN_EYE, y);
+    const length = Math.hypot(x, lifted, z);
+    return [(x / length) * distance, (lifted / length) * distance, (z / length) * distance];
+  }
+  // From the south-west, above the roof: the view of the boards.
+  const length = Math.hypot(-0.62, 0.5, 0.6);
+  return [(-0.62 / length) * distance, (0.5 / length) * distance, (0.6 / length) * distance];
+}
+
+/** The camera's near and far planes, scaled to the roof so that the depth buffer is not starved (fix 9). */
+export function nearAndFarOf(radius: number): { near: number; far: number } {
+  return { near: radius * 0.05, far: radius * 30 };
+}
+
+/** How near and how far the orbit may go. */
+export function distanceLimitsOf(radius: number): { min: number; max: number } {
+  return { min: Math.max(2, radius * 0.2), max: radius * 12 };
+}

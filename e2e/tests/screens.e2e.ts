@@ -177,16 +177,22 @@ test.describe("the shell", () => {
     await expectScreen(page, "studio-project-switcher");
   });
 
-  test("performance", async ({ page }) => {
-    await page.goto("/performance");
+  // On phone the top bar says the notes once the run is over: the picture is taken after that, not before.
+  const settled = async (page: Page, projectName: string) => {
     await expect(design(page)).toBeVisible({ timeout: RUN });
+    if (isPhone(projectName)) await expect(page.getByRole("banner").getByRole("button", { name: "1 note to review" })).toBeVisible({ timeout: RUN });
+  };
+
+  test("performance", async ({ page }, testInfo) => {
+    await page.goto("/performance");
+    await settled(page, testInfo.project.name);
 
     await expectScreen(page, "performance");
   });
 
-  test("handover", async ({ page }) => {
+  test("handover", async ({ page }, testInfo) => {
     await page.goto("/handover/report");
-    await expect(design(page)).toBeVisible({ timeout: RUN });
+    await settled(page, testInfo.project.name);
 
     await expectScreen(page, "handover");
   });

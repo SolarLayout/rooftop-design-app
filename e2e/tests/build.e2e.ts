@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { A_MAP, findOpened, roofMap, scaleLabel, searchField, withTheImagery } from "../find";
+import { A_MAP, findOpened, roofMap, scaleLabel, searchField } from "../find";
 import { expect, test } from "../fixtures";
 
 // "Build this roof" (plan/phase-04-plan.md, step 11): the roof type, the document from the API, the
@@ -52,7 +52,6 @@ test.describe.configure({ timeout: RUN + 30_000 });
 
 test.describe("Build this roof", () => {
   test("from Home to the Studio on the Roof lens in under 60 s; the outline sent within 0.5 m per edge and 2 % of area", async ({ page }, testInfo) => {
-    await withTheImagery(page);
     const layouts: { roof: { outline: [number, number][]; roof_type: string; source: string }; name: string }[] = [];
     page.on("request", (request) => {
       if (request.url().endsWith("/api/layout")) layouts.push(request.postDataJSON());
@@ -109,7 +108,6 @@ test.describe("Build this roof", () => {
 
 test.describe("the Roof lens", () => {
   test("Edit shows the design's outline on the map; Build again keeps the design and its name", async ({ page }) => {
-    await withTheImagery(page);
     const layouts: { name: string; roof: { source: string } }[] = [];
     page.on("request", (request) => {
       if (request.url().endsWith("/api/layout")) layouts.push(request.postDataJSON());

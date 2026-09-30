@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { cameraOf, createViewStore, lensOf, sunTimeOf } from "./view-store";
+import { cameraOf, cameraRequestOf, createViewStore, lensOf, sunTimeOf } from "./view-store";
 
 describe("the view", () => {
   test("it begins on the first lens, in 3D, on the design day", () => {
@@ -18,12 +18,15 @@ describe("the view", () => {
     expect(lensOf(store.getState())).toBe("strings");
   });
 
-  test("the camera goes to a preset", () => {
+  test("the camera goes to a preset, and each request counts, so that Fit frames again", () => {
     const store = createViewStore();
+    const before = cameraRequestOf(store.getState());
 
+    store.getState().setCamera("plan");
     store.getState().setCamera("plan");
 
     expect(cameraOf(store.getState())).toBe("plan");
+    expect(cameraRequestOf(store.getState())).toBe(before + 2);
   });
 
   test("the time of the sun is a day and an hour in solar time", () => {
