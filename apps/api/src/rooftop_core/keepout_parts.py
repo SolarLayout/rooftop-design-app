@@ -10,9 +10,11 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 
 from shapely.geometry import MultiPolygon, Polygon
+from shapely.strtree import STRtree
 
 from .geometry import Roof, keepout
-from .placement import ArraySpec, Layout
+from .io.pvsyst import Module
+from .placement import ArraySpec, Layout, place
 
 PARAPET = "parapet"
 OBSTACLE = "obstacle"
@@ -24,6 +26,7 @@ class KeepoutPart:
     obstacle_index: int | None  # place of the obstacle in roof.obstacles; None for the parapet
     name: str | None  # name of the obstacle; None for the parapet
     area: Polygon | MultiPolygon  # on the roof, local metres
+    positions: int = 0  # how many positions it keeps clear; 0 until positions_kept_clear counted them
 
 
 def receiving_height(roof: Roof, arr: ArraySpec) -> float:
@@ -46,3 +49,18 @@ def keepout_parts(roof: Roof, arr: ArraySpec, layout: Layout) -> list[KeepoutPar
         if on_roof.area > 0:
             parts.append(KeepoutPart(cause, index, name, on_roof))
     return parts
+
+
+def positions_kept_clear(
+    roof: Roof, arr: ArraySpec, module: Module, parts: list[KeepoutPart]
+) -> list[KeepoutPart]:
+    """The parts with the count of positions each keeps clear: the positions of the same layout with
+    shaded positions allowed that fall in the part. A position on the edge of two parts counts in both."""
+    if not parts:
+        return parts
+    shaded = place(roof, replace(arr, allow_shaded=True), module)
+    footprints = [module_.poly for module_ in shaded.modules]
+    if not footprints:
+        return [replace(part, positions=0) for part in parts]
+    tree = STRtree(footprints)
+    return [replace(part, positions=len(tree.query(part.area, predicate="intersects"))) for part in parts]

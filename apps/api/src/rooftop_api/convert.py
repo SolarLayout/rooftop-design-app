@@ -177,6 +177,7 @@ def keepout_from_engine(part: KeepoutPart) -> schemas.Keepout:
         cause=part.cause,
         obstacle=part.name,
         obstacle_index=part.obstacle_index,
+        positions=part.positions,
         polygons=polygons_from_shape(part.area),
     )
 

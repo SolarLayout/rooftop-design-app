@@ -296,3 +296,12 @@ def test_a_project_format_of_the_future_is_refused(client, light_demo):
 
     assert response.status_code == 422
     assert error_of(response)["field"] == "format"
+
+
+def test_every_keepout_part_says_how_many_positions_it_keeps_clear(client, demo):
+    keepout = client.post("/layout", json=demo).json()["layout"]["keepout"]
+
+    by_name = {k["obstacle"] or "parapet": k["positions"] for k in keepout}
+    assert all(isinstance(count, int) and count >= 0 for count in by_name.values())
+    assert by_name["Stair room"] > 0
+    assert sum(by_name.values()) >= 1

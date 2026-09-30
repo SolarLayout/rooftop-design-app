@@ -28,6 +28,10 @@ class Keepout(BaseModel):
     cause: Literal["parapet", "obstacle"]
     obstacle: str | None = Field(description="Name of the obstacle; null for the parapet")
     obstacle_index: int | None = Field(description="Its place in roof.obstacles; null for the parapet")
+    positions: int = Field(
+        description="How many positions it keeps clear: those of the layout with shaded positions "
+        "allowed that fall in it"
+    )
     polygons: list[Polygon]
 
 

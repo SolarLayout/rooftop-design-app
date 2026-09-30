@@ -1027,12 +1027,18 @@
             },
             "title": "Polygons",
             "type": "array"
+          },
+          "positions": {
+            "description": "How many positions it keeps clear: those of the layout with shaded positions allowed that fall in it",
+            "title": "Positions",
+            "type": "integer"
           }
         },
         "required": [
           "cause",
           "obstacle",
           "obstacle_index",
+          "positions",
           "polygons"
         ],
         "title": "Keepout",
