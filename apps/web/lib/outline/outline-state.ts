@@ -4,13 +4,17 @@
 import { CLOSE_WITHIN, CLOSE_WITHIN_TOUCH, SNAP_DEGREES } from "../../components/ui/design-numbers";
 import { frameAt, type Frame, type LonLat } from "./frame";
 import { canRedo, canUndo, historyOf, redone, undone, withNext, type History } from "./history";
-import { areaOf, bearingOf, compassOf, edgesOf, facingOf, isClockwise, type Facing, type XY } from "./measure";
+import { areaOf, bearingOf, centroidOf, compassOf, edgesOf, facingOf, isClockwise, type Facing, type XY } from "./measure";
 import { nudged, nudgeOfKey } from "./nudge";
+import { rectangleOf, turnedAbout, turnOfHandle } from "./rectangle";
 import { closesOnFirst, snappedCorner } from "./snap";
 import { isRectangle, withEdgeLength } from "./typed-length";
 
-/** What the history keeps: the corners and whether they are closed. */
-export type Drawn = { corners: readonly XY[]; closed: boolean };
+/** A box drawn with the rectangle tool: its four corners before the turn, and the turn. */
+export type Box = { base: readonly XY[]; turn: number };
+
+/** What the history keeps: the corners, whether they are closed, and the box they came from. */
+export type Drawn = { corners: readonly XY[]; closed: boolean; rectangle: Box | null };
 
 export type OutlineState = {
   /** The frame of metres, made where the first corner was placed; null before it. */
@@ -21,6 +25,8 @@ export type OutlineState = {
   selected: number | null;
   /** "Square the corners": right angles are snapped to. */
   squared: boolean;
+  /** The box the corners are, while they are one: it can be turned by its handle. Null for any other outline. */
+  rectangle: Box | null;
   history: History<Drawn>;
 };
 
@@ -39,7 +45,11 @@ export type OutlineEvent =
   | { type: "redone" }
   | { type: "cleared" }
   | { type: "edgeLength"; edge: number; length: number }
-  | { type: "squared"; squared: boolean };
+  | { type: "squared"; squared: boolean }
+  | { type: "boxDragged"; from: XY; to: XY }
+  | { type: "boxDropped" }
+  | { type: "boxTurned"; handle: XY }
+  | { type: "turnDropped" };
 
 export type Measurements = {
   edges: number[];
@@ -49,7 +59,7 @@ export type Measurements = {
   corners: number;
 };
 
-const NOTHING: Drawn = { corners: [], closed: false };
+const NOTHING: Drawn = { corners: [], closed: false, rectangle: null };
 const FEWEST_CORNERS = 3;
 
 /**
@@ -82,18 +92,32 @@ function squaredUp(corners: readonly XY[], squared: boolean): readonly XY[] {
   ];
 }
 
-export const START: OutlineState = { frame: null, corners: [], closed: false, selected: null, squared: true, history: historyOf(NOTHING) };
+export const START: OutlineState = {
+  frame: null,
+  corners: [],
+  closed: false,
+  selected: null,
+  squared: true,
+  rectangle: null,
+  history: historyOf(NOTHING),
+};
 
-const drawnOf = (state: OutlineState): Drawn => ({ corners: state.corners, closed: state.closed });
+const drawnOf = (state: OutlineState): Drawn => ({ corners: state.corners, closed: state.closed, rectangle: state.rectangle });
 
 /** A new state of drawing, as one step of the history. */
 function stepped(state: OutlineState, drawn: Drawn, selected: number | null): OutlineState {
   return { ...state, ...drawn, selected, history: withNext(state.history, drawn) };
 }
 
-/** A state that follows, but is not a step of its own: while a corner is dragged. */
+/** A state that follows, but is not a step of its own: while a corner is dragged. The box is a polygon after it. */
 function moved(state: OutlineState, corners: readonly XY[], selected: number | null): OutlineState {
-  return { ...state, corners, selected };
+  return { ...state, corners, selected, rectangle: null };
+}
+
+/** The box whose corners these are, turned as before: what a typed length leaves of it. */
+function boxOf(corners: readonly XY[], rectangle: Box | null): Box | null {
+  if (!rectangle) return null;
+  return { base: turnedAbout(corners, centroidOf(corners), -rectangle.turn), turn: rectangle.turn };
 }
 
 function edgesDrawn(corners: readonly XY[], closed: boolean): [XY, XY][] {
@@ -117,17 +141,17 @@ export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineS
       const { corners } = state;
       const first = corners[0];
       if (first && corners.length >= FEWEST_CORNERS && closesOnFirst(first, event.at, event.touch ? CLOSE_WITHIN_TOUCH : CLOSE_WITHIN, event.metresPerPx)) {
-        return stepped(state, { corners: squaredUp(corners, state.squared), closed: true }, null);
+        return stepped(state, { corners: squaredUp(corners, state.squared), closed: true, rectangle: null }, null);
       }
       const previous = corners[corners.length - 1] ?? null;
       const beforeThat = corners[corners.length - 2] ?? null;
       const corner = snappedAgainst(state, event.at, previous, beforeThat, []);
-      return stepped(state, { corners: [...corners, corner], closed: false }, corners.length);
+      return stepped(state, { corners: [...corners, corner], closed: false, rectangle: null }, corners.length);
     }
 
     case "close":
       if (state.closed || state.corners.length < FEWEST_CORNERS) return state;
-      return stepped(state, { corners: squaredUp(state.corners, state.squared), closed: true }, null);
+      return stepped(state, { corners: squaredUp(state.corners, state.squared), closed: true, rectangle: null }, null);
 
     case "cornerMoved": {
       const { corners } = state;
@@ -150,7 +174,7 @@ export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineS
       const count = edgesDrawn(corners, state.closed).length;
       if (event.edge < 0 || event.edge >= count) return state;
       const added = [...corners.slice(0, event.edge + 1), event.at, ...corners.slice(event.edge + 1)];
-      return stepped(state, { corners: added, closed: state.closed }, event.edge + 1);
+      return stepped(state, { corners: added, closed: state.closed, rectangle: null }, event.edge + 1);
     }
 
     case "selected":
@@ -159,18 +183,18 @@ export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineS
     case "nudged": {
       const nudge = nudgeOfKey(event.key, event.shift);
       if (!nudge || state.selected === null) return state;
-      return stepped(state, { corners: nudged(state.corners, state.selected, nudge), closed: state.closed }, state.selected);
+      return stepped(state, { corners: nudged(state.corners, state.selected, nudge), closed: state.closed, rectangle: null }, state.selected);
     }
 
     case "removed": {
       if (state.selected === null || state.corners.length <= FEWEST_CORNERS) return state;
       const corners = state.corners.filter((_, index) => index !== state.selected);
-      return stepped(state, { corners, closed: state.closed }, null);
+      return stepped(state, { corners, closed: state.closed, rectangle: null }, null);
     }
 
     case "steppedBack":
       if (state.closed || state.corners.length === 0) return state;
-      return stepped(state, { corners: state.corners.slice(0, -1), closed: false }, state.corners.length - 2 >= 0 ? state.corners.length - 2 : null);
+      return stepped(state, { corners: state.corners.slice(0, -1), closed: false, rectangle: null }, state.corners.length - 2 >= 0 ? state.corners.length - 2 : null);
 
     case "undone": {
       if (!canUndo(state.history)) return state;
@@ -191,11 +215,33 @@ export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineS
     case "edgeLength": {
       const corners = withEdgeLength(state.corners, event.edge, event.length, state.squared);
       if (corners === state.corners) return state;
-      return stepped(state, { corners, closed: state.closed }, state.selected);
+      return stepped(state, { corners, closed: state.closed, rectangle: boxOf(corners, state.rectangle) }, state.selected);
     }
 
     case "squared":
       return { ...state, squared: event.squared };
+
+    case "boxDragged": {
+      const base = rectangleOf(event.from, event.to);
+      if (!base) return { ...state, corners: [], closed: false, rectangle: null, selected: null };
+      return { ...state, corners: base, closed: true, rectangle: { base, turn: 0 }, selected: null };
+    }
+
+    case "boxDropped":
+      if (!state.rectangle) return state;
+      return stepped(state, drawnOf(state), null);
+
+    case "boxTurned": {
+      if (!state.rectangle) return state;
+      const { base } = state.rectangle;
+      const centre = centroidOf(base);
+      const turn = turnOfHandle(centre, event.handle, SNAP_DEGREES);
+      return { ...state, corners: turnedAbout(base, centre, turn), rectangle: { base, turn }, selected: null };
+    }
+
+    case "turnDropped":
+      if (!state.rectangle) return state;
+      return stepped(state, drawnOf(state), null);
   }
 }
 

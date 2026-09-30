@@ -1,13 +1,14 @@
 "use client";
 
 import type { FeatureCollection, Geometry } from "geojson";
-import { Marker, type Map as MapLibre, type MapMouseEvent } from "maplibre-gl";
+import { Marker, type Map as MapLibre, type MapMouseEvent, type MapTouchEvent } from "maplibre-gl";
 import { useEffect, useRef } from "react";
 import { classNames } from "@/components/ui/class-names";
 import { shown } from "@/components/ui/number-entry";
 import { metresPerPixel } from "@/lib/map/scale-bar";
 import { frameAt, toLonLat, toMetres, type Frame, type LonLat } from "@/lib/outline/frame";
-import { midpointsOf, type XY } from "@/lib/outline/measure";
+import { centroidOf, midpointsOf, type XY } from "@/lib/outline/measure";
+import { turnedAbout } from "@/lib/outline/rectangle";
 import type { OutlineEvent, OutlineState } from "@/lib/outline/outline-state";
 
 export type Tool = "corners" | "rectangle" | "detect";
@@ -35,6 +36,13 @@ const CORNER_EDITED = "pulsing-corner";
 // The ring of a midpoint is as wide as the line of the outline.
 const MIDPOINT = "block size-2.5 rounded-full border-outline border-accent-ink bg-accent";
 const LABEL = "block rounded-seg bg-ground px-2.25 py-0.75 type-value-small font-medium text-text shadow-tooltip select-none";
+// The handle that turns a box: a round button above its top edge, this many pixels up.
+const TURN = classNames(
+  "flex size-touch cursor-grab items-center justify-center rounded-full border border-accent bg-surface-1 text-accent shadow-float",
+  "focus-ring",
+);
+const TURN_HANDLE_UP_PX = 44;
+const TURN_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="18" height="18"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v4.5h-4.5"/></svg>';
 
 const isCoarse = () => window.matchMedia("(pointer: coarse)").matches;
 
@@ -43,7 +51,7 @@ function tokenOf(map: MapLibre, name: string): string {
   return getComputedStyle(map.getContainer()).getPropertyValue(name).trim();
 }
 
-function geoJsonOf(frame: Frame | null, corners: readonly XY[], closed: boolean): FeatureCollection {
+function geoJsonOf(frame: Frame | null, corners: readonly XY[], closed: boolean, stem: [XY, XY] | null): FeatureCollection {
   if (!frame || corners.length < 2) return { type: "FeatureCollection", features: [] };
   const ring = corners.map((corner) => {
     const { lon, lat } = toLonLat(frame, corner);
@@ -51,7 +59,19 @@ function geoJsonOf(frame: Frame | null, corners: readonly XY[], closed: boolean)
   });
   const geometry: Geometry =
     closed && corners.length >= 3 ? { type: "Polygon", coordinates: [[...ring, ring[0]]] } : { type: "LineString", coordinates: ring };
-  return { type: "FeatureCollection", features: [{ type: "Feature", geometry, properties: {} }] };
+  const features: FeatureCollection["features"] = [{ type: "Feature", geometry, properties: {} }];
+  if (stem) features.push({ type: "Feature", geometry: { type: "LineString", coordinates: stem.map((point) => lonLatOf(frame, point)) }, properties: {} });
+  return { type: "FeatureCollection", features };
+}
+
+/** Where the handle that turns a box stands: above the middle of its top edge, turned with it. */
+function turnHandleOf(state: OutlineState, metresPerPx: number): { handle: XY; stem: [XY, XY] } | null {
+  if (!state.rectangle || !state.closed) return null;
+  const { base, turn } = state.rectangle;
+  const centre = centroidOf(base);
+  const top = Math.max(...base.map((corner) => corner.y));
+  const [mid, handle] = turnedAbout([{ x: centre.x, y: top }, { x: centre.x, y: top + TURN_HANDLE_UP_PX * metresPerPx }], centre, turn);
+  return { handle, stem: [mid, handle] };
 }
 
 function lonLatOf(frame: Frame, point: XY): [number, number] {
@@ -68,6 +88,7 @@ export function OutlineLayer({ map, state, tool, on }: Props) {
   const corners = useRef<Marker[]>([]);
   const midpoints = useRef<Marker[]>([]);
   const labels = useRef<Marker[]>([]);
+  const turn = useRef<Marker | null>(null);
   const isDragging = useRef(false);
   const latest = useRef({ state, tool, on });
   useEffect(() => {
@@ -76,7 +97,7 @@ export function OutlineLayer({ map, state, tool, on }: Props) {
 
   // The layers, once.
   useEffect(() => {
-    map.addSource(SOURCE, { type: "geojson", data: geoJsonOf(null, [], false) });
+    map.addSource(SOURCE, { type: "geojson", data: geoJsonOf(null, [], false, null) });
     map.addLayer({ id: FILL, type: "fill", source: SOURCE, filter: ["==", "$type", "Polygon"], paint: { "fill-color": tokenOf(map, "--color-outline-fill") } });
     map.addLayer({
       id: LINE,
@@ -91,11 +112,12 @@ export function OutlineLayer({ map, state, tool, on }: Props) {
     };
   }, [map]);
 
-  // The fill and the line follow the corners.
+  // The fill and the line follow the corners; the stem of the turn handle too.
   useEffect(() => {
     const source = map.getSource(SOURCE);
-    if (source && "setData" in source) (source as { setData: (data: FeatureCollection) => void }).setData(geoJsonOf(state.frame, state.corners, state.closed));
-  }, [map, state.frame, state.corners, state.closed]);
+    const stem = turnHandleOf(state, metresPerPixel(map.getCenter().lat, map.getZoom()))?.stem ?? null;
+    if (source && "setData" in source) (source as { setData: (data: FeatureCollection) => void }).setData(geoJsonOf(state.frame, state.corners, state.closed, stem));
+  }, [map, state]);
 
   // A press on the map places a corner; the first press begins the frame where it is.
   useEffect(() => {
@@ -113,10 +135,61 @@ export function OutlineLayer({ map, state, tool, on }: Props) {
     };
   }, [map]);
 
+  // A drag with the rectangle tool draws a box, while there is none; once there is one the map pans again.
+  useEffect(() => {
+    if (tool !== "rectangle") return;
+    let from: { at: LonLat; frame: Frame } | null = null;
+    function lonLatOfEvent(event: MapMouseEvent | MapTouchEvent): LonLat {
+      return { lon: event.lngLat.lng, lat: event.lngLat.lat };
+    }
+    function onDown(event: MapMouseEvent | MapTouchEvent) {
+      const { state: now, on: tell } = latest.current;
+      if (now.corners.length > 0) return;
+      if ("originalEvent" in event && event.originalEvent instanceof MouseEvent && event.originalEvent.button !== 0) return;
+      const at = lonLatOfEvent(event);
+      const frame = now.frame ?? frameAt(at);
+      if (!now.frame) tell({ type: "began", at });
+      from = { at, frame };
+      event.preventDefault();
+    }
+    function onMove(event: MapMouseEvent | MapTouchEvent) {
+      if (!from) return;
+      event.preventDefault();
+      latest.current.on({ type: "boxDragged", from: toMetres(from.frame, from.at), to: toMetres(from.frame, lonLatOfEvent(event)) });
+    }
+    function onUp() {
+      if (!from) return;
+      from = null;
+      latest.current.on({ type: "boxDropped" });
+    }
+    map.on("mousedown", onDown);
+    map.on("mousemove", onMove);
+    map.on("mouseup", onUp);
+    map.on("touchstart", onDown);
+    map.on("touchmove", onMove);
+    map.on("touchend", onUp);
+    return () => {
+      map.off("mousedown", onDown);
+      map.off("mousemove", onMove);
+      map.off("mouseup", onUp);
+      map.off("touchstart", onDown);
+      map.off("touchmove", onMove);
+      map.off("touchend", onUp);
+    };
+  }, [map, tool]);
+
+  // While a box can be drawn, a drag is the box's, not the map's.
+  useEffect(() => {
+    const draws = tool === "rectangle" && state.corners.length === 0;
+    if (draws) map.dragPan.disable();
+    else map.dragPan.enable();
+  }, [map, tool, state.corners.length]);
+
   // The cursor says what a press does.
   useEffect(() => {
-    map.getCanvas().style.cursor = tool === "corners" && !state.closed ? "crosshair" : "";
-  }, [map, tool, state.closed]);
+    const draws = (tool === "corners" && !state.closed) || (tool === "rectangle" && state.corners.length === 0);
+    map.getCanvas().style.cursor = draws ? "crosshair" : "";
+  }, [map, tool, state.closed, state.corners.length]);
 
   // The handles and the labels: made anew when their number changes, moved otherwise; left alone
   // while one is dragged, because the drag is theirs.
@@ -128,6 +201,8 @@ export function OutlineLayer({ map, state, tool, on }: Props) {
       remove(corners.current);
       remove(midpoints.current);
       remove(labels.current);
+      turn.current?.remove();
+      turn.current = null;
       return;
     }
     const drawnEdges = state.closed ? state.corners.length : Math.max(0, state.corners.length - 1);
@@ -160,11 +235,21 @@ export function OutlineLayer({ map, state, tool, on }: Props) {
       labels.current[edge].setLngLat(lonLatOf(frame, middle));
       labels.current[edge].getElement().textContent = `${shown(lengths[edge], 1)} m`;
     });
+
+    const turning = turnHandleOf(state, metresPerPixel(map.getCenter().lat, map.getZoom()));
+    if (!turning) {
+      turn.current?.remove();
+      turn.current = null;
+    } else {
+      turn.current ??= turnMarker(map, latest, isDragging);
+      turn.current.setLngLat(lonLatOf(frame, turning.handle));
+    }
   }, [map, state]);
 
   useEffect(
     () => () => {
       [corners, midpoints, labels].forEach((markers) => markers.current.splice(0).forEach((marker) => marker.remove()));
+      turn.current?.remove();
     },
     [],
   );
@@ -248,4 +333,27 @@ function labelMarker(map: MapLibre): Marker {
   element.dataset.testid = "edge-label";
   // The label stands beside the midpoint handle, not on it.
   return new Marker({ element, offset: [0, 18] }).setLngLat([0, 0]).addTo(map);
+}
+
+function turnMarker(map: MapLibre, latest: Latest, isDragging: React.RefObject<boolean>): Marker {
+  const element = document.createElement("button");
+  element.type = "button";
+  element.className = TURN;
+  element.dataset.testid = "turn-handle";
+  element.setAttribute("aria-label", "Turn the rectangle");
+  element.innerHTML = TURN_ICON;
+  element.addEventListener("click", (event) => event.stopPropagation());
+  const marker = new Marker({ element, draggable: true }).setLngLat([0, 0]).addTo(map);
+  marker.on("dragstart", () => {
+    isDragging.current = true;
+  });
+  marker.on("drag", () => {
+    const { state, on } = latest.current;
+    if (state.frame) on({ type: "boxTurned", handle: metresOf(marker, state.frame) });
+  });
+  marker.on("dragend", () => {
+    isDragging.current = false;
+    latest.current.on({ type: "turnDropped" });
+  });
+  return marker;
 }

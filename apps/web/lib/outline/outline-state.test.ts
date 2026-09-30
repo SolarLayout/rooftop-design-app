@@ -184,6 +184,73 @@ describe("while drawing", () => {
   });
 });
 
+describe("the rectangle tool", () => {
+  const dragged = (state: OutlineState, from: XY, to: XY) => after(state, { type: "began", at: PUNE }, { type: "boxDragged", from, to });
+
+  test("a box dragged across the roof is four corners, closed, from the lowest left; while it is dragged nothing is pushed", () => {
+    const dragging = dragged(START, { x: 45, y: 20 }, { x: -45, y: -20 });
+
+    expect(dragging.corners).toEqual(RECTANGLE);
+    expect(dragging.closed).toBe(true);
+    expect(dragging.history.past).toHaveLength(0);
+    expect(dragging.rectangle).toEqual({ base: RECTANGLE, turn: 0 });
+  });
+
+  test("dropped, the box is one step, and the panel names its sides", () => {
+    const dropped = outlineAfter(dragged(START, { x: -45, y: -20 }, { x: 45, y: 20 }), { type: "boxDropped" });
+
+    expect(dropped.history.past).toHaveLength(1);
+    expect(edgeNamesOf(dropped)).toEqual(["South", "East", "North", "West"]);
+    expect(outlineAfter(dropped, { type: "undone" }).corners).toEqual([]);
+  });
+
+  test("a drag of no width or no height draws nothing", () => {
+    expect(dragged(START, { x: 0, y: 0 }, { x: 10, y: 0 }).corners).toEqual([]);
+  });
+
+  test("the handle turns the box about its centre, snapped to north within 3°; dropped, it is a step", () => {
+    const box = outlineAfter(dragged(START, { x: -45, y: -20 }, { x: 45, y: 20 }), { type: "boxDropped" });
+
+    const turning = outlineAfter(box, { type: "boxTurned", handle: { x: -30 * Math.sin(Math.PI / 6), y: 30 * Math.cos(Math.PI / 6) } });
+    expect(turning.rectangle?.turn).toBeCloseTo(30, 6);
+    expect(measurementsOf(turning).facing?.degrees).toBeCloseTo(150, 6);
+    expect(measurementsOf(turning).edges.map((edge) => Math.round(edge * 1e6) / 1e6)).toEqual([90, 40, 90, 40]);
+    expect(turning.history.past).toHaveLength(box.history.past.length);
+
+    const nearNorth = outlineAfter(box, { type: "boxTurned", handle: { x: -30 * Math.sin(Math.PI / 90), y: 30 * Math.cos(Math.PI / 90) } });
+    expect(nearNorth.rectangle?.turn).toBe(0);
+
+    const dropped = outlineAfter(turning, { type: "turnDropped" });
+    expect(dropped.history.past).toHaveLength(box.history.past.length + 1);
+  });
+
+  test("once a corner is dragged the box is a polygon like any other: no turn handle", () => {
+    const box = outlineAfter(dragged(START, { x: -45, y: -20 }, { x: 45, y: 20 }), { type: "boxDropped" });
+
+    const moved = after(box, { type: "cornerMoved", index: 2, at: { x: 50, y: 30 } }, { type: "cornerDropped" });
+
+    expect(moved.rectangle).toBeNull();
+    expect(outlineAfter(moved, { type: "boxTurned", handle: { x: -30, y: 0 } })).toBe(moved);
+  });
+
+  test("a typed length keeps the box a box: the base follows", () => {
+    const box = outlineAfter(dragged(START, { x: -45, y: -20 }, { x: 45, y: 20 }), { type: "boxDropped" });
+
+    const longer = outlineAfter(box, { type: "edgeLength", edge: 0, length: 100 });
+
+    expect(measurementsOf(longer).edges).toEqual([100, 40, 100, 40]);
+    expect(longer.rectangle?.base[1]).toEqual({ x: 50, y: -20 });
+  });
+
+  test("clear, undo and a new box start over", () => {
+    const box = outlineAfter(dragged(START, { x: -45, y: -20 }, { x: 45, y: 20 }), { type: "boxDropped" });
+
+    expect(outlineAfter(box, { type: "cleared" }).rectangle).toBeNull();
+    expect(outlineAfter(box, { type: "undone" }).rectangle).toBeNull();
+    expect(outlineAfter(outlineAfter(box, { type: "undone" }), { type: "redone" }).rectangle).toEqual({ base: RECTANGLE, turn: 0 });
+  });
+});
+
 describe("typed lengths", () => {
   test("a length typed into an edge corrects the outline; squared, the rectangle stays one", () => {
     const state = outlineAfter(placed(...RECTANGLE), { type: "close" });

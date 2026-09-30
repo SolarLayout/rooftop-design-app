@@ -32,9 +32,10 @@ const PROVIDER = esriProvider(KEY_OF_THE_APP);
 /** Before a roof is found the map shows India, where the first users are, from far. */
 const FROM_FAR: MapView = { lon: 78.5, lat: 21.5, zoom: 4 };
 
-const WORDS: Record<Step, { title: string; lead: string }> = {
+const WORDS: Record<Step | "rectangle", { title: string; lead: string }> = {
   find: { title: "Find the roof", lead: "Search an address or a place, or paste coordinates or a maps link. The map flies to it." },
   outline: { title: "Outline the roof", lead: "Click each corner. Drag a corner to adjust it, or type a length you have measured." },
+  rectangle: { title: "Outline the roof", lead: "Drag a box across the roof, then turn it to the building by its handle. Drag a corner to adjust it." },
   build: { title: "Build the roof", lead: "The roof rises in the Studio." },
 };
 
@@ -63,7 +64,7 @@ export function Find() {
     () => mapStateOf({ hasKey: PROVIDER !== null, hasWebGL: webGL ?? true, tilesFailed }),
     [webGL, tilesFailed],
   );
-  const words = WORDS[step];
+  const words = WORDS[step === "outline" && tool === "rectangle" ? "rectangle" : step];
   useOutlineKeys(step === "outline", on);
 
   /** A place was found: the map flies to it at roof zoom, and the outline can begin. */

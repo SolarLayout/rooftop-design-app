@@ -201,3 +201,73 @@ test.describe("by corners", () => {
     if (isPhone(testInfo.project.name)) await expect(page.getByRole("button", { name: "Redo" })).toBeHidden();
   });
 });
+
+test.describe("by rectangle", () => {
+  /** A box dragged from the south-west corner to the north-east. */
+  async function dragTheBox(page: Page, centre: { cx: number; cy: number }) {
+    await page.getByRole("button", { name: "Rectangle" }).click();
+    await page.mouse.move(Math.round(centre.cx - 45 * PX_PER_M), Math.round(centre.cy + 20 * PX_PER_M));
+    await page.mouse.down();
+    await page.mouse.move(Math.round(centre.cx + 45 * PX_PER_M), Math.round(centre.cy - 20 * PX_PER_M), { steps: 6 });
+    await page.mouse.up();
+  }
+
+  test("a box dragged across the roof is the same rectangle: 90 by 40 within 0.5 m, facing south", async ({ page }) => {
+    const centre = await atTheRoof(page);
+
+    await dragTheBox(page, centre);
+
+    await expect(corners(page)).toHaveCount(4);
+    for (const [name, length] of [
+      ["South", 90],
+      ["East", 40],
+      ["North", 90],
+      ["West", 40],
+    ] as const) {
+      expect(Math.abs((await numberOf(field(page, name))) - length), name).toBeLessThanOrEqual(0.5);
+    }
+    await expect(tile(page, "Faces")).toHaveText("180° S");
+    await expect(page.getByRole("button", { name: "Turn the rectangle" })).toBeVisible();
+  });
+
+  test("its handle turns it: the edges keep their lengths, the direction it faces follows", async ({ page }) => {
+    const centre = await atTheRoof(page);
+    await dragTheBox(page, centre);
+    const handle = page.getByRole("button", { name: "Turn the rectangle" });
+    const box = (await handle.boundingBox())!;
+    const from = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+    // The handle stands above the top edge; 10° counter-clockwise about the centre is up and to the left.
+    const radius = Math.hypot(from.x - centre.cx, from.y - centre.cy);
+    const to = { x: centre.cx - radius * Math.sin((10 * Math.PI) / 180), y: centre.cy - radius * Math.cos((10 * Math.PI) / 180) };
+
+    await page.mouse.move(from.x, from.y);
+    await page.mouse.down();
+    await page.mouse.move(to.x, to.y, { steps: 8 });
+    await page.mouse.up();
+
+    await expect(tile(page, "Faces")).toHaveText(/^1(69|70|71)° S$/);
+    for (const [edge, length] of [
+      [0, 90],
+      [1, 40],
+    ] as const) {
+      expect(Math.abs((await numberOf(edgeLabels(page).nth(edge))) - length)).toBeLessThanOrEqual(0.5);
+    }
+    await page.getByRole("button", { name: "Undo" }).click();
+    await expect(tile(page, "Faces")).toHaveText("180° S");
+  });
+
+  test("a corner of the box dragged makes it a polygon: the handle goes", async ({ page }) => {
+    const centre = await atTheRoof(page);
+    await dragTheBox(page, centre);
+    const corner = corners(page).nth(2);
+    const box = (await corner.boundingBox())!;
+
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width / 2 + 5 * PX_PER_M, box.y + box.height / 2 - 5 * PX_PER_M, { steps: 6 });
+    await page.mouse.up();
+
+    await expect(page.getByRole("button", { name: "Turn the rectangle" })).toHaveCount(0);
+    await expect(tile(page, "Corners")).toHaveText("4");
+  });
+});

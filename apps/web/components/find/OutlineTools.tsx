@@ -19,7 +19,7 @@ type Props = {
 
 const TOOLS: { id: Tool; name: string; short: string; icon: IconName; comesWith: string | null }[] = [
   { id: "corners", name: "Corners", short: "Corners", icon: "corners", comesWith: null },
-  { id: "rectangle", name: "Rectangle", short: "Rectangle", icon: "rectangle", comesWith: "Comes with step 8 of the phase" },
+  { id: "rectangle", name: "Rectangle", short: "Rectangle", icon: "rectangle", comesWith: null },
   { id: "detect", name: "Detect building", short: "Detect", icon: "detect", comesWith: "Comes with step 10 of the phase" },
 ];
 
