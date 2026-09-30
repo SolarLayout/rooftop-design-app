@@ -5,7 +5,10 @@ import { shown } from "../../components/ui/number-entry";
 import type { SceneXYZ, XY, XYZ } from "./adapter";
 
 /** A label of the stage: its words and where it stands on the canvas, in pixels from its top left. */
-export type StageLabel = { words: string; x: number; y: number; visible: boolean };
+/** A label of a dimension, or the anchor of the callout of what is selected. */
+export type LabelKind = "label" | "callout";
+
+export type StageLabel = { kind: LabelKind; words: string; x: number; y: number; visible: boolean };
 
 /** Where a label is anchored: a point in the engine's metres, and what it says. */
 export type LabelPlace = { words: string; at: XYZ };
@@ -53,6 +56,7 @@ export function sameLabels(before: readonly StageLabel[], after: readonly StageL
   return before.every((label, index) => {
     const other = after[index];
     return (
+      label.kind === other.kind &&
       label.words === other.words &&
       label.visible === other.visible &&
       Math.round(label.x) === Math.round(other.x) &&

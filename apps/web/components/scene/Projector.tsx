@@ -4,11 +4,11 @@ import { useFrame } from "@react-three/fiber";
 import { useMemo } from "react";
 import { Vector3 } from "three";
 import type { SceneXYZ } from "@/lib/scene/adapter";
-import { bearingOf, pixelOf, type StageLabel } from "@/lib/scene/projection";
+import { bearingOf, pixelOf, type LabelKind, type StageLabel } from "@/lib/scene/projection";
 import type { StageStore } from "@/lib/scene/stage-store";
 
 /** A label's anchor as the scene holds it: a point in three's metres about the origin of the scene. */
-export type Anchor = { words: string; at: SceneXYZ };
+export type Anchor = { words: string; at: SceneXYZ; kind?: LabelKind };
 
 type Props = { anchors: readonly Anchor[]; stage: StageStore };
 
@@ -22,12 +22,12 @@ export function Projector({ anchors, stage }: Props) {
   const direction = useMemo(() => new Vector3(), []);
 
   useFrame(({ camera, size }) => {
-    const labels: StageLabel[] = anchors.map(({ words, at }) => {
+    const labels: StageLabel[] = anchors.map(({ words, at, kind = "label" }) => {
       // In front of the camera: nearer than its plane, in its own frame.
       const inFront = point.set(at[0], at[1], at[2]).applyMatrix4(camera.matrixWorldInverse).z < 0;
       point.set(at[0], at[1], at[2]).project(camera);
       const [x, y] = pixelOf([point.x, point.y], size.width, size.height);
-      return { words, x, y, visible: inFront };
+      return { kind, words, x, y, visible: inFront };
     });
     camera.getWorldDirection(direction);
     const from = camera.position;
