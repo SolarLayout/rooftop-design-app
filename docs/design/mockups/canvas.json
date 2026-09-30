@@ -135,6 +135,20 @@
    "w": 1440,
    "x": 1520,
    "y": 8646
+  },
+  "ObstaclesOnMap.dc.html": {
+   "h": 2380,
+   "title": "Obstacles on the map and their heights",
+   "w": 1440,
+   "x": 3040,
+   "y": 8646
+  },
+  "ByHand.dc.html": {
+   "h": 2880,
+   "title": "Enter dimensions by hand",
+   "w": 1440,
+   "x": 0,
+   "y": 9700
   }
  },
  "createdOnFiles": {
@@ -214,7 +228,9 @@
   "ShellStates.dc.html",
   "Tabs.dc.html",
   "LocateTablet.dc.html",
-  "LocateStates.dc.html"
+  "LocateStates.dc.html",
+  "ObstaclesOnMap.dc.html",
+  "ByHand.dc.html"
  ],
  "pages": [],
  "title": "SolarLayout Rooftop — Web Design"

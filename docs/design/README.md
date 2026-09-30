@@ -42,6 +42,8 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | Home | `Home.dc.html` | `home-desktop.png` | desktop |
 | Find and outline | `Locate.dc.html`, `LocatePhone.dc.html`, `LocateTablet.dc.html` | `find-outline-desktop.png`, `find-outline-phone.png`, `find-outline-tablet.png` | desktop, phone, tablet |
 | Find and outline, states and tools | `LocateStates.dc.html` | `find-outline-states.png` | |
+| Obstacles on the map and their heights | `ObstaclesOnMap.dc.html` | `find-obstacles.png` | desktop, phone in parts |
+| Enter dimensions by hand | `ByHand.dc.html` | `find-by-hand.png` | desktop, phone in parts |
 | Studio, Roof lens | `RoofLens.dc.html` | `studio-roof-lens-desktop.png` | desktop |
 | Studio, Array lens | `Main.dc.html`, `StudioTablet.dc.html`, `StudioPhone.dc.html` | `studio-desktop.png`, `studio-tablet.png`, `studio-phone.png` | desktop, tablet, phone |
 | Studio, Sun lens | `SunLens.dc.html` | `studio-sun-lens-desktop.png` | desktop |
@@ -70,5 +72,7 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   kept so that the boards can be written again.
 - `mockups/build_phase4_boards.py` writes the two boards of Phase 4, "Find and outline" on tablet and "Find and outline,
   states and tools", drawn on 2026-09-30 by session 6 (`plan/phase-04-plan.md`, step 0).
-- `mockups/canvas.json` is the layout of the boards on the canvas. The canvas and the repo hold the same
-  17 boards since 2026-09-30.
+- `mockups/build_phase4_obstacles_by_hand.py` writes the two boards of the third pull request of Phase 4, "Obstacles on the
+  map and their heights" and "Enter dimensions by hand", drawn on 2026-09-30 by session 7 (`plan/phase-04-plan.md`, step 13).
+- `mockups/canvas.json` is the layout of the boards on the canvas. The repo holds 19 boards; the canvas holds the first
+  17 (2026-09-30). The two boards of session 7 are published to it when the owner asks.
