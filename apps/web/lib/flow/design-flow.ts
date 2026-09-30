@@ -10,7 +10,7 @@ import { CLOCK_OF_THE_BROWSER, type Clock } from "../clock";
 import type { ProjectState, ProjectStore } from "../stores/project-store";
 import type { Failure, ResultsStore } from "../stores/results-store";
 
-export type FlowApi = Pick<Api, "computeLayout" | "runDesign">;
+export type FlowApi = Pick<Api, "getDemo" | "computeLayout" | "runDesign">;
 
 type Options = {
   project: ProjectStore;
@@ -22,6 +22,8 @@ type Options = {
 export type DesignFlow = {
   /** Begins to listen to the project. A design that is open already is asked for at once. */
   start: () => void;
+  /** Asks the API for the demo and opens it, as it is handed out. Until it is there the design is on its way. */
+  openDemo: () => void;
   /** Asks again for what failed, at once, with the document as it is now. */
   tryAgain: () => void;
   /** Gives up what is on its way and listens no longer. */
@@ -43,6 +45,8 @@ export function createDesignFlow({ project, results, api = apiOfTheApp, clock = 
   let designCall: AbortController | null = null;
   let giveUpThePause: (() => void) | null = null;
   let stopListening: (() => void) | null = null;
+  let demoCall: AbortController | null = null;
+  let hasTheDemoFailed = false;
 
   function giveUpTheLayout() {
     layoutCall?.abort();
@@ -54,6 +58,39 @@ export function createDesignFlow({ project, results, api = apiOfTheApp, clock = 
     giveUpThePause = null;
     designCall?.abort();
     designCall = null;
+  }
+
+  function giveUpTheDemo() {
+    demoCall?.abort();
+    demoCall = null;
+  }
+
+  function openDemo() {
+    giveUpTheDemo();
+    giveUpTheLayout();
+    giveUpTheRun();
+    hasTheDemoFailed = false;
+    const call = new AbortController();
+    demoCall = call;
+    // The edit that the demo will be: until then the results say that it is on its way.
+    const edit = project.getState().edit + 1;
+    results.getState().clear();
+    results.getState().designBegan(edit);
+    api
+      .getDemo({ signal: call.signal })
+      .then(
+        (demo) => {
+          if (!call.signal.aborted) project.getState().open(demo);
+        },
+        (error: unknown) => {
+          if (call.signal.aborted) return;
+          hasTheDemoFailed = true;
+          results.getState().designFailed(edit, failureOf(error));
+        },
+      )
+      .finally(() => {
+        if (demoCall === call) demoCall = null;
+      });
   }
 
   function askForTheLayout(document: Project, edit: number) {
@@ -111,6 +148,9 @@ export function createDesignFlow({ project, results, api = apiOfTheApp, clock = 
   function follow({ project: document, edit, openedAt }: ProjectState) {
     if (document === null || edit === followed) return;
     followed = edit;
+    // A design was opened, by whatever way: a demo that is still on its way is not waited for.
+    giveUpTheDemo();
+    hasTheDemoFailed = false;
     const isOpened = openedAt === edit;
     if (isOpened) {
       giveUpTheLayout();
@@ -129,8 +169,10 @@ export function createDesignFlow({ project, results, api = apiOfTheApp, clock = 
       stopListening = project.subscribe(follow);
       follow(project.getState());
     },
+    openDemo,
     tryAgain() {
       const { project: document, edit } = project.getState();
+      if (hasTheDemoFailed) openDemo();
       if (document === null) return;
       if (results.getState().layout.status === "failed") askForTheLayout(document, edit);
       if (results.getState().design.status === "failed") run(document, edit);
@@ -138,6 +180,7 @@ export function createDesignFlow({ project, results, api = apiOfTheApp, clock = 
     stop() {
       stopListening?.();
       stopListening = null;
+      giveUpTheDemo();
       giveUpTheLayout();
       giveUpTheRun();
     },

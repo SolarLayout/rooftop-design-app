@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useStore } from "zustand";
 import { createDesignFlow, type DesignFlow } from "@/lib/flow/design-flow";
-import { createProjectStore, nameOf, type ProjectState, type ProjectStore } from "@/lib/stores/project-store";
+import { createProjectStore, nameOf, projectOf, type ProjectState, type ProjectStore } from "@/lib/stores/project-store";
 import {
   createResultsStore,
   designFailureOf,
@@ -41,6 +41,8 @@ export function StoresProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     stores.flow.start();
+    // A workspace without a design opens the demo. From Phase 10 on the designs of the device come first.
+    if (projectOf(stores.project.getState()) === null) stores.flow.openDemo();
     return () => stores.flow.stop();
   }, [stores]);
 

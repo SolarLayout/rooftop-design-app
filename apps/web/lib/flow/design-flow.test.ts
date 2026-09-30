@@ -41,10 +41,14 @@ function standIn() {
     });
   }
 
+  const demos: Array<Asked<Project>> = [];
+
   return {
     layouts,
     runs,
+    demos,
     api: {
+      getDemo: (options?: CallOptions) => asked(demos, {} as ProjectRequest, options),
       computeLayout: (project: ProjectRequest, options?: CallOptions) => asked(layouts, project, options),
       runDesign: (project: ProjectRequest, options?: RunOptions) => asked(runs, project, options),
     },
@@ -165,6 +169,123 @@ describe("a design is opened", () => {
     expect(designOf(results.getState())).toBeNull();
     expect(layouts).toHaveLength(2);
     expect(runs).toHaveLength(2);
+  });
+});
+
+describe("the demo is opened", () => {
+  test("it is asked for, and until it is there the design is on its way", () => {
+    const { demos, layouts, runs, results, project, designFlow } = flow();
+
+    designFlow.openDemo();
+
+    expect(demos).toHaveLength(1);
+    expect(layouts).toHaveLength(0);
+    expect(runs).toHaveLength(0);
+    expect(project.getState().project).toBeNull();
+    expect(designStatusOf(results.getState())).toBe("running");
+    expect(isDesignUpdating(results.getState())).toBe(true);
+  });
+
+  test("arrived, it is the design that is open, and its layout and its run are asked for at once", async () => {
+    const { demos, layouts, runs, project, designFlow, last } = flow();
+    designFlow.openDemo();
+
+    last(demos).answer(DEMO);
+    await settled();
+
+    expect(project.getState().project).toBe(DEMO);
+    expect(layouts.map((call) => call.project)).toEqual([DEMO]);
+    expect(runs.map((call) => call.project)).toEqual([DEMO]);
+  });
+
+  test("it is opened as the API hands it out: nothing is added, and no system voltage is chosen for it", async () => {
+    const { demos, runs, project, designFlow, last } = flow();
+    const withoutAVoltage = { ...DEMO, system_voltage: null } as Project;
+    designFlow.openDemo();
+
+    last(demos).answer(withoutAVoltage);
+    await settled();
+
+    expect(project.getState().project).toBe(withoutAVoltage);
+    expect(runs[0]?.project.system_voltage).toBeNull();
+  });
+
+  test("a demo that does not come is a failure, in the words of the API; no design is open", async () => {
+    const { demos, results, project, designFlow, last } = flow();
+    designFlow.openDemo();
+
+    last(demos).refuse(ApiError.unreachable(new TypeError("fetch failed")));
+    await settled();
+
+    expect(project.getState().project).toBeNull();
+    expect(designStatusOf(results.getState())).toBe("failed");
+    expect(designFailureOf(results.getState())).toEqual({ code: "api_unreachable", message: UNREACHABLE });
+  });
+
+  test("tried again, it is asked for once more", async () => {
+    const { demos, runs, results, designFlow, last } = flow();
+    designFlow.openDemo();
+    last(demos).refuse(ApiError.unreachable(new TypeError("fetch failed")));
+    await settled();
+
+    designFlow.tryAgain();
+
+    expect(demos).toHaveLength(2);
+    expect(designStatusOf(results.getState())).toBe("running");
+    expect(designFailureOf(results.getState())).toBeNull();
+
+    last(demos).answer(DEMO);
+    await settled();
+    expect(runs).toHaveLength(1);
+  });
+
+  test("once it is open, try again asks for the run, not for the demo", async () => {
+    const { demos, runs, designFlow, last } = flow();
+    designFlow.openDemo();
+    last(demos).answer(DEMO);
+    await settled();
+    last(runs).refuse(ApiError.unreachable(new TypeError("fetch failed")));
+    await settled();
+
+    designFlow.tryAgain();
+
+    expect(demos).toHaveLength(1);
+    expect(runs).toHaveLength(2);
+  });
+
+  test("the flow is stopped: the demo is given up, and one that comes late is not opened", async () => {
+    const { demos, project, results, designFlow, last } = flow();
+    designFlow.openDemo();
+
+    designFlow.stop();
+    last(demos).answer(DEMO);
+    await settled();
+
+    expect(last(demos).signal.aborted).toBe(true);
+    expect(project.getState().project).toBeNull();
+    expect(designFailureOf(results.getState())).toBeNull();
+  });
+
+  test("asked for twice, the first is given up", () => {
+    const { demos, designFlow } = flow();
+
+    designFlow.openDemo();
+    designFlow.openDemo();
+
+    expect(demos.map((call) => call.signal.aborted)).toEqual([true, false]);
+  });
+
+  test("another design that is opened meanwhile is the one that stays", async () => {
+    const { demos, project, designFlow, last } = flow();
+    const another = { ...DEMO, name: "Another roof" } as Project;
+    designFlow.openDemo();
+
+    project.getState().open(another);
+    last(demos).answer(DEMO);
+    await settled();
+
+    expect(last(demos).signal.aborted).toBe(true);
+    expect(project.getState().project).toBe(another);
   });
 });
 

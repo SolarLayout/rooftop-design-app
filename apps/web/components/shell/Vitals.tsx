@@ -182,7 +182,7 @@ export function Vitals({ view, onOpenNotes, className }: Props) {
     <section aria-label="Design vitals" tabIndex={0} className={classNames(BAR, "focus-ring", columnsOf(view), className)}>
       {view.isLoading ? (
         BONES.map((bone, index) => (
-          <div key={bone.value} className={classNames("flex flex-col justify-center gap-2.5", CARD, CELL, lines(index, 4))}>
+          <div key={bone.label + bone.value} className={classNames("flex flex-col justify-center gap-2.5", CARD, CELL, lines(index, 4))}>
             <Skeleton kind="label" className={bone.label} />
             <Skeleton kind={index === 0 ? "lead" : "value"} className={bone.value} />
           </div>
