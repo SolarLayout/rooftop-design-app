@@ -33,6 +33,12 @@ PVGIS TMY: GHI 1,822.9 kWh/m2, ambient 11.93 to 39.26 degC, horizon highest 2.7 
 | Pitch, GCR, profile angle | 6.45 m, 0.709, 30.5 deg |
 | Row lower edges y | 1.0, 7.45, 13.9, 20.35, 26.8, 33.25 m |
 
+## Kept clear by each part of the keep-out
+The positions of the layout with shaded positions allowed that fall in each part (`Keepout.positions`, Phase 5):
+parapet 12, stair room 18, water tank 9, AC units 0, 0, 0 and 1. The layout with shaded positions allowed has
+834 positions: the grid begins at the edge of what is usable, which the keep-out moves, so the parts together
+(40) are not exactly the 44 the keep-out takes away.
+
 ## Strings at 1500 V
 Series range 14 to 29, nominal 26. Voc cold 51.04 V per module. 4 strings per MPPT, 24 per inverter.
 

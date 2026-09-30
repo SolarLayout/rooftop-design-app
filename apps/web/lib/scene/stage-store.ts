@@ -4,12 +4,17 @@
 import { createStore } from "zustand/vanilla";
 import { sameLabels, type StageLabel } from "./projection";
 
+/** What the ground under the roof is: nothing yet, the plain colour with the grid, or the imagery. */
+export type Ground = "none" | "plain" | "imagery";
+
 export type StageState = {
   labels: StageLabel[];
   /** Where the camera looks, in degrees clockwise from north. */
   bearingDeg: number;
+  ground: Ground;
   setLabels: (labels: StageLabel[]) => void;
   setBearing: (bearingDeg: number) => void;
+  setGround: (ground: Ground) => void;
 };
 
 export type StageStore = ReturnType<typeof createStageStore>;
@@ -21,14 +26,19 @@ export function createStageStore() {
   return createStore<StageState>()((set, get) => ({
     labels: [],
     bearingDeg: 0,
+    ground: "none",
     setLabels(labels) {
       if (!sameLabels(get().labels, labels)) set({ labels });
     },
     setBearing(bearingDeg) {
       if (tenths(get().bearingDeg) !== tenths(bearingDeg)) set({ bearingDeg });
     },
+    setGround(ground) {
+      if (get().ground !== ground) set({ ground });
+    },
   }));
 }
 
 export const labelsOf = (state: StageState) => state.labels;
 export const bearingDegOf = (state: StageState) => state.bearingDeg;
+export const groundOf = (state: StageState) => state.ground;

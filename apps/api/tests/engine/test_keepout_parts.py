@@ -1,11 +1,13 @@
 """The shadow keep-out, told apart by what casts it."""
 
+from dataclasses import replace
+
 import pytest
 from shapely.ops import unary_union
 
 from rooftop_core.demo import demo_roof
 from rooftop_core.io.pvsyst import read_pan
-from rooftop_core.keepout_parts import KeepoutPart, keepout_parts
+from rooftop_core.keepout_parts import KeepoutPart, keepout_parts, positions_kept_clear
 from rooftop_core.placement import ArraySpec, place
 from tests.equipment import fixture_path
 
@@ -86,3 +88,45 @@ def test_the_parts_follow_the_design_day_of_the_layout(module):
 
     assert june[1].name == december[1].name == "Stair room"
     assert june[1].area.area < december[1].area.area
+
+
+# How many positions each part keeps clear (plan/phase-05-plan.md, decision 4): the positions of the same
+# layout with shaded positions allowed that fall in the part.
+def test_each_part_counts_the_positions_it_keeps_clear(module):
+    roof = demo_roof()
+    array = ArraySpec()
+    layout = place(roof, array, module)
+    parts = positions_kept_clear(roof, array, module, keepout_parts(roof, array, layout))
+    shaded = place(roof, replace(array, allow_shaded=True), module)
+
+    # The demo's numbers (plan/reference/demo-numbers.md, "Kept clear by each part").
+    assert [(part.name or "parapet", part.positions) for part in parts] == [
+        ("parapet", 12),
+        ("Stair room", 18),
+        ("Water tank", 9),
+        ("AC unit 1", 0),
+        ("AC unit 2", 0),
+        ("AC unit 3", 0),
+        ("AC unit 4", 1),
+    ]
+    # The parts together count about what the keep-out took away: not exactly, because the grid of the
+    # positions starts at the edge of what is usable, which the keep-out moves a little.
+    taken_away = shaded.n_modules - layout.n_modules
+    assert taken_away > 0
+    assert abs(sum(part.positions for part in parts) - taken_away) <= 0.2 * taken_away
+
+
+def test_the_count_is_the_same_when_shaded_positions_are_allowed(module):
+    roof = demo_roof()
+    kept = ArraySpec()
+    allowed = ArraySpec(allow_shaded=True)
+    of_kept = positions_kept_clear(roof, kept, module, keepout_parts(roof, kept, place(roof, kept, module)))
+    of_allowed = positions_kept_clear(
+        roof, allowed, module, keepout_parts(roof, allowed, place(roof, allowed, module))
+    )
+
+    assert [part.positions for part in of_allowed] == [part.positions for part in of_kept]
+
+
+def test_without_a_count_a_part_keeps_clear_nothing_it_knows_of(parts):
+    assert all(part.positions == 0 for part in parts)

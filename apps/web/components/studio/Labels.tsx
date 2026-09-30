@@ -26,7 +26,7 @@ export function Labels({ stage }: Props) {
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-stage-overlay overflow-hidden contain-layout">
       {labels.map((label, index) =>
-        label.visible ? (
+        label.visible && label.kind === "label" ? (
           <span key={index} data-testid="stage-label" className={LABEL} style={measures({ x: label.x, y: label.y })}>
             {label.words}
           </span>

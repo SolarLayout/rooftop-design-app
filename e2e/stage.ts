@@ -11,6 +11,12 @@ export type Pixel = [red: number, green: number, blue: number];
 export const STAGE: Pixel = [11, 14, 19];
 
 export const stage = (page: Page) => page.getByTestId("stage");
+
+// The view controls of the stage (plan step 4).
+export const planView = (page: Page) => stage(page).getByRole("radio", { name: "Plan view" });
+export const threeDView = (page: Page) => stage(page).getByRole("radio", { name: "3D view" });
+export const fit = (page: Page) => stage(page).getByRole("button", { name: "Fit the roof" });
+export const north = (page: Page) => stage(page).getByRole("button", { name: /^North: the view looks/ });
 export const sceneCanvas = (page: Page) => stage(page).locator("canvas");
 
 /** A place on the canvas as shares of its width and height, from its top left. */
@@ -71,11 +77,22 @@ export const isNear = ([r1, g1, b1]: Pixel, [r2, g2, b2]: Pixel, within = 6) => 
 /** The roof is the brightest thing on the stage; until the first frame is drawn the pixels are black. */
 export const isBright = ([red, green, blue]: Pixel) => Math.min(red, green, blue) > 120;
 
+/** Something of the design is drawn there: the roof's grey or the modules' blue, not the background and not black. */
+export const isDrawn = (pixel: Pixel) => !isNear(pixel, STAGE) && !isNear(pixel, [0, 0, 0]) && (isBright(pixel) || pixel[2] > pixel[0] + 15);
+
 /** The stage drawn with the roof on it: its text equivalent names the roof and the canvas is there. */
 export async function sceneShown(page: Page): Promise<void> {
   await expect(stage(page)).toHaveAttribute("data-state", "scene", { timeout: A_SCENE });
   await expect(page.getByTestId("on-the-roof-roof")).toContainText("Roof", { timeout: A_SCENE });
   await expect(sceneCanvas(page)).toBeVisible({ timeout: A_SCENE });
+}
+
+/** The scene with everything it draws for the demo: the modules of the layout and the sun's light. */
+export async function sceneSettled(page: Page): Promise<void> {
+  await sceneShown(page);
+  await expect(page.getByTestId("on-the-roof-modules")).toContainText("modules", { timeout: A_SCENE });
+  await expect(page.getByTestId("on-the-roof-sun")).toContainText("Sun", { timeout: A_SCENE });
+  await expect(page.getByTestId("on-the-roof-ground")).toContainText("The ground is", { timeout: A_SCENE });
 }
 
 /** The page without WebGL, as a browser that has none. */

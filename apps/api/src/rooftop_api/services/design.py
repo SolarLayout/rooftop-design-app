@@ -15,7 +15,7 @@ from rooftop_api.services.equipment import current_per_mppt, module_notes
 from rooftop_api.services.uploads import file_name
 from rooftop_core import csv_weather, memo, readouts, shade_summary
 from rooftop_core.errors import EngineError
-from rooftop_core.keepout_parts import keepout_parts
+from rooftop_core.keepout_parts import keepout_parts, positions_kept_clear
 from rooftop_core.progress import ProgressEvent
 from rooftop_core.project import Design, Project
 from rooftop_core.simulation import UC_BY_ROOF
@@ -88,7 +88,10 @@ def result(run: Run, on_progress: Callable[[ProgressEvent], None] | None = None)
     layout, roof, module = design.layout, design.p.roof, design.module
     shade = shade_summary.summarise(design.pre)
     return schemas.DesignResult.model_construct(
-        layout=convert.layout_from_engine(layout, keepout_parts(roof, design.p.array, layout)),
+        layout=convert.layout_from_engine(
+            layout,
+            positions_kept_clear(roof, design.p.array, module, keepout_parts(roof, design.p.array, layout)),
+        ),
         readouts=layouts.readouts(roof, layout, module),
         weather=weather_service.summary(design.weather),
         weather_notes=run.weather_notes,

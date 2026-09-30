@@ -7,7 +7,7 @@ from rooftop_api.errors import UNPROCESSABLE, ApiError
 from rooftop_api.services.equipment import has_size, no_size_message
 from rooftop_core.geometry import Roof
 from rooftop_core.io.pvsyst import Module
-from rooftop_core.keepout_parts import keepout_parts
+from rooftop_core.keepout_parts import keepout_parts, positions_kept_clear
 from rooftop_core.placement import Layout, place
 from rooftop_core.project import Project, module_of
 
@@ -21,7 +21,7 @@ def lay_out(project: schemas.Project) -> schemas.LayoutResponse:
     require_outline(p.roof)
     module = module_for(p)
     layout = place(p.roof, p.array, module)
-    parts = keepout_parts(p.roof, p.array, layout)
+    parts = positions_kept_clear(p.roof, p.array, module, keepout_parts(p.roof, p.array, layout))
     return schemas.LayoutResponse(
         layout=convert.layout_from_engine(layout, parts), readouts=readouts(p.roof, layout, module)
     )

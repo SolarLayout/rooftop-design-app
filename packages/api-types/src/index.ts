@@ -719,6 +719,11 @@ export interface components {
             obstacle_index: number | null;
             /** Polygons */
             polygons: components["schemas"]["Polygon"][];
+            /**
+             * Positions
+             * @description How many positions it keeps clear: those of the layout with shaded positions allowed that fall in it
+             */
+            positions: number;
         };
         /**
          * Layout

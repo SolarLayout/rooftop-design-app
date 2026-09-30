@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "../fixtures";
-import { A_SCENE, isBright, isNear, pixelOnce, pixelsAt, sceneCanvas, sceneShown, stage, STAGE, withoutWebGL, type Share } from "../stage";
+import { A_SCENE, fit, isBright, isDrawn, isNear, north, pixelOnce, pixelsAt, planView, sceneCanvas, sceneShown, stage, STAGE, threeDView, withoutWebGL, type Share } from "../stage";
 
 // The 3D stage of the Studio (plan/phase-05-plan.md, steps 1 to 4): the scene is drawn in the browser
 // with software WebGL, on three sizes; its text equivalent names what is on the roof; without WebGL the
@@ -11,10 +11,6 @@ const RUN = 90_000;
 const isDesktop = (projectName: string) => projectName === "desktop";
 const isPhone = (projectName: string) => projectName === "phone";
 
-const planView = (page: Page) => stage(page).getByRole("radio", { name: "Plan view" });
-const threeDView = (page: Page) => stage(page).getByRole("radio", { name: "3D view" });
-const fit = (page: Page) => stage(page).getByRole("button", { name: "Fit the roof" });
-const north = (page: Page) => stage(page).getByRole("button", { name: /^North: the view looks/ });
 
 // Places in the middle band of the canvas, under no control and no label, where the two views differ.
 const BAND: Share[] = [0.35, 0.5, 0.65].flatMap((y) => [0.2, 0.35, 0.5, 0.65, 0.8].map((x): Share => [x, y]));
@@ -22,12 +18,12 @@ const BAND: Share[] = [0.35, 0.5, 0.65].flatMap((y) => [0.2, 0.35, 0.5, 0.65, 0.
 test.describe.configure({ timeout: RUN + 30_000 });
 
 test.describe("the stage", () => {
-  test("draws the demo's roof: the middle of the canvas is the roof, not the background", async ({ page }) => {
+  test("draws the demo's roof: the middle of the canvas is the roof with its modules, not the background", async ({ page }) => {
     await page.goto("/studio/roof");
     await sceneShown(page);
 
-    const pixel = await pixelOnce(page, 0.5, 0.5, isBright);
-    expect(isBright(pixel), `the middle of the stage is ${pixel.join(", ")}`).toBe(true);
+    const pixel = await pixelOnce(page, 0.5, 0.5, isDrawn);
+    expect(isDrawn(pixel), `the middle of the stage is ${pixel.join(", ")}`).toBe(true);
     expect(isNear(pixel, STAGE)).toBe(false);
     await expect(page.getByTestId("on-the-roof-roof")).toHaveText("Roof, 4 corners, 3,600 m², parapet 0.9 m", { timeout: RUN });
   });
@@ -53,7 +49,7 @@ test.describe("the stage", () => {
   test("Plan changes the picture: the roof lies in the middle, north up, the ground above it", async ({ page }) => {
     await page.goto("/studio/roof");
     await sceneShown(page);
-    await pixelOnce(page, 0.5, 0.5, isBright);
+    await pixelOnce(page, 0.5, 0.5, isDrawn);
     const in3D = await pixelsAt(page, BAND);
     await expect(planView(page)).toHaveAttribute("aria-checked", "false");
 
@@ -63,8 +59,8 @@ test.describe("the stage", () => {
     await expect
       .poll(async () => (await pixelsAt(page, BAND)).some((pixel, index) => !isNear(pixel, in3D[index])), { timeout: A_SCENE })
       .toBe(true);
-    const middle = await pixelOnce(page, 0.5, 0.5, isBright);
-    expect(isBright(middle), `the middle of the plan is ${middle.join(", ")}`).toBe(true);
+    const middle = await pixelOnce(page, 0.5, 0.5, isDrawn);
+    expect(isDrawn(middle), `the middle of the plan is ${middle.join(", ")}`).toBe(true);
     const [above] = await pixelsAt(page, [[0.5, 0.08]]);
     expect(isBright(above), `above the roof in the plan is ${above.join(", ")}`).toBe(false);
 

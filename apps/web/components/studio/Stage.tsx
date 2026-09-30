@@ -2,17 +2,21 @@
 
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { useStore } from "zustand";
 import { useProject, useResults } from "@/components/shell/stores";
 import { useWebGL } from "@/components/find/use-web-gl";
 import { classNames } from "@/components/ui/class-names";
 import { shown } from "@/components/ui/number-entry";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
+import { calloutOf } from "@/lib/scene/keepout";
 import { wordsOf } from "@/lib/scene/obstacles";
-import { createStageStore } from "@/lib/scene/stage-store";
+import { createStageStore, groundOf, type StageStore } from "@/lib/scene/stage-store";
 import type { Lens } from "@/lib/routes";
 import { projectOf } from "@/lib/stores/project-store";
-import { readoutsOf } from "@/lib/stores/results-store";
+import { layoutOf, readoutsOf, sunOf } from "@/lib/stores/results-store";
+import { Callout } from "./Callout";
 import { Labels } from "./Labels";
+import { PlanFallback } from "./PlanFallback";
 import { subLineOf } from "./stage-view";
 import { ViewControls } from "./ViewControls";
 
@@ -39,6 +43,7 @@ const VIEW_CONTROLS = "top-1 right-3 tablet:top-4 tablet:right-5 desktop:top-5";
 export function Stage({ lens, name, className }: Props) {
   const project = useProject(projectOf);
   const readouts = useResults(readoutsOf);
+  const layout = useResults(layoutOf);
   const webGL = useWebGL();
   const [isLost, setLost] = useState(false);
   // What the scene tells the DOM over it, for this stage alone.
@@ -48,8 +53,15 @@ export function Stage({ lens, name, className }: Props) {
 
   return (
     <div data-testid="stage" data-state={cannotDraw ? "plan" : "scene"} className={classNames("relative", className)}>
-      <div className="absolute inset-0 z-stage">{cannotDraw ? null : <Scene onContextLost={() => setLost(true)} stage={stage} />}</div>
+      <div className="absolute inset-0 z-stage">
+        {cannotDraw ? (
+          project ? <PlanFallback roof={project.roof} layout={layout?.layout ?? null} reason={cannotDraw} /> : null
+        ) : (
+          <Scene onContextLost={() => setLost(true)} stage={stage} />
+        )}
+      </div>
       {cannotDraw ? null : <Labels stage={stage} />}
+      {cannotDraw ? null : <Callout stage={stage} />}
       <div className="pointer-events-none absolute inset-x-4 top-4 z-stage-overlay flex flex-col gap-0.5 tablet:inset-x-5 desktop:top-5 desktop:left-6">
         <h1 className="sr-only desktop:not-sr-only desktop:type-lens">{name}</h1>
         {subLine ? (
@@ -59,26 +71,26 @@ export function Stage({ lens, name, className }: Props) {
         ) : null}
       </div>
       {cannotDraw ? null : <ViewControls stage={stage} className={VIEW_CONTROLS} />}
-      {cannotDraw ? (
-        <p role="status" className="absolute inset-x-4 bottom-4 z-stage-overlay type-small text-text-2">
-          {cannotDraw}
-        </p>
-      ) : ATTRIBUTION ? (
+      {cannotDraw ? null : ATTRIBUTION ? (
         <p data-testid="stage-attribution" className="pointer-events-none absolute bottom-1 left-4 z-stage-overlay max-w-full truncate type-label-s text-text-on-imagery on-imagery tablet:left-5 desktop:bottom-1.5 desktop:left-6">
           {ATTRIBUTION}
         </p>
       ) : null}
-      <OnTheRoof />
+      <OnTheRoof stage={stage} />
     </div>
   );
 }
 
 /** The text equivalent of the scene: what stands on the roof, for a screen reader and for the tests. */
-function OnTheRoof() {
+function OnTheRoof({ stage }: { stage: StageStore }) {
+  const ground = useStore(stage, groundOf);
   const project = useProject(projectOf);
   const readouts = useResults(readoutsOf);
+  const layout = useResults(layoutOf);
+  const sun = useResults(sunOf);
   if (!project) return null;
-  const { roof } = project;
+  const { roof, array } = project;
+  const window = { from: array.window_start_h, to: array.window_end_h, allowShaded: array.allow_shaded };
   return (
     <ul aria-label="On the roof" className="sr-only">
       <li data-testid="on-the-roof-roof">
@@ -92,6 +104,24 @@ function OnTheRoof() {
           </li>
         ),
       )}
+      {layout ? (
+        <li data-testid="on-the-roof-modules">
+          {shown(layout.layout.modules.length, 0)} modules in {shown(layout.layout.n_rows, 0)} rows
+        </li>
+      ) : null}
+      {ground === "none" ? null : (
+        <li data-testid="on-the-roof-ground">{ground === "imagery" ? "The ground is the satellite imagery" : "The ground is plain, with a grid"}</li>
+      )}
+      {sun ? (
+        <li data-testid="on-the-roof-sun">
+          Sun {shown(sun.elevationDeg, 1)}° over the horizon, {shown(sun.azimuthDeg, 1)}° from north
+        </li>
+      ) : null}
+      {layout?.layout.keepout.map((part, index) => (
+        <li key={`keepout-${index}`} data-testid="on-the-roof-keepout">
+          {calloutOf(part, window).title}: {calloutOf(part, window).detail}
+        </li>
+      ))}
     </ul>
   );
 }

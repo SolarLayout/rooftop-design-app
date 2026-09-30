@@ -78,7 +78,7 @@ describe("a pixel of the canvas", () => {
 });
 
 describe("whether the labels changed", () => {
-  const label = { words: "90.0 m", x: 100.2, y: 50.4, visible: true };
+  const label = { kind: "label" as const, words: "90.0 m", x: 100.2, y: 50.4, visible: true };
 
   test("the same, give or take less than a pixel, is the same", () => {
     expect(sameLabels([label], [{ ...label, x: 100.4, y: 49.6 }])).toBe(true);
