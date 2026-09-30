@@ -6,6 +6,7 @@ import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { API_DIR } from "../../lib/paths.ts";
 import { FRESH_VARIABLE, REPORT_PREFIX } from "../pytest-selected-report.ts";
 import { makeWorktree, type Worktree } from "./worktree.ts";
 
@@ -23,14 +24,25 @@ const A_RUN = 300_000;
 
 type Run = { code: number; report: string; ran: string[]; output: string };
 
-/** The runner in the worktree, on the subset, with the proofs' own sentinel. */
+/**
+ * The runner in the worktree, on the subset, with the proofs' own sentinel. The worktree has no Python
+ * environment of its own: uv runs the environment of the repo without syncing it, and the worktree's
+ * `src` stands first on the path, so its modules are the ones imported and measured. Nothing is
+ * installed and nothing is fetched.
+ */
 function run(env: Record<string, string> = {}): Run {
   // A second -v (the runner gives one): one line per test, so that what ran can be read.
   const result = spawnSync("bun", ["tools/check/pytest-selected.ts", "-v", "-o", `always_run=${SENTINEL}`, ...SUBSET], {
     cwd: worktree.path,
     encoding: "utf8",
     maxBuffer: 64 << 20,
-    env: { ...process.env, ...env },
+    env: {
+      ...process.env,
+      UV_PROJECT_ENVIRONMENT: join(API_DIR, ".venv"),
+      UV_NO_SYNC: "1",
+      PYTHONPATH: join(api, "src"),
+      ...env,
+    },
   });
   const output = `${result.stdout}${result.stderr}`;
   const report = output.split("\n").findLast((line) => line.startsWith(REPORT_PREFIX))?.slice(REPORT_PREFIX.length) ?? "";
@@ -55,8 +67,6 @@ function withChange<T>(file: string, change: (text: string) => string, body: () 
 beforeAll(() => {
   worktree = makeWorktree();
   api = join(worktree.path, "apps/api");
-  const synced = spawnSync("uv", ["sync", "--frozen", "--offline"], { cwd: api, encoding: "utf8" });
-  if (synced.status !== 0) throw new Error(`uv sync in the worktree failed: ${synced.stderr}`);
 }, A_RUN);
 
 afterAll(() => {
