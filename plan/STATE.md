@@ -3,9 +3,10 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-09-30, end of session 5. Phase 3 is done: the design system as code, the stores, the
-data flow, the routes and the shell are merged (pull requests #24 to #33). Phase 4 is next; its work order is
-resume prompt 005, which asks for a plan first.
+**Last updated:** 2026-09-30, session 6, after step 2 of Phase 4. The plan of the phase is `plan/phase-04-plan.md`
+(three pull requests, fifteen steps). Pull request #34 (the demo run once before the browser tests) is merged.
+The first pull request of the phase, #35, is a draft with steps 1 and 2 in it; the boards of step 0 are on
+`main` and wait for the owner's word.
 
 ## Where we are
 
@@ -15,11 +16,15 @@ resume prompt 005, which asks for a plan first.
 | 1 Foundation | Done, merged (PR #1) | |
 | 2 Engine and API | Done (PR #7, PRs #11 to #23) | What exists, what was decided, what was found: `phase-02-engine-api.md`, "As built" |
 | 3 Design system and shell | Done (PRs #24 to #33) | What exists, what was decided, what was found: `phase-03-design-system-shell.md`, "As built". How its second half was built: `phase-03-rest-plan.md` |
-| 4 to 11 | Not started | |
+| 4 Find and outline | In progress, session 6 | Plan: `phase-04-plan.md`. Steps 0 to 2 done; pull request #35 open as a draft |
+| 5 to 11 | Not started | |
 
 ## In flight
 
-No open branch and no open pull request. `main` is green. Nothing waits for the owner.
+Branch `feat/phase-4-find`, pull request #35 (draft): step 1 (the API's `/roof/from-map` and `/roof/on-map`, the
+client's calls) and step 2 (the stores at the root of the app). `main` is green. Waiting for the owner: a yes to
+the two boards of step 0 (`docs/design/previews/find-outline-tablet.png`, `find-outline-states.png`), before
+step 3 is shown.
 
 ## What the web app has today
 
@@ -50,6 +55,7 @@ tested.
 | `GET /health`, `GET /demo` | `getHealth`, `getDemo` |
 | `POST /equipment/module`, `/equipment/inverter` | `parseModule`, `parseInverter` |
 | `POST /roof/import` | `importRoof` |
+| `POST /roof/from-map`, `POST /roof/on-map` | `roofFromMap`, `roofOnMap` |
 | `POST /layout`, `POST /sun` | `computeLayout`, `computeSun` |
 | `POST /weather` | `loadWeather` |
 | `POST /design`, progress as events | `runDesign` |
@@ -60,10 +66,10 @@ changed; an export 0.2 to 0.9 s after a run.
 
 ## Next, in order
 
-1. Phase 4: find the roof on the map and outline it (the flagship). Work order:
-   `plan/resume/005-phase-4-find-and-outline.md`: the plan first (`plan/phase-04-plan.md`), the owner's word,
-   then the build. Scope: `plan/phase-04-find-and-outline.md`. Before it: the memo for the shading, if a
-   check of a pull request passes 6 min 30 s (see "Open items").
+1. Phase 4, from step 3 of `plan/phase-04-plan.md`: the map, the search, the route `/find` (pull request #35),
+   then the outline (pull request 2) and the obstacles and the by-hand entry (pull request 3). Work order:
+   `plan/resume/005-phase-4-find-and-outline.md`. Before anything else: the memo for the shading, if a check of
+   a pull request passes 6 min 30 s (see "Open items").
 2. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
 3. In parallel with any phase: the screens still to draw (Phase 0).
 
@@ -97,7 +103,7 @@ changed; an export 0.2 to 0.9 s after a run.
 | A fresh clone has not been tried | Phase 11 |
 | Esri's imagery tile host answered one request without a referrer; the key is scoped, not secret. Watch usage on the Esri dashboard | Phase 4 |
 | The key needs the production address added to its referrers when the app gets one | Deployment |
-| `tools/imagery-preview/` is a throwaway test page on port 4700; remove it when Phase 4 lands | Phase 4 |
+| `tools/imagery-preview/` is a throwaway test page on port 4700; it goes with step 3 of Phase 4 | Phase 4, pull request #35 |
 | Option captions "Fills the inverter" and "Lower clipping" in the Strings mockup are derived in the web app; the engine does not produce them | Phase 7 |
 | String placement on the roof in the Strings mockup is illustrative | Phase 7 uses the engine's strings |
 | Heights cannot come from a DXF: a layer name may hold neither `=` nor `:`. Every DXF obstacle gets 1.0 m and is listed as missing | Phase 5, with the owner |
@@ -110,7 +116,7 @@ changed; an export 0.2 to 0.9 s after a run.
 | The report (PDF) prints the date of the server's day | Phase 9 |
 | pytest takes 152 s here and the check of a pull request 3 min 33 s to 6 min 43 s (sessions 3 to 5), of the 10 it may take. In session 5 it took 4 min 18 s to 6 min 29 s on the same code of the API: the time is of the machine of the check, not of the change. Most of it is design runs of 1.5 s each; they could share their shading through a memo | When a check passes 6 min 30 s: the memo, as a pull request of its own, before anything else. It came within a second of it three times in session 5 |
 | One browser test failed once in a full run and passes alone, five times of five: `kit-sheet.e2e.ts`, "and by keyboard: the keyboard stops at what scrolls", on desktop. The key End was pressed and the sheet did not scroll. It did not fail again in the nine full runs after | Watch. If it fails again: make the test wait until the content can scroll before the key, as a pull request of its own |
-| The browser tests of the shell run the design of the demo on the server of the tests, on three sizes at once. A test waits for a result up to 90 s; under that load the layout alone took more than 5 s once | Watch. If they become slow or unsteady: one run before the tests begin, in the global setup, so that the server has kept its results |
+| The browser tests of the shell run the design of the demo on the server of the tests, on three sizes at once. On 2026-09-30 eight phone tests waited more than 90 s on a cold server; since #34 the global setup runs the demo once before the tests begin | Done in #34. Watch that it stays steady |
 | A push was refused once with "Permission denied (publickey)" and went through when tried again | Watch; nothing to do |
 | The `/api` rewrite passes the events of a design run on as they come in `next dev`. A production build (`next start`) and a proxy in front of it have not been tried | Phase 11, deployment |
 | One design run keeps a worker thread busy for 12 s and the process holds up to 576 MB of kept results. How many runs at once a server must carry is not decided | Phase 11 |
