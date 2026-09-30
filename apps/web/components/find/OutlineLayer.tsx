@@ -400,6 +400,11 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
     map.getCanvas().style.cursor = drawsByDrag || drawsByPress ? "crosshair" : "";
   }, [map, drawsByDrag, drawsByPress]);
 
+  // Without a tool in hand (the roof typed by hand) the corners are shown, not dragged.
+  useEffect(() => {
+    [...corners.current, ...midpoints.current].forEach((marker) => marker.setDraggable(tool !== null));
+  }, [tool, state.corners.length]);
+
   // The handles and the labels: made anew when their number changes, moved otherwise; left alone
   // while one is dragged, because the drag is theirs.
   useEffect(() => {
@@ -555,7 +560,7 @@ function cornerMarker(map: MapLibre, index: number, latest: Latest, isDragging: 
     if (index === 0 && !state.closed && state.corners.length >= 3) on({ type: "close" });
     else on({ type: "selected", index });
   });
-  const marker = new Marker({ element, draggable: true }).setLngLat([0, 0]).addTo(map);
+  const marker = new Marker({ element, draggable: latest.current.tool !== null }).setLngLat([0, 0]).addTo(map);
   let loupe: Marker | null = null;
   marker.on("dragstart", () => {
     isDragging.current = true;
@@ -593,7 +598,7 @@ function midpointMarker(map: MapLibre, edge: number, latest: Latest, isDragging:
     const { state, on } = latest.current;
     if (state.frame) on({ type: "midpointTaken", edge, at: metresOf(marker, state.frame) });
   });
-  const marker = new Marker({ element, draggable: true }).setLngLat([0, 0]).addTo(map);
+  const marker = new Marker({ element, draggable: latest.current.tool !== null }).setLngLat([0, 0]).addTo(map);
   // A drag of a midpoint makes a corner there and drags it.
   marker.on("dragstart", () => {
     isDragging.current = true;

@@ -26,11 +26,15 @@ class MapShape(Input):
 
 
 class OutlineOnMap(Input):
-    """What was drawn on the map: the corners of the roof, the obstacles, the roof type, a name."""
+    """What was drawn on the map, or entered by hand about a place: the corners of the roof, the
+    obstacles, the roof type, a name."""
 
     outline: Annotated[list[LonLat], Field(min_length=3)]
     obstacles: list[MapShape] = []
     roof_type: RoofType = "flat_tilted"
+    source: Literal["map", "coordinates"] = Field(
+        default="map", description="How the roof was entered: outlined on the map, or by its measurements"
+    )
     name: Name | None = Field(
         default=None, description="The name of the new design; the API's default when left out"
     )

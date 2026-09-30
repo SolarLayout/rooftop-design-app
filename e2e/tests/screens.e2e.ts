@@ -90,6 +90,36 @@ test("find, the obstacles drawn", async ({ page }) => {
   await expectScreen(page, "find-obstacles");
 });
 
+// The roof entered by hand without a map (no WebGL): the plan on the stage, the fields in the panel, as
+// the board "Enter dimensions by hand" draws it.
+test("find, the roof by hand", async ({ page }) => {
+  await page.addInitScript(() => {
+    const getContext = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement, kind: string, ...rest: unknown[]) {
+      if (kind === "webgl" || kind === "webgl2") return null;
+      return (getContext as (this: HTMLCanvasElement, kind: string, ...rest: unknown[]) => unknown).call(this, kind, ...rest);
+    } as typeof HTMLCanvasElement.prototype.getContext;
+  });
+  await page.goto("/find");
+  await page.getByRole("status").getByRole("button", { name: "Enter dimensions by hand instead" }).click();
+  await searchField(page).fill("18.52000, 73.86000");
+  await searchField(page).press("Enter");
+  await expect(page.getByRole("textbox", { name: "Latitude" })).toHaveValue("18.52000");
+  for (const [name, value] of [
+    ["Length", "90"],
+    ["Width", "40"],
+    ["Long side faces", "180"],
+  ] as const) {
+    await page.getByRole("textbox", { name }).fill(value);
+    await page.getByRole("textbox", { name }).press("Enter");
+  }
+  await expect(page.getByTestId("plan-view").getByTestId("plan-label")).toHaveCount(4);
+  // The last field commits by the mouse: no focus ring in the picture.
+  await page.getByRole("heading", { level: 1, name: "Enter the roof by hand" }).click();
+
+  await expectScreen(page, "find-by-hand");
+});
+
 // The shell, with the demo from the API of the test stack. A picture is taken once the result is there.
 test.describe("the shell", () => {
   const RUN = 90_000;

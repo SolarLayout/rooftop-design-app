@@ -73,6 +73,14 @@ def test_without_a_name_the_project_is_the_untitled_roof(client):
     assert _from_map(client).json()["name"] == "Untitled roof"
 
 
+def test_a_roof_entered_by_hand_about_a_place_keeps_its_source(client):
+    roof = _from_map(client, source="coordinates").json()["roof"]
+
+    assert roof["source"] == "coordinates"
+    assert _edges(roof["outline"]) == pytest.approx([90, 40, 90, 40], abs=0.01)
+    assert _from_map(client).json()["roof"]["source"] == "map"
+
+
 def test_obstacles_drawn_on_the_map_keep_their_heights_and_become_the_shapes_of_the_engine(client):
     box = local_to_lonlat([(10, 5), (15, 5), (15, 9), (10, 9)], *PUNE)
     tank = local_to_lonlat([(30, 10)], *PUNE)

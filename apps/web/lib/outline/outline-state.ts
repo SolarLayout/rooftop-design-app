@@ -63,6 +63,7 @@ export type OutlineEvent =
   | { type: "turnDropped" }
   | { type: "footprintTaken"; corners: readonly XY[] }
   | { type: "loaded"; at: LonLat; corners: readonly XY[]; obstacles?: readonly Obstacle[] }
+  | { type: "entered"; at: LonLat; corners: readonly XY[] }
   | { type: "shapeDragged"; kind: "box" | "cylinder"; from: XY; to: XY }
   | { type: "shapeDropped" }
   | { type: "shapePlaced"; kind: "wall" | "building"; at: XY; metresPerPx: number; touch: boolean }
@@ -304,6 +305,18 @@ export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineS
       const obstacles = event.obstacles ?? [];
       const drawn: Drawn = { corners: event.corners, closed: true, rectangle: null, obstacles };
       return { ...START, frame: frameAt(event.at), ...drawn, squared: state.squared, nextId: Math.max(0, ...obstacles.map((obstacle) => obstacle.id)) + 1, history: historyOf(drawn) };
+    }
+
+    case "entered": {
+      // The roof typed by hand: a closed outline at the place, a step each time it changes. The
+      // obstacles stay while the place stays; at another place they are of the old roof and go.
+      const samePlace = state.frame !== null && state.frame.centre.lon === event.at.lon && state.frame.centre.lat === event.at.lat;
+      const frame = samePlace ? state.frame : frameAt(event.at);
+      const corners = event.corners.length < FEWEST_CORNERS ? [] : event.corners;
+      const same = samePlace && corners.length === state.corners.length && corners.every((corner, n) => corner.x === state.corners[n].x && corner.y === state.corners[n].y);
+      if (same && state.closed === corners.length > 0) return state;
+      const drawn: Drawn = { corners, closed: corners.length > 0, rectangle: null, obstacles: samePlace ? state.obstacles : [] };
+      return { ...state, frame, ...drawn, selected: null, selectedObstacle: null, drawing: null, pending: null, history: withNext(state.history, drawn) };
     }
 
     case "shapeDragged": {

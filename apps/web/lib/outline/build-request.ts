@@ -17,13 +17,17 @@ export function cornersOnMap(state: OutlineState): [number, number][] | null {
   });
 }
 
-export function buildRequestOf(state: OutlineState, roofType: Roof["roof_type"], foundBy: FoundBy | null): OutlineOnMap | null {
+/** How the roof was entered: outlined on the map, or typed by its measurements ("coordinates", as the desktop app's). */
+export type EnteredBy = "map" | "coordinates";
+
+export function buildRequestOf(state: OutlineState, roofType: Roof["roof_type"], foundBy: FoundBy | null, source: EnteredBy = "map"): OutlineOnMap | null {
   const outline = cornersOnMap(state);
   if (!outline || !state.frame) return null;
   return {
     outline,
     obstacles: mapShapesOf(state.obstacles, state.frame),
     roof_type: roofType,
+    source,
     ...(foundBy?.byWords ? { name: foundBy.label } : {}),
   };
 }

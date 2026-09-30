@@ -31,6 +31,19 @@ function Tile({ label, value, unit }: { label: string; value: string; unit?: str
   );
 }
 
+/** The area, the direction the long side faces and the corners, as three tiles. */
+export function MeasurementTiles({ state }: { state: OutlineState }) {
+  const hemisphere = (state.frame?.centre.lat ?? 0) >= 0 ? "north" : "south";
+  const measured = measurementsOf(state, hemisphere);
+  return (
+    <section className="grid grid-cols-3 gap-field" aria-label="Measurements">
+      <Tile label="Area" value={measured.area === null ? "—" : shown(Math.round(measured.area), 0)} unit={measured.area === null ? undefined : "m²"} />
+      <Tile label="Faces" value={measured.facing === null ? "—" : `${Math.round(measured.facing.degrees)}° ${measured.facing.compass}`} />
+      <Tile label="Corners" value={measured.corners === 0 ? "—" : String(measured.corners)} />
+    </section>
+  );
+}
+
 /** The measurements of the outline, live, and the fields that correct it (the board "Find and outline"). */
 export function OutlinePanel({ state, on, className }: Props) {
   const hemisphere = (state.frame?.centre.lat ?? 0) >= 0 ? "north" : "south";
@@ -73,11 +86,7 @@ export function OutlinePanel({ state, on, className }: Props) {
         </div>
       </section>
 
-      <section className="grid grid-cols-3 gap-field" aria-label="Measurements">
-        <Tile label="Area" value={measured.area === null ? "—" : shown(Math.round(measured.area), 0)} unit={measured.area === null ? undefined : "m²"} />
-        <Tile label="Faces" value={measured.facing === null ? "—" : `${Math.round(measured.facing.degrees)}° ${measured.facing.compass}`} />
-        <Tile label="Corners" value={String(measured.corners)} />
-      </section>
+      <MeasurementTiles state={state} />
     </div>
   );
 }

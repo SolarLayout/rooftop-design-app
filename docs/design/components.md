@@ -246,6 +246,26 @@ touch), `DetectedCallout` the callout of Detect building. Every rule of drawing 
   on a row selects it, Remove takes it. The card of the Roof lens counts them. In code: `ObstacleList`,
   `HeightDialog`, the obstacles in `lib/outline/obstacles.ts` and the reducer.
 
+## Enter dimensions by hand (Find and outline)
+The way on when there is no map key, no WebGL or no connection, and a way for anyone who has measured the roof
+(the board "Enter dimensions by hand"). "Enter dimensions by hand instead", under Build and in the place of the map
+when there is none, switches the panel to fields: Place (latitude and longitude, five decimals, north and east
+positive, filled by the search or typed), Shape (a segmented control, Rectangle or Corners), then Length, Width
+and "Long side faces" (metres with two decimals; degrees clockwise from north, whole), or the corner table (a row
+per corner, metres east and north of the middle of the roof, Add a corner, Remove, three at least); then the same
+tiles, roof type and Build as for a roof drawn on the map. Nothing is preselected: the fields are empty, the tiles
+say nothing and Build waits until the place and the shape are there.
+
+The roof is drawn as it is typed. With a map it stands on the imagery at the place, turned to where it faces, and
+its corners are shown, not dragged: the fields are the truth of it; "Draw on the map instead" goes back to the
+tools. Without a map the stage draws the plan: north up, on a grid of 10 m, the outline in the accent with its edge
+labels, a north mark, the scale bar, and the reason there is no map where the attribution stands. Build sends the
+corners in WGS84 about the place, as for a roof drawn, with the source "coordinates": the card of the Roof lens
+says "Entered by hand". Obstacles by hand come with the Roof lens.
+
+In code (`apps/web/components/find`): `ByHandPanel` the fields, `PlanView` the plan, the rectangle and the table in
+`apps/web/lib/outline/by-hand.ts`, the roof entered as one event of the reducer (`entered`).
+
 ## Deliverable row (Handover)
 Row 64 high: format badge 44 by 28 (accent for the selected row), title, one line of facts, then a download
 icon (file) or a chevron (opens a view).
