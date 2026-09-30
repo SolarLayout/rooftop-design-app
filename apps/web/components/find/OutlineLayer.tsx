@@ -46,6 +46,13 @@ const TURN_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 
 const isCoarse = () => window.matchMedia("(pointer: coarse)").matches;
 
+// The loupe of a touch drag: 104 px, twice the imagery, a cross at the corner, above the finger.
+const LOUPE = "relative block size-26 overflow-hidden rounded-full border-outline border-accent bg-ground shadow-float";
+const LOUPE_CROSS = "absolute bg-accent opacity-updating";
+const LOUPE_PX = 104;
+const LOUPE_TIMES = 2;
+const LOUPE_ABOVE_PX = 92;
+
 /** A token of the container's stylesheet, for what MapLibre paints itself. */
 function tokenOf(map: MapLibre, name: string): string {
   return getComputedStyle(map.getContainer()).getPropertyValue(name).trim();
@@ -264,6 +271,36 @@ function metresOf(marker: Marker, frame: Frame): XY {
   return toMetres(frame, { lon: lng, lat });
 }
 
+/** The loupe over a corner dragged by a finger: a canvas that shows the map around the corner, twice as large. */
+function loupeMarker(map: MapLibre): Marker {
+  const element = document.createElement("span");
+  element.className = LOUPE;
+  element.dataset.testid = "loupe";
+  element.setAttribute("aria-hidden", "true");
+  const canvas = document.createElement("canvas");
+  canvas.width = LOUPE_PX * window.devicePixelRatio;
+  canvas.height = LOUPE_PX * window.devicePixelRatio;
+  canvas.className = "block size-full";
+  element.appendChild(canvas);
+  const across = document.createElement("span");
+  across.className = classNames(LOUPE_CROSS, "top-1/2 left-0 h-px w-full");
+  const down = document.createElement("span");
+  down.className = classNames(LOUPE_CROSS, "top-0 left-1/2 h-full w-px");
+  element.append(across, down);
+  return new Marker({ element, offset: [0, -LOUPE_ABOVE_PX] }).setLngLat([0, 0]).addTo(map);
+}
+
+function drawLoupe(map: MapLibre, loupe: Marker, at: { lng: number; lat: number }): void {
+  const canvas = loupe.getElement().querySelector("canvas");
+  const context = canvas?.getContext("2d");
+  if (!canvas || !context) return;
+  const ratio = map.getPixelRatio();
+  const point = map.project(at);
+  const side = (LOUPE_PX / LOUPE_TIMES) * ratio;
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.drawImage(map.getCanvas(), point.x * ratio - side / 2, point.y * ratio - side / 2, side, side, 0, 0, canvas.width, canvas.height);
+}
+
 function cornerMarker(map: MapLibre, index: number, latest: Latest, isDragging: React.RefObject<boolean>): Marker {
   const element = document.createElement("button");
   element.type = "button";
@@ -280,16 +317,24 @@ function cornerMarker(map: MapLibre, index: number, latest: Latest, isDragging: 
     else on({ type: "selected", index });
   });
   const marker = new Marker({ element, draggable: true }).setLngLat([0, 0]).addTo(map);
+  let loupe: Marker | null = null;
   marker.on("dragstart", () => {
     isDragging.current = true;
     latest.current.on({ type: "selected", index });
+    if (isCoarse()) loupe = loupeMarker(map);
   });
   marker.on("drag", () => {
     const { state, on } = latest.current;
     if (state.frame) on({ type: "cornerMoved", index, at: metresOf(marker, state.frame) });
+    if (loupe) {
+      loupe.setLngLat(marker.getLngLat());
+      drawLoupe(map, loupe, marker.getLngLat());
+    }
   });
   marker.on("dragend", () => {
     isDragging.current = false;
+    loupe?.remove();
+    loupe = null;
     latest.current.on({ type: "cornerDropped" });
   });
   return marker;

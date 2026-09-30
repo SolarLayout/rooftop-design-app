@@ -187,6 +187,32 @@ test.describe("by corners", () => {
     await expect(field(page, "East")).toBeVisible();
   });
 
+  test("on touch a loupe stands above the finger while a corner is dragged, twice the imagery; on desktop none", async ({ page }, testInfo) => {
+    const centre = await atTheRoof(page);
+    await drawTheRectangle(page, centre);
+    const corner = corners(page).nth(1);
+    const box = (await corner.boundingBox())!;
+    const loupe = page.getByTestId("loupe");
+
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width / 2 + 3 * PX_PER_M, box.y + box.height / 2, { steps: 4 });
+
+    if (testInfo.project.name === "desktop") {
+      await expect(loupe).toHaveCount(0);
+    } else {
+      await expect(loupe).toBeVisible();
+      const seen = (await loupe.boundingBox())!;
+      expect([Math.round(seen.width), Math.round(seen.height)]).toEqual([104, 104]);
+      // Above the finger: its middle is 92 above the corner.
+      const now = (await corner.boundingBox())!;
+      expect(Math.round(now.y + now.height / 2 - (seen.y + seen.height / 2))).toBe(92);
+    }
+    await page.mouse.up();
+
+    await expect(loupe).toHaveCount(0);
+  });
+
   test("the handles: 18 on desktop, 22 on touch, in a target of 44", async ({ page }, testInfo) => {
     const centre = await atTheRoof(page);
     await press(page, centre, 0, 0);

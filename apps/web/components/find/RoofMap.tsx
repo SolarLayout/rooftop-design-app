@@ -63,6 +63,8 @@ export function RoofMap({ imagery, view, onState, onMap, outline, className }: P
       zoom: view.zoom,
       maxZoom: MAX_ZOOM,
       attributionControl: false,
+      // The loupe of a touch drag copies what the map drew: the buffer must be kept.
+      canvasContextAttributes: { preserveDrawingBuffer: true },
       style: {
         version: 8,
         sources: {
