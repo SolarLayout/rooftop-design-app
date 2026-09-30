@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { XY } from "./measure";
-import { outlineAfter, START, type OutlineEvent, type OutlineState } from "./outline-state";
+import { isClosedAndSettled, outlineAfter, START, type OutlineEvent, type OutlineState } from "./outline-state";
 
 // The obstacles in the reducer of the outline (plan/phase-04-plan.md, step 14): a box, a tank, a wall
 // and a building drawn on the closed roof, each awaiting its height right after; selected, resized,
@@ -146,6 +146,19 @@ describe("a building beside the roof", () => {
     expect(outlineAfter(three, { type: "close" }).pending?.points).toHaveLength(3);
     const two = after(closed(), ...corners.slice(0, 2).map((at): OutlineEvent => ({ type: "shapePlaced", kind: "building", at, ...PRESS })));
     expect(outlineAfter(two, { type: "close" }).pending).toBeNull();
+  });
+});
+
+describe("what follows the closing", () => {
+  test("waits for a drag to end: a box dragged across the roof is closed from its first move, settled at its drop", () => {
+    const dragging = after(START, { type: "began", at: PUNE }, { type: "boxDragged", from: { x: -45, y: -20 }, to: { x: 45, y: 20 } });
+    expect(dragging.closed).toBe(true);
+    expect(isClosedAndSettled(dragging)).toBe(false);
+
+    const dropped = outlineAfter(dragging, { type: "boxDropped" });
+    expect(isClosedAndSettled(dropped)).toBe(true);
+    expect(isClosedAndSettled(closed())).toBe(true);
+    expect(isClosedAndSettled(START)).toBe(false);
   });
 });
 

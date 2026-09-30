@@ -344,7 +344,7 @@ test.describe("by Detect building", () => {
     await expect(corners(page)).toHaveCount(4);
   });
 
-  test("Adjust keeps the footprint and takes the corners tool", async ({ page }) => {
+  test("Adjust keeps the footprint, whose corners drag as any closed roof's; the toolbar has gone on to the obstacles", async ({ page }) => {
     await withTheFootprints(page);
     const centre = await atTheRoof(page);
     const callout = await proposed(page, centre);
@@ -352,7 +352,8 @@ test.describe("by Detect building", () => {
     await callout.getByRole("button", { name: "Adjust" }).click();
 
     await expect(callout).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Corners" })).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("button", { name: "Box" })).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("button", { name: "Corners" })).toHaveCount(0);
     await expect(corners(page)).toHaveCount(4);
     await expect(page.getByText("© Overture Maps Foundation, ODbL")).toHaveCount(0);
   });

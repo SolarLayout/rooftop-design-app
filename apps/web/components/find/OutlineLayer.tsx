@@ -9,10 +9,28 @@ import { footprintOutline, FOOTPRINTS_LAYER, FOOTPRINTS_URL, FOOTPRINTS_ZOOM } f
 import { metresPerPixel } from "@/lib/map/scale-bar";
 import { frameAt, toLonLat, toMetres, type Frame, type LonLat } from "@/lib/outline/frame";
 import { areaOf, centroidOf, midpointsOf, type XY } from "@/lib/outline/measure";
+import { foldOf, labelOf, type Obstacle, type ObstacleKind, type Shape } from "@/lib/outline/obstacles";
 import { turnedAbout } from "@/lib/outline/rectangle";
 import type { OutlineEvent, OutlineState } from "@/lib/outline/outline-state";
 
-export type Tool = "corners" | "rectangle" | "detect";
+/** The ways to outline while the roof is open; the obstacles to draw once it is closed. */
+export type Tool = "corners" | "rectangle" | "detect" | "box" | "tank" | "wall" | "building";
+
+/** The kind of obstacle a tool draws; null for a tool of the outline. */
+export function kindOfTool(tool: Tool | null): ObstacleKind | null {
+  switch (tool) {
+    case "box":
+      return "box";
+    case "tank":
+      return "cylinder";
+    case "wall":
+      return "wall";
+    case "building":
+      return "building";
+    default:
+      return null;
+  }
+}
 
 /** What a press with Detect building found, and where on the screen it was. */
 export type Detected = { at: { x: number; y: number } } & ({ found: true; corners: number; area: number } | { found: false });
@@ -33,6 +51,11 @@ const LINE = "outline-line";
 const FOOTPRINTS = "footprints";
 const FOOTPRINTS_FILL = "footprints-fill";
 const FOOTPRINTS_LINE = "footprints-line";
+const OBSTACLES = "obstacles";
+const OBSTACLES_FILL = "obstacles-fill";
+const OBSTACLES_LINE = "obstacles-line";
+// A round tank is drawn as a polygon of this many sides.
+const TANK_SIDES = 36;
 // The dashes of a footprint's line, in widths of the line.
 const FOOTPRINT_DASHES = [3, 2];
 
@@ -62,6 +85,11 @@ const LOUPE_CROSS = "absolute bg-accent opacity-updating";
 const LOUPE_PX = 104;
 const LOUPE_TIMES = 2;
 const LOUPE_ABOVE_PX = 92;
+
+/** Whether a press began on the map itself, not on a handle over it: a handle's drag is the handle's. */
+function onTheCanvas(map: MapLibre, event: MapMouseEvent | MapTouchEvent): boolean {
+  return event.originalEvent.target === map.getCanvas();
+}
 
 /** A token of the container's stylesheet, for what MapLibre paints itself. */
 function tokenOf(map: MapLibre, name: string): string {
@@ -96,6 +124,42 @@ function lonLatOf(frame: Frame, point: XY): [number, number] {
   return [lon, lat];
 }
 
+/** The outline of a shape as points: a tank as a polygon of many sides. */
+function ringOf(shape: Shape): XY[] {
+  if (shape.kind !== "cylinder") return [...shape.points];
+  const [centre] = shape.points;
+  const radius = (shape.diameter ?? 0) / 2;
+  return Array.from({ length: TANK_SIDES }, (_, n) => {
+    const angle = (2 * Math.PI * n) / TANK_SIDES;
+    return { x: centre.x + radius * Math.cos(angle), y: centre.y + radius * Math.sin(angle) };
+  });
+}
+
+/** The obstacles, the shape being drawn and the one awaiting its height, as what the map draws. */
+function obstaclesGeoJson(frame: Frame | null, obstacles: readonly Obstacle[], live: Shape | null, selected: number | null): FeatureCollection {
+  if (!frame) return { type: "FeatureCollection", features: [] };
+  const features: FeatureCollection["features"] = [];
+  const add = (shape: Shape, properties: { id: number | null; selected: boolean; live: boolean }) => {
+    const ring = ringOf(shape).map((point) => lonLatOf(frame, point));
+    if (shape.kind === "wall") {
+      if (ring.length >= 2) features.push({ type: "Feature", geometry: { type: "LineString", coordinates: ring }, properties });
+      return;
+    }
+    if (ring.length >= 3) features.push({ type: "Feature", geometry: { type: "Polygon", coordinates: [[...ring, ring[0]]] }, properties });
+    else if (ring.length === 2) features.push({ type: "Feature", geometry: { type: "LineString", coordinates: ring }, properties });
+  };
+  obstacles.forEach((obstacle) => add(obstacle, { id: obstacle.id, selected: obstacle.id === selected, live: false }));
+  if (live) add(live, { id: null, selected: false, live: true });
+  return { type: "FeatureCollection", features };
+}
+
+/** The handles of an obstacle: its corners, or the one at the edge of a tank. */
+function handlesOf(obstacle: Obstacle): XY[] {
+  if (obstacle.kind !== "cylinder") return [...obstacle.points];
+  const [centre] = obstacle.points;
+  return [{ x: centre.x + (obstacle.diameter ?? 0) / 2, y: centre.y }];
+}
+
 /**
  * What the outline draws on the map: the fill and the line (MapLibre layers, painted in the tokens),
  * the handles of the corners and the midpoints, the labels of the edges (markers), and what a press on
@@ -106,6 +170,9 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
   const midpoints = useRef<Marker[]>([]);
   const labels = useRef<Marker[]>([]);
   const turn = useRef<Marker | null>(null);
+  const obstacleLabels = useRef<Marker[]>([]);
+  const obstacleHandles = useRef<Marker[]>([]);
+  const liveHandles = useRef<Marker[]>([]);
   const isDragging = useRef(false);
   const latest = useRef({ state, tool, on, onDetected });
   useEffect(() => {
@@ -122,12 +189,38 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
       source: SOURCE,
       paint: { "line-color": tokenOf(map, "--color-accent"), "line-width": parseFloat(tokenOf(map, "--border-outline")) },
     });
+    // The obstacles: light over dark, the selected one and the one being drawn in the accent.
+    const accent = tokenOf(map, "--color-accent");
+    map.addSource(OBSTACLES, { type: "geojson", data: obstaclesGeoJson(null, [], null, null) });
+    map.addLayer({
+      id: OBSTACLES_FILL,
+      type: "fill",
+      source: OBSTACLES,
+      filter: ["==", "$type", "Polygon"],
+      paint: { "fill-color": ["case", ["get", "live"], tokenOf(map, "--color-outline-fill"), tokenOf(map, "--color-obstacle-fill")] },
+    });
+    map.addLayer({
+      id: OBSTACLES_LINE,
+      type: "line",
+      source: OBSTACLES,
+      paint: {
+        "line-color": ["case", ["any", ["get", "selected"], ["get", "live"]], accent, tokenOf(map, "--color-obstacle-line")],
+        "line-width": parseFloat(tokenOf(map, "--border-outline")),
+      },
+    });
     return () => {
-      if (map.getLayer(LINE)) map.removeLayer(LINE);
-      if (map.getLayer(FILL)) map.removeLayer(FILL);
-      if (map.getSource(SOURCE)) map.removeSource(SOURCE);
+      [OBSTACLES_LINE, OBSTACLES_FILL, LINE, FILL].forEach((layer) => map.getLayer(layer) && map.removeLayer(layer));
+      [OBSTACLES, SOURCE].forEach((source) => map.getSource(source) && map.removeSource(source));
     };
   }, [map]);
+
+  // The obstacles follow the state; so do the shape being drawn and the one awaiting its height.
+  useEffect(() => {
+    const source = map.getSource(OBSTACLES);
+    if (source && "setData" in source) {
+      (source as { setData: (data: FeatureCollection) => void }).setData(obstaclesGeoJson(state.frame, state.obstacles, state.drawing ?? state.pending, state.selectedObstacle));
+    }
+  }, [map, state]);
 
   // The fill and the line follow the corners; the stem of the turn handle too.
   useEffect(() => {
@@ -183,6 +276,20 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
         found?.({ found: true, corners: corners.length, area: areaOf(corners), at: { x: event.point.x, y: event.point.y } });
         return;
       }
+      const kind = kindOfTool(inHand);
+      if (kind && now.frame) {
+        if (now.pending) return;
+        const metresPerPx = metresPerPixel(map.getCenter().lat, map.getZoom());
+        if (kind === "wall" || kind === "building") {
+          tell({ type: "shapePlaced", kind, at: toMetres(now.frame, at), metresPerPx, touch: isCoarse() });
+          return;
+        }
+        // A press with the box or the tank in hand selects the obstacle under it, or lets the selected one go.
+        const [under] = map.getLayer(OBSTACLES_FILL) ? map.queryRenderedFeatures(event.point, { layers: [OBSTACLES_FILL] }) : [];
+        const id = under?.properties?.id;
+        tell({ type: "obstacleSelected", id: typeof id === "number" ? id : null });
+        return;
+      }
       if (inHand !== "corners" || now.closed) return;
       const frame = now.frame ?? frameAt(at);
       if (!now.frame) tell({ type: "began", at });
@@ -203,7 +310,7 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
     }
     function onDown(event: MapMouseEvent | MapTouchEvent) {
       const { state: now, on: tell } = latest.current;
-      if (now.corners.length > 0) return;
+      if (now.corners.length > 0 || !onTheCanvas(map, event)) return;
       if ("originalEvent" in event && event.originalEvent instanceof MouseEvent && event.originalEvent.button !== 0) return;
       const at = lonLatOfEvent(event);
       const frame = now.frame ?? frameAt(at);
@@ -237,18 +344,61 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
     };
   }, [map, tool]);
 
+  // A drag with the box or the tank in hand draws it on the closed roof, while none awaits its height.
+  useEffect(() => {
+    const kind = kindOfTool(tool);
+    if (kind !== "box" && kind !== "cylinder") return;
+    let from: LonLat | null = null;
+    function lonLatOfEvent(event: MapMouseEvent | MapTouchEvent): LonLat {
+      return { lon: event.lngLat.lng, lat: event.lngLat.lat };
+    }
+    function onDown(event: MapMouseEvent | MapTouchEvent) {
+      const { state: now } = latest.current;
+      if (!now.frame || !now.closed || now.pending || !onTheCanvas(map, event)) return;
+      if ("originalEvent" in event && event.originalEvent instanceof MouseEvent && event.originalEvent.button !== 0) return;
+      from = lonLatOfEvent(event);
+      event.preventDefault();
+    }
+    function onMove(event: MapMouseEvent | MapTouchEvent) {
+      const { state: now, on: tell } = latest.current;
+      if (!from || !now.frame) return;
+      event.preventDefault();
+      tell({ type: "shapeDragged", kind: kind as "box" | "cylinder", from: toMetres(now.frame, from), to: toMetres(now.frame, lonLatOfEvent(event)) });
+    }
+    function onUp() {
+      if (!from) return;
+      from = null;
+      latest.current.on({ type: "shapeDropped" });
+    }
+    map.on("mousedown", onDown);
+    map.on("mousemove", onMove);
+    map.on("mouseup", onUp);
+    map.on("touchstart", onDown);
+    map.on("touchmove", onMove);
+    map.on("touchend", onUp);
+    return () => {
+      map.off("mousedown", onDown);
+      map.off("mousemove", onMove);
+      map.off("mouseup", onUp);
+      map.off("touchstart", onDown);
+      map.off("touchmove", onMove);
+      map.off("touchend", onUp);
+    };
+  }, [map, tool]);
+
+  const drawsByDrag = (tool === "rectangle" && state.corners.length === 0) || ((tool === "box" || tool === "tank") && state.closed && !state.pending);
+  const drawsByPress = (tool === "corners" && !state.closed) || tool === "detect" || ((tool === "wall" || tool === "building") && state.closed && !state.pending);
+
   // While a box can be drawn, a drag is the box's, not the map's.
   useEffect(() => {
-    const draws = tool === "rectangle" && state.corners.length === 0;
-    if (draws) map.dragPan.disable();
+    if (drawsByDrag) map.dragPan.disable();
     else map.dragPan.enable();
-  }, [map, tool, state.corners.length]);
+  }, [map, drawsByDrag]);
 
   // The cursor says what a press does.
   useEffect(() => {
-    const draws = (tool === "corners" && !state.closed) || (tool === "rectangle" && state.corners.length === 0) || tool === "detect";
-    map.getCanvas().style.cursor = draws ? "crosshair" : "";
-  }, [map, tool, state.closed, state.corners.length]);
+    map.getCanvas().style.cursor = drawsByDrag || drawsByPress ? "crosshair" : "";
+  }, [map, drawsByDrag, drawsByPress]);
 
   // The handles and the labels: made anew when their number changes, moved otherwise; left alone
   // while one is dragged, because the drag is theirs.
@@ -305,9 +455,46 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
     }
   }, [map, state]);
 
+  // The labels of the obstacles, the handles of the selected one, and the points of the shape being drawn.
+  useEffect(() => {
+    if (isDragging.current) return;
+    const { frame } = state;
+    const remove = (markers: Marker[]) => markers.splice(0).forEach((marker) => marker.remove());
+    if (!frame) {
+      remove(obstacleLabels.current);
+      remove(obstacleHandles.current);
+      remove(liveHandles.current);
+      return;
+    }
+    if (obstacleLabels.current.length !== state.obstacles.length) {
+      remove(obstacleLabels.current);
+      obstacleLabels.current = state.obstacles.map(() => obstacleLabelMarker(map));
+    }
+    state.obstacles.forEach((obstacle, index) => {
+      const marker = obstacleLabels.current[index];
+      marker.setLngLat(lonLatOf(frame, foldOf(obstacle)));
+      marker.getElement().textContent = labelOf(obstacle);
+    });
+
+    const selected = state.obstacles.find((obstacle) => obstacle.id === state.selectedObstacle) ?? null;
+    const handles = selected ? handlesOf(selected) : [];
+    if (obstacleHandles.current.length !== handles.length || obstacleHandles.current.some((marker) => marker.getElement().dataset.obstacle !== String(selected?.id))) {
+      remove(obstacleHandles.current);
+      obstacleHandles.current = selected ? handles.map((_, index) => obstacleHandleMarker(map, selected.id, index, latest, isDragging)) : [];
+    }
+    handles.forEach((point, index) => obstacleHandles.current[index].setLngLat(lonLatOf(frame, point)));
+
+    const live = state.drawing && state.drawing.kind !== "cylinder" ? state.drawing.points : [];
+    if (liveHandles.current.length !== live.length) {
+      remove(liveHandles.current);
+      liveHandles.current = live.map(() => liveHandleMarker(map));
+    }
+    live.forEach((point, index) => liveHandles.current[index].setLngLat(lonLatOf(frame, point)));
+  }, [map, state]);
+
   useEffect(
     () => () => {
-      [corners, midpoints, labels].forEach((markers) => markers.current.splice(0).forEach((marker) => marker.remove()));
+      [corners, midpoints, labels, obstacleLabels, obstacleHandles, liveHandles].forEach((markers) => markers.current.splice(0).forEach((marker) => marker.remove()));
       turn.current?.remove();
     },
     [],
@@ -430,6 +617,53 @@ function labelMarker(map: MapLibre): Marker {
   element.dataset.testid = "edge-label";
   // The label stands beside the midpoint handle, not on it.
   return new Marker({ element, offset: [0, 18] }).setLngLat([0, 0]).addTo(map);
+}
+
+function obstacleLabelMarker(map: MapLibre): Marker {
+  const element = document.createElement("code");
+  element.className = LABEL;
+  element.dataset.testid = "obstacle-label";
+  // The label hangs from the lowest point of the shape, to its right: clear of the roof's edge labels.
+  return new Marker({ element, anchor: "top-left", offset: [-6, 10] }).setLngLat([0, 0]).addTo(map);
+}
+
+/** A handle of the selected obstacle: a corner, or the edge of a tank; dragged, it reshapes it. */
+function obstacleHandleMarker(map: MapLibre, id: number, index: number, latest: Latest, isDragging: React.RefObject<boolean>): Marker {
+  const element = document.createElement("button");
+  element.type = "button";
+  element.className = TARGET;
+  element.dataset.testid = "obstacle-corner";
+  element.dataset.obstacle = String(id);
+  element.setAttribute("aria-label", `Corner ${index + 1} of the obstacle`);
+  const dot = document.createElement("span");
+  dot.className = CORNER;
+  element.appendChild(dot);
+  element.addEventListener("click", (event) => event.stopPropagation());
+  const marker = new Marker({ element, draggable: true }).setLngLat([0, 0]).addTo(map);
+  marker.on("dragstart", () => {
+    isDragging.current = true;
+  });
+  marker.on("drag", () => {
+    const { state, on } = latest.current;
+    if (state.frame) on({ type: "obstacleCornerMoved", id, index, at: metresOf(marker, state.frame) });
+  });
+  marker.on("dragend", () => {
+    isDragging.current = false;
+    latest.current.on({ type: "obstacleCornerDropped" });
+  });
+  return marker;
+}
+
+/** A point of the wall or the building being drawn: seen, not dragged. */
+function liveHandleMarker(map: MapLibre): Marker {
+  const element = document.createElement("span");
+  element.className = TARGET;
+  element.dataset.testid = "live-point";
+  element.setAttribute("aria-hidden", "true");
+  const dot = document.createElement("span");
+  dot.className = CORNER;
+  element.appendChild(dot);
+  return new Marker({ element }).setLngLat([0, 0]).addTo(map);
 }
 
 function turnMarker(map: MapLibre, latest: Latest, isDragging: React.RefObject<boolean>): Marker {

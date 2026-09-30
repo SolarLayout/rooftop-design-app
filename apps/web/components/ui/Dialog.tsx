@@ -11,6 +11,11 @@ export type DialogAction = {
   label: string;
   kind: ButtonKind;
   onPress: () => void;
+  /**
+   * An action that waits for a field of the dialog to be answered. It is shown as waiting and can still
+   * be pressed: the press leaves the field, which commits what was typed, and the action then has it.
+   */
+  waits?: boolean;
 };
 
 type PanelProps = {
@@ -54,7 +59,7 @@ export function DialogPanel({ title, children, actions, onClose, names }: PanelP
       {/* On phone the actions are under each other, the last one on top. */}
       <div data-testid="dialog-actions" className="mt-1 flex flex-col-reverse gap-2 tablet:mt-2.5 tablet:flex-row tablet:justify-end">
         {actions.map((action, index) => (
-          <Button key={action.label} kind={action.kind} size="sheet" data-first-action={index === 0 || undefined} onClick={action.onPress}>
+          <Button key={action.label} kind={action.kind} size="sheet" data-first-action={index === 0 || undefined} aria-disabled={action.waits || undefined} onClick={action.onPress}>
             {action.label}
           </Button>
         ))}
@@ -65,6 +70,11 @@ export function DialogPanel({ title, children, actions, onClose, names }: PanelP
 
 type Props = Omit<PanelProps, "names"> & {
   open: boolean;
+  /**
+   * Where the focus goes when the dialog opens: the first action, which changes nothing, so that Enter
+   * by mistake does no harm; or the field marked to be answered, when the dialog asks for a number.
+   */
+  initialFocus?: "first-action" | "field";
 };
 
 /**
@@ -72,7 +82,7 @@ type Props = Omit<PanelProps, "names"> & {
  * everything: the focus goes in, stays in, and goes back to where it was. Escape closes it; a press
  * beside it does not.
  */
-export function Dialog({ open, onClose, ...panel }: Props) {
+export function Dialog({ open, onClose, initialFocus = "first-action", ...panel }: Props) {
   const id = useId();
   const dialog = useRef<HTMLDialogElement>(null);
   const names = { title: `${id}-title`, text: `${id}-text` };
@@ -83,11 +93,12 @@ export function Dialog({ open, onClose, ...panel }: Props) {
     if (open && !element.open) {
       element.showModal();
       // The browser would take the first control, which is the one that closes. The first action
-      // changes nothing and says so.
-      element.querySelector<HTMLElement>("[data-first-action]")?.focus();
+      // changes nothing and says so; a dialog that asks for a number puts the focus in its field.
+      const field = initialFocus === "field" ? element.querySelector<HTMLElement>("[data-initial-focus]") : null;
+      (field ?? element.querySelector<HTMLElement>("[data-first-action]"))?.focus();
     }
     if (!open && element.open) element.close();
-  }, [open]);
+  }, [open, initialFocus]);
 
   return (
     <dialog

@@ -121,6 +121,8 @@ In code: `NumberField` and `Stepper`; their numbers in `number-entry.ts`.
 - What is typed is a draft. Enter or leaving the field commits it; Escape gives it up. The arrows up and down
   step the draft and do not commit. Plus and minus of a stepper commit at once, and cannot be pressed at the
   end of the range.
+- A field that has no value yet (the height of an obstacle drawn on the map) is empty, with its label and its
+  unit, and says nothing until a number is typed; nothing is preselected. In code: `value` null.
 - A number outside the range is brought to the nearest limit. What is no number leaves the value as it was.
   In both cases the field says under itself what happened, in `text-caption`: "5.00 m is the highest that can
   be set.", "Enter a number, from 0.00 to 5.00 m.". The next good entry takes the words away.
@@ -228,6 +230,21 @@ touch), `DetectedCallout` the callout of Detect building. Every rule of drawing 
 - The footprints that are known show at `--opacity-hint` while Detect building is the tool, with "© Overture
   Maps Foundation, ODbL" under the imagery's attribution; the callout stands at the press.
 - The map says `aria-busy` while it moves; the panel's title and lead follow the step and the tool.
+- The toolbar follows the state of the roof (the board "Obstacles on the map and their heights"). While the
+  outline is open it holds Corners, Rectangle and Detect building; once it is closed it holds the four obstacles,
+  Box, Tank, Wall and Building, with Box in hand. Undo, Redo and Clear stay; Clear takes the obstacles with the
+  roof, and the outline opened again brings the outline tools back. A box is dragged across the thing and kept a
+  rectangle when a corner is dragged; a tank is dragged from its middle to its edge; a wall is pressed point by
+  point and ended by a press on the last point or Enter; a building beside the roof is pressed corner by corner and
+  closed on the first. Each asks its height right after, in a dialog (a sheet on phone): the name of its kind
+  suggested, the height empty, Remove takes the shape off the map.
+- Obstacles are drawn light over dark (`--color-obstacle-line`, `--color-obstacle-fill`), so that the roof stays
+  the amber thing on the screen; the selected one and the one being drawn are accent. Each carries a label with
+  its name and its height under its lowest point. The selected one has handles: its corners, or the edge of a
+  tank; Delete removes it. The panel lists them under the measurements, "Obstacles · n", each with its size (a
+  box by its sides, a tank by its diameter, a wall by its length, a building by its area) and its height, a press
+  on a row selects it, Remove takes it. The card of the Roof lens counts them. In code: `ObstacleList`,
+  `HeightDialog`, the obstacles in `lib/outline/obstacles.ts` and the reducer.
 
 ## Deliverable row (Handover)
 Row 64 high: format badge 44 by 28 (accent for the selected row), title, one line of facts, then a download
@@ -307,6 +324,10 @@ used and does not scroll.
 - On phone the handle of the sheet closes it, by a press or a drag downwards, and there is no button to
   close.
 - A press beside the dialog leaves it open: what it asks must be answered.
+- A dialog that asks for a number (the height of an obstacle) puts the focus in that field when it opens
+  (`initialFocus="field"`), and its primary action waits, shown as it cannot be pressed, until the field has a
+  number. The action can still be pressed: the press leaves the field, which commits what was typed, and the
+  action then has it. Enter in the field commits and adds in one go.
 
 ## Tooltip
 The name of a control that shows an icon or one word. Height 28, padding 0 10, `control-active`, border

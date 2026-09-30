@@ -21,9 +21,10 @@ type Entry = {
 /**
  * Draft, then commit. What is typed is a draft and changes nothing. Enter or leaving the field commits
  * it; Escape gives it up. The arrows step the draft. `onCommit` hears a value only when it is another
- * than before.
+ * than before. A field that has no value yet (`value` null) is empty and says nothing until a number
+ * is typed into it.
  */
-export function useNumberEntry(value: number, range: Range, unit: string | undefined, onCommit: (value: number) => void): Entry {
+export function useNumberEntry(value: number | null, range: Range, unit: string | undefined, onCommit: (value: number) => void): Entry {
   const [draft, setDraft] = useState<string | null>(null);
   const [said, setSaid] = useState<string | null>(null);
 
@@ -35,8 +36,17 @@ export function useNumberEntry(value: number, range: Range, unit: string | undef
 
   function commitDraft() {
     if (draft === null) return;
-    const result = committed(draft, value, range);
     setDraft(null);
+    if (value === null) {
+      // Nothing yet: an empty draft leaves it so, and says nothing; what is no number says what can be entered.
+      const typed = numberOf(draft);
+      if (draft.trim() === "") return setSaid(null);
+      if (typed === null) return setSaid(saidOf("not-a-number", range, unit));
+      const result = committed(draft, typed, range);
+      setSaid(saidOf(result.correction, range, unit));
+      return onCommit(result.value);
+    }
+    const result = committed(draft, value, range);
     setSaid(saidOf(result.correction, range, unit));
     if (result.value !== value) onCommit(result.value);
   }
@@ -46,13 +56,13 @@ export function useNumberEntry(value: number, range: Range, unit: string | undef
     if (event.key === "Escape") setDraft(null);
     if (event.key === "ArrowUp" || event.key === "ArrowDown") {
       event.preventDefault();
-      const from = numberOf(draft ?? "") ?? value;
+      const from = numberOf(draft ?? "") ?? value ?? range.min ?? 0;
       setDraft(shown(stepped(from, event.key === "ArrowUp" ? "up" : "down", range), range.decimals));
     }
   }
 
   return {
-    text: draft ?? shown(value, range.decimals),
+    text: draft ?? (value === null ? "" : shown(value, range.decimals)),
     said,
     commit,
     input: {

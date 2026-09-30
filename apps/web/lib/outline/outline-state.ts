@@ -365,6 +365,14 @@ function withCornerAt(obstacle: Obstacle, index: number, at: XY): Obstacle {
   return { ...obstacle, points: obstacle.points.map((point, n) => (n === index ? at : point)) };
 }
 
+/**
+ * Whether the roof is closed and nothing is being dragged: a box dragged across the roof is closed from
+ * its first move, but what follows the closing (the tools of the obstacles) waits for the drop.
+ */
+export function isClosedAndSettled(state: OutlineState): boolean {
+  return state.closed && state.history.present.closed;
+}
+
 /** What the panel shows of the outline. */
 export function measurementsOf(state: OutlineState, hemisphere: "north" | "south" = "north"): Measurements {
   return {

@@ -8,7 +8,8 @@ import { useNumberEntry } from "./use-number-entry";
 
 type Props = {
   label: string;
-  value: number;
+  /** Null for a field that has no value yet: it is empty until a number is typed. */
+  value: number | null;
   /** Hears the value once it is committed, and only when it is another than before. */
   onCommit: (value: number) => void;
   range: Range;
@@ -18,10 +19,12 @@ type Props = {
   disabled?: boolean;
   /** For the kit: the field as it looks with the focus inside. */
   shownAs?: "focus";
+  /** In a dialog, the focus goes into this field when it opens: it is the one to answer. */
+  initialFocus?: boolean;
   className?: string;
 };
 
-export function NumberField({ label, value, onCommit, range, unit, labelInside = false, disabled = false, shownAs, className }: Props) {
+export function NumberField({ label, value, onCommit, range, unit, labelInside = false, disabled = false, shownAs, initialFocus, className }: Props) {
   const id = useId();
   const entry = useNumberEntry(value, range, unit, onCommit);
   const names = { label: `${id}-label`, unit: `${id}-unit`, said: `${id}-said` };
@@ -34,6 +37,7 @@ export function NumberField({ label, value, onCommit, range, unit, labelInside =
       autoComplete="off"
       value={entry.text}
       disabled={disabled}
+      data-initial-focus={initialFocus || undefined}
       aria-labelledby={names.label}
       aria-describedby={classNames(unit && names.unit, names.said)}
       className={classNames(INPUT, "text-right", labelInside ? "w-16" : "w-12")}

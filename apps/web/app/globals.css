@@ -724,6 +724,12 @@
 @utility pulsing {
   animation: pulse-saved var(--duration-pulse-saved) ease-in-out infinite;
 }
+/* The map's canvas takes the keyboard focus (a dialog gives it back there): the ring of every control, inside its edge. */
+.maplibregl-canvas:focus-visible {
+  outline: var(--ring-focus);
+  outline-offset: calc(-1 * var(--ring-focus-offset));
+}
+
 /* The corner being edited on the map pulses, over the shadow every handle has. */
 @keyframes pulse-corner {
   0%,

@@ -20,15 +20,18 @@ import { FOOTPRINTS_ATTRIBUTION } from "@/lib/map/overture";
 import { mapStateOf } from "@/lib/map/map-state";
 import { buildRequestOf } from "@/lib/outline/build-request";
 import { frameAt, toMetres } from "@/lib/outline/frame";
-import { outlineAfter, START } from "@/lib/outline/outline-state";
+import { nameOf, obstaclesOfMap } from "@/lib/outline/obstacles";
+import { isClosedAndSettled, outlineAfter, START } from "@/lib/outline/outline-state";
 import { pathOfLens } from "@/lib/routes";
 import { latitudeOf, longitudeOf, projectOf } from "@/lib/stores/project-store";
 import { MapButtons } from "./MapButtons";
 import { DetectedCallout } from "./DetectedCallout";
+import { HeightDialog } from "./HeightDialog";
 import { NoMap } from "./NoMap";
+import { ObstacleList } from "./ObstacleList";
 import type { Detected, Tool } from "./OutlineLayer";
 import { OutlinePanel } from "./OutlinePanel";
-import { OutlineTools } from "./OutlineTools";
+import { isObstacleTool, OutlineTools, toolFor } from "./OutlineTools";
 import { RoofTypeChoice, type RoofType } from "./RoofTypeChoice";
 import { WHY_NOT_BY_HAND } from "./NoMap";
 import type { MapView } from "./RoofMap";
@@ -45,11 +48,15 @@ const PROVIDER = esriProvider(KEY_OF_THE_APP);
 /** Before a roof is found the map shows India, where the first users are, from far. */
 const FROM_FAR: MapView = { lon: 78.5, lat: 21.5, zoom: 4 };
 
-const WORDS: Record<Step | "rectangle" | "detect", { title: string; lead: string }> = {
+const WORDS: Record<Step | Exclude<Tool, "corners">, { title: string; lead: string }> = {
   find: { title: "Find the roof", lead: "Search an address or a place, or paste coordinates or a maps link. The map flies to it." },
   outline: { title: "Outline the roof", lead: "Click each corner. Drag a corner to adjust it, or type a length you have measured." },
   rectangle: { title: "Outline the roof", lead: "Drag a box across the roof, then turn it to the building by its handle. Drag a corner to adjust it." },
   detect: { title: "Outline the roof", lead: "Click inside the building. Where its footprint is known, it is proposed as the outline, to accept or adjust." },
+  box: { title: "Outline the roof", lead: "Drag a box across the thing on the roof, then turn it by its handle. Its height is asked right after." },
+  tank: { title: "Outline the roof", lead: "Drag from the middle of the tank to its edge. Its height is asked right after." },
+  wall: { title: "Outline the roof", lead: "Click each point of the wall; click the last again, or press Enter, to end it. Its height is asked right after." },
+  building: { title: "Outline the roof", lead: "Click the corners of the building beside the roof; click the first again to close it. Its height is asked right after." },
   build: { title: "Build the roof", lead: "The roof rises in the Studio; the array fills it at once." },
 };
 
@@ -74,7 +81,10 @@ export function Find() {
   const [step, setStep] = useState<Step>("find");
   const [foundAt, setFoundAt] = useState<FoundPlace | null>(null);
   const [outline, on] = useReducer(outlineAfter, START);
-  const [tool, setTool] = useState<Tool>("corners");
+  const [toolTaken, setTool] = useState<Tool>("corners");
+  // The toolbar follows the roof: closed (and no drag going on), an obstacle is drawn; opened again, the outline is.
+  const roofClosed = isClosedAndSettled(outline);
+  const tool: Tool = roofClosed === isObstacleTool(toolTaken) ? toolTaken : toolFor(roofClosed);
   const [detected, setDetected] = useState<Detected | null>(null);
   const [roofType, setRoofType] = useState<RoofType>("flat_tilted");
   const [building, setBuilding] = useState<Building>({ kind: "idle" });
@@ -89,7 +99,7 @@ export function Find() {
     [webGL, tilesFailed],
   );
   const words = WORDS[step === "outline" && tool !== "corners" ? tool : step];
-  useOutlineKeys(step === "outline", on);
+  useOutlineKeys(step === "outline" && outline.pending === null, on);
 
   // Edit from the Roof lens: the outline of the design that is open is shown on the map, where it is.
   useEffect(() => {
@@ -100,7 +110,7 @@ export function Find() {
       (onMap) => {
         const at = { lon: project.roof.lon, lat: project.roof.lat };
         const frame = frameAt(at);
-        on({ type: "loaded", at, corners: onMap.outline.map(([lon, lat]) => toMetres(frame, { lon, lat })) });
+        on({ type: "loaded", at, corners: onMap.outline.map(([lon, lat]) => toMetres(frame, { lon, lat })), obstacles: obstaclesOfMap(onMap.obstacles, frame) });
         setRoofType(project.roof.roof_type);
         setView({ lon: at.lon, lat: at.lat, zoom: ROOF_ZOOM });
         setStep("outline");
@@ -191,15 +201,23 @@ export function Find() {
             <DetectedCallout
               detected={detected}
               onUse={() => setDetected(null)}
-              onAdjust={() => {
-                setDetected(null);
-                setTool("corners");
-              }}
+              // The footprint stays and its corners drag, as the corners of any closed roof do.
+              onAdjust={() => setDetected(null)}
               onClose={() => setDetected(null)}
             />
           </div>
         ) : null}
       </div>
+
+      {/* Outside the layer over the stage, which lets pointer events through: a dialog inherits that. */}
+      {step === "outline" ? (
+        <HeightDialog
+          shape={outline.pending}
+          suggestedName={outline.pending ? nameOf(outline.pending.kind, outline.obstacles) : ""}
+          onAdd={(name, height) => on({ type: "heightGiven", name, height })}
+          onDiscard={() => on({ type: "pendingDiscarded" })}
+        />
+      ) : null}
 
       <aside
         aria-label={words.title}
@@ -218,6 +236,7 @@ export function Find() {
         {step === "outline" ? (
           <>
             <OutlinePanel state={outline} on={on} />
+            {outline.closed ? <ObstacleList state={outline} on={on} /> : null}
             <section className="flex flex-col gap-2.5">
               <h2 className="hidden type-section text-text-3 uppercase desktop:block">Roof type</h2>
               <RoofTypeChoice value={roofType} onChange={setRoofType} />
