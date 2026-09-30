@@ -19,6 +19,11 @@ describe("measures", () => {
     expect(variables({ x: -12.5 })).toEqual({ "--x": "-12.5px" });
   });
 
+  test("a turn is in degrees, clockwise", () => {
+    expect(variables({ turn: -46 })).toEqual({ "--turn": "-46deg" });
+    expect(variables({ turn: 0 })).toEqual({ "--turn": "0deg" });
+  });
+
   test("what is no number is refused: the style would be void", () => {
     expect(() => measures({ at: Number.NaN })).toThrow("at is no number");
     expect(() => measures({ span: Number.POSITIVE_INFINITY })).toThrow("span is no number");

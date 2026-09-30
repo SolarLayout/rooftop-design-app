@@ -7,6 +7,8 @@ import { classNames } from "./class-names";
 export type SegmentedOption<T extends string> = {
   value: T;
   label: string;
+  /** What the choice is called to a screen reader, where the label alone says too little ("3D": "3D view"). */
+  name?: string;
   /** A choice that is shown and cannot be taken. */
   disabled?: boolean;
 };
@@ -67,6 +69,7 @@ export function Segmented<T extends string>({ label, options, value, onChange, f
           type="button"
           role="radio"
           aria-checked={option.value === value}
+          aria-label={option.name}
           tabIndex={option.value === value ? 0 : -1}
           disabled={option.disabled}
           onClick={() => onChange(option.value)}

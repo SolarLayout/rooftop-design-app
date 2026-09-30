@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { A_MAP, findOpened, roofMap, scaleLabel, searchField, withTheImagery } from "../find";
+import { A_MAP, findOpened, roofMap, scaleLabel, searchField } from "../find";
 import { expect, test } from "../fixtures";
 
 // Enter dimensions by hand (plan/phase-04-plan.md, step 15; the board "Enter dimensions by hand"): the
@@ -44,7 +44,6 @@ test.describe.configure({ timeout: RUN + 30_000 });
 test.describe("without a map", () => {
   test("the way on by hand: the place from the search, the rectangle typed, the plan drawn, then built; the card says entered by hand", async ({ page }) => {
     await withoutWebGL(page);
-    await withTheImagery(page);
     const layouts: { roof: { outline: [number, number][]; source: string } }[] = [];
     page.on("request", (request) => {
       if (request.url().endsWith("/api/layout")) layouts.push(request.postDataJSON());
@@ -87,7 +86,6 @@ test.describe("without a map", () => {
 
   test("the corner table: a row per corner, three at least; the plan follows the rows", async ({ page }) => {
     await withoutWebGL(page);
-    await withTheImagery(page);
     await page.goto("/find");
     await page.getByRole("status").getByRole("button", { name: "Enter dimensions by hand instead" }).click();
     await atThePlace(page);

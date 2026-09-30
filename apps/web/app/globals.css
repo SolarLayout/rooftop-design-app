@@ -816,6 +816,10 @@
   top: var(--y);
   margin: 0;
 }
+/* A turn, in degrees clockwise, for the needle of the north control. */
+@utility turned {
+  rotate: var(--turn);
+}
 
 /* Text that stands on the satellite imagery is read against whatever is under it. */
 @utility on-imagery {

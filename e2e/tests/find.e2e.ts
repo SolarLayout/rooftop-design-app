@@ -1,6 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import type { Page } from "@playwright/test";
-import { A_MAP, findOpened as opened, IMAGERY, roofMap as map, scaleLabel, searchField, withTheGeocoder, withTheImagery } from "../find";
+import { A_MAP, findOpened as opened, roofMap as map, scaleLabel, searchField, withTheGeocoder } from "../find";
+import { IMAGERY } from "../fixtures";
 import { expect, test } from "../fixtures";
 
 // Find and outline (plan/phase-04-plan.md, step 3): the map with the imagery, the frame of the screen on
@@ -114,7 +115,6 @@ test.describe("without a map", () => {
         return (getContext as (this: HTMLCanvasElement, kind: string, ...rest: unknown[]) => unknown).call(this, kind, ...rest);
       } as typeof HTMLCanvasElement.prototype.getContext;
     });
-    await withTheImagery(page);
     await page.goto("/find");
 
     const said = page.getByRole("status");
@@ -136,7 +136,6 @@ test.describe("without a map", () => {
 
 test.describe("the ways to it", () => {
   test("from the project switcher: New design", async ({ page }) => {
-    await withTheImagery(page);
     await page.goto("/studio/array");
     const trigger = page.getByRole("banner").getByRole("button", { name: /Pune demo roof/ });
     await expect(trigger).toBeVisible({ timeout: 90_000 });
@@ -151,7 +150,6 @@ test.describe("the ways to it", () => {
   });
 
   test("from Home: Find my roof", async ({ page }) => {
-    await withTheImagery(page);
     await page.goto("/");
 
     await page.getByRole("link", { name: "Find my roof" }).click();

@@ -94,24 +94,44 @@ beside the text carries identity.
 
 ## 3D scene palette (TypeScript, `apps/web/lib/scene-palette.ts`)
 
-Not CSS: the 3D scene takes its colours from a TypeScript palette. It is written with the first 3D scene
-(Phase 5).
+Not CSS: the 3D scene takes its colours from a TypeScript palette, because three.js cannot read a stylesheet.
+`apps/web/lib/scene-palette.test.ts` reads this table and the file and fails when they differ. Each value is
+a colour as three.js takes it: a hex, or a hex with an alpha for what is see-through (`opacity`).
 
 | Name | Value | Use |
 |---|---|---|
-| `roof` | `#D3D6DB` | Roof surface |
-| `parapetCap` | `#ECEEF0` | Top of the parapet |
-| `parapetLit` / `parapetShade` | `#B9BEC6` / `#8E95A0` | Inner faces of the parapet |
-| `wallLit` / `wallShade` | `#4A5262` / `#2E3440` | Building walls |
-| `obstacleTop` / `obstacleLit` / `obstacleShade` | `#F1F2F4` / `#C2C7CF` / `#868D99` | Obstacles |
-| `moduleGlass` | `#16294D` | Module |
-| `moduleCellLine` / `moduleFrame` | `#2A4675` / `#33558C` | Module detail |
-| `moduleUnused` | `#8C93A0` | Position not used |
-| `shadow` | `#0B1220` at 36 to 40 % | Overlay shadows; real cast shadows are tuned to read the same |
-| `keepOutFill` / `keepOutLine` | accent at 18 % / accent, dashed | Kept-clear zones |
-| `selection` | accent (white for a selected string) | Outline of the selected object |
+| `stage` | `#0B0E13` | The background of the scene: the ground token |
+| `groundPlain` | `#12161D` | The ground plane where there is no imagery |
 | `gridLine` | `#1B222D` | Ground grid |
-| `sun` / `sunCore` | `#FFB020` / `#FFD36B` | Sun marker and path |
+| `roof` | `#D3D6DB` | Roof surface |
+| `roofEdge` | `#ECEEF0` | The line along the roof's edge and the setback line |
+| `parapetCap` | `#ECEEF0` | Top of the parapet |
+| `parapetLit` | `#B9BEC6` | Inner faces of the parapet toward the light |
+| `parapetShade` | `#8E95A0` | Inner faces of the parapet away from it |
+| `wallLit` | `#4A5262` | Building walls toward the light |
+| `wallShade` | `#2E3440` | Building walls away from it |
+| `obstacleTop` | `#F1F2F4` | Obstacles, their top |
+| `obstacleLit` | `#C2C7CF` | Obstacles, the faces toward the light |
+| `obstacleShade` | `#868D99` | Obstacles, the faces away from it |
+| `treeTrunk` | `#6B5A48` | The trunk of a tree |
+| `treeCrown` | `#4F7A4A` | The crown of a tree |
+| `moduleGlass` | `#16294D` | Module |
+| `moduleCellLine` | `#2A4675` | Module detail |
+| `moduleFrame` | `#33558C` | Module frame |
+| `moduleUnused` | `#8C93A0` | Position not used |
+| `walkway` | `#C4C8CE` | A walkway across the array |
+| `keepOutFill` | `#FFB02030` | Kept-clear zones: accent at 18 % |
+| `keepOutLine` | `#FFB020` | Kept-clear zones, the dashed line |
+| `selection` | `#FFB020` | Outline of the selected object |
+| `hover` | `#FFD36B` | Outline of the object under the pointer |
+| `sun` | `#FFB020` | Sun marker and path |
+| `sunCore` | `#FFD36B` | The middle of the sun marker |
+| `lightSun` | `#FFF4E0` | The colour of the sun light |
+| `lightSky` | `#BCD0E8` | The sky's share of the ambient light |
+| `lightGround` | `#20242C` | The ground's share of the ambient light |
+
+Real cast shadows come from the sun light; the amber of the selection is the accent token. A selected
+string is white (Phase 7).
 
 ## Typography
 
@@ -371,6 +391,7 @@ layer of their own.
 | `--z-*` | `z-` and the name | `z-float` |
 | `--border-*` | `border-` and the name; `border-b-tab` for the line under a tab | `border-handle-touch desktop:border-handle`, `border-dot`, `border-corner`, `border-outline` |
 | `--shadow-text-on-imagery` | `on-imagery` | on text that stands on the satellite imagery |
+| `--x`, `--y`, `--turn` (numbers of the data, set with `measures()`) | `placed`, `turned` | a label of the stage where its point of the scene falls; the needle of the north control |
 
 Tailwind's own palette, sizes of type, radii and shadows do not exist in this app: a utility that is not made
 of a token makes no CSS.
@@ -379,7 +400,9 @@ A place or a width that follows the data (the handle of a slider at its value) i
 around it, from 0 to 1. The component sets it with `measures()` (`apps/web/components/ui/measures.ts`), which
 is the only inline style there is, and a utility reads it: `left-at` (`--at`), `w-span` and `h-span`
 (`--span`). A place on the screen that is worked out (where a tooltip or a list floats) is set the same
-way, in pixels: `placed` (`--x`, `--y`). A size, a colour or a shadow is never set this way.
+way, in pixels: `placed` (`--x`, `--y`); a turn that is worked out (the needle of the north control, by the
+camera's bearing) the same way, in degrees clockwise: `turned` (`--turn`). A size, a colour or a shadow is
+never set this way.
 
 States have variants of their own, so that the kit can show a state without a pointer or a keyboard:
 `hovered:` (under a pointer that can hover, or `data-shown-as="hover"`), `pressed:` (while pressed, or

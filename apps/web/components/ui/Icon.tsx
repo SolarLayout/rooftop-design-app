@@ -58,6 +58,13 @@ const STROKED = {
     </>
   ),
   minus: <path d="M5 12h14" />,
+  // The needle of the north control: its point in the accent, the N under it. Turned as one by `turned`.
+  north: (
+    <>
+      <path d="M12 2.5 15 9H9z" className="fill-accent stroke-accent" />
+      <path d="M9.5 19v-7l5 7v-7" />
+    </>
+  ),
   pin: (
     <>
       <path d="M12 21s6-5.7 6-11a6 6 0 0 0-12 0c0 5.3 6 11 6 11z" />
