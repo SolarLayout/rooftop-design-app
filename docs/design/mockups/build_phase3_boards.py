@@ -618,8 +618,8 @@ def vitals_waiting() -> str:
         + small_cell("If all were used", "442.40", "kWp", edge=f"; border-left: 1px solid {LINE}")
         + f'<a href="StringsLensNoVoltage.dc.html" style="grid-column: span 3; display: flex; align-items: center; gap: 12px; height: 72px; padding: 0 18px; background: {NOTE_SURFACE}; border-top: 1px solid {NOTE_LINE}; border-radius: 0 0 15px 15px; color: {TEXT}">'
         + note(22)
-        + '<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 500">Energy is waiting for the system voltage</span>'
-        + f'<span style="font-size: 13px; color: {TEXT_2}">Choose 600, 1000 or 1500 V in the Strings lens</span></span>'
+        + '<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 500">Choose a system voltage to size the strings</span>'
+        + f'<span style="font-size: 13px; color: {TEXT_2}">600, 1000 or 1500 V. Nothing is sized until you choose.</span></span>'
         + icon(ARROW, 18, TEXT_2)
         + "</a></section>"
     )
@@ -635,8 +635,7 @@ def vitals_waiting() -> str:
         f'<section aria-label="Design vitals" style="width: 390px; box-sizing: border-box; display: flex; gap: 8px; padding: 0 0 14px 16px; overflow: hidden; white-space: nowrap; font-size: 15px; background: {GROUND}; border-radius: 12px">'
         f'<a href="StringsLensNoVoltage.dc.html" style="flex-shrink: 0; display: flex; align-items: center; gap: 10px; height: 64px; box-sizing: border-box; padding: 0 14px; background: {NOTE_SURFACE}; border: 1px solid {NOTE_LINE}; border-radius: 14px; color: {TEXT}">'
         + note(22)
-        + '<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 13px; font-weight: 500">Energy is waiting</span>'
-        + f'<span style="font-size: 12px; color: {TEXT_2}">Choose a system voltage</span></span></a>'
+        + '<span style="display: flex; flex-direction: column; gap: 2px"><span style="width: 172px; font-size: 13px; font-weight: 500; white-space: normal">Choose a system voltage to size the strings</span></span></a>'
         + phone_card("Roof", "3,600", "m²")
         + phone_card("Positions", "790", "modules")
         + phone_card("If all were used", "442.40", "kWp")
@@ -644,8 +643,8 @@ def vitals_waiting() -> str:
     )
     return (
         '<div style="display: flex; align-items: flex-start; gap: 40px">'
-        + state("Tablet 834: three cells, and the note across the width. It leads to the Strings lens", tablet, gap=8)
-        + state("Phone 390: the note comes first in the row", phone, gap=8)
+        + state("Tablet 834: three cells, and the note across the width, in the words of the API. It leads to the Strings lens", tablet, gap=8)
+        + state("Phone 390: the note comes first in the row, its title alone", phone, gap=8)
         + "</div>"
     )
 

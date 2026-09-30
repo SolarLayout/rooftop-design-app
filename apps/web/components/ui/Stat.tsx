@@ -29,23 +29,33 @@ type Props = {
   unit?: string;
   /** What follows the value: a status mark. */
   mark?: ReactNode;
+  /** The value is of before, and a new one is on its way: it stays, dimmed. */
+  dimmed?: boolean;
+  /** What stands beside the value and is never dimmed: the ring of a value that is updated. */
+  beside?: ReactNode;
   look?: StatLook;
   className?: string;
 };
 
+const BESIDE: Record<StatLook, string> = { cell: "gap-1.5", lead: "gap-2.5", tile: "gap-1.5" };
+
 /** One label with its value. It belongs into `Stats`. */
-export function Stat({ label, value, unit, mark, look = "cell", className }: Props) {
+export function Stat({ label, value, unit, mark, dimmed = false, beside, look = "cell", className }: Props) {
   return (
     <div className={classNames("flex min-w-0 flex-col justify-center whitespace-nowrap", FRAME[look], className)}>
       <dt className="type-caption text-text-2">{label}</dt>
-      <dd className={classNames("flex items-center gap-1.5 text-text", VALUE[look])}>
-        <span>
-          {value}
-          {/* The space is as wide as a figure of the value: it is outside the unit. */}
-          {unit ? " " : null}
-          {unit ? <span className={classNames("text-text-2", UNIT[look])}>{unit}</span> : null}
+      <dd className={classNames("flex items-center text-text", BESIDE[look], VALUE[look])}>
+        <span data-testid="stat-value" className={classNames("flex items-center gap-1.5", dimmed && "opacity-updating")}>
+          <span>
+            {value}
+            {/* The space is as wide as a figure of the value: it is outside the unit. */}
+            {unit ? " " : null}
+            {/* Dimmed, the unit has the colour of the number: in its own it could not be read any more. */}
+            {unit ? <span className={classNames(dimmed ? "text-text" : "text-text-2", UNIT[look])}>{unit}</span> : null}
+          </span>
+          {mark}
         </span>
-        {mark}
+        {beside}
       </dd>
     </div>
   );

@@ -32,6 +32,7 @@ export type ModuleResponse = Answers["ModuleResponse"];
 export type InverterResponse = Answers["InverterResponse"];
 export type ImportedRoof = Answers["ImportedRoof"];
 export type LayoutResponse = Answers["LayoutResponse"];
+export type LayoutReadouts = Answers["LayoutReadouts"];
 export type SunResponse = Answers["SunResponse"];
 export type WeatherResponse = Answers["WeatherResponse"];
 

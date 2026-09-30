@@ -16,3 +16,6 @@ export const LIST_GAP = 6;
 
 /** What stays free between a thing that floats and the edge of the screen, in pixels. */
 export const SCREEN_MARGIN = 8;
+
+/** A design run begins this long after a committed edit, in milliseconds: edits shortly after each other are one run. */
+export const DESIGN_PAUSE = 500;

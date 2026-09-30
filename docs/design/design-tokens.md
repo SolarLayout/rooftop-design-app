@@ -142,6 +142,7 @@ height and tracking together.
 | `--text-page` | `--font-display` | `600` | `30px` | `36px` | `-0.02em` | Page title |
 | `--text-lens` | `--font-display` | `600` | `26px` | `32px` | `-0.02em` | Lens title, panel title |
 | `--text-lens-touch` | `--font-display` | `600` | `22px` | `28px` | `-0.02em` | Lens title, panel title on phone |
+| `--text-brand` | `--font-display` | `600` | `17px` | `20px` | `-0.01em` | The name of the product in the top bar |
 | `--text-number-tile` | `--font-display` | `600` | `34px` | `38px` | `-0.02em` | KPI tiles |
 | `--text-number-vital` | `--font-display` | `600` | `26px` | `30px` | `-0.02em` | Energy in the vitals on desktop and tablet |
 | `--text-number-vital-touch` | `--font-display` | `600` | `22px` | `26px` | `-0.02em` | Energy in the vitals on phone |
@@ -158,6 +159,7 @@ height and tracking together.
 | `--text-value-small` | `--font-mono` | `400` | `13px` | `20px` | `0` | Table values, chips, the time of the time control |
 | `--text-value-xs` | `--font-mono` | `400` | `12px` | `20px` | `0` | Coordinates, file names, facts in mono |
 | `--text-tick` | `--font-mono` | `400` | `11px` | `20px` | `0` | Axis ticks, slider ticks, format badges |
+| `--text-label-s` | `--font-sans` | `400` | `11px` | `20px` | `0` | The label under an icon of the lens rail |
 
 The line height is 20 px wherever the mockups state none: they set it once, on the page.
 Emphasis inside a style is a weight utility beside it (`type-body font-medium`).
@@ -190,6 +192,8 @@ Base 2 px. Steps in use: 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48,
 |---|---|---|
 | `--breakpoint-tablet` | `640px` | Tablet from this width; phone below it |
 | `--breakpoint-desktop` | `1101px` | Desktop from this width: over 1100 |
+| `--breakpoint-tablet-wide` | `820px` | Inside tablet: from this width the top bar has room for Present and for the word of Export |
+| `--breakpoint-desktop-wide` | `1360px` | Inside desktop: from this width the top bar has room for the place of the design and for the state of saving |
 | `--size-topbar` | `56px` | Top bar height on desktop and phone |
 | `--size-topbar-tablet` | `60px` | Top bar height on tablet |
 | `--size-rail` | `72px` | Lens rail width |
@@ -200,6 +204,8 @@ Base 2 px. Steps in use: 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48,
 | `--size-tabbar` | `72px` | Bottom tab bar height |
 | `--size-touch` | `44px` | Touch target, the least on phone and tablet, both ways |
 | `--size-sheet-peek` | `84px` | What is seen of the bottom sheet at its lowest stop: the handle and the lens switch |
+| `--columns-vitals` | `1.25fr 1.15fr 0.85fr 0.85fr 1fr 0.8fr 1.25fr 1.55fr` | The columns of the vitals bar on desktop: seven values and the last cell |
+| `--columns-vitals-waiting` | `1fr 1fr 1fr 2.4fr` | The same before there are options: three values and what is waited for |
 
 Reference widths: 390, 834, 1440.
 
@@ -227,6 +233,7 @@ A line is 1 px wide. Those that are wider have a token.
 | Token | Value | Use |
 |---|---|---|
 | `--border-tab` | `2px` | The line under a tab |
+| `--border-dot` | `1.5px` | The line of the hollow dot of a design that is not kept |
 | `--border-handle` | `3px` | The accent line around the handle of a slider, on desktop |
 | `--border-handle-touch` | `4px` | The same on phone and tablet |
 
@@ -249,11 +256,14 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--shadow-float` | `inset 0 1px 0 rgba(255,255,255,.06), 0 1px 2px rgba(0,0,0,.45), 0 16px 40px rgba(0,0,0,.5)` | Anything over the 3D or the map |
 | `--shadow-tooltip` | `0 1px 2px rgba(0,0,0,.45), 0 8px 20px rgba(0,0,0,.35)` | Tooltips |
 | `--shadow-panel` | `inset 0 1px 0 rgba(255,255,255,.06), 0 2px 4px rgba(0,0,0,.4), 0 24px 64px rgba(0,0,0,.55)` | Large floating panels |
+| `--shadow-drawer` | `-16px 0 40px rgba(0,0,0,.5)` | The drawer of the notes, which comes from the right |
 | `--shadow-track` | `inset 0 1px 3px rgba(0,0,0,.45)` | Track of a switch |
 | `--shadow-knob` | `0 1px 3px rgba(0,0,0,.5)` | Switch knob |
 | `--shadow-handle` | `0 2px 6px rgba(0,0,0,.6)` | Map and slider handles |
 | `--halo-focus` | `0 0 0 3px rgba(255,176,32,.18)` | Focused field (with an accent border) |
 | `--halo-selected` | `0 0 0 3px rgba(255,176,32,.14)` | Selected card (with an accent border) |
+| `--halo-saved` | `0 0 0 0 rgba(61,214,160,.5)` | Around the saved dot, where its pulse begins and ends |
+| `--halo-saved-out` | `0 0 0 5px rgba(61,214,160,0)` | Around the saved dot, at the middle of its pulse |
 
 ## States
 
@@ -300,6 +310,7 @@ and the file equal.
 | `TOOLTIP_GAP` | `8` | Pixels between a tooltip and its control |
 | `LIST_GAP` | `6` | Pixels between a list that floats and its trigger |
 | `SCREEN_MARGIN` | `8` | Pixels that stay free between what floats and the edge of the screen |
+| `DESIGN_PAUSE` | `500` | Milliseconds between a committed edit and the design run that follows it: edits shortly after each other are one run |
 
 ## Layers
 
@@ -325,18 +336,20 @@ layer of their own.
 | `--font-weight-*` | `font-regular`, `font-medium`, `font-semibold` | |
 | `--spacing` | every spacing and size utility, in steps | `gap-2`, `h-10`, `px-3.5` |
 | `--space-*`, `--size-*` | the same utilities, by name | `gap-row`, `p-panel`, `h-topbar`, `w-inspector`, `min-h-touch` |
-| `--breakpoint-*` | `tablet:`, `desktop:` | `desktop:flex` |
+| `--breakpoint-*` | `tablet:`, `desktop:`; inside them `tablet-wide:`, `desktop-wide:`, for the top bar | `desktop:flex` |
 | `--radius-*` | `rounded-` and the name | `rounded-control` |
 | `--shadow-*`, `--halo-*` | `shadow-` and the name | `shadow-raised`, `shadow-halo-focus`, `shadow-halo-selected` |
 | `--ring-focus`, `--ring-focus-offset` | `focus-ring` | on every control |
 | `--opacity-disabled`, `--opacity-updating` | `opacity-disabled`, `opacity-updating` | `disabled:opacity-disabled` |
 | `--duration-spin`, `--duration-breathe` | `turning`, `breathing` | on a ring that turns, on a skeleton |
+| `--duration-pulse-saved`, `--halo-saved`, `--halo-saved-out` | `pulsing` | on the saved dot |
+| `--columns-*` | `grid-cols-` and the name | `desktop:grid-cols-vitals` |
 | `--ease-out`, `--duration-*` | `ease-out`, `duration-` and the name | `duration-press` |
 | `--duration-press`, `--ease-out`, `--shift-press`, `--scale-press` | `press-motion`, `raised-by-hover`, `lowered-by-press` | on every control that is pressed |
 | `--duration-panel`, `--ease-out` | `sheet-motion` | on a sheet that goes to its stop |
 | `--stroke-*` | `stroke-icon`, `stroke-icon-light`, `stroke-tick` | on the `svg` of an icon |
 | `--z-*` | `z-` and the name | `z-float` |
-| `--border-*` | `border-` and the name; `border-b-tab` for the line under a tab | `border-handle-touch desktop:border-handle` |
+| `--border-*` | `border-` and the name; `border-b-tab` for the line under a tab | `border-handle-touch desktop:border-handle`, `border-dot` |
 
 Tailwind's own palette, sizes of type, radii and shadows do not exist in this app: a utility that is not made
 of a token makes no CSS.
@@ -352,7 +365,7 @@ States have variants of their own, so that the kit can show a state without a po
 `data-shown-as="pressed"`), `focused:` (the focus is inside, or `data-shown-as="focus"`), and `within-hovered:` for what is directly inside
 a control that is under the pointer (the line under a tab). `focus-ring` also
 answers to `data-shown-as="focus"`. None applies to a control
-that is disabled.
+that is disabled, nor to one that is shown and cannot be used (`aria-disabled="true"`).
 
 ## Icons
 Stroke icons, 24 by 24 view box, round caps and joins, `currentColor`. Sizes 14, 16, 18, 20, 22, which are
