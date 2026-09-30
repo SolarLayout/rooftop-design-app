@@ -13,7 +13,22 @@ export async function withTheImagery(page: Page): Promise<void> {
   await page.route(IMAGERY, (route) => route.fulfill({ path: TILE, contentType: "image/png" }));
 }
 
+export const GEOCODER = /geocode-api\.arcgis\.com/;
+const FIXTURES = path.resolve(__dirname, "fixtures");
+
+/** The geocoder answers every search with a fixture: the places of Hinjewadi, or nothing. */
+export async function withTheGeocoder(page: Page, answer: "hinjewadi" | "nothing" = "hinjewadi"): Promise<string[]> {
+  const asked: string[] = [];
+  await page.route(GEOCODER, (route) => {
+    asked.push(route.request().url());
+    return route.fulfill({ path: path.join(FIXTURES, `geocode-${answer}.json`), contentType: "application/json" });
+  });
+  return asked;
+}
+
 export const roofMap = (page: Page) => page.getByTestId("roof-map");
+export const scaleLabel = (page: Page) => page.getByTestId("scale-bar").locator("code");
+export const searchField = (page: Page) => page.getByRole("combobox", { name: "Search an address or paste coordinates" });
 
 /** The screen with its map shown. */
 export async function findOpened(page: Page): Promise<void> {

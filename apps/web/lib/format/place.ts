@@ -13,3 +13,8 @@ function angle(degrees: number, decimals: number, positive: string, negative: st
 export function placeInShort(latitude: number, longitude: number): string {
   return `${angle(latitude, 2, "N", "S")} · ${angle(longitude, 2, "E", "W")}`;
 }
+
+/** Where a roof is, in full: five decimals with N, S, E and W, as the search shows what was typed. */
+export function placeInFull(latitude: number, longitude: number): string {
+  return `${angle(latitude, 5, "N", "S")}, ${angle(longitude, 5, "E", "W")}`;
+}

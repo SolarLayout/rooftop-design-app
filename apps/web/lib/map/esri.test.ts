@@ -60,8 +60,8 @@ describe("the search", () => {
 
   test("the places of an answer, in its order, with their address and their place", () => {
     expect(placesOf(ANSWER)).toEqual([
-      { label: "Hinjewadi Phase 2, Pune, Maharashtra", lon: 73.7124, lat: 18.5954 },
-      { label: "Hinjewadi Phase 2 Rd, Hinjewadi, Pune", lon: 73.7101, lat: 18.5921 },
+      { label: "Hinjewadi Phase 2, Pune, Maharashtra", kind: "Locality", lon: 73.7124, lat: 18.5954 },
+      { label: "Hinjewadi Phase 2 Rd, Hinjewadi, Pune", kind: "", lon: 73.7101, lat: 18.5921 },
     ]);
   });
 

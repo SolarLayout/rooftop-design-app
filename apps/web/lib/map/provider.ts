@@ -16,6 +16,8 @@ export type Imagery = {
 export type Place = {
   /** The whole address, as the provider gives it. */
   label: string;
+  /** What kind of place: a locality, a street, a point of interest; empty when the provider says nothing. */
+  kind: string;
   lon: number;
   lat: number;
 };

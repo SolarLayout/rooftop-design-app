@@ -9,11 +9,11 @@ type Props = {
   /** Of `useFloating`. */
   floating: Floating;
   /** How wide the panel is on desktop. On phone and tablet it is as wide as the screen. */
-  width?: "list" | "menu";
+  width?: "list" | "menu" | "search";
   children: ReactNode;
 };
 
-const WIDTH = { list: "desktop:w-80", menu: "desktop:w-85" };
+const WIDTH = { list: "desktop:w-80", menu: "desktop:w-85", search: "desktop:w-100" };
 
 // A popover of the browser has colours and a width of its own, and cuts off what stands out of it. While
 // it is closed the browser does not show it; open, it is a column.

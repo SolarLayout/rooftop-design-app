@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import type { Page } from "@playwright/test";
-import { A_MAP, findOpened as opened, IMAGERY, roofMap as map, withTheImagery } from "../find";
+import { A_MAP, findOpened as opened, IMAGERY, roofMap as map, scaleLabel, searchField, withTheGeocoder, withTheImagery } from "../find";
 import { expect, test } from "../fixtures";
 
 // Find and outline (plan/phase-04-plan.md, step 3): the map with the imagery, the frame of the screen on
@@ -44,7 +44,7 @@ test.describe("the map", () => {
     await opened(page);
 
     await expect(page.getByRole("link", { name: "Back to home" })).toHaveAttribute("href", "/");
-    await expect(page.getByRole("search").getByRole("textbox", { name: "Search an address or paste coordinates" })).toBeVisible();
+    await expect(searchField(page)).toBeVisible();
     await expect(page.getByRole("heading", { level: 1, name: "Find the roof" })).toBeVisible();
     const steps = page.getByRole("list", { name: "Steps" });
     if (isPhone(testInfo.project.name)) {
@@ -166,5 +166,144 @@ test.describe("the ways to it", () => {
     await opened(page);
 
     expect(asked).toEqual([]);
+  });
+});
+
+test.describe("the search", () => {
+  const HINJEWADI = "Hinjewadi Phase 2, Pune, Maharashtra";
+  const isTablet = (projectName: string) => projectName === "tablet";
+
+  /** The map stands at the roof zoom on the place: the scale bar says 20 m, the panel says step 2. */
+  async function arrivedAt(page: Page, projectName: string, label: string) {
+    await expect(scaleLabel(page)).toHaveText("20 m", { timeout: A_MAP });
+    await expect(page.getByRole("heading", { level: 1, name: "Outline the roof" })).toBeVisible();
+    if (isPhone(projectName)) await expect(page.getByText("Step 2 of 3")).toBeVisible();
+    else {
+      await expect(page.getByRole("list", { name: "Steps" }).locator('[aria-current="step"]')).toHaveText("2Outline");
+      await expect(page.getByTestId("found-at")).toHaveText(label);
+    }
+  }
+
+  test("words: the places found, the first marked; Enter takes it and the map flies there", async ({ page }, testInfo) => {
+    const asked = await withTheGeocoder(page);
+    await opened(page);
+
+    await searchField(page).fill("Hinjewadi Phase 2");
+    await searchField(page).press("Enter");
+
+    const list = page.getByRole("listbox", { name: "Places found" });
+    await expect(list.getByRole("option")).toHaveText([
+      `${HINJEWADI}Locality`,
+      "Hinjewadi Phase 2 Rd, Hinjewadi, Pune, MaharashtraStreet",
+      "Phase 2, Rajiv Gandhi Infotech Park, Hinjewadi, Pune, MaharashtraPlace",
+    ]);
+    await expect(list.getByRole("option").first()).toHaveAttribute("aria-selected", "true");
+    expect(asked).toHaveLength(1);
+    const url = new URL(asked[0]);
+    expect(url.searchParams.get("singleLine")).toBe("Hinjewadi Phase 2");
+    expect(url.searchParams.get("maxLocations")).toBe("5");
+    expect(url.searchParams.has("token")).toBe(true);
+
+    await searchField(page).press("Enter");
+
+    await expect(list).toBeHidden();
+    await arrivedAt(page, testInfo.project.name, HINJEWADI);
+  });
+
+  test("the arrows mark the next place, a press takes one", async ({ page }, testInfo) => {
+    await withTheGeocoder(page);
+    await opened(page);
+    await searchField(page).fill("Hinjewadi");
+    await searchField(page).press("Enter");
+    const options = page.getByRole("listbox", { name: "Places found" }).getByRole("option");
+    await expect(options).toHaveCount(3);
+
+    await searchField(page).press("ArrowDown");
+    await expect(options.nth(1)).toHaveAttribute("aria-selected", "true");
+    await expect(options.nth(0)).toHaveAttribute("aria-selected", "false");
+    await options.nth(2).click();
+
+    await arrivedAt(page, testInfo.project.name, "Phase 2, Rajiv Gandhi Infotech Park, Hinjewadi, Pune, Maharashtra");
+  });
+
+  test("Escape closes the list and keeps the words", async ({ page }) => {
+    await withTheGeocoder(page);
+    await opened(page);
+    await searchField(page).fill("Hinjewadi");
+    await searchField(page).press("Enter");
+    await expect(page.getByRole("listbox", { name: "Places found" })).toBeVisible();
+
+    await searchField(page).press("Escape");
+
+    await expect(page.getByRole("listbox", { name: "Places found" })).toBeHidden();
+    await expect(searchField(page)).toHaveValue("Hinjewadi");
+    await expect(page.getByRole("heading", { level: 1, name: "Find the roof" })).toBeVisible();
+  });
+
+  test("nothing found: it says so, and what to try", async ({ page }) => {
+    await withTheGeocoder(page, "nothing");
+    await opened(page);
+
+    await searchField(page).fill("xq9 street");
+    await searchField(page).press("Enter");
+
+    await expect(page.getByRole("status").filter({ hasText: "Nothing found" })).toHaveText(
+      /Nothing found for “xq9 street”\. Try a fuller address, or paste coordinates\./,
+    );
+  });
+
+  test("the search cannot be reached: it says so", async ({ page }) => {
+    await page.route(/geocode-api\.arcgis\.com/, (route) => route.abort("connectionrefused"));
+    await opened(page);
+
+    await searchField(page).fill("Hinjewadi");
+    await searchField(page).press("Enter");
+
+    await expect(page.getByRole("status").filter({ hasText: "search" })).toContainText("The search cannot be reached. Check the connection and try again.");
+  });
+
+  test("coordinates typed: no request, the map flies at once, the place is said in full", async ({ page }, testInfo) => {
+    const asked = await withTheGeocoder(page);
+    await opened(page);
+
+    await searchField(page).fill("18.52000, 73.86000");
+    await searchField(page).press("Enter");
+
+    await arrivedAt(page, testInfo.project.name, "18.52000° N, 73.86000° E");
+    expect(asked).toEqual([]);
+  });
+
+  test("a maps link pasted: its coordinates are read", async ({ page }, testInfo) => {
+    const asked = await withTheGeocoder(page);
+    await opened(page);
+
+    await searchField(page).fill("https://www.google.com/maps/@18.5204,73.8567,19z");
+    await searchField(page).press("Enter");
+
+    await arrivedAt(page, testInfo.project.name, "18.52040° N, 73.85670° E");
+    expect(asked).toEqual([]);
+  });
+
+  test("on phone and tablet: Use my location flies to where the device is", async ({ page, context }, testInfo) => {
+    test.skip(isDesktop(testInfo.project.name), "Desktop has no button for the location: it has a keyboard and an address.");
+    await context.grantPermissions(["geolocation"]);
+    await context.setGeolocation({ latitude: 18.52, longitude: 73.86 });
+    await opened(page);
+
+    await page.getByRole("button", { name: "Use my location" }).click();
+
+    await arrivedAt(page, testInfo.project.name, "18.52000° N, 73.86000° E");
+    if (isTablet(testInfo.project.name)) await expect(page.getByRole("button", { name: "Use my location" })).toBeHidden();
+  });
+
+  test("on phone and tablet: a location that is not given says so", async ({ page, context }, testInfo) => {
+    test.skip(isDesktop(testInfo.project.name), "Desktop has no button for the location.");
+    await context.setGeolocation(null);
+    await context.grantPermissions([]);
+    await opened(page);
+
+    await page.getByRole("button", { name: "Use my location" }).click();
+
+    await expect(page.getByRole("status").filter({ hasText: "location" })).toContainText("Your location is not available", { timeout: A_MAP });
   });
 });

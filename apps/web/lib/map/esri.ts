@@ -25,7 +25,7 @@ export class SearchError extends Error {
   }
 }
 
-type Candidate = { address?: unknown; location?: { x?: unknown; y?: unknown }; score?: unknown };
+type Candidate = { address?: unknown; location?: { x?: unknown; y?: unknown }; attributes?: { Type?: unknown } };
 
 /** The places of an answer of the geocoder, in its order; an answer of another shape is a fault. */
 export function placesOf(answer: unknown): Place[] {
@@ -34,9 +34,10 @@ export function placesOf(answer: unknown): Place[] {
   if (error) throw new SearchError(typeof error.message === "string" ? error.message : "The search is not available.");
   if (!Array.isArray(candidates)) throw new SearchError("The search answered in a shape that cannot be read.");
   return candidates.flatMap((candidate: Candidate) => {
-    const { address, location } = candidate;
+    const { address, location, attributes } = candidate;
     if (typeof address !== "string" || typeof location?.x !== "number" || typeof location?.y !== "number") return [];
-    return [{ label: address, lon: location.x, lat: location.y }];
+    const kind = typeof attributes?.Type === "string" ? attributes.Type : "";
+    return [{ label: address, kind, lon: location.x, lat: location.y }];
   });
 }
 

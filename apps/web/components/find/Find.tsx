@@ -15,7 +15,7 @@ import { latitudeOf, longitudeOf } from "@/lib/stores/project-store";
 import { MapButtons } from "./MapButtons";
 import { NoMap } from "./NoMap";
 import type { MapView } from "./RoofMap";
-import { SearchField } from "./SearchField";
+import { Search, type FoundPlace } from "./Search";
 import { Steps, type Step } from "./Steps";
 import { useWebGL } from "./use-web-gl";
 
@@ -46,7 +46,7 @@ export function Find() {
   const [tilesFailed, setTilesFailed] = useState(false);
   const [map, setMap] = useState<MapLibre | null>(null);
   const [step, setStep] = useState<Step>("find");
-  const [typed, setTyped] = useState("");
+  const [foundAt, setFoundAt] = useState<FoundPlace | null>(null);
   // The map begins at the roof of the design that is open; without one, from far.
   const [view, setView] = useState<MapView>(() =>
     latitude === null || longitude === null ? FROM_FAR : { lon: longitude, lat: latitude, zoom: ROOF_ZOOM },
@@ -58,11 +58,17 @@ export function Find() {
   );
   const words = WORDS[step];
 
-  function onSubmit(value: string) {
-    // Step 4 of the plan makes this search; until then the field keeps what was typed.
-    void value;
-    void setView;
-    void setStep;
+  /** A place was found: the map flies to it at roof zoom, and the outline can begin. */
+  function onPlace(place: FoundPlace) {
+    setFoundAt(place);
+    setView({ lon: place.lon, lat: place.lat, zoom: ROOF_ZOOM });
+    setStep("outline");
+  }
+
+  function near() {
+    if (!map) return undefined;
+    const centre = map.getCenter();
+    return { lon: centre.lng, lat: centre.lat };
   }
 
   return (
@@ -80,7 +86,7 @@ export function Find() {
           <Link href="/" aria-label="Back to home" className={FLOATING_BUTTON}>
             <Icon name="arrow-left" size={18} />
           </Link>
-          <SearchField value={typed} onChange={setTyped} onSubmit={onSubmit} className="min-w-0 grow desktop:w-100 desktop:grow-0" />
+          <Search provider={PROVIDER} near={near} onPlace={onPlace} found={foundAt?.label ?? null} className="min-w-0 grow desktop:w-100 desktop:grow-0" />
           <Steps current={step} className="hidden tablet:flex" />
         </div>
         {/* The phone has no buttons: the map is pinched and turned by hand. */}
