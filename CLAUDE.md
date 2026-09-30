@@ -80,6 +80,12 @@ This is production software, not a prototype. The owner's words: "this is not th
   (`ROOFTOP_TOOLCHAIN`, set by the check). The cache is `.turbo/`, never committed. A change to the check's own
   code (`tools/check.ts`, `tools/check/**`) runs everything. The proofs of the caching run last, in a worktree
   under the system's temporary directory, never in the working tree.
+- Inside the pytest step, pytest-testmon runs only the tests whose code changed (`tools/check/pytest-selected.ts`);
+  its data is `apps/api/.testmondata`, with a key beside it over what testmon does not track (the data files,
+  `pyproject.toml`, `uv.lock`, the Python version, the platform). A different key deletes the data and runs the
+  suite whole. The numbers of the engine (`tests/engine/test_demo_numbers.py`) run in every pytest run as a
+  sentinel (`tests/always_run.py`). A comment alone changes nothing: testmon reads the syntax tree. In `apps/api`,
+  `bun run test -- tests/api` runs a part with the selection, `bun run test:all` the whole suite without it.
 
 ## Commands
 | Command | Use |
