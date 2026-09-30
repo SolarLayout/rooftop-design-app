@@ -6,6 +6,7 @@ import { frameAt, type Frame, type LonLat } from "./frame";
 import { canRedo, canUndo, historyOf, redone, undone, withNext, type History } from "./history";
 import { areaOf, bearingOf, centroidOf, compassOf, edgesOf, facingOf, isClockwise, type Facing, type XY } from "./measure";
 import { nudged, nudgeOfKey } from "./nudge";
+import { boxOf as obstacleBoxOf, boxWithCorner, FEWEST_POINTS, nameOf, tankOf, type Obstacle, type ObstacleKind, type Shape } from "./obstacles";
 import { rectangleOf, turnedAbout, turnOfHandle } from "./rectangle";
 import { closesOnFirst, snappedCorner } from "./snap";
 import { isRectangle, withEdgeLength } from "./typed-length";
@@ -13,8 +14,8 @@ import { isRectangle, withEdgeLength } from "./typed-length";
 /** A box drawn with the rectangle tool: its four corners before the turn, and the turn. */
 export type Box = { base: readonly XY[]; turn: number };
 
-/** What the history keeps: the corners, whether they are closed, and the box they came from. */
-export type Drawn = { corners: readonly XY[]; closed: boolean; rectangle: Box | null };
+/** What the history keeps: the corners, whether they are closed, the box they came from, and the obstacles. */
+export type Drawn = { corners: readonly XY[]; closed: boolean; rectangle: Box | null; obstacles: readonly Obstacle[] };
 
 export type OutlineState = {
   /** The frame of metres, made where the first corner was placed; null before it. */
@@ -27,6 +28,16 @@ export type OutlineState = {
   squared: boolean;
   /** The box the corners are, while they are one: it can be turned by its handle. Null for any other outline. */
   rectangle: Box | null;
+  /** The obstacles on the roof, each with its height. */
+  obstacles: readonly Obstacle[];
+  /** The obstacle being drawn: a box or a tank while it is dragged, a wall or a building point by point. */
+  drawing: Shape | null;
+  /** A shape that is done and awaits its height; nothing else is drawn until it has one or is discarded. */
+  pending: Shape | null;
+  /** The id of the selected obstacle: its corners drag, Delete removes it. */
+  selectedObstacle: number | null;
+  /** The id the next obstacle gets. */
+  nextId: number;
   history: History<Drawn>;
 };
 
@@ -51,7 +62,16 @@ export type OutlineEvent =
   | { type: "boxTurned"; handle: XY }
   | { type: "turnDropped" }
   | { type: "footprintTaken"; corners: readonly XY[] }
-  | { type: "loaded"; at: LonLat; corners: readonly XY[] };
+  | { type: "loaded"; at: LonLat; corners: readonly XY[]; obstacles?: readonly Obstacle[] }
+  | { type: "shapeDragged"; kind: "box" | "cylinder"; from: XY; to: XY }
+  | { type: "shapeDropped" }
+  | { type: "shapePlaced"; kind: "wall" | "building"; at: XY; metresPerPx: number; touch: boolean }
+  | { type: "heightGiven"; height: number; name: string }
+  | { type: "pendingDiscarded" }
+  | { type: "obstacleSelected"; id: number | null }
+  | { type: "obstacleCornerMoved"; id: number; index: number; at: XY }
+  | { type: "obstacleCornerDropped" }
+  | { type: "obstacleRemoved"; id: number };
 
 export type Measurements = {
   edges: number[];
@@ -61,7 +81,7 @@ export type Measurements = {
   corners: number;
 };
 
-const NOTHING: Drawn = { corners: [], closed: false, rectangle: null };
+const NOTHING: Drawn = { corners: [], closed: false, rectangle: null, obstacles: [] };
 const FEWEST_CORNERS = 3;
 
 /**
@@ -101,15 +121,38 @@ export const START: OutlineState = {
   selected: null,
   squared: true,
   rectangle: null,
+  obstacles: [],
+  drawing: null,
+  pending: null,
+  selectedObstacle: null,
+  nextId: 1,
   history: historyOf(NOTHING),
 };
 
-const drawnOf = (state: OutlineState): Drawn => ({ corners: state.corners, closed: state.closed, rectangle: state.rectangle });
+const drawnOf = (state: OutlineState): Drawn => ({ corners: state.corners, closed: state.closed, rectangle: state.rectangle, obstacles: state.obstacles });
 
-/** A new state of drawing, as one step of the history. */
-function stepped(state: OutlineState, drawn: Drawn, selected: number | null): OutlineState {
-  return { ...state, ...drawn, selected, history: withNext(state.history, drawn) };
+/** A new state of drawing, as one step of the history. The obstacles stay as they are unless given. */
+function stepped(state: OutlineState, drawn: Omit<Drawn, "obstacles"> & { obstacles?: readonly Obstacle[] }, selected: number | null): OutlineState {
+  const next: Drawn = { obstacles: state.obstacles, ...drawn };
+  return { ...state, ...next, selected, selectedObstacle: drawn.obstacles ? state.selectedObstacle : null, history: withNext(state.history, next) };
 }
+
+/** A new set of obstacles, as one step of the history, with one of them selected. */
+function withObstacles(state: OutlineState, obstacles: readonly Obstacle[], selectedObstacle: number | null): OutlineState {
+  const next: Drawn = { ...drawnOf(state), obstacles };
+  return { ...state, obstacles, selected: null, selectedObstacle, history: withNext(state.history, next) };
+}
+
+/** Whether an obstacle can be drawn now: on a closed roof, while none awaits its height. */
+const canDraw = (state: OutlineState) => state.closed && state.pending === null;
+
+/** The shape being drawn of the kind, or a new one. */
+function drawingOf(state: OutlineState, kind: ObstacleKind): Shape {
+  return state.drawing?.kind === kind ? state.drawing : { kind, points: [], diameter: null };
+}
+
+/** The shape being drawn is done: it awaits its height. */
+const done = (state: OutlineState, shape: Shape): OutlineState => ({ ...state, drawing: null, pending: shape, selectedObstacle: null });
 
 /** A state that follows, but is not a step of its own: while a corner is dragged. The box is a polygon after it. */
 function moved(state: OutlineState, corners: readonly XY[], selected: number | null): OutlineState {
@@ -151,9 +194,12 @@ export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineS
       return stepped(state, { corners: [...corners, corner], closed: false, rectangle: null }, corners.length);
     }
 
-    case "close":
+    case "close": {
+      const { drawing } = state;
+      if (drawing) return drawing.points.length >= FEWEST_POINTS[drawing.kind] ? done(state, drawing) : state;
       if (state.closed || state.corners.length < FEWEST_CORNERS) return state;
       return stepped(state, { corners: squaredUp(state.corners, state.squared), closed: true, rectangle: null }, null);
+    }
 
     case "cornerMoved": {
       const { corners } = state;
@@ -180,7 +226,7 @@ export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineS
     }
 
     case "selected":
-      return { ...state, selected: event.index };
+      return { ...state, selected: event.index, selectedObstacle: null };
 
     case "nudged": {
       const nudge = nudgeOfKey(event.key, event.shift);
@@ -189,30 +235,34 @@ export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineS
     }
 
     case "removed": {
+      if (state.selectedObstacle !== null) return withObstacles(state, state.obstacles.filter((obstacle) => obstacle.id !== state.selectedObstacle), null);
       if (state.selected === null || state.corners.length <= FEWEST_CORNERS) return state;
       const corners = state.corners.filter((_, index) => index !== state.selected);
       return stepped(state, { corners, closed: state.closed, rectangle: null }, null);
     }
 
-    case "steppedBack":
+    case "steppedBack": {
+      const { drawing } = state;
+      if (drawing) return { ...state, drawing: drawing.points.length > 1 ? { ...drawing, points: drawing.points.slice(0, -1) } : null };
       if (state.closed || state.corners.length === 0) return state;
       return stepped(state, { corners: state.corners.slice(0, -1), closed: false, rectangle: null }, state.corners.length - 2 >= 0 ? state.corners.length - 2 : null);
+    }
 
     case "undone": {
       if (!canUndo(state.history)) return state;
       const history = undone(state.history);
-      return { ...state, ...history.present, selected: null, history };
+      return { ...state, ...history.present, selected: null, selectedObstacle: null, drawing: null, history };
     }
 
     case "redone": {
       if (!canRedo(state.history)) return state;
       const history = redone(state.history);
-      return { ...state, ...history.present, selected: null, history };
+      return { ...state, ...history.present, selected: null, selectedObstacle: null, drawing: null, history };
     }
 
     case "cleared":
-      if (state.corners.length === 0) return state;
-      return stepped(state, NOTHING, null);
+      if (state.corners.length === 0 && state.obstacles.length === 0) return state;
+      return { ...stepped(state, NOTHING, null), drawing: null, pending: null };
 
     case "edgeLength": {
       const corners = withEdgeLength(state.corners, event.edge, event.length, state.squared);
@@ -249,10 +299,70 @@ export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineS
       if (event.corners.length < FEWEST_CORNERS) return state;
       return stepped(state, { corners: event.corners, closed: true, rectangle: null }, null);
 
-    case "loaded":
+    case "loaded": {
       if (event.corners.length < FEWEST_CORNERS) return state;
-      return { ...START, frame: frameAt(event.at), corners: event.corners, closed: true, squared: state.squared, history: historyOf({ corners: event.corners, closed: true, rectangle: null }) };
+      const obstacles = event.obstacles ?? [];
+      const drawn: Drawn = { corners: event.corners, closed: true, rectangle: null, obstacles };
+      return { ...START, frame: frameAt(event.at), ...drawn, squared: state.squared, nextId: Math.max(0, ...obstacles.map((obstacle) => obstacle.id)) + 1, history: historyOf(drawn) };
+    }
+
+    case "shapeDragged": {
+      if (!canDraw(state)) return state;
+      const shape: Shape | null = event.kind === "box" ? boxed(obstacleBoxOf(event.from, event.to)) : tankOf(event.from, event.to);
+      return { ...state, drawing: shape, selectedObstacle: null };
+    }
+
+    case "shapeDropped":
+      return state.drawing ? done(state, state.drawing) : state;
+
+    case "shapePlaced": {
+      if (!canDraw(state)) return state;
+      const drawing = drawingOf(state, event.kind);
+      const { points } = drawing;
+      const within = event.touch ? CLOSE_WITHIN_TOUCH : CLOSE_WITHIN;
+      const endsOn = event.kind === "wall" ? points[points.length - 1] : points[0];
+      if (endsOn && points.length >= FEWEST_POINTS[event.kind] && closesOnFirst(endsOn, event.at, within, event.metresPerPx)) return done(state, drawing);
+      return { ...state, drawing: { ...drawing, points: [...points, event.at] }, selectedObstacle: null };
+    }
+
+    case "heightGiven": {
+      const { pending } = state;
+      if (!pending) return state;
+      const obstacle: Obstacle = { ...pending, id: state.nextId, name: event.name.trim() || nameOf(pending.kind, state.obstacles), height: event.height };
+      return { ...withObstacles(state, [...state.obstacles, obstacle], obstacle.id), pending: null, nextId: state.nextId + 1 };
+    }
+
+    case "pendingDiscarded":
+      return state.pending ? { ...state, pending: null } : state;
+
+    case "obstacleSelected":
+      return { ...state, selectedObstacle: event.id, selected: null };
+
+    case "obstacleCornerMoved": {
+      const obstacles = state.obstacles.map((obstacle) => (obstacle.id === event.id ? withCornerAt(obstacle, event.index, event.at) : obstacle));
+      return { ...state, obstacles, selected: null, selectedObstacle: event.id };
+    }
+
+    case "obstacleCornerDropped":
+      return { ...state, history: withNext(state.history, drawnOf(state)) };
+
+    case "obstacleRemoved":
+      return withObstacles(state, state.obstacles.filter((obstacle) => obstacle.id !== event.id), null);
   }
+}
+
+const boxed = (points: XY[] | null): Shape | null => (points ? { kind: "box", points, diameter: null } : null);
+
+/** An obstacle with corner `index` at `at`: a box stays a rectangle, a tank's one handle sets its diameter, a wall or a building bends. */
+function withCornerAt(obstacle: Obstacle, index: number, at: XY): Obstacle {
+  if (obstacle.kind === "box") return { ...obstacle, points: boxWithCorner(obstacle.points, index, at) };
+  if (obstacle.kind === "cylinder") {
+    const [centre] = obstacle.points;
+    const diameter = 2 * Math.hypot(at.x - centre.x, at.y - centre.y);
+    return diameter > 0 ? { ...obstacle, diameter } : obstacle;
+  }
+  if (index < 0 || index >= obstacle.points.length) return obstacle;
+  return { ...obstacle, points: obstacle.points.map((point, n) => (n === index ? at : point)) };
 }
 
 /** What the panel shows of the outline. */
