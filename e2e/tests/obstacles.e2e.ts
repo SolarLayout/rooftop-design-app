@@ -172,7 +172,7 @@ test.describe("one of each kind, built", () => {
     await page.getByRole("button", { name: "Build this roof" }).click();
 
     await expect(page).toHaveURL(/\/studio\/roof$/, { timeout: RUN });
-    await expect(page.getByTestId("roof-how").first()).toHaveText("Outlined on satellite · 4 corners · 4 obstacles");
+    await expect(page.getByTestId("roof-how")).toHaveText("Outlined on satellite · 4 corners · 4 obstacles");
     await expect.poll(() => layouts.length, { timeout: RUN }).toBeGreaterThan(0);
     const { obstacles } = layouts[0].roof;
     expect(obstacles.map((obstacle) => [obstacle.kind, obstacle.name, obstacle.height])).toEqual([

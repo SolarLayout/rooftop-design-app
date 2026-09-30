@@ -9,6 +9,12 @@ import type { Roof } from "@/lib/api";
 import { roofCardOf } from "@/lib/roof-card";
 import { withRoofType } from "@/lib/studio/roof-type";
 import { projectOf } from "@/lib/stores/project-store";
+import type { Size } from "./use-size";
+
+type Props = {
+  /** The size of the screen: the inspector is mounted once, in the container of the size (decision 9). */
+  size: Size;
+};
 
 /** The way back to the map, with the outline of this design shown there. */
 export const EDIT_THE_OUTLINE = "/find?edit=roof";
@@ -20,7 +26,7 @@ const SECTION = "type-section text-text-3 uppercase";
  * the map, and the roof type. The parapet, the setback, the walkways, the clearance, the albedo and the
  * obstacles come with the stage of the roof (Phase 5).
  */
-export function RoofInspector() {
+export function RoofInspector({ size }: Props) {
   const project = useProject(projectOf);
   const { project: store } = useStores();
   const card = project ? roofCardOf(project.roof) : null;
@@ -33,7 +39,7 @@ export function RoofInspector() {
   }
 
   return (
-    <div className="flex flex-col gap-section">
+    <div data-size={size} className="flex flex-col gap-section">
       <section aria-label="Location and outline" className="flex items-center gap-3.5 rounded-card border border-line bg-surface-1 p-card-compact shadow-card">
         <span aria-hidden="true" className="flex h-14 w-11 shrink-0 items-center justify-center rounded-row bg-surface-2">
           <span className="block h-3.5 w-8 rounded-xs border border-accent bg-outline-fill" />

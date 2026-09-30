@@ -7,6 +7,7 @@ import { LENSES, type Lens } from "@/lib/routes";
 import { LensNav } from "./LensNav";
 import { RoofInspector } from "@/components/studio/RoofInspector";
 import { Stage } from "@/components/studio/Stage";
+import { useSize } from "@/components/studio/use-size";
 import { NotBuiltYet } from "./NotBuiltYet";
 import { useNotesOfTheShell } from "./Shell";
 import { useStores, useVitals } from "./stores";
@@ -16,16 +17,18 @@ type Props = { lens: Lens };
 
 /**
  * The frame of the Studio: the lenses, the stage, the vitals and the inspector, laid out for each size.
- * The stage and the inspector are built with their lenses; until then they say so.
+ * The inspector is mounted once, in the container of the size (plan/phase-05-plan.md, decision 9): the
+ * aside of tablet and desktop, the sheet of phone; before the size is known, nothing. The stage and the
+ * inspector are built with their lenses; until then they say so.
  */
 export function Studio({ lens }: Props) {
   const { view } = useStores();
   const { notes, open } = useNotesOfTheShell();
   const vitals = useVitals(notes);
+  const size = useSize();
   const [stop, setStop] = useState<Stop>("half");
   const name = LENSES.find((one) => one.id === lens)?.name ?? "";
-  // The inspector stands once for each size; each shows the same, the lens's own once it is built.
-  const inspector = lens === "roof" ? <RoofInspector /> : <NotBuiltYet />;
+  const inspector = size === null ? null : lens === "roof" ? <RoofInspector size={size} /> : <NotBuiltYet />;
 
   // The Studio comes back to the lens that was opened last.
   useEffect(() => view.getState().showLens(lens), [view, lens]);
@@ -44,13 +47,13 @@ export function Studio({ lens }: Props) {
         aria-label={`${name} inspector`}
         className="hidden flex-col px-5 pt-6 pb-5 tablet:flex desktop:w-inspector desktop:shrink-0 desktop:overflow-y-auto desktop:border-l desktop:border-line-subtle desktop:bg-chrome desktop:p-panel"
       >
-        {inspector}
+        {size === "phone" ? null : inspector}
       </aside>
 
       <div className="tablet:hidden">
         <Sheet label="Inspector" stop={stop} onStop={setStop}>
           <LensNav current={lens} look="switch" className="mx-4 mt-1 grid" />
-          <div className="px-4 pt-4 pb-6">{inspector}</div>
+          <div className="px-4 pt-4 pb-6">{size === "phone" ? inspector : null}</div>
         </Sheet>
       </div>
     </div>

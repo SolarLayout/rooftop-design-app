@@ -141,7 +141,7 @@ test.describe("the shell", () => {
   test("studio, the Roof lens", async ({ page }) => {
     await page.goto("/studio/roof");
     await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
-    await expect(page.getByTestId("roof-how").filter({ visible: true })).toHaveText("Entered by hand · 4 corners · 6 obstacles");
+    await expect(page.getByTestId("roof-how")).toHaveText("Entered by hand · 4 corners · 6 obstacles");
 
     await sceneSettled(page);
     await expectScreen(page, "studio-roof");
