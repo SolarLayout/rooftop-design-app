@@ -46,6 +46,11 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | Enter dimensions by hand | `ByHand.dc.html` | `find-by-hand.png` | desktop, phone in parts |
 | Studio, Roof lens | `RoofLens.dc.html` | `studio-roof-lens-desktop.png` | desktop |
 | Studio, Array lens | `Main.dc.html`, `StudioTablet.dc.html`, `StudioPhone.dc.html` | `studio-desktop.png`, `studio-tablet.png`, `studio-phone.png` | desktop, tablet, phone |
+| Studio, Roof lens on tablet and phone | `RoofLensTablet.dc.html`, `RoofLensPhone.dc.html` | `studio-roof-lens-tablet.png`, `studio-roof-lens-phone.png` | tablet, phone |
+| Obstacle edited on the roof | `ObstacleOnRoof.dc.html` | `studio-obstacle-on-roof.png` | desktop, phone in parts |
+| Roof types in 3D | `RoofTypes3D.dc.html` | `studio-roof-types-3d.png` | desktop |
+| Studio, Array lens, states | `ArrayLensStates.dc.html` | `studio-array-lens-states.png` | desktop in parts |
+| Import with missing heights | `ImportHeights.dc.html` | `studio-import-heights.png` | desktop, phone in parts |
 | Studio, Sun lens | `SunLens.dc.html` | `studio-sun-lens-desktop.png` | desktop |
 | Studio, Strings lens | `StringsLens.dc.html` | `studio-strings-lens-desktop.png` | desktop |
 | Studio, Strings lens, no system voltage yet | `StringsLensNoVoltage.dc.html` | `studio-strings-lens-no-voltage.png` | desktop |
@@ -74,5 +79,10 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   states and tools", drawn on 2026-09-30 by session 6 (`plan/phase-04-plan.md`, step 0).
 - `mockups/build_phase4_obstacles_by_hand.py` writes the two boards of the third pull request of Phase 4, "Obstacles on the
   map and their heights" and "Enter dimensions by hand", drawn on 2026-09-30 by session 7 (`plan/phase-04-plan.md`, step 13).
-- `mockups/canvas.json` is the layout of the boards on the canvas. The canvas and the repo hold the same 21 boards
-  since 2026-09-30 (session 7 published the four of Phase 4 that the canvas lacked).
+- `mockups/build_phase5_roof_boards.py` writes the three boards of the Roof lens of Phase 5 (the lens on tablet and
+  phone, the obstacle edited on the roof) and `mockups/build_phase5_array_boards.py` the three of the Array lens
+  (its states, the roof types in 3D, the import with missing heights), drawn on 2026-09-30 by session 9
+  (`plan/phase-05-plan.md`, step 0). The 3D crops are drawn from the engine's own positions, kept in
+  `mockups/roof_types_positions.json`, so that the boards can be written again without the engine.
+- `mockups/canvas.json` is the layout of the boards on the canvas. The canvas and the repo hold the same 27 boards
+  since 2026-09-30 (session 9 published the six of Phase 5).

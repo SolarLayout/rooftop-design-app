@@ -122,6 +122,15 @@
 - Satellite imagery carries its attribution wherever it is shown, on the map and under the 3D.
 - Modules are instanced. Changing the time never rebuilds geometry.
 - Colour by string, MPPT or inverter uses the series tokens. Positions not used are grey.
+- The stage draws what the engine answered: the positions of `/layout`, its kept-clear areas, its setback. A sloped
+  roof is drawn pitched about the line through its centroid; the engine's numbers are its own (the board "Roof types
+  in 3D"). Plan is the same scene seen straight down, north up, and what stands in without WebGL.
+- The line under the lens's title counts what the layout answered: on the Roof lens the roof's area, the area inside
+  the setback and the obstacles; on the Array lens the positions, the tables, the rows and the area of all the
+  positions.
+- While a layout is on its way the modules of before stay and the line under the title is dimmed with a ring; a
+  layout that failed is a callout on the stage with the engine's sentence and Try again, and the last good modules
+  stay (the board "Studio, Array lens, states").
 
 ## Do not
 

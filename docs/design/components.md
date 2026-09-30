@@ -246,6 +246,29 @@ touch), `DetectedCallout` the callout of Detect building. Every rule of drawing 
   on a row selects it, Remove takes it. The card of the Roof lens counts them. In code: `ObstacleList`,
   `HeightDialog`, the obstacles in `lib/outline/obstacles.ts` and the reducer.
 
+## Obstacles on the roof (Studio, Roof lens)
+The board "Obstacle edited on the roof". The obstacles of the document are edited on the 3D roof and in the list of
+the Roof lens, which share one selection. A press selects (the roof, an obstacle, a kept-clear area, a module);
+hover is a lighter outline on pointer devices; Escape clears; the parapet is not selectable. The selected obstacle
+has an accent outline (2 px on its silhouette, 1.5 px on the edges of its top), its callout ("Stair room · selected",
+"5.0 × 4.0 m · 3.0 m high · drag to move") anchored by the 9 px dot at the middle of the east edge of its top, and
+handles: a corner handle (18, 22 on touch, white with an accent border) at each corner of its top for the size, the
+turn handle (32 round, 44 on touch, with the turn icon) on a stem of 44 due north off its north edge, the height
+handle on a vertical stem of 40 (52 on touch) from the middle of its top. A tank has one handle at its edge for its
+diameter. The handles are away while it is dragged; a drag moves it on the roof plane snapped to 0.1 m with the
+live place beside the pointer ("East 27.5 m · North 18.0 m") and the old place as a dashed accent ghost; the drop
+commits the edit. On phone every handle takes a press of 44 by 44.
+The list: "Obstacles · n" with Add; a row per obstacle (icon, name, its size and height in mono), the selected one
+open as a card (`note-surface`, accent border, `halo-selected`) with its name editable in the head, its kind and
+Remove, and its fields two to a row by its kind (functional-inventory.md, 1.2): a box Length, Width, Height,
+Rotation, East, North; a tank Diameter, Height, East, North; a tree Crown ⌀, Height, Crown starts at (a full row),
+East, North; a wall and a building their points as the corner table of "Enter dimensions by hand", a wall its
+thickness too. "Parapet, all edges · h 0.9 m" is a read-only row at the end when there is a parapet. Add opens a
+menu of the kinds (Box, Tank, Wall, Tree, Building, each with the size a new one gets); the new obstacle stands at the
+centre of the roof as a dashed accent footprint with the callout "Box 7 · draft", its card open with the Height
+empty and the focus in it and the primary "Add the box" waiting: nothing is preselected, it joins the design when
+its height is typed; Add then a tap on the roof places it there.
+
 ## Enter dimensions by hand (Find and outline)
 The way on when there is no map key, no WebGL or no connection, and a way for anyone who has measured the roof
 (the board "Enter dimensions by hand"). "Enter dimensions by hand instead", under Build and in the place of the map
@@ -265,6 +288,18 @@ says "Entered by hand". Obstacles by hand come with the Roof lens.
 
 In code (`apps/web/components/find`): `ByHandPanel` the fields, `PlanView` the plan, the rectangle and the table in
 `apps/web/lib/outline/by-hand.ts`, the roof entered as one event of the reducer (`entered`).
+
+## Import a drawing (the project switcher)
+The board "Import with missing heights". A dialog of 440 ("Import a drawing"), one sentence of what is read, the file
+drop ("Drop the drawing here", "KMZ, KML or DXF"), a state with the file held before it is read (`surface-2`, border
+`line`, the file icon in accent, the name in mono, "DXF · 48 KB · read when the roof is opened", "Choose another"),
+"DXF units" as a segmented control m or mm with nothing pressed and at `opacity-disabled` until the file is a DXF, then
+m suggested; "Open the roof" waits until a file is there. After the import the Roof lens's card says "From a file · 6
+corners · 4 obstacles" with the file name in mono; a note under it (`note-surface`, accent border, the note mark)
+carries the engine's sentence "These obstacles have no height in the file and were set to 1.0 m.", "3 to review" and
+Review; the open card of an obstacle to review has the hint "Enter the real height. The file gave none; 1.0 m stands
+until you do" and a quiet Next in its foot; the rows still to review carry a note mark after their height. A typed
+height takes the obstacle off the list; the note goes when it is empty. On the roof what is not yet real is dashed.
 
 ## Deliverable row (Handover)
 Row 64 high: format badge 44 by 28 (accent for the selected row), title, one line of facts, then a download

@@ -149,6 +149,48 @@
    "w": 1440,
    "x": 0,
    "y": 9700
+  },
+  "RoofLensTablet.dc.html": {
+   "x": 0,
+   "y": 13000,
+   "w": 834,
+   "h": 1194,
+   "title": "Studio, Roof lens · tablet 834"
+  },
+  "RoofLensPhone.dc.html": {
+   "x": 914,
+   "y": 13000,
+   "w": 390,
+   "h": 844,
+   "title": "Studio, Roof lens · phone 390"
+  },
+  "ObstacleOnRoof.dc.html": {
+   "x": 1384,
+   "y": 13000,
+   "w": 1440,
+   "h": 2580,
+   "title": "Obstacle edited on the roof"
+  },
+  "RoofTypes3D.dc.html": {
+   "x": 2904,
+   "y": 13000,
+   "w": 1440,
+   "h": 2240,
+   "title": "Roof types in 3D"
+  },
+  "ArrayLensStates.dc.html": {
+   "x": 0,
+   "y": 15700,
+   "w": 1440,
+   "h": 3340,
+   "title": "Studio, Array lens, states"
+  },
+  "ImportHeights.dc.html": {
+   "x": 1520,
+   "y": 15700,
+   "w": 1440,
+   "h": 2110,
+   "title": "Import with missing heights"
   }
  },
  "createdOnFiles": {
@@ -207,6 +249,14 @@
    "w": 240,
    "x": 0,
    "y": 6754
+  },
+  "t7": {
+   "kind": "title1",
+   "maxW": 4344,
+   "text": "7 · Studio in 3D: the Roof and Array lenses on every size, their states, the roof types",
+   "w": 240,
+   "x": 0,
+   "y": 12700
   }
  },
  "order": [
@@ -230,7 +280,13 @@
   "LocateTablet.dc.html",
   "LocateStates.dc.html",
   "ObstaclesOnMap.dc.html",
-  "ByHand.dc.html"
+  "ByHand.dc.html",
+  "RoofLensTablet.dc.html",
+  "RoofLensPhone.dc.html",
+  "ObstacleOnRoof.dc.html",
+  "RoofTypes3D.dc.html",
+  "ArrayLensStates.dc.html",
+  "ImportHeights.dc.html"
  ],
  "pages": [],
  "title": "SolarLayout Rooftop — Web Design"
