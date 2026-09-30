@@ -23,8 +23,11 @@ export function shadowBiasOf(elevationDeg: number, radius: number, mapSize: numb
   return { bias: -0.00012, normalBias: Math.max(0.1, texel * 3 * grazing) };
 }
 
-/** The strength of the sun light and of the ambient light, with the sun's height. */
+/**
+ * The strength of the sun light and of the ambient light, with the sun's height. The ambient stays
+ * strong, so that a shadow reads as the boards draw it (a third darker), never as black.
+ */
 export function intensitiesOf(elevationDeg: number): { sun: number; ambient: number } {
   const height = Math.max(0, Math.sin(toRadians(elevationDeg)));
-  return { sun: fadeOf(elevationDeg) * (height * 2.4 + 0.2), ambient: 0.35 + height * 0.65 };
+  return { sun: fadeOf(elevationDeg) * (height * 1.6 + 0.2), ambient: 0.9 + height * 0.6 };
 }

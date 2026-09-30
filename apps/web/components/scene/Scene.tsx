@@ -77,7 +77,7 @@ export function Scene({ onContextLost, stage }: Props) {
           />
         ) : null}
       </group>
-      <Ground imagery={IMAGERY} lat={roof.lat} lon={roof.lon} radius={frame.radius} depth={BUILDING_DEPTH} />
+      <Ground imagery={IMAGERY} lat={roof.lat} lon={roof.lon} radius={frame.radius} depth={BUILDING_DEPTH} stage={stage} />
     </SceneCanvas>
   );
 }

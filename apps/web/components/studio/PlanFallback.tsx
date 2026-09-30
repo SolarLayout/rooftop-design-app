@@ -54,7 +54,7 @@ export function PlanFallback({ roof, layout, reason, className }: Props) {
           <path key={`inner-${n}`} d={pathOf(polygon)} vectorEffect="non-scaling-stroke" className="fill-none stroke-line-strong" strokeDasharray="0.6 0.4" />
         ))}
         {layout?.modules.map((module) => (
-          <path key={module.idx} d={pathOf({ exterior: module.outline, holes: [] })} className="fill-data-gain" />
+          <path key={module.idx} data-testid="plan-module" d={pathOf({ exterior: module.outline, holes: [] })} className="fill-data-gain" />
         ))}
         {layout?.keepout.flatMap((part, n) =>
           part.polygons.map((polygon, m) => <path key={`keepout-${n}-${m}`} d={pathOf(polygon)} vectorEffect="non-scaling-stroke" className="fill-outline-fill stroke-accent" strokeDasharray="0.5 0.3" />),

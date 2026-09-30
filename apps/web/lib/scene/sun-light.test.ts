@@ -27,7 +27,7 @@ describe("the shadow bias", () => {
 
 describe("the intensities", () => {
   test("the sun's follows its height and the fade; the ambient never goes out", () => {
-    expect(intensitiesOf(90).sun).toBeCloseTo(2.6, 6);
+    expect(intensitiesOf(90).sun).toBeCloseTo(1.8, 6);
     expect(intensitiesOf(0).sun).toBe(0);
     expect(intensitiesOf(0).ambient).toBeGreaterThan(0);
     expect(intensitiesOf(60).ambient).toBeGreaterThan(intensitiesOf(10).ambient);

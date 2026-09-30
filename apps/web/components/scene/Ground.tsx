@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { BufferGeometry, CanvasTexture, Float32BufferAttribute, SRGBColorSpace } from "three";
 import { FLAT, toScenePoint } from "@/lib/scene/adapter";
 import { gridLinesOf, IMAGERY_RADIUS, tilesAround, type Extent } from "@/lib/scene/ground";
+import type { StageStore } from "@/lib/scene/stage-store";
 import { stitchTiles } from "@/lib/scene/stitch";
 import type { Imagery } from "@/lib/map/provider";
 import { PALETTE } from "@/lib/scene-palette";
@@ -19,6 +20,8 @@ type Props = {
   radius: number;
   /** How far the ground lies under the roof plane; at it unless said. */
   depth?: number;
+  /** Where the scene says what ground it drew, for the text equivalent of the stage. */
+  stage: StageStore;
 };
 
 /** The plain ground is at least this wide, and six times the roof's radius. */
@@ -56,7 +59,7 @@ function ImageryPlane({ texture, extent, height }: { texture: CanvasTexture; ext
  * that does not come leaves its square plain. Mounted at the origin of the scene, not in the group that
  * shifts the roof: the tiles are about the centroid already.
  */
-export function Ground({ imagery, lat, lon, radius, depth = 0 }: Props) {
+export function Ground({ imagery, lat, lon, radius, depth = 0, stage }: Props) {
   const invalidate = useThree((state) => state.invalidate);
   const anisotropy = useThree((state) => state.gl.capabilities.getMaxAnisotropy());
   const [picture, setPicture] = useState<{ texture: CanvasTexture; extent: Extent } | null>(null);
@@ -86,10 +89,11 @@ export function Ground({ imagery, lat, lon, radius, depth = 0 }: Props) {
 
   // The texture of the moment is let go when another takes its place, and on unmount.
   useEffect(() => {
+    stage.getState().setGround(picture ? "imagery" : "plain");
     if (!picture) return;
     invalidate();
     return () => picture.texture.dispose();
-  }, [picture, invalidate]);
+  }, [picture, invalidate, stage]);
 
   useEffect(() => () => grid.dispose(), [grid]);
 

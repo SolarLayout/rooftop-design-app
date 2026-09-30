@@ -2,6 +2,7 @@ import type { Page } from "@playwright/test";
 import { expect, test } from "../fixtures";
 import { expectScreen } from "../screens";
 import { A_MAP, findOpened, roofMap, scaleLabel, searchField } from "../find";
+import { sceneSettled } from "../stage";
 
 // Each screen against its baseline in e2e/baselines. After a change that is meant, look at the new
 // picture beside the preview in docs/design/previews, then renew the baseline:
@@ -133,6 +134,7 @@ test.describe("the shell", () => {
     await page.goto("/studio/array");
     await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
 
+    await sceneSettled(page);
     await expectScreen(page, "studio");
   });
 
@@ -141,6 +143,7 @@ test.describe("the shell", () => {
     await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
     await expect(page.getByTestId("roof-how").filter({ visible: true })).toHaveText("Entered by hand · 4 corners · 6 obstacles");
 
+    await sceneSettled(page);
     await expectScreen(page, "studio-roof");
   });
 
@@ -153,6 +156,7 @@ test.describe("the shell", () => {
     await page.goto("/studio/strings");
     await expect(vitals(page).getByText("442.40")).toBeVisible({ timeout: RUN });
 
+    await sceneSettled(page);
     await expectScreen(page, "studio-before-a-voltage");
   });
 
@@ -164,6 +168,7 @@ test.describe("the shell", () => {
     await opener.getByRole("button", { name: "1 note to review" }).click();
     await expect(page.getByRole("dialog", { name: "Notes to review" })).toBeVisible();
 
+    await sceneSettled(page);
     await expectScreen(page, "studio-notes");
   });
 
@@ -174,6 +179,7 @@ test.describe("the shell", () => {
     await design(page).click();
     await expect(page.getByRole("menu", { name: "Project" })).toBeVisible();
 
+    await sceneSettled(page);
     await expectScreen(page, "studio-project-switcher");
   });
 

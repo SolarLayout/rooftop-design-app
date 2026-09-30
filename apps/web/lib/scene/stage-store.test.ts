@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { bearingDegOf, createStageStore, labelsOf } from "./stage-store";
+import { bearingDegOf, createStageStore, labelsOf, groundOf } from "./stage-store";
 
 // What the scene tells the DOM over it, written on each drawn frame: it must not wake React for nothing.
 
@@ -41,5 +41,19 @@ describe("the stage store", () => {
 
     store.getState().setBearing(46.2);
     expect(bearingDegOf(store.getState())).toBe(46.2);
+  });
+});
+
+describe("the ground", () => {
+  test("is nothing until the scene says what it drew, and takes only a change", () => {
+    const store = createStageStore();
+    expect(groundOf(store.getState())).toBe("none");
+    const before = store.getState();
+
+    store.getState().setGround("none");
+    expect(store.getState()).toBe(before);
+
+    store.getState().setGround("imagery");
+    expect(groundOf(store.getState())).toBe("imagery");
   });
 });

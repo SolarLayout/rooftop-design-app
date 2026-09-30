@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { useStore } from "zustand";
 import { useProject, useResults } from "@/components/shell/stores";
 import { useWebGL } from "@/components/find/use-web-gl";
 import { classNames } from "@/components/ui/class-names";
@@ -9,10 +10,10 @@ import { shown } from "@/components/ui/number-entry";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
 import { calloutOf } from "@/lib/scene/keepout";
 import { wordsOf } from "@/lib/scene/obstacles";
-import { createStageStore } from "@/lib/scene/stage-store";
+import { createStageStore, groundOf, type StageStore } from "@/lib/scene/stage-store";
 import type { Lens } from "@/lib/routes";
 import { projectOf } from "@/lib/stores/project-store";
-import { layoutOf, readoutsOf } from "@/lib/stores/results-store";
+import { layoutOf, readoutsOf, sunOf } from "@/lib/stores/results-store";
 import { Callout } from "./Callout";
 import { Labels } from "./Labels";
 import { PlanFallback } from "./PlanFallback";
@@ -75,16 +76,18 @@ export function Stage({ lens, name, className }: Props) {
           {ATTRIBUTION}
         </p>
       ) : null}
-      <OnTheRoof />
+      <OnTheRoof stage={stage} />
     </div>
   );
 }
 
 /** The text equivalent of the scene: what stands on the roof, for a screen reader and for the tests. */
-function OnTheRoof() {
+function OnTheRoof({ stage }: { stage: StageStore }) {
+  const ground = useStore(stage, groundOf);
   const project = useProject(projectOf);
   const readouts = useResults(readoutsOf);
   const layout = useResults(layoutOf);
+  const sun = useResults(sunOf);
   if (!project) return null;
   const { roof, array } = project;
   const window = { from: array.window_start_h, to: array.window_end_h, allowShaded: array.allow_shaded };
@@ -104,6 +107,14 @@ function OnTheRoof() {
       {layout ? (
         <li data-testid="on-the-roof-modules">
           {shown(layout.layout.modules.length, 0)} modules in {shown(layout.layout.n_rows, 0)} rows
+        </li>
+      ) : null}
+      {ground === "none" ? null : (
+        <li data-testid="on-the-roof-ground">{ground === "imagery" ? "The ground is the satellite imagery" : "The ground is plain, with a grid"}</li>
+      )}
+      {sun ? (
+        <li data-testid="on-the-roof-sun">
+          Sun {shown(sun.elevationDeg, 1)}° over the horizon, {shown(sun.azimuthDeg, 1)}° from north
         </li>
       ) : null}
       {layout?.layout.keepout.map((part, index) => (

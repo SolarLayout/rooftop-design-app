@@ -7,6 +7,7 @@ import { Segmented } from "@/components/ui/Segmented";
 import { Skeleton } from "@/components/ui/Skeleton";
 import type { Roof } from "@/lib/api";
 import { roofCardOf } from "@/lib/roof-card";
+import { withRoofType } from "@/lib/studio/roof-type";
 import { projectOf } from "@/lib/stores/project-store";
 
 /** The way back to the map, with the outline of this design shown there. */
@@ -25,7 +26,10 @@ export function RoofInspector() {
   const card = project ? roofCardOf(project.roof) : null;
 
   function chooseRoofType(roofType: Roof["roof_type"]) {
-    store.getState().commit((design) => (design.roof.roof_type === roofType ? design : { ...design, roof: { ...design.roof, roof_type: roofType } }));
+    store.getState().commit((design) => {
+      const roof = withRoofType(design.roof, roofType);
+      return roof === design.roof ? design : { ...design, roof };
+    });
   }
 
   return (
