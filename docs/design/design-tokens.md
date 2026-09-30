@@ -200,6 +200,7 @@ Base 2 px. Steps in use: 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48,
 | `--size-inspector` | `384px` | Inspector width |
 | `--size-handover-list` | `440px` | Handover list width |
 | `--size-find-panel` | `380px` | Find and outline panel width |
+| `--size-find-stage-inset` | `424px` | Desktop: what floats over the map of Find stays this far from the right: the panel, its margin and a gap |
 | `--size-vitals` | `78px` | Vitals bar height on desktop |
 | `--size-tabbar` | `72px` | Bottom tab bar height |
 | `--size-touch` | `44px` | Touch target, the least on phone and tablet, both ways |
@@ -260,6 +261,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--shadow-track` | `inset 0 1px 3px rgba(0,0,0,.45)` | Track of a switch |
 | `--shadow-knob` | `0 1px 3px rgba(0,0,0,.5)` | Switch knob |
 | `--shadow-handle` | `0 2px 6px rgba(0,0,0,.6)` | Map and slider handles |
+| `--shadow-text-on-imagery` | `0 1px 3px rgba(0,0,0,.9)` | Under text that stands on the satellite imagery: the scale, the attribution |
 | `--halo-focus` | `0 0 0 3px rgba(255,176,32,.18)` | Focused field (with an accent border) |
 | `--halo-selected` | `0 0 0 3px rgba(255,176,32,.14)` | Selected card (with an accent border) |
 | `--halo-saved` | `0 0 0 0 rgba(61,214,160,.5)` | Around the saved dot, where its pulse begins and ends |
@@ -311,6 +313,8 @@ and the file equal.
 | `LIST_GAP` | `6` | Pixels between a list that floats and its trigger |
 | `SCREEN_MARGIN` | `8` | Pixels that stay free between what floats and the edge of the screen |
 | `DESIGN_PAUSE` | `500` | Milliseconds between a committed edit and the design run that follows it: edits shortly after each other are one run |
+| `ROOF_ZOOM` | `19` | The zoom of the map at a roof that was found: the native limit of the imagery, about 0.3 m per pixel |
+| `SCALE_BAR_MAX` | `124` | Pixels that the scale bar of the map may be wide at most; it shows the largest round length that fits |
 
 ## Layers
 
@@ -350,6 +354,7 @@ layer of their own.
 | `--stroke-*` | `stroke-icon`, `stroke-icon-light`, `stroke-tick` | on the `svg` of an icon |
 | `--z-*` | `z-` and the name | `z-float` |
 | `--border-*` | `border-` and the name; `border-b-tab` for the line under a tab | `border-handle-touch desktop:border-handle`, `border-dot` |
+| `--shadow-text-on-imagery` | `on-imagery` | on text that stands on the satellite imagery |
 
 Tailwind's own palette, sizes of type, radii and shadows do not exist in this app: a utility that is not made
 of a token makes no CSS.
