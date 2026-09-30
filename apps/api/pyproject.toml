@@ -19,10 +19,12 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "coverage==7.16.2",
     "httpx2>=2.13,<3",
     "import-linter>=2.3,<3",
     "pypdf>=6,<7",
     "pytest>=8.3,<10",
+    "pytest-testmon==2.2.0",
     "ruff>=0.11,<1",
 ]
 
@@ -45,6 +47,8 @@ addopts = "-q --strict-markers"
 # A way of the test client that starlette gives up is a fault of the check, not a line to read over.
 filterwarnings = ["error::starlette.exceptions.StarletteDeprecationWarning"]
 markers = ["slow: takes seconds, not milliseconds; still part of every run of the check"]
+# The sentinel of the selection by pytest-testmon (tests/always_run.py): these tests run every time.
+always_run = "tests/engine/test_demo_numbers.py"
 
 [tool.ruff]
 line-length = 110

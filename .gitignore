@@ -31,3 +31,6 @@ playwright-report/
 next-env.d.ts
 *.tsbuildinfo
 .import_linter_cache/
+
+# pytest-testmon: which tests each Python file affects; a cache, never committed
+apps/api/.testmondata*

@@ -40,7 +40,10 @@
       "outputs": []
     },
     "test": {
-      "outputs": []
+      "outputs": [],
+      "passThroughEnv": [
+        "ROOFTOP_CHECK_FRESH"
+      ]
     },
     "//#typecheck:tools": {
       "inputs": [

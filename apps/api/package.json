@@ -8,6 +8,7 @@
     "lint": "uv run --locked ruff check . && uv run --locked ruff format --check .",
     "format": "uv run ruff check --fix . && uv run ruff format .",
     "imports": "uv run --locked lint-imports",
-    "test": "uv run --locked pytest"
+    "test": "bun ../../tools/check/pytest-selected.ts",
+    "test:all": "uv run --locked pytest"
   }
 }
