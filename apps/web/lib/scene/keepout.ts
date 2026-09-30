@@ -1,6 +1,8 @@
 // The words of a kept-clear area on the roof (plan/phase-05-plan.md, step 8, decision 4): what /layout
 // answered about one part of the keep-out, and the shade-free window of the array.
 import type { Keepout } from "../api";
+import { areaOf, centroidOf } from "../outline/measure";
+import type { XY } from "./adapter";
 
 export type Window = {
   /** Solar hours the window runs from and to. */
@@ -31,4 +33,14 @@ export function calloutOf(part: Keepout, window: Window): Callout {
     title: `${window.allowShaded ? "Shaded in the window" : "Kept clear"} · ${positionsOf(part.positions)}`,
     detail: `${what} shades this area between ${hourOf(window.from)} and ${hourOf(window.to)}`,
   };
+}
+
+/** Where the callout of a part is hung: the centroid of its largest polygon; null when it has none. */
+export function anchorOf(part: Keepout): XY | null {
+  const largest = part.polygons
+    .map((polygon) => polygon.exterior.map(([x, y]) => ({ x, y })))
+    .sort((a, b) => areaOf(b) - areaOf(a))[0];
+  if (!largest) return null;
+  const { x, y } = centroidOf(largest);
+  return [x, y];
 }

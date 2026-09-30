@@ -14,6 +14,9 @@ export type SunTime = {
   hour: number;
 };
 
+/** What is selected on the roof: the roof, an obstacle, a kept-clear area or a module, by its index in its list. */
+export type Selection = { kind: "roof" } | { kind: "obstacle" | "keepout" | "module"; index: number };
+
 export type ViewState = {
   /** The lens that was opened last. The Studio comes back to it. */
   lens: Lens;
@@ -23,7 +26,10 @@ export type ViewState = {
   /** How many times north up was asked for: the camera turns on each request. */
   northRequest: number;
   sunTime: SunTime;
+  selection: Selection | null;
   showLens: (lens: Lens) => void;
+  select: (selection: Selection | null) => void;
+  clearSelection: () => void;
   setCamera: (camera: CameraPreset) => void;
   turnNorthUp: () => void;
   setSunTime: (sunTime: SunTime) => void;
@@ -32,7 +38,7 @@ export type ViewState = {
 export type ViewStore = ReturnType<typeof createViewStore>;
 
 // As the approved mockups open: the first lens, in 3D, the design day at 10:30.
-const AT_THE_START = { lens: "roof", camera: "3d", cameraRequest: 0, northRequest: 0, sunTime: { day: "design_day", hour: 10.5 } } as const;
+const AT_THE_START = { lens: "roof", camera: "3d", cameraRequest: 0, northRequest: 0, sunTime: { day: "design_day", hour: 10.5 }, selection: null } as const;
 
 function refuseWhatIsNoTime({ day, hour }: SunTime): void {
   if (!(hour >= 0 && hour <= 24)) throw new RangeError(`${hour} is no hour of a day: from 0 to 24.`);
@@ -45,6 +51,8 @@ export function createViewStore() {
   return createStore<ViewState>()((set) => ({
     ...AT_THE_START,
     showLens: (lens) => set({ lens }),
+    select: (selection) => set({ selection }),
+    clearSelection: () => set({ selection: null }),
     setCamera: (camera) => set((state) => ({ camera, cameraRequest: state.cameraRequest + 1 })),
     turnNorthUp: () => set((state) => ({ northRequest: state.northRequest + 1 })),
     setSunTime(sunTime) {
@@ -59,3 +67,4 @@ export const cameraOf = (state: ViewState) => state.camera;
 export const cameraRequestOf = (state: ViewState) => state.cameraRequest;
 export const northRequestOf = (state: ViewState) => state.northRequest;
 export const sunTimeOf = (state: ViewState) => state.sunTime;
+export const selectionOf = (state: ViewState) => state.selection;

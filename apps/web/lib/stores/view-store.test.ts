@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { cameraOf, cameraRequestOf, createViewStore, lensOf, northRequestOf, sunTimeOf } from "./view-store";
+import { cameraOf, cameraRequestOf, createViewStore, lensOf, northRequestOf, selectionOf, sunTimeOf } from "./view-store";
 
 describe("the view", () => {
   test("it begins on the first lens, in 3D, on the design day", () => {
@@ -71,5 +71,45 @@ describe("the view", () => {
 
     expect(lensOf(store.getState())).toBe("sun");
     expect(sunTimeOf(store.getState())).toEqual({ day: "design_day", hour: 9 });
+  });
+});
+
+// What is selected on the roof (plan/phase-05-plan.md, decision 10): the list and the scene read the same.
+describe("the selection", () => {
+  test("nothing is selected at the start", () => {
+    expect(selectionOf(createViewStore().getState())).toBeNull();
+  });
+
+  test("an obstacle, a kept-clear area or a module is selected by its index; the roof by itself", () => {
+    const store = createViewStore();
+
+    store.getState().select({ kind: "obstacle", index: 2 });
+    expect(selectionOf(store.getState())).toEqual({ kind: "obstacle", index: 2 });
+
+    store.getState().select({ kind: "keepout", index: 0 });
+    expect(selectionOf(store.getState())).toEqual({ kind: "keepout", index: 0 });
+
+    store.getState().select({ kind: "roof" });
+    expect(selectionOf(store.getState())).toEqual({ kind: "roof" });
+  });
+
+  test("selecting what is selected leaves it selected; select null clears", () => {
+    const store = createViewStore();
+    store.getState().select({ kind: "module", index: 5 });
+
+    store.getState().select({ kind: "module", index: 5 });
+    expect(selectionOf(store.getState())).toEqual({ kind: "module", index: 5 });
+
+    store.getState().select(null);
+    expect(selectionOf(store.getState())).toBeNull();
+  });
+
+  test("another design opened clears the selection", () => {
+    const store = createViewStore();
+    store.getState().select({ kind: "obstacle", index: 0 });
+
+    store.getState().clearSelection();
+
+    expect(selectionOf(store.getState())).toBeNull();
   });
 });
