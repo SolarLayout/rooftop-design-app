@@ -6,6 +6,10 @@
 // (ROOFTOP_CHECK_FRESH=1), the data is deleted and the whole suite runs and is recorded. The sentinel
 // (tests/always_run.py) runs in every run whatever testmon selects. Arguments are passed on to pytest
 // (`bun run test -- tests/api` in apps/api), for a hand that wants a part of the suite.
+//
+// With ROOFTOP_CHECK_SELECT=0 there is no selection and no tracing: pytest runs the suite whole, as on
+// GitHub, where the task is cached whole by turbo and testmon's data is never kept (decision 4 of
+// plan/phase-04b-plan.md).
 
 import { Database } from "bun:sqlite";
 import { spawn } from "node:child_process";
@@ -13,7 +17,7 @@ import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { API_DIR } from "../lib/paths.ts";
 import { dataKey, readDataKeyInputs } from "./pytest-data-key.ts";
-import { FRESH_VARIABLE, REPORT_PREFIX } from "./pytest-selected-report.ts";
+import { FRESH_VARIABLE, REPORT_PREFIX, SELECT_VARIABLE } from "./pytest-selected-report.ts";
 import { describePytestRun, parsePytestCounts } from "./pytest-summary.ts";
 
 const DATA = join(API_DIR, ".testmondata");
@@ -57,10 +61,10 @@ function knownTests(): number | null {
 }
 
 /** Runs pytest, streams its output, and gives it back with the exit code. */
-function runPytest(args: string[]): Promise<{ output: string; code: number }> {
+function runPytest(selection: string[], args: string[]): Promise<{ output: string; code: number }> {
   return new Promise((resolve, reject) => {
     // -v against the -q of pyproject.toml: verbosity 0, so that testmon's line about what changed is printed.
-    const child = spawn("uv", ["run", "--locked", "pytest", "--testmon", "-v", ...args], { cwd: API_DIR, stdio: ["ignore", "pipe", "inherit"] });
+    const child = spawn("uv", ["run", "--locked", "pytest", ...selection, "-v", ...args], { cwd: API_DIR, stdio: ["ignore", "pipe", "inherit"] });
     let output = "";
     child.stdout.on("data", (chunk: Buffer) => {
       output += chunk.toString();
@@ -71,16 +75,20 @@ function runPytest(args: string[]): Promise<{ output: string; code: number }> {
   });
 }
 
-const key = dataKey(readDataKeyInputs());
-const rebuilt = reasonToRebuild(key);
-if (rebuilt) {
-  deleteData();
-  writeFileSync(KEY, `${key}\n`);
-  console.log(`pytest-testmon: ${rebuilt}`);
+const selecting = process.env[SELECT_VARIABLE] !== "0";
+let rebuilt: string | null = `whole and untraced, without pytest-testmon (${SELECT_VARIABLE}=0)`;
+if (selecting) {
+  const key = dataKey(readDataKeyInputs());
+  rebuilt = reasonToRebuild(key);
+  if (rebuilt) {
+    deleteData();
+    writeFileSync(KEY, `${key}\n`);
+    console.log(`pytest-testmon: ${rebuilt}`);
+  }
 }
 const known = rebuilt ? 0 : (knownTests() ?? 0);
 
-const { output, code } = await runPytest(process.argv.slice(2));
+const { output, code } = await runPytest(selecting ? ["--testmon"] : ["-p", "no:testmon"], process.argv.slice(2));
 // Testmon's "changed files" are the test files whose tests are affected, not the files that changed.
 const changed = /^testmon: (changed files: .*?|new DB, .*?|The packages installed .*?)(, environment: default)?$/m
   .exec(output)?.[1]

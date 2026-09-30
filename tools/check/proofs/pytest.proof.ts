@@ -7,7 +7,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { API_DIR } from "../../lib/paths.ts";
-import { FRESH_VARIABLE, REPORT_PREFIX } from "../pytest-selected-report.ts";
+import { FRESH_VARIABLE, REPORT_PREFIX, SELECT_VARIABLE } from "../pytest-selected-report.ts";
 import { makeWorktree, type Worktree } from "./worktree.ts";
 
 // Quick leaf tests, and the roof-from-map tests of the API, which go through geo.py; the sentinel of the
@@ -143,6 +143,15 @@ describe("what pytest re-runs", () => {
     const undone = run();
     expect(undone.code).toBe(0);
     expect(files(undone.ran)).toEqual(["tests/engine/test_keepout_parts.py", SENTINEL].sort());
+  }, A_RUN);
+
+  test("without selection (GitHub): everything runs, untraced, and the data is left alone", () => {
+    const whole = run({ [SELECT_VARIABLE]: "0" });
+    expect(whole.code).toBe(0);
+    expect(whole.report).toBe(`ran all ${all} tests: whole and untraced, without pytest-testmon (${SELECT_VARIABLE}=0)`);
+    expect(files(whole.ran)).toEqual([...SUBSET].sort());
+    expect(whole.output).not.toContain("testmon:");
+    expect(files(run().ran)).toEqual([SENTINEL]);
   }, A_RUN);
 
   test("--fresh: the data is deleted and everything runs", () => {

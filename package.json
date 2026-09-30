@@ -23,6 +23,7 @@
     "lint": "bun tools/with-node.ts turbo run lint",
     "typecheck:tools": "bun tools/with-node.ts tsc --noEmit -p tsconfig.json",
     "test:tools": "bun test tools",
+    "e2e": "cd e2e && bun ../tools/with-node.ts playwright test",
     "proofs": "bun test ./tools/check/proofs/turbo.proof.ts ./tools/check/proofs/pytest.proof.ts"
   },
   "devDependencies": {
