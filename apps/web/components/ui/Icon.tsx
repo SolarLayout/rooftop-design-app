@@ -13,7 +13,23 @@ const STROKED = {
   "arrow-left": <path d="M19 12H5m0 0 6-6m-6 6 6 6" />,
   "arrow-right": <path d="M5 12h14m0 0-6-6m6 6-6 6" />,
   "arrow-up": <path d="M12 19V5m0 0-6 6m6-6 6 6" />,
+  bin: <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />,
   "chevron-down": <path d="m6 9 6 6 6-6" />,
+  corners: (
+    <>
+      <path d="M5 19 8 6l11 3-4 10z" />
+      <circle cx="5" cy="19" r="1.6" className="fill-current" />
+      <circle cx="8" cy="6" r="1.6" className="fill-current" />
+      <circle cx="19" cy="9" r="1.6" className="fill-current" />
+      <circle cx="15" cy="19" r="1.6" className="fill-current" />
+    </>
+  ),
+  detect: (
+    <>
+      <path d="M12 3v3M12 18v3M3 12h3M18 12h3" />
+      <circle cx="12" cy="12" r="4" />
+    </>
+  ),
   "chevron-left": <path d="m15 6-6 6 6 6" />,
   "chevron-right": <path d="m9 6 6 6-6 6" />,
   "chevron-up": <path d="m6 15 6-6 6 6" />,
@@ -49,6 +65,13 @@ const STROKED = {
   ),
   performance: <path d="M5 20V10M12 20V4M19 20v-7" />,
   plus: <path d="M12 5v14M5 12h14" />,
+  rectangle: <rect x="3.5" y="6.5" width="17" height="11" rx="1" />,
+  redo: (
+    <>
+      <path d="m15 14 5-5-5-5" />
+      <path d="M20 9H10a6 6 0 0 0 0 12h3" />
+    </>
+  ),
   roof: (
     <>
       <path d="M3 11 12 4l9 7" />

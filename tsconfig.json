@@ -14,5 +14,5 @@
     "resolveJsonModule": true
   },
   "include": ["tools/**/*.ts"],
-  "exclude": ["node_modules", "tools/imagery-preview"]
+  "exclude": ["node_modules"]
 }

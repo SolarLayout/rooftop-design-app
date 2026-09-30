@@ -20,8 +20,23 @@ export const SCREEN_MARGIN = 8;
 /** A design run begins this long after a committed edit, in milliseconds: edits shortly after each other are one run. */
 export const DESIGN_PAUSE = 500;
 
-/** The zoom of the map at a roof that was found: the native limit of the imagery, about 0.3 m per pixel. */
-export const ROOF_ZOOM = 19;
+/** The zoom of the map at a roof that was found, as MapLibre counts zoom (on tiles of 512): the native zoom 19 of the imagery's tiles of 256, about 0.3 m per pixel. */
+export const ROOF_ZOOM = 18;
 
 /** How wide the scale bar of the map may be at most, in pixels; it shows the largest round length that fits. */
 export const SCALE_BAR_MAX = 124;
+
+/** Degrees within which a corner snaps to a right angle or to a parallel, and the rectangle's turn to north. */
+export const SNAP_DEGREES = 3;
+
+/** Pixels within which a press on the first corner closes the outline. */
+export const CLOSE_WITHIN = 12;
+
+/** The same on phone and tablet. */
+export const CLOSE_WITHIN_TOUCH = 20;
+
+/** Millimetres a selected corner moves by an arrow key. */
+export const NUDGE_MM = 100;
+
+/** The same with Shift held. */
+export const NUDGE_SHIFT_MM = 1000;

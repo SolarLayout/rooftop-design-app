@@ -1,6 +1,7 @@
 "use client";
 
-import { Map as MapLibre, setWorkerUrl, type ErrorEvent } from "maplibre-gl";
+import { addProtocol, Map as MapLibre, setWorkerUrl, type ErrorEvent } from "maplibre-gl";
+import { Protocol } from "pmtiles";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef, useState } from "react";
 import { classNames } from "@/components/ui/class-names";
@@ -8,6 +9,7 @@ import { measures } from "@/components/ui/measures";
 import { SCALE_BAR_MAX } from "@/components/ui/design-numbers";
 import type { Imagery } from "@/lib/map/provider";
 import { metresPerPixel, scaleBarOf, type ScaleBar } from "@/lib/map/scale-bar";
+import { OutlineLayer, type OutlineProps } from "./OutlineLayer";
 
 /** Where the map looks. */
 export type MapView = { lon: number; lat: number; zoom: number };
@@ -20,6 +22,10 @@ type Props = {
   onState: (state: "ready" | "failed") => void;
   /** The map behind this component, once it is there: for what draws on it. */
   onMap?: (map: MapLibre) => void;
+  /** The outline drawn on the map, and the tool in hand. */
+  outline?: OutlineProps;
+  /** A second line of attribution, for what else is shown on the map. */
+  moreAttribution?: string | null;
   className?: string;
 };
 
@@ -29,18 +35,23 @@ const MAX_ZOOM = 21.5;
 // The worker of MapLibre is served by the app (tools/vendor-maplibre.ts): under Next's bundler it cannot
 // find its own file. Set once, before the first map.
 setWorkerUrl("/maplibre-gl/maplibre-gl-worker.mjs");
-const SCALE_BAR = "flex flex-col gap-0.75";
+// The footprints come as one archive read by ranges (lib/map/overture.ts): the protocol that reads it.
+addProtocol("pmtiles", new Protocol().tile);
+// The phone board has no scale bar; the toolbar takes its room there.
+const SCALE_BAR = "hidden flex-col gap-0.75 tablet:flex";
 
 /**
  * The satellite map (MapLibre), with the scale bar and the attribution of the imagery on it. Its zoom
  * and north buttons are placed by the screen (`MapButtons`). The colours of what it draws come from
  * the tokens of its container.
  */
-export function RoofMap({ imagery, view, onState, onMap, className }: Props) {
+export function RoofMap({ imagery, view, onState, onMap, outline, moreAttribution, className }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<MapLibre | null>(null);
   const [scale, setScale] = useState<ScaleBar | null>(null);
   const [state, setState] = useState<"loading" | "ready" | "failed">("loading");
+  const [loaded, setLoaded] = useState<MapLibre | null>(null);
+  const [isMoving, setMoving] = useState(false);
   const tell = useRef(onState);
   const hand = useRef(onMap);
   useEffect(() => {
@@ -57,6 +68,8 @@ export function RoofMap({ imagery, view, onState, onMap, className }: Props) {
       zoom: view.zoom,
       maxZoom: MAX_ZOOM,
       attributionControl: false,
+      // The loupe of a touch drag copies what the map drew: the buffer must be kept.
+      canvasContextAttributes: { preserveDrawingBuffer: true },
       style: {
         version: 8,
         sources: {
@@ -75,7 +88,7 @@ export function RoofMap({ imagery, view, onState, onMap, className }: Props) {
     let hasShownTiles = false;
 
     function onScale() {
-      setScale(scaleBarOf(metresPerPixel(made.getCenter().lat, made.getZoom(), imagery.tileSize), SCALE_BAR_MAX));
+      setScale(scaleBarOf(metresPerPixel(made.getCenter().lat, made.getZoom()), SCALE_BAR_MAX));
     }
     function onIdle() {
       if (hasShownTiles || !made.areTilesLoaded()) return;
@@ -90,13 +103,19 @@ export function RoofMap({ imagery, view, onState, onMap, className }: Props) {
       tell.current("failed");
     }
     made.on("move", onScale);
+    made.on("movestart", () => setMoving(true));
+    made.on("moveend", () => setMoving(false));
     made.on("idle", onIdle);
     made.on("error", onError);
-    made.once("load", () => hand.current?.(made));
+    made.once("load", () => {
+      setLoaded(made);
+      hand.current?.(made);
+    });
     onScale();
 
     return () => {
       map.current = null;
+      setLoaded(null);
       made.remove();
     };
     // The map is made once; a view that changes later is flown to below.
@@ -117,11 +136,13 @@ export function RoofMap({ imagery, view, onState, onMap, className }: Props) {
         ref={container}
         data-testid="roof-map"
         data-state={state}
+        aria-busy={isMoving}
         role="img"
         aria-label="Satellite map"
         // MapLibre's stylesheet makes its container `relative`, and wins over `absolute`: it is sized, not placed.
         className="size-full"
       />
+      {loaded && outline ? <OutlineLayer map={loaded} {...outline} /> : null}
       <div className="pointer-events-none absolute bottom-7 left-5 flex flex-col gap-2 text-text">
         {scale ? (
           <div data-testid="scale-bar" className={SCALE_BAR}>
@@ -131,7 +152,11 @@ export function RoofMap({ imagery, view, onState, onMap, className }: Props) {
             </div>
           </div>
         ) : null}
-        <p className="type-label-s text-text-on-imagery on-imagery">{imagery.attribution}</p>
+        {/* On desktop the toolbar stands beside it: the words wrap into a narrow column. */}
+        <p className="type-label-s text-text-on-imagery on-imagery desktop:max-w-44">
+          {imagery.attribution}
+          {moreAttribution ? <span className="block">{moreAttribution}</span> : null}
+        </p>
       </div>
     </div>
   );

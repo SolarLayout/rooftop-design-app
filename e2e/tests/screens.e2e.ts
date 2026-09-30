@@ -1,7 +1,7 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "../fixtures";
 import { expectScreen } from "../screens";
-import { findOpened } from "../find";
+import { A_MAP, findOpened, roofMap, scaleLabel, searchField } from "../find";
 
 // Each screen against its baseline in e2e/baselines. After a change that is meant, look at the new
 // picture beside the preview in docs/design/previews, then renew the baseline:
@@ -21,6 +21,30 @@ test("find", async ({ page }) => {
   await expectScreen(page, "find");
 });
 
+// The roof of the demo outlined by corners, as the boards "Find and outline" draw it.
+test("find, the roof outlined", async ({ page }) => {
+  await findOpened(page);
+  await searchField(page).fill("18.52000, 73.86000");
+  await searchField(page).press("Enter");
+  await expect(scaleLabel(page)).toHaveText("20 m", { timeout: A_MAP });
+  await expect(roofMap(page)).toHaveAttribute("aria-busy", "false", { timeout: A_MAP });
+  const box = (await roofMap(page).boundingBox())!;
+  const pxPerM = 1 / 0.28313;
+  for (const [east, north] of [
+    [-45, -20],
+    [45, -20],
+    [45, 20],
+    [-45, 20],
+  ]) {
+    await page.mouse.click(Math.round(box.x + box.width / 2 + east * pxPerM), Math.round(box.y + box.height / 2 - north * pxPerM));
+  }
+  await page.getByTestId("corner").first().click();
+  await expect(page.getByRole("textbox", { name: "South" })).toBeVisible();
+  await expect(roofMap(page)).toHaveAttribute("aria-busy", "false");
+
+  await expectScreen(page, "find-outline");
+});
+
 // The shell, with the demo from the API of the test stack. A picture is taken once the result is there.
 test.describe("the shell", () => {
   const RUN = 90_000;
@@ -35,6 +59,14 @@ test.describe("the shell", () => {
     await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
 
     await expectScreen(page, "studio");
+  });
+
+  test("studio, the Roof lens", async ({ page }) => {
+    await page.goto("/studio/roof");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await expect(page.getByTestId("roof-how").filter({ visible: true })).toHaveText("Entered by hand · 4 corners");
+
+    await expectScreen(page, "studio-roof");
   });
 
   test("studio, before a system voltage", async ({ page }) => {
