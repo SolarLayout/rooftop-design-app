@@ -50,7 +50,8 @@ export type OutlineEvent =
   | { type: "boxDropped" }
   | { type: "boxTurned"; handle: XY }
   | { type: "turnDropped" }
-  | { type: "footprintTaken"; corners: readonly XY[] };
+  | { type: "footprintTaken"; corners: readonly XY[] }
+  | { type: "loaded"; at: LonLat; corners: readonly XY[] };
 
 export type Measurements = {
   edges: number[];
@@ -247,6 +248,10 @@ export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineS
     case "footprintTaken":
       if (event.corners.length < FEWEST_CORNERS) return state;
       return stepped(state, { corners: event.corners, closed: true, rectangle: null }, null);
+
+    case "loaded":
+      if (event.corners.length < FEWEST_CORNERS) return state;
+      return { ...START, frame: frameAt(event.at), corners: event.corners, closed: true, squared: state.squared, history: historyOf({ corners: event.corners, closed: true, rectangle: null }) };
   }
 }
 

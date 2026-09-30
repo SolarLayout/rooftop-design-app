@@ -3,23 +3,34 @@
 import type { Map as MapLibre } from "maplibre-gl";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useMemo, useReducer, useState } from "react";
-import { useProject } from "@/components/shell/stores";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useProject, useStores } from "@/components/shell/stores";
+import { Button } from "@/components/ui/Button";
+import { ProgressRing } from "@/components/ui/ProgressRing";
+import { StatusMark } from "@/components/ui/StatusMark";
+import { Tooltip } from "@/components/ui/Tooltip";
 import { iconButtonLook } from "@/components/ui/button-look";
 import { classNames } from "@/components/ui/class-names";
 import { ROOF_ZOOM } from "@/components/ui/design-numbers";
 import { Icon } from "@/components/ui/Icon";
+import { api, ApiError, type Project } from "@/lib/api";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
 import { FOOTPRINTS_ATTRIBUTION } from "@/lib/map/overture";
 import { mapStateOf } from "@/lib/map/map-state";
+import { buildRequestOf } from "@/lib/outline/build-request";
+import { frameAt, toMetres } from "@/lib/outline/frame";
 import { outlineAfter, START } from "@/lib/outline/outline-state";
-import { latitudeOf, longitudeOf } from "@/lib/stores/project-store";
+import { pathOfLens } from "@/lib/routes";
+import { latitudeOf, longitudeOf, projectOf } from "@/lib/stores/project-store";
 import { MapButtons } from "./MapButtons";
 import { DetectedCallout } from "./DetectedCallout";
 import { NoMap } from "./NoMap";
 import type { Detected, Tool } from "./OutlineLayer";
 import { OutlinePanel } from "./OutlinePanel";
 import { OutlineTools } from "./OutlineTools";
+import { RoofTypeChoice, type RoofType } from "./RoofTypeChoice";
+import { WHY_NOT_BY_HAND } from "./NoMap";
 import type { MapView } from "./RoofMap";
 import { Search, type FoundPlace } from "./Search";
 import { Steps, type Step } from "./Steps";
@@ -39,7 +50,7 @@ const WORDS: Record<Step | "rectangle" | "detect", { title: string; lead: string
   outline: { title: "Outline the roof", lead: "Click each corner. Drag a corner to adjust it, or type a length you have measured." },
   rectangle: { title: "Outline the roof", lead: "Drag a box across the roof, then turn it to the building by its handle. Drag a corner to adjust it." },
   detect: { title: "Outline the roof", lead: "Click inside the building. Where its footprint is known, it is proposed as the outline, to accept or adjust." },
-  build: { title: "Build the roof", lead: "The roof rises in the Studio." },
+  build: { title: "Build the roof", lead: "The roof rises in the Studio; the array fills it at once." },
 };
 
 // On phone and tablet the panel is a sheet of 384 at the bottom; the map ends above it.
@@ -47,8 +58,14 @@ const STAGE = "absolute inset-x-0 top-0 bottom-96 desktop:bottom-0";
 const OVER_THE_STAGE = "pointer-events-none absolute inset-x-0 top-0 bottom-96 desktop:bottom-0 desktop:right-find-stage-inset";
 const FLOATING_BUTTON = classNames(iconButtonLook("secondary", "l", "square"), "size-12 rounded-card-s bg-surface-1 shadow-float");
 
+type Building = { kind: "idle" } | { kind: "building" } | { kind: "failed"; message: string };
+
 /** Find the roof on the map and outline it: the flagship (plan/phase-04-find-and-outline.md). */
 export function Find() {
+  const router = useRouter();
+  const isEditing = useSearchParams().get("edit") === "roof";
+  const { project: store } = useStores();
+  const project = useProject(projectOf);
   const latitude = useProject(latitudeOf);
   const longitude = useProject(longitudeOf);
   const webGL = useWebGL();
@@ -59,6 +76,9 @@ export function Find() {
   const [outline, on] = useReducer(outlineAfter, START);
   const [tool, setTool] = useState<Tool>("corners");
   const [detected, setDetected] = useState<Detected | null>(null);
+  const [roofType, setRoofType] = useState<RoofType>("flat_tilted");
+  const [building, setBuilding] = useState<Building>({ kind: "idle" });
+  const loaded = useRef(false);
   // The map begins at the roof of the design that is open; without one, from far.
   const [view, setView] = useState<MapView>(() =>
     latitude === null || longitude === null ? FROM_FAR : { lon: longitude, lat: latitude, zoom: ROOF_ZOOM },
@@ -70,6 +90,48 @@ export function Find() {
   );
   const words = WORDS[step === "outline" && tool !== "corners" ? tool : step];
   useOutlineKeys(step === "outline", on);
+
+  // Edit from the Roof lens: the outline of the design that is open is shown on the map, where it is.
+  useEffect(() => {
+    if (!isEditing || !project || loaded.current) return;
+    loaded.current = true;
+    const control = new AbortController();
+    api.roofOnMap(project.roof, { signal: control.signal }).then(
+      (onMap) => {
+        const at = { lon: project.roof.lon, lat: project.roof.lat };
+        const frame = frameAt(at);
+        on({ type: "loaded", at, corners: onMap.outline.map(([lon, lat]) => toMetres(frame, { lon, lat })) });
+        setRoofType(project.roof.roof_type);
+        setView({ lon: at.lon, lat: at.lat, zoom: ROOF_ZOOM });
+        setStep("outline");
+      },
+      (error: unknown) => {
+        if (control.signal.aborted) return;
+        setBuilding({ kind: "failed", message: error instanceof ApiError ? error.message : "The outline could not be shown on the map." });
+        setStep("outline");
+      },
+    );
+    return () => control.abort();
+  }, [isEditing, project]);
+
+  /** Build this roof: the document from the API, opened as the design, or its roof put into the design that is edited. */
+  async function build() {
+    const request = buildRequestOf(outline, roofType, foundAt);
+    if (!request) return;
+    setBuilding({ kind: "building" });
+    try {
+      const answer = await api.roofFromMap(request);
+      if (isEditing && project) {
+        store.getState().commit((design) => ({ ...design, roof: { ...design.roof, ...roofOf(answer) } }));
+      } else {
+        store.getState().open(answer);
+      }
+      setStep("build");
+      router.push(pathOfLens("roof"));
+    } catch (error) {
+      setBuilding({ kind: "failed", message: error instanceof ApiError ? error.message : "The roof could not be built. Try again." });
+    }
+  }
 
   /** A place was found: the map flies to it at roof zoom, and the outline can begin. */
   function onPlace(place: FoundPlace) {
@@ -141,7 +203,7 @@ export function Find() {
 
       <aside
         aria-label={words.title}
-        className="absolute inset-x-0 bottom-0 flex h-96 flex-col gap-3 rounded-t-panel border-t border-line bg-chrome px-4 pt-2 pb-5 tablet:px-5 desktop:inset-x-auto desktop:top-5 desktop:right-5 desktop:bottom-5 desktop:h-auto desktop:w-find-panel desktop:gap-5 desktop:rounded-panel desktop:border desktop:p-card desktop:shadow-panel"
+        className="absolute inset-x-0 bottom-0 flex h-96 flex-col gap-3 overflow-y-auto rounded-t-panel border-t border-line bg-chrome px-4 pt-2 pb-5 tablet:px-5 desktop:inset-x-auto desktop:top-5 desktop:right-5 desktop:bottom-5 desktop:h-auto desktop:w-find-panel desktop:gap-5 desktop:rounded-panel desktop:border desktop:p-card desktop:shadow-panel"
       >
         <span className="flex justify-center desktop:hidden">
           <span className="h-1 w-10 rounded-full bg-line-strong" />
@@ -153,8 +215,45 @@ export function Find() {
           </div>
           <p className="text-text-2">{words.lead}</p>
         </div>
-        {step === "outline" ? <OutlinePanel state={outline} on={on} /> : null}
+        {step === "outline" ? (
+          <>
+            <OutlinePanel state={outline} on={on} />
+            <section className="flex flex-col gap-2.5">
+              <h2 className="hidden type-section text-text-3 uppercase desktop:block">Roof type</h2>
+              <RoofTypeChoice value={roofType} onChange={setRoofType} />
+            </section>
+            <div className="mt-auto flex flex-col gap-2.5">
+              {building.kind === "failed" ? (
+                <p role="status" className="flex items-start gap-2 type-small text-text-2">
+                  <StatusMark kind="note" label="Note" wordsShown={false} size={16} />
+                  {building.message}
+                </p>
+              ) : null}
+              <Button kind="primary" size="xl" icon="arrow-right" disabled={!outline.closed || building.kind === "building"} onClick={build} className="w-full">
+                {building.kind === "building" ? (
+                  <>
+                    <ProgressRing size={16} />
+                    Building the roof
+                  </>
+                ) : (
+                  "Build this roof"
+                )}
+              </Button>
+              <Tooltip words={WHY_NOT_BY_HAND}>
+                <Button kind="quiet" size="l" aria-disabled="true" className="w-full">
+                  Enter dimensions by hand instead
+                </Button>
+              </Tooltip>
+            </div>
+          </>
+        ) : null}
       </aside>
     </div>
   );
+}
+
+/** What of a built document goes into a design that is edited: its geometry, its source, its type. */
+function roofOf(answer: Project): Pick<Project["roof"], "outline" | "lat" | "lon" | "obstacles" | "source" | "roof_type"> {
+  const { outline, lat, lon, obstacles, source, roof_type } = answer.roof;
+  return { outline, lat, lon, obstacles, source, roof_type };
 }

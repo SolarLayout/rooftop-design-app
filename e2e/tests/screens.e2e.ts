@@ -61,6 +61,14 @@ test.describe("the shell", () => {
     await expectScreen(page, "studio");
   });
 
+  test("studio, the Roof lens", async ({ page }) => {
+    await page.goto("/studio/roof");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await expect(page.getByTestId("roof-how").filter({ visible: true })).toHaveText("Entered by hand · 4 corners");
+
+    await expectScreen(page, "studio-roof");
+  });
+
   test("studio, before a system voltage", async ({ page }) => {
     await page.route("**/api/demo", async (route) => {
       const answer = await route.fetch();

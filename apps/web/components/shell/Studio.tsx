@@ -5,6 +5,7 @@ import { Sheet } from "@/components/ui/Sheet";
 import type { Stop } from "@/components/ui/sheet-stops";
 import { LENSES, type Lens } from "@/lib/routes";
 import { LensNav } from "./LensNav";
+import { RoofInspector } from "@/components/studio/RoofInspector";
 import { NotBuiltYet } from "./NotBuiltYet";
 import { useNotesOfTheShell } from "./Shell";
 import { useStores, useVitals } from "./stores";
@@ -22,6 +23,8 @@ export function Studio({ lens }: Props) {
   const vitals = useVitals(notes);
   const [stop, setStop] = useState<Stop>("half");
   const name = LENSES.find((one) => one.id === lens)?.name ?? "";
+  // The inspector stands once for each size; each shows the same, the lens's own once it is built.
+  const inspector = lens === "roof" ? <RoofInspector /> : <NotBuiltYet />;
 
   // The Studio comes back to the lens that was opened last.
   useEffect(() => view.getState().showLens(lens), [view, lens]);
@@ -41,17 +44,15 @@ export function Studio({ lens }: Props) {
 
       <aside
         aria-label={`${name} inspector`}
-        className="hidden flex-col px-5 pt-6 pb-5 tablet:flex desktop:w-inspector desktop:shrink-0 desktop:border-l desktop:border-line-subtle desktop:bg-chrome desktop:p-panel"
+        className="hidden flex-col px-5 pt-6 pb-5 tablet:flex desktop:w-inspector desktop:shrink-0 desktop:overflow-y-auto desktop:border-l desktop:border-line-subtle desktop:bg-chrome desktop:p-panel"
       >
-        <NotBuiltYet />
+        {inspector}
       </aside>
 
       <div className="tablet:hidden">
         <Sheet label="Inspector" stop={stop} onStop={setStop}>
           <LensNav current={lens} look="switch" className="mx-4 mt-1 grid" />
-          <div className="px-4 pt-4">
-            <NotBuiltYet />
-          </div>
+          <div className="px-4 pt-4 pb-6">{inspector}</div>
         </Sheet>
       </div>
     </div>
