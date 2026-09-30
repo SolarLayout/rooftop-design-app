@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { cameraOf, cameraRequestOf, createViewStore, lensOf, northRequestOf, selectionOf, sunTimeOf } from "./view-store";
+import { cameraOf, cameraRequestOf, createViewStore, lensOf, northRequestOf, selectionOf, sunTimeOf, toReviewOf } from "./view-store";
 
 describe("the view", () => {
   test("it begins on the first lens, in 3D, on the design day", () => {
@@ -111,5 +111,29 @@ describe("the selection", () => {
     store.getState().clearSelection();
 
     expect(selectionOf(store.getState())).toBeNull();
+  });
+});
+
+// The heights a drawing could not give (plan/phase-05-plan.md, decision 13): the names of the obstacles that
+// got 1.0 m, reviewed one by one in the Roof lens.
+describe("the heights to review", () => {
+  test("none at the start; the import sets them; a typed height takes one off", () => {
+    const store = createViewStore();
+    expect(toReviewOf(store.getState())).toEqual([]);
+
+    store.getState().setToReview(["Lift shaft", "Plant room", "Skylight"]);
+    store.getState().reviewed("Plant room");
+
+    expect(toReviewOf(store.getState())).toEqual(["Lift shaft", "Skylight"]);
+  });
+
+  test("a name that is not on the list changes nothing", () => {
+    const store = createViewStore();
+    store.getState().setToReview(["Lift shaft"]);
+    const before = store.getState();
+
+    store.getState().reviewed("Vent");
+
+    expect(store.getState()).toBe(before);
   });
 });
