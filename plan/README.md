@@ -22,7 +22,7 @@ Always:
 | 1 | Monorepo, tooling, one-command dev stack | `phase-01-foundation.md` | done |
 | 2 | Engine and stateless API | `phase-02-engine-api.md` | done |
 | 3 | Design system and app shell | `phase-03-design-system-shell.md` | done |
-| 4 | Find the roof on the map and outline it (flagship) | `phase-04-find-and-outline.md` | not started |
+| 4 | Find the roof on the map and outline it (flagship) | `phase-04-find-and-outline.md` | in progress: the map, the search, the outline three ways and Build are merged (#35, #36); obstacles on the map and entry by hand remain |
 | 5 | Studio: 3D roof, Roof and Array lenses | `phase-05-studio-roof-array.md` | not started |
 | 6 | Studio: Sun lens | `phase-06-studio-sun.md` | not started |
 | 7 | Studio: Strings lens | `phase-07-studio-strings.md` | not started |

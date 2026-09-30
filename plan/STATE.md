@@ -5,8 +5,9 @@ Keep it short and true. History belongs in git and in the phase files, not here.
 
 **Last updated:** 2026-09-30, session 6, after step 11 of Phase 4. The plan of the phase is `plan/phase-04-plan.md`
 (three pull requests, fifteen steps). Pull request #35 (the map, the search, the route `/find`; steps 1 to 5)
-is merged. The second, #36, is a draft with steps 6 to 11: the geometry, the three ways to outline, the loupe,
-Build, and the Roof lens's card. The acceptance of the phase is met by its tests; step 12 closes it.
+is merged, and so is the second, #36 (steps 6 to 12: the geometry, the three ways to outline, the loupe, Build,
+the Roof lens's card). The acceptance of the phase is met by their tests. The check of #36 took 6 min 37 s: the
+memo for the shading comes next, before the third pull request (steps 13 to 15).
 
 ## Where we are
 
@@ -16,15 +17,12 @@ Build, and the Roof lens's card. The acceptance of the phase is met by its tests
 | 1 Foundation | Done, merged (PR #1) | |
 | 2 Engine and API | Done (PR #7, PRs #11 to #23) | What exists, what was decided, what was found: `phase-02-engine-api.md`, "As built" |
 | 3 Design system and shell | Done (PRs #24 to #33) | What exists, what was decided, what was found: `phase-03-design-system-shell.md`, "As built". How its second half was built: `phase-03-rest-plan.md` |
-| 4 Find and outline | In progress, session 6 | Plan: `phase-04-plan.md`. Steps 0 to 5 merged (#35); steps 6 to 11 on the draft #36; step 12 closes it; steps 13 to 15 (obstacles on the map, by hand) are pull request 3 |
+| 4 Find and outline | In progress: steps 0 to 12 done (sessions 6), steps 13 to 15 remain | Plan: `phase-04-plan.md`. Merged: #35, #36. To come: the obstacles on the map with their heights and the entry by hand (pull request 3, their boards first). "As built": `phase-04-find-and-outline.md` |
 | 5 to 11 | Not started | |
 
 ## In flight
 
-Branch `feat/phase-4-outline`, pull request #36 (draft): the geometry of the outline and its state as a reducer
-(step 6), the corners tool (7), the rectangle tool (8), the loupe of a touch drag (9), Detect building with
-Overture's footprints (10), the roof type, Build and the Roof lens's card with Edit (11). `main` is green. The
-owner said "go according to your plan" on the plan and the boards; nothing waits for him.
+No open branch and no open pull request. `main` is green. Nothing waits for the owner.
 
 ## What the web app has today
 
@@ -74,12 +72,14 @@ changed; an export 0.2 to 0.9 s after a run.
 
 ## Next, in order
 
-1. Phase 4, from step 12 of `plan/phase-04-plan.md`: the close of pull request #36; then the obstacles on the
-   map and the by-hand entry (pull request 3, steps 13 to 15, their boards first) and the close of the phase. Work order:
+1. The memo for the shading, as a pull request of its own: the check of #36 passed 6 min 30 s (6 min 37 s).
+   See "Open items".
+2. Phase 4, pull request 3: the boards of step 13 (obstacles on the map and their heights; Enter dimensions by
+   hand), then steps 14 and 15, then the close of the phase (`plan/phase-04-plan.md`, "Done means"). Work order:
    `plan/resume/005-phase-4-find-and-outline.md`. Before anything else: the memo for the shading, if a check of
    a pull request passes 6 min 30 s (#35 took 6 min 26 s; see "Open items").
-2. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
-3. In parallel with any phase: the screens still to draw (Phase 0).
+3. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
+4. In parallel with any phase: the screens still to draw (Phase 0).
 
 ## Facts about this machine and setup
 
@@ -123,7 +123,7 @@ changed; an export 0.2 to 0.9 s after a run.
 | The names of the demo's equipment are shown as the files state them: "INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560", "WattPower Systems Pvt.Ltd WP-330KTL-H1". The mockups show "Insolation INA-144MHC-TF-560". The files were not touched. The shell shows no equipment | Phase 5 or 7: a shorter name is for the screen to make, or the owner gives the names to show |
 | NASA POWER is asked for the year 2023 and the times of a CSV are read as UTC, as on the desktop; neither can be set in a request | Phase 8, with the weather source |
 | The report (PDF) prints the date of the server's day | Phase 9 |
-| pytest takes 152 s here and the check of a pull request 3 min 33 s to 6 min 43 s (sessions 3 to 5), of the 10 it may take. In session 5 it took 4 min 18 s to 6 min 29 s on the same code of the API: the time is of the machine of the check, not of the change. Most of it is design runs of 1.5 s each; they could share their shading through a memo | When a check passes 6 min 30 s: the memo, as a pull request of its own, before anything else. It came within a second of it three times in session 5 |
+| pytest takes 152 s here and the check of a pull request 3 min 33 s to 6 min 43 s (sessions 3 to 5), of the 10 it may take. In session 6: #34 4 min 40 s, #35 6 min 26 s, #36 6 min 37 s. Most of it is design runs of 1.5 s each; they could share their shading through a memo | The mark of 6 min 30 s is passed: the memo, as a pull request of its own, is next, before pull request 3 of Phase 4 |
 | One browser test failed once in a full run and passes alone, five times of five: `kit-sheet.e2e.ts`, "and by keyboard: the keyboard stops at what scrolls", on desktop. The key End was pressed and the sheet did not scroll. It did not fail again in the nine full runs after | Watch. If it fails again: make the test wait until the content can scroll before the key, as a pull request of its own |
 | In session 6, with a load average above 50 from Chrome, Cursor and the desktop app, full runs of the browser tests took 310 to 340 s and one kit test failed at a time, a different one each run (the toast's place on tablet, the tabs' arrows on phone, the number field on phone); each passed alone, and the runs of the map's own suites passed | Watch. The tests are sound alone; the machine's load is the owner's. If a run on a quiet machine fails one, make that test wait for its result, as a pull request of its own |
 | The browser tests of the shell run the design of the demo on the server of the tests, on three sizes at once. On 2026-09-30 eight phone tests waited more than 90 s on a cold server; since #34 the global setup runs the demo once before the tests begin | Done in #34. Watch that it stays steady |
