@@ -409,6 +409,7 @@ fits."
 In code: `NotesDrawer`, and `NotesPanel` for what is seen of it; the notes are made by `notesOf`
 (`components/shell/notes-view.ts`).
 
+- On tablet and desktop it stands under the top bar, which stays in sight.
 - It is the dialog of the browser, opened over everything (the top layer, not `z-sheet`): the focus goes to
   the button that closes, stays inside, and goes back. Escape closes it, and a press beside it. On tablet and
   desktop the screen behind it is not dimmed; on phone it is.
