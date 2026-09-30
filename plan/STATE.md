@@ -3,55 +3,48 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-09-30, during session 5, after step 14 of the rest of Phase 3. Every component is
-merged (pull requests #30 to #32). The stores, the data flow, the formats, the routes and the shell are built,
-in the draft pull request #33. Two steps remain: the vitals with the numbers of the demo from the API, and the
-browser tests of the shell on the routes. Then the close of the phase.
+**Last updated:** 2026-09-30, end of session 5. Phase 3 is done: the design system as code, the stores, the
+data flow, the routes and the shell are merged (pull requests #24 to #33). Phase 4 is next. No resume prompt
+is written for it: the owner asks for one when he wants it.
 
 ## Where we are
 
 | Phase | Status | Notes |
 |---|---|---|
-| 0 Design | Direction approved. 17 boards drawn and approved | More screens to draw, listed in `phase-00-design.md`. The board of Tabs is not on the canvas yet |
+| 0 Design | Direction approved. 17 boards drawn and approved | More screens to draw, listed in `phase-00-design.md`. The canvas is behind the repo by three boards, see "Open items" |
 | 1 Foundation | Done, merged (PR #1) | |
 | 2 Engine and API | Done (PR #7, PRs #11 to #23) | What exists, what was decided, what was found: `phase-02-engine-api.md`, "As built" |
-| 3 Design system and shell | In progress (PRs #24 to #32; #33 is open) | What exists, what remains: `phase-03-design-system-shell.md`, "As built, so far". How the rest is built: `phase-03-rest-plan.md` |
+| 3 Design system and shell | Done (PRs #24 to #33) | What exists, what was decided, what was found: `phase-03-design-system-shell.md`, "As built". How its second half was built: `phase-03-rest-plan.md` |
 | 4 to 11 | Not started | |
 
 ## In flight
 
-Branch `feat/phase-3-stores-shell`, pull request #33, a draft. It holds steps 10 to 14 of
-`phase-03-rest-plan.md`, each as a commit after a green `bun check`, with the documents of a step in commits
-of their own before it: the stores (`apps/web/lib/stores`), the data flow (`apps/web/lib/flow`), the formats
-(`apps/web/lib/format`), the routes (`apps/web/app/(workspaces)`, `apps/web/lib/routes.ts`), the shell
-(`apps/web/components/shell`) and the third page of the kit (`/kit/shell`). Steps 15 and 16 go into the same
-pull request. `main` is green.
+No open branch and no open pull request. `main` is green.
 
-Decisions D37 to D39 are taken in the pull request and are in `plan/README.md` on its branch: the words of the
-vitals before a system voltage are those of the API (the owner's); the vitals bar is in the Studio only; two
-widths inside tablet and desktop where the top bar gives way.
-
-A session that takes over: read the commits of the branch, then go on with the first step of the plan that
-is not marked as done. On the routes the vitals say "Opening the design" until step 15 opens the demo.
-
-One thing waits for the owner, and blocks nothing: the board of Tabs is approved (decision D35) and is not on
-the design canvas, because the permission system refused the publish. See "Open items".
+Two things wait for the owner, and block nothing: the design canvas (three boards behind the repo), and a
+look at decisions D38 and D39, which session 5 took itself. See "Open items".
 
 ## What the web app has today
 
 | Thing | Where |
 |---|---|
 | Fonts, from the repo | `apps/web/app/fonts` |
-| Design tokens, 233, and Tailwind made of them alone | `apps/web/app/globals.css`; the document is `docs/design/design-tokens.md` |
-| Numbers of the design that code needs (times, gaps) | `apps/web/components/ui/design-numbers.ts`; the document is the same, "Numbers in code" |
-| Components of session 3: Button, ButtonLink, IconButton, Icon, StatusMark, Card, Stat, Segmented, Switch, NumberField, Stepper | `apps/web/components/ui` |
-| Components of session 4: Slider, RangeSlider, Sheet, SheetGrip, ProgressRing, RunStep, Skeleton, Tooltip, Toast, Toaster, Select, FloatingPanel, Dialog, FileDrop, Table, Tabs | `apps/web/components/ui` |
-| Their logic, as pure functions and one store without React | `slider-steps.ts`, `sheet-stops.ts`, `ring-arc.ts`, `toast-queue.ts`, `place-floating.ts`, `list-keys.ts`, `dropped-file.ts`, `table-cells.ts`, `choice-keys.ts`, `number-entry.ts`, `measures.ts` |
-| The kit: every component in every state, development only | `/kit` and `/kit/part-2`; `apps/web/app/kit`, `apps/web/components/kit` |
+| Design tokens, and Tailwind made of them alone | `apps/web/app/globals.css`; the document is `docs/design/design-tokens.md` |
+| Numbers of the design that code needs (times, gaps, the pause before a run) | `apps/web/components/ui/design-numbers.ts`; the document is the same, "Numbers in code" |
+| Components: Button, ButtonLink, IconButton, Icon, StatusMark, Card, Stat, Segmented, Switch, NumberField, Stepper, Slider, RangeSlider, Sheet, SheetGrip, ProgressRing, RunStep, Skeleton, Tooltip, Toast, Toaster, Select, FloatingPanel, Dialog, FileDrop, Table, Tabs | `apps/web/components/ui` |
+| The kit: every component and every part of the shell in every state, development only | `/kit`, `/kit/part-2`, `/kit/shell`; `apps/web/app/kit`, `apps/web/components/kit` |
 | The typed client of the API | `apps/web/lib/api` |
-| The home page | A placeholder |
-| Stores, data flow, formats of the vitals | On the branch of pull request #33: `apps/web/lib/stores`, `lib/flow`, `lib/format`, `lib/clock.ts` |
-| Routes of the workspaces, shell, third page of the kit | On the same branch: `apps/web/app/(workspaces)`, `apps/web/components/shell`, `/kit/shell` |
+| Stores without React: the project, the results, the view | `apps/web/lib/stores` |
+| The data flow: what follows a committed edit; opening the demo | `apps/web/lib/flow/design-flow.ts` |
+| Formats: the quantities of the vitals, the place of a design | `apps/web/lib/format` |
+| The places that have an address: workspaces, lenses, items of Handover | `apps/web/lib/routes.ts` |
+| The shell: top bar, navigation, project switcher, state of saving, vitals, notes; the frame of the Studio | `apps/web/components/shell`; around `apps/web/app/(workspaces)` |
+| The stores for React, and the hooks that read them | `apps/web/components/shell/stores.tsx` |
+| Routes | `/` (a placeholder), `/studio/[lens]`, `/performance`, `/handover/[item]` (the shell, with placeholders inside) |
+
+A workspace opens the demo when no design is open, runs it, and shows its numbers in the vitals of the
+Studio. Nothing can be edited yet: no screen commits an edit. The flow that follows an edit is there and
+tested.
 
 ## What the API gives today
 
@@ -70,18 +63,10 @@ changed; an export 0.2 to 0.9 s after a run.
 
 ## Next, in order
 
-Work order: `plan/resume/004-phase-3-stores-data-flow-shell.md`. Plan: `plan/phase-03-rest-plan.md`.
-
-1. Phase 3, steps 10 to 16, in one pull request (decisions D34 and D36), each step a commit, test first:
-   the three stores; the data flow; the formats of the vitals; the routes with their placeholders; the
-   shell with the vitals in all their states, the drawer of notes, the project switcher and the state of
-   saving; the vitals with the numbers of the demo from the API; the browser tests of the shell on 390, 834
-   and 1440.
-2. Close Phase 3: acceptance, "As built", status, state, record.
-3. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert". None
-   blocks Phase 3.
-4. Phase 4: find the roof on the map and outline it (the flagship).
-5. In parallel with any phase: the screens still to draw (Phase 0).
+1. Phase 4: find the roof on the map and outline it (the flagship). `plan/phase-04-find-and-outline.md`.
+   Before it: the memo for the shading, if a check of a pull request passes 6 min 30 s (see "Open items").
+2. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
+3. In parallel with any phase: the screens still to draw (Phase 0).
 
 ## Facts about this machine and setup
 
@@ -95,15 +80,22 @@ Work order: `plan/resume/004-phase-3-stores-data-flow-shell.md`. Plan: `plan/pha
 | bun, uv, Python | bun 1.3.14; uv; Python 3.12.13, the build that uv manages (`apps/api/.python-version`, `apps/api/pyproject.toml`) |
 | Playwright | `@playwright/test` 1.52.0; its browser (chromium-1169) is already installed. `@axe-core/playwright` 4.13.0 |
 | Baselines of the screens | `e2e/baselines/darwin`, made on this machine. Renew with `bun tools/with-node.ts playwright test <name> --update-snapshots` in `e2e/`, after looking at the new picture |
+| `bun check` | About 7 minutes here: pytest 152 s, the browser tests 240 s (1,025 of them) |
 | Esri key | In `apps/web/.env.local` as `NEXT_PUBLIC_ESRI_API_KEY`. Never read, print or commit the file. Referrers: `http://localhost:4700`, `http://127.0.0.1:4700`. Expires about 28 Sep 2027 |
-| Design canvas | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy (open to anyone with the link; the owner shared it again on 2026-09-29, after the boards of round 4 were published). 16 boards; the 17th, Tabs, is in the repo only. To add a board: read `project/canvas.json` of the canvas, then publish the board and the index to it |
+| Design canvas | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy (open to anyone with the link). 16 boards. To add or change a board: read `project/canvas.json` of the canvas, then publish the board and the index to it. A publish needs the owner's permission |
 | Design system | `docs/design/` |
 
 ## Open items (not blocking)
 
 | Item | Where it belongs |
 |---|---|
-| The board of Tabs is approved and not on the design canvas: the permission system refused the publish on 2026-09-29 ("Expose Local Services"). Two files go to the canvas: `docs/design/mockups/Tabs.dc.html` as `project/Tabs.dc.html`, and `docs/design/mockups/canvas.json` as `project/canvas.json`, which has the board already. After it, the owner shares the canvas again if it became private, and the note in `docs/design/README.md` is taken out | The owner: he allows the publish to the artifact and tells a session to do it, or publishes it himself |
+| The design canvas is behind the repo by three boards. The board of Tabs is approved (D35) and missing: the permission system refused the publish on 2026-09-29 ("Expose Local Services"). The boards "Shell states" and "Strings lens, no system voltage yet" have the words of before decision D37. Four files go to the canvas: `docs/design/mockups/Tabs.dc.html`, `ShellStates.dc.html` and `StringsLensNoVoltage.dc.html`, each as `project/<name>`, and `docs/design/mockups/canvas.json` as `project/canvas.json`. After it, the owner shares the canvas again if it became private, and the note in `docs/design/README.md` is taken out | The owner: he allows the publish to the artifact and tells a session to do it, or publishes it himself |
+| Decisions D38 (the vitals bar is in the Studio only) and D39 (two widths where the top bar gives way) were taken by session 5, not by the owner | The owner, when he looks at the shell. If he overrules one, it is changed in `plan/README.md` and in the shell |
+| Shown and cannot be used, each until its phase: Present (Phase 10); in the project switcher New design and Import a drawing (Phase 4), Open a project and Save a copy (Phase 9 or 10) | The phase that builds each makes it a link or a button |
+| The shell has no toaster: nothing says anything yet. `Toaster` takes a `className`; on phone the toasts stand above the tab bar (`bottom-tabbar`) | The first phase that has something to say |
+| The drawer of the notes comes and goes without motion; the tokens have 240 ms for panels | Phase 11, or when the owner asks |
+| The inspector of the Studio is a placeholder that stands three times in the page, once for each size | Phase 5 decides how the real one is mounted |
+| The Layers button of the rail, the view controls and the time control of the stage are not there | Phase 5 (stage), Phase 6 (time) |
 | `.github/workflows/e2e.yml` has never been run. It runs on Linux, and the screens have baselines for `darwin` only: its first run will write its own and fail | Phase 11, or when browser tests are wanted in CI |
 | A fresh clone has not been tried | Phase 11 |
 | Esri's imagery tile host answered one request without a referrer; the key is scoped, not secret. Watch usage on the Esri dashboard | Phase 4 |
@@ -116,13 +108,12 @@ Work order: `plan/resume/004-phase-3-stores-data-flow-shell.md`. Plan: `plan/pha
 | The engine places the sun at the middle of the hour for every source. The bundled PVGIS hours agree with the sun at the time stamp itself (GHI, DNI and DHI close to 0.8 W/m2 there, 43.6 W/m2 half an hour later). Not changed; a question for Prasanta | Owner and domain expert |
 | A CSV with GHI alone is split by Erbs: on the Pune year beam 1,435 and diffuse 823 kWh/m2, where PVGIS has 2,000 and 550. The API says so in a note when such a file is loaded | Owner and domain expert; Phase 8 shows the note |
 | Strings are sized with the Voc of the one-diode model, also when the PAN states a coefficient (ABi: stated -0.286, model -0.334 %/degC). The screen shows the stated one | Owner and domain expert; Phase 7 has the field to enter a value |
-| The names of the demo's equipment are shown as the files state them: "INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560", "WattPower Systems Pvt.Ltd WP-330KTL-H1". The mockups show "Insolation INA-144MHC-TF-560". The files were not touched | Phase 5 or 7: a shorter name is for the screen to make, or the owner gives the names to show |
+| The names of the demo's equipment are shown as the files state them: "INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560", "WattPower Systems Pvt.Ltd WP-330KTL-H1". The mockups show "Insolation INA-144MHC-TF-560". The files were not touched. The shell shows no equipment | Phase 5 or 7: a shorter name is for the screen to make, or the owner gives the names to show |
 | NASA POWER is asked for the year 2023 and the times of a CSV are read as UTC, as on the desktop; neither can be set in a request | Phase 8, with the weather source |
 | The report (PDF) prints the date of the server's day | Phase 9 |
-| pytest takes 157 s here and the pull request check 3 min 33 s to 6 min 43 s (sessions 3 and 4; the same code of the API took 3 min 33 s and 6 min 27 s), of the 10 it may take. Most of it is design runs of 1.5 s each; they could share their shading through a memo | When a check passes 6 min 30 s: the memo, as a pull request of its own, before anything else |
-| The previews `shell-states.png` and `studio-strings-lens-no-voltage.png`, and the two boards on the canvas, show the words of before decision D37. The sources in `docs/design/mockups` are corrected | Session 5 renders the previews at the close if it can; the canvas waits for the owner's permission, with the board of Tabs |
-| One browser test failed once in four full runs and passes alone, five times of five: `kit-sheet.e2e.ts`, "and by keyboard: the keyboard stops at what scrolls", on desktop. The key End was pressed and the sheet did not scroll | Watch. If it fails again: make the test wait until the content can scroll before the key, as a pull request of its own |
-| The check of pull request #33 took 6 min 28 s at its first run, two seconds under the mark | Watch the runs that follow; the row on pytest says what to do |
+| pytest takes 152 s here and the check of a pull request 3 min 33 s to 6 min 43 s (sessions 3 to 5), of the 10 it may take. In session 5 it took 4 min 18 s to 6 min 29 s on the same code of the API: the time is of the machine of the check, not of the change. Most of it is design runs of 1.5 s each; they could share their shading through a memo | When a check passes 6 min 30 s: the memo, as a pull request of its own, before anything else. It came within a second of it three times in session 5 |
+| One browser test failed once in a full run and passes alone, five times of five: `kit-sheet.e2e.ts`, "and by keyboard: the keyboard stops at what scrolls", on desktop. The key End was pressed and the sheet did not scroll. It did not fail again in the nine full runs after | Watch. If it fails again: make the test wait until the content can scroll before the key, as a pull request of its own |
+| The browser tests of the shell run the design of the demo on the server of the tests, on three sizes at once. A test waits for a result up to 90 s; under that load the layout alone took more than 5 s once | Watch. If they become slow or unsteady: one run before the tests begin, in the global setup, so that the server has kept its results |
 | A push was refused once with "Permission denied (publickey)" and went through when tried again | Watch; nothing to do |
 | The `/api` rewrite passes the events of a design run on as they come in `next dev`. A production build (`next start`) and a proxy in front of it have not been tried | Phase 11, deployment |
 | One design run keeps a worker thread busy for 12 s and the process holds up to 576 MB of kept results. How many runs at once a server must carry is not decided | Phase 11 |
@@ -135,7 +126,7 @@ Work order: `plan/resume/004-phase-3-stores-data-flow-shell.md`. Plan: `plan/pha
 | 2 | 2026-09-29 | `plan/sessions/002/record.md`, `plan/sessions/002/owner-messages.md` |
 | 3 | 2026-09-29 | `plan/sessions/003/record.md`, `plan/sessions/003/owner-messages.md` |
 | 4 | 2026-09-29 | `plan/sessions/004/record.md`, `plan/sessions/004/owner-messages.md` |
-| 5 | 2026-09-30 | In progress; its record is written at its end |
+| 5 | 2026-09-30 | `plan/sessions/005/record.md`, `plan/sessions/005/owner-messages.md` |
 
 ## Closed, do not reopen
 
@@ -147,4 +138,5 @@ Work order: `plan/resume/004-phase-3-stores-data-flow-shell.md`. Plan: `plan/pha
 - Fonts come from the repo, never from Google (D27).
 - Tailwind is made of the design tokens alone (D28).
 - The design of Tabs (D35).
-- The rest of Phase 3 is two pull requests, split after the components; inside each, every step is a commit (D34, D36).
+- The rest of Phase 3 was two pull requests, split after the components; inside each, every step a commit (D34, D36).
+- Before a system voltage the vitals speak in the words of the API (D37).

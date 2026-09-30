@@ -1,6 +1,6 @@
 # 004: Phase 3, the second half: stores, data flow, routes, shell
 
-Written: 2026-09-29, by session 4, at the owner's request. Status: open.
+Written: 2026-09-29, by session 4, at the owner's request. Status: used by session 5; the phase is closed.
 
 ## Paste this
 

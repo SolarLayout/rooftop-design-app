@@ -69,4 +69,6 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   kept so that the boards can be written again.
 - `mockups/canvas.json` is the layout of the boards on the canvas. It has the board "Tabs" already; the
   canvas has not: the permission system refused the publish on 2026-09-29. Until the board is published,
-  the repo is where it is seen (`previews/tabs.png`).
+  the repo is where it is seen (`previews/tabs.png`). The boards "Shell states" and "Strings lens, no system
+  voltage yet" were corrected on 2026-09-30 (decision D37); on the canvas they still show the words of
+  before. `plan/STATE.md`, "Open items", says what goes to the canvas.

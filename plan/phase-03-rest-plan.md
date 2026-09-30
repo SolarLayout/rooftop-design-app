@@ -2,8 +2,8 @@
 
 Written 2026-09-29 by session 4, at the owner's request, before the rest of the phase is built.
 Work order: `plan/resume/003-phase-3-components-stores-shell.md`. Scope and acceptance:
-`plan/phase-03-design-system-shell.md`. This file says how the rest is built, in which order, and what is
-decided on the way. It is kept true while the work goes on: a step that is done is marked.
+`plan/phase-03-design-system-shell.md`. This file says how the rest was built, in which order, and what was
+decided on the way. Every step is done: the phase closed on 2026-09-30, with pull request #33.
 
 ## Where the work stands
 
@@ -12,9 +12,8 @@ decided on the way. It is kept true while the work goes on: a step that is done 
 | 1 The guard reads `*.ts` | Merged, pull request #30 |
 | 2 Slider, RangeSlider | Merged, pull request #31 |
 | 3 to 9 and T: the components | Merged, pull request #32. Its check took 6 min 25 s |
-| 10 to 14: stores, data flow, formats, routes, shell | Built by session 5, in the draft pull request #33, branch `feat/phase-3-stores-shell` |
-| 15 and 16: the numbers of the demo, browser tests of the shell | Not begun. The same pull request. Work order: `plan/resume/004-phase-3-stores-data-flow-shell.md` |
-| C: the close of the phase | After step 16 |
+| 10 to 16: stores, data flow, formats, routes, shell, the numbers of the demo, browser tests | Merged, pull request #33, by session 5. Its check took 4 min 18 s to 6 min 29 s |
+| C: the close of the phase | Done by session 5: `phase-03-design-system-shell.md`, "As built" |
 | Tabs, the board | Approved (decision D35) and built. Not on the canvas: `plan/STATE.md`, "Open items" |
 
 ## How the work goes
@@ -48,10 +47,10 @@ decided on the way. It is kept true while the work goes on: a step that is done 
 | 12, done | Formats | `lib/format`: the quantities of the vitals, each as number and unit, on `shown` of `number-entry.ts` | All of it | None |
 | 13, done | Routes | `/`, `/studio/[lens]`, `/performance`, `/handover/[item]`, with placeholders. `/studio` and `/handover` lead to their first. An unknown lens or item is not found | `lib/routes.ts`: the lenses and the items, and what is one | Every route answers, an unknown one is not found |
 | 14, done | Shell | `components/shell`: top bar at three sizes, workspace navigation, tab bar on phone, project switcher, state of saving, Present and Export, vitals in every state, drawer of notes. The stage of the Studio is a placeholder | `vitals-view.ts`: what the vitals show, from the results and their status. `notes-view.ts`: the notes, from the results | Look against the previews, navigation, the switcher, the drawer |
-| 15 | Vitals from the API | A workspace without a project opens the demo. The vitals show its numbers; without a system voltage the roof and the positions, and what is waited for in the words of the API | Covered by 11, 12 and 14 | The seven numbers of the demo; the demo with its voltage left out |
-| 16 | Tests of the shell | | | Renders and navigates on the three sizes; no scroll sideways at 360, 390, 640, 834, 1100, 1101, 1440; baselines; axe |
+| 15, done | Vitals from the API | A workspace without a project opens the demo. The vitals show its numbers; without a system voltage the roof and the positions, and what is waited for in the words of the API | Covered by 11, 12 and 14 | The seven numbers of the demo; the demo with its voltage left out |
+| 16, done | Tests of the shell | | | Renders and navigates on the three sizes; no scroll sideways at 360, 390, 640, 834, 1100, 1101, 1440; baselines; axe |
 | T, done | Tabs | `Tabs`, on `choice-keys.ts`. The board is not on the canvas yet | None new | Look, keys, the row on phone |
-| C | Close | "As built", status, `STATE.md`, record of session 4, resume prompt 003 set to used | | |
+| C, done | Close | "As built", status, `STATE.md`, record of session 5, resume prompt 004 set to used | | |
 
 ## Decisions that I take, unless the owner says otherwise
 
@@ -96,7 +95,7 @@ wins where it says otherwise.
 |---|---|---|
 | Approval of the Tabs board | Given, 2026-09-29 | Nothing |
 | The board of Tabs on the canvas: the publish needs his permission | Any time | Nothing |
-| The words of the vitals before a system voltage, if the API's and the board's cannot both be served | Step 15 | Step 15 only |
+| The words of the vitals before a system voltage, if the API's and the board's cannot both be served | Answered in session 5: the API's (D37) | Nothing |
 | Which name of the equipment to show | Only if a part shows equipment. None of this plan does | Nothing |
 
 ## Risks
