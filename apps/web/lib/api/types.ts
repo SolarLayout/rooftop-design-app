@@ -25,12 +25,16 @@ export type RoofRequest = Requests["Roof"];
 export type ObstacleRequest = Requests["Obstacle"];
 export type EquipmentFile = Requests["EquipmentFile"];
 export type RoofFile = Requests["RoofFile"];
+export type OutlineOnMap = Requests["OutlineOnMap"];
+export type MapShapeRequest = Requests["MapShape"];
 export type SunRequest = Requests["SunRequest"];
 export type WeatherRequest = Requests["WeatherRequest"];
 
 export type ModuleResponse = Answers["ModuleResponse"];
 export type InverterResponse = Answers["InverterResponse"];
 export type ImportedRoof = Answers["ImportedRoof"];
+export type RoofOnMap = Answers["RoofOnMap"];
+export type MapShape = Answers["MapShape"];
 export type LayoutResponse = Answers["LayoutResponse"];
 export type LayoutReadouts = Answers["LayoutReadouts"];
 export type SunResponse = Answers["SunResponse"];

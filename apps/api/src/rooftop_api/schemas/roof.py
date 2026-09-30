@@ -8,7 +8,7 @@ from rooftop_api.schemas.common import Compass, Input, Latitude, Longitude, Poin
 
 ObstacleKind = Literal["box", "cylinder", "wall", "tree", "building"]
 RoofType = Literal["flat_tilted", "flat_ew", "sloped_flush"]
-RoofSource = Literal["coordinates", "kmz", "dxf"]
+RoofSource = Literal["coordinates", "kmz", "dxf", "map"]
 Metres = Annotated[float, Field(ge=0)]
 Size = Annotated[float, Field(gt=0, description="Metres, more than nothing")]
 POINTS_NEEDED = {"wall": 2, "building": 3}

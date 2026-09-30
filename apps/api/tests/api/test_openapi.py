@@ -10,6 +10,8 @@ OPERATIONS = {
     ("post", "/equipment/module"): "parseModule",
     ("post", "/equipment/inverter"): "parseInverter",
     ("post", "/roof/import"): "importRoof",
+    ("post", "/roof/from-map"): "roofFromMap",
+    ("post", "/roof/on-map"): "roofOnMap",
     ("post", "/layout"): "computeLayout",
     ("post", "/sun"): "computeSun",
     ("post", "/weather"): "loadWeather",

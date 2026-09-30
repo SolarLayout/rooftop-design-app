@@ -13,6 +13,7 @@ ASCII DXF): a browser has the content, not a path.
 from __future__ import annotations
 
 import io
+import math
 import re
 import zipfile
 from dataclasses import dataclass, field
@@ -232,18 +233,28 @@ def _assemble(shapes, roof_i, lat, lon, fname, source) -> ImportedRoof:
         elif kind == "line":
             out.obstacles.append(Obstacle(label, "wall", points=mv(pts), height=h))
         else:
-            poly = Polygon(pts).buffer(0)
-            with np.errstate(all="ignore"):
-                rect = poly.minimum_rotated_rectangle
-            if abs(rect.area - poly.area) < 0.02 * max(poly.area, 1e-9) and len(pts) <= 5:
-                xs, ys = zip(*list(rect.exterior.coords)[:4], strict=False)
-                import math
-                e0 = math.dist((xs[0], ys[0]), (xs[1], ys[1]))
-                e1 = math.dist((xs[1], ys[1]), (xs[2], ys[2]))
-                ang = math.degrees(math.atan2(ys[1] - ys[0], xs[1] - xs[0]))
-                out.obstacles.append(Obstacle(label, "box", x=poly.centroid.x + dx, y=poly.centroid.y + dy,
-                                              length=e0, width=e1, rotation_deg=ang, height=h))
+            found = box_from_polygon(pts)
+            if found is not None:
+                x, y, length, width, rotation = found
+                out.obstacles.append(Obstacle(label, "box", x=x + dx, y=y + dy, length=length, width=width,
+                                              rotation_deg=rotation, height=h))
             else:
+                poly = Polygon(pts).buffer(0)
                 out.obstacles.append(Obstacle(label, "building", points=mv(list(poly.exterior.coords)[:-1]),
                                               height=h))
     return out
+
+
+def box_from_polygon(pts) -> tuple[float, float, float, float, float] | None:
+    """(x, y, length, width, rotation) of a polygon that is a rectangle within 2 % of its area and has at
+    most five points; None when it is not one."""
+    poly = Polygon(pts).buffer(0)
+    with np.errstate(all="ignore"):
+        rect = poly.minimum_rotated_rectangle
+    if abs(rect.area - poly.area) >= 0.02 * max(poly.area, 1e-9) or len(pts) > 5:
+        return None
+    xs, ys = zip(*list(rect.exterior.coords)[:4], strict=False)
+    e0 = math.dist((xs[0], ys[0]), (xs[1], ys[1]))
+    e1 = math.dist((xs[1], ys[1]), (xs[2], ys[2]))
+    ang = math.degrees(math.atan2(ys[1] - ys[0], xs[1] - xs[0]))
+    return poly.centroid.x, poly.centroid.y, e0, e1, ang

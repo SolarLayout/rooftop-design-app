@@ -51,6 +51,32 @@ test.describe("the client of the API", () => {
     expect(fractions.at(-1)).toBe(1);
   });
 
+  test("a roof outlined on the map comes back in metres, and goes back to where it was drawn", async ({ baseURL }) => {
+    const api = createApi({ base: `${baseURL}/api` });
+    // A 90 by 40 m rectangle centred on Pune, as (lon, lat), counter-clockwise from the south-west.
+    const drawn: [number, number][] = [
+      [73.8595749364774, 18.519816702284242],
+      [73.86042745851117, 18.51982184272995],
+      [73.86042506447365, 18.52018329680534],
+      [73.85957254064984, 18.520178156252225],
+    ];
+
+    const project = await api.roofFromMap({ outline: drawn, roof_type: "flat_ew", name: "Pune, Maharashtra" });
+
+    const { outline } = project.roof;
+    const edges = outline.map(([x, y], n) => Math.hypot(outline[(n + 1) % outline.length][0] - x, outline[(n + 1) % outline.length][1] - y));
+    expect(edges.map((edge) => Math.round(edge * 100) / 100)).toEqual([90, 40, 90, 40]);
+    expect(project.roof.lat).toBeCloseTo(18.52, 6);
+    expect(project.roof.lon).toBeCloseTo(73.86, 6);
+    expect([project.name, project.roof.source, project.roof.roof_type, project.system_voltage]).toEqual(["Pune, Maharashtra", "map", "flat_ew", null]);
+
+    const back = await api.roofOnMap(project.roof);
+    back.outline.forEach(([lon, lat], n) => {
+      expect(lon).toBeCloseTo(drawn[n][0], 7);
+      expect(lat).toBeCloseTo(drawn[n][1], 7);
+    });
+  });
+
   test("without a system voltage the result says what it waits for", async ({ baseURL }) => {
     const api = createApi({ base: `${baseURL}/api` });
 
