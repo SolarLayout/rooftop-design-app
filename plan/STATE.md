@@ -73,7 +73,8 @@ changed; an export 0.2 to 0.9 s after a run.
 ## Next, in order
 
 1. The memo for the shading, as a pull request of its own: the check of #36 passed 6 min 30 s (6 min 37 s).
-   See "Open items".
+   See "Open items". Work order: `plan/resume/006-shading-memo-and-phase-4-rest.md`, which also holds the
+   second slice.
 2. Phase 4, pull request 3: the boards of step 13 (obstacles on the map and their heights; Enter dimensions by
    hand), then steps 14 and 15, then the close of the phase (`plan/phase-04-plan.md`, "Done means"). Work order:
    `plan/resume/005-phase-4-find-and-outline.md`. Before anything else: the memo for the shading, if a check of
