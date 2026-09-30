@@ -1,6 +1,6 @@
 # 006: the shading memo, then the rest of Phase 4
 
-Written: 2026-09-30, by session 6, at the owner's request. Status: open.
+Written: 2026-09-30, by session 6, at the owner's request. Status: used by session 7, 2026-09-30.
 
 ## Paste this
 

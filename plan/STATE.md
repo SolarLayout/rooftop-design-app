@@ -3,11 +3,10 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-09-30, session 7, after the memo (#37) and the boards of step 13 of Phase 4. The plan of the phase is `plan/phase-04-plan.md`
-(three pull requests, fifteen steps). Pull request #35 (the map, the search, the route `/find`; steps 1 to 5)
-is merged, and so is the second, #36 (steps 6 to 12: the geometry, the three ways to outline, the loupe, Build,
-the Roof lens's card). The acceptance of the phase is met by their tests. The memo for the shading is merged (#37).
-The two boards of step 13 are drawn and on `main`; they wait for the owner's yes before steps 14 and 15.
+**Last updated:** 2026-09-30, session 7, at the close of Phase 4. The phase is done: its plan `plan/phase-04-plan.md`
+(three pull requests, fifteen steps) is built in #35 (the map, the search, the route `/find`), #36 (the outline three
+ways, Build, the Roof lens's card) and #38 (the obstacles on the map with their heights, the roof entered by hand).
+The memo for the shading in the tests is merged (#37). Phase 5 is next.
 
 ## Where we are
 
@@ -17,13 +16,12 @@ The two boards of step 13 are drawn and on `main`; they wait for the owner's yes
 | 1 Foundation | Done, merged (PR #1) | |
 | 2 Engine and API | Done (PR #7, PRs #11 to #23) | What exists, what was decided, what was found: `phase-02-engine-api.md`, "As built" |
 | 3 Design system and shell | Done (PRs #24 to #33) | What exists, what was decided, what was found: `phase-03-design-system-shell.md`, "As built". How its second half was built: `phase-03-rest-plan.md` |
-| 4 Find and outline | In progress: steps 0 to 12 done (session 6), the boards of step 13 drawn (session 7); steps 14 and 15 remain | Plan: `phase-04-plan.md`. Merged: #35, #36, #37 (the memo). To come: the obstacles on the map with their heights and the entry by hand (pull request 3), once the boards are approved. "As built": `phase-04-find-and-outline.md` |
+| 4 Find and outline | Done (sessions 6 and 7: #35, #36, #38; the memo #37) | What exists, what was decided, what was found: `phase-04-find-and-outline.md`, "As built". How it was built: `phase-04-plan.md` |
 | 5 to 11 | Not started | |
 
 ## In flight
 
-No open branch and no open pull request. `main` is green. Waiting for the owner: a yes to the two boards of step 13
-(`docs/design/previews/find-obstacles.png`, `find-by-hand.png`; on the canvas too).
+No open branch and no open pull request. `main` is green. Nothing waits for the owner.
 
 ## What the web app has today
 
@@ -43,16 +41,17 @@ No open branch and no open pull request. `main` is green. Waiting for the owner:
 | The stores for React, and the hooks that read them | `apps/web/components/shell/stores.tsx` |
 | Routes | `/` (a placeholder with "Find my roof"), `/find` (the map, the search, the outline), `/studio/[lens]`, `/performance`, `/handover/[item]` (the shell, with placeholders inside) |
 | The map: the provider, Esri, the search's reading of what is typed, the scale bar, the states without a map | `apps/web/lib/map` |
-| The outline: the frame of metres, the measures, snapping, typed lengths, the rectangle, the history, the nudge, the reducer | `apps/web/lib/outline` |
-| Find and outline: the screen, the map (MapLibre), the search, the outline drawn on the map, the panel, the tools, the roof type, Build | `apps/web/components/find` |
+| The outline: the frame of metres, the measures, snapping, typed lengths, the rectangle, the history, the nudge, the obstacles, the roof by hand, the reducer | `apps/web/lib/outline` |
+| Find and outline: the screen, the map (MapLibre), the search, the outline drawn on the map, the panel, the tools (the ways to outline while the roof is open; the obstacles once it is closed), the height dialog, the obstacle list, the roof type, Build; the roof by hand and the plan drawn without a map | `apps/web/components/find` |
 | The Roof lens's inspector: the card of the roof with Edit, the roof type as a committed edit | `apps/web/components/studio/RoofInspector.tsx`; the words of the card in `apps/web/lib/roof-card.ts` |
 | Overture's footprints: the pinned release, the ring of a footprint | `apps/web/lib/map/overture.ts`; the extract tool `tools/footprints.ts`; the fixture `e2e/fixtures/footprints-pune.pmtiles` |
 | MapLibre's worker, served by the app | `apps/web/public/maplibre-gl`, copied by `tools/vendor-maplibre.ts` |
 
 A workspace opens the demo when no design is open, runs it, and shows its numbers in the vitals of the
-Studio. A roof found on the map and outlined becomes the design that is open (Build), and the Studio opens
-on the Roof lens; its roof type is the first committed edit of the app, and Edit leads back to the map with
-the outline shown. Until Phase 10 keeps designs on the device, a reload of the Studio loses a roof built on
+Studio. A roof found on the map and outlined, with its obstacles and their heights, or typed by its measurements
+with or without a map, becomes the design that is open (Build), and the Studio opens on the Roof lens; its roof
+type is the first committed edit of the app, and Edit leads back to the map with the outline and the obstacles
+shown. Until Phase 10 keeps designs on the device, a reload of the Studio loses a roof built on
 the map and opens the demo (D44).
 
 ## What the API gives today
@@ -73,9 +72,9 @@ changed; an export 0.2 to 0.9 s after a run.
 
 ## Next, in order
 
-1. Phase 4, pull request 3: steps 14 and 15 to the boards of step 13, once the owner says yes to them, then the
-   close of the phase (`plan/phase-04-plan.md`, "Done means"). Work order: `plan/resume/006-shading-memo-and-phase-4-rest.md`,
-   second slice.
+1. Phase 5: the Studio's 3D roof, the Roof and Array lenses (`plan/phase-05-studio-roof-array.md`). It begins with a
+   written plan, as Phase 4 did, and the boards it lacks (the Roof lens on phone and tablet; the Array lens's
+   states). A resume prompt is written when the owner asks.
 2. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
 3. In parallel with any phase: the screens still to draw (Phase 0).
 
@@ -91,7 +90,7 @@ changed; an export 0.2 to 0.9 s after a run.
 | bun, uv, Python | bun 1.3.14; uv; Python 3.12.13, the build that uv manages (`apps/api/.python-version`, `apps/api/pyproject.toml`) |
 | Playwright | `@playwright/test` 1.52.0; its browser (chromium-1169) is already installed. `@axe-core/playwright` 4.13.0 |
 | Baselines of the screens | `e2e/baselines/darwin`, made on this machine. Renew with `bun tools/with-node.ts playwright test <name> --update-snapshots` in `e2e/`, after looking at the new picture |
-| `bun check` | About 6 minutes here: pytest 119 s, the browser tests 330 s (1,152 of them) |
+| `bun check` | About 6 minutes here: pytest 120 s, the browser tests 350 s (1,179 of them). While it runs, nothing of `apps/web` or `apps/api` may be edited: the test stack reloads them live, and the browser tests would see the half-made change. Drafts go to the scratchpad until it ends |
 | Esri key | In `apps/web/.env.local` as `NEXT_PUBLIC_ESRI_API_KEY`. Never read, print or commit the file. Referrers: `http://localhost:4700`, `http://127.0.0.1:4700`. Expires about 28 Sep 2027 |
 | Design canvas | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy. 21 boards, the same as `docs/design/mockups`. To add or change a board: read the canvas itself (not only a file of it), then publish from a folder shaped `project/<name>` in the scratchpad: `root` that folder, `file_path` its `project/canvas.json`, the boards in `files` by their `project/` paths. A `file_path` outside such a folder lands at the root of the artifact, not under `project/`. The publish is refused by the permission system while the canvas is shared with the link; the owner made it private for the publishes of 2026-09-30 and shares it again after |
 | Design system | `docs/design/` |
@@ -104,6 +103,9 @@ changed; an export 0.2 to 0.9 s after a run.
 | The shell has no toaster: nothing says anything yet. `Toaster` takes a `className`; on phone the toasts stand above the tab bar (`bottom-tabbar`) | The first phase that has something to say |
 | The drawer of the notes comes and goes without motion; the tokens have 240 ms for panels | Phase 11, or when the owner asks |
 | The inspector of the Studio is a placeholder that stands three times in the page, once for each size | Phase 5 decides how the real one is mounted |
+| The obstacle list of Find shows each height and does not edit it; trees are not drawn on the map; the by-hand roof's corners are not dragged on the map | Phase 5: the Roof lens edits every field of an obstacle and adds trees |
+| The Roof lens's card wraps to a second line once it counts obstacles ("Entered by hand · 4 corners · 6 obstacles") | Phase 5, when the inspector is laid out for good |
+| The Esri key is baked into the page at build time: the "no key" state is seen only on a build without it, and the tests reach the no-map states through "no WebGL" | Phase 11 |
 | The Layers button of the rail, the view controls and the time control of the stage are not there | Phase 5 (stage), Phase 6 (time) |
 | `.github/workflows/e2e.yml` has never been run. It runs on Linux, and the screens have baselines for `darwin` only: its first run will write its own and fail | Phase 11, or when browser tests are wanted in CI |
 | A fresh clone has not been tried | Phase 11 |
@@ -121,7 +123,7 @@ changed; an export 0.2 to 0.9 s after a run.
 | The names of the demo's equipment are shown as the files state them: "INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560", "WattPower Systems Pvt.Ltd WP-330KTL-H1". The mockups show "Insolation INA-144MHC-TF-560". The files were not touched. The shell shows no equipment | Phase 5 or 7: a shorter name is for the screen to make, or the owner gives the names to show |
 | NASA POWER is asked for the year 2023 and the times of a CSV are read as UTC, as on the desktop; neither can be set in a request | Phase 8, with the weather source |
 | The report (PDF) prints the date of the server's day | Phase 9 |
-| The memo for the shading in the tests (#37, session 7). Measured before: pytest 151 s here; 66 hourly shadings for 15 distinct inputs and 208 simulations for 66; the repeats cost 76 s and 10 s, of which 48 s are the proofs of the memo, of progress reporting and of a fresh server, which must stay without a memo. Now one memo (`apps/api/tests/kept.py`) serves the whole pytest session, the engine tests and the API alike: pytest 122 s here, the demo's shading computed once. On GitHub the same code took 155 s in one run and 279 s in the next, and 274 s after the memo: the runners vary two-fold, so the mark of 6 min 30 s is a poor rule there; the check of #37 took 5 min 38 s. Four workers with pytest-xdist would give 66 s here (measured, not adopted: a dependency and a change of its own) | If a check passes the mark again: pytest-xdist, pinned, as a pull request of its own, after the owner's yes |
+| The memo for the shading in the tests (#37, session 7). Measured before: pytest 151 s here; 66 hourly shadings for 15 distinct inputs and 208 simulations for 66; the repeats cost 76 s and 10 s, of which 48 s are the proofs of the memo, of progress reporting and of a fresh server, which must stay without a memo. Now one memo (`apps/api/tests/kept.py`) serves the whole pytest session, the engine tests and the API alike: pytest 122 s here, the demo's shading computed once. On GitHub the same code took 155 s in one run and 279 s in the next, and 274 s after the memo: the runners vary two-fold, so the mark of 6 min 30 s is a poor rule there; the checks of #37 and #38 took 5 min 38 s and 5 min 33 s. Four workers with pytest-xdist would give 66 s here (measured, not adopted: a dependency and a change of its own) | If a check passes the mark again: pytest-xdist, pinned, as a pull request of its own, after the owner's yes |
 | One browser test failed once in a full run and passes alone, five times of five: `kit-sheet.e2e.ts`, "and by keyboard: the keyboard stops at what scrolls", on desktop. The key End was pressed and the sheet did not scroll. It did not fail again in the nine full runs after | Watch. If it fails again: make the test wait until the content can scroll before the key, as a pull request of its own |
 | In session 6, with a load average above 50 from Chrome, Cursor and the desktop app, full runs of the browser tests took 310 to 340 s and one kit test failed at a time, a different one each run (the toast's place on tablet, the tabs' arrows on phone, the number field on phone); each passed alone, and the runs of the map's own suites passed | Watch. The tests are sound alone; the machine's load is the owner's. If a run on a quiet machine fails one, make that test wait for its result, as a pull request of its own |
 | The browser tests of the shell run the design of the demo on the server of the tests, on three sizes at once. On 2026-09-30 eight phone tests waited more than 90 s on a cold server; since #34 the global setup runs the demo once before the tests begin | Done in #34. Watch that it stays steady |
@@ -139,6 +141,7 @@ changed; an export 0.2 to 0.9 s after a run.
 | 4 | 2026-09-29 | `plan/sessions/004/record.md`, `plan/sessions/004/owner-messages.md` |
 | 5 | 2026-09-30 | `plan/sessions/005/record.md`, `plan/sessions/005/owner-messages.md` |
 | 6 | 2026-09-30 | `plan/sessions/006/record.md`, `plan/sessions/006/owner-messages.md` |
+| 7 | 2026-09-30 | `plan/sessions/007/record.md`, `plan/sessions/007/owner-messages.md` |
 
 ## Closed, do not reopen
 

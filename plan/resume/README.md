@@ -23,7 +23,7 @@ asks for one. Paste the block inside the file into a new session started in this
 | 003 | `003-phase-3-components-stores-shell.md` | Phase 3, the rest: the components of round 4, stores, data flow, shell | 2026-09-29 | used by session 4, 2026-09-29. It built parts 1 to 9 and Tabs; parts 10 to 16 are the work of 004 |
 | 004 | `004-phase-3-stores-data-flow-shell.md` | Phase 3, the second half: stores, data flow, formats, routes, shell, and the close of the phase | 2026-09-29 | used by session 5, 2026-09-29 and 2026-09-30. The phase is closed |
 | 005 | `005-phase-4-find-and-outline.md` | Phase 4: the plan first, then find the roof on the map and outline it | 2026-09-30 | used by session 6, 2026-09-30. The plan, the boards and steps 1 to 11 (pull requests #35 and #36) are done; steps 13 to 15 remain, in 006 |
-| 006 | `006-shading-memo-and-phase-4-rest.md` | The shading memo (the check passed 6 min 30 s), then Phase 4's third pull request and its close | 2026-09-30 | open |
+| 006 | `006-shading-memo-and-phase-4-rest.md` | The shading memo (the check passed 6 min 30 s), then Phase 4's third pull request and its close | 2026-09-30 | used by session 7, 2026-09-30. The memo (#37), the boards, steps 14 and 15 (#38) and the close of the phase are done |
 
 ## Shape of a prompt file
 

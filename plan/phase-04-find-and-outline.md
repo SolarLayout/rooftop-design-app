@@ -1,9 +1,11 @@
 # Phase 4: find the roof on the map and outline it (flagship)
 
-**Status:** in progress, session 6 (2026-09-30). Steps 1 to 11 of `phase-04-plan.md` are built: pull request #35 is merged,
-#36 holds the outline and Build; steps 13 to 15 (obstacles on the map, entry by hand) remain. **Depends on:** phases 2 and
-3, and the Esri API key from the owner (D13).
-**Mockups:** "Find and outline" desktop and phone, "Studio, Roof lens".
+**Status:** done, sessions 6 and 7 (2026-09-30). The fifteen steps of `phase-04-plan.md` are built in three pull requests:
+#35 (the map, the search, the route), #36 (the outline three ways, Build, the Roof lens's card) and #38 (the obstacles on
+the map with their heights, the roof entered by hand). **Depends on:** phases 2 and 3, and the Esri API key from the owner
+(D13).
+**Mockups:** "Find and outline" desktop, phone and tablet, "Find and outline, states and tools", "Obstacles on the map and
+their heights", "Enter dimensions by hand", "Studio, Roof lens".
 
 ## Goal
 A user types an address, sees their building from above, marks the roof, and is standing in a 3D model of it
@@ -75,6 +77,8 @@ Automatic detection of obstacles or roof pitch from imagery. 3D city models.
 | Rectangle: a box dragged, turned by its handle | the same, `lib/outline/rectangle.ts` | #36 |
 | Detect building: Overture's footprints of the pinned release, faint while the tool is in hand, a press proposes the building's outline with a callout | `lib/map/overture.ts`, `components/find/DetectedCallout.tsx`; the extract `tools/footprints.ts`; the fixture `e2e/fixtures/footprints-pune.pmtiles` | #36 |
 | The roof type, Build this roof, the Roof lens's card with Edit and the roof type as a committed edit | `components/find/RoofTypeChoice.tsx`, `lib/outline/build-request.ts`, `components/studio/RoofInspector.tsx`, `lib/roof-card.ts` | #36 |
+| Obstacles on the map: once the roof is closed the toolbar holds Box, Tank, Wall and Building; each is drawn with the map's tools and asks its height right after in a dialog (a sheet on phone) with nothing preselected; drawn light over dark with their name and height, the selected one accent with its handles; listed in the panel; counted on the Roof lens's card; sent to Build as shapes in WGS84 with their heights | `lib/outline/obstacles.ts`, the reducer; `components/find/HeightDialog.tsx`, `ObstacleList.tsx`, `OutlineTools.tsx`, `OutlineLayer.tsx`; the number field's empty state, the dialog's waiting action | #38 |
+| Enter dimensions by hand: the place (from the search or typed), a rectangle by length, width and where its long side faces, or a table of corners; the same tiles, roof type and Build; the roof on the imagery when there is a map, the plan drawn north up on a grid when there is none; the source `coordinates` kept by the API, so that the Roof lens says "Entered by hand" | `lib/outline/by-hand.ts`, the reducer's `entered`; `components/find/ByHandPanel.tsx`, `PlanView.tsx`, `NoMap.tsx`; `OutlineOnMap.source` in the API | #38 |
 
 ### Acceptance
 
@@ -85,6 +89,7 @@ Automatic detection of obstacles or roof pitch from imagery. 3D city models.
 | Typed edge length changes the polygon and every dependent number | `outline.e2e.ts`, "a length typed into an edge" |
 | Attribution is always visible on the map and in the 3D scene | `find.e2e.ts`; with the footprints, Overture's line too. The 3D scene is Phase 5 |
 | Playwright on three viewports with map tiles mocked from fixtures: draw by corners, by rectangle, accept a detected footprint (fixture), edit an edge, build | `find.e2e.ts`, `outline.e2e.ts`, `build.e2e.ts`; the imagery a fixture tile, the geocoder a fixture, the footprints one tile of Overture's release served by ranges. No request leaves the machine |
+| Beyond it: obstacles on the map with their heights; "Enter dimensions by hand"; the no-key and no-WebGL states leading on | `obstacles.e2e.ts`: one of each kind drawn with its height in the request of Build, the card counting them, on three sizes. `by-hand.e2e.ts`: without WebGL, the place from the search, the rectangle typed, the plan drawn, built with the source `coordinates`, the card saying "Entered by hand"; the corner table; with a map, the roof on the imagery and the way back to the tools. The baselines `find-obstacles` and `find-by-hand` |
 
 ### Decided while building
 
@@ -96,13 +101,20 @@ D40 to D49 in `plan/README.md`. Beside them:
 | The panel's title and lead follow the step and the tool: "Find the roof" before a place, then the words of the boards for corners, rectangle and detect | The boards draw step 2; step 1 needs words of its own |
 | A rectangle within a degree of right angles stays one for the names of its edges and for a typed length; closing squares four corners within 3° | A press is never exact; a dragged rectangle should stay named by its sides |
 | Snapping puts a corner on the snapped line at the foot of the pointer, not at the pointer's distance | What the pointer meant along the line is kept, as snapping to an axis does |
+| The toolbar follows the closing of the roof only once a drag has ended (D50) | A box dragged across the roof is closed from its first move; the tools of the obstacles under a drag in progress would take the drag away |
+| A press that begins on a handle is the handle's alone | A handle stands on the map's canvas container: its press reached the map too, and a turn of the rectangle with Box in hand drew a box as well |
+| The height dialog stands at the root of the screen, not in the layer over the stage | That layer lets pointer events through, and a modal dialog inside it inherits that: Enter worked, the mouse did not |
+| Adjust, after a footprint, no longer takes the corners tool | The roof is closed: its corners drag as any closed roof's, and the toolbar has gone on to the obstacles |
 
 ### Deviations from the scope as written
 
 | Scope | As built | Why |
 |---|---|---|
 | "The map tilts, the imagery stays on the ground, the building rises, Studio opens on the Roof lens" | The Studio opens on the Roof lens with the card of the roof; the tilt and the rising building are the stage of Phase 5 | The 3D stage is Phase 5 |
-| Obstacles on the map; "Enter dimensions by hand instead" | Not yet: pull request 3, steps 13 to 15 | The order of the plan |
+| Obstacles on the map: box, circle, wall line, building polygon | As written, with a round tank for the circle; trees are not drawn on the map, they come with the Roof lens | The board of step 13; a tree's crown and its start are two more heights to ask |
+| The by-hand roof's corners drag on the map (the board "Enter dimensions by hand") | With a map the roof stands on the imagery and its corners are shown, not dragged: the fields are the truth of it, and "Draw on the map instead" is the way to drag | One truth of the roof; a drag that changed the fields under the user, or fields that lied, was worse |
+| The place fields side by side (the board) | One per row on every size | A coordinate with five decimals and its label do not fit two to a row of 332 |
+| The obstacle list edits the height (the board's row) | The row shows it; the Roof lens edits it (Phase 5) | The board showed no editing; the dialog asks it once |
 | "Imagery tiles for the ground of the 3D scene" | The provider gives the tile addresses; the ground is Phase 5 | The 3D stage is Phase 5 |
 
 ### Found on the way
@@ -126,3 +138,13 @@ D40 to D49 in `plan/README.md`. Beside them:
 - The `pmtiles` reader's `FileSource` wants a file of the browser; Bun's file serves it in a test.
 - A tool button with a shorter word on phone had a different name there; a button's name is set once, for the eye
   the word may change.
+- The targets of the roof's handles (44 px) reach 5 m beyond its edges at roof zoom: a press there is the handle's.
+  A test draws an obstacle clear of them.
+- MapLibre's markers stand in the canvas container: a press on one reaches the map's own `mousedown` too. A drag
+  that draws checks that the press began on the canvas itself.
+- A modal dialog inherits `pointer-events: none` from an ancestor, even in the top layer.
+- The dialog gives the focus back to the map's canvas, which had none of the app's ring: it has one now, inside its
+  edge, and a picture is taken after a press of the mouse so that no ring is in it.
+- The Roof lens's card wraps to a second line once it counts obstacles ("Entered by hand · 4 corners · 6 obstacles").
+- GitHub's runners vary two-fold on the same code (pytest 155 s and 279 s in two runs of one commit): the check's
+  length there is a poor measure of a change.
