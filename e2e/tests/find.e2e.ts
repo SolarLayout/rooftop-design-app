@@ -28,14 +28,16 @@ function faultsOf(page: Page): string[] {
 }
 
 test.describe("the map", () => {
-  test("it renders with the imagery, its attribution and its scale, and no request leaves this machine", async ({ page }) => {
+  test("it renders with the imagery, its attribution and its scale, and no request leaves this machine", async ({ page }, testInfo) => {
     const faults = faultsOf(page);
     await opened(page);
 
     await expect(map(page)).toHaveAccessibleName("Satellite map");
     await expect(map(page).locator("canvas")).toBeVisible();
     await expect(page.getByText("Powered by Esri · Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community")).toBeVisible();
-    await expect(page.getByTestId("scale-bar")).toBeVisible();
+    // The phone board has no scale bar.
+    if (isPhone(testInfo.project.name)) await expect(page.getByTestId("scale-bar")).toBeHidden();
+    else await expect(page.getByTestId("scale-bar")).toBeVisible();
     await expect(page).toHaveTitle("Find and outline · SolarLayout Rooftop");
     expect(faults).toEqual([]);
   });

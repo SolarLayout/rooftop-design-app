@@ -52,6 +52,36 @@ export type Measurements = {
 const NOTHING: Drawn = { corners: [], closed: false };
 const FEWEST_CORNERS = 3;
 
+/**
+ * Four corners whose angles are all within the snap of a right angle, made an exact rectangle when they
+ * are closed with the corners squared: the first edge is kept, the others are set square to it.
+ */
+function squaredUp(corners: readonly XY[], squared: boolean): readonly XY[] {
+  if (!squared || corners.length !== 4) return corners;
+  const within = Math.sin((SNAP_DEGREES * Math.PI) / 180);
+  const isSquare = corners.every((corner, index) => {
+    const before = corners[(index + 3) % 4];
+    const after = corners[(index + 1) % 4];
+    const a = Math.hypot(before.x - corner.x, before.y - corner.y);
+    const b = Math.hypot(after.x - corner.x, after.y - corner.y);
+    const cosine = ((before.x - corner.x) * (after.x - corner.x) + (before.y - corner.y) * (after.y - corner.y)) / (a * b);
+    return a > 0 && b > 0 && Math.abs(cosine) <= within;
+  });
+  if (!isSquare) return corners;
+  const [c0, c1, c2] = corners;
+  const length = Math.hypot(c1.x - c0.x, c1.y - c0.y);
+  const along = { x: (c1.x - c0.x) / length, y: (c1.y - c0.y) / length };
+  const across = { x: -along.y, y: along.x };
+  const depth = (c2.x - c1.x) * across.x + (c2.y - c1.y) * across.y;
+  const rounded = (value: number) => Math.round(value * 1e6) / 1e6;
+  return [
+    c0,
+    c1,
+    { x: rounded(c1.x + depth * across.x), y: rounded(c1.y + depth * across.y) },
+    { x: rounded(c0.x + depth * across.x), y: rounded(c0.y + depth * across.y) },
+  ];
+}
+
 export const START: OutlineState = { frame: null, corners: [], closed: false, selected: null, squared: true, history: historyOf(NOTHING) };
 
 const drawnOf = (state: OutlineState): Drawn => ({ corners: state.corners, closed: state.closed });
@@ -87,7 +117,7 @@ export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineS
       const { corners } = state;
       const first = corners[0];
       if (first && corners.length >= FEWEST_CORNERS && closesOnFirst(first, event.at, event.touch ? CLOSE_WITHIN_TOUCH : CLOSE_WITHIN, event.metresPerPx)) {
-        return stepped(state, { corners, closed: true }, null);
+        return stepped(state, { corners: squaredUp(corners, state.squared), closed: true }, null);
       }
       const previous = corners[corners.length - 1] ?? null;
       const beforeThat = corners[corners.length - 2] ?? null;
@@ -97,7 +127,7 @@ export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineS
 
     case "close":
       if (state.closed || state.corners.length < FEWEST_CORNERS) return state;
-      return stepped(state, { corners: state.corners, closed: true }, null);
+      return stepped(state, { corners: squaredUp(state.corners, state.squared), closed: true }, null);
 
     case "cornerMoved": {
       const { corners } = state;

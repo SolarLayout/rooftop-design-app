@@ -3,16 +3,20 @@
 // opposite edge follows (plan/phase-04-find-and-outline.md, "Type a measured length").
 import { edgesOf, type XY } from "./measure";
 
-const RIGHT_ANGLE_WITHIN = 1e-6;
+/** A corner within this of a right angle, in degrees, still counts as one: a dragged or nudged rectangle stays a rectangle. */
+const RIGHT_ANGLE_WITHIN = 1;
 
-/** Whether four corners make a rectangle: every corner a right angle. */
+/** Whether four corners make a rectangle: every corner a right angle, within a degree. */
 export function isRectangle(points: readonly XY[]): boolean {
   if (points.length !== 4) return false;
   return points.every((corner, index) => {
     const before = points[(index + 3) % 4];
     const after = points[(index + 1) % 4];
-    const dot = (before.x - corner.x) * (after.x - corner.x) + (before.y - corner.y) * (after.y - corner.y);
-    return Math.abs(dot) <= RIGHT_ANGLE_WITHIN * Math.hypot(before.x - corner.x, before.y - corner.y) * Math.hypot(after.x - corner.x, after.y - corner.y) + 1e-9;
+    const a = Math.hypot(before.x - corner.x, before.y - corner.y);
+    const b = Math.hypot(after.x - corner.x, after.y - corner.y);
+    if (a === 0 || b === 0) return false;
+    const cosine = ((before.x - corner.x) * (after.x - corner.x) + (before.y - corner.y) * (after.y - corner.y)) / (a * b);
+    return Math.abs(cosine) <= Math.sin((RIGHT_ANGLE_WITHIN * Math.PI) / 180);
   });
 }
 

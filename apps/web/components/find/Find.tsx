@@ -3,7 +3,7 @@
 import type { Map as MapLibre } from "maplibre-gl";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useReducer, useState } from "react";
 import { useProject } from "@/components/shell/stores";
 import { iconButtonLook } from "@/components/ui/button-look";
 import { classNames } from "@/components/ui/class-names";
@@ -11,12 +11,17 @@ import { ROOF_ZOOM } from "@/components/ui/design-numbers";
 import { Icon } from "@/components/ui/Icon";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
 import { mapStateOf } from "@/lib/map/map-state";
+import { outlineAfter, START } from "@/lib/outline/outline-state";
 import { latitudeOf, longitudeOf } from "@/lib/stores/project-store";
 import { MapButtons } from "./MapButtons";
 import { NoMap } from "./NoMap";
+import type { Tool } from "./OutlineLayer";
+import { OutlinePanel } from "./OutlinePanel";
+import { OutlineTools } from "./OutlineTools";
 import type { MapView } from "./RoofMap";
 import { Search, type FoundPlace } from "./Search";
 import { Steps, type Step } from "./Steps";
+import { useOutlineKeys } from "./use-outline-keys";
 import { useWebGL } from "./use-web-gl";
 
 // The map draws with WebGL in the browser alone: it is loaded there, never on the server.
@@ -47,6 +52,8 @@ export function Find() {
   const [map, setMap] = useState<MapLibre | null>(null);
   const [step, setStep] = useState<Step>("find");
   const [foundAt, setFoundAt] = useState<FoundPlace | null>(null);
+  const [outline, on] = useReducer(outlineAfter, START);
+  const [tool, setTool] = useState<Tool>("corners");
   // The map begins at the roof of the design that is open; without one, from far.
   const [view, setView] = useState<MapView>(() =>
     latitude === null || longitude === null ? FROM_FAR : { lon: longitude, lat: latitude, zoom: ROOF_ZOOM },
@@ -57,6 +64,7 @@ export function Find() {
     [webGL, tilesFailed],
   );
   const words = WORDS[step];
+  useOutlineKeys(step === "outline", on);
 
   /** A place was found: the map flies to it at roof zoom, and the outline can begin. */
   function onPlace(place: FoundPlace) {
@@ -75,7 +83,14 @@ export function Find() {
     <div className="relative h-dvh overflow-hidden bg-ground text-text type-body-touch desktop:type-body">
       <div className={STAGE}>
         {state.kind === "ready" && PROVIDER && webGL ? (
-          <RoofMap imagery={PROVIDER.imagery} view={view} onState={(at) => setTilesFailed(at === "failed")} onMap={setMap} className="h-full" />
+          <RoofMap
+            imagery={PROVIDER.imagery}
+            view={view}
+            onState={(at) => setTilesFailed(at === "failed")}
+            onMap={setMap}
+            outline={{ state: outline, tool: step === "outline" ? tool : null, on }}
+            className="h-full"
+          />
         ) : state.kind !== "ready" ? (
           <NoMap state={state} />
         ) : null}
@@ -91,6 +106,9 @@ export function Find() {
         </div>
         {/* The phone has no buttons: the map is pinched and turned by hand. */}
         <MapButtons map={map} className="pointer-events-auto absolute right-5 bottom-7 hidden tablet:flex desktop:right-0" />
+        {step === "outline" ? (
+          <OutlineTools state={outline} tool={tool} onTool={setTool} on={on} className="pointer-events-auto absolute bottom-16 left-1/2 -translate-x-1/2 tablet:bottom-22 desktop:bottom-7" />
+        ) : null}
       </div>
 
       <aside
@@ -107,6 +125,7 @@ export function Find() {
           </div>
           <p className="text-text-2">{words.lead}</p>
         </div>
+        {step === "outline" ? <OutlinePanel state={outline} on={on} /> : null}
       </aside>
     </div>
   );

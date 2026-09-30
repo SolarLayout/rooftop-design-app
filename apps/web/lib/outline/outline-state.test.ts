@@ -76,6 +76,38 @@ describe("placing corners", () => {
     expect(outlineAfter(placed(RECTANGLE[0], RECTANGLE[1]), { type: "close" }).closed).toBe(false);
   });
 
+  test("closing squares four corners that are within 3° of a rectangle: the first edge is kept, the rest set square to it", () => {
+    // Drawn by hand: the corners a little off, as presses on a map are.
+    const drawn = placed({ x: -45, y: -20 }, { x: 45.2, y: -19.9 }, { x: 45.4, y: 20.3 }, { x: -44.8, y: 20.1 });
+
+    const closed = outlineAfter(drawn, { type: "close" });
+
+    const { edges, area } = measurementsOf(closed);
+    expect(closed.corners[0]).toEqual({ x: -45, y: -20 });
+    expect(closed.corners[1]).toEqual({ x: 45.2, y: -19.9 });
+    expect(edges[0]).toBeCloseTo(edges[2], 6);
+    expect(edges[1]).toBeCloseTo(edges[3], 6);
+    expect(edgeNamesOf(closed)).toEqual(["South", "East", "North", "West"]);
+    expect(area).toBeCloseTo(edges[0] * edges[1], 6);
+  });
+
+  test("closing leaves four corners alone when one is further than 3° from a right angle, or the corners are not squared", () => {
+    const skewed = placed({ x: -45, y: -20 }, { x: 45, y: -20 }, { x: 50, y: 20 }, { x: -40, y: 20 });
+    const closed = outlineAfter(skewed, { type: "close" });
+    expect(closed.corners[2]).toEqual({ x: 50, y: 20 });
+
+    const notSquared = after(
+      START,
+      { type: "began", at: PUNE },
+      { type: "squared", squared: false },
+      ...[{ x: -45, y: -20 }, { x: 45.2, y: -19.9 }, { x: 45.4, y: 20.3 }, { x: -44.8, y: 20.1 }].map(
+        (at): OutlineEvent => ({ type: "placed", at, metresPerPx: M_PER_PX, touch: false }),
+      ),
+      { type: "close" },
+    );
+    expect(notSquared.corners[2]).toEqual({ x: 45.4, y: 20.3 });
+  });
+
   test("a closed outline takes no more corners by a press on the map", () => {
     const closed = outlineAfter(placed(...RECTANGLE), { type: "close" });
 
