@@ -770,6 +770,9 @@
 @utility border-dot {
   border-width: var(--border-dot);
 }
+@utility border-outline {
+  border-width: var(--border-outline);
+}
 @utility border-corner {
   border-width: var(--border-corner);
 }

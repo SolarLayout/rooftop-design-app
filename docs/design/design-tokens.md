@@ -320,7 +320,7 @@ and the file equal.
 | `LIST_GAP` | `6` | Pixels between a list that floats and its trigger |
 | `SCREEN_MARGIN` | `8` | Pixels that stay free between what floats and the edge of the screen |
 | `DESIGN_PAUSE` | `500` | Milliseconds between a committed edit and the design run that follows it: edits shortly after each other are one run |
-| `ROOF_ZOOM` | `19` | The zoom of the map at a roof that was found: the native limit of the imagery, about 0.3 m per pixel |
+| `ROOF_ZOOM` | `18` | The zoom of the map at a roof that was found, as MapLibre counts zoom (on tiles of 512): the native zoom 19 of the imagery's tiles of 256, about 0.3 m per pixel |
 | `SCALE_BAR_MAX` | `124` | Pixels that the scale bar of the map may be wide at most; it shows the largest round length that fits |
 | `SNAP_DEGREES` | `3` | Degrees within which a corner snaps to a right angle or to a parallel, and the rectangle's turn to north |
 | `CLOSE_WITHIN` | `12` | Pixels within which a press on the first corner closes the outline |
@@ -366,7 +366,7 @@ layer of their own.
 | `--duration-panel`, `--ease-out` | `sheet-motion` | on a sheet that goes to its stop |
 | `--stroke-*` | `stroke-icon`, `stroke-icon-light`, `stroke-tick` | on the `svg` of an icon |
 | `--z-*` | `z-` and the name | `z-float` |
-| `--border-*` | `border-` and the name; `border-b-tab` for the line under a tab | `border-handle-touch desktop:border-handle`, `border-dot`, `border-corner` |
+| `--border-*` | `border-` and the name; `border-b-tab` for the line under a tab | `border-handle-touch desktop:border-handle`, `border-dot`, `border-corner`, `border-outline` |
 | `--shadow-text-on-imagery` | `on-imagery` | on text that stands on the satellite imagery |
 
 Tailwind's own palette, sizes of type, radii and shadows do not exist in this app: a utility that is not made
