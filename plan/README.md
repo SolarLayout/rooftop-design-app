@@ -110,6 +110,7 @@ plan/
   phase-04-plan.md              how Phase 4 was built: steps, decisions, what was found; the example for a plan
   phase-04b-test-caching.md     Phase 4.5: caching of the checks
   phase-04b-plan.md             how Phase 4.5 is built: what was measured, the steps, the decisions, the risks
+  phase-05-plan.md              how Phase 5 is built: what was found, five pull requests, the decisions, the risks
   reference/
     functional-inventory.md     every input, output, export and message of the desktop app
     r3f-notes.md                3D fixes already paid for in solar-mms-modeller
