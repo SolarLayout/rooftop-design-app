@@ -71,6 +71,7 @@ function flow() {
   const project = createProjectStore();
   const results = createResultsStore();
   const designFlow = createDesignFlow({ api: server.api, clock: time.clock, project, results });
+  designFlow.start();
   const last = <Answer>(list: Array<Asked<Answer>>): Asked<Answer> => {
     const found = list.at(-1);
     if (!found) throw new Error("Nothing was asked.");
@@ -119,10 +120,22 @@ describe("a design is opened", () => {
     const project = createProjectStore();
     project.getState().open(DEMO);
 
-    createDesignFlow({ api: server.api, clock: time.clock, project, results: createResultsStore() });
+    const designFlow = createDesignFlow({ api: server.api, clock: time.clock, project, results: createResultsStore() });
+    expect(server.layouts).toHaveLength(0);
+
+    designFlow.start();
 
     expect(server.layouts).toHaveLength(1);
     expect(server.runs).toHaveLength(1);
+  });
+
+  test("started twice, it listens once", () => {
+    const { project, layouts, designFlow } = flow();
+
+    designFlow.start();
+    project.getState().open(DEMO);
+
+    expect(layouts).toHaveLength(1);
   });
 
   test("the answers are kept with the edit they belong to", async () => {
@@ -391,6 +404,18 @@ describe("the flow is stopped", () => {
 
     expect(layouts[1]?.signal.aborted).toBe(true);
     expect(waiting()).toBe(0);
+    expect(runs).toHaveLength(1);
+  });
+
+  test("started again, it follows what happened meanwhile", async () => {
+    const { project, layouts, runs, designFlow } = await opened();
+    designFlow.stop();
+    project.getState().commit(tilt(20));
+
+    designFlow.start();
+
+    expect(layouts).toHaveLength(2);
+    expect(layouts[1]?.project.array?.tilt_deg).toBe(20);
     expect(runs).toHaveLength(1);
   });
 

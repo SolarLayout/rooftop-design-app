@@ -50,6 +50,12 @@
   --text-lens-touch--font-weight: 600;
   --text-lens-touch--font-family: var(--font-display);
 
+  --text-brand: 17px;
+  --text-brand--line-height: 20px;
+  --text-brand--letter-spacing: -0.01em;
+  --text-brand--font-weight: 600;
+  --text-brand--font-family: var(--font-display);
+
   --text-number-tile: 34px;
   --text-number-tile--line-height: 38px;
   --text-number-tile--letter-spacing: -0.02em;
@@ -146,6 +152,12 @@
   --text-tick--font-weight: 400;
   --text-tick--font-family: var(--font-mono);
 
+  --text-label-s: 11px;
+  --text-label-s--line-height: 20px;
+  --text-label-s--letter-spacing: 0;
+  --text-label-s--font-weight: 400;
+  --text-label-s--font-family: var(--font-sans);
+
   --spacing: 4px;
   --space-inline: 8px;
   --space-field: 8px;
@@ -162,6 +174,8 @@
 
   --breakpoint-tablet: 640px;
   --breakpoint-desktop: 1101px;
+  --breakpoint-tablet-wide: 820px;
+  --breakpoint-desktop-wide: 1360px;
   --size-topbar: 56px;
   --size-topbar-tablet: 60px;
   --size-rail: 72px;
@@ -172,6 +186,8 @@
   --size-tabbar: 72px;
   --size-touch: 44px;
   --size-sheet-peek: 84px;
+  --columns-vitals: 1.25fr 1.15fr 0.85fr 0.85fr 1fr 0.8fr 1.25fr 1.55fr;
+  --columns-vitals-waiting: 1fr 1fr 1fr 2.4fr;
 
   --radius-key: 4px;
   --radius-xs: 6px;
@@ -187,6 +203,7 @@
   --radius-full: 9999px;
 
   --border-tab: 2px;
+  --border-dot: 1.5px;
   --border-handle: 3px;
   --border-handle-touch: 4px;
 
@@ -284,11 +301,14 @@
   --shadow-float: inset 0 1px 0 rgba(255,255,255,.06), 0 1px 2px rgba(0,0,0,.45), 0 16px 40px rgba(0,0,0,.5);
   --shadow-tooltip: 0 1px 2px rgba(0,0,0,.45), 0 8px 20px rgba(0,0,0,.35);
   --shadow-panel: inset 0 1px 0 rgba(255,255,255,.06), 0 2px 4px rgba(0,0,0,.4), 0 24px 64px rgba(0,0,0,.55);
+  --shadow-drawer: -16px 0 40px rgba(0,0,0,.5);
   --shadow-track: inset 0 1px 3px rgba(0,0,0,.45);
   --shadow-knob: 0 1px 3px rgba(0,0,0,.5);
   --shadow-handle: 0 2px 6px rgba(0,0,0,.6);
   --halo-focus: 0 0 0 3px rgba(255,176,32,.18);
   --halo-selected: 0 0 0 3px rgba(255,176,32,.14);
+  --halo-saved: 0 0 0 0 rgba(61,214,160,.5);
+  --halo-saved-out: 0 0 0 5px rgba(61,214,160,0);
 }
 
 /*
@@ -330,8 +350,13 @@
   --spacing-touch: var(--size-touch);
   --spacing-sheet-peek: var(--size-sheet-peek);
 
+  --grid-template-columns-vitals: var(--columns-vitals);
+  --grid-template-columns-vitals-waiting: var(--columns-vitals-waiting);
+
   --breakpoint-tablet: 640px;
   --breakpoint-desktop: 1101px;
+  --breakpoint-tablet-wide: 820px;
+  --breakpoint-desktop-wide: 1360px;
 
   --radius-key: var(--radius-key);
   --radius-xs: var(--radius-xs);
@@ -401,11 +426,14 @@
   --shadow-float: var(--shadow-float);
   --shadow-tooltip: var(--shadow-tooltip);
   --shadow-panel: var(--shadow-panel);
+  --shadow-drawer: var(--shadow-drawer);
   --shadow-track: var(--shadow-track);
   --shadow-knob: var(--shadow-knob);
   --shadow-handle: var(--shadow-handle);
   --shadow-halo-focus: var(--halo-focus);
   --shadow-halo-selected: var(--halo-selected);
+  --shadow-halo-saved: var(--halo-saved);
+  --shadow-halo-saved-out: var(--halo-saved-out);
 }
 
 /* Type styles: family, weight, size, line height and tracking together. */
@@ -443,6 +471,13 @@
   font-size: var(--text-lens-touch);
   line-height: var(--text-lens-touch--line-height);
   letter-spacing: var(--text-lens-touch--letter-spacing);
+}
+@utility type-brand {
+  font-family: var(--text-brand--font-family);
+  font-weight: var(--text-brand--font-weight);
+  font-size: var(--text-brand);
+  line-height: var(--text-brand--line-height);
+  letter-spacing: var(--text-brand--letter-spacing);
 }
 @utility type-number-tile {
   font-family: var(--text-number-tile--font-family);
@@ -564,14 +599,22 @@
   letter-spacing: var(--text-tick--letter-spacing);
   font-variant-numeric: tabular-nums;
 }
+@utility type-label-s {
+  font-family: var(--text-label-s--font-family);
+  font-weight: var(--text-label-s--font-weight);
+  font-size: var(--text-label-s);
+  line-height: var(--text-label-s--line-height);
+  letter-spacing: var(--text-label-s--letter-spacing);
+}
 
 /*
   States. The kit shows a control in a state without a pointer or a keyboard, by `data-shown-as`.
   `pressed` is declared after `hovered`, so that a control that is both looks pressed.
+  A control that is shown and cannot be used (`aria-disabled`) answers to none, as a disabled one.
 */
 @custom-variant hovered {
   @media (hover: hover) {
-    &:hover:not(:disabled) {
+    &:hover:not(:disabled, [aria-disabled="true"]) {
       @slot;
     }
   }
@@ -580,7 +623,7 @@
   }
 }
 @custom-variant pressed {
-  &:active:not(:disabled) {
+  &:active:not(:disabled, [aria-disabled="true"]) {
     @slot;
   }
   &[data-shown-as="pressed"] {
@@ -591,7 +634,7 @@
 /* What is directly inside a control answers to the pointer over the control: the line under a tab. */
 @custom-variant within-hovered {
   @media (hover: hover) {
-    :where(:hover:not(:disabled)) > & {
+    :where(:hover:not(:disabled, [aria-disabled="true"])) > & {
       @slot;
     }
   }
@@ -648,6 +691,19 @@
 @utility breathing {
   animation: breathe var(--duration-breathe) ease-in-out infinite;
 }
+/* What is saved is alive: its dot pulses. */
+@keyframes pulse-saved {
+  0%,
+  100% {
+    box-shadow: var(--halo-saved);
+  }
+  50% {
+    box-shadow: var(--halo-saved-out);
+  }
+}
+@utility pulsing {
+  animation: pulse-saved var(--duration-pulse-saved) ease-in-out infinite;
+}
 /* The lowest of the three heights: no shadow at all. */
 @utility flat {
   box-shadow: none;
@@ -682,6 +738,9 @@
 }
 @utility border-handle-touch {
   border-width: var(--border-handle-touch);
+}
+@utility border-dot {
+  border-width: var(--border-dot);
 }
 
 /*

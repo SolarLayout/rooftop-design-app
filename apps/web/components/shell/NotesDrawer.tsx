@@ -1,0 +1,131 @@
+"use client";
+
+import { useEffect, useId, useRef } from "react";
+import { Button } from "@/components/ui/Button";
+import { ButtonLink } from "@/components/ui/ButtonLink";
+import { classNames } from "@/components/ui/class-names";
+import { Icon } from "@/components/ui/Icon";
+import { IconButton } from "@/components/ui/IconButton";
+import { SheetGrip } from "@/components/ui/SheetGrip";
+import type { Note } from "./notes-view";
+
+type PanelProps = {
+  notes: readonly Note[];
+  onClose: () => void;
+  onTryAgain: () => void;
+  /** The name of the title in the page. */
+  titleId: string;
+};
+
+// Phone: a bottom sheet. Tablet and desktop: from the right, as wide as the inspector, over it.
+const PANEL = classNames(
+  "flex max-h-3/4 w-full flex-col rounded-t-panel border border-b-0 border-line bg-chrome",
+  "tablet:h-full tablet:max-h-none tablet:w-inspector tablet:rounded-none tablet:border-0 tablet:border-l tablet:shadow-drawer",
+);
+
+function NoteRow({ note, onClose, onTryAgain }: { note: Note } & Pick<PanelProps, "onClose" | "onTryAgain">) {
+  const { action } = note;
+  return (
+    <li className="flex gap-3 rounded-row border border-note-line bg-note-surface p-3.5">
+      <span className="flex pt-px">
+        <Icon name="note" size={20} label="Note" className="text-accent" />
+      </span>
+      <span className="flex min-w-0 grow flex-col gap-1">
+        <span className="font-medium">{note.title}</span>
+        <span className="type-small text-text-2">{note.reason}</span>
+        <span className="mt-1.5 flex items-center gap-2.5">
+          <span className="grow type-caption text-text-3">{note.where}</span>
+          {action.kind === "open" ? (
+            <ButtonLink size="s" href={action.path} onClick={onClose}>
+              {action.label}
+            </ButtonLink>
+          ) : (
+            <Button
+              size="s"
+              onClick={() => {
+                onClose();
+                onTryAgain();
+              }}
+            >
+              {action.label}
+            </Button>
+          )}
+        </span>
+      </span>
+    </li>
+  );
+}
+
+/** What is seen of the notes: their count, and each with its reason and where it leads. */
+export function NotesPanel({ notes, onClose, onTryAgain, titleId }: PanelProps) {
+  return (
+    <div data-testid="notes-panel" className={PANEL}>
+      <SheetGrip onClose={onClose} className="tablet:hidden" />
+      <div className="flex shrink-0 items-center gap-2.5 pt-3 pr-2.5 pb-3 pl-4 tablet:pt-4.5 tablet:pr-3.5 tablet:pl-5">
+        <h2 id={titleId} className="grow type-lens-touch">
+          Notes to review
+        </h2>
+        <span data-testid="notes-count" className="type-value-small text-text-2">
+          {notes.length}
+        </span>
+        <IconButton data-close kind="quiet" size="s" icon="close" iconSize={18} label="Close" onClick={onClose} />
+      </div>
+      <ul className="flex min-h-0 grow flex-col gap-2.5 overflow-y-auto px-4 pt-1 pb-4 tablet:px-5 tablet:pb-5">
+        {notes.length === 0 ? (
+          <li className="flex items-center gap-3 rounded-row border border-line bg-surface-1 p-3.5">
+            <Icon name="tick" stroke="tick" size={20} label="Fits" className="text-ok" />
+            <span className="flex flex-col gap-0.5">
+              <span className="font-medium">Nothing to review</span>
+              <span className="type-small text-text-2">Every check of the design fits.</span>
+            </span>
+          </li>
+        ) : (
+          notes.map((note) => <NoteRow key={note.id} note={note} onClose={onClose} onTryAgain={onTryAgain} />)
+        )}
+      </ul>
+    </div>
+  );
+}
+
+type Props = Omit<PanelProps, "titleId"> & { open: boolean };
+
+/**
+ * The notes to review, over the screen: the dialog of the browser, so that the focus goes in, stays in
+ * and goes back. Escape closes it, and a press beside it.
+ */
+export function NotesDrawer({ open, onClose, ...panel }: Props) {
+  const titleId = useId();
+  const dialog = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const element = dialog.current;
+    if (!element) return;
+    if (open && !element.open) {
+      element.showModal();
+      // On phone the handle comes first; the button that closes says what it does.
+      element.querySelector<HTMLElement>("[data-close]")?.focus();
+    }
+    if (!open && element.open) element.close();
+  }, [open]);
+
+  return (
+    <dialog
+      ref={dialog}
+      aria-labelledby={titleId}
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+      // What is pressed is the dialog itself only where the panel is not.
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+      className={classNames(
+        "fixed inset-0 size-full max-h-none max-w-none items-end justify-end bg-transparent text-text outline-none",
+        "backdrop:bg-dim open:flex tablet:items-stretch tablet:backdrop:bg-transparent",
+      )}
+    >
+      {open ? <NotesPanel {...panel} onClose={onClose} titleId={titleId} /> : null}
+    </dialog>
+  );
+}

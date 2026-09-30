@@ -122,3 +122,9 @@ export function readoutsOf(state: ResultsState) {
   if (layout.value && (layout.edit ?? 0) > (design.edit ?? 0)) return layout.value.readouts;
   return design.value?.readouts ?? layout.value?.readouts ?? null;
 }
+
+/** The notes of a layout that is newer than the design; null when the design is not older, or there is no layout. */
+export function newerLayoutNotesOf(state: ResultsState) {
+  const { layout, design } = state;
+  return layout.value && (layout.edit ?? 0) > (design.edit ?? 0) ? layout.value.layout.notes : null;
+}

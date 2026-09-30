@@ -20,6 +20,8 @@ type Options = {
 };
 
 export type DesignFlow = {
+  /** Begins to listen to the project. A design that is open already is asked for at once. */
+  start: () => void;
   /** Asks again for what failed, at once, with the document as it is now. */
   tryAgain: () => void;
   /** Gives up what is on its way and listens no longer. */
@@ -40,6 +42,7 @@ export function createDesignFlow({ project, results, api = apiOfTheApp, clock = 
   let layoutCall: AbortController | null = null;
   let designCall: AbortController | null = null;
   let giveUpThePause: (() => void) | null = null;
+  let stopListening: (() => void) | null = null;
 
   function giveUpTheLayout() {
     layoutCall?.abort();
@@ -120,10 +123,12 @@ export function createDesignFlow({ project, results, api = apiOfTheApp, clock = 
     else runAfterThePause(document, edit);
   }
 
-  const stopListening = project.subscribe(follow);
-  follow(project.getState());
-
   return {
+    start() {
+      if (stopListening) return;
+      stopListening = project.subscribe(follow);
+      follow(project.getState());
+    },
     tryAgain() {
       const { project: document, edit } = project.getState();
       if (document === null) return;
@@ -131,7 +136,8 @@ export function createDesignFlow({ project, results, api = apiOfTheApp, clock = 
       if (results.getState().design.status === "failed") run(document, edit);
     },
     stop() {
-      stopListening();
+      stopListening?.();
+      stopListening = null;
       giveUpTheLayout();
       giveUpTheRun();
     },

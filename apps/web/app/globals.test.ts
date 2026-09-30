@@ -213,6 +213,13 @@ describe("the tokens in Tailwind", () => {
     expect(made).not.toContain("lg\\:hidden");
   });
 
+  test("inside tablet and desktop there is one width each, for the top bar", async () => {
+    const made = oneLine(await utilitiesOf(["tablet-wide:flex", "desktop-wide:flex"]));
+
+    expect(made).toContain("@media (width >= 820px) { .tablet-wide\\:flex");
+    expect(made).toContain("@media (width >= 1360px) { .desktop-wide\\:flex");
+  });
+
   test.each([
     "bg-red-500",
     "text-white",
@@ -237,17 +244,26 @@ describe("states", () => {
     const hover = "{ background-color: var(--color-accent-hover); }";
     const pressed = "{ background-color: var(--color-accent-pressed); }";
 
-    expect(made).toContain(`@media (hover: hover) { .hovered\\:bg-accent-hover:hover:not(:disabled) ${hover} }`);
+    expect(made).toContain(`@media (hover: hover) { .hovered\\:bg-accent-hover:hover:not(:disabled, [aria-disabled="true"]) ${hover} }`);
     expect(made).toContain(`.hovered\\:bg-accent-hover[data-shown-as="hover"] ${hover}`);
-    expect(made).toContain(`.pressed\\:bg-accent-pressed:active:not(:disabled) ${pressed}`);
+    expect(made).toContain(`.pressed\\:bg-accent-pressed:active:not(:disabled, [aria-disabled="true"]) ${pressed}`);
     expect(made).toContain(`.pressed\\:bg-accent-pressed[data-shown-as="pressed"] ${pressed}`);
+  });
+
+  test("a control that is shown and cannot be used looks as a disabled one", async () => {
+    const made = oneLine(await utilitiesOf(["aria-disabled:opacity-disabled", "aria-disabled:flat"]));
+
+    expect(made).toContain('.aria-disabled\\:opacity-disabled[aria-disabled="true"] { opacity: var(--opacity-disabled); }');
+    expect(made).toContain('.aria-disabled\\:flat[aria-disabled="true"] { box-shadow: none; }');
   });
 
   test("what is inside a control can answer to the pointer over the control", async () => {
     const made = oneLine(await utilitiesOf(["within-hovered:border-line-hover"]));
     const line = "{ border-color: var(--color-line-hover); }";
 
-    expect(made).toContain(`@media (hover: hover) { :where(:hover:not(:disabled)) > .within-hovered\\:border-line-hover ${line} }`);
+    expect(made).toContain(
+      `@media (hover: hover) { :where(:hover:not(:disabled, [aria-disabled="true"])) > .within-hovered\\:border-line-hover ${line} }`,
+    );
     expect(made).toContain(`:where([data-shown-as="hover"]) > .within-hovered\\:border-line-hover ${line}`);
   });
 
@@ -272,10 +288,38 @@ describe("lines", () => {
     expect(made).toContain(".border-handle-touch { border-width: var(--border-handle-touch); }");
   });
 
+  test("the line of the hollow dot is a token", async () => {
+    const made = oneLine(await utilitiesOf(["border-dot"]));
+
+    expect(made).toContain(".border-dot { border-width: var(--border-dot); }");
+  });
+
   test("the line under a tab is a token", async () => {
     const made = oneLine(await utilitiesOf(["border-b-tab"]));
 
     expect(made).toContain(".border-b-tab { border-bottom-width: var(--border-tab); border-bottom-style: solid; }");
+  });
+});
+
+describe("the shell", () => {
+  test("the columns of the vitals bar are tokens", async () => {
+    const made = oneLine(await utilitiesOf(["grid-cols-vitals", "grid-cols-vitals-waiting"]));
+
+    expect(made).toContain(".grid-cols-vitals { grid-template-columns: var(--columns-vitals); }");
+    expect(made).toContain(".grid-cols-vitals-waiting { grid-template-columns: var(--columns-vitals-waiting); }");
+  });
+
+  test("the drawer has its shadow", async () => {
+    expect(oneLine(await utilitiesOf(["shadow-drawer"]))).toContain("--tw-shadow: var(--shadow-drawer);");
+  });
+
+  test("the saved dot pulses, between its two halos", async () => {
+    const made = oneLine(await utilitiesOf(["pulsing"]));
+
+    expect(made).toContain(".pulsing { animation: pulse-saved var(--duration-pulse-saved) ease-in-out infinite; }");
+    expect(oneLine(css)).toContain(
+      "@keyframes pulse-saved { 0%, 100% { box-shadow: var(--halo-saved); } 50% { box-shadow: var(--halo-saved-out); } }",
+    );
   });
 });
 

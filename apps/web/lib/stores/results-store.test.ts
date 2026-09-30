@@ -13,14 +13,15 @@ import {
   layoutFailureOf,
   layoutOf,
   layoutStatusOf,
+  newerLayoutNotesOf,
   noOptionsOf,
   progressOf,
   readoutsOf,
 } from "./results-store";
 
 // Answers as the API hands them out; what the tests do not read is left out.
-function layout(positions: number): LayoutResponse {
-  return { layout: { notes: [] }, readouts: { positions, roof_area_m2: 3600 } } as unknown as LayoutResponse;
+function layout(positions: number, notes: string[] = []): LayoutResponse {
+  return { layout: { notes }, readouts: { positions, roof_area_m2: 3600 } } as unknown as LayoutResponse;
 }
 
 function design(positions: number, chosen: string | null = "29x22x1"): DesignResult {
@@ -341,6 +342,43 @@ describe("what is read of the results", () => {
     store.getState().layoutArrived(1, layout(790));
 
     expect(readoutsOf(store.getState())?.positions).toBe(790);
+  });
+});
+
+describe("the notes of the layout", () => {
+  const UNIT_GAP = "Unit gap 0.30 m keeps east-west units shade-free in the window.";
+
+  test("of a layout that is newer than the design", () => {
+    const store = fresh();
+    store.getState().designBegan(1);
+    store.getState().designArrived(1, design(790));
+    store.getState().layoutAsked(2);
+    store.getState().layoutArrived(2, layout(640, [UNIT_GAP]));
+
+    expect(newerLayoutNotesOf(store.getState())).toEqual([UNIT_GAP]);
+    expect(newerLayoutNotesOf(store.getState())).toBe(newerLayoutNotesOf(store.getState()));
+  });
+
+  test("of a layout before its design came", () => {
+    const store = fresh();
+    store.getState().layoutAsked(1);
+    store.getState().layoutArrived(1, layout(790, [UNIT_GAP]));
+
+    expect(newerLayoutNotesOf(store.getState())).toEqual([UNIT_GAP]);
+  });
+
+  test("none of their own when the design is as new: it has the notes of its layout itself", () => {
+    const store = fresh();
+    store.getState().layoutAsked(1);
+    store.getState().layoutArrived(1, layout(790, [UNIT_GAP]));
+    store.getState().designBegan(1);
+    store.getState().designArrived(1, design(790));
+
+    expect(newerLayoutNotesOf(store.getState())).toBeNull();
+  });
+
+  test("none before a layout came", () => {
+    expect(newerLayoutNotesOf(fresh().getState())).toBeNull();
   });
 });
 

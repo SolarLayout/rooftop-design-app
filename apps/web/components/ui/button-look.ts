@@ -18,6 +18,8 @@ const PRESSABLE = classNames(
   "inline-flex shrink-0 cursor-pointer items-center justify-center select-none whitespace-nowrap",
   "press-motion focus-ring pressed:lowered-by-press",
   "disabled:cursor-default disabled:opacity-disabled disabled:flat",
+  // Shown, and cannot be used yet: it looks the same, and still takes the focus, so that it is found.
+  "aria-disabled:cursor-default aria-disabled:opacity-disabled aria-disabled:flat",
 );
 
 const KIND: Record<ButtonKind, string> = {

@@ -4,7 +4,14 @@ import { classNames } from "./class-names";
 // Stroke icons on a 24 by 24 view box, in the colour of the text around them
 // (docs/design/design-tokens.md, "Icons"). The paths are those of the approved mockups.
 const STROKED = {
+  array: (
+    <>
+      <rect x="3" y="4" width="18" height="16" rx="1.5" />
+      <path d="M3 12h18M9 4v16M15 4v16" />
+    </>
+  ),
   "arrow-left": <path d="M19 12H5m0 0 6-6m-6 6 6 6" />,
+  "arrow-right": <path d="M5 12h14m0 0-6-6m6 6-6 6" />,
   "arrow-up": <path d="M12 19V5m0 0-6 6m6-6 6 6" />,
   "chevron-down": <path d="m6 9 6 6 6-6" />,
   "chevron-left": <path d="m15 6-6 6 6 6" />,
@@ -12,6 +19,14 @@ const STROKED = {
   "chevron-up": <path d="m6 15 6-6 6 6" />,
   close: <path d="M6 6l12 12M18 6 6 18" />,
   download: <path d="M12 3v12m0 0-4-4m4 4 4-4M4 19h16" />,
+  folder: <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />,
+  handover: (
+    <>
+      <path d="M6 3h8l4 4v14H6z" />
+      <path d="M14 3v4h4M9 13h6M9 17h6" />
+    </>
+  ),
+  home: <path d="m4 11 8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z" />,
   minus: <path d="M5 12h14" />,
   note: (
     <>
@@ -19,7 +34,27 @@ const STROKED = {
       <path d="M12 7v6M12 16.5v.5" />
     </>
   ),
+  performance: <path d="M5 20V10M12 20V4M19 20v-7" />,
   plus: <path d="M12 5v14M5 12h14" />,
+  roof: (
+    <>
+      <path d="M3 11 12 4l9 7" />
+      <path d="M5 10v9h14v-9" />
+    </>
+  ),
+  strings: <path d="M13 2 4 14h7l-1 8 9-12h-7z" />,
+  studio: (
+    <>
+      <path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z" />
+      <path d="m4 7.5 8 4.5 8-4.5M12 12v9" />
+    </>
+  ),
+  sun: (
+    <>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+    </>
+  ),
   tick: <path d="m5 12 5 5 9-10" />,
   upload: <path d="M12 16V4m0 0-4 4m4-4 4 4M4 20h16" />,
   undo: (

@@ -6,6 +6,7 @@ import { expectScreen } from "../screens";
 const PAGES = [
   { path: "/kit", name: "kit", heading: "Controls, depth and motion" },
   { path: "/kit/part-2", name: "kit-part-2", heading: "Controls, part 2" },
+  { path: "/kit/shell", name: "kit-shell", heading: "Shell" },
 ];
 
 for (const { path, name, heading } of PAGES) {
