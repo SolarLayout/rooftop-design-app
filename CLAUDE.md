@@ -86,6 +86,12 @@ This is production software, not a prototype. The owner's words: "this is not th
   suite whole. The numbers of the engine (`tests/engine/test_demo_numbers.py`) run in every pytest run as a
   sentinel (`tests/always_run.py`). A comment alone changes nothing: testmon reads the syntax tree. In `apps/api`,
   `bun run test -- tests/api` runs a part with the selection, `bun run test:all` the whole suite without it.
+- The browser step is the root task `//#e2e`, keyed on everything the browser tests can see: `apps/web`,
+  `packages/api-types`, the API's sources and configuration, `e2e`, the tools that start the stack, the
+  lockfile, `.nvmrc`, and `apps/web/.env.local` by turbo's hash of it (no code of ours reads the file).
+- On GitHub the `check` workflow restores `.turbo/cache` from the last run of the branch or of `main` and saves
+  it after every run; a push to `main` runs `--fresh`. pytest runs whole and untraced there
+  (`ROOFTOP_CHECK_SELECT=0`).
 
 ## Commands
 | Command | Use |

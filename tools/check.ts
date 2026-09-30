@@ -14,7 +14,7 @@ import { FRESH_VARIABLE, REPORT_PREFIX } from "./check/pytest-selected-report.ts
 import { describeTasks, readRunSummary, type StepState } from "./check/run-summary.ts";
 import { readToolchain, TOOLCHAIN_VARIABLE, toolchainString } from "./check/toolchain.ts";
 import { envWithNode, nodeMissingMessage, resolveNode } from "./lib/node.ts";
-import { API_DIR, E2E_DIR, packageFile, REPO_ROOT } from "./lib/paths.ts";
+import { API_DIR, packageFile, REPO_ROOT } from "./lib/paths.ts";
 
 type State = StepState | "left out" | "FAILED" | "not run";
 type Result = { state: State; detail: string };
@@ -72,16 +72,6 @@ function turbo(tasks: string[], filters: string[]): Result {
   return describeTasks(results);
 }
 
-/** The browser tests run through Playwright itself; their key comes with the next pull request. */
-function playwright(): Result {
-  const cli = packageFile("@playwright/test", "cli.js", E2E_DIR);
-  if (!cli) return { state: "FAILED", detail: "@playwright/test is not installed. Run `bun install` first." };
-  const result = spawnSync(node!.path, [cli, "test"], { cwd: E2E_DIR, env, stdio: "inherit" });
-  if (result.error) return { state: "FAILED", detail: `playwright: ${result.error.message}` };
-  if (result.status !== 0) return { state: "FAILED", detail: `exit code ${result.status ?? `signal ${result.signal}`}` };
-  return { state: "ok", detail: "" };
-}
-
 /** When pytest ran, its own account of what ran (tools/check/pytest-selected.ts) is the detail. */
 function withPytestReport(result: Result): Result {
   if (result.state !== "ok") return result;
@@ -101,7 +91,7 @@ const STEPS: Step[] = [
   { id: "imports", name: "import-linter (api)", run: () => turbo(["imports"], ["@rooftop/api"]) },
   { id: "pytest", name: "pytest (api)", run: () => withPytestReport(turbo(["test"], ["@rooftop/api"])) },
   { id: "unit", name: "bun test (web, tools)", run: () => turbo(["test", "test:tools"], ["@rooftop/web", "//"]) },
-  { id: "e2e", name: "Playwright (phone, tablet, desktop)", run: playwright },
+  { id: "e2e", name: "Playwright (phone, tablet, desktop)", run: () => turbo(["e2e"], ["//"]) },
   { id: "proofs", name: "proofs of the caching (in a worktree)", run: () => turbo(["proofs"], ["//"]) },
 ];
 

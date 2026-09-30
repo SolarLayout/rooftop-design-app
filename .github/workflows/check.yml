@@ -15,6 +15,9 @@ jobs:
     timeout-minutes: 10
     env:
       NEXT_TELEMETRY_DISABLED: "1"
+      # pytest runs whole and untraced here: the task is cached whole by turbo, and testmon's data is
+      # never kept on GitHub (plan/phase-04b-plan.md, decision 4).
+      ROOFTOP_CHECK_SELECT: "0"
     steps:
       - uses: actions/checkout@v4
 
@@ -38,7 +41,26 @@ jobs:
         working-directory: apps/api
         run: uv sync --frozen
 
+      # The check's cache: turbo's entries, one per task and hash (plan/phase-04b-plan.md, decision 12).
+      # Restored from the most recent run of this branch or of main; saved by every run under a key of
+      # its own, so that the next run finds it. The lockfiles in the key start a fresh store when the
+      # dependencies change. A push to main ignores what it restores (--fresh) and rebuilds it.
+      - name: Restore the check's cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .turbo/cache
+          key: check-${{ runner.os }}-${{ hashFiles('bun.lock', 'apps/api/uv.lock') }}-${{ github.run_id }}
+          restore-keys: |
+            check-${{ runner.os }}-${{ hashFiles('bun.lock', 'apps/api/uv.lock') }}-
+
       # Browser tests are not part of this workflow: they run locally in `bun check`
       # and, when started by hand, in the e2e workflow.
       - name: bun check, without the browser tests
-        run: bun check --skip=e2e
+        run: bun check --skip=e2e ${{ github.event_name == 'push' && '--fresh' || '' }}
+
+      - name: Save the check's cache
+        if: success() || failure()
+        uses: actions/cache/save@v4
+        with:
+          path: .turbo/cache
+          key: check-${{ runner.os }}-${{ hashFiles('bun.lock', 'apps/api/uv.lock') }}-${{ github.run_id }}

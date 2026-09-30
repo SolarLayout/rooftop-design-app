@@ -42,7 +42,8 @@
     "test": {
       "outputs": [],
       "passThroughEnv": [
-        "ROOFTOP_CHECK_FRESH"
+        "ROOFTOP_CHECK_FRESH",
+        "ROOFTOP_CHECK_SELECT"
       ]
     },
     "//#typecheck:tools": {
@@ -58,6 +59,31 @@
         "tools/**",
         "tsconfig.json",
         "package.json"
+      ],
+      "outputs": []
+    },
+    "//#e2e": {
+      "inputs": [
+        "apps/web/**",
+        "!apps/web/.next*/**",
+        "!apps/web/*.tsbuildinfo",
+        "!apps/web/next-env.d.ts",
+        "packages/api-types/**",
+        "apps/api/src/**",
+        "apps/api/pyproject.toml",
+        "apps/api/uv.lock",
+        "apps/api/.python-version",
+        "e2e/**",
+        "!e2e/test-results/**",
+        "!e2e/playwright-report/**",
+        "tools/dev.ts",
+        "tools/lib/**",
+        "tools/with-node.ts",
+        "bun.lock",
+        ".nvmrc",
+        "!**/node_modules/**",
+        "!**/.turbo/**",
+        "!**/__pycache__/**"
       ],
       "outputs": []
     },
@@ -80,7 +106,10 @@
         "apps/api/tests/fixtures/weather/README.md",
         "apps/api/pyproject.toml",
         "e2e/tests/find.e2e.ts",
-        "e2e/fixtures/geocode-nothing.json"
+        "e2e/fixtures/geocode-nothing.json",
+        "tools/footprints.ts",
+        "apps/api/src/rooftop_api/routers/roof.py",
+        "e2e/baselines/darwin/desktop/find.png"
       ],
       "outputs": []
     },

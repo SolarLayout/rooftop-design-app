@@ -5,7 +5,7 @@ import { TOOLCHAIN_VARIABLE } from "../toolchain.ts";
 import { envWithNode, resolveNode } from "../../lib/node.ts";
 import { packageFile, REPO_ROOT } from "../../lib/paths.ts";
 
-export const EVERY_TASK = ["typecheck", "typecheck:tools", "lint", "imports", "test", "test:tools", "proofs"];
+export const EVERY_TASK = ["typecheck", "typecheck:tools", "lint", "imports", "test", "test:tools", "e2e", "proofs"];
 
 /** Task id to hash, for the tasks that have a command in the tree. */
 export function turboHashes(tree: string, toolchain: string): Map<string, string> {
