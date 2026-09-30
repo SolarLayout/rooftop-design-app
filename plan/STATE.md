@@ -3,10 +3,10 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-09-30, session 7, at the close of Phase 4. The phase is done: its plan `plan/phase-04-plan.md`
-(three pull requests, fifteen steps) is built in #35 (the map, the search, the route `/find`), #36 (the outline three
-ways, Build, the Roof lens's card) and #38 (the obstacles on the map with their heights, the roof entered by hand).
-The memo for the shading in the tests is merged (#37). Phase 5 is next.
+**Last updated:** 2026-09-30, session 8, at the close of Phase 4.5. The phase is done: its plan `plan/phase-04b-plan.md`
+(three pull requests, fifteen decisions) is built in #39 (every step of the check a turbo task, the proofs in a worktree),
+#40 (pytest-testmon with a sentinel and a key of its data) and #41 (the browser step keyed on all it can see; the cache
+on GitHub). Phase 5 is next.
 
 ## Where we are
 
@@ -17,7 +17,7 @@ The memo for the shading in the tests is merged (#37). Phase 5 is next.
 | 2 Engine and API | Done (PR #7, PRs #11 to #23) | What exists, what was decided, what was found: `phase-02-engine-api.md`, "As built" |
 | 3 Design system and shell | Done (PRs #24 to #33) | What exists, what was decided, what was found: `phase-03-design-system-shell.md`, "As built". How its second half was built: `phase-03-rest-plan.md` |
 | 4 Find and outline | Done (sessions 6 and 7: #35, #36, #38; the memo #37) | What exists, what was decided, what was found: `phase-04-find-and-outline.md`, "As built". How it was built: `phase-04-plan.md` |
-| 4.5 Caching of the checks | Not started; next | `phase-04b-test-caching.md`; the work order `resume/007-phase-4-5-test-caching.md` |
+| 4.5 Caching of the checks | Done (session 8: #39, #40, #41) | What exists, the numbers before and after, what was found: `phase-04b-test-caching.md`, "As built". How it was built: `phase-04b-plan.md` |
 | 5 to 11 | Not started | |
 
 ## In flight
@@ -73,13 +73,10 @@ changed; an export 0.2 to 0.9 s after a run.
 
 ## Next, in order
 
-1. Phase 4.5: caching of the checks, so that what has not changed does not run again, here and on GitHub, for
-   Python and TypeScript (`plan/phase-04b-test-caching.md`); the plan first. Work order:
-   `plan/resume/007-phase-4-5-test-caching.md`.
-2. Phase 5: the Studio's 3D roof, the Roof and Array lenses (`plan/phase-05-studio-roof-array.md`): the plan, the
+1. Phase 5: the Studio's 3D roof, the Roof and Array lenses (`plan/phase-05-studio-roof-array.md`): the plan, the
    boards it lacks, the first pull request. Work order: `plan/resume/008-phase-5-studio-roof-array.md`.
-3. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
-4. In parallel with any phase: the screens still to draw (Phase 0).
+2. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
+3. In parallel with any phase: the screens still to draw (Phase 0).
 
 ## Facts about this machine and setup
 
@@ -93,7 +90,8 @@ changed; an export 0.2 to 0.9 s after a run.
 | bun, uv, Python | bun 1.3.14; uv; Python 3.12.13, the build that uv manages (`apps/api/.python-version`, `apps/api/pyproject.toml`) |
 | Playwright | `@playwright/test` 1.52.0; its browser (chromium-1169) is already installed. `@axe-core/playwright` 4.13.0 |
 | Baselines of the screens | `e2e/baselines/darwin`, made on this machine. Renew with `bun tools/with-node.ts playwright test <name> --update-snapshots` in `e2e/`, after looking at the new picture |
-| `bun check` | About 6 minutes here: pytest 120 s, the browser tests 350 s (1,179 of them). While it runs, nothing of `apps/web` or `apps/api` may be edited: the test stack reloads them live, and the browser tests would see the half-made change. Drafts go to the scratchpad until it ends |
+| `bun check` | Every step a turbo task, skipped when its inputs have not changed since it was last green (`.turbo/`); the summary says which and why. Unchanged tree: under 2 s. Everything changed, or `--fresh`: about 7 minutes here (pytest 118 s untraced, 139 s when testmon's data is rebuilt; the browser tests 360 s, 1,179 of them). Inside pytest, testmon runs only the tests a change can have changed, plus the sentinel `test_demo_numbers.py`; a change to the check's own code (`tools/check.ts`, `tools/check/**`) runs everything. While the browser tests run, nothing of `apps/web` or `apps/api` may be edited: the test stack reloads them live, and the browser tests would see the half-made change; while the proofs run (the last step), nothing at all, because they copy the working tree into their worktree. Drafts go to the scratchpad until it ends. Details: `phase-04b-test-caching.md`, "As built" |
+| The check on GitHub | `.turbo/cache` restored from the most recent run of the branch or of `main`, saved by every run; a push to `main` runs `--fresh`; pytest runs whole and untraced there (`ROOFTOP_CHECK_SELECT=0`). A push that changes a document alone: about 25 s in all |
 | Esri key | In `apps/web/.env.local` as `NEXT_PUBLIC_ESRI_API_KEY`. Never read, print or commit the file. Referrers: `http://localhost:4700`, `http://127.0.0.1:4700`. Expires about 28 Sep 2027 |
 | Design canvas | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy. 21 boards, the same as `docs/design/mockups`. To add or change a board: read the canvas itself (not only a file of it), then publish from a folder shaped `project/<name>` in the scratchpad: `root` that folder, `file_path` its `project/canvas.json`, the boards in `files` by their `project/` paths. A `file_path` outside such a folder lands at the root of the artifact, not under `project/`. The publish is refused by the permission system while the canvas is shared with the link; the owner made it private for the publishes of 2026-09-30 and shares it again after |
 | Design system | `docs/design/` |
@@ -126,7 +124,7 @@ changed; an export 0.2 to 0.9 s after a run.
 | The names of the demo's equipment are shown as the files state them: "INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560", "WattPower Systems Pvt.Ltd WP-330KTL-H1". The mockups show "Insolation INA-144MHC-TF-560". The files were not touched. The shell shows no equipment | Phase 5 or 7: a shorter name is for the screen to make, or the owner gives the names to show |
 | NASA POWER is asked for the year 2023 and the times of a CSV are read as UTC, as on the desktop; neither can be set in a request | Phase 8, with the weather source |
 | The report (PDF) prints the date of the server's day | Phase 9 |
-| The memo for the shading in the tests (#37, session 7). Measured before: pytest 151 s here; 66 hourly shadings for 15 distinct inputs and 208 simulations for 66; the repeats cost 76 s and 10 s, of which 48 s are the proofs of the memo, of progress reporting and of a fresh server, which must stay without a memo. Now one memo (`apps/api/tests/kept.py`) serves the whole pytest session, the engine tests and the API alike: pytest 122 s here, the demo's shading computed once. On GitHub the same code took 155 s in one run and 279 s in the next, and 274 s after the memo: the runners vary two-fold, so the mark of 6 min 30 s is a poor rule there; the checks of #37 and #38 took 5 min 38 s and 5 min 33 s. Four workers with pytest-xdist would give 66 s here (measured, not adopted: a dependency and a change of its own) | If a check passes the mark again: pytest-xdist, pinned, as a pull request of its own, after the owner's yes |
+| The memo for the shading in the tests (#37, session 7). Measured before: pytest 151 s here; 66 hourly shadings for 15 distinct inputs and 208 simulations for 66; the repeats cost 76 s and 10 s, of which 48 s are the proofs of the memo, of progress reporting and of a fresh server, which must stay without a memo. Now one memo (`apps/api/tests/kept.py`) serves the whole pytest session, the engine tests and the API alike: pytest 122 s here, the demo's shading computed once. On GitHub the same code took 155 s in one run and 279 s in the next, and 274 s after the memo: the runners vary two-fold, so the mark of 6 min 30 s is a poor rule there; the checks of #37 and #38 took 5 min 38 s and 5 min 33 s. Four workers with pytest-xdist would give 66 s here (measured, not adopted: a dependency and a change of its own) | If a check passes the mark again: pytest-xdist, pinned, as a pull request of its own, after the owner's yes. Since Phase 4.5 the mark matters only when `apps/api` changed: a push that leaves it alone skips pytest |
 | One browser test failed once in a full run and passes alone, five times of five: `kit-sheet.e2e.ts`, "and by keyboard: the keyboard stops at what scrolls", on desktop. The key End was pressed and the sheet did not scroll. It did not fail again in the nine full runs after | Watch. If it fails again: make the test wait until the content can scroll before the key, as a pull request of its own |
 | In session 6, with a load average above 50 from Chrome, Cursor and the desktop app, full runs of the browser tests took 310 to 340 s and one kit test failed at a time, a different one each run (the toast's place on tablet, the tabs' arrows on phone, the number field on phone); each passed alone, and the runs of the map's own suites passed | Watch. The tests are sound alone; the machine's load is the owner's. If a run on a quiet machine fails one, make that test wait for its result, as a pull request of its own |
 | The browser tests of the shell run the design of the demo on the server of the tests, on three sizes at once. On 2026-09-30 eight phone tests waited more than 90 s on a cold server; since #34 the global setup runs the demo once before the tests begin | Done in #34. Watch that it stays steady |
@@ -145,6 +143,7 @@ changed; an export 0.2 to 0.9 s after a run.
 | 5 | 2026-09-30 | `plan/sessions/005/record.md`, `plan/sessions/005/owner-messages.md` |
 | 6 | 2026-09-30 | `plan/sessions/006/record.md`, `plan/sessions/006/owner-messages.md` |
 | 7 | 2026-09-30 | `plan/sessions/007/record.md`, `plan/sessions/007/owner-messages.md` |
+| 8 | 2026-09-30 | `plan/sessions/008/record.md`, `plan/sessions/008/owner-messages.md` |
 
 ## Closed, do not reopen
 
@@ -159,3 +158,5 @@ changed; an export 0.2 to 0.9 s after a run.
 - The rest of Phase 3 was two pull requests, split after the components; inside each, every step a commit (D34, D36).
 - Before a system voltage the vitals speak in the words of the API (D37).
 - The vitals bar is in the Studio only (D38); the two widths where the top bar gives way (D39).
+- The check's cache is turbo's, for every step; pytest-testmon selects here and not on GitHub; pytest-xdist waits for
+  the owner's yes (session 8, `phase-04b-plan.md` decisions 1, 4, 13; D53).
