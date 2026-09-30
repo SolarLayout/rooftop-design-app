@@ -17,6 +17,7 @@ The memo for the shading in the tests is merged (#37). Phase 5 is next.
 | 2 Engine and API | Done (PR #7, PRs #11 to #23) | What exists, what was decided, what was found: `phase-02-engine-api.md`, "As built" |
 | 3 Design system and shell | Done (PRs #24 to #33) | What exists, what was decided, what was found: `phase-03-design-system-shell.md`, "As built". How its second half was built: `phase-03-rest-plan.md` |
 | 4 Find and outline | Done (sessions 6 and 7: #35, #36, #38; the memo #37) | What exists, what was decided, what was found: `phase-04-find-and-outline.md`, "As built". How it was built: `phase-04-plan.md` |
+| 4.5 Caching of the checks | Not started; next | `phase-04b-test-caching.md`; the work order `resume/007-phase-4-5-test-caching.md` |
 | 5 to 11 | Not started | |
 
 ## In flight
@@ -72,11 +73,13 @@ changed; an export 0.2 to 0.9 s after a run.
 
 ## Next, in order
 
-1. Phase 5: the Studio's 3D roof, the Roof and Array lenses (`plan/phase-05-studio-roof-array.md`). It begins with a
-   written plan, as Phase 4 did, and the boards it lacks (the Roof lens on phone and tablet; the Array lens's
-   states). A resume prompt is written when the owner asks.
-2. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
-3. In parallel with any phase: the screens still to draw (Phase 0).
+1. Phase 4.5: caching of the checks, so that what has not changed does not run again, here and on GitHub, for
+   Python and TypeScript (`plan/phase-04b-test-caching.md`); the plan first. Work order:
+   `plan/resume/007-phase-4-5-test-caching.md`.
+2. Phase 5: the Studio's 3D roof, the Roof and Array lenses (`plan/phase-05-studio-roof-array.md`): the plan, the
+   boards it lacks, the first pull request. Work order: `plan/resume/008-phase-5-studio-roof-array.md`.
+3. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
+4. In parallel with any phase: the screens still to draw (Phase 0).
 
 ## Facts about this machine and setup
 

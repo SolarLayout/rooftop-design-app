@@ -23,6 +23,7 @@ Always:
 | 2 | Engine and stateless API | `phase-02-engine-api.md` | done |
 | 3 | Design system and app shell | `phase-03-design-system-shell.md` | done |
 | 4 | Find the roof on the map and outline it (flagship) | `phase-04-find-and-outline.md` | done (#35, #36, #38) |
+| 4.5 | Caching of the checks: what has not changed does not run again, here and on GitHub (not a product phase) | `phase-04b-test-caching.md` | not started; asked for by the owner on 2026-09-30, before Phase 5 |
 | 5 | Studio: 3D roof, Roof and Array lenses | `phase-05-studio-roof-array.md` | not started |
 | 6 | Studio: Sun lens | `phase-06-studio-sun.md` | not started |
 | 7 | Studio: Strings lens | `phase-07-studio-strings.md` | not started |
@@ -105,6 +106,8 @@ plan/
   sessions/NNN/                 record of each past session and the owner's messages, word for word
   phase-NN-*.md                 one per phase: goal, scope, deliverables, acceptance
   phase-03-rest-plan.md         how the rest of Phase 3 is built: steps, decisions, what was found
+  phase-04-plan.md              how Phase 4 was built: steps, decisions, what was found; the example for a plan
+  phase-04b-test-caching.md     Phase 4.5: caching of the checks
   reference/
     functional-inventory.md     every input, output, export and message of the desktop app
     r3f-notes.md                3D fixes already paid for in solar-mms-modeller
