@@ -2,20 +2,83 @@
   "$schema": "https://turbo.build/schema.json",
   "ui": "stream",
   "agentGuidance": false,
+  "globalDependencies": [
+    "bunfig.toml",
+    ".nvmrc",
+    "tsconfig.json",
+    "tools/check.ts",
+    "tools/check/**"
+  ],
+  "globalEnv": [
+    "ROOFTOP_TOOLCHAIN"
+  ],
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env.example"],
-      "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env.example"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "!.next/dev/**"
+      ]
     },
     "typecheck": {
-      "dependsOn": ["^typecheck"],
+      "dependsOn": [
+        "^typecheck"
+      ],
       "outputs": []
     },
     "lint": {
       "outputs": []
     },
+    "imports": {
+      "outputs": []
+    },
     "test": {
+      "outputs": []
+    },
+    "//#typecheck:tools": {
+      "inputs": [
+        "tools/**",
+        "tsconfig.json",
+        "package.json"
+      ],
+      "outputs": []
+    },
+    "//#test:tools": {
+      "inputs": [
+        "tools/**",
+        "tsconfig.json",
+        "package.json"
+      ],
+      "outputs": []
+    },
+    "//#proofs": {
+      "inputs": [
+        "tools/check.ts",
+        "tools/check/**",
+        "turbo.json",
+        "package.json",
+        "bun.lock",
+        "apps/web/package.json",
+        "e2e/package.json",
+        "apps/api/package.json",
+        ".github/workflows/*.yml",
+        "apps/web/lib/outline/snap.ts",
+        "apps/web/components/find/RoofMap.tsx",
+        "tools/lib/ports.ts",
+        "packages/api-types/src/index.ts",
+        "apps/api/src/rooftop_core/geo.py",
+        "apps/api/tests/fixtures/weather/README.md",
+        "apps/api/pyproject.toml",
+        "e2e/tests/find.e2e.ts",
+        "e2e/fixtures/geocode-nothing.json"
+      ],
       "outputs": []
     },
     "dev": {

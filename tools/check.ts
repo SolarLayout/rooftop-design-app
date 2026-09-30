@@ -1,134 +1,132 @@
 // bun check
-// Runs every check in a fixed order and stops at the first failure.
-//   bun check                 everything
+// Runs every check in a fixed order and stops at the first failure. Each step is one or more turbo tasks:
+// a task whose inputs have not changed since a green run is not run again, and the summary says so.
+//   bun check                 everything, with the caches
 //   bun check --only=pytest   some steps (ids, comma separated)
 //   bun check --skip=e2e      everything but some steps
+//   bun check --fresh         ignore every cache and rebuild them
 
 import { spawnSync } from "node:child_process";
+import { existsSync, readdirSync, readFileSync, rmSync } from "node:fs";
+import { join } from "node:path";
+import { parseFlags } from "./check/flags.ts";
+import { describeTasks, readRunSummary, type StepState } from "./check/run-summary.ts";
+import { readToolchain, TOOLCHAIN_VARIABLE, toolchainString } from "./check/toolchain.ts";
 import { envWithNode, nodeMissingMessage, resolveNode } from "./lib/node.ts";
-import { API_DIR, E2E_DIR, packageFile, REPO_ROOT, WEB_DIR } from "./lib/paths.ts";
+import { E2E_DIR, packageFile, REPO_ROOT } from "./lib/paths.ts";
 
-type Command = { command: string; args: string[]; cwd: string };
-type Step = { id: string; name: string; needsNode: boolean; commands: () => Command[] };
+type State = StepState | "left out" | "FAILED" | "not run";
+type Result = { state: State; detail: string };
+type Step = { id: string; name: string; run: () => Result };
+
+const TURBO_RUNS = join(REPO_ROOT, ".turbo", "runs");
 
 const node = resolveNode();
-const env = node ? envWithNode(node) : process.env;
-const bun = process.execPath;
-
-const STEPS: Step[] = [
-  {
-    id: "typecheck",
-    name: "typecheck (web, tools, e2e)",
-    needsNode: true,
-    commands: () => [
-      { command: bun, args: ["run", "typecheck"], cwd: WEB_DIR },
-      { command: bun, args: ["run", "typecheck:tools"], cwd: REPO_ROOT },
-      { command: bun, args: ["run", "typecheck"], cwd: E2E_DIR },
-    ],
-  },
-  {
-    id: "eslint",
-    name: "eslint (web)",
-    needsNode: true,
-    commands: () => [{ command: bun, args: ["run", "lint"], cwd: WEB_DIR }],
-  },
-  {
-    id: "ruff",
-    name: "ruff check and format (api)",
-    needsNode: false,
-    commands: () => [
-      { command: "uv", args: ["run", "--locked", "ruff", "check", "."], cwd: API_DIR },
-      { command: "uv", args: ["run", "--locked", "ruff", "format", "--check", "."], cwd: API_DIR },
-    ],
-  },
-  {
-    id: "imports",
-    name: "import-linter (api)",
-    needsNode: false,
-    commands: () => [{ command: "uv", args: ["run", "--locked", "lint-imports"], cwd: API_DIR }],
-  },
-  {
-    id: "pytest",
-    name: "pytest (api)",
-    needsNode: false,
-    commands: () => [{ command: "uv", args: ["run", "--locked", "pytest"], cwd: API_DIR }],
-  },
-  {
-    id: "unit",
-    name: "bun test (TypeScript unit tests)",
-    needsNode: false,
-    commands: () => [{ command: bun, args: ["test"], cwd: REPO_ROOT }],
-  },
-  {
-    id: "e2e",
-    name: "Playwright smoke (phone, tablet, desktop)",
-    needsNode: true,
-    commands: () => [
-      {
-        command: node!.path,
-        args: [packageFile("@playwright/test", "cli.js", E2E_DIR) ?? "@playwright/test is not installed", "test"],
-        cwd: E2E_DIR,
-      },
-    ],
-  },
-];
-
-function listOf(flag: string): string[] | null {
-  const found = process.argv.slice(2).find((argument) => argument.startsWith(`--${flag}=`));
-  return found ? found.slice(flag.length + 3).split(",").filter(Boolean) : null;
+if (!node) {
+  console.error(nodeMissingMessage());
+  process.exit(1);
 }
+const toolchain = toolchainString(readToolchain());
+const env = { ...envWithNode(node), [TOOLCHAIN_VARIABLE]: toolchain };
 
-const only = listOf("only");
-const skip = listOf("skip") ?? [];
-const unknown = [...(only ?? []), ...skip].filter((id) => !STEPS.some((step) => step.id === id));
-if (unknown.length > 0) {
-  console.error(`Unknown step: ${unknown.join(", ")}. Steps: ${STEPS.map((step) => step.id).join(", ")}.`);
+const STEP_IDS = ["typecheck", "eslint", "ruff", "imports", "pytest", "unit", "e2e", "proofs"];
+const flags = parseFlags(process.argv.slice(2), STEP_IDS);
+if (!flags.ok) {
+  console.error(flags.message);
   process.exit(2);
 }
 
-type Outcome = { step: Step; state: "ok" | "FAILED" | "not run" | "skipped"; seconds: number; detail: string };
+/** Runs turbo tasks and reads what it did from the run summary it writes. */
+function turbo(tasks: string[], filters: string[]): Result {
+  const bin = packageFile("turbo", "bin/turbo", REPO_ROOT);
+  if (!bin) return { state: "FAILED", detail: "turbo is not installed. Run `bun install` first." };
+  const before = new Set(existsSync(TURBO_RUNS) ? readdirSync(TURBO_RUNS) : []);
+  const args = [
+    "run",
+    ...tasks,
+    ...filters.map((filter) => `--filter=${filter}`),
+    "--output-logs=new-only",
+    "--summarize",
+    "--no-daemon",
+    ...(flags.ok && flags.fresh ? ["--force"] : []),
+  ];
+  const result = spawnSync(bin, args, { cwd: REPO_ROOT, env, stdio: "inherit" });
+  if (result.error) return { state: "FAILED", detail: `turbo: ${result.error.message}` };
+
+  const written = readdirSync(TURBO_RUNS).filter((name) => !before.has(name));
+  if (written.length !== 1) {
+    return { state: "FAILED", detail: `turbo wrote ${written.length} run summaries where one was expected` };
+  }
+  const path = join(TURBO_RUNS, written[0]!);
+  const results = readRunSummary(readFileSync(path, "utf8"));
+  rmSync(path, { force: true });
+  for (const task of results.filter((task) => task.cached)) {
+    console.log(`cache hit: ${task.taskId} (turbo hash ${task.hash.slice(0, 8)}, made at ${task.madeAt ?? "an earlier run"})`);
+  }
+  if (result.status !== 0) {
+    const failed = results.filter((task) => task.exitCode !== null && task.exitCode !== 0).map((task) => task.taskId);
+    return { state: "FAILED", detail: failed.length > 0 ? `failed: ${failed.join(", ")}` : `exit code ${result.status ?? `signal ${result.signal}`}` };
+  }
+  return describeTasks(results);
+}
+
+/** The browser tests run through Playwright itself; their key comes with the next pull request. */
+function playwright(): Result {
+  const cli = packageFile("@playwright/test", "cli.js", E2E_DIR);
+  if (!cli) return { state: "FAILED", detail: "@playwright/test is not installed. Run `bun install` first." };
+  const result = spawnSync(node!.path, [cli, "test"], { cwd: E2E_DIR, env, stdio: "inherit" });
+  if (result.error) return { state: "FAILED", detail: `playwright: ${result.error.message}` };
+  if (result.status !== 0) return { state: "FAILED", detail: `exit code ${result.status ?? `signal ${result.signal}`}` };
+  return { state: "ok", detail: "" };
+}
+
+const STEPS: Step[] = [
+  { id: "typecheck", name: "typecheck (web, tools, e2e)", run: () => turbo(["typecheck", "typecheck:tools"], []) },
+  { id: "eslint", name: "eslint (web)", run: () => turbo(["lint"], ["@rooftop/web"]) },
+  { id: "ruff", name: "ruff check and format (api)", run: () => turbo(["lint"], ["@rooftop/api"]) },
+  { id: "imports", name: "import-linter (api)", run: () => turbo(["imports"], ["@rooftop/api"]) },
+  { id: "pytest", name: "pytest (api)", run: () => turbo(["test"], ["@rooftop/api"]) },
+  { id: "unit", name: "bun test (web, tools)", run: () => turbo(["test", "test:tools"], ["@rooftop/web", "//"]) },
+  { id: "e2e", name: "Playwright (phone, tablet, desktop)", run: playwright },
+  { id: "proofs", name: "proofs of the caching (in a worktree)", run: () => turbo(["proofs"], ["//"]) },
+];
+
+type Outcome = { step: Step; result: Result; seconds: number };
 const outcomes: Outcome[] = [];
 let failed: Outcome | null = null;
 
+console.log(`bun check: ${toolchain}; caches ${flags.fresh ? "ignored and rebuilt (--fresh)" : "on"}`);
+
 for (const step of STEPS) {
-  if ((only && !only.includes(step.id)) || skip.includes(step.id)) {
-    outcomes.push({ step, state: "skipped", seconds: 0, detail: "left out on request" });
+  if ((flags.only && !flags.only.includes(step.id)) || flags.skip.includes(step.id)) {
+    outcomes.push({ step, result: { state: "left out", detail: "on request" }, seconds: 0 });
     continue;
   }
   if (failed) {
-    outcomes.push({ step, state: "not run", seconds: 0, detail: "" });
+    outcomes.push({ step, result: { state: "not run", detail: "" }, seconds: 0 });
     continue;
   }
-
   console.log(`\n=== ${step.name} ===`);
   const began = performance.now();
-  let detail = "";
-
-  if (step.needsNode && !node) {
-    console.error(nodeMissingMessage());
-    detail = "Node.js not found";
-  } else {
-    for (const { command, args, cwd } of step.commands()) {
-      const result = spawnSync(command, args, { cwd, env, stdio: "inherit" });
-      if (result.error) detail = `${command}: ${result.error.message}`;
-      else if (result.status !== 0) detail = `exit code ${result.status ?? `signal ${result.signal}`}`;
-      if (detail) break;
-    }
-  }
-
-  const outcome: Outcome = { step, state: detail ? "FAILED" : "ok", seconds: (performance.now() - began) / 1000, detail };
+  const result = step.run();
+  const outcome = { step, result, seconds: (performance.now() - began) / 1000 };
   outcomes.push(outcome);
-  if (detail) failed = outcome;
+  if (result.state === "FAILED") failed = outcome;
 }
 
 console.log("\n=== bun check: summary ===");
-for (const outcome of outcomes) {
-  const time = outcome.state === "ok" || outcome.state === "FAILED" ? `${outcome.seconds.toFixed(1)} s` : "";
-  console.log(`  ${outcome.state.padEnd(8)} ${outcome.step.name.padEnd(44)} ${time.padStart(8)}  ${outcome.detail}`.trimEnd());
+for (const { step, result, seconds } of outcomes) {
+  const time = result.state === "left out" || result.state === "not run" ? "" : `${seconds.toFixed(1)} s`;
+  console.log(`  ${result.state.padEnd(8)} ${step.name.padEnd(36)} ${time.padStart(8)}  ${result.detail}`.trimEnd());
 }
-const left = outcomes.filter((outcome) => outcome.state === "skipped").length;
+const skipped = outcomes.filter((outcome) => outcome.result.state === "skipped").length;
+const leftOut = outcomes.filter((outcome) => outcome.result.state === "left out").length;
 if (failed) {
   console.log(`\nFAILED at: ${failed.step.name}. Later steps were not run.`);
   process.exit(1);
 }
-console.log(left > 0 ? `\nAll steps that ran are green; ${left} left out on request.` : "\nAll green.");
+const notes = [
+  skipped > 0 ? `${skipped} skipped, their inputs unchanged since they were cached` : "",
+  leftOut > 0 ? `${leftOut} left out on request` : "",
+].filter(Boolean);
+console.log(notes.length > 0 ? `\nAll steps that ran are green; ${notes.join("; ")}.` : "\nAll green.");

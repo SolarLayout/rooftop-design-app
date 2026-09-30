@@ -11,7 +11,8 @@
     "start": "next start -p 4700",
     "typegen": "next typegen",
     "typecheck": "next typegen && tsc --noEmit",
-    "lint": "eslint --max-warnings 0"
+    "lint": "eslint --max-warnings 0",
+    "test": "bun test"
   },
   "dependencies": {
     "@react-three/drei": "10.7.7",
