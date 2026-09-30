@@ -276,6 +276,8 @@
   --color-outline-fill: rgba(255,176,32,.09);
   --color-obstacle-line: #FFFFFF;
   --color-obstacle-fill: rgba(11,14,19,.55);
+  --color-module-glass: #16294D;
+  --color-module-frame: #33558C;
 
   --color-data-gain: #3987E5;
   --color-data-loss: #D95926;
@@ -415,6 +417,8 @@
   --color-outline-fill: var(--color-outline-fill);
   --color-obstacle-line: var(--color-obstacle-line);
   --color-obstacle-fill: var(--color-obstacle-fill);
+  --color-module-glass: var(--color-module-glass);
+  --color-module-frame: var(--color-module-frame);
   --color-data-gain: var(--color-data-gain);
   --color-data-loss: var(--color-data-loss);
   --color-data-zero: var(--color-data-zero);

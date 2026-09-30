@@ -61,6 +61,8 @@ theme (`:root`).
 | `--color-outline-fill` | `rgba(255,176,32,.09)` | The fill of the outline on the map: accent at 9 % |
 | `--color-obstacle-line` | `#FFFFFF` | The line of an obstacle drawn on the map: light over dark, so that the roof stays the amber thing on the screen; the selected one is accent |
 | `--color-obstacle-fill` | `rgba(11,14,19,.55)` | The fill of an obstacle drawn on the map: the ground at 55 % |
+| `--color-module-glass` | `#16294D` | The glass of the module glyph on the equipment card: the module's blue of the 3D palette |
+| `--color-module-frame` | `#33558C` | The frame of the module glyph, and the line between its two halves |
 
 There is no error red. A result that does not fit is a note: exclamation mark in a circle, accent colour, with
 the reason.
