@@ -3,10 +3,9 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-09-30, session 8, at the close of Phase 4.5. The phase is done: its plan `plan/phase-04b-plan.md`
-(three pull requests, fifteen decisions) is built in #39 (every step of the check a turbo task, the proofs in a worktree),
-#40 (pytest-testmon with a sentinel and a key of its data) and #41 (the browser step keyed on all it can see; the cache
-on GitHub). Phase 5 is next.
+**Last updated:** 2026-09-30, session 9, in the middle of Phase 5. Its plan `plan/phase-05-plan.md` (five pull requests,
+twenty-one decisions) and its six boards are approved; #42 (the 3D scene) and #43 (the modules, the kept-clear areas, the
+sun) are merged; the inspectors of the Roof and Array lenses and the direct manipulation are in progress on their branches.
 
 ## Where we are
 
@@ -18,11 +17,14 @@ on GitHub). Phase 5 is next.
 | 3 Design system and shell | Done (PRs #24 to #33) | What exists, what was decided, what was found: `phase-03-design-system-shell.md`, "As built". How its second half was built: `phase-03-rest-plan.md` |
 | 4 Find and outline | Done (sessions 6 and 7: #35, #36, #38; the memo #37) | What exists, what was decided, what was found: `phase-04-find-and-outline.md`, "As built". How it was built: `phase-04-plan.md` |
 | 4.5 Caching of the checks | Done (session 8: #39, #40, #41) | What exists, the numbers before and after, what was found: `phase-04b-test-caching.md`, "As built". How it was built: `phase-04b-plan.md` |
-| 5 to 11 | Not started | |
+| 5 Studio, 3D roof, Roof and Array lenses | In progress (session 9: #42, #43 merged) | What exists so far: `phase-05-studio-roof-array.md`, "As built". How it is built: `phase-05-plan.md` |
+| 6 to 11 | Not started | |
 
 ## In flight
 
-No open branch and no open pull request. `main` is green. Nothing waits for the owner.
+Phase 5, session 9. Branches stacked on `main`: `feat/phase-5-roof-lens` (pull request 3: the Roof lens inspector, the
+obstacles, the import), `feat/phase-5-array-lens` (pull request 4: the Array lens inspector), `feat/phase-5-manipulation`
+(pull request 5: undo, drag). `main` is green.
 
 ## What the web app has today
 
