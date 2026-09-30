@@ -3,9 +3,10 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-09-30, session 6, after step 8 of Phase 4. The plan of the phase is `plan/phase-04-plan.md`
+**Last updated:** 2026-09-30, session 6, after step 11 of Phase 4. The plan of the phase is `plan/phase-04-plan.md`
 (three pull requests, fifteen steps). Pull request #35 (the map, the search, the route `/find`; steps 1 to 5)
-is merged. The second, #36, is a draft with steps 6 to 8: the geometry, the corners tool, the rectangle tool.
+is merged. The second, #36, is a draft with steps 6 to 11: the geometry, the three ways to outline, the loupe,
+Build, and the Roof lens's card. The acceptance of the phase is met by its tests; step 12 closes it.
 
 ## Where we are
 
@@ -15,14 +16,15 @@ is merged. The second, #36, is a draft with steps 6 to 8: the geometry, the corn
 | 1 Foundation | Done, merged (PR #1) | |
 | 2 Engine and API | Done (PR #7, PRs #11 to #23) | What exists, what was decided, what was found: `phase-02-engine-api.md`, "As built" |
 | 3 Design system and shell | Done (PRs #24 to #33) | What exists, what was decided, what was found: `phase-03-design-system-shell.md`, "As built". How its second half was built: `phase-03-rest-plan.md` |
-| 4 Find and outline | In progress, session 6 | Plan: `phase-04-plan.md`. Steps 0 to 5 merged (#35); steps 6 to 8 on the draft #36; steps 9 to 15 to come |
+| 4 Find and outline | In progress, session 6 | Plan: `phase-04-plan.md`. Steps 0 to 5 merged (#35); steps 6 to 11 on the draft #36; step 12 closes it; steps 13 to 15 (obstacles on the map, by hand) are pull request 3 |
 | 5 to 11 | Not started | |
 
 ## In flight
 
 Branch `feat/phase-4-outline`, pull request #36 (draft): the geometry of the outline and its state as a reducer
-(step 6), the corners tool (7), the rectangle tool (8). `main` is green. The owner said "go according to your
-plan" on the plan and the boards; nothing waits for him.
+(step 6), the corners tool (7), the rectangle tool (8), the loupe of a touch drag (9), Detect building with
+Overture's footprints (10), the roof type, Build and the Roof lens's card with Edit (11). `main` is green. The
+owner said "go according to your plan" on the plan and the boards; nothing waits for him.
 
 ## What the web app has today
 
@@ -43,12 +45,16 @@ plan" on the plan and the boards; nothing waits for him.
 | Routes | `/` (a placeholder with "Find my roof"), `/find` (the map, the search, the outline), `/studio/[lens]`, `/performance`, `/handover/[item]` (the shell, with placeholders inside) |
 | The map: the provider, Esri, the search's reading of what is typed, the scale bar, the states without a map | `apps/web/lib/map` |
 | The outline: the frame of metres, the measures, snapping, typed lengths, the rectangle, the history, the nudge, the reducer | `apps/web/lib/outline` |
-| Find and outline: the screen, the map (MapLibre), the search, the outline drawn on the map, the panel, the tools | `apps/web/components/find` |
+| Find and outline: the screen, the map (MapLibre), the search, the outline drawn on the map, the panel, the tools, the roof type, Build | `apps/web/components/find` |
+| The Roof lens's inspector: the card of the roof with Edit, the roof type as a committed edit | `apps/web/components/studio/RoofInspector.tsx`; the words of the card in `apps/web/lib/roof-card.ts` |
+| Overture's footprints: the pinned release, the ring of a footprint | `apps/web/lib/map/overture.ts`; the extract tool `tools/footprints.ts`; the fixture `e2e/fixtures/footprints-pune.pmtiles` |
 | MapLibre's worker, served by the app | `apps/web/public/maplibre-gl`, copied by `tools/vendor-maplibre.ts` |
 
 A workspace opens the demo when no design is open, runs it, and shows its numbers in the vitals of the
-Studio. Nothing can be edited yet: no screen commits an edit. The flow that follows an edit is there and
-tested.
+Studio. A roof found on the map and outlined becomes the design that is open (Build), and the Studio opens
+on the Roof lens; its roof type is the first committed edit of the app, and Edit leads back to the map with
+the outline shown. Until Phase 10 keeps designs on the device, a reload of the Studio loses a roof built on
+the map and opens the demo (D44).
 
 ## What the API gives today
 
@@ -68,9 +74,8 @@ changed; an export 0.2 to 0.9 s after a run.
 
 ## Next, in order
 
-1. Phase 4, from step 9 of `plan/phase-04-plan.md`: the loupe of a touch drag (9), detect building (10), the
-   roof type and Build with the Roof lens's card (11), the close of pull request #36 (12); then the obstacles and
-   the by-hand entry (pull request 3, steps 13 to 15) and the close of the phase. Work order:
+1. Phase 4, from step 12 of `plan/phase-04-plan.md`: the close of pull request #36; then the obstacles on the
+   map and the by-hand entry (pull request 3, steps 13 to 15, their boards first) and the close of the phase. Work order:
    `plan/resume/005-phase-4-find-and-outline.md`. Before anything else: the memo for the shading, if a check of
    a pull request passes 6 min 30 s (#35 took 6 min 26 s; see "Open items").
 2. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
@@ -120,6 +125,7 @@ changed; an export 0.2 to 0.9 s after a run.
 | The report (PDF) prints the date of the server's day | Phase 9 |
 | pytest takes 152 s here and the check of a pull request 3 min 33 s to 6 min 43 s (sessions 3 to 5), of the 10 it may take. In session 5 it took 4 min 18 s to 6 min 29 s on the same code of the API: the time is of the machine of the check, not of the change. Most of it is design runs of 1.5 s each; they could share their shading through a memo | When a check passes 6 min 30 s: the memo, as a pull request of its own, before anything else. It came within a second of it three times in session 5 |
 | One browser test failed once in a full run and passes alone, five times of five: `kit-sheet.e2e.ts`, "and by keyboard: the keyboard stops at what scrolls", on desktop. The key End was pressed and the sheet did not scroll. It did not fail again in the nine full runs after | Watch. If it fails again: make the test wait until the content can scroll before the key, as a pull request of its own |
+| In session 6, with a load average above 50 from Chrome, Cursor and the desktop app, full runs of the browser tests took 310 to 340 s and one kit test failed at a time, a different one each run (the toast's place on tablet, the tabs' arrows on phone, the number field on phone); each passed alone, and the runs of the map's own suites passed | Watch. The tests are sound alone; the machine's load is the owner's. If a run on a quiet machine fails one, make that test wait for its result, as a pull request of its own |
 | The browser tests of the shell run the design of the demo on the server of the tests, on three sizes at once. On 2026-09-30 eight phone tests waited more than 90 s on a cold server; since #34 the global setup runs the demo once before the tests begin | Done in #34. Watch that it stays steady |
 | A push was refused once with "Permission denied (publickey)" and went through when tried again | Watch; nothing to do |
 | The `/api` rewrite passes the events of a design run on as they come in `next dev`. A production build (`next start`) and a proxy in front of it have not been tried | Phase 11, deployment |
