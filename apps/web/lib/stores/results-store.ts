@@ -5,6 +5,7 @@
 // whoever brings it: a late answer never replaces a newer one.
 import { createStore } from "zustand/vanilla";
 import type { DesignProgress, DesignResult, LayoutResponse } from "../api";
+import type { SunTime } from "./view-store";
 
 /** Waiting: a design run that is asked for and has not begun, because more edits may follow. */
 export type Status = "idle" | "waiting" | "running" | "failed";
@@ -24,9 +25,26 @@ type Kept<Value> = {
   failure: Failure | null;
 };
 
+/** Where the sun stands over the roof, and the place and the time it was asked for. */
+export type SunAt = SunTime & { lat: number; lon: number; elevationDeg: number; azimuthDeg: number };
+
+/** The place and the time a sun is asked for: what tells one request from another. */
+export type SunKey = SunTime & { lat: number; lon: number };
+
+export const sunKeyOf = ({ lat, lon, day, hour }: SunKey): string => `${lat},${lon},${day},${hour}`;
+
+type KeptSun = {
+  /** The last sun that came; null when none ever came, or another design was opened. */
+  value: SunAt | null;
+  /** The key of the place and the time asked for last. */
+  asked: string | null;
+  failure: Failure | null;
+};
+
 export type ResultsState = {
   layout: Kept<LayoutResponse>;
   design: Kept<DesignResult>;
+  sun: KeptSun;
   /** How far the run is, from the engine. It is for showing: a run is over when its result is there. */
   progress: DesignProgress | null;
 
@@ -40,6 +58,10 @@ export type ResultsState = {
   designArrived: (edit: number, design: DesignResult) => void;
   designFailed: (edit: number, failure: Failure) => void;
 
+  sunAsked: (key: SunKey) => void;
+  sunArrived: (sun: SunAt) => void;
+  sunFailed: (key: SunKey, failure: Failure) => void;
+
   /** Another design is opened: nothing of the one before stays. */
   clear: () => void;
 };
@@ -47,6 +69,7 @@ export type ResultsState = {
 export type ResultsStore = ReturnType<typeof createResultsStore>;
 
 const NOTHING = { value: null, edit: null, asked: null, status: "idle", failure: null } as const;
+const NO_SUN: KeptSun = { value: null, asked: null, failure: null };
 
 const asked = <Value>(kept: Kept<Value>, edit: number, status: Status): Kept<Value> => ({
   ...kept,
@@ -67,6 +90,7 @@ export function createResultsStore() {
   return createStore<ResultsState>()((set, get) => ({
     layout: NOTHING,
     design: NOTHING,
+    sun: NO_SUN,
     progress: null,
 
     layoutAsked: (edit) => set({ layout: asked(get().layout, edit, "running") }),
@@ -89,7 +113,15 @@ export function createResultsStore() {
       if (get().design.asked === edit) set({ design: failed(get().design, failure), progress: null });
     },
 
-    clear: () => set({ layout: NOTHING, design: NOTHING, progress: null }),
+    sunAsked: (key) => set({ sun: { ...get().sun, asked: sunKeyOf(key), failure: null } }),
+    sunArrived(sun) {
+      if (get().sun.asked === sunKeyOf(sun)) set({ sun: { value: sun, asked: get().sun.asked, failure: null } });
+    },
+    sunFailed(key, failure) {
+      if (get().sun.asked === sunKeyOf(key)) set({ sun: { ...get().sun, failure } });
+    },
+
+    clear: () => set({ layout: NOTHING, design: NOTHING, sun: NO_SUN, progress: null }),
   }));
 }
 
@@ -105,6 +137,9 @@ export const designStatusOf = (state: ResultsState) => state.design.status;
 export const designFailureOf = (state: ResultsState) => state.design.failure;
 export const isDesignUpdating = (state: ResultsState) => state.design.status === "waiting" || state.design.status === "running";
 export const progressOf = (state: ResultsState) => state.progress;
+
+/** The sun of the scene; null while none has come. */
+export const sunOf = (state: ResultsState) => state.sun.value;
 
 /** Why there are no options, in the words of the API; null when there are some, or no result. */
 export const noOptionsOf = (state: ResultsState) => state.design.value?.no_options ?? null;

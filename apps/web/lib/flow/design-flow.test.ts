@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { DESIGN_PAUSE } from "../../components/ui/design-numbers";
 import { ApiError } from "../api";
-import type { CallOptions, DesignProgress, DesignResult, LayoutResponse, Project, ProjectRequest, RunOptions } from "../api";
+import type { CallOptions, DesignProgress, DesignResult, LayoutResponse, Project, ProjectRequest, RunOptions, SunRequest, SunResponse } from "../api";
 import { clockOfTheTest } from "../clock-of-the-test";
 import { createProjectStore } from "../stores/project-store";
 import {
@@ -16,7 +16,9 @@ import {
   layoutOf,
   layoutStatusOf,
   progressOf,
+  sunOf,
 } from "../stores/results-store";
+import { createViewStore } from "../stores/view-store";
 import { createDesignFlow } from "./design-flow";
 
 type Asked<Answer> = {
@@ -42,20 +44,27 @@ function standIn() {
   }
 
   const demos: Array<Asked<Project>> = [];
+  const suns: Array<Asked<SunResponse> & { request: SunRequest }> = [];
 
   return {
     layouts,
     runs,
     demos,
+    suns,
     api: {
       getDemo: (options?: CallOptions) => asked(demos, {} as ProjectRequest, options),
       computeLayout: (project: ProjectRequest, options?: CallOptions) => asked(layouts, project, options),
       runDesign: (project: ProjectRequest, options?: RunOptions) => asked(runs, project, options),
+      computeSun(request: SunRequest, options?: CallOptions) {
+        const promise = asked(suns, {} as ProjectRequest, options);
+        suns[suns.length - 1] = { ...suns[suns.length - 1], request };
+        return promise;
+      },
     },
   };
 }
 
-const DEMO = { name: "Pune demo roof", system_voltage: 1500, array: { tilt_deg: 15 } } as unknown as Project;
+const DEMO = { name: "Pune demo roof", system_voltage: 1500, array: { tilt_deg: 15 }, roof: { lat: 18.52, lon: 73.86 } } as unknown as Project;
 
 const layout = (positions: number) => ({ layout: { notes: [] }, readouts: { positions } }) as unknown as LayoutResponse;
 const design = (positions: number) =>
@@ -74,14 +83,15 @@ function flow() {
   const server = standIn();
   const project = createProjectStore();
   const results = createResultsStore();
-  const designFlow = createDesignFlow({ api: server.api, clock: time.clock, project, results });
+  const view = createViewStore();
+  const designFlow = createDesignFlow({ api: server.api, clock: time.clock, project, results, view });
   designFlow.start();
   const last = <Answer>(list: Array<Asked<Answer>>): Asked<Answer> => {
     const found = list.at(-1);
     if (!found) throw new Error("Nothing was asked.");
     return found;
   };
-  return { ...time, ...server, project, results, designFlow, last };
+  return { ...time, ...server, project, results, view, designFlow, last };
 }
 
 /** The demo is open and its first results are there. */
@@ -124,7 +134,7 @@ describe("a design is opened", () => {
     const project = createProjectStore();
     project.getState().open(DEMO);
 
-    const designFlow = createDesignFlow({ api: server.api, clock: time.clock, project, results: createResultsStore() });
+    const designFlow = createDesignFlow({ api: server.api, clock: time.clock, project, results: createResultsStore(), view: createViewStore() });
     expect(server.layouts).toHaveLength(0);
 
     designFlow.start();
@@ -547,5 +557,98 @@ describe("the flow is stopped", () => {
     project.getState().commit(tilt(20));
 
     expect(layouts).toHaveLength(1);
+  });
+});
+
+// The sun of the scene (plan/phase-05-plan.md, decision 5): asked for the roof's place at the view's time
+// when a design opens, and again when the place or the time changes; not when anything else does.
+describe("the sun", () => {
+  const SUN = { day_of_year: 355, positions: [{ hour: 10.5, elevation_deg: 40.2, azimuth_deg: 151.3 }], sunrise_h: 6.8, sunset_h: 17.8, shadows: null } as SunResponse;
+  const place = (lat: number) => (project: Project) => ({ ...project, roof: { ...project.roof, lat } });
+
+  test("is asked for the roof's place at the view's time when a design opens", () => {
+    const { project, suns } = flow();
+
+    project.getState().open(DEMO);
+
+    expect(suns).toHaveLength(1);
+    expect(suns[0].request).toEqual({ lat: 18.52, lon: 73.86, day: "design_day", hours: [10.5] });
+  });
+
+  test("arrived, it is kept, with the place and the time it is of", async () => {
+    const { project, results, suns } = flow();
+    project.getState().open(DEMO);
+
+    suns[0].answer(SUN);
+    await settled();
+
+    expect(sunOf(results.getState())).toEqual({ elevationDeg: 40.2, azimuthDeg: 151.3, lat: 18.52, lon: 73.86, day: "design_day", hour: 10.5 });
+  });
+
+  test("an edit that leaves the place alone does not ask again", async () => {
+    const { project, suns } = await opened();
+
+    project.getState().commit(tilt(20));
+
+    expect(suns).toHaveLength(1);
+  });
+
+  test("an edit of the place asks again, and the one before is given up", async () => {
+    const { project, suns } = await opened();
+
+    project.getState().commit(place(19));
+
+    expect(suns).toHaveLength(2);
+    expect(suns[0].signal.aborted).toBe(true);
+    expect(suns[1].request.lat).toBe(19);
+  });
+
+  test("a change of the view's time asks again", async () => {
+    const { view, suns } = await opened();
+
+    view.getState().setSunTime({ day: 172, hour: 16 });
+
+    expect(suns).toHaveLength(2);
+    expect(suns[1].request).toEqual({ lat: 18.52, lon: 73.86, day: 172, hours: [16] });
+  });
+
+  test("a late answer for another place or time is not kept", async () => {
+    const { project, results, suns } = await opened();
+    project.getState().commit(place(19));
+
+    suns[1].answer(SUN);
+    await settled();
+
+    expect(sunOf(results.getState())?.lat).toBe(19);
+    expect(sunOf(results.getState())?.elevationDeg).toBe(40.2);
+  });
+
+  test("a sun that does not come leaves the scene without one, and says why in the store", async () => {
+    const { project, results, suns } = flow();
+    project.getState().open(DEMO);
+
+    suns[0].refuse(new ApiError(null, "unreachable", UNREACHABLE, null));
+    await settled();
+
+    expect(sunOf(results.getState())).toBeNull();
+    expect(results.getState().sun.failure?.message).toBe(UNREACHABLE);
+  });
+
+  test("the flow stopped gives the sun up", async () => {
+    const { suns, designFlow } = flow();
+    designFlow.stop();
+
+    expect(suns).toHaveLength(0);
+  });
+
+  test("another design that is opened takes the sun of the one before away", async () => {
+    const { project, results, suns } = await opened();
+    suns[0].answer(SUN);
+    await settled();
+
+    project.getState().open({ ...DEMO, roof: { lat: 19, lon: 73.86 } } as unknown as Project);
+
+    expect(sunOf(results.getState())).toBeNull();
+    expect(suns).toHaveLength(2);
   });
 });

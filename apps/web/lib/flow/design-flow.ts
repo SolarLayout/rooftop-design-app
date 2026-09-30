@@ -8,13 +8,15 @@ import { DESIGN_PAUSE } from "../../components/ui/design-numbers";
 import { api as apiOfTheApp, ApiError, type Api, type Project } from "../api";
 import { CLOCK_OF_THE_BROWSER, type Clock } from "../clock";
 import type { ProjectState, ProjectStore } from "../stores/project-store";
-import type { Failure, ResultsStore } from "../stores/results-store";
+import { sunKeyOf, type Failure, type ResultsStore, type SunKey } from "../stores/results-store";
+import type { ViewStore } from "../stores/view-store";
 
-export type FlowApi = Pick<Api, "getDemo" | "computeLayout" | "runDesign">;
+export type FlowApi = Pick<Api, "getDemo" | "computeLayout" | "runDesign" | "computeSun">;
 
 type Options = {
   project: ProjectStore;
   results: ResultsStore;
+  view: ViewStore;
   api?: FlowApi;
   clock?: Clock;
 };
@@ -39,8 +41,11 @@ function failureOf(error: unknown): Failure {
   };
 }
 
-export function createDesignFlow({ project, results, api = apiOfTheApp, clock = CLOCK_OF_THE_BROWSER }: Options): DesignFlow {
+export function createDesignFlow({ project, results, view, api = apiOfTheApp, clock = CLOCK_OF_THE_BROWSER }: Options): DesignFlow {
   let followed = 0;
+  let sunCall: AbortController | null = null;
+  let sunAsked: string | null = null;
+  let stopFollowingTheView: (() => void) | null = null;
   let layoutCall: AbortController | null = null;
   let designCall: AbortController | null = null;
   let giveUpThePause: (() => void) | null = null;
@@ -63,6 +68,43 @@ export function createDesignFlow({ project, results, api = apiOfTheApp, clock = 
   function giveUpTheDemo() {
     demoCall?.abort();
     demoCall = null;
+  }
+
+  function giveUpTheSun() {
+    sunCall?.abort();
+    sunCall = null;
+    sunAsked = null;
+  }
+
+  /**
+   * The sun of the scene: where it stands over the roof at the view's time (plan decision 5). Asked
+   * when the place or the time changes, never for anything else; what was asked before is given up.
+   */
+  function askForTheSun() {
+    const document = project.getState().project;
+    if (document === null) return;
+    const key: SunKey = { lat: document.roof.lat, lon: document.roof.lon, ...view.getState().sunTime };
+    const keyed = sunKeyOf(key);
+    if (keyed === sunAsked) return;
+    giveUpTheSun();
+    sunAsked = keyed;
+    const call = new AbortController();
+    sunCall = call;
+    results.getState().sunAsked(key);
+    api
+      .computeSun({ lat: key.lat, lon: key.lon, day: key.day, hours: [key.hour] }, { signal: call.signal })
+      .then(
+        (answer) => {
+          const [position] = answer.positions;
+          results.getState().sunArrived({ ...key, elevationDeg: position.elevation_deg, azimuthDeg: position.azimuth_deg });
+        },
+        (error: unknown) => {
+          if (!call.signal.aborted) results.getState().sunFailed(key, failureOf(error));
+        },
+      )
+      .finally(() => {
+        if (sunCall === call) sunCall = null;
+      });
   }
 
   function openDemo() {
@@ -155,9 +197,11 @@ export function createDesignFlow({ project, results, api = apiOfTheApp, clock = 
     if (isOpened) {
       giveUpTheLayout();
       giveUpTheRun();
+      giveUpTheSun();
       results.getState().clear();
     }
     askForTheLayout(document, edit);
+    askForTheSun();
     // Nobody edits a design that is just opened: its run need not wait.
     if (isOpened) run(document, edit);
     else runAfterThePause(document, edit);
@@ -167,6 +211,7 @@ export function createDesignFlow({ project, results, api = apiOfTheApp, clock = 
     start() {
       if (stopListening) return;
       stopListening = project.subscribe(follow);
+      stopFollowingTheView = view.subscribe(askForTheSun);
       follow(project.getState());
     },
     openDemo,
@@ -180,9 +225,12 @@ export function createDesignFlow({ project, results, api = apiOfTheApp, clock = 
     stop() {
       stopListening?.();
       stopListening = null;
+      stopFollowingTheView?.();
+      stopFollowingTheView = null;
       giveUpTheDemo();
       giveUpTheLayout();
       giveUpTheRun();
+      giveUpTheSun();
     },
   };
 }

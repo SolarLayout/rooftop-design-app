@@ -32,7 +32,8 @@ const Context = createContext<Stores | null>(null);
 function createStores(): Stores {
   const project = createProjectStore();
   const results = createResultsStore();
-  return { project, results, view: createViewStore(), flow: createDesignFlow({ project, results }) };
+  const view = createViewStore();
+  return { project, results, view, flow: createDesignFlow({ project, results, view }) };
 }
 
 /**
