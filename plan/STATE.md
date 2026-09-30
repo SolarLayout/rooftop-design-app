@@ -3,9 +3,10 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-09-30, during session 5, after step 12 of the rest of Phase 3. Every component is
-merged (pull requests #30 to #32). The stores, the data flow and the formats of the vitals are built, in the
-draft pull request #33; the routes, the shell and its browser tests remain.
+**Last updated:** 2026-09-30, during session 5, after step 14 of the rest of Phase 3. Every component is
+merged (pull requests #30 to #32). The stores, the data flow, the formats, the routes and the shell are built,
+in the draft pull request #33. Two steps remain: the vitals with the numbers of the demo from the API, and the
+browser tests of the shell on the routes. Then the close of the phase.
 
 ## Where we are
 
@@ -19,13 +20,19 @@ draft pull request #33; the routes, the shell and its browser tests remain.
 
 ## In flight
 
-Branch `feat/phase-3-stores-shell`, pull request #33, a draft. It holds steps 10 to 12 of
-`phase-03-rest-plan.md`, each as a commit, each after a green `bun check`: the stores (`apps/web/lib/stores`),
-the data flow (`apps/web/lib/flow`), the formats of the vitals (`apps/web/lib/format`). Steps 13 to 16 go into
-the same pull request. `main` is green.
+Branch `feat/phase-3-stores-shell`, pull request #33, a draft. It holds steps 10 to 14 of
+`phase-03-rest-plan.md`, each as a commit after a green `bun check`, with the documents of a step in commits
+of their own before it: the stores (`apps/web/lib/stores`), the data flow (`apps/web/lib/flow`), the formats
+(`apps/web/lib/format`), the routes (`apps/web/app/(workspaces)`, `apps/web/lib/routes.ts`), the shell
+(`apps/web/components/shell`) and the third page of the kit (`/kit/shell`). Steps 15 and 16 go into the same
+pull request. `main` is green.
+
+Decisions D37 to D39 are taken in the pull request and are in `plan/README.md` on its branch: the words of the
+vitals before a system voltage are those of the API (the owner's); the vitals bar is in the Studio only; two
+widths inside tablet and desktop where the top bar gives way.
 
 A session that takes over: read the commits of the branch, then go on with the first step of the plan that
-is not marked as done.
+is not marked as done. On the routes the vitals say "Opening the design" until step 15 opens the demo.
 
 One thing waits for the owner, and blocks nothing: the board of Tabs is approved (decision D35) and is not on
 the design canvas, because the permission system refused the publish. See "Open items".
@@ -44,7 +51,7 @@ the design canvas, because the permission system refused the publish. See "Open 
 | The typed client of the API | `apps/web/lib/api` |
 | The home page | A placeholder |
 | Stores, data flow, formats of the vitals | On the branch of pull request #33: `apps/web/lib/stores`, `lib/flow`, `lib/format`, `lib/clock.ts` |
-| Routes of the workspaces, shell | Not there yet |
+| Routes of the workspaces, shell, third page of the kit | On the same branch: `apps/web/app/(workspaces)`, `apps/web/components/shell`, `/kit/shell` |
 
 ## What the API gives today
 
@@ -113,6 +120,7 @@ Work order: `plan/resume/004-phase-3-stores-data-flow-shell.md`. Plan: `plan/pha
 | NASA POWER is asked for the year 2023 and the times of a CSV are read as UTC, as on the desktop; neither can be set in a request | Phase 8, with the weather source |
 | The report (PDF) prints the date of the server's day | Phase 9 |
 | pytest takes 157 s here and the pull request check 3 min 33 s to 6 min 43 s (sessions 3 and 4; the same code of the API took 3 min 33 s and 6 min 27 s), of the 10 it may take. Most of it is design runs of 1.5 s each; they could share their shading through a memo | When a check passes 6 min 30 s: the memo, as a pull request of its own, before anything else |
+| The previews `shell-states.png` and `studio-strings-lens-no-voltage.png`, and the two boards on the canvas, show the words of before decision D37. The sources in `docs/design/mockups` are corrected | Session 5 renders the previews at the close if it can; the canvas waits for the owner's permission, with the board of Tabs |
 | One browser test failed once in four full runs and passes alone, five times of five: `kit-sheet.e2e.ts`, "and by keyboard: the keyboard stops at what scrolls", on desktop. The key End was pressed and the sheet did not scroll | Watch. If it fails again: make the test wait until the content can scroll before the key, as a pull request of its own |
 | The check of pull request #33 took 6 min 28 s at its first run, two seconds under the mark | Watch the runs that follow; the row on pytest says what to do |
 | A push was refused once with "Permission denied (publickey)" and went through when tried again | Watch; nothing to do |

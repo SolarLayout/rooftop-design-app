@@ -12,8 +12,8 @@ decided on the way. It is kept true while the work goes on: a step that is done 
 | 1 The guard reads `*.ts` | Merged, pull request #30 |
 | 2 Slider, RangeSlider | Merged, pull request #31 |
 | 3 to 9 and T: the components | Merged, pull request #32. Its check took 6 min 25 s |
-| 10 to 12: stores, data flow, formats | Built by session 5, in the draft pull request #33, branch `feat/phase-3-stores-shell` |
-| 13 to 16: routes, shell, the numbers of the demo, browser tests | Not begun. The same pull request. Work order: `plan/resume/004-phase-3-stores-data-flow-shell.md` |
+| 10 to 14: stores, data flow, formats, routes, shell | Built by session 5, in the draft pull request #33, branch `feat/phase-3-stores-shell` |
+| 15 and 16: the numbers of the demo, browser tests of the shell | Not begun. The same pull request. Work order: `plan/resume/004-phase-3-stores-data-flow-shell.md` |
 | C: the close of the phase | After step 16 |
 | Tabs, the board | Approved (decision D35) and built. Not on the canvas: `plan/STATE.md`, "Open items" |
 
@@ -46,8 +46,8 @@ decided on the way. It is kept true while the work goes on: a step that is done 
 | 10, done | Stores | `lib/stores`: project (the `.rtd` document, as the API hands it out), results (layout, design, status, progress, which edit they belong to), view (lens, camera preset, sun time). Selectors by name, narrow | All of it | None |
 | 11, done | Data flow | `lib/flow/design-flow.ts`: a committed edit asks for the layout at once and for the design run after a pause of 500 ms. A run that is overtaken is given up by its signal. Results of before stay, marked as updating | With a stand-in for the client and a clock that is given: order, the pause, giving up, a late answer never replaces a newer one, failure keeps the last good result | None |
 | 12, done | Formats | `lib/format`: the quantities of the vitals, each as number and unit, on `shown` of `number-entry.ts` | All of it | None |
-| 13 | Routes | `/`, `/studio/[lens]`, `/performance`, `/handover/[item]`, with placeholders. `/studio` and `/handover` lead to their first. An unknown lens or item is not found | `lib/routes.ts`: the lenses and the items, and what is one | Every route answers, an unknown one is not found |
-| 14 | Shell | `components/shell`: top bar at three sizes, workspace navigation, tab bar on phone, project switcher, state of saving, Present and Export, vitals in every state, drawer of notes. The stage of the Studio is a placeholder | `vitals-view.ts`: what the vitals show, from the results and their status. `notes-view.ts`: the notes, from the results | Look against the previews, navigation, the switcher, the drawer |
+| 13, done | Routes | `/`, `/studio/[lens]`, `/performance`, `/handover/[item]`, with placeholders. `/studio` and `/handover` lead to their first. An unknown lens or item is not found | `lib/routes.ts`: the lenses and the items, and what is one | Every route answers, an unknown one is not found |
+| 14, done | Shell | `components/shell`: top bar at three sizes, workspace navigation, tab bar on phone, project switcher, state of saving, Present and Export, vitals in every state, drawer of notes. The stage of the Studio is a placeholder | `vitals-view.ts`: what the vitals show, from the results and their status. `notes-view.ts`: the notes, from the results | Look against the previews, navigation, the switcher, the drawer |
 | 15 | Vitals from the API | A workspace without a project opens the demo. The vitals show its numbers; without a system voltage the roof and the positions, and what is waited for in the words of the API | Covered by 11, 12 and 14 | The seven numbers of the demo; the demo with its voltage left out |
 | 16 | Tests of the shell | | | Renders and navigates on the three sizes; no scroll sideways at 360, 390, 640, 834, 1100, 1101, 1440; baselines; axe |
 | T, done | Tabs | `Tabs`, on `choice-keys.ts`. The board is not on the canvas yet | None new | Look, keys, the row on phone |
