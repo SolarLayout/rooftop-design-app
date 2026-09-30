@@ -10,10 +10,11 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { parseFlags } from "./check/flags.ts";
+import { FRESH_VARIABLE, REPORT_PREFIX } from "./check/pytest-selected-report.ts";
 import { describeTasks, readRunSummary, type StepState } from "./check/run-summary.ts";
 import { readToolchain, TOOLCHAIN_VARIABLE, toolchainString } from "./check/toolchain.ts";
 import { envWithNode, nodeMissingMessage, resolveNode } from "./lib/node.ts";
-import { E2E_DIR, packageFile, REPO_ROOT } from "./lib/paths.ts";
+import { API_DIR, E2E_DIR, packageFile, REPO_ROOT } from "./lib/paths.ts";
 
 type State = StepState | "left out" | "FAILED" | "not run";
 type Result = { state: State; detail: string };
@@ -27,7 +28,7 @@ if (!node) {
   process.exit(1);
 }
 const toolchain = toolchainString(readToolchain());
-const env = { ...envWithNode(node), [TOOLCHAIN_VARIABLE]: toolchain };
+const env: NodeJS.ProcessEnv = { ...envWithNode(node), [TOOLCHAIN_VARIABLE]: toolchain };
 
 const STEP_IDS = ["typecheck", "eslint", "ruff", "imports", "pytest", "unit", "e2e", "proofs"];
 const flags = parseFlags(process.argv.slice(2), STEP_IDS);
@@ -35,6 +36,7 @@ if (!flags.ok) {
   console.error(flags.message);
   process.exit(2);
 }
+if (flags.fresh) env[FRESH_VARIABLE] = "1";
 
 /** Runs turbo tasks and reads what it did from the run summary it writes. */
 function turbo(tasks: string[], filters: string[]): Result {
@@ -80,12 +82,24 @@ function playwright(): Result {
   return { state: "ok", detail: "" };
 }
 
+/** When pytest ran, its own account of what ran (tools/check/pytest-selected.ts) is the detail. */
+function withPytestReport(result: Result): Result {
+  if (result.state !== "ok") return result;
+  try {
+    const log = readFileSync(join(API_DIR, ".turbo", "turbo-test.log"), "utf8");
+    const line = log.split("\n").findLast((line) => line.includes(REPORT_PREFIX));
+    return line ? { ...result, detail: line.slice(line.indexOf(REPORT_PREFIX) + REPORT_PREFIX.length).trim() } : result;
+  } catch {
+    return result;
+  }
+}
+
 const STEPS: Step[] = [
   { id: "typecheck", name: "typecheck (web, tools, e2e)", run: () => turbo(["typecheck", "typecheck:tools"], []) },
   { id: "eslint", name: "eslint (web)", run: () => turbo(["lint"], ["@rooftop/web"]) },
   { id: "ruff", name: "ruff check and format (api)", run: () => turbo(["lint"], ["@rooftop/api"]) },
   { id: "imports", name: "import-linter (api)", run: () => turbo(["imports"], ["@rooftop/api"]) },
-  { id: "pytest", name: "pytest (api)", run: () => turbo(["test"], ["@rooftop/api"]) },
+  { id: "pytest", name: "pytest (api)", run: () => withPytestReport(turbo(["test"], ["@rooftop/api"])) },
   { id: "unit", name: "bun test (web, tools)", run: () => turbo(["test", "test:tools"], ["@rooftop/web", "//"]) },
   { id: "e2e", name: "Playwright (phone, tablet, desktop)", run: playwright },
   { id: "proofs", name: "proofs of the caching (in a worktree)", run: () => turbo(["proofs"], ["//"]) },

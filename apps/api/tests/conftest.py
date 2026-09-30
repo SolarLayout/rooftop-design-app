@@ -8,6 +8,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+# pytester for the tests of the plugins; always_run keeps the numbers of the engine in every run
+# (plan/phase-04b-test-caching.md).
+pytest_plugins = ["pytester", "tests.always_run"]
+
 if TYPE_CHECKING:
     from rooftop_core.project import Design
     from rooftop_core.weather import Weather
