@@ -184,3 +184,75 @@ test.describe("the mounting", () => {
     await expect(inspector.getByRole("textbox", { name: "Lower-edge clearance" })).toHaveCount(0);
   });
 });
+
+test.describe("the spacing and the window", () => {
+  test("the engine decides the pitch and the azimuth, and says why", async ({ page }, testInfo) => {
+    await arrayLensOpened(page, testInfo.project.name);
+    const spacing = page.getByRole("region", { name: "Spacing" });
+
+    await expect(spacing.getByTestId("read-out").filter({ hasText: "Row pitch" })).toContainText("6.45 m");
+    await expect(spacing.getByTestId("read-out").filter({ hasText: "Row pitch" })).toContainText("Shade-free · GCR 0.71 · profile angle 30.5°");
+    await expect(spacing.getByTestId("read-out").filter({ hasText: "Azimuth" })).toContainText("180° S");
+    await expect(spacing.getByTestId("read-out").filter({ hasText: "Azimuth" })).toContainText("Follows the roof edge closest to the equator");
+    await expect(spacing.getByRole("switch", { name: "Shade-free row pitch" })).toHaveAttribute("aria-checked", "true");
+    await expect(spacing.getByRole("switch", { name: "Follow the roof edge" })).toHaveAttribute("aria-checked", "true");
+    await expect(page.getByRole("group", { name: "Shade-free window" }).getByTestId("value")).toHaveText("09:00 – 16:00");
+  });
+
+  test("the pitch switched off is a field with the engine's last pitch; 7.00 typed goes to the engine; on hands it back", async ({ page }, testInfo) => {
+    await arrayLensOpened(page, testInfo.project.name);
+    const pitchSwitch = page.getByRole("switch", { name: "Shade-free row pitch" });
+    await pitchSwitch.scrollIntoViewIfNeeded();
+    let asked = nextLayout(page);
+
+    await pitchSwitch.click();
+
+    expect((await asked).array.row_pitch_m).toBe(6.45);
+    const field = page.getByRole("textbox", { name: "Row pitch" });
+    await expect(field).toHaveValue("6.45");
+    await expect(page.getByRole("region", { name: "Spacing" })).toContainText("Shade-free would be 6.45 m");
+    asked = nextLayout(page);
+
+    await field.fill("7.00");
+    await field.press("Enter");
+
+    expect((await asked).array.row_pitch_m).toBe(7);
+    asked = nextLayout(page);
+
+    await pitchSwitch.click();
+
+    expect((await asked).array.row_pitch_m).toBeNull();
+    await expect(field).toHaveCount(0);
+  });
+
+  test("the start of the window dragged to 09:15", async ({ page }, testInfo) => {
+    await arrayLensOpened(page, testInfo.project.name);
+    const from = page.getByRole("slider", { name: "Shade-free window, from" });
+    await expect(from).toHaveAttribute("aria-valuetext", "09:00 solar time");
+    const asked = nextLayout(page);
+
+    await dragged(page, from, (9.25 - 5) / 14);
+
+    expect((await asked).array.window_start_h).toBe(9.25);
+    await expect(page.getByRole("group", { name: "Shade-free window" }).getByTestId("value")).toHaveText("09:15 – 16:00");
+  });
+
+  test("the design day and the shaded positions commit at once", async ({ page }, testInfo) => {
+    await arrayLensOpened(page, testInfo.project.name);
+    const june = page.getByRole("radiogroup", { name: "Design day" }).getByRole("radio", { name: "21 Jun" });
+    await june.scrollIntoViewIfNeeded();
+    let asked = nextLayout(page);
+
+    await june.click();
+
+    expect((await asked).array.design_doy).toBe(172);
+    const shaded = page.getByRole("switch", { name: "Allow shaded positions" });
+    await expect(page.getByText("Off: positions shaded inside the window stay empty")).toBeVisible();
+    asked = nextLayout(page);
+
+    await shaded.click();
+
+    expect((await asked).array.allow_shaded).toBe(true);
+    await expect(page.getByText("On: positions shaded inside the window are used too")).toBeVisible();
+  });
+});

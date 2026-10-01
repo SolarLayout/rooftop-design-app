@@ -5,8 +5,9 @@ import { useProject, useResults, useStores } from "@/components/shell/stores";
 import type { ModuleResponse } from "@/lib/api";
 import { moduleShownOf, type ReplacedModule } from "@/lib/studio/array-view";
 import { editOf, openedAtOf, projectOf } from "@/lib/stores/project-store";
-import { designEditOf, designOf } from "@/lib/stores/results-store";
+import { designEditOf, designOf, layoutOf } from "@/lib/stores/results-store";
 import { ArrayMounting, type ArrayChange } from "./ArrayMounting";
+import { ArraySpacing } from "./ArraySpacing";
 import { ModuleCard } from "./ModuleCard";
 import { ReplaceModuleDialog } from "./ReplaceModuleDialog";
 
@@ -15,7 +16,7 @@ type Replaced = ReplacedModule & { openedAt: number | null };
 
 /**
  * The inspector of the Array lens (the boards "Studio, Array lens" on three sizes and "Studio, Array
- * lens, states"): the module with Replace, the mounting. Every field commits an edit of the document;
+ * lens, states"): the module with Replace, the mounting, the spacing and the shade-free window. Every field commits an edit of the document;
  * the layout and the energy follow (decision 16).
  */
 export function ArrayInspector() {
@@ -24,6 +25,7 @@ export function ArrayInspector() {
   const openedAt = useProject(openedAtOf);
   const design = useResults(designOf);
   const designEdit = useResults(designEditOf);
+  const layout = useResults(layoutOf);
   const [replaced, setReplaced] = useState<Replaced | null>(null);
   const [isReplacing, setReplacing] = useState(false);
 
@@ -50,6 +52,11 @@ export function ArrayInspector() {
         <ModuleCard shown={shown} onReplace={() => setReplacing(true)} />
         {project ? <ArrayMounting array={project.array} roof={project.roof} onChange={changeArray} /> : null}
       </div>
+      {project ? (
+        <div className="flex flex-col gap-section">
+          <ArraySpacing array={project.array} roofType={project.roof.roof_type} layout={layout} onChange={changeArray} />
+        </div>
+      ) : null}
       <ReplaceModuleDialog open={isReplacing} onRead={moduleRead} onClose={() => setReplacing(false)} />
     </div>
   );
