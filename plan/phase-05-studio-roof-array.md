@@ -1,10 +1,10 @@
 # Phase 5: Studio, the 3D roof, Roof and Array lenses
 
-**Status:** in progress, session 9 (2026-09-30 and 2026-10-01). How it is built: `phase-05-plan.md` (five pull requests).
+**Status:** done, session 9 (2026-09-30 to 2026-10-02). How it was built: `phase-05-plan.md` (five pull requests).
 Merged: #42 (the scene, the building, the obstacles, the ground, the camera and the view controls), #43 (the modules, the
 kept-clear areas, the sun, the plan without WebGL), #44 (the Roof lens inspector, the obstacles, the import of a drawing),
-#45 (the Array lens inspector, the states of the stage), #46 (a DXF's place asked). In progress: selection and direct
-manipulation (pull request 5). **Depends on:** phases 2, 3 and 4. Read `reference/r3f-notes.md` first.
+#45 (the Array lens inspector, the states of the stage), #46 (a DXF's place asked), #47 (selection by raycast, undo and
+redo, the drag and the handles of an obstacle). **Depends on:** phases 2, 3 and 4. Read `reference/r3f-notes.md` first.
 **Mockups:** "Studio, Roof lens" (desktop, tablet, phone), "Studio, Array lens" (desktop, tablet, phone), "Obstacle edited on
 the roof", "Roof types in 3D", "Studio, Array lens, states", "Import with missing heights".
 
@@ -71,8 +71,9 @@ Sun animation, strings colouring, energy.
 | Import a drawing from the project switcher: KMZ, KML or DXF with its units, held until Open the roof, sent as base64; `/roof/import` answers the whole document (decision 13), opened in the Roof lens; the heights the file could not give are a list to review: the engine's note under the card, Review and Next select each, a typed height takes it off, the rows and the roof mark them | `components/shell/ImportDrawing.tsx`, `ProjectSwitcher.tsx`; `lib/studio/import-drawing.ts`, `review-heights.ts`; `apps/api/src/rooftop_api/services/roof_files.py`, `schemas/roof_import.py`; the view store's `toReview` | #44 |
 | A DXF's place asked in the import dialog: the search field of Find as a form field, then Latitude and Longitude, empty until found or typed; Open the roof waits for them; nothing is guessed | `components/shell/ImportDrawing.tsx`; `components/find/Search.tsx` (`look`) | #46 |
 | The Array lens: the module card from the design's equipment with the Voc note, Replace through `/equipment/module` committing `pan_text` (a refused file leaves the equipment of before, D32); mounting by roof type (tilt with the latitude's hint, orientation, modules in tilt, clearance; east-west tilt and ridge gap; sloped follows the pitch); spacing with the switches of the pitch and the azimuth (null hands the choice to the engine, decision 16); the shade-free window by the quarter hour; the design day; shaded positions; the states of the stage: the line dimmed with a ring while a layout is on its way, a chip with the API's words and Try again when it failed | `components/studio/ArrayInspector.tsx`, `ModuleCard.tsx`, `ReplaceModuleDialog.tsx`, `ArrayMounting.tsx`, `ArraySpacing.tsx`, `LayoutFailed.tsx`, `stage-view.ts`; `lib/studio/array-fields.ts`, `array-view.ts`, `module-card.ts` | #45 |
+| Selection by raycast: a press selects what it hit, a module by its instance, the roof, an obstacle, a kept-clear area, the ground clears; hover is the lighter outline and the cursor says what can be taken (decision 10); undo and redo of the last fifty committed edits with Cmd or Ctrl+Z and Shift (decision 11), an undo an edit like any other; the selected obstacle dragged on the roof plane, snapped to 0.1 m and kept inside the roof, the scene moving it alone with a dashed ghost at the old place and a live label, the drop one edit (decision 12); its handles placed by projection as the labels are: four corners for the size, the turn handle on its stem snapping to the right angles within 3°, the height handle on its stem, a tank's and a tree's edge for the diameter, 44 px on touch; Add then a tap places the draft where the tap was | `components/scene/pointer.ts`, `Obstacles.tsx`, `Modules.tsx`; `components/studio/Handles.tsx`, `use-history-keys.ts`; `lib/scene/pick.ts`, `drag.ts`, `handles.ts`, `projection.ts` (the stems); `lib/stores/project-store.ts` (`past`, `future`, `undo`, `redo`), the view store's `selection`, `dragging` | #47 |
 
-### Acceptance, so far
+### Acceptance
 
 | Asked | Met by |
 |---|---|
@@ -82,7 +83,9 @@ Sun animation, strings colouring, energy.
 | Changing tilt to 10° refits within 200 ms of release | `e2e/tests/array-lens.e2e.ts`: the request of `/layout` within 200 ms of the pointer's release, on three sizes |
 | Inspector edits round-trip to the store | `roof-lens.e2e.ts`, `array-lens.e2e.ts`: every field read back in the request of `/layout` |
 | Selection by click works | `roof-lens.e2e.ts`, `modules.e2e.ts`: an obstacle and a kept-clear area pressed, the callout and the list follow |
-| Drag the stair room 5 m east, undo restores; 60 fps; 20 lens switches | Pull request 5 |
+| Drag the stair room 5 m east: keep-out and module count update; undo restores | `e2e/tests/manipulation.e2e.ts`: the stair room dragged 5 m east reads 27.50, `/layout` carries 27.5 and its kept-clear count changes; undo restores 22.50 and the count; on three sizes, by touch on phone and tablet |
+| No WebGL context loss after 20 lens switches | `e2e/tests/lens-switches.e2e.ts`: twenty switches in a row, the stage still drawing the roof |
+| 60 fps orbit on a mid laptop with 1,068 modules | Looked at by hand on 2026-10-02 with `fps.mjs` (headed Chromium, the sloped roof's 1,068 modules, an orbit drag): 56.3 frames per second on this machine's GPU (Apple M1 Ultra, ANGLE Metal). Near the mark, not at it; a mid laptop has not been measured |
 
 ### Deviations from the plan as written
 
@@ -98,6 +101,9 @@ Sun animation, strings colouring, energy.
 | The east-west "Unit pitch" and the sloped "Row pitch" read-outs of the states board | Not built | The API gives no unit gap; the sentences are not the engine's (plan decision 16: only the fields of `spacingOf`) |
 | Try again in the chip of a failed layout is 32 high on the board | 36, the quiet button's size | One component |
 | The import board, as first approved, had no place for a DXF | The place is asked (the board changed and approved on 2026-10-01, `99532e9`) | A DXF holds no place; nothing is guessed |
+| The callout of the selected obstacle stands to the upper right of its dot (the board) | The chip is centred over its dot | One component; centred, it never covers the obstacle it names |
+| The mid-drag picture on phone (the board shows the drag) | The phone's picture is the selected box with its touch handles, pinched in; the drag's picture is taken on desktop and tablet | The live label of a drag lands a pixel apart from one run to the next on phone |
+| The handles are reached by keyboard (implied by the guidelines) | The handles are for the pointer alone (`aria-hidden`) | The fields of the card do the same by number, by keyboard |
 
 ### Found on the way
 
@@ -121,3 +127,14 @@ Sun animation, strings colouring, energy.
 - Both lens agents wrote a module for the look the inspectors share; they are one now (`inspector-look.tsx`).
 - `git add -A` after a rebase takes conflict markers in: a file with markers broke the browser tests' import once.
 - The desktop app put every DXF at its own default place, Pune, silently (`main_window.py`, `_choose_roof_file`).
+- A mouse wheel over a DOM handle does not reach the canvas: zooming with the pointer exactly on a handle does nothing
+  (the roof beside it zooms). Open.
+- On a phone pinched in on an obstacle the callout and the turn handle can overlap. Open.
+- Under the load of the whole suite: a lens's link pressed while the Studio re-renders can be lost (the tests press
+  again); the browser merges wheel notches that come together, so a zoom by the wheel is not the same twice (the
+  drag's picture is taken at the fit zoom on desktop); a label projected to a fraction of a pixel is drawn differently
+  in two frames (`pixelOf` rounds to whole pixels); the damping of the orbit tails off for seconds (`cameraSettled` waits
+  for the labels to stand still to a hundredth of a pixel over half a second); a `test.describe.configure({ timeout })`
+  did not reach one test, which sets `test.setTimeout` itself.
+- `readPixels` of the scene's canvas returned zeros under three browsers at once, drawing buffer kept or not; a picture
+  of the canvas decoded in the page reads what the screen shows (decision 7 amended).

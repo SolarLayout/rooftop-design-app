@@ -25,7 +25,7 @@ asks for one. Paste the block inside the file into a new session started in this
 | 005 | `005-phase-4-find-and-outline.md` | Phase 4: the plan first, then find the roof on the map and outline it | 2026-09-30 | used by session 6, 2026-09-30. The plan, the boards and steps 1 to 11 (pull requests #35 and #36) are done; steps 13 to 15 remain, in 006 |
 | 006 | `006-shading-memo-and-phase-4-rest.md` | The shading memo (the check passed 6 min 30 s), then Phase 4's third pull request and its close | 2026-09-30 | used by session 7, 2026-09-30. The memo (#37), the boards, steps 14 and 15 (#38) and the close of the phase are done |
 | 007 | `007-phase-4-5-test-caching.md` | Phase 4.5: caching of the checks, here and on GitHub, for Python and TypeScript; the plan first | 2026-09-30 | used by session 8, 2026-09-30. The plan, the three pull requests (#39, #40, #41) and the close are done |
-| 008 | `008-phase-5-studio-roof-array.md` | Phase 5: the plan, the boards it lacks, the first pull request of the 3D roof and the lenses | 2026-09-30 | open; next |
+| 008 | `008-phase-5-studio-roof-array.md` | Phase 5: the plan, the boards it lacks, the first pull request of the 3D roof and the lenses | 2026-09-30 | used by session 9, 2026-09-30 to 2026-10-02. The plan, the six boards, the five pull requests (#42 to #47) and the close are done |
 
 ## Shape of a prompt file
 
