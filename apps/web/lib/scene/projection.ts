@@ -1,6 +1,7 @@
 // What the DOM over the stage is told by the camera (plan/phase-05-plan.md, decision 6): the labels of
 // the roof's edges, which stand where the scene's points fall on the canvas, and the bearing that the
 // north control shows. Pure functions; the Projector projects and the components draw.
+import { Raycaster, Vector2, type Camera, type Ray } from "three";
 import { shown } from "../../components/ui/number-entry";
 import type { SceneXYZ, XY, XYZ } from "./adapter";
 
@@ -67,4 +68,26 @@ export function sameLabels(before: readonly StageLabel[], after: readonly StageL
       Math.round(label.y) === Math.round(other.y)
     );
   });
+}
+
+/** A stem shorter than this on screen, in pixels, points no way: the handle on it is not shown. */
+const NO_WAY_WITHIN = 0.5;
+
+/**
+ * Where a handle on a stem stands on the canvas: `length` pixels from the stem's foot, the way the second
+ * point lies from it on screen; null when the stem is seen end-on and points no way (the height handle in
+ * the plan).
+ */
+export function stemEndOf(foot: readonly [number, number], toward: readonly [number, number], length: number): [number, number] | null {
+  const [dx, dy] = [toward[0] - foot[0], toward[1] - foot[1]];
+  const apart = Math.hypot(dx, dy);
+  if (apart < NO_WAY_WITHIN) return null;
+  return [foot[0] + (dx / apart) * length, foot[1] + (dy / apart) * length];
+}
+
+/** The ray through the camera at a pixel of the canvas, from its top left: what a pointer on the DOM over the stage points at. */
+export function rayAt(camera: Camera, [px, py]: readonly [number, number], width: number, height: number): Ray {
+  const raycaster = new Raycaster();
+  raycaster.setFromCamera(new Vector2((px / width) * 2 - 1, 1 - (py / height) * 2), camera);
+  return raycaster.ray;
 }

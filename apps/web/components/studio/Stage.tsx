@@ -18,6 +18,7 @@ import { projectOf } from "@/lib/stores/project-store";
 import { layoutOf, readoutsOf, sunOf } from "@/lib/stores/results-store";
 import { draftOf, selectionOf, toReviewOf } from "@/lib/stores/view-store";
 import { Callout } from "./Callout";
+import { Handles } from "./Handles";
 import { Labels } from "./Labels";
 import { LayoutFailed } from "./LayoutFailed";
 import { PlanFallback } from "./PlanFallback";
@@ -76,6 +77,7 @@ export function Stage({ lens, name, className }: Props) {
       </div>
       {cannotDraw ? null : <Labels stage={stage} />}
       {cannotDraw ? null : <Callout stage={stage} />}
+      {cannotDraw ? null : <Handles stage={stage} />}
       <div className="pointer-events-none absolute inset-x-4 top-4 z-stage-overlay flex flex-col gap-0.5 tablet:inset-x-5 desktop:top-5 desktop:left-6">
         <h1 className="sr-only desktop:not-sr-only desktop:type-lens">{name}</h1>
         {line ? (

@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { bearingOf, labelPlacesOf, northWordsOf, pixelOf, sameLabels } from "./projection";
+import { OrthographicCamera, PerspectiveCamera } from "three";
+import { bearingOf, labelPlacesOf, northWordsOf, pixelOf, rayAt, sameLabels, stemEndOf } from "./projection";
 
 // What the DOM over the stage is told by the camera (plan decision 6): the labels of the roof's edges,
 // placed by projection, and the bearing of the north control. Bearings are degrees clockwise from north.
@@ -99,5 +100,48 @@ describe("a label with a name", () => {
   test("is the same only under the same name: the handles are told apart by it", () => {
     expect(sameLabels([corner], [{ ...corner }])).toBe(true);
     expect(sameLabels([corner], [{ ...corner, id: "corner-1" }])).toBe(false);
+  });
+});
+
+// A handle on a stem stands a number of pixels from the stem's foot, the way the stem points on screen.
+describe("the end of a stem", () => {
+  test("so many pixels from the foot toward the second point, whatever its distance", () => {
+    expect(stemEndOf([100, 100], [100, 90], 44)).toEqual([100, 56]);
+    expect(stemEndOf([100, 100], [103, 104], 40)).toEqual([124, 132]);
+  });
+
+  test("a stem seen end-on has no way to point: no handle", () => {
+    expect(stemEndOf([100, 100], [100.2, 100.1], 44)).toBeNull();
+  });
+});
+
+// A pointer on the DOM over the stage becomes a ray through the camera (plan step 19).
+describe("the ray at a pixel", () => {
+  /** To six decimals, a minus nought made nought. */
+  const rounded = (values: number[]) => values.map((value) => Number(value.toFixed(6)) + 0);
+
+  /** A camera 50 m up looking straight down, north up as the plan's camera is (straight down with up upward has no way to turn). */
+  function lookingDown<Kind extends PerspectiveCamera | OrthographicCamera>(camera: Kind): Kind {
+    camera.up.set(0, 0, -1);
+    camera.position.set(0, 50, 0);
+    camera.lookAt(0, 0, 0);
+    camera.updateMatrixWorld();
+    return camera;
+  }
+
+  test("through a perspective camera looking down, the middle of the canvas looks straight down", () => {
+    const ray = rayAt(lookingDown(new PerspectiveCamera(45, 4 / 3, 1, 100)), [400, 300], 800, 600);
+    expect(rounded(ray.origin.toArray())).toEqual([0, 50, 0]);
+    expect(rounded(ray.direction.toArray())).toEqual([0, -1, 0]);
+  });
+
+  test("a pixel right of the middle looks right of straight down", () => {
+    expect(rayAt(lookingDown(new PerspectiveCamera(45, 4 / 3, 1, 100)), [600, 300], 800, 600).direction.x).toBeGreaterThan(0);
+  });
+
+  test("through an orthographic camera every ray is parallel; the origin moves with the pixel", () => {
+    const ray = rayAt(lookingDown(new OrthographicCamera(-40, 40, 30, -30, 1, 100)), [600, 300], 800, 600);
+    expect(rounded(ray.direction.toArray())).toEqual([0, -1, 0]);
+    expect(ray.origin.x).toBeCloseTo(20, 6);
   });
 });

@@ -126,6 +126,8 @@ const STROKED = {
     </>
   ),
   tick: <path d="m5 12 5 5 9-10" />,
+  // The turn handle of an obstacle on the roof: an arrow around.
+  turn: <path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v4.5h-4.5" />,
   tree: (
     <>
       <path d="M12 21v-5" />

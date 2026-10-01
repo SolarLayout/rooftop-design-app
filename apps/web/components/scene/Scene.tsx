@@ -6,22 +6,23 @@ import { useProject, useResults, useStores, useView } from "@/components/shell/s
 import { frameOf } from "@/lib/scene/building";
 import { toScene, type XY, type XYZ } from "@/lib/scene/adapter";
 import { onTheRoofPlane } from "@/lib/scene/drag";
+import { handlePointsOf, type About } from "@/lib/scene/handles";
 import { anchorOf } from "@/lib/scene/keepout";
-import { anchorOfObstacle } from "@/lib/scene/obstacles";
+import { anchorOfObstacle, canBeDragged } from "@/lib/scene/obstacles";
 import { anchorOfModule, anchorOfRoof, selectionOfPick, type Picked } from "@/lib/scene/pick";
 import { labelPlacesOf } from "@/lib/scene/projection";
 import type { Cursor, StageStore } from "@/lib/scene/stage-store";
 import { projectOf } from "@/lib/stores/project-store";
 import { layoutOf, sunOf } from "@/lib/stores/results-store";
-import { draftOf, selectionOf, toReviewOf } from "@/lib/stores/view-store";
-import { withDraftAt } from "@/lib/studio/obstacle-fields";
+import { draftOf, draggingOf, selectionOf, toReviewOf } from "@/lib/stores/view-store";
+import { withDraftAt, withObstacleReplaced } from "@/lib/studio/obstacle-fields";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
 import { Building, BUILDING_DEPTH } from "./Building";
 import { CameraRig } from "./CameraRig";
 import { Ground } from "./Ground";
 import { KeepOut } from "./KeepOut";
 import { Modules } from "./Modules";
-import { Draft, Obstacles } from "./Obstacles";
+import { Footprint, Obstacles } from "./Obstacles";
 import { Projector, type Anchor } from "./Projector";
 import { SceneCanvas } from "./SceneCanvas";
 import { SunLight } from "./SunLight";
@@ -41,7 +42,8 @@ const ON_THE_ROOF = new Set<Picked["what"]>(["roof", "module", "keepout"]);
 /**
  * The 3D scene of the Studio: the design that is open, drawn from the stores, about the roof's centroid
  * (plan/phase-05-plan.md, decisions 1 and 2). It is loaded in the browser alone. A press selects what it
- * hit (decision 10); with a draft standing, a press on the roof places the draft there (decision 15).
+ * hit (decision 10); with a draft standing, a press on the roof places the draft there (decision 15); the
+ * selected obstacle is dragged on the roof plane and drawn where the pointer has it (decision 12).
  */
 export function Scene({ onContextLost, stage }: Props) {
   const project = useProject(projectOf);
@@ -50,12 +52,15 @@ export function Scene({ onContextLost, stage }: Props) {
   const selection = useView(selectionOf);
   const draft = useView(draftOf);
   const toReview = useView(toReviewOf);
-  const { view } = useStores();
+  const dragging = useView(draggingOf);
+  const { view, project: store } = useStores();
   const roof = project?.roof ?? null;
   const flushClearance = project?.array.flush_clearance_m ?? 0.1;
   const frame = useMemo(() => (roof ? frameOf(roof) : null), [roof]);
+  const about = useMemo<About | null>(() => (frame ? { centroid: frame.centroid, heightAt: frame.heightAt } : null), [frame]);
   // The labels of the roof's edges and the callout of what is selected (a kept-clear area, an obstacle, a
-  // draft obstacle, a module, the roof), anchored about the origin of the scene as the building is.
+  // draft obstacle, a module, the roof), anchored about the origin of the scene as the building is; the
+  // points the handles of the selected obstacle are placed by, of the obstacle as the pointer has it.
   const anchors = useMemo<Anchor[]>(() => {
     if (!roof || !frame) return [];
     const [cx, cy] = frame.centroid;
@@ -64,15 +69,19 @@ export function Scene({ onContextLost, stage }: Props) {
     const callout = (at: XYZ): Anchor => ({ words: "", at: about(at), kind: "callout" });
     if (draft) return [...labels, callout(anchorOfObstacle(draft, frame.heightAt))];
     if (selection?.kind === "roof") return [...labels, callout(anchorOfRoof(roof.outline, frame.heightAt))];
-    if (selection?.kind === "obstacle" && roof.obstacles[selection.index]) return [...labels, callout(anchorOfObstacle(roof.obstacles[selection.index], frame.heightAt))];
+    if (selection?.kind === "obstacle" && roof.obstacles[selection.index]) {
+      const obstacle = dragging?.index === selection.index ? dragging.obstacle : roof.obstacles[selection.index];
+      const handles = dragging?.by === "move" ? [] : handlePointsOf(obstacle, frame.heightAt).map(({ id, at }): Anchor => ({ words: "", at: about(at), kind: "handle", id }));
+      return [...labels, callout(anchorOfObstacle(obstacle, frame.heightAt)), ...handles];
+    }
     const position = selection?.kind === "module" ? layout?.layout.modules[selection.index] : undefined;
     if (position) return [...labels, callout(anchorOfModule(position, frame.heightAt))];
     const part = selection?.kind === "keepout" ? layout?.layout.keepout[selection.index] : undefined;
     const hung = part ? anchorOf(part) : null;
     return hung ? [...labels, callout([hung[0], hung[1], frame.heightAt(hung)])] : labels;
-  }, [roof, frame, layout, selection, draft]);
+  }, [roof, frame, layout, selection, draft, dragging]);
 
-  if (!roof || !frame) return null;
+  if (!roof || !frame || !about) return null;
   const [cx, cy] = frame.centroid;
   const [ox, oy, oz] = toScene([-cx, -cy, 0]);
   const sunAt = sun ? { elevationDeg: sun.elevationDeg, azimuthDeg: sun.azimuthDeg } : null;
@@ -103,13 +112,20 @@ export function Scene({ onContextLost, stage }: Props) {
         <Building roof={roof} onPressRoof={(event) => pressed({ what: "roof" }, event)} onOverRoof={over("roof", "pointer")} />
         <Obstacles
           obstacles={roof.obstacles}
-          heightAt={frame.heightAt}
           selected={selection?.kind === "obstacle" ? selection.index : null}
           toReview={toReview}
           onSelect={(index) => pressed({ what: "obstacle", index })}
-          onOver={(index, isOver) => over(`obstacle-${index}`, "pointer")(isOver)}
+          onOver={(index, isOver) => over(`obstacle-${index}`, selection?.kind === "obstacle" && selection.index === index && canBeDragged(roof.obstacles[index]) ? "grab" : "pointer")(isOver)}
+          about={about}
+          roofOutline={roof.outline}
+          dragging={dragging}
+          onDrag={(next) => {
+            view.getState().setDragging(next);
+            stage.getState().setOver("drag", next ? "grabbing" : null);
+          }}
+          onDrop={(index, obstacle) => store.getState().commit((design) => withObstacleReplaced(design, index, obstacle))}
         />
-        {draft ? <Draft draft={draft} heightAt={frame.heightAt} /> : null}
+        {draft ? <Footprint obstacle={draft} heightAt={frame.heightAt} /> : null}
         {layout ? (
           <Modules
             layout={layout.layout}

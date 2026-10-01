@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
+import type { Obstacle } from "../api";
 import type { DraftObstacle } from "../studio/obstacle-fields";
-import { cameraOf, cameraRequestOf, createViewStore, draftOf, lensOf, northRequestOf, selectionOf, sunTimeOf, toReviewOf } from "./view-store";
+import { cameraOf, cameraRequestOf, createViewStore, draftOf, draggingOf, lensOf, northRequestOf, selectionOf, sunTimeOf, toReviewOf } from "./view-store";
 
 describe("the view", () => {
   test("it begins on the first lens, in 3D, on the design day", () => {
@@ -178,5 +179,32 @@ describe("the draft obstacle", () => {
     store.getState().setDraft(draft);
     store.getState().setDraft(null);
     expect(draftOf(store.getState())).toBeNull();
+  });
+});
+
+// An obstacle while it is dragged (plan step 19, decision 12): of the view until the drop commits it; the scene
+// draws it where the pointer has it, the list says its live values.
+describe("the drag", () => {
+  const stairRoom: Obstacle = { name: "Stair room", kind: "box", x: 22.5, y: 18, length: 5, width: 4, rotation_deg: 0, diameter: 1, height: 3, thickness: 0.2, trunk_height: 2, points: [], auto: false };
+
+  test("nothing is dragged at the start; a drag is the obstacle as the pointer has it; null ends it", () => {
+    const store = createViewStore();
+    expect(draggingOf(store.getState())).toBeNull();
+
+    store.getState().setDragging({ index: 0, by: "move", obstacle: { ...stairRoom, x: 27.5 } });
+    expect(draggingOf(store.getState())).toEqual({ index: 0, by: "move", obstacle: { ...stairRoom, x: 27.5 } });
+
+    store.getState().setDragging(null);
+    expect(draggingOf(store.getState())).toBeNull();
+  });
+
+  test("the same obstacle at the same place, told again, leaves the state as it is: the pointer moves more often than the snap", () => {
+    const store = createViewStore();
+    store.getState().setDragging({ index: 0, by: "move", obstacle: { ...stairRoom, x: 27.5 } });
+    const before = store.getState();
+
+    store.getState().setDragging({ index: 0, by: "move", obstacle: { ...stairRoom, x: 27.5 } });
+
+    expect(store.getState()).toBe(before);
   });
 });

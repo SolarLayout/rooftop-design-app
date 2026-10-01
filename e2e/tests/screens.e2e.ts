@@ -3,7 +3,7 @@ import path from "node:path";
 import { expect, test } from "../fixtures";
 import { expectScreen } from "../screens";
 import { A_MAP, findOpened, roofMap, scaleLabel, searchField } from "../find";
-import { sceneSettled } from "../stage";
+import { boxFrameOf, handlesSettled, inThePlan, metresFrom, sceneSettled, zoomedInAt } from "../stage";
 
 // Each screen against its baseline in e2e/baselines. After a change that is meant, look at the new
 // picture beside the preview in docs/design/previews, then renew the baseline:
@@ -224,6 +224,32 @@ test.describe("the shell", () => {
 
     await sceneSettled(page);
     await expectScreen(page, "studio-roof-obstacle");
+  });
+
+  // The stair room mid-drag, as the board "Obstacle edited on the roof" draws it: in the plan, zoomed in about
+  // it, the pointer held down with the stair room moved 5 m east, its old place a dashed ghost, the live place
+  // beside the pointer, the handles away. The picture is taken before the pointer is let go. On phone the sheet
+  // stays at its half stop, so that the stage is in the picture.
+  test("studio, an obstacle dragged", async ({ page }, testInfo) => {
+    await page.goto("/studio/roof");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await page.getByTestId("obstacle-row").filter({ hasText: "Stair room" }).click();
+    await expect(page.getByTestId("stage-callout")).toContainText("Stair room · selected", { timeout: RUN });
+    await sceneSettled(page);
+    const point = await inThePlan(page);
+    await zoomedInAt(page, point(22.5, 18), 5, Boolean(testInfo.project.use.hasTouch));
+    await handlesSettled(page);
+    const frame = await boxFrameOf(page, 5, 4);
+    const to = metresFrom(frame, 5, 0);
+
+    await page.mouse.move(frame.x, frame.y);
+    await page.mouse.down();
+    await page.mouse.move(to.x, to.y, { steps: 6 });
+    await expect(page.getByTestId("stage-live")).toHaveText("East 27.5 m · North 18.0 m", { timeout: RUN });
+    await expect(page.getByTestId("stage-handle")).toHaveCount(0);
+
+    await expectScreen(page, "studio-obstacle-dragged");
+    await page.mouse.up();
   });
 
   // The Roof lens after a KML without every height is imported, as the board "Import with missing heights"

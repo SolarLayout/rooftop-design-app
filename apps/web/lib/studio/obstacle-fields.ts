@@ -3,7 +3,7 @@
 // inspector renders them; a committed value is an edit of the obstacle.
 import type { Range } from "../../components/ui/number-entry";
 import { shown } from "../../components/ui/number-entry";
-import type { Obstacle, Roof } from "../api";
+import type { Obstacle, Project, Roof } from "../api";
 import { areaOf, type XY as XYOf } from "../outline/measure";
 import type { XY } from "../scene/adapter";
 
@@ -100,6 +100,12 @@ export function withPointRemoved<Kind extends WithPoints>(obstacle: Kind, index:
 export function withObstacleAt(roof: Roof, index: number, obstacle: Obstacle): Roof {
   if (roof.obstacles[index] === obstacle) return roof;
   return { ...roof, obstacles: roof.obstacles.map((one, n) => (n === index ? obstacle : one)) };
+}
+
+/** The design with the obstacle at `index` replaced, as the drop of a drag commits it in one edit (decision 12); the same design when it is the same obstacle. */
+export function withObstacleReplaced(design: Project, index: number, obstacle: Obstacle): Project {
+  const roof = withObstacleAt(design.roof, index, obstacle);
+  return roof === design.roof ? design : { ...design, roof };
 }
 
 /** The roof without the obstacle at `index`. */

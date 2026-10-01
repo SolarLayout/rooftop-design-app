@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { Obstacle } from "../api";
-import type { Roof } from "../api";
-import { factOfNewKind, factsOf, FEWEST_POINTS, fieldsOfObstacle, newObstacleOf, OBSTACLE_KINDS, withDraftAt, withObstacleAdded, withObstacleAt, withObstacleField, withoutObstacleAt, withPoint, withPointAdded, withPointRemoved } from "./obstacle-fields";
+import type { Project, Roof } from "../api";
+import { factOfNewKind, factsOf, FEWEST_POINTS, fieldsOfObstacle, newObstacleOf, OBSTACLE_KINDS, withDraftAt, withObstacleAdded, withObstacleAt, withObstacleField, withObstacleReplaced, withoutObstacleAt, withPoint, withPointAdded, withPointRemoved } from "./obstacle-fields";
 
 // The obstacles of the Roof lens (plan/phase-05-plan.md, step 12, decision 15; the board "Obstacle edited
 // on the roof"): the fields of each kind from plan/reference/functional-inventory.md, 1.2, and what a new
@@ -167,6 +167,15 @@ describe("the obstacles of the roof", () => {
 
   test("one is taken away at its index", () => {
     expect(withoutObstacleAt(roof, 0).obstacles).toEqual([roof.obstacles[1]]);
+  });
+
+  test("the design with one replaced: one edit of the drop of a drag; the same one is the same design", () => {
+    const design = { name: "A roof", roof } as Project;
+    const moved = withObstacleField(roof.obstacles[0], "x", 27.5);
+    const after = withObstacleReplaced(design, 0, moved);
+    expect(after.roof.obstacles[0]).toBe(moved);
+    expect(after.name).toBe("A roof");
+    expect(withObstacleReplaced(design, 0, roof.obstacles[0])).toBe(design);
   });
 
   test("a draft joins the roof with its height, at the end", () => {

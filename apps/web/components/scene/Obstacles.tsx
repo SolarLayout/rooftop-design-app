@@ -1,19 +1,20 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useThree, type ThreeEvent } from "@react-three/fiber";
+import { useMemo, useRef, useState } from "react";
 import { BoxGeometry, BufferGeometry, CylinderGeometry, EdgesGeometry, ExtrudeGeometry, Float32BufferAttribute, MeshStandardMaterial, Shape, Vector2 } from "three";
 import type { Obstacle } from "@/lib/api";
 import { FLAT, toScene, toScenePoint, type XY } from "@/lib/scene/adapter";
-import { footprintOf, ROUND_SEGMENTS, solidsOf, type HeightAt, type Look, type Solid } from "@/lib/scene/obstacles";
-import type { DraftObstacle } from "@/lib/studio/obstacle-fields";
+import { halfSidesOf, movedTo, onTheRoofPlane, type Dragging } from "@/lib/scene/drag";
+import type { About } from "@/lib/scene/handles";
+import { canBeDragged, footprintOf, ROUND_SEGMENTS, solidsOf, type HeightAt, type Look, type Solid } from "@/lib/scene/obstacles";
+import { withObstacleField, type DraftObstacle } from "@/lib/studio/obstacle-fields";
 import { PALETTE, type PaletteName } from "@/lib/scene-palette";
 import { canHover, onPress } from "./pointer";
 
 type Props = {
   /** The roof's obstacles, in their order in the document: an index into them names one. */
   obstacles: readonly Obstacle[];
-  /** The height of the roof surface at a point of the plan, from the frame of the scene. */
-  heightAt: HeightAt;
   /** The index of the selected obstacle; null for none. */
   selected: number | null;
   /** The names of the obstacles whose height is still to be reviewed: drawn with a dashed outline. */
@@ -21,6 +22,15 @@ type Props = {
   onSelect: (index: number) => void;
   /** The pointer came over an obstacle, or left it, by its index. */
   onOver?: (index: number, isOver: boolean) => void;
+  /** The frame of the scene and the roof's outline: a drag stays on the roof plane and inside the roof (decision 12). */
+  about: About;
+  roofOutline: readonly XY[];
+  /** The obstacle the pointer drags, as the pointer has it; null while none is. The scene draws it there. */
+  dragging: Dragging | null;
+  /** The drag as it goes: told on each move, null when it ends. */
+  onDrag: (dragging: Dragging | null) => void;
+  /** The drop: the obstacle at `index` becomes `obstacle`, one edit. */
+  onDrop: (index: number, obstacle: Obstacle) => void;
 };
 
 const ROUGHNESS = 0.9;
@@ -123,17 +133,80 @@ function SolidMesh({ solid, unitBox, materials }: SolidProps) {
   return <mesh geometry={geometry} material={[materials.top, materials.lit]} rotation={rotation} position={position} castShadow receiveShadow />;
 }
 
-type OneProps = { solids: Solid[]; index: number; isSelected: boolean; isToReview: boolean; onSelect: Props["onSelect"]; onOver: Props["onOver"]; unitBox: BoxGeometry; materials: Materials };
+/** What the controls of the camera are to a drag: on or off. They are the default controls of the scene (CameraRig). */
+type Controls = { enabled: boolean } | null;
 
-/** One obstacle: its solids, its outline when it is selected, under the pointer, or not yet real; a press selects it. */
-function One({ solids, index, isSelected, isToReview, onSelect, onOver, unitBox, materials }: OneProps) {
+/** A drag that has begun: where the press met the roof plane, about the origin of the scene, and the plane's height. */
+type Press = { from: XY; height: number };
+
+type OneProps = Pick<Props, "onSelect" | "onOver" | "about" | "roofOutline" | "onDrag" | "onDrop"> & {
+  obstacle: Obstacle;
+  shown: Obstacle;
+  index: number;
+  isSelected: boolean;
+  isToReview: boolean;
+  isDragged: boolean;
+  unitBox: BoxGeometry;
+  materials: Materials;
+};
+
+/**
+ * One obstacle: its solids, its outline when it is selected, under the pointer, or not yet real; a press
+ * selects it. Selected, a press on it begins a drag on the roof plane (decision 12): the pointer is
+ * captured, the orbit of the camera is off while the drag lasts, the obstacle follows the pointer snapped
+ * and kept inside the roof, and the drop commits it; its old place stays as a dashed ghost meanwhile.
+ */
+function One({ obstacle, shown, index, isSelected, isToReview, isDragged, onSelect, onOver, about, roofOutline, onDrag, onDrop, unitBox, materials }: OneProps) {
   const [isHovered, setHovered] = useState(false);
+  const get = useThree((state) => state.get);
+  const press = useRef<Press | null>(null);
   const look: OutlineLook | null = isSelected ? "selected" : isToReview ? "to-review" : isHovered ? "hover" : null;
+  const solids = useMemo(() => solidsOf(shown, about.heightAt), [shown, about]);
+  const canDrag = isSelected && canBeDragged(obstacle);
+
+  /** The orbit of the camera, off while the drag lasts: the same press must not turn the roof. */
+  function orbit(isOn: boolean) {
+    const controls = get().controls as Controls;
+    if (controls) controls.enabled = isOn;
+  }
+
+  function begin(event: ThreeEvent<PointerEvent>) {
+    if (!canDrag || event.button !== 0) return;
+    const height = about.heightAt([obstacle.x, obstacle.y]);
+    const from = onTheRoofPlane(event.ray, height);
+    if (!from) return;
+    event.stopPropagation();
+    (event.target as Element).setPointerCapture(event.pointerId);
+    orbit(false);
+    press.current = { from, height };
+  }
+
+  function move(event: ThreeEvent<PointerEvent>) {
+    if (!press.current) return;
+    const to = onTheRoofPlane(event.ray, press.current.height);
+    if (!to) return;
+    const [x, y] = movedTo({ x: obstacle.x, y: obstacle.y, ...halfSidesOf(obstacle) }, { from: press.current.from, to }, roofOutline);
+    onDrag({ index, by: "move", obstacle: withObstacleField(withObstacleField(obstacle, "x", x), "y", y) });
+  }
+
+  function end(event: ThreeEvent<PointerEvent>, isDropped: boolean) {
+    if (!press.current) return;
+    press.current = null;
+    (event.target as Element).releasePointerCapture(event.pointerId);
+    orbit(true);
+    if (isDropped && shown !== obstacle) onDrop(index, shown);
+    onDrag(null);
+  }
 
   return (
     <group
       userData={{ obstacle: index }}
       onClick={(event) => onPress(event, () => onSelect(index))}
+      onPointerDown={begin}
+      onPointerMove={move}
+      onPointerUp={(event) => end(event, true)}
+      onPointerCancel={(event) => end(event, false)}
+      onLostPointerCapture={(event) => end(event, false)}
       onPointerOver={(event) => {
         event.stopPropagation();
         onOver?.(index, true);
@@ -144,6 +217,7 @@ function One({ solids, index, isSelected, isToReview, onSelect, onOver, unitBox,
         setHovered(false);
       }}
     >
+      {isDragged ? <Footprint obstacle={obstacle} heightAt={about.heightAt} /> : null}
       {solids.map((solid, n) => (
         <SolidMesh key={n} solid={solid} unitBox={unitBox} materials={materials} />
       ))}
@@ -158,23 +232,28 @@ function One({ solids, index, isSelected, isToReview, onSelect, onOver, unitBox,
  * pointer a lighter one, one whose height is to be reviewed a dashed one; a press on one selects it
  * (decision 10). What the engine added itself is not drawn: the building draws the parapet.
  */
-export function Obstacles({ obstacles, heightAt, selected, toReview, onSelect, onOver }: Props) {
-  const solids = useMemo(() => obstacles.map((obstacle) => solidsOf(obstacle, heightAt)), [obstacles, heightAt]);
+export function Obstacles({ obstacles, selected, toReview, onSelect, onOver, about, roofOutline, dragging, onDrag, onDrop }: Props) {
   const unitBox = useMemo(() => new BoxGeometry(1, 1, 1), []);
   const materials = useMemo(() => materialsOf(), []);
 
   return (
     <group>
-      {solids.map((ofObstacle, index) =>
-        ofObstacle.length === 0 ? null : (
+      {obstacles.map((obstacle, index) =>
+        obstacle.auto ? null : (
           <One
             key={index}
-            solids={ofObstacle}
+            obstacle={obstacle}
+            shown={dragging?.index === index ? dragging.obstacle : obstacle}
             index={index}
             isSelected={selected === index}
-            isToReview={toReview.includes(obstacles[index].name)}
+            isToReview={toReview.includes(obstacle.name)}
+            isDragged={dragging?.index === index && dragging.by === "move"}
             onSelect={onSelect}
             onOver={onOver}
+            about={about}
+            roofOutline={roofOutline}
+            onDrag={onDrag}
+            onDrop={onDrop}
             unitBox={unitBox}
             materials={materials}
           />
@@ -196,14 +275,15 @@ function segmentsOf(points: readonly XY[], closed: boolean, heightAt: HeightAt):
 }
 
 /**
- * A new obstacle before it has a height (decision 15): its footprint on the roof, dashed, in the accent. The
- * draft is of the view, not of the document, so the scene draws it from the view store.
+ * The footprint of an obstacle on the roof, dashed, in the accent: a new obstacle before it has a height
+ * (decision 15; the draft is of the view, not of the document, so the scene draws it from the view
+ * store), and the old place of an obstacle while it is dragged, as its ghost (decision 12).
  */
-export function Draft({ draft, heightAt }: { draft: DraftObstacle; heightAt: HeightAt }) {
+export function Footprint({ obstacle, heightAt }: { obstacle: Obstacle | DraftObstacle; heightAt: HeightAt }) {
   const geometry = useMemo(() => {
-    const { points, closed } = footprintOf(draft);
+    const { points, closed } = footprintOf(obstacle);
     return segmentsOf(points, closed, heightAt);
-  }, [draft, heightAt]);
+  }, [obstacle, heightAt]);
   return (
     <lineSegments geometry={geometry} onUpdate={(line) => line.computeLineDistances()}>
       <lineDashedMaterial color={PALETTE.selection} {...DASH} toneMapped={false} />

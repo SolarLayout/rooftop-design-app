@@ -10,7 +10,7 @@ import { calloutOfModule, calloutOfRoof } from "@/lib/scene/pick";
 import { labelsOf, type StageStore } from "@/lib/scene/stage-store";
 import { projectOf } from "@/lib/stores/project-store";
 import { layoutOf } from "@/lib/stores/results-store";
-import { draftOf, selectionOf, toReviewOf, type Selection } from "@/lib/stores/view-store";
+import { draftOf, draggingOf, selectionOf, toReviewOf, type Selection } from "@/lib/stores/view-store";
 import type { DraftObstacle } from "@/lib/studio/obstacle-fields";
 
 type Props = { stage: StageStore };
@@ -48,11 +48,13 @@ export function Callout({ stage }: Props) {
   const selection = useView(selectionOf);
   const draft = useView(draftOf);
   const toReview = useView(toReviewOf);
+  const dragging = useView(draggingOf);
   const project = useProject(projectOf);
   const layout = useResults(layoutOf);
   const hung = useStore(stage, labelsOf).find((label) => label.kind === "callout");
 
-  if (!project || !hung?.visible) return null;
+  // While a drag lasts the live label beside the pointer says what changes; the callout waits for the drop.
+  if (!project || !hung?.visible || dragging) return null;
   const words = wordsOf({ selection, draft, toReview, project, layout: layout?.layout ?? null });
   if (!words) return null;
 
