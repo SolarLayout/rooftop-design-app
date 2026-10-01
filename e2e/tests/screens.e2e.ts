@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-import type { Page } from "@playwright/test";
-import path from "node:path";
-=======
 import type { Page, Route } from "@playwright/test";
->>>>>>> 771a4fb (Studio: the line dimmed while a layout is on its way, a chip when it failed (Phase 5, step 16))
+import path from "node:path";
 import { expect, test } from "../fixtures";
 import { expectScreen } from "../screens";
 import { A_MAP, findOpened, roofMap, scaleLabel, searchField } from "../find";
