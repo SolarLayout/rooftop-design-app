@@ -89,7 +89,8 @@ export function NumberField({ label, value, onCommit, range, unit, labelInside =
           data-testid="well"
           data-shown-as={shownAs}
           className={classNames(
-            "flex h-12 items-center gap-1.5 rounded-row px-3.5 desktop:h-9 desktop:rounded-control desktop:px-3",
+            // On touch the wells of a column are all as wide, whatever their unit (the board "Studio, Roof lens, phone").
+            "flex h-12 w-33 items-center justify-end gap-1.5 rounded-row px-3.5 desktop:h-9 desktop:w-auto desktop:justify-start desktop:rounded-control desktop:px-3",
             WELL,
             dim,
           )}

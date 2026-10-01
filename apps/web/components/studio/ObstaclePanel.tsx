@@ -48,7 +48,7 @@ export const ICON_OF_KIND: Record<ObstacleKind, IconName> = { box: "box", cylind
 /** A point of a wall or a building: metres east and north, as the corners of "Enter dimensions by hand". */
 const POINT = { min: -5000, max: 5000, decimals: 2 };
 
-const ROW = "flex h-11.5 items-center gap-2.5 rounded-row border border-line bg-surface-1 px-3 text-left cursor-pointer press-motion focus-ring hovered:bg-surface-2";
+const ROW = "flex h-11.5 w-full items-center gap-2.5 rounded-row border border-line bg-surface-1 px-3 text-left cursor-pointer press-motion focus-ring hovered:bg-surface-2";
 const CARD = "flex flex-col gap-2.5 rounded-row border border-accent bg-note-surface p-3 shadow-halo-selected";
 
 /** The design with its roof changed; the same design when the roof is the same. */

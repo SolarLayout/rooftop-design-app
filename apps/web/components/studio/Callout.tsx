@@ -51,10 +51,12 @@ export function Callout({ stage }: Props) {
 
   return (
     <div className="pointer-events-none absolute inset-0 z-stage-overlay overflow-hidden contain-layout">
-      <div data-testid="stage-callout" role="status" className="placed flex flex-col items-start" style={measures({ x: hung.x, y: hung.y })}>
-        <span className="block size-2.25 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent" />
-        <span className="-mt-1.75 block h-10 w-px -translate-x-1/2 -translate-y-full bg-accent" />
-        <div className="-translate-y-22 flex flex-col gap-0.5 rounded-row border border-note-line bg-surface-1 px-3.5 py-2.5 shadow-float">
+      {/* The anchor is a point: the dot is centred on it, the line rises from it, the chip stands on the line
+          (docs/design/components.md, "Callout on the stage"). */}
+      <div data-testid="stage-callout" role="status" className="placed size-0" style={measures({ x: hung.x, y: hung.y })}>
+        <span className="absolute top-0 left-0 block size-2.25 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent" />
+        <span className="absolute bottom-0 left-0 block h-10 w-px -translate-x-1/2 bg-accent" />
+        <div className="absolute bottom-10 left-0 flex -translate-x-1/2 flex-col gap-0.5 rounded-row border border-note-line bg-surface-1 px-3.5 py-2.5 shadow-float">
           <span className="type-small font-medium whitespace-nowrap text-text">{words.title}</span>
           <span className="type-caption whitespace-nowrap text-text-2">{words.detail}</span>
         </div>
