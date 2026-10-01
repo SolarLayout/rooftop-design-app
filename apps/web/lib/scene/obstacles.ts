@@ -5,7 +5,9 @@
 import { shown } from "../../components/ui/number-entry";
 import type { Obstacle } from "../api";
 import { areaOf, centroidOf } from "../outline/measure";
-import type { Box, XY } from "./adapter";
+import { lengthOf, type DraftObstacle } from "../studio/obstacle-fields";
+import type { Box, XY, XYZ } from "./adapter";
+import type { Callout } from "./keepout";
 
 /** What a cylinder is painted as: an obstacle, or a part of a tree. */
 export type Look = "obstacle" | "trunk" | "crown";
@@ -63,11 +65,6 @@ export function solidsOf(obstacle: Obstacle, heightAt: HeightAt): Solid[] {
   return [{ kind: "prism", points: points.map(([px, py]) => [px, py]), zBottom: heightAt([centre.x, centre.y]), height }];
 }
 
-/** The length of a polyline, point to point. */
-function lengthOf(points: readonly XY[]): number {
-  return points.slice(1).reduce((sum, [px, py], n) => sum + Math.hypot(px - points[n][0], py - points[n][1]), 0);
-}
-
 /** The size of an obstacle, in the words of the Roof lens's list (`sizeOf` of lib/outline/obstacles.ts). */
 function sizeWordsOf(obstacle: Obstacle): string {
   const { kind, points } = obstacle;
@@ -81,4 +78,98 @@ function sizeWordsOf(obstacle: Obstacle): string {
 /** The text equivalent of an obstacle: its name, its kind and size, its height. */
 export function wordsOf(obstacle: Obstacle): string {
   return `${obstacle.name}, ${sizeWordsOf(obstacle)}, ${shown(obstacle.height, 1)} m high`;
+}
+
+/** A cylinder's side, and the circle of a footprint, are this many flat faces, as the engine's discs are. */
+export const ROUND_SEGMENTS = 24;
+
+/** Why the callout of an obstacle stands: it is selected, it is a draft, or its height is to be reviewed. */
+export type ObstacleState = "selected" | "draft" | "to-review";
+
+/** The size of an obstacle with its unit, as its callout says it. */
+function sizeInMetres(obstacle: Obstacle | DraftObstacle): string {
+  const { kind, points } = obstacle;
+  if (kind === "box") return `${shown(obstacle.length, 1)} × ${shown(obstacle.width, 1)} m`;
+  if (kind === "cylinder") return `⌀ ${shown(obstacle.diameter, 1)} m`;
+  if (kind === "tree") return `crown ⌀ ${shown(obstacle.diameter, 1)} m`;
+  if (kind === "wall") return `${shown(lengthOf(points), 1)} m long`;
+  return `${shown(Math.round(areaOf(points.map(([x, y]) => ({ x, y })))), 0)} m²`;
+}
+
+/**
+ * The callout of an obstacle (the boards "Obstacle edited on the roof" and "Import with missing heights"):
+ * its name and why it stands out, then its size and its height, or what its height waits for.
+ */
+export function calloutOfObstacle(obstacle: Obstacle | DraftObstacle, state: ObstacleState): Callout {
+  const title = `${obstacle.name} · ${state === "draft" ? "draft" : "selected"}`;
+  if (state === "draft" || obstacle.height === null) return { title, detail: `${sizeInMetres(obstacle)} · type its height to add it` };
+  if (state === "to-review") return { title, detail: `${sizeInMetres(obstacle)} · height to review` };
+  if (obstacle.kind === "tree") {
+    return { title, detail: `${sizeInMetres(obstacle)} from ${shown(obstacle.trunk_height, 1)} to ${shown(obstacle.height, 1)} m` };
+  }
+  return { title, detail: `${sizeInMetres(obstacle)} · ${shown(obstacle.height, 1)} m high` };
+}
+
+/** The point of a polyline half way along it. */
+function halfWayAlong(points: readonly XY[]): XY {
+  const half = lengthOf(points) / 2;
+  let walked = 0;
+  for (let n = 1; n < points.length; n += 1) {
+    const [a, b] = [points[n - 1], points[n]];
+    const step = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    if (walked + step >= half && step > 0) {
+      const share = (half - walked) / step;
+      return [a[0] + (b[0] - a[0]) * share, a[1] + (b[1] - a[1]) * share];
+    }
+    walked += step;
+  }
+  return points[0] ?? [0, 0];
+}
+
+/** The centre of an obstacle's plan: where it stands, half way along a wall, the centroid of a building. */
+export function centreOf(obstacle: Obstacle | DraftObstacle): XY {
+  if (obstacle.kind === "wall") return halfWayAlong(obstacle.points);
+  if (obstacle.kind === "building") {
+    const { x, y } = centroidOf(obstacle.points.map(([px, py]) => ({ x: px, y: py })));
+    return [x, y];
+  }
+  return [obstacle.x, obstacle.y];
+}
+
+/** Where the callout of an obstacle is hung: the top of the obstacle over its centre; a draft has no height, so the roof. */
+export function anchorOfObstacle(obstacle: Obstacle | DraftObstacle, heightAt: HeightAt): XYZ {
+  const [x, y] = centreOf(obstacle);
+  return [x, y, heightAt([x, y]) + (obstacle.height ?? 0)];
+}
+
+export type Footprint = { points: readonly XY[]; closed: boolean };
+
+/** A circle about a centre, as a ring of flat segments. */
+function circleOf([cx, cy]: XY, radius: number): XY[] {
+  return Array.from({ length: ROUND_SEGMENTS }, (_, n) => {
+    const angle = (2 * Math.PI * n) / ROUND_SEGMENTS;
+    return [cx + radius * Math.cos(angle), cy + radius * Math.sin(angle)];
+  });
+}
+
+/**
+ * The footprint of an obstacle on the roof plane: a box's corners turned about its centre, counter-clockwise
+ * from the south-west as the engine turns it; a tank's or a tree's crown as a circle; a wall's points, open;
+ * a building's, closed. A draft is drawn by it, dashed, before it has a height (decision 15).
+ */
+export function footprintOf(obstacle: Obstacle | DraftObstacle): Footprint {
+  const { kind, x, y, points } = obstacle;
+  if (kind === "wall") return { points, closed: false };
+  if (kind === "building") return { points, closed: true };
+  if (kind === "cylinder" || kind === "tree") return { points: circleOf([x, y], obstacle.diameter / 2), closed: true };
+  const turn = (obstacle.rotation_deg * Math.PI) / 180;
+  const [cos, sin] = [Math.cos(turn), Math.sin(turn)];
+  const [half, deep] = [obstacle.length / 2, obstacle.width / 2];
+  const corners: XY[] = [
+    [-half, -deep],
+    [half, -deep],
+    [half, deep],
+    [-half, deep],
+  ];
+  return { points: corners.map(([dx, dy]) => [x + dx * cos - dy * sin, y + dx * sin + dy * cos]), closed: true };
 }

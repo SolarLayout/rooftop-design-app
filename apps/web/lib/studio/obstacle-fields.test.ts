@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { Obstacle } from "../api";
-import { factsOf, fieldsOfObstacle, newObstacleOf, OBSTACLE_KINDS, withObstacleField } from "./obstacle-fields";
+import type { Roof } from "../api";
+import { factOfNewKind, factsOf, FEWEST_POINTS, fieldsOfObstacle, newObstacleOf, OBSTACLE_KINDS, withObstacleAdded, withObstacleAt, withObstacleField, withoutObstacleAt, withPoint, withPointAdded, withPointRemoved } from "./obstacle-fields";
 
 // The obstacles of the Roof lens (plan/phase-05-plan.md, step 12, decision 15; the board "Obstacle edited
 // on the roof"): the fields of each kind from plan/reference/functional-inventory.md, 1.2, and what a new
@@ -120,5 +121,58 @@ describe("the edit a field makes", () => {
     expect(after.x).toBe(27.5);
     expect(after.name).toBe("Stair room");
     expect(withObstacleField(box(), "x", 22.5)).toEqual(box());
+  });
+});
+
+describe("the Add menu", () => {
+  test("says the size a new one of each kind gets", () => {
+    expect(OBSTACLE_KINDS.map((kind) => factOfNewKind(kind.id))).toEqual(["2.0 × 2.0 m", "⌀ 2.0 m", "6.0 m, points", "crown ⌀ 4.0 m", "beside the roof, points"]);
+  });
+});
+
+describe("the points of a wall and of a building", () => {
+  const wall = box({ kind: "wall", points: [[0, 0], [6, 0]] });
+  const building = box({ kind: "building", points: [[0, 0], [8, 0], [8, 8]] });
+
+  test("a wall keeps two at least, a building three", () => {
+    expect(FEWEST_POINTS).toEqual({ wall: 2, building: 3 });
+  });
+
+  test("a point is moved; the same point is the same obstacle", () => {
+    expect(withPoint(wall, 1, [7, 1]).points).toEqual([[0, 0], [7, 1]]);
+    expect(withPoint(wall, 1, [6, 0])).toBe(wall);
+  });
+
+  test("a wall's new point goes on along its last segment; a building's at the middle of its closing edge", () => {
+    expect(withPointAdded(wall).points).toEqual([[0, 0], [6, 0], [12, 0]]);
+    expect(withPointAdded(building).points).toEqual([[0, 0], [8, 0], [8, 8], [4, 4]]);
+  });
+
+  test("a point is removed, down to the fewest; the fewest stay", () => {
+    expect(withPointRemoved(withPointAdded(building), 1).points).toEqual([[0, 0], [8, 8], [4, 4]]);
+    expect(withPointRemoved(building, 1)).toBe(building);
+    expect(withPointRemoved(wall, 0)).toBe(wall);
+    expect(withPointRemoved(withPointAdded(wall), 0).points).toEqual([[6, 0], [12, 0]]);
+  });
+});
+
+describe("the obstacles of the roof", () => {
+  const roof = { obstacles: [box(), box({ name: "Water tank", kind: "cylinder" })] } as Roof;
+
+  test("one is replaced at its index; the same one is the same roof", () => {
+    const moved = withObstacleField(roof.obstacles[0], "x", 27.5);
+    expect(withObstacleAt(roof, 0, moved).obstacles).toEqual([moved, roof.obstacles[1]]);
+    expect(withObstacleAt(roof, 0, roof.obstacles[0])).toBe(roof);
+  });
+
+  test("one is taken away at its index", () => {
+    expect(withoutObstacleAt(roof, 0).obstacles).toEqual([roof.obstacles[1]]);
+  });
+
+  test("a draft joins the roof with its height, at the end", () => {
+    const draft = newObstacleOf("tree", [45, 20], roof.obstacles);
+    const after = withObstacleAdded(roof, draft, 6);
+    expect(after.obstacles).toHaveLength(3);
+    expect(after.obstacles[2]).toMatchObject({ name: "Tree 1", kind: "tree", height: 6, trunk_height: 2, diameter: 4 });
   });
 });

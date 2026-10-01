@@ -68,7 +68,7 @@ export function NumberField({ label, value, onCommit, range, unit, labelInside =
           data-shown-as={shownAs}
           className={classNames("flex h-11 items-center gap-2 rounded-control px-3", WELL, dim)}
         >
-          <span id={names.label} className={labelHidden ? "sr-only" : "grow text-text-2"}>
+          <span id={names.label} className={labelHidden ? "sr-only" : "grow whitespace-nowrap text-text-2"}>
             {label}
           </span>
           {input}

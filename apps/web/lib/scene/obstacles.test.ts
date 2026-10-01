@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { Vector3 } from "three";
 import type { Obstacle } from "../api";
 import { boxMatrixOf, type XY } from "./adapter";
-import { solidsOf, TRUNK_RADIUS, wordsOf } from "./obstacles";
+import { anchorOfObstacle, calloutOfObstacle, footprintOf, solidsOf, TRUNK_RADIUS, wordsOf } from "./obstacles";
 
 // The obstacles of the document as solids in the engine's metres (plan/phase-05-plan.md, step 3), and
 // their words for the text equivalent of the scene.
@@ -230,5 +230,71 @@ describe("the words of an obstacle", () => {
       "Building 1, building 110 m², 8.0 m high",
     );
     expect(wordsOf(obstacle({ ...STAIR_ROOM, length: 5.04, width: 3.96 }))).toBe("Stair room, box 5.0 × 4.0 m, 3.0 m high");
+  });
+});
+
+// The callout of the selected obstacle and of a draft (the boards "Obstacle edited on the roof" and "Import
+// with missing heights"), and where it is hung: the top of the obstacle at its centre.
+describe("the callout of an obstacle", () => {
+  test("selected: its name, then its size and its height", () => {
+    expect(calloutOfObstacle(STAIR_ROOM, "selected")).toEqual({ title: "Stair room · selected", detail: "5.0 × 4.0 m · 3.0 m high" });
+    expect(calloutOfObstacle(WATER_TANK, "selected")).toEqual({ title: "Water tank · selected", detail: "⌀ 2.5 m · 2.0 m high" });
+    expect(calloutOfObstacle(WALL, "selected").detail).toBe("30.0 m long · 2.5 m high");
+    expect(calloutOfObstacle(BUILDING, "selected").detail).toBe("64 m² · 8.0 m high");
+  });
+
+  test("a tree: its crown from where it starts to its height", () => {
+    expect(calloutOfObstacle(TREE, "selected")).toEqual({ title: "Tree 1 · selected", detail: "crown ⌀ 4.0 m from 2.0 to 6.0 m" });
+  });
+
+  test("to review: the height is said to be waited for", () => {
+    expect(calloutOfObstacle(STAIR_ROOM, "to-review")).toEqual({ title: "Stair room · selected", detail: "5.0 × 4.0 m · height to review" });
+  });
+
+  test("a draft: no height yet, and what adds it", () => {
+    const draft = { ...STAIR_ROOM, name: "Box 7", length: 2, width: 2, height: null };
+    expect(calloutOfObstacle(draft, "draft")).toEqual({ title: "Box 7 · draft", detail: "2.0 × 2.0 m · type its height to add it" });
+  });
+
+  test("is hung at the top of the obstacle, over its centre (a wall: half way along it); a draft at the roof", () => {
+    expect(anchorOfObstacle(STAIR_ROOM, FLAT)).toEqual([22.5, 18, 3]);
+    expect(anchorOfObstacle(STAIR_ROOM, SLOPED)).toEqual([22.5, 18, 3 - 1.8]);
+    expect(anchorOfObstacle(WALL, FLAT)).toEqual([20, 15, 2.5]);
+    expect(anchorOfObstacle(BUILDING, FLAT)).toEqual([104, 4, 8]);
+    expect(anchorOfObstacle({ ...STAIR_ROOM, height: null }, FLAT)).toEqual([22.5, 18, 0]);
+  });
+});
+
+// The footprint of a draft, drawn dashed on the roof before it has a height (decision 15).
+describe("the footprint of an obstacle", () => {
+  test("a box: its four corners, turned about its centre", () => {
+    const { points, closed } = footprintOf(STAIR_ROOM);
+    expect(closed).toBe(true);
+    expect(points.map(([x, y]) => [Number(x.toFixed(6)), Number(y.toFixed(6))])).toEqual([
+      [20, 16],
+      [25, 16],
+      [25, 20],
+      [20, 20],
+    ]);
+    const turned = footprintOf({ ...STAIR_ROOM, rotation_deg: 90 }).points.map(([x, y]) => [Number(x.toFixed(6)), Number(y.toFixed(6))]);
+    expect(turned).toEqual([
+      [24.5, 15.5],
+      [24.5, 20.5],
+      [20.5, 20.5],
+      [20.5, 15.5],
+    ]);
+  });
+
+  test("a tank and a tree: a circle of the diameter", () => {
+    const { points, closed } = footprintOf(WATER_TANK);
+    expect(closed).toBe(true);
+    expect(points).toHaveLength(24);
+    points.forEach(([x, y]) => expect(Math.hypot(x - 62, y - 24)).toBeCloseTo(1.25));
+    expect(footprintOf(TREE).points.every(([x, y]) => Math.abs(Math.hypot(x - 95, y - 5) - 2) < 1e-9)).toBe(true);
+  });
+
+  test("a wall: its points, open; a building: its points, closed", () => {
+    expect(footprintOf(WALL)).toEqual({ points: WALL.points, closed: false });
+    expect(footprintOf(BUILDING)).toEqual({ points: BUILDING.points, closed: true });
   });
 });

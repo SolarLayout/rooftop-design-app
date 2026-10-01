@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { cameraOf, cameraRequestOf, createViewStore, lensOf, northRequestOf, selectionOf, sunTimeOf, toReviewOf } from "./view-store";
+import type { DraftObstacle } from "../studio/obstacle-fields";
+import { cameraOf, cameraRequestOf, createViewStore, draftOf, lensOf, northRequestOf, selectionOf, sunTimeOf, toReviewOf } from "./view-store";
 
 describe("the view", () => {
   test("it begins on the first lens, in 3D, on the design day", () => {
@@ -135,5 +136,47 @@ describe("the heights to review", () => {
     store.getState().reviewed("Vent");
 
     expect(store.getState()).toBe(before);
+  });
+});
+
+// A new obstacle before its height is typed (plan/phase-05-plan.md, decision 15): a draft of the view, not
+// of the document, until the height comes; selected while it stands.
+describe("the draft obstacle", () => {
+  const draft: DraftObstacle = { name: "Box 7", kind: "box", x: 45, y: 20, length: 2, width: 2, rotation_deg: 0, diameter: 2, height: null, thickness: 0.2, trunk_height: 2, points: [], auto: false };
+
+  test("none at the start; Add makes one and it takes the selection", () => {
+    const store = createViewStore();
+    expect(draftOf(store.getState())).toBeNull();
+    store.getState().select({ kind: "obstacle", index: 2 });
+
+    store.getState().setDraft(draft);
+
+    expect(draftOf(store.getState())).toEqual(draft);
+    expect(selectionOf(store.getState())).toBeNull();
+  });
+
+  test("a selection made while the draft stands drops the draft: one thing is open at a time", () => {
+    const store = createViewStore();
+    store.getState().setDraft(draft);
+
+    store.getState().select({ kind: "obstacle", index: 0 });
+
+    expect(draftOf(store.getState())).toBeNull();
+    expect(selectionOf(store.getState())).toEqual({ kind: "obstacle", index: 0 });
+  });
+
+  test("the draft is edited in place; null drops it; clearing the selection drops it too", () => {
+    const store = createViewStore();
+    store.getState().setDraft(draft);
+
+    store.getState().setDraft({ ...draft, length: 3 });
+    expect(draftOf(store.getState())?.length).toBe(3);
+
+    store.getState().clearSelection();
+    expect(draftOf(store.getState())).toBeNull();
+
+    store.getState().setDraft(draft);
+    store.getState().setDraft(null);
+    expect(draftOf(store.getState())).toBeNull();
   });
 });

@@ -14,6 +14,8 @@ import { roofCardOf, type RoofCard } from "@/lib/roof-card";
 import { roofFieldsOf, withRoofField, type RoofFieldId } from "@/lib/studio/roof-fields";
 import { withRoofType } from "@/lib/studio/roof-type";
 import { projectOf } from "@/lib/stores/project-store";
+import { fieldsLayoutOf, SECTION } from "./inspector-look";
+import { ObstaclePanel } from "./ObstaclePanel";
 import type { Size } from "./use-size";
 
 type Props = {
@@ -23,14 +25,6 @@ type Props = {
 
 /** The way back to the map, with the outline of this design shown there. */
 export const EDIT_THE_OUTLINE = "/find?edit=roof";
-
-export const SECTION = "type-section text-text-3 uppercase";
-
-/**
- * How the fields of a section stand: two to a row with the label inside on tablet and desktop; on phone
- * one to a row, the label before the field, as the boards draw the edges and the fields of an obstacle.
- */
-export const fieldsLayoutOf = (size: Size) => (size === "phone" ? "flex flex-col gap-field" : "grid grid-cols-2 gap-field");
 
 /** The design with its roof changed; the same design when the roof is the same. */
 function withRoof(design: Project, roof: Roof): Project {
@@ -98,8 +92,8 @@ function LocationCard({ card, size }: { card: RoofCard | null; size: Size }) {
 
 /**
  * The inspector of the Roof lens (plan/phase-05-plan.md, steps 11 to 13): the card of the roof with Edit,
- * the roof type, the edges and access as fields that commit as fields do (decision 16). On tablet it
- * stands in two columns under the vitals; on phone in the sheet.
+ * the roof type, the edges and access as fields that commit as fields do (decision 16), and the obstacles.
+ * On tablet it stands in two columns under the vitals, the obstacles in the second; on phone in the sheet.
  */
 export function RoofInspector({ size }: Props) {
   const project = useProject(projectOf);
@@ -147,6 +141,11 @@ export function RoofInspector({ size }: Props) {
           )}
         </section>
       </div>
+      {project ? (
+        <div className="desktop:contents">
+          <ObstaclePanel roof={project.roof} size={size} />
+        </div>
+      ) : null}
     </div>
   );
 }
