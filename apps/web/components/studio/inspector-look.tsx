@@ -1,10 +1,17 @@
 import type { ReactNode } from "react";
+import type { Size } from "./use-size";
 
 // The look of what the inspectors of the Studio share (the boards "Studio, Array lens" and "Studio,
-// Roof lens"): the section label, a row with its control at the right, and a value the engine decided,
-// read out with the reason under it.
+// Roof lens"): the section label, how the fields of a section stand, a row with its control at the
+// right, and a value the engine decided, read out with the reason under it.
 
 export const SECTION = "type-section text-text-3 uppercase";
+
+/**
+ * How the fields of a section stand: two to a row with the label inside on tablet and desktop; on phone
+ * one to a row, the label before the field, as the boards draw the edges and the fields of an obstacle.
+ */
+export const fieldsLayoutOf = (size: Size) => (size === "phone" ? "flex flex-col gap-field" : "grid grid-cols-2 gap-field");
 
 /** A row of the inspector: the label at the left, the control at the right. */
 export const ROW = "flex min-h-10 items-center justify-between gap-row";
