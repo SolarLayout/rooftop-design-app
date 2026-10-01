@@ -1,18 +1,21 @@
 "use client";
 
 import type { ThreeEvent } from "@react-three/fiber";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { BufferGeometry, Float32BufferAttribute, Path, Shape, ShapeGeometry } from "three";
 import type { Keepout } from "@/lib/api";
 import { FLAT, toScenePoint, type XY } from "@/lib/scene/adapter";
 import { colourOf, PALETTE } from "@/lib/scene-palette";
+import { canHover, onPress } from "./pointer";
 
 type Props = {
   parts: readonly Keepout[];
   heightAt: (point: XY) => number;
   /** The index of the selected part in `parts`; null for none. */
   selected: number | null;
-  onSelect: (index: number) => void;
+  onSelect: (index: number, event: ThreeEvent<MouseEvent>) => void;
+  /** The pointer came over a part, or left it, by its index. */
+  onOver?: (index: number, isOver: boolean) => void;
 };
 
 /** The overlays are lifted off the roof so that they never fight with it, each part a little more (fix 10). */
@@ -35,7 +38,11 @@ function ringOf(ring: readonly [number, number][], heightAt: (point: XY) => numb
   return geometry;
 }
 
-function Part({ part, index, heightAt, isSelected, onSelect }: { part: Keepout; index: number; heightAt: Props["heightAt"]; isSelected: boolean; onSelect: Props["onSelect"] }) {
+type PartProps = { part: Keepout; index: number; heightAt: Props["heightAt"]; isSelected: boolean; onSelect: Props["onSelect"]; onOver: Props["onOver"] };
+
+/** One part: its fill and its dashed ring; the ring lighter under the pointer (on pointer devices), the fill stronger when selected. */
+function Part({ part, index, heightAt, isSelected, onSelect, onOver }: PartProps) {
+  const [isHovered, setHovered] = useState(false);
   const lift = LIFT + index * LIFT_STEP;
   const fills = useMemo(
     () =>
@@ -49,21 +56,30 @@ function Part({ part, index, heightAt, isSelected, onSelect }: { part: Keepout; 
   );
   const rings = useMemo(() => part.polygons.flatMap((polygon) => [polygon.exterior, ...polygon.holes].map((ring) => ringOf(ring, heightAt, lift + LIFT_STEP / 2))), [part, heightAt, lift]);
 
-  function select(event: ThreeEvent<MouseEvent>) {
-    event.stopPropagation();
-    onSelect(index);
-  }
-
   return (
     <group userData={{ keepout: index }}>
       {fills.map((geometry, n) => (
-        <mesh key={n} geometry={geometry} rotation={FLAT} onClick={select}>
+        <mesh
+          key={n}
+          geometry={geometry}
+          rotation={FLAT}
+          onClick={(event) => onPress(event, () => onSelect(index, event))}
+          onPointerOver={(event) => {
+            event.stopPropagation();
+            onOver?.(index, true);
+            if (canHover()) setHovered(true);
+          }}
+          onPointerOut={() => {
+            onOver?.(index, false);
+            setHovered(false);
+          }}
+        >
           <meshBasicMaterial color={FILL.hex} transparent opacity={isSelected ? Math.min(1, FILL.opacity * 2) : FILL.opacity} depthWrite={false} toneMapped={false} />
         </mesh>
       ))}
       {rings.map((geometry, n) => (
         <lineLoop key={n} geometry={geometry} onUpdate={(line) => line.computeLineDistances()}>
-          <lineDashedMaterial color={PALETTE.keepOutLine} dashSize={0.4} gapSize={0.25} toneMapped={false} />
+          <lineDashedMaterial color={isHovered && !isSelected ? PALETTE.hover : PALETTE.keepOutLine} dashSize={0.4} gapSize={0.25} toneMapped={false} />
         </lineLoop>
       ))}
     </group>
@@ -72,13 +88,14 @@ function Part({ part, index, heightAt, isSelected, onSelect }: { part: Keepout; 
 
 /**
  * The kept-clear areas of the layout (plan step 8): the keep-out told apart by what casts it, each part
- * an overlay on the roof in the accent, dashed; a press selects it and the stage says why it is kept clear.
+ * an overlay on the roof in the accent, dashed; a press selects it and the stage says why it is kept clear;
+ * under the pointer its line is lighter (plan step 17).
  */
-export function KeepOut({ parts, heightAt, selected, onSelect }: Props) {
+export function KeepOut({ parts, heightAt, selected, onSelect, onOver }: Props) {
   return (
     <group>
       {parts.map((part, index) => (
-        <Part key={index} part={part} index={index} heightAt={heightAt} isSelected={selected === index} onSelect={onSelect} />
+        <Part key={index} part={part} index={index} heightAt={heightAt} isSelected={selected === index} onSelect={onSelect} onOver={onOver} />
       ))}
     </group>
   );

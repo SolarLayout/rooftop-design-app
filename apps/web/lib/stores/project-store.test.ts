@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Project } from "../api";
-import { createProjectStore, editOf, latitudeOf, longitudeOf, nameOf, openedAtOf, projectOf, systemVoltageOf } from "./project-store";
+import { canRedo, canUndo, createProjectStore, editOf, latitudeOf, longitudeOf, nameOf, openedAtOf, projectOf, systemVoltageOf } from "./project-store";
 
 // A document as the API hands it out; what the tests do not read is left out.
 const DEMO = {
@@ -130,5 +130,75 @@ describe("what is read of the project", () => {
 
     expect(systemVoltageOf(store.getState())).toBeNull();
     expect("system_voltage" in (projectOf(store.getState()) ?? {})).toBe(false);
+  });
+});
+
+// Undo and redo of committed edits (plan/phase-05-plan.md, step 18, decision 11): the documents of the
+// last fifty edits are kept; an undo or a redo is an edit like any other, so the layout follows it.
+describe("undo and redo", () => {
+  const tilt = (degrees: number) => (project: Project) => ({ ...project, array: { ...project.array, tilt_deg: degrees } });
+
+  test("nothing to undo or redo before an edit", () => {
+    const store = createProjectStore();
+    store.getState().open(DEMO);
+
+    expect(canUndo(store.getState())).toBe(false);
+    expect(canRedo(store.getState())).toBe(false);
+    store.getState().undo();
+    expect(editOf(store.getState())).toBe(1);
+  });
+
+  test("undo gives the document of before, and counts as an edit; redo the one after", () => {
+    const store = createProjectStore();
+    store.getState().open(DEMO);
+    store.getState().commit(tilt(20));
+    store.getState().commit(tilt(25));
+
+    store.getState().undo();
+    expect(projectOf(store.getState())?.array.tilt_deg).toBe(20);
+    expect(editOf(store.getState())).toBe(4);
+    expect(canRedo(store.getState())).toBe(true);
+
+    store.getState().undo();
+    expect(projectOf(store.getState())).toBe(DEMO);
+    expect(canUndo(store.getState())).toBe(false);
+
+    store.getState().redo();
+    expect(projectOf(store.getState())?.array.tilt_deg).toBe(20);
+    expect(editOf(store.getState())).toBe(6);
+  });
+
+  test("a new edit after an undo drops what could be redone", () => {
+    const store = createProjectStore();
+    store.getState().open(DEMO);
+    store.getState().commit(tilt(20));
+    store.getState().undo();
+
+    store.getState().commit(tilt(30));
+
+    expect(canRedo(store.getState())).toBe(false);
+    store.getState().undo();
+    expect(projectOf(store.getState())).toBe(DEMO);
+  });
+
+  test("another design opened starts afresh", () => {
+    const store = createProjectStore();
+    store.getState().open(DEMO);
+    store.getState().commit(tilt(20));
+
+    store.getState().open(WITHOUT_A_VOLTAGE);
+
+    expect(canUndo(store.getState())).toBe(false);
+  });
+
+  test("fifty edits are kept, the oldest forgotten", () => {
+    const store = createProjectStore();
+    store.getState().open(DEMO);
+    for (let degrees = 1; degrees <= 60; degrees += 1) store.getState().commit(tilt(degrees));
+
+    for (let n = 0; n < 50; n += 1) store.getState().undo();
+
+    expect(projectOf(store.getState())?.array.tilt_deg).toBe(10);
+    expect(canUndo(store.getState())).toBe(false);
   });
 });

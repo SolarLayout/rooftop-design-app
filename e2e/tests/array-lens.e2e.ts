@@ -25,9 +25,15 @@ const layoutFailed = (page: Page) => page.getByTestId("layout-failed");
 const moduleTitle = (page: Page) => page.getByTestId("module-title").filter({ visible: true });
 
 /** The Array lens with the demo, its first run over: what /layout is asked next is an edit. */
-async function arrayLensOpened(page: Page, projectName: string) {
+/**
+ * The Array lens open on the demo. It waits for the module's card, which comes with the design run; a test
+ * of the fields alone waits for the Mounting section, which comes with the document: a demo of another roof
+ * type needs a run of its own, which under load can take longer than a test may wait.
+ */
+async function arrayLensOpened(page: Page, projectName: string, waitFor: "module" | "mounting" = "module") {
   await page.goto("/studio/array");
-  await expect(moduleTitle(page)).toHaveText("INA-144MHC-TF-560", { timeout: RUN });
+  if (waitFor === "module") await expect(moduleTitle(page)).toHaveText("INA-144MHC-TF-560", { timeout: RUN });
+  else await expect(page.getByRole("region", { name: "Mounting" }).filter({ visible: true })).toBeVisible({ timeout: RUN });
   if (isPhone(projectName)) {
     await page.getByRole("separator", { name: "Inspector" }).focus();
     await page.keyboard.press("End");
@@ -154,32 +160,41 @@ test.describe("the mounting", () => {
     await expect(page.getByRole("textbox", { name: "Modules in tilt" })).toHaveValue("3");
   });
 
-  test("the fields of the roof type: tilted rows, east-west, sloped", async ({ page }, testInfo) => {
+  // One test per roof type: each opens the lens once, and a demo of another type needs a design run of its own.
+  test("the fields of tilted rows: the tilt with the latitude's hint, the orientation, the clearance", async ({ page }, testInfo) => {
     await arrayLensOpened(page, testInfo.project.name);
     const inspector = page.getByRole("region", { name: "Mounting" });
+
     await expect(inspector.getByRole("slider", { name: "Tilt" })).toBeVisible();
     await expect(inspector.getByText("Latitude 18.5° N suggests 15°")).toBeVisible();
     await expect(inspector.getByRole("textbox", { name: "Lower-edge clearance" })).toHaveValue("0.50");
+  });
 
+  test("the fields of an east-west roof: its tilt, the ridge gap, the clearance; no orientation", async ({ page }, testInfo) => {
     await page.route("**/api/demo", async (route) => {
       const answer = await route.fetch();
       const demo: { roof: Record<string, unknown> } = await answer.json();
       await route.fulfill({ response: answer, json: { ...demo, roof: { ...demo.roof, roof_type: "flat_ew" } } });
     });
-    await arrayLensOpened(page, testInfo.project.name);
+    await arrayLensOpened(page, testInfo.project.name, "mounting");
+    const inspector = page.getByRole("region", { name: "Mounting" });
+
     await expect(inspector.getByRole("slider", { name: "East-west tilt" })).toHaveAttribute("aria-valuemax", "30");
     await expect(inspector.getByText("Each side, away from the ridge")).toBeVisible();
     await expect(inspector.getByRole("textbox", { name: "Ridge gap" })).toHaveValue("0.30");
     await expect(inspector.getByRole("textbox", { name: "Lower-edge clearance" })).toHaveValue("0.50");
     await expect(inspector.getByRole("radiogroup", { name: "Orientation" })).toHaveCount(0);
+  });
 
-    await page.unroute("**/api/demo");
+  test("the fields of a sloped roof: the pitch read out, the orientation and the modules in tilt; no tilt, no clearance", async ({ page }, testInfo) => {
     await page.route("**/api/demo", async (route) => {
       const answer = await route.fetch();
       const demo: { roof: Record<string, unknown> } = await answer.json();
       await route.fulfill({ response: answer, json: { ...demo, roof: { ...demo.roof, roof_type: "sloped_flush", slope_deg: 10, parapet_h: 0 } } });
     });
-    await arrayLensOpened(page, testInfo.project.name);
+    await arrayLensOpened(page, testInfo.project.name, "mounting");
+    const inspector = page.getByRole("region", { name: "Mounting" });
+
     await expect(inspector.getByTestId("read-out-line")).toHaveText("Follows the roof pitch · 10° facing 180° S · set in the Roof lens");
     await expect(inspector.getByRole("slider")).toHaveCount(0);
     await expect(inspector.getByRole("radiogroup", { name: "Orientation" })).toBeVisible();

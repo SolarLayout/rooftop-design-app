@@ -96,18 +96,23 @@ function sizeInMetres(obstacle: Obstacle | DraftObstacle): string {
   return `${shown(Math.round(areaOf(points.map(([x, y]) => ({ x, y })))), 0)} m²`;
 }
 
+/** Whether a drag on the roof moves the obstacle: a wall and a building are moved by their points alone (decision 12). */
+export const canBeDragged = (obstacle: Pick<Obstacle, "kind">) => obstacle.kind !== "wall" && obstacle.kind !== "building";
+
 /**
  * The callout of an obstacle (the boards "Obstacle edited on the roof" and "Import with missing heights"):
- * its name and why it stands out, then its size and its height, or what its height waits for.
+ * its name and why it stands out, then its size and its height, or what its height waits for; and how it
+ * is moved, by a drag or by its points in the list.
  */
 export function calloutOfObstacle(obstacle: Obstacle | DraftObstacle, state: ObstacleState): Callout {
   const title = `${obstacle.name} · ${state === "draft" ? "draft" : "selected"}`;
   if (state === "draft" || obstacle.height === null) return { title, detail: `${sizeInMetres(obstacle)} · type its height to add it` };
   if (state === "to-review") return { title, detail: `${sizeInMetres(obstacle)} · height to review` };
+  const moved = canBeDragged(obstacle) ? "drag to move" : "moved by its points in the list";
   if (obstacle.kind === "tree") {
-    return { title, detail: `${sizeInMetres(obstacle)} from ${shown(obstacle.trunk_height, 1)} to ${shown(obstacle.height, 1)} m` };
+    return { title, detail: `${sizeInMetres(obstacle)} from ${shown(obstacle.trunk_height, 1)} to ${shown(obstacle.height, 1)} m · ${moved}` };
   }
-  return { title, detail: `${sizeInMetres(obstacle)} · ${shown(obstacle.height, 1)} m high` };
+  return { title, detail: `${sizeInMetres(obstacle)} · ${shown(obstacle.height, 1)} m high · ${moved}` };
 }
 
 /** The point of a polyline half way along it. */
@@ -136,10 +141,20 @@ export function centreOf(obstacle: Obstacle | DraftObstacle): XY {
   return [obstacle.x, obstacle.y];
 }
 
-/** Where the callout of an obstacle is hung: the top of the obstacle over its centre; a draft has no height, so the roof. */
+/**
+ * Where the callout of an obstacle is hung (components.md, "Obstacles on the roof"): the middle of the east
+ * edge of its top, clear of the height handle over its centre; a wall half way along it, a building over
+ * its centroid; a draft has no height, so the roof over its centre.
+ */
 export function anchorOfObstacle(obstacle: Obstacle | DraftObstacle, heightAt: HeightAt): XYZ {
   const [x, y] = centreOf(obstacle);
-  return [x, y, heightAt([x, y]) + (obstacle.height ?? 0)];
+  const top = heightAt([x, y]) + (obstacle.height ?? 0);
+  if (obstacle.height === null || !canBeDragged(obstacle)) return [x, y, top];
+  if (obstacle.kind === "box") {
+    const turn = (obstacle.rotation_deg * Math.PI) / 180;
+    return [x + (obstacle.length / 2) * Math.cos(turn), y + (obstacle.length / 2) * Math.sin(turn), top];
+  }
+  return [x + obstacle.diameter / 2, y, top];
 }
 
 export type Footprint = { points: readonly XY[]; closed: boolean };

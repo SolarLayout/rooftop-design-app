@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { bearingDegOf, createStageStore, labelsOf, groundOf } from "./stage-store";
+import { PerspectiveCamera } from "three";
+import { bearingDegOf, cameraOf, createStageStore, cursorOf, groundOf, labelsOf } from "./stage-store";
 
 // What the scene tells the DOM over it, written on each drawn frame: it must not wake React for nothing.
 
@@ -55,5 +56,76 @@ describe("the ground", () => {
 
     store.getState().setGround("imagery");
     expect(groundOf(store.getState())).toBe("imagery");
+  });
+});
+
+// The cursor over the stage (plan step 17): each thing under the pointer says what it wants, by name; the
+// strongest wins, so that a module over the roof and the roof under it never fight.
+describe("the cursor", () => {
+  test("is the default until something is under the pointer", () => {
+    expect(cursorOf(createStageStore().getState())).toBe("default");
+  });
+
+  test("a thing under the pointer asks for a cursor; when it is left the cursor goes back", () => {
+    const store = createStageStore();
+
+    store.getState().setOver("roof", "pointer");
+    expect(cursorOf(store.getState())).toBe("pointer");
+
+    store.getState().setOver("roof", null);
+    expect(cursorOf(store.getState())).toBe("default");
+  });
+
+  test("of several the strongest wins: grabbing over grab over pointer; one left leaves the others", () => {
+    const store = createStageStore();
+    store.getState().setOver("roof", "pointer");
+    store.getState().setOver("obstacle-0", "grab");
+    expect(cursorOf(store.getState())).toBe("grab");
+
+    store.getState().setOver("drag", "grabbing");
+    expect(cursorOf(store.getState())).toBe("grabbing");
+
+    store.getState().setOver("drag", null);
+    store.getState().setOver("obstacle-0", null);
+    expect(cursorOf(store.getState())).toBe("pointer");
+  });
+
+  test("saying the same again leaves the state as it is", () => {
+    const store = createStageStore();
+    store.getState().setOver("roof", "pointer");
+    const before = store.getState();
+
+    store.getState().setOver("roof", "pointer");
+    expect(store.getState()).toBe(before);
+
+    store.getState().setOver("modules", null);
+    expect(store.getState()).toBe(before);
+  });
+});
+
+// The camera and the size of the canvas (plan step 19): a pointer on the DOM over the stage becomes a ray
+// through them. The same camera at the same size leaves the state as it is.
+describe("the camera", () => {
+  test("is none until the first frame, then the one the Projector saw, with the canvas's size", () => {
+    const store = createStageStore();
+    expect(cameraOf(store.getState())).toBeNull();
+    const camera = new PerspectiveCamera();
+
+    store.getState().setCamera(camera, 800, 600);
+
+    expect(cameraOf(store.getState())).toEqual({ camera, width: 800, height: 600 });
+  });
+
+  test("the same camera at the same size leaves the state as it is; another size is taken", () => {
+    const store = createStageStore();
+    const camera = new PerspectiveCamera();
+    store.getState().setCamera(camera, 800, 600);
+    const before = store.getState();
+
+    store.getState().setCamera(camera, 800, 600);
+    expect(store.getState()).toBe(before);
+
+    store.getState().setCamera(camera, 1000, 600);
+    expect(cameraOf(store.getState())?.width).toBe(1000);
   });
 });

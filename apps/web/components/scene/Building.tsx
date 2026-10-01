@@ -1,10 +1,12 @@
 "use client";
 
+import type { ThreeEvent } from "@react-three/fiber";
 import { useMemo } from "react";
 import { BufferGeometry, DoubleSide, Float32BufferAttribute, Shape, ShapeGeometry } from "three";
 import { FLAT, toScene, toScenePoint, type XY } from "@/lib/scene/adapter";
 import { frameOf, parapetWallsOf, wallOf, type RoofOfTheScene } from "@/lib/scene/building";
 import { PALETTE } from "@/lib/scene-palette";
+import { onPress } from "./pointer";
 
 /** How far the building goes down under the roof: the design does not say, so every building is this deep. */
 export const BUILDING_DEPTH = 6;
@@ -12,7 +14,13 @@ export const BUILDING_DEPTH = 6;
 /** The roof's edge line stands this much above the surface, so that it is not cut by it. */
 const LINE_LIFT = 0.01;
 
-type Props = { roof: RoofOfTheScene };
+type Props = {
+  roof: RoofOfTheScene;
+  /** A press on the roof surface, with where it hit (plan step 17). */
+  onPressRoof?: (event: ThreeEvent<MouseEvent>) => void;
+  /** The pointer came over the roof surface, or left it. */
+  onOverRoof?: (isOver: boolean) => void;
+};
 
 /** The roof surface as a shape in the engine's (x, y), each corner lifted to the roof's height there. */
 function roofGeometryOf(roof: RoofOfTheScene): ShapeGeometry {
@@ -47,8 +55,12 @@ function edgeOf(roof: RoofOfTheScene): BufferGeometry {
   return new BufferGeometry().setAttribute("position", new Float32BufferAttribute(points, 3));
 }
 
-/** The building: its roof surface, its walls down to the ground, its parapet (plan decision 3 for a pitch). */
-export function Building({ roof }: Props) {
+/**
+ * The building: its roof surface, its walls down to the ground, its parapet (plan decision 3 for a pitch).
+ * A press on the surface selects the roof; the walls and the parapet take no press (components.md,
+ * "Obstacles on the roof").
+ */
+export function Building({ roof, onPressRoof, onOverRoof }: Props) {
   const surface = useMemo(() => roofGeometryOf(roof), [roof]);
   const walls = useMemo(() => wallsGeometryOf(roof), [roof]);
   const edge = useMemo(() => edgeOf(roof), [roof]);
@@ -56,7 +68,14 @@ export function Building({ roof }: Props) {
 
   return (
     <group>
-      <mesh geometry={surface} rotation={FLAT} receiveShadow>
+      <mesh
+        geometry={surface}
+        rotation={FLAT}
+        receiveShadow
+        onClick={(event) => onPress(event, () => onPressRoof?.(event))}
+        onPointerOver={() => onOverRoof?.(true)}
+        onPointerOut={() => onOverRoof?.(false)}
+      >
         <meshStandardMaterial color={PALETTE.roof} roughness={0.95} side={DoubleSide} />
       </mesh>
       <mesh geometry={walls} castShadow>

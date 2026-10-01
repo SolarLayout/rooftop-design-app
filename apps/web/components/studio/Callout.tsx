@@ -6,19 +6,25 @@ import { measures } from "@/components/ui/measures";
 import type { Layout, Project } from "@/lib/api";
 import { calloutOf, type Callout as Words } from "@/lib/scene/keepout";
 import { calloutOfObstacle } from "@/lib/scene/obstacles";
+import { calloutOfModule, calloutOfRoof } from "@/lib/scene/pick";
 import { labelsOf, type StageStore } from "@/lib/scene/stage-store";
 import { projectOf } from "@/lib/stores/project-store";
 import { layoutOf } from "@/lib/stores/results-store";
-import { draftOf, selectionOf, toReviewOf, type Selection } from "@/lib/stores/view-store";
+import { draftOf, draggingOf, selectionOf, toReviewOf, type Selection } from "@/lib/stores/view-store";
 import type { DraftObstacle } from "@/lib/studio/obstacle-fields";
 
 type Props = { stage: StageStore };
 
 type Of = { selection: Selection | null; draft: DraftObstacle | null; toReview: readonly string[]; project: Project; layout: Layout | null };
 
-/** The words of the callout: of the draft, of the selected obstacle, or of the selected kept-clear area; null where nothing is selected. */
+/** The words of the callout: of the draft, of the selected obstacle, kept-clear area, module or roof; null where nothing is selected. */
 function wordsOf({ selection, draft, toReview, project, layout }: Of): Words | null {
   if (draft) return calloutOfObstacle(draft, "draft");
+  if (selection?.kind === "roof") return calloutOfRoof(project.roof.outline);
+  if (selection?.kind === "module") {
+    const position = layout?.modules[selection.index];
+    return position && layout ? calloutOfModule(position, layout.kind) : null;
+  }
   if (selection?.kind === "obstacle") {
     const obstacle = project.roof.obstacles[selection.index];
     return obstacle ? calloutOfObstacle(obstacle, toReview.includes(obstacle.name) ? "to-review" : "selected") : null;
@@ -35,17 +41,20 @@ function wordsOf({ selection, draft, toReview, project, layout }: Of): Words | n
  * The callout of what is selected on the roof (docs/design/components.md, "Callout on the stage"): a
  * chip joined to its object by a line and a dot, placed where the Projector says the object falls. For
  * a kept-clear area it says how many positions it keeps clear and what shades it, when; for an obstacle
- * its size and its height; for a draft what adds it.
+ * its size and its height; for a draft what adds it; for a module its position and its row; for the roof
+ * its size.
  */
 export function Callout({ stage }: Props) {
   const selection = useView(selectionOf);
   const draft = useView(draftOf);
   const toReview = useView(toReviewOf);
+  const dragging = useView(draggingOf);
   const project = useProject(projectOf);
   const layout = useResults(layoutOf);
   const hung = useStore(stage, labelsOf).find((label) => label.kind === "callout");
 
-  if (!project || !hung?.visible) return null;
+  // While a drag lasts the live label beside the pointer says what changes; the callout waits for the drop.
+  if (!project || !hung?.visible || dragging) return null;
   const words = wordsOf({ selection, draft, toReview, project, layout: layout?.layout ?? null });
   if (!words) return null;
 

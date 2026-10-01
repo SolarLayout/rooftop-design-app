@@ -3,7 +3,7 @@
 // inspector renders them; a committed value is an edit of the obstacle.
 import type { Range } from "../../components/ui/number-entry";
 import { shown } from "../../components/ui/number-entry";
-import type { Obstacle, Roof } from "../api";
+import type { Obstacle, Project, Roof } from "../api";
 import { areaOf, type XY as XYOf } from "../outline/measure";
 import type { XY } from "../scene/adapter";
 
@@ -102,6 +102,12 @@ export function withObstacleAt(roof: Roof, index: number, obstacle: Obstacle): R
   return { ...roof, obstacles: roof.obstacles.map((one, n) => (n === index ? obstacle : one)) };
 }
 
+/** The design with the obstacle at `index` replaced, as the drop of a drag commits it in one edit (decision 12); the same design when it is the same obstacle. */
+export function withObstacleReplaced(design: Project, index: number, obstacle: Obstacle): Project {
+  const roof = withObstacleAt(design.roof, index, obstacle);
+  return roof === design.roof ? design : { ...design, roof };
+}
+
 /** The roof without the obstacle at `index`. */
 export function withoutObstacleAt(roof: Roof, index: number): Roof {
   return { ...roof, obstacles: roof.obstacles.filter((_, n) => n !== index) };
@@ -178,6 +184,17 @@ export function sizeOf(obstacle: Obstacle | DraftObstacle): string {
 /** The facts of an obstacle in its row: its size in the words of its kind, then its height. */
 export function factsOf(obstacle: Obstacle): string {
   return `${sizeOf(obstacle)} · h ${shown(obstacle.height, 1)} m`;
+}
+
+/**
+ * The draft placed where the roof was tapped (Add, then a tap: components.md, "Obstacles on the roof"): a
+ * box, a tank or a tree by its centre; a wall or a building with its points moved along by as much.
+ */
+export function withDraftAt(draft: DraftObstacle, [x, y]: XY): DraftObstacle {
+  if (draft.x === x && draft.y === y) return draft;
+  const [dx, dy] = [x - draft.x, y - draft.y];
+  const points = draft.points.map(([px, py]): [number, number] => [px + dx, py + dy]);
+  return { ...draft, x, y, points };
 }
 
 /** The obstacle with one field set; the same obstacle when nothing changes. */

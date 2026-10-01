@@ -36,7 +36,7 @@ import {
   type ObstacleKind,
 } from "@/lib/studio/obstacle-fields";
 import { indexToReview, REVIEW_HINT } from "@/lib/studio/review-heights";
-import { draftOf, selectionOf, toReviewOf } from "@/lib/stores/view-store";
+import { draftOf, draggingOf, selectionOf, toReviewOf } from "@/lib/stores/view-store";
 import { fieldsLayoutOf, SECTION } from "./inspector-look";
 import type { Size } from "./use-size";
 
@@ -284,6 +284,7 @@ export function ObstaclePanel({ roof, size }: Props) {
   const selection = useView(selectionOf);
   const draft = useView(draftOf);
   const toReview = useView(toReviewOf);
+  const dragging = useView(draggingOf);
   const own = roof.obstacles.map((obstacle, index) => ({ obstacle, index })).filter(({ obstacle }) => !obstacle.auto);
   const selected = selection?.kind === "obstacle" ? selection.index : null;
 
@@ -353,8 +354,9 @@ export function ObstaclePanel({ roof, size }: Props) {
           return (
             <li key={index}>
               {selected === index ? (
+                // While a drag lasts the card says the live values, as the board asks.
                 <ObstacleCard
-                  obstacle={obstacle}
+                  obstacle={dragging?.index === index ? dragging.obstacle : obstacle}
                   size={size}
                   onChange={(next) => change(index, next)}
                   onRemove={() => remove(index)}

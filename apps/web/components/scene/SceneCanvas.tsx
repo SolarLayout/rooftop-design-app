@@ -8,6 +8,8 @@ import { PALETTE } from "@/lib/scene-palette";
 type Props = {
   /** Said once when the browser takes the WebGL context away; the stage then shows the plan instead. */
   onContextLost: () => void;
+  /** A press that hit nothing of the scene: the sky. */
+  onPressNothing?: () => void;
   children: ReactNode;
 };
 
@@ -16,7 +18,7 @@ type Props = {
  * drawn on demand, at most twice the pixels of the screen, tone-mapped, with PCF shadows. It is loaded in
  * the browser alone (next/dynamic, ssr false).
  */
-export function SceneCanvas({ onContextLost, children }: Props) {
+export function SceneCanvas({ onContextLost, onPressNothing, children }: Props) {
   const lost = useRef(onContextLost);
   useEffect(() => {
     lost.current = onContextLost;
@@ -28,6 +30,7 @@ export function SceneCanvas({ onContextLost, children }: Props) {
       dpr={[1, 2]}
       shadows={{ type: PCFShadowMap }}
       gl={{ antialias: true, toneMapping: ACESFilmicToneMapping, powerPreference: "high-performance" }}
+      onPointerMissed={onPressNothing}
       onCreated={({ gl }) => {
         gl.domElement.addEventListener("webglcontextlost", (event) => {
           event.preventDefault();

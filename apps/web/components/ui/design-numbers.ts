@@ -40,3 +40,12 @@ export const NUDGE_MM = 100;
 
 /** The same with Shift held. */
 export const NUDGE_SHIFT_MM = 1000;
+
+/** Pixels the turn handle of a selected obstacle stands off the middle of the north edge of its top, due north, on its stem. */
+export const STEM_TURN = 44;
+
+/** Pixels the height handle stands over the middle of the top, on its vertical stem, on desktop. */
+export const STEM_HEIGHT = 40;
+
+/** The same on phone and tablet. */
+export const STEM_HEIGHT_TOUCH = 52;
