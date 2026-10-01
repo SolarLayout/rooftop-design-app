@@ -7,7 +7,8 @@ import type { ViewStore } from "../stores/view-store";
 
 export type DrawingKind = "kmz" | "dxf";
 
-export type Drawing = { name: string; base64: string; units?: RoofFile["units"] };
+/** A drawing to import; a DXF comes with its units and its place, which the file does not hold. */
+export type Drawing = { name: string; base64: string; units?: RoofFile["units"]; lat?: number; lon?: number };
 
 type Stores = { api: Pick<Api, "importRoof">; project: ProjectStore; view: ViewStore };
 
@@ -20,8 +21,9 @@ export function kindOfDrawing(name: string): DrawingKind | null {
 }
 
 /** Sends the drawing, opens its document, lists the heights to review; gives back the API's notes. */
-export async function importDrawing({ name, base64, units }: Drawing, { api, project, view }: Stores): Promise<string[]> {
-  const answer = await api.importRoof(units === undefined ? { name, base64 } : { name, base64, units });
+export async function importDrawing({ name, base64, units, lat, lon }: Drawing, { api, project, view }: Stores): Promise<string[]> {
+  const file: RoofFile = { name, base64, ...(units === undefined ? {} : { units }), ...(lat === undefined || lon === undefined ? {} : { lat, lon }) };
+  const answer = await api.importRoof(file);
   project.getState().open(answer.project);
   view.getState().setToReview(answer.missing_heights);
   return answer.notes;

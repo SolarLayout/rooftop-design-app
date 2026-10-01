@@ -16,7 +16,7 @@ const RUN = 90_000;
 const isPhone = (projectName: string) => projectName === "phone";
 
 type ObstacleSent = { name: string; kind: string; length: number; height: number; diameter: number; trunk_height: number; points: [number, number][] };
-type LayoutRequest = { roof: { roof_type: string; parapet_h: number; setback_m: number; slope_deg: number; obstacles: ObstacleSent[] } };
+type LayoutRequest = { roof: { roof_type: string; parapet_h: number; setback_m: number; slope_deg: number; lat: number; lon: number; obstacles: ObstacleSent[] } };
 
 /** Every request of the layout the page sends, as it is sent. */
 function layoutsOf(page: Page): LayoutRequest[] {
@@ -283,6 +283,7 @@ test.describe("import a drawing", () => {
     await expect(dialog.getByText("KML · 1 KB · read when the roof is opened")).toBeVisible();
     await expect(dialog.getByRole("button", { name: "Choose another" })).toBeVisible();
     await expect(units(page)).toHaveAttribute("aria-disabled", "true");
+    await expect(dialog.getByTestId("import-place")).toHaveCount(0);
     await expect(openTheRoof(page)).not.toHaveAttribute("aria-disabled", "true");
 
     await openTheRoof(page).click();
@@ -321,26 +322,56 @@ test.describe("import a drawing", () => {
     expect(layouts[layouts.length - 1].roof.obstacles.find((obstacle) => obstacle.name === "Vent")).toMatchObject({ height: 0.8 });
   });
 
-  test("a DXF: the units can be chosen, m suggested; without a place the API refuses it, in its words", async ({ page }) => {
+  test("a DXF: the units can be chosen, m suggested; its place is asked, nothing guessed; coordinates pasted fill it; the roof opens there", async ({ page }) => {
+    const layouts = layoutsOf(page);
     await importOpened(page);
+    await expect(importDialog(page).getByTestId("import-place")).toHaveCount(0);
 
     await fileInput(page).setInputFiles(DXF);
 
-    await expect(importDialog(page).getByText(/DXF · \d+ KB · read when the roof is opened/)).toBeVisible();
+    const dialog = importDialog(page);
+    await expect(dialog.getByText(/DXF · \d+ KB · read when the roof is opened/)).toBeVisible();
     await expect(units(page)).not.toHaveAttribute("aria-disabled", "true");
     await expect(units(page).getByRole("radio", { name: "m", exact: true })).toBeChecked();
     await units(page).getByRole("radio", { name: "mm" }).click();
     await expect(units(page).getByRole("radio", { name: "mm" })).toBeChecked();
+    const place = dialog.getByTestId("import-place");
+    await expect(place).toContainText("The drawing does not say where the roof is. Search the place, or type its coordinates");
+    await expect(place.getByRole("textbox", { name: "Latitude" })).toHaveValue("");
+    await expect(place.getByRole("textbox", { name: "Longitude" })).toHaveValue("");
+    await expect(openTheRoof(page)).toHaveAttribute("aria-disabled", "true");
+
+    const search = place.getByRole("combobox", { name: "Search an address or paste coordinates" });
+    await search.fill("18.59120, 73.73840");
+    await search.press("Enter");
+
+    await expect(place.getByRole("textbox", { name: "Latitude" })).toHaveValue("18.59120");
+    await expect(place.getByRole("textbox", { name: "Longitude" })).toHaveValue("73.73840");
+    await expect(place).toContainText("From the search. Change it if the drawing is elsewhere");
+    await expect(openTheRoof(page)).not.toHaveAttribute("aria-disabled", "true");
 
     await openTheRoof(page).click();
 
-    const field = importDialog(page).getByTestId("file-drop");
-    await expect(field).toContainText("This file was not loaded", { timeout: RUN });
-    await expect(field).toContainText("A DXF drawing does not say where the roof is. Give its latitude and longitude.");
-    await expect(field.getByRole("button", { name: "Choose another" })).toBeVisible();
+    await expect(dialog).toBeHidden({ timeout: RUN });
+    await expect(page.getByTestId("roof-how")).toHaveText("From a file", { timeout: RUN });
+    await expect(page.getByTestId("roof-place")).toHaveText("18.59120° N, 73.73840° E");
+    await expect.poll(() => layouts.length, { timeout: RUN }).toBeGreaterThan(0);
+    const { roof } = layouts[layouts.length - 1];
+    expect([roof.lat, roof.lon]).toEqual([18.5912, 73.7384]);
+  });
+
+  test("a DXF with its place typed into the fields is ready to open; one field alone is not", async ({ page }) => {
+    await importOpened(page);
+    await fileInput(page).setInputFiles(DXF);
+    const place = importDialog(page).getByTestId("import-place");
+
+    await place.getByRole("textbox", { name: "Latitude" }).fill("18.5912");
+    await place.getByRole("textbox", { name: "Latitude" }).press("Enter");
     await expect(openTheRoof(page)).toHaveAttribute("aria-disabled", "true");
-    await expect(page).toHaveURL(/\/studio\/roof$/);
-    await expect(page.getByTestId("roof-how")).toHaveText("Entered by hand");
+    await place.getByRole("textbox", { name: "Longitude" }).fill("73.7384");
+    await place.getByRole("textbox", { name: "Longitude" }).press("Enter");
+
+    await expect(openTheRoof(page)).not.toHaveAttribute("aria-disabled", "true");
   });
 
   test("a file that is no drawing is refused, in the words of the API; the design of before stays", async ({ page }) => {

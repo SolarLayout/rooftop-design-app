@@ -26,6 +26,8 @@ type Props = {
   onPlace: (place: FoundPlace) => void;
   /** The label of the place that was found, beside the field. */
   found: string | null;
+  /** Floating over the map (Find), or a field of a form (the import of a drawing). */
+  look?: "floating" | "field";
   className?: string;
 };
 
@@ -34,10 +36,11 @@ const NO_KEY = "Words cannot be searched for without a map key. Paste coordinate
 const NO_LOCATION = "Your location is not available. Allow it in the browser, or search for the address.";
 
 const BOX = "flex h-12 min-w-0 items-center gap-3 rounded-card-s border border-line bg-surface-1 px-4 shadow-float";
+const FIELD = "flex h-10 min-w-0 items-center gap-2.5 rounded-control border border-line bg-well px-3 shadow-well";
 const NOTE = "flex min-h-11 items-center gap-2.5 px-2.5 text-text-2";
 
 /** The field of the search: words for the geocoder, coordinates, or a maps link; the places found under it. */
-export function Search({ provider, near, onPlace, found, className }: Props) {
+export function Search({ provider, near, onPlace, found, look = "floating", className }: Props) {
   const id = useId();
   const [typed, setTyped] = useState("");
   const [state, dispatch] = useReducer(searchStateAfter, IDLE);
@@ -131,7 +134,7 @@ export function Search({ provider, near, onPlace, found, className }: Props) {
       <form
         ref={anchor}
         role="search"
-        className={classNames(BOX, "min-w-0 grow")}
+        className={classNames(look === "field" ? FIELD : BOX, "min-w-0 grow")}
         onSubmit={(event) => {
           event.preventDefault();
           onSubmit();
