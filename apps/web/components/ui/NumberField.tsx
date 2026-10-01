@@ -44,7 +44,7 @@ export function NumberField({ label, value, onCommit, range, unit, labelInside =
       data-initial-focus={initialFocus || undefined}
       aria-labelledby={names.label}
       aria-describedby={classNames(unit && names.unit, names.said)}
-      className={classNames(INPUT, "text-right", labelHidden ? "w-full grow" : wide ? "w-24" : labelInside ? "w-16" : "w-12")}
+      className={classNames(INPUT, "text-right", labelHidden ? "w-full grow" : wide ? "w-24" : "w-16")}
       {...entry.input}
     />
   );
@@ -68,7 +68,7 @@ export function NumberField({ label, value, onCommit, range, unit, labelInside =
           data-shown-as={shownAs}
           className={classNames("flex h-11 items-center gap-2 rounded-control px-3", WELL, dim)}
         >
-          <span id={names.label} className={labelHidden ? "sr-only" : "grow text-text-2"}>
+          <span id={names.label} className={labelHidden ? "sr-only" : "grow whitespace-nowrap text-text-2"}>
             {label}
           </span>
           {input}
@@ -89,7 +89,8 @@ export function NumberField({ label, value, onCommit, range, unit, labelInside =
           data-testid="well"
           data-shown-as={shownAs}
           className={classNames(
-            "flex h-12 items-center gap-1.5 rounded-row px-3.5 desktop:h-9 desktop:rounded-control desktop:px-3",
+            // On touch the wells of a column are all as wide, whatever their unit (the board "Studio, Roof lens, phone").
+            "flex h-12 w-33 items-center justify-end gap-1.5 rounded-row px-3.5 desktop:h-9 desktop:w-auto desktop:justify-start desktop:rounded-control desktop:px-3",
             WELL,
             dim,
           )}

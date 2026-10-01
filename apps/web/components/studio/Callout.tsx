@@ -1,50 +1,62 @@
 "use client";
 
-import { useEffect } from "react";
 import { useStore } from "zustand";
-import { useProject, useResults, useStores, useView } from "@/components/shell/stores";
+import { useProject, useResults, useView } from "@/components/shell/stores";
 import { measures } from "@/components/ui/measures";
-import { calloutOf } from "@/lib/scene/keepout";
+import type { Layout, Project } from "@/lib/api";
+import { calloutOf, type Callout as Words } from "@/lib/scene/keepout";
+import { calloutOfObstacle } from "@/lib/scene/obstacles";
 import { labelsOf, type StageStore } from "@/lib/scene/stage-store";
 import { projectOf } from "@/lib/stores/project-store";
 import { layoutOf } from "@/lib/stores/results-store";
-import { selectionOf } from "@/lib/stores/view-store";
+import { draftOf, selectionOf, toReviewOf, type Selection } from "@/lib/stores/view-store";
+import type { DraftObstacle } from "@/lib/studio/obstacle-fields";
 
 type Props = { stage: StageStore };
+
+type Of = { selection: Selection | null; draft: DraftObstacle | null; toReview: readonly string[]; project: Project; layout: Layout | null };
+
+/** The words of the callout: of the draft, of the selected obstacle, or of the selected kept-clear area; null where nothing is selected. */
+function wordsOf({ selection, draft, toReview, project, layout }: Of): Words | null {
+  if (draft) return calloutOfObstacle(draft, "draft");
+  if (selection?.kind === "obstacle") {
+    const obstacle = project.roof.obstacles[selection.index];
+    return obstacle ? calloutOfObstacle(obstacle, toReview.includes(obstacle.name) ? "to-review" : "selected") : null;
+  }
+  if (selection?.kind === "keepout") {
+    const part = layout?.keepout[selection.index];
+    const { array } = project;
+    return part ? calloutOf(part, { from: array.window_start_h, to: array.window_end_h, allowShaded: array.allow_shaded }) : null;
+  }
+  return null;
+}
 
 /**
  * The callout of what is selected on the roof (docs/design/components.md, "Callout on the stage"): a
  * chip joined to its object by a line and a dot, placed where the Projector says the object falls. For
- * a kept-clear area it says how many positions it keeps clear and what shades it, when. Escape clears.
+ * a kept-clear area it says how many positions it keeps clear and what shades it, when; for an obstacle
+ * its size and its height; for a draft what adds it.
  */
 export function Callout({ stage }: Props) {
-  const { view } = useStores();
   const selection = useView(selectionOf);
+  const draft = useView(draftOf);
+  const toReview = useView(toReviewOf);
   const project = useProject(projectOf);
   const layout = useResults(layoutOf);
   const hung = useStore(stage, labelsOf).find((label) => label.kind === "callout");
 
-  useEffect(() => {
-    if (!selection) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") view.getState().clearSelection();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [selection, view]);
-
-  if (!selection || selection.kind !== "keepout" || !project || !layout || !hung?.visible) return null;
-  const part = layout.layout.keepout[selection.index];
-  if (!part) return null;
-  const { array } = project;
-  const words = calloutOf(part, { from: array.window_start_h, to: array.window_end_h, allowShaded: array.allow_shaded });
+  if (!project || !hung?.visible) return null;
+  const words = wordsOf({ selection, draft, toReview, project, layout: layout?.layout ?? null });
+  if (!words) return null;
 
   return (
     <div className="pointer-events-none absolute inset-0 z-stage-overlay overflow-hidden contain-layout">
-      <div data-testid="stage-callout" role="status" className="placed flex flex-col items-start" style={measures({ x: hung.x, y: hung.y })}>
-        <span className="block size-2.25 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent" />
-        <span className="-mt-1.75 block h-10 w-px -translate-x-1/2 -translate-y-full bg-accent" />
-        <div className="-translate-y-22 flex flex-col gap-0.5 rounded-row border border-note-line bg-surface-1 px-3.5 py-2.5 shadow-float">
+      {/* The anchor is a point: the dot is centred on it, the line rises from it, the chip stands on the line
+          (docs/design/components.md, "Callout on the stage"). */}
+      <div className="placed size-0" style={measures({ x: hung.x, y: hung.y })}>
+        <span className="absolute top-0 left-0 block size-2.25 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent" />
+        <span className="absolute bottom-0 left-0 block h-10 w-px -translate-x-1/2 bg-accent" />
+        <div data-testid="stage-callout" role="status" className="absolute bottom-10 left-0 flex -translate-x-1/2 flex-col gap-0.5 rounded-row border border-note-line bg-surface-1 px-3.5 py-2.5 shadow-float">
           <span className="type-small font-medium whitespace-nowrap text-text">{words.title}</span>
           <span className="type-caption whitespace-nowrap text-text-2">{words.detail}</span>
         </div>

@@ -6,6 +6,7 @@ import { placeInShort } from "@/lib/format/place";
 import { workspaceOf } from "@/lib/routes";
 import { latitudeOf, longitudeOf, nameOf, projectOf } from "@/lib/stores/project-store";
 import { lensOf } from "@/lib/stores/view-store";
+import { ImportDrawing } from "./ImportDrawing";
 import { NotesDrawer } from "./NotesDrawer";
 import type { Note } from "./notes-view";
 import { useNotes, useProject, useStores, useView } from "./stores";
@@ -32,6 +33,7 @@ function Frame({ children }: { children: ReactNode }) {
   const lens = useView(lensOf);
   const notes = useNotes();
   const [areNotesOpen, setNotesOpen] = useState(false);
+  const [isImportOpen, setImportOpen] = useState(false);
 
   // A workspace without a design opens the demo. From Phase 10 on the designs of the device come first.
   useEffect(() => {
@@ -53,11 +55,13 @@ function Frame({ children }: { children: ReactNode }) {
           saving="not-kept"
           notes={notes.length}
           onOpenNotes={ofTheShell.open}
+          onImport={() => setImportOpen(true)}
         />
         <div className="relative flex min-h-0 grow flex-col overflow-y-auto">{children}</div>
         <TabBar current={workspace} lens={lens} />
       </div>
       <NotesDrawer open={areNotesOpen} notes={notes} onClose={() => setNotesOpen(false)} onTryAgain={flow.tryAgain} />
+      <ImportDrawing open={isImportOpen} onClose={() => setImportOpen(false)} />
     </NotesContext.Provider>
   );
 }

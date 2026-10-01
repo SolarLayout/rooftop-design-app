@@ -18,13 +18,16 @@ type Props<T extends string> = {
   label: string;
   options: ReadonlyArray<SegmentedOption<T>>;
   /**
-   * The choice that is taken. There is always one: a choice that only the user can make is asked for
-   * with a decision card, never with a segmented control of which nothing is taken.
+   * The choice that is taken. There is one, as a rule: a choice that only the user can make is asked for
+   * with a decision card, never with a segmented control of which nothing is taken. Null only while the
+   * control cannot be used, where the choice does not apply yet (the units of a drawing before it is a DXF).
    */
-  value: T;
+  value: T | null;
   onChange: (value: T) => void;
   /** The choices share the width in equal parts. */
   fill?: boolean;
+  /** The control is shown and cannot be used: dim, and neither pointer nor key takes a choice. */
+  disabled?: boolean;
   className?: string;
 };
 
@@ -41,13 +44,17 @@ const TAKEN = "bg-control-active font-medium text-text shadow-segment desktop:fo
 const NOT_TAKEN = "bg-transparent text-text-2 hovered:text-text";
 
 /** Two to four choices with short names, of which one is taken. */
-export function Segmented<T extends string>({ label, options, value, onChange, fill = false, className }: Props<T>) {
+export function Segmented<T extends string>({ label, options, value, onChange, fill = false, disabled = false, className }: Props<T>) {
   const group = useRef<HTMLDivElement>(null);
+  // The keyboard stops at the choice that is taken; where none is, at the first.
+  const stopAt = value ?? options[0]?.value;
 
   function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (disabled) return;
     const unavailable = new Set(options.filter((option) => option.disabled).map((option) => option.value));
     const values = options.map((option) => option.value);
-    const next = choiceAfterKey(values, value, event.key, unavailable);
+    // With nothing taken, the first key takes the choice the keyboard stands at.
+    const next = value === null ? (choiceAfterKey(values, stopAt, event.key, unavailable) === null ? null : stopAt) : choiceAfterKey(values, value, event.key, unavailable);
     if (next === null) return;
 
     event.preventDefault();
@@ -60,8 +67,9 @@ export function Segmented<T extends string>({ label, options, value, onChange, f
       ref={group}
       role="radiogroup"
       aria-label={label}
+      aria-disabled={disabled || undefined}
       onKeyDown={onKeyDown}
-      className={classNames(fill ? "grid auto-cols-fr grid-flow-col" : "inline-flex", TRACK, className)}
+      className={classNames(fill ? "grid auto-cols-fr grid-flow-col" : "inline-flex", TRACK, disabled && "opacity-disabled", className)}
     >
       {options.map((option) => (
         <button
@@ -70,9 +78,12 @@ export function Segmented<T extends string>({ label, options, value, onChange, f
           role="radio"
           aria-checked={option.value === value}
           aria-label={option.name}
-          tabIndex={option.value === value ? 0 : -1}
+          tabIndex={option.value === stopAt ? 0 : -1}
           disabled={option.disabled}
-          onClick={() => onChange(option.value)}
+          aria-disabled={disabled || undefined}
+          onClick={() => {
+            if (!disabled) onChange(option.value);
+          }}
           className={classNames(ITEM, option.value === value ? TAKEN : NOT_TAKEN)}
         >
           {option.label}

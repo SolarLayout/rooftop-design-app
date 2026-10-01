@@ -31,6 +31,13 @@ const STROKED = {
       <circle cx="15" cy="19" r="1.6" className="fill-current" />
     </>
   ),
+  // The document icon, for a file that is held or read.
+  file: (
+    <>
+      <path d="M6 3h8l4 4v14H6z" />
+      <path d="M14 3v4h4M9 13h6M9 17h6" />
+    </>
+  ),
   detect: (
     <>
       <path d="M12 3v3M12 18v3M3 12h3M18 12h3" />
@@ -77,6 +84,7 @@ const STROKED = {
       <path d="M12 7v6M12 16.5v.5" />
     </>
   ),
+  parapet: <path d="M3 19V8h18v11M3 8V6h18v2" />,
   performance: <path d="M5 20V10M12 20V4M19 20v-7" />,
   plus: <path d="M12 5v14M5 12h14" />,
   rectangle: <rect x="3.5" y="6.5" width="17" height="11" rx="1" />,
@@ -118,6 +126,12 @@ const STROKED = {
     </>
   ),
   tick: <path d="m5 12 5 5 9-10" />,
+  tree: (
+    <>
+      <path d="M12 21v-5" />
+      <path d="M8 16h8l-2-3h1.5l-2.5-3.5h1L12 5 8 9.5h1L6.5 13H8z" />
+    </>
+  ),
   upload: <path d="M12 16V4m0 0-4 4m4-4 4 4M4 20h16" />,
   wall: <path d="M3 6h18v12H3zM3 12h18M9 6v6M15 12v6" />,
   undo: (

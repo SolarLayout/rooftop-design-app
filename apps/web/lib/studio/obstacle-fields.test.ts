@@ -1,0 +1,178 @@
+import { describe, expect, test } from "bun:test";
+import type { Obstacle } from "../api";
+import type { Roof } from "../api";
+import { factOfNewKind, factsOf, FEWEST_POINTS, fieldsOfObstacle, newObstacleOf, OBSTACLE_KINDS, withObstacleAdded, withObstacleAt, withObstacleField, withoutObstacleAt, withPoint, withPointAdded, withPointRemoved } from "./obstacle-fields";
+
+// The obstacles of the Roof lens (plan/phase-05-plan.md, step 12, decision 15; the board "Obstacle edited
+// on the roof"): the fields of each kind from plan/reference/functional-inventory.md, 1.2, and what a new
+// one is.
+
+const box = (over: Partial<Obstacle> = {}): Obstacle => ({
+  name: "Stair room",
+  kind: "box",
+  x: 22.5,
+  y: 18,
+  length: 5,
+  width: 4,
+  rotation_deg: 0,
+  diameter: 1,
+  height: 3,
+  thickness: 0.2,
+  trunk_height: 2,
+  points: [],
+  auto: false,
+  ...over,
+});
+
+describe("the fields of an obstacle", () => {
+  test("a box: its sides, its height, its turn, where it stands", () => {
+    expect(fieldsOfObstacle(box()).map((field) => [field.id, field.label, field.value, field.unit])).toEqual([
+      ["length", "Length", 5, "m"],
+      ["width", "Width", 4, "m"],
+      ["height", "Height", 3, "m"],
+      ["rotation_deg", "Rotation", 0, "°"],
+      ["x", "East", 22.5, "m"],
+      ["y", "North", 18, "m"],
+    ]);
+  });
+
+  test("a tank: its diameter, its height, where it stands", () => {
+    expect(fieldsOfObstacle(box({ kind: "cylinder", diameter: 2.5, height: 2 })).map((field) => field.id)).toEqual(["diameter", "height", "x", "y"]);
+  });
+
+  test("a tree: its crown, its height, where the crown starts, where it stands", () => {
+    const fields = fieldsOfObstacle(box({ kind: "tree", diameter: 4, height: 6, trunk_height: 2 }));
+    expect(fields.map((field) => [field.id, field.label])).toEqual([
+      ["diameter", "Crown ⌀"],
+      ["height", "Height"],
+      ["trunk_height", "Crown starts at"],
+      ["x", "East"],
+      ["y", "North"],
+    ]);
+  });
+
+  test("a wall: its height and its thickness; its points are a table of their own", () => {
+    expect(fieldsOfObstacle(box({ kind: "wall", points: [[0, 0], [12, 0]] })).map((field) => field.id)).toEqual(["height", "thickness"]);
+  });
+
+  test("a building: its height alone; its points are a table of their own", () => {
+    expect(fieldsOfObstacle(box({ kind: "building", points: [[0, 0], [8, 0], [8, 8]] })).map((field) => field.id)).toEqual(["height"]);
+  });
+
+  test("the ranges are the inventory's", () => {
+    const of = (obstacle: Obstacle, id: string) => fieldsOfObstacle(obstacle).find((field) => field.id === id)?.range;
+    expect(of(box(), "length")).toEqual({ min: 0.1, max: 500, decimals: 2 });
+    expect(of(box(), "rotation_deg")).toEqual({ min: -180, max: 180, decimals: 0 });
+    expect(of(box(), "height")).toEqual({ min: 0.05, max: 200, decimals: 2 });
+    expect(of(box(), "x")).toEqual({ min: -5000, max: 5000, decimals: 2 });
+    expect(of(box({ kind: "tree" }), "diameter")).toEqual({ min: 0.1, max: 100, decimals: 2 });
+    expect(of(box({ kind: "tree" }), "trunk_height")).toEqual({ min: 0, max: 100, decimals: 2 });
+    expect(of(box({ kind: "wall" }), "thickness")).toEqual({ min: 0.05, max: 5, decimals: 2 });
+  });
+});
+
+describe("a new obstacle", () => {
+  test("stands at the centre of the roof with the inventory's sizes, named by its kind and its count, without a height", () => {
+    const fresh = newObstacleOf("box", [45, 20], [box(), box({ name: "Box 2", kind: "box" }), box({ kind: "cylinder" })]);
+    expect(fresh).toMatchObject({ name: "Box 3", kind: "box", x: 45, y: 20, length: 2, width: 2, rotation_deg: 0 });
+    expect(fresh.height).toBeNull();
+  });
+
+  test("a tank is 2 m wide, a tree's crown 4 m from 2 m up; a wall is 6 m long through the centre; a building a 10 m block 3 m east", () => {
+    expect(newObstacleOf("cylinder", [45, 20], [])).toMatchObject({ name: "Tank 1", diameter: 2 });
+    expect(newObstacleOf("tree", [45, 20], [])).toMatchObject({ name: "Tree 1", diameter: 4, trunk_height: 2 });
+    expect(newObstacleOf("wall", [45, 20], [])).toMatchObject({ name: "Wall 1", thickness: 0.2, points: [[42, 20], [48, 20]] });
+    expect(newObstacleOf("building", [45, 20], []).points).toEqual([
+      [48, 15],
+      [58, 15],
+      [58, 25],
+      [48, 25],
+    ]);
+  });
+
+  test("counts only the kind's own, not what the engine added itself", () => {
+    expect(newObstacleOf("box", [0, 0], [box({ auto: true }), box({ kind: "wall" })]).name).toBe("Box 1");
+  });
+
+  test("the kinds, in the order of the menu, with the word of each", () => {
+    expect(OBSTACLE_KINDS.map((kind) => [kind.id, kind.word])).toEqual([
+      ["box", "Box"],
+      ["cylinder", "Tank"],
+      ["wall", "Wall"],
+      ["tree", "Tree"],
+      ["building", "Building"],
+    ]);
+  });
+});
+
+describe("the facts of an obstacle in its row", () => {
+  test("a box by its sides and its height, a tank by its diameter, a wall by its length, a building by its area, a tree by its crown", () => {
+    expect(factsOf(box())).toBe("5.0 × 4.0 · h 3.0 m");
+    expect(factsOf(box({ kind: "cylinder", diameter: 2.5, height: 2 }))).toBe("⌀ 2.5 · h 2.0 m");
+    expect(factsOf(box({ kind: "wall", height: 0.8, points: [[0, 0], [12, 0], [12, 6]] }))).toBe("18.0 m · h 0.8 m");
+    expect(factsOf(box({ kind: "building", height: 8, points: [[0, 0], [8, 0], [8, 8], [0, 8]] }))).toBe("64 m² · h 8.0 m");
+    expect(factsOf(box({ kind: "tree", diameter: 4, height: 6 }))).toBe("crown ⌀ 4.0 · h 6.0 m");
+  });
+});
+
+describe("the edit a field makes", () => {
+  test("sets the value and leaves the rest", () => {
+    const after = withObstacleField(box(), "x", 27.5);
+    expect(after.x).toBe(27.5);
+    expect(after.name).toBe("Stair room");
+    expect(withObstacleField(box(), "x", 22.5)).toEqual(box());
+  });
+});
+
+describe("the Add menu", () => {
+  test("says the size a new one of each kind gets", () => {
+    expect(OBSTACLE_KINDS.map((kind) => factOfNewKind(kind.id))).toEqual(["2.0 × 2.0 m", "⌀ 2.0 m", "6.0 m, points", "crown ⌀ 4.0 m", "beside the roof, points"]);
+  });
+});
+
+describe("the points of a wall and of a building", () => {
+  const wall = box({ kind: "wall", points: [[0, 0], [6, 0]] });
+  const building = box({ kind: "building", points: [[0, 0], [8, 0], [8, 8]] });
+
+  test("a wall keeps two at least, a building three", () => {
+    expect(FEWEST_POINTS).toEqual({ wall: 2, building: 3 });
+  });
+
+  test("a point is moved; the same point is the same obstacle", () => {
+    expect(withPoint(wall, 1, [7, 1]).points).toEqual([[0, 0], [7, 1]]);
+    expect(withPoint(wall, 1, [6, 0])).toBe(wall);
+  });
+
+  test("a wall's new point goes on along its last segment; a building's at the middle of its closing edge", () => {
+    expect(withPointAdded(wall).points).toEqual([[0, 0], [6, 0], [12, 0]]);
+    expect(withPointAdded(building).points).toEqual([[0, 0], [8, 0], [8, 8], [4, 4]]);
+  });
+
+  test("a point is removed, down to the fewest; the fewest stay", () => {
+    expect(withPointRemoved(withPointAdded(building), 1).points).toEqual([[0, 0], [8, 8], [4, 4]]);
+    expect(withPointRemoved(building, 1)).toBe(building);
+    expect(withPointRemoved(wall, 0)).toBe(wall);
+    expect(withPointRemoved(withPointAdded(wall), 0).points).toEqual([[6, 0], [12, 0]]);
+  });
+});
+
+describe("the obstacles of the roof", () => {
+  const roof = { obstacles: [box(), box({ name: "Water tank", kind: "cylinder" })] } as Roof;
+
+  test("one is replaced at its index; the same one is the same roof", () => {
+    const moved = withObstacleField(roof.obstacles[0], "x", 27.5);
+    expect(withObstacleAt(roof, 0, moved).obstacles).toEqual([moved, roof.obstacles[1]]);
+    expect(withObstacleAt(roof, 0, roof.obstacles[0])).toBe(roof);
+  });
+
+  test("one is taken away at its index", () => {
+    expect(withoutObstacleAt(roof, 0).obstacles).toEqual([roof.obstacles[1]]);
+  });
+
+  test("a draft joins the roof with its height, at the end", () => {
+    const draft = newObstacleOf("tree", [45, 20], roof.obstacles);
+    const after = withObstacleAdded(roof, draft, 6);
+    expect(after.obstacles).toHaveLength(3);
+    expect(after.obstacles[2]).toMatchObject({ name: "Tree 1", kind: "tree", height: 6, trunk_height: 2, diameter: 4 });
+  });
+});

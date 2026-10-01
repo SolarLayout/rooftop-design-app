@@ -3,21 +3,23 @@
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { useStore } from "zustand";
-import { useProject, useResults } from "@/components/shell/stores";
+import { useProject, useResults, useView } from "@/components/shell/stores";
 import { useWebGL } from "@/components/find/use-web-gl";
 import { classNames } from "@/components/ui/class-names";
 import { shown } from "@/components/ui/number-entry";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
 import { calloutOf } from "@/lib/scene/keepout";
-import { wordsOf } from "@/lib/scene/obstacles";
+import { calloutOfObstacle, wordsOf } from "@/lib/scene/obstacles";
 import { createStageStore, groundOf, type StageStore } from "@/lib/scene/stage-store";
 import type { Lens } from "@/lib/routes";
 import { projectOf } from "@/lib/stores/project-store";
 import { layoutOf, readoutsOf, sunOf } from "@/lib/stores/results-store";
+import { draftOf, selectionOf, toReviewOf } from "@/lib/stores/view-store";
 import { Callout } from "./Callout";
 import { Labels } from "./Labels";
 import { PlanFallback } from "./PlanFallback";
 import { subLineOf } from "./stage-view";
+import { useEscapeClears } from "./use-escape-clears";
 import { ViewControls } from "./ViewControls";
 
 // The scene draws with WebGL in the browser alone: it is loaded there, never on the server.
@@ -50,6 +52,7 @@ export function Stage({ lens, name, className }: Props) {
   const [stage] = useState(createStageStore);
   const subLine = subLineOf(lens, readouts, project?.roof.obstacles.length ?? 0);
   const cannotDraw = webGL === false ? NO_WEBGL : isLost ? CONTEXT_LOST : null;
+  useEscapeClears();
 
   return (
     <div data-testid="stage" data-state={cannotDraw ? "plan" : "scene"} className={classNames("relative", className)}>
@@ -88,9 +91,13 @@ function OnTheRoof({ stage }: { stage: StageStore }) {
   const readouts = useResults(readoutsOf);
   const layout = useResults(layoutOf);
   const sun = useResults(sunOf);
+  const selection = useView(selectionOf);
+  const draft = useView(draftOf);
+  const toReview = useView(toReviewOf);
   if (!project) return null;
   const { roof, array } = project;
   const window = { from: array.window_start_h, to: array.window_end_h, allowShaded: array.allow_shaded };
+  const selected = selection?.kind === "obstacle" ? selection.index : null;
   return (
     <ul aria-label="On the roof" className="sr-only">
       <li data-testid="on-the-roof-roof">
@@ -99,11 +106,14 @@ function OnTheRoof({ stage }: { stage: StageStore }) {
       </li>
       {roof.obstacles.map((obstacle, index) =>
         obstacle.auto ? null : (
-          <li key={index} data-testid="on-the-roof-obstacle">
+          <li key={index} data-testid="on-the-roof-obstacle" aria-current={selected === index || undefined}>
             {wordsOf(obstacle)}
+            {selected === index ? ", selected" : ""}
+            {toReview.includes(obstacle.name) ? ", height to review" : ""}
           </li>
         ),
       )}
+      {draft ? <li data-testid="on-the-roof-draft">{calloutOfObstacle(draft, "draft").title}</li> : null}
       {layout ? (
         <li data-testid="on-the-roof-modules">
           {shown(layout.layout.modules.length, 0)} modules in {shown(layout.layout.n_rows, 0)} rows

@@ -1,10 +1,12 @@
 "use client";
 
-import { useMemo } from "react";
-import { BoxGeometry, CylinderGeometry, ExtrudeGeometry, MeshStandardMaterial, Shape, Vector2 } from "three";
+import type { ThreeEvent } from "@react-three/fiber";
+import { useMemo, useState } from "react";
+import { BoxGeometry, BufferGeometry, CylinderGeometry, EdgesGeometry, ExtrudeGeometry, Float32BufferAttribute, MeshStandardMaterial, Shape, Vector2 } from "three";
 import type { Obstacle } from "@/lib/api";
-import { FLAT, toScene } from "@/lib/scene/adapter";
-import { solidsOf, type HeightAt, type Look, type Solid } from "@/lib/scene/obstacles";
+import { FLAT, toScene, toScenePoint, type XY } from "@/lib/scene/adapter";
+import { footprintOf, ROUND_SEGMENTS, solidsOf, type HeightAt, type Look, type Solid } from "@/lib/scene/obstacles";
+import type { DraftObstacle } from "@/lib/studio/obstacle-fields";
 import { PALETTE, type PaletteName } from "@/lib/scene-palette";
 
 type Props = {
@@ -12,12 +14,23 @@ type Props = {
   obstacles: readonly Obstacle[];
   /** The height of the roof surface at a point of the plan, from the frame of the scene. */
   heightAt: HeightAt;
+  /** The index of the selected obstacle; null for none. */
+  selected: number | null;
+  /** The names of the obstacles whose height is still to be reviewed: drawn with a dashed outline. */
+  toReview: readonly string[];
+  onSelect: (index: number) => void;
 };
 
-/** A cylinder's side is this many flat faces, as the engine's discs are. */
-const CYLINDER_SEGMENTS = 24;
-
 const ROUGHNESS = 0.9;
+
+/** An outline stands this much off the faces it follows, so that they never cut it. */
+const OUTLINE_OFF = 0.02;
+
+/** Faces of a cylinder that meet at less than this many degrees share no edge of the outline: its side stays smooth. */
+const SMOOTH_WITHIN = 20;
+
+/** How the dashes of an outline that is not yet real are drawn. */
+const DASH = { dashSize: 0.4, gapSize: 0.25 };
 
 type Materials = Record<"top" | "lit" | "trunk" | "crown", MeshStandardMaterial>;
 
@@ -43,53 +56,111 @@ function cylinderMaterialsOf(look: Look, materials: Materials): MeshStandardMate
   return [materials.lit, materials.top, materials.lit];
 }
 
+type Placed = { position: [number, number, number]; rotation: [number, number, number] };
+
+/** Where a solid stands and how it is turned, in the metres of the scene. */
+function placeOf(solid: Solid): Placed {
+  if (solid.kind === "box") {
+    const { x, y, height, rotationDeg, zBottom = 0 } = solid.box;
+    return { position: toScene([x, y, zBottom + height / 2]), rotation: [0, (rotationDeg * Math.PI) / 180, 0] };
+  }
+  if (solid.kind === "cylinder") return { position: toScene([solid.x, solid.y, solid.zBottom + solid.height / 2]), rotation: [0, 0, 0] };
+  return { position: toScene([0, 0, solid.zBottom]), rotation: [FLAT.x, FLAT.y, FLAT.z] };
+}
+
+/** The edges of a solid, a hair outside it, in the metres of the scene. */
+function edgesOf(solid: Solid): EdgesGeometry {
+  if (solid.kind === "box") {
+    const { length, height, width } = solid.box;
+    return new EdgesGeometry(new BoxGeometry(length + OUTLINE_OFF, height + OUTLINE_OFF, width + OUTLINE_OFF));
+  }
+  if (solid.kind === "cylinder") {
+    const radius = solid.radius + OUTLINE_OFF / 2;
+    return new EdgesGeometry(new CylinderGeometry(radius, radius, solid.height + OUTLINE_OFF, ROUND_SEGMENTS), SMOOTH_WITHIN);
+  }
+  const shape = new Shape(solid.points.map(([x, y]) => new Vector2(x, y)));
+  return new EdgesGeometry(new ExtrudeGeometry(shape, { depth: solid.height + OUTLINE_OFF, bevelEnabled: false }));
+}
+
+/** What a solid's outline says: the accent of a selection, the lighter accent under the pointer, dashed where the height is not yet real. */
+type OutlineLook = "selected" | "hover" | "to-review";
+
+/** The outline of one solid: its edges in the accent, where the solid itself stands. */
+function Outline({ solid, look }: { solid: Solid; look: OutlineLook }) {
+  const geometry = useMemo(() => edgesOf(solid), [solid]);
+  const colour = look === "hover" ? PALETTE.hover : PALETTE.selection;
+  const { position, rotation } = placeOf(solid);
+  // A prism's outline is a hair deeper than the prism, so that it stands off the top and the bottom alike.
+  const lifted: [number, number, number] = solid.kind === "prism" ? [position[0], position[1] - OUTLINE_OFF / 2, position[2]] : position;
+  return (
+    <lineSegments geometry={geometry} position={lifted} rotation={rotation} onUpdate={(line) => line.computeLineDistances()}>
+      {look === "to-review" ? <lineDashedMaterial color={colour} {...DASH} toneMapped={false} /> : <lineBasicMaterial color={colour} toneMapped={false} />}
+    </lineSegments>
+  );
+}
+
 type SolidProps = { solid: Solid; unitBox: BoxGeometry; materials: Materials };
 
 /** One solid of an obstacle: a unit box placed by its size, turn and place; a cylinder; a prism laid flat and lifted. */
 function SolidMesh({ solid, unitBox, materials }: SolidProps) {
   const geometry = useMemo(() => {
     if (solid.kind === "box") return unitBox;
-    if (solid.kind === "cylinder") return new CylinderGeometry(solid.radius, solid.radius, solid.height, CYLINDER_SEGMENTS);
+    if (solid.kind === "cylinder") return new CylinderGeometry(solid.radius, solid.radius, solid.height, ROUND_SEGMENTS);
     const shape = new Shape(solid.points.map(([x, y]) => new Vector2(x, y)));
     return new ExtrudeGeometry(shape, { depth: solid.height, bevelEnabled: false });
   }, [solid, unitBox]);
+  const { position, rotation } = placeOf(solid);
 
   if (solid.kind === "box") {
-    const { x, y, length, width, height, rotationDeg, zBottom = 0 } = solid.box;
-    return (
-      <mesh
-        geometry={geometry}
-        material={boxMaterialsOf(materials)}
-        position={toScene([x, y, zBottom + height / 2])}
-        rotation={[0, (rotationDeg * Math.PI) / 180, 0]}
-        scale={[length, height, width]}
-        castShadow
-        receiveShadow
-      />
-    );
+    const { length, width, height } = solid.box;
+    return <mesh geometry={geometry} material={boxMaterialsOf(materials)} position={position} rotation={rotation} scale={[length, height, width]} castShadow receiveShadow />;
   }
   if (solid.kind === "cylinder") {
-    return (
-      <mesh
-        geometry={geometry}
-        material={cylinderMaterialsOf(solid.look, materials)}
-        position={toScene([solid.x, solid.y, solid.zBottom + solid.height / 2])}
-        castShadow
-        receiveShadow
-      />
-    );
+    return <mesh geometry={geometry} material={cylinderMaterialsOf(solid.look, materials)} position={position} castShadow receiveShadow />;
   }
+  return <mesh geometry={geometry} material={[materials.top, materials.lit]} rotation={rotation} position={position} castShadow receiveShadow />;
+}
+
+/** Whether the device has a pointer that can hover: the hover outline is for it alone (guidelines.md, "3D scene"). */
+const canHover = () => window.matchMedia("(hover: hover)").matches;
+
+type OneProps = { solids: Solid[]; index: number; isSelected: boolean; isToReview: boolean; onSelect: Props["onSelect"]; unitBox: BoxGeometry; materials: Materials };
+
+/** One obstacle: its solids, its outline when it is selected, under the pointer, or not yet real; a press selects it. */
+function One({ solids, index, isSelected, isToReview, onSelect, unitBox, materials }: OneProps) {
+  const [isHovered, setHovered] = useState(false);
+  const look: OutlineLook | null = isSelected ? "selected" : isToReview ? "to-review" : isHovered ? "hover" : null;
+
+  function select(event: ThreeEvent<MouseEvent>) {
+    event.stopPropagation();
+    onSelect(index);
+  }
+
   return (
-    <mesh geometry={geometry} material={[materials.top, materials.lit]} rotation={FLAT} position={toScene([0, 0, solid.zBottom])} castShadow receiveShadow />
+    <group
+      userData={{ obstacle: index }}
+      onClick={select}
+      onPointerOver={(event) => {
+        event.stopPropagation();
+        if (canHover()) setHovered(true);
+      }}
+      onPointerOut={() => setHovered(false)}
+    >
+      {solids.map((solid, n) => (
+        <SolidMesh key={n} solid={solid} unitBox={unitBox} materials={materials} />
+      ))}
+      {look ? solids.map((solid, n) => <Outline key={`outline-${n}`} solid={solid} look={look} />) : null}
+    </group>
   );
 }
 
 /**
- * The obstacles on the roof (plan/phase-05-plan.md, step 3): every solid of each one, in the colours of
- * the palette, casting and taking shadows. Each obstacle's group carries its index in the document, for
- * the selection of a later step. What the engine added itself is not drawn: the building draws the parapet.
+ * The obstacles on the roof (plan/phase-05-plan.md, steps 3 and 12): every solid of each one, in the colours
+ * of the palette, casting and taking shadows. The selected one has an accent outline, the one under the
+ * pointer a lighter one, one whose height is to be reviewed a dashed one; a press on one selects it
+ * (decision 10). What the engine added itself is not drawn: the building draws the parapet.
  */
-export function Obstacles({ obstacles, heightAt }: Props) {
+export function Obstacles({ obstacles, heightAt, selected, toReview, onSelect }: Props) {
   const solids = useMemo(() => obstacles.map((obstacle) => solidsOf(obstacle, heightAt)), [obstacles, heightAt]);
   const unitBox = useMemo(() => new BoxGeometry(1, 1, 1), []);
   const materials = useMemo(() => materialsOf(), []);
@@ -98,13 +169,45 @@ export function Obstacles({ obstacles, heightAt }: Props) {
     <group>
       {solids.map((ofObstacle, index) =>
         ofObstacle.length === 0 ? null : (
-          <group key={index} userData={{ obstacle: index }}>
-            {ofObstacle.map((solid, n) => (
-              <SolidMesh key={n} solid={solid} unitBox={unitBox} materials={materials} />
-            ))}
-          </group>
+          <One
+            key={index}
+            solids={ofObstacle}
+            index={index}
+            isSelected={selected === index}
+            isToReview={toReview.includes(obstacles[index].name)}
+            onSelect={onSelect}
+            unitBox={unitBox}
+            materials={materials}
+          />
         ),
       )}
     </group>
+  );
+}
+
+/** The footprint stands this much off the roof, as the kept-clear overlays do. */
+const FOOTPRINT_LIFT = 0.03;
+
+/** The segments of a polyline, each from a point to the next, around the end when it is closed. */
+function segmentsOf(points: readonly XY[], closed: boolean, heightAt: HeightAt): BufferGeometry {
+  const last = closed ? points.length : points.length - 1;
+  const at = (point: XY) => toScenePoint(point, heightAt(point) + FOOTPRINT_LIFT);
+  const vertices = Array.from({ length: Math.max(0, last) }, (_, n) => [...at(points[n]), ...at(points[(n + 1) % points.length])]).flat();
+  return new BufferGeometry().setAttribute("position", new Float32BufferAttribute(vertices, 3));
+}
+
+/**
+ * A new obstacle before it has a height (decision 15): its footprint on the roof, dashed, in the accent. The
+ * draft is of the view, not of the document, so the scene draws it from the view store.
+ */
+export function Draft({ draft, heightAt }: { draft: DraftObstacle; heightAt: HeightAt }) {
+  const geometry = useMemo(() => {
+    const { points, closed } = footprintOf(draft);
+    return segmentsOf(points, closed, heightAt);
+  }, [draft, heightAt]);
+  return (
+    <lineSegments geometry={geometry} onUpdate={(line) => line.computeLineDistances()}>
+      <lineDashedMaterial color={PALETTE.selection} {...DASH} toneMapped={false} />
+    </lineSegments>
   );
 }

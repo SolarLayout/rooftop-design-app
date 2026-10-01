@@ -1,7 +1,7 @@
 """Schema to engine and back: nothing is lost on the way, in either direction."""
 
 import json
-from dataclasses import asdict
+from dataclasses import asdict, replace
 
 import pytest
 from shapely.geometry import GeometryCollection, LineString, MultiPolygon, Point, Polygon, box
@@ -165,9 +165,10 @@ def test_coefficients_say_where_they_come_from(module):
 
 
 def test_coefficients_of_the_file_say_so(module):
-    module.mu_voc_mv = -130.0
+    # A copy: the fixture is shared by the tests of this file, which must not see the change.
+    stated = replace(module, mu_voc_mv=-130.0)
 
-    from_file = convert.coefficients_from_engine(ModuleModel(module).coefficients())
+    from_file = convert.coefficients_from_engine(ModuleModel(stated).coefficients())
 
     assert from_file.source == "PAN file"
     assert from_file.mu_voc_mv == -130.0

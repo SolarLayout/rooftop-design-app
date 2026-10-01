@@ -606,6 +606,8 @@ export interface components {
                 number,
                 number
             ][];
+            /** @description The whole document: this roof, everything else at its default, named after the file */
+            project: components["schemas"]["Project"];
             /**
              * Source
              * @enum {string}

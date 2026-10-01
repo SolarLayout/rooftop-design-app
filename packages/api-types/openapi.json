@@ -771,6 +771,10 @@
             "title": "Outline",
             "type": "array"
           },
+          "project": {
+            "$ref": "#/components/schemas/Project",
+            "description": "The whole document: this roof, everything else at its default, named after the file"
+          },
           "source": {
             "enum": [
               "kmz",
@@ -788,7 +792,8 @@
           "lon",
           "obstacles",
           "missing_heights",
-          "notes"
+          "notes",
+          "project"
         ],
         "title": "ImportedRoof",
         "type": "object"
