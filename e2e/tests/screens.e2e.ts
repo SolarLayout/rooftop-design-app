@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import type { Page, Route } from "@playwright/test";
 import path from "node:path";
 import { expect, test } from "../fixtures";
 import { expectScreen } from "../screens";
@@ -137,6 +137,65 @@ test.describe("the shell", () => {
 
     await sceneSettled(page);
     await expectScreen(page, "studio");
+  });
+
+  /**
+   * An edit of the Array lens, one more module in tilt, with the layout and the design run that follow it
+   * held back by the test, so that the stage stands in the state of the edit. On phone the inspector is
+   * reached through the sheet, which is brought back to half, as the board draws it.
+   */
+  const edited = async (page: Page, projectName: string, layout: (route: Route) => Promise<void>) => {
+    await page.route("**/api/layout", layout);
+    const designRuns: Route[] = [];
+    await page.route("**/api/design", (route) => {
+      designRuns.push(route);
+    });
+    const grip = page.getByRole("separator", { name: "Inspector" });
+    if (isPhone(projectName)) {
+      await grip.focus();
+      await page.keyboard.press("End");
+      await expect(grip).toHaveAttribute("aria-valuetext", "Open");
+    }
+    const more = page.getByRole("button", { name: "More" });
+    await more.scrollIntoViewIfNeeded();
+    await more.click();
+    await more.blur();
+    if (isPhone(projectName)) {
+      await grip.focus();
+      await page.keyboard.press("ArrowDown");
+      await expect(grip).toHaveAttribute("aria-valuetext", "Half open");
+      await grip.blur();
+    }
+    // On tablet the inspector scrolled under the stage to reach the field: the stage comes back into view.
+    await page.getByTestId("stage").scrollIntoViewIfNeeded();
+    // The run waits for the pause after an edit, then is held: the vitals stand still at "Updating energy".
+    await expect.poll(() => designRuns.length, { timeout: RUN }).toBe(1);
+  };
+
+  // The layout on its way: the line under the title dimmed with its ring, the modules of before (the
+  // board "Studio, Array lens, states").
+  test("studio, the layout on its way", async ({ page }, testInfo) => {
+    await page.goto("/studio/array");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await sceneSettled(page);
+
+    await edited(page, testInfo.project.name, async () => {});
+    await expect(page.getByTestId("stage-subline")).toHaveAttribute("data-state", "updating");
+
+    await expectScreen(page, "studio-array-updating");
+  });
+
+  // The layout that failed: the chip over the stage with the words of the API, the last good modules.
+  test("studio, the layout failed", async ({ page }, testInfo) => {
+    const CROSSES = { error: { code: "engine_error", message: "The roof outline crosses itself. Give the corners in order around the roof.", field: null } };
+    await page.goto("/studio/array");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await sceneSettled(page);
+
+    await edited(page, testInfo.project.name, (route) => route.fulfill({ status: 422, json: CROSSES }));
+    await expect(page.getByTestId("layout-failed")).toContainText("The layout was not updated");
+
+    await expectScreen(page, "studio-array-failed");
   });
 
   test("studio, the Roof lens", async ({ page }) => {
