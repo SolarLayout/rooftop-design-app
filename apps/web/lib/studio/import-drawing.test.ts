@@ -51,6 +51,14 @@ describe("importing a drawing", () => {
     expect(toReviewOf(view.getState())).toEqual(["Old"]);
   });
 
+  test("a DXF goes with its place, which the file does not hold", async () => {
+    const { asked, api } = standIn(() => Promise.resolve(ANSWER));
+
+    await importDrawing({ name: "warehouse-roof.dxf", base64: "QUJD", units: "m", lat: 18.5912, lon: 73.7384 }, { api, project: createProjectStore(), view: createViewStore() });
+
+    expect(asked[0]).toEqual({ name: "warehouse-roof.dxf", base64: "QUJD", units: "m", lat: 18.5912, lon: 73.7384 });
+  });
+
   test("a KML needs no units", async () => {
     const { asked, api } = standIn(() => Promise.resolve({ ...ANSWER, missing_heights: [] }));
     const view = createViewStore();

@@ -291,6 +291,22 @@ test.describe("the shell", () => {
     if (isPhone(projectName)) await expect(page.getByRole("banner").getByRole("button", { name: "1 note to review" })).toBeVisible({ timeout: RUN });
   };
 
+  // Import a drawing with a DXF held: its units and its place asked, as the board draws them.
+  test("import a drawing, a DXF held", async ({ page }) => {
+    await page.goto("/studio/roof");
+    await sceneSettled(page);
+    await page.getByRole("banner").getByRole("button", { name: /Pune demo roof/ }).click();
+    await page.getByRole("menu", { name: "Project" }).getByRole("menuitem", { name: "Import a drawing" }).click();
+    const dialog = page.getByRole("dialog", { name: "Import a drawing" });
+    await dialog.locator("input[type=file]").setInputFiles(path.resolve(__dirname, "../fixtures/roof-with-tank.dxf"));
+    await expect(dialog.getByTestId("import-place")).toBeVisible();
+    await expect(dialog.getByRole("button", { name: "Open the roof" })).toHaveAttribute("aria-disabled", "true");
+    // The focus leaves the dialog's field, so that no ring is in the picture; on phone the sheet's heading may be scrolled away.
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+
+    await expectScreen(page, "import-dxf");
+  });
+
   test("performance", async ({ page }, testInfo) => {
     await page.goto("/performance");
     await settled(page, testInfo.project.name);
