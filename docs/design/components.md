@@ -294,7 +294,11 @@ The board "Import with missing heights". A dialog of 440 ("Import a drawing"), o
 drop ("Drop the drawing here", "KMZ, KML or DXF"), a state with the file held before it is read (`surface-2`, border
 `line`, the file icon in accent, the name in mono, "DXF · 48 KB · read when the roof is opened", "Choose another"),
 "DXF units" as a segmented control m or mm with nothing pressed and at `opacity-disabled` until the file is a DXF, then
-m suggested; "Open the roof" waits until a file is there. After the import the Roof lens's card says "From a file · 6
+m suggested. A DXF holds nothing of where the roof is, and the place sets the sun, the shadows and the weather, so for a
+DXF the dialog asks "Place": the search field of Find (an address, coordinates or a maps link), then Latitude and
+Longitude, empty, filled by the search or typed, as the roof entered by hand has them; nothing is guessed (the desktop
+app put every DXF at its own default). A KMZ or KML carries its place and shows no Place block. "Open the roof" waits
+until a file is there, and for a DXF until its place is too. After the import the Roof lens's card says "From a file · 6
 corners · 4 obstacles" with the file name in mono; a note under it (`note-surface`, accent border, the note mark)
 carries the engine's sentence "These obstacles have no height in the file and were set to 1.0 m.", "3 to review" and
 Review; the open card of an obstacle to review has the hint "Enter the real height. The file gave none; 1.0 m stands

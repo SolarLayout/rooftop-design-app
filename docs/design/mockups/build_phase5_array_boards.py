@@ -104,10 +104,11 @@ UNUSED = "#8C93A0"
 
 CHART = '<path d="M5 20V10M12 20V4M19 20v-7"/>'
 FILE = '<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 13h6M9 17h6"/>'
+SEARCH = '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.500-3.500"/>'
 
 ARRAY_STATES_HEIGHT = 3340
 ROOF_TYPES_HEIGHT = 2240
-IMPORT_HEIGHT = 2110
+IMPORT_HEIGHT = 2720
 
 # The obstacles of the demo, as demo-numbers.md lists them (centre x, y, size, height).
 DEMO_OBSTACLES = (
@@ -1021,18 +1022,54 @@ def units_choice(taken: str | None) -> str:
     )
 
 
-def import_dialog(with_file: bool) -> str:
+def place_field(label_: str, value: str, unit: str) -> str:
+    name = label_.lower()
+    return (
+        f'<div style="display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; {FIELD_WELL}">'
+        f'<label for="im-{name}" style="flex-grow: 1; color: {TEXT_2}; font-size: 13px">{label_}</label>'
+        f'<input id="im-{name}" value="{value}" inputmode="decimal" style="width: 76px; min-width: 0; background: transparent; border: 0; outline: 0; text-align: right; {MONO}; font-weight: 500">'
+        f'<span style="color: {TEXT_2}; font-size: 12px; white-space: nowrap">{unit}</span></div>'
+    )
+
+
+def place_asked(found: bool) -> str:
+    """The place of a DXF: the drawing has none, so it is searched or typed, as the roof entered by hand is."""
+    search = (
+        f'<div style="display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 12px; {FIELD_WELL}">{icon(SEARCH, 16, TEXT_2)}'
+        + (
+            '<input aria-label="Search an address or paste coordinates" value="Hinjewadi Phase 2, Pune" style="flex-grow: 1; min-width: 0; background: transparent; border: 0; outline: 0; font-size: 14px">'
+            if found
+            else f'<input aria-label="Search an address or paste coordinates" value="" placeholder="Search an address or paste coordinates" style="flex-grow: 1; min-width: 0; background: transparent; border: 0; outline: 0; font-size: 14px; color: {TEXT_3}">'
+        )
+        + "</div>"
+    )
+    lat, lon = ("18.59120", "73.73840") if found else ("", "")
+    hint = "From the search. Change it if the drawing is elsewhere" if found else "The drawing does not say where the roof is. Search the place, or type its coordinates"
+    return (
+        '<div style="display: flex; flex-direction: column; gap: 8px">'
+        f'<div style="display: flex; flex-direction: column; gap: 2px"><span>Place</span><span style="font-size: 12px; color: {TEXT_3}">{hint}</span></div>'
+        + search
+        + f'<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">{place_field("Latitude", lat, "° N")}{place_field("Longitude", lon, "° E")}</div></div>'
+    )
+
+
+def import_dialog(held_file: str | None = None, place: str | None = None) -> str:
+    """The dialog of Import a drawing: empty, or with a file held (`held_file` its name); for a DXF the place
+    is asked (`place` "empty" or "found"), for a KMZ or KML it comes from the file."""
     words = '<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 500">{title}</span>' + f'<span style="font-size: 12px; color: {TEXT_2}">{{detail}}</span></span>'
-    if with_file:
+    is_dxf = held_file is not None and held_file.endswith(".dxf")
+    if held_file:
+        kind = "DXF" if is_dxf else "KML"
         held = drop(
             f"background: {SURFACE_2}; border: 1px solid {LINE}",
             icon(FILE, 20, ACCENT, 1.8)
             + '<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px">'
-            '<code style="font-weight: 500">warehouse-roof.dxf</code>'
-            f'<span style="font-size: 12px; color: {TEXT_2}">DXF · 48 KB · read when the roof is opened</span></span>'
+            f'<code style="font-weight: 500">{held_file}</code>'
+            f'<span style="font-size: 12px; color: {TEXT_2}">{kind} · 48 KB · read when the roof is opened</span></span>'
             + secondary("Choose another", 36),
         )
-        actions = quiet("Cancel") + primary("Open the roof")
+        ready = not is_dxf or place == "found"
+        actions = quiet("Cancel") + (primary("Open the roof") if ready else disabled_primary("Open the roof"))
     else:
         held = drop(
             f"border: 1px dashed {LINE_STRONG}",
@@ -1046,9 +1083,10 @@ def import_dialog(with_file: bool) -> str:
         f'<h3 id="im-t" style="flex-grow: 1; margin: 0; {DISPLAY}; font-size: 22px; line-height: 28px; letter-spacing: -0.02em">Import a drawing</h3>'
         + icon_button("Close", CLOSE, 32)
         + "</div>"
-        f'<p id="im-d" style="margin: 0; color: {TEXT_2}">The largest closed shape is the roof; the other closed shapes are obstacles, named by their layer. The place comes from the file where it has one.</p>'
+        f'<p id="im-d" style="margin: 0; color: {TEXT_2}">The largest closed shape is the roof; the other closed shapes are obstacles, named by their layer. A KMZ or KML says where the roof is; a DXF does not, so its place is asked.</p>'
         + held
-        + units_choice("m" if with_file else None)
+        + units_choice("m" if is_dxf else None)
+        + (place_asked(place == "found") if is_dxf else "")
         + f'<div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px">{actions}</div></div>'
     )
 
@@ -1057,10 +1095,15 @@ def import_card() -> str:
     body = (
         '<div style="display: grid; grid-template-columns: 340px 440px 440px; gap: 24px; align-items: start">'
         + state("The project switcher, Import a drawing under the pointer", switcher_open())
-        + state("The dialog: the file drop, the DXF units with nothing chosen, Open the roof waiting", import_dialog(False))
-        + state("A DXF dropped: m is suggested, as the inventory's default; Open the roof", import_dialog(True))
+        + state("The dialog: the file drop, the DXF units with nothing chosen, Open the roof waiting", import_dialog())
+        + state("A KML dropped: its place and heights come from the file; Open the roof", import_dialog("warehouse-roof.kml"))
         + "</div>"
-        + f'<p style="margin: 0; font-size: 12px; color: {TEXT_2}">The largest closed polyline is the roof; other closed polylines and circles are obstacles, named by their layer: a circle a tank, a near-rectangle a box with its turn, a line a wall, anything else a building. A KMZ or KML gives its place and heights from the placemarks; a DXF gives neither, and its units are asked. Open the roof opens the design in the Studio at the Roof lens. On phone and tablet the dialog is a bottom sheet.</p>'
+        + '<div style="display: grid; grid-template-columns: 440px 440px minmax(0, 1fr); gap: 24px; align-items: start">'
+        + state("A DXF dropped: m is suggested, as the inventory's default; the place is asked, empty, and Open the roof waits for it", import_dialog("warehouse-roof.dxf", "empty"))
+        + state("The place found by the search fills the coordinates, as it does for a roof entered by hand; Open the roof", import_dialog("warehouse-roof.dxf", "found"))
+        + f'<p style="margin: 0; font-size: 12px; color: {TEXT_2}">A DXF holds the roof\'s shape and nothing of where it is on Earth, and the place sets the sun, the shadows and the weather: so nothing is guessed (the desktop app put every DXF at its own default, Pune). The place is searched or pasted, in the words of Find, or typed; the same two fields as "Enter dimensions by hand". The API refuses a DXF without a place (<code>site_missing</code>) and the dialog never sends one without. A KMZ or KML needs no place: the block is not shown.</p>'
+        + "</div>"
+        + f'<p style="margin: 0; font-size: 12px; color: {TEXT_2}">The largest closed polyline is the roof; other closed polylines and circles are obstacles, named by their layer: a circle a tank, a near-rectangle a box with its turn, a line a wall, anything else a building. A KMZ or KML gives its place and heights from the placemarks; a DXF gives neither, and its units and its place are asked. Open the roof opens the design in the Studio at the Roof lens. On phone and tablet the dialog is a bottom sheet.</p>'
     )
     return card("Import a drawing", body, gap=14)
 
@@ -1084,7 +1127,7 @@ def roof_card_imported(touch: bool = False) -> str:
     return (
         f'<div style="display: flex; align-items: center; gap: 14px; padding: 14px; background: {SURFACE_1}; border: 1px solid {LINE}; border-radius: 14px; box-shadow: {SHADOW_CARD}">{glyph}'
         '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0">'
-        '<code style="font-weight: 500; font-size: 12px; white-space: nowrap">18.52000° N, 73.86000° E</code>'
+        '<code style="font-weight: 500; font-size: 12px; white-space: nowrap">18.59120° N, 73.73840° E</code>'
         f'<div style="font-size: 12px; color: {TEXT_2}">From a file · 6 corners · 4 obstacles</div>'
         f'<code style="font-size: 12px; color: {TEXT_2}">warehouse-roof.dxf</code></div>'
         + ("" if touch else f'<button style="height: 36px; padding: 0 12px; background: {CONTROL}; border: 1px solid {LINE_STRONG}; border-radius: 9px; font-size: 13px; cursor: pointer; box-shadow: {SHADOW_RAISED}">Edit</button>')
