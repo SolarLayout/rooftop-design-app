@@ -105,3 +105,41 @@ export async function withoutWebGL(page: Page): Promise<void> {
     } as typeof HTMLCanvasElement.prototype.getContext;
   });
 }
+
+/** A point of the roof in the document's metres as a pixel of the page. */
+export type PlanFrame = (metresEast: number, metresNorth: number) => { x: number; y: number };
+
+/**
+ * The plan view, with the frame that maps the demo roof's metres to pixels of the page: in the plan the
+ * metres map in a straight line, and the four edge labels stand at the middle of each edge, so they give
+ * the frame (the long edges north and south, the short ones east and west; the roof is 90 by 40 m).
+ */
+export async function inThePlan(page: Page): Promise<PlanFrame> {
+  await planView(page).click();
+  await expect(planView(page)).toHaveAttribute("aria-checked", "true");
+  const labels = stage(page).getByTestId("stage-label");
+  await expect(labels).toHaveCount(4, { timeout: A_SCENE });
+  // The plan is drawn once the long edges' labels stand one over the other.
+  await expect
+    .poll(
+      async () => {
+        const boxes = await labels.evaluateAll((nodes) => nodes.map((node) => ({ words: node.textContent, x: node.getBoundingClientRect().x })));
+        const long = boxes.filter((box) => box.words === "90.0 m");
+        return long.length === 2 && Math.abs(long[0].x - long[1].x) < 2;
+      },
+      { timeout: A_SCENE },
+    )
+    .toBe(true);
+  const placed = await Promise.all(
+    [0, 1, 2, 3].map(async (n) => {
+      const box = (await labels.nth(n).boundingBox())!;
+      return { words: await labels.nth(n).innerText(), x: box.x + box.width / 2, y: box.y + box.height / 2 };
+    }),
+  );
+  const [north, south] = placed.filter((label) => label.words === "90.0 m").sort((a, b) => a.y - b.y);
+  const [west, east] = placed.filter((label) => label.words === "40.0 m").sort((a, b) => a.x - b.x);
+  return (metresEast, metresNorth) => ({
+    x: west.x + ((east.x - west.x) * metresEast) / 90 + ((north.x - south.x) * (metresNorth - 20)) / 40,
+    y: west.y + ((east.y - west.y) * metresEast) / 90 + ((north.y - south.y) * (metresNorth - 20)) / 40,
+  });
+}

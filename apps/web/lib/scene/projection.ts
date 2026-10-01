@@ -4,11 +4,14 @@
 import { shown } from "../../components/ui/number-entry";
 import type { SceneXYZ, XY, XYZ } from "./adapter";
 
-/** A label of the stage: its words and where it stands on the canvas, in pixels from its top left. */
-/** A label of a dimension, or the anchor of the callout of what is selected. */
-export type LabelKind = "label" | "callout";
+/** A label of a dimension, the anchor of the callout of what is selected, or a point a handle of the selected obstacle is placed by. */
+export type LabelKind = "label" | "callout" | "handle";
 
-export type StageLabel = { kind: LabelKind; words: string; x: number; y: number; visible: boolean };
+/**
+ * A label of the stage: its words and where it stands on the canvas, in pixels from its top left. A
+ * handle's point has a name instead of words ("corner-2", "turn-foot"), by which the handles find it.
+ */
+export type StageLabel = { kind: LabelKind; id?: string; words: string; x: number; y: number; visible: boolean };
 
 /** Where a label is anchored: a point in the engine's metres, and what it says. */
 export type LabelPlace = { words: string; at: XYZ };
@@ -57,6 +60,7 @@ export function sameLabels(before: readonly StageLabel[], after: readonly StageL
     const other = after[index];
     return (
       label.kind === other.kind &&
+      label.id === other.id &&
       label.words === other.words &&
       label.visible === other.visible &&
       Math.round(label.x) === Math.round(other.x) &&

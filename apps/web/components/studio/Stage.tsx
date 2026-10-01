@@ -12,7 +12,7 @@ import { ProgressRing } from "@/components/ui/ProgressRing";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
 import { calloutOf } from "@/lib/scene/keepout";
 import { calloutOfObstacle, wordsOf } from "@/lib/scene/obstacles";
-import { createStageStore, groundOf, type StageStore } from "@/lib/scene/stage-store";
+import { createStageStore, cursorOf, groundOf, type Cursor, type StageStore } from "@/lib/scene/stage-store";
 import type { Lens } from "@/lib/routes";
 import { projectOf } from "@/lib/stores/project-store";
 import { layoutOf, readoutsOf, sunOf } from "@/lib/stores/results-store";
@@ -42,6 +42,9 @@ const VIEW_CONTROLS = "top-1 right-3 tablet:top-4 tablet:right-5 desktop:top-5";
 /** The chip of a layout that failed stands under the title, in the middle of the stage: as wide as the board draws it, or as the phone allows. */
 const LAYOUT_FAILED = "absolute inset-x-4 top-16 z-stage-overlay tablet:inset-x-0 tablet:top-20 tablet:mx-auto tablet:w-95 desktop:top-24";
 
+/** The cursor over the scene: a pointer over what can be selected, a hand over what can be dragged (plan step 17). */
+const CURSOR: Record<Cursor, string | false> = { default: false, pointer: "cursor-pointer", grab: "cursor-grab", grabbing: "cursor-grabbing" };
+
 /**
  * The stage of the Studio: the 3D scene, the lens's title with its line of read-outs over it, the
  * labels of the roof's edges and the view controls over it, and the text equivalent of what the scene
@@ -58,12 +61,13 @@ export function Stage({ lens, name, className }: Props) {
   const [isLost, setLost] = useState(false);
   // What the scene tells the DOM over it, for this stage alone.
   const [stage] = useState(createStageStore);
+  const cursor = useStore(stage, cursorOf);
   const cannotDraw = webGL === false ? NO_WEBGL : isLost ? CONTEXT_LOST : null;
   useEscapeClears();
 
   return (
     <div data-testid="stage" data-state={cannotDraw ? "plan" : "scene"} className={classNames("relative", className)}>
-      <div className="absolute inset-0 z-stage">
+      <div className={classNames("absolute inset-0 z-stage", CURSOR[cursor])}>
         {cannotDraw ? (
           project ? <PlanFallback roof={project.roof} layout={layout?.layout ?? null} reason={cannotDraw} /> : null
         ) : (
@@ -107,11 +111,13 @@ function OnTheRoof({ stage }: { stage: StageStore }) {
   const { roof, array } = project;
   const window = { from: array.window_start_h, to: array.window_end_h, allowShaded: array.allow_shaded };
   const selected = selection?.kind === "obstacle" ? selection.index : null;
+  const selectedModule = selection?.kind === "module" ? layout?.layout.modules[selection.index] : undefined;
   return (
     <ul aria-label="On the roof" className="sr-only">
-      <li data-testid="on-the-roof-roof">
+      <li data-testid="on-the-roof-roof" aria-current={selection?.kind === "roof" || undefined}>
         Roof, {roof.outline.length} corners{readouts ? `, ${shown(Math.round(readouts.roof_area_m2), 0)} m²` : ""}
         {roof.parapet_h > 0 ? `, parapet ${shown(roof.parapet_h, 1)} m` : ""}
+        {selection?.kind === "roof" ? ", selected" : ""}
       </li>
       {roof.obstacles.map((obstacle, index) =>
         obstacle.auto ? null : (
@@ -126,6 +132,7 @@ function OnTheRoof({ stage }: { stage: StageStore }) {
       {layout ? (
         <li data-testid="on-the-roof-modules">
           {shown(layout.layout.modules.length, 0)} modules in {shown(layout.layout.n_rows, 0)} rows
+          {selectedModule ? `, position ${shown(selectedModule.idx + 1, 0)} selected` : ""}
         </li>
       ) : null}
       {ground === "none" ? null : (

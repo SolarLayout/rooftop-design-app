@@ -9,6 +9,7 @@ import type { StageStore } from "@/lib/scene/stage-store";
 import { stitchTiles } from "@/lib/scene/stitch";
 import type { Imagery } from "@/lib/map/provider";
 import { PALETTE } from "@/lib/scene-palette";
+import { onPress } from "./pointer";
 
 type Props = {
   /** The imagery of the map; null without a key, and the ground is the plain colour with the grid. */
@@ -22,6 +23,8 @@ type Props = {
   depth?: number;
   /** Where the scene says what ground it drew, for the text equivalent of the stage. */
   stage: StageStore;
+  /** A press on the ground: it clears what is selected (plan step 17). */
+  onPressGround?: () => void;
 };
 
 /** The plain ground is at least this wide, and six times the roof's radius. */
@@ -41,11 +44,13 @@ function gridGeometryOf(size: number, height: number): BufferGeometry {
   return new BufferGeometry().setAttribute("position", new Float32BufferAttribute(points, 3));
 }
 
+type PlaneProps = { texture: CanvasTexture; extent: Extent; height: number; onPressGround?: () => void };
+
 /** The ground of the imagery: the whole stitched picture on one plane, laid by its corners in metres. */
-function ImageryPlane({ texture, extent, height }: { texture: CanvasTexture; extent: Extent; height: number }) {
+function ImageryPlane({ texture, extent, height, onPressGround }: PlaneProps) {
   const centre = toScenePoint([(extent.left + extent.right) / 2, (extent.bottom + extent.top) / 2], height);
   return (
-    <mesh position={centre} rotation={FLAT} receiveShadow>
+    <mesh position={centre} rotation={FLAT} receiveShadow onClick={(event) => onPress(event, () => onPressGround?.())}>
       <planeGeometry args={[extent.right - extent.left, extent.top - extent.bottom]} />
       <meshStandardMaterial map={texture} roughness={1} />
     </mesh>
@@ -59,7 +64,7 @@ function ImageryPlane({ texture, extent, height }: { texture: CanvasTexture; ext
  * that does not come leaves its square plain. Mounted at the origin of the scene, not in the group that
  * shifts the roof: the tiles are about the centroid already.
  */
-export function Ground({ imagery, lat, lon, radius, depth = 0, stage }: Props) {
+export function Ground({ imagery, lat, lon, radius, depth = 0, stage, onPressGround }: Props) {
   const invalidate = useThree((state) => state.invalidate);
   const anisotropy = useThree((state) => state.gl.capabilities.getMaxAnisotropy());
   const [picture, setPicture] = useState<{ texture: CanvasTexture; extent: Extent } | null>(null);
@@ -99,12 +104,12 @@ export function Ground({ imagery, lat, lon, radius, depth = 0, stage }: Props) {
 
   return (
     <group>
-      <mesh position={[0, -depth - PLAIN_BELOW, 0]} rotation={FLAT} receiveShadow>
+      <mesh position={[0, -depth - PLAIN_BELOW, 0]} rotation={FLAT} receiveShadow onClick={(event) => onPress(event, () => onPressGround?.())}>
         <planeGeometry args={[plainSize, plainSize]} />
         <meshStandardMaterial color={PALETTE.groundPlain} roughness={1} />
       </mesh>
       {picture ? (
-        <ImageryPlane texture={picture.texture} extent={picture.extent} height={-depth - IMAGERY_BELOW} />
+        <ImageryPlane texture={picture.texture} extent={picture.extent} height={-depth - IMAGERY_BELOW} onPressGround={onPressGround} />
       ) : (
         <lineSegments geometry={grid}>
           <lineBasicMaterial color={PALETTE.gridLine} toneMapped={false} />

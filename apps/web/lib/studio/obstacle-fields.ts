@@ -180,6 +180,17 @@ export function factsOf(obstacle: Obstacle): string {
   return `${sizeOf(obstacle)} · h ${shown(obstacle.height, 1)} m`;
 }
 
+/**
+ * The draft placed where the roof was tapped (Add, then a tap: components.md, "Obstacles on the roof"): a
+ * box, a tank or a tree by its centre; a wall or a building with its points moved along by as much.
+ */
+export function withDraftAt(draft: DraftObstacle, [x, y]: XY): DraftObstacle {
+  if (draft.x === x && draft.y === y) return draft;
+  const [dx, dy] = [x - draft.x, y - draft.y];
+  const points = draft.points.map(([px, py]): [number, number] => [px + dx, py + dy]);
+  return { ...draft, x, y, points };
+}
+
 /** The obstacle with one field set; the same obstacle when nothing changes. */
 export function withObstacleField<Kind extends Obstacle | DraftObstacle>(obstacle: Kind, id: ObstacleFieldId, value: number): Kind {
   return obstacle[id] === value ? obstacle : { ...obstacle, [id]: value };

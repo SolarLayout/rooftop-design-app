@@ -1,6 +1,5 @@
 "use client";
 
-import type { ThreeEvent } from "@react-three/fiber";
 import { useMemo, useState } from "react";
 import { BoxGeometry, BufferGeometry, CylinderGeometry, EdgesGeometry, ExtrudeGeometry, Float32BufferAttribute, MeshStandardMaterial, Shape, Vector2 } from "three";
 import type { Obstacle } from "@/lib/api";
@@ -8,6 +7,7 @@ import { FLAT, toScene, toScenePoint, type XY } from "@/lib/scene/adapter";
 import { footprintOf, ROUND_SEGMENTS, solidsOf, type HeightAt, type Look, type Solid } from "@/lib/scene/obstacles";
 import type { DraftObstacle } from "@/lib/studio/obstacle-fields";
 import { PALETTE, type PaletteName } from "@/lib/scene-palette";
+import { canHover, onPress } from "./pointer";
 
 type Props = {
   /** The roof's obstacles, in their order in the document: an index into them names one. */
@@ -19,6 +19,8 @@ type Props = {
   /** The names of the obstacles whose height is still to be reviewed: drawn with a dashed outline. */
   toReview: readonly string[];
   onSelect: (index: number) => void;
+  /** The pointer came over an obstacle, or left it, by its index. */
+  onOver?: (index: number, isOver: boolean) => void;
 };
 
 const ROUGHNESS = 0.9;
@@ -121,30 +123,26 @@ function SolidMesh({ solid, unitBox, materials }: SolidProps) {
   return <mesh geometry={geometry} material={[materials.top, materials.lit]} rotation={rotation} position={position} castShadow receiveShadow />;
 }
 
-/** Whether the device has a pointer that can hover: the hover outline is for it alone (guidelines.md, "3D scene"). */
-const canHover = () => window.matchMedia("(hover: hover)").matches;
-
-type OneProps = { solids: Solid[]; index: number; isSelected: boolean; isToReview: boolean; onSelect: Props["onSelect"]; unitBox: BoxGeometry; materials: Materials };
+type OneProps = { solids: Solid[]; index: number; isSelected: boolean; isToReview: boolean; onSelect: Props["onSelect"]; onOver: Props["onOver"]; unitBox: BoxGeometry; materials: Materials };
 
 /** One obstacle: its solids, its outline when it is selected, under the pointer, or not yet real; a press selects it. */
-function One({ solids, index, isSelected, isToReview, onSelect, unitBox, materials }: OneProps) {
+function One({ solids, index, isSelected, isToReview, onSelect, onOver, unitBox, materials }: OneProps) {
   const [isHovered, setHovered] = useState(false);
   const look: OutlineLook | null = isSelected ? "selected" : isToReview ? "to-review" : isHovered ? "hover" : null;
-
-  function select(event: ThreeEvent<MouseEvent>) {
-    event.stopPropagation();
-    onSelect(index);
-  }
 
   return (
     <group
       userData={{ obstacle: index }}
-      onClick={select}
+      onClick={(event) => onPress(event, () => onSelect(index))}
       onPointerOver={(event) => {
         event.stopPropagation();
+        onOver?.(index, true);
         if (canHover()) setHovered(true);
       }}
-      onPointerOut={() => setHovered(false)}
+      onPointerOut={() => {
+        onOver?.(index, false);
+        setHovered(false);
+      }}
     >
       {solids.map((solid, n) => (
         <SolidMesh key={n} solid={solid} unitBox={unitBox} materials={materials} />
@@ -160,7 +158,7 @@ function One({ solids, index, isSelected, isToReview, onSelect, unitBox, materia
  * pointer a lighter one, one whose height is to be reviewed a dashed one; a press on one selects it
  * (decision 10). What the engine added itself is not drawn: the building draws the parapet.
  */
-export function Obstacles({ obstacles, heightAt, selected, toReview, onSelect }: Props) {
+export function Obstacles({ obstacles, heightAt, selected, toReview, onSelect, onOver }: Props) {
   const solids = useMemo(() => obstacles.map((obstacle) => solidsOf(obstacle, heightAt)), [obstacles, heightAt]);
   const unitBox = useMemo(() => new BoxGeometry(1, 1, 1), []);
   const materials = useMemo(() => materialsOf(), []);
@@ -176,6 +174,7 @@ export function Obstacles({ obstacles, heightAt, selected, toReview, onSelect }:
             isSelected={selected === index}
             isToReview={toReview.includes(obstacles[index].name)}
             onSelect={onSelect}
+            onOver={onOver}
             unitBox={unitBox}
             materials={materials}
           />

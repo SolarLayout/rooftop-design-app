@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { Obstacle } from "../api";
 import type { Roof } from "../api";
-import { factOfNewKind, factsOf, FEWEST_POINTS, fieldsOfObstacle, newObstacleOf, OBSTACLE_KINDS, withObstacleAdded, withObstacleAt, withObstacleField, withoutObstacleAt, withPoint, withPointAdded, withPointRemoved } from "./obstacle-fields";
+import { factOfNewKind, factsOf, FEWEST_POINTS, fieldsOfObstacle, newObstacleOf, OBSTACLE_KINDS, withDraftAt, withObstacleAdded, withObstacleAt, withObstacleField, withoutObstacleAt, withPoint, withPointAdded, withPointRemoved } from "./obstacle-fields";
 
 // The obstacles of the Roof lens (plan/phase-05-plan.md, step 12, decision 15; the board "Obstacle edited
 // on the roof"): the fields of each kind from plan/reference/functional-inventory.md, 1.2, and what a new
@@ -174,5 +174,27 @@ describe("the obstacles of the roof", () => {
     const after = withObstacleAdded(roof, draft, 6);
     expect(after.obstacles).toHaveLength(3);
     expect(after.obstacles[2]).toMatchObject({ name: "Tree 1", kind: "tree", height: 6, trunk_height: 2, diameter: 4 });
+  });
+});
+
+// Add, then a tap on the roof places the draft where the tap was (plan step 19; components.md, "Obstacles on
+// the roof"): a box, a tank or a tree by its centre; a wall or a building by moving its points along.
+describe("the draft placed where the roof was tapped", () => {
+  test("a box, a tank or a tree stands at the tap", () => {
+    const box = newObstacleOf("box", [45, 20], []);
+    expect(withDraftAt(box, [22.5, 18])).toMatchObject({ x: 22.5, y: 18, length: 2, width: 2 });
+    expect(withDraftAt(newObstacleOf("tree", [45, 20], []), [10, 34])).toMatchObject({ x: 10, y: 34, diameter: 4 });
+  });
+
+  test("a wall or a building moves its points by as much as its centre moves", () => {
+    const wall = newObstacleOf("wall", [45, 20], []);
+    expect(withDraftAt(wall, [47, 25])).toMatchObject({ x: 47, y: 25, points: [[44, 25], [50, 25]] });
+    const building = newObstacleOf("building", [45, 20], []);
+    expect(withDraftAt(building, [46, 21]).points).toEqual([[49, 16], [59, 16], [59, 26], [49, 26]]);
+  });
+
+  test("the same place is the same draft", () => {
+    const box = newObstacleOf("box", [45, 20], []);
+    expect(withDraftAt(box, [45, 20])).toBe(box);
   });
 });

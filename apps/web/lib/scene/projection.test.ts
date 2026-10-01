@@ -92,3 +92,12 @@ describe("whether the labels changed", () => {
     expect(sameLabels([], [])).toBe(true);
   });
 });
+
+describe("a label with a name", () => {
+  const corner = { kind: "handle" as const, id: "corner-0", words: "", x: 10, y: 10, visible: true };
+
+  test("is the same only under the same name: the handles are told apart by it", () => {
+    expect(sameLabels([corner], [{ ...corner }])).toBe(true);
+    expect(sameLabels([corner], [{ ...corner, id: "corner-1" }])).toBe(false);
+  });
+});
