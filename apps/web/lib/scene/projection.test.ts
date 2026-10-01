@@ -75,6 +75,7 @@ describe("a pixel of the canvas", () => {
     expect(pixelOf([0, 0], 800, 600)).toEqual([400, 300]);
     expect(pixelOf([-1, 1], 800, 600)).toEqual([0, 0]);
     expect(pixelOf([1, -1], 800, 600)).toEqual([800, 600]);
+    expect(pixelOf([0.001, 0.001], 800, 600)).toEqual([400, 300]);
   });
 });
 

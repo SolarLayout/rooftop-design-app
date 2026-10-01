@@ -1,6 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import type { Page } from "@playwright/test";
 import { expect, test } from "../fixtures";
+import { switchLens } from "../stage";
 
 // The shell on its routes, with the demo from the API of the test stack: it renders, it navigates, it
 // never scrolls sideways, and axe finds nothing serious. Its parts, each in every state, are tested on
@@ -183,7 +184,7 @@ test.describe("the Studio, from lens to lens", () => {
       ["strings", "Strings"],
       ["roof", "Roof"],
     ]) {
-      await lenses(page).getByRole("link", { name }).click();
+      await switchLens(page, name);
 
       await expect(page).toHaveURL(new RegExp(`/studio/${lens}$`));
       await expect(page.getByRole("heading", { level: 1, name, exact: true })).toBeVisible();

@@ -95,6 +95,25 @@ export async function sceneSettled(page: Page): Promise<void> {
   await expect(page.getByTestId("on-the-roof-ground")).toContainText("The ground is", { timeout: A_SCENE });
 }
 
+/**
+ * The lens switched by its link, in the navigation of the size. The Studio re-renders on the way, and under
+ * load a press can land on a link that is being replaced: the press is made again until the address changes.
+ */
+export async function switchLens(page: Page, name: string): Promise<void> {
+  const link = page.getByRole("navigation", { name: "Lenses" }).filter({ visible: true }).getByRole("link", { name, exact: true });
+  const address = new RegExp(`/studio/${name.toLowerCase()}$`);
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await link.click();
+    try {
+      await expect(page).toHaveURL(address, { timeout: 3_000 });
+      return;
+    } catch {
+      // The press was lost in a re-render: once more.
+    }
+  }
+  await expect(page).toHaveURL(address);
+}
+
 /** The page without WebGL, as a browser that has none. */
 export async function withoutWebGL(page: Page): Promise<void> {
   await page.addInitScript(() => {
@@ -195,12 +214,14 @@ const between = (from: number, to: number, n: number) => from + ((to - from) * n
 /** The camera has settled after a move: the labels of the roof's edges have stopped moving on the page. */
 export async function cameraSettled(page: Page): Promise<void> {
   const labels = stage(page).getByTestId("stage-label");
-  const places = () => labels.evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect()).map(({ x, y }) => `${Math.round(x)},${Math.round(y)}`).join(" "));
+  // To a hundredth of a pixel, over half a second: the damping of the orbit tails off slowly, and a label still
+  // gliding by a fraction of a pixel is drawn differently in two pictures.
+  const places = () => labels.evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect()).map(({ x, y }) => `${x.toFixed(2)},${y.toFixed(2)}`).join(" "));
   await expect
     .poll(
       async () => {
         const before = await places();
-        await page.waitForTimeout(300);
+        await page.waitForTimeout(500);
         return (await places()) === before;
       },
       { timeout: A_SCENE },
@@ -241,7 +262,11 @@ export async function zoomedInAt(page: Page, at: Place, times: number, hasTouch:
   await page.mouse.up({ button: "right" });
   await cameraSettled(page);
   const notches = Math.ceil(Math.log(times) / Math.log(A_NOTCH));
-  for (let notch = 0; notch < notches; notch += 1) await page.mouse.wheel(0, -100);
+  // A breath between the notches: the browser merges wheel events that come together, and a merged pair zooms once.
+  for (let notch = 0; notch < notches; notch += 1) {
+    await page.mouse.wheel(0, -100);
+    await page.waitForTimeout(30);
+  }
   await cameraSettled(page);
 }
 

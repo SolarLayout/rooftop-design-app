@@ -51,7 +51,8 @@ export function labelPlacesOf(outline: readonly XY[], heightAt: (point: XY) => n
 
 /** A point of the picture (from -1 to 1 each way, y up) as a pixel of the canvas, from its top left. */
 export function pixelOf([x, y]: readonly [number, number], width: number, height: number): [number, number] {
-  return [((x + 1) / 2) * width, ((1 - y) / 2) * height];
+  // Whole pixels: a label at a fraction of a pixel is drawn differently from one frame to the next.
+  return [Math.round(((x + 1) / 2) * width), Math.round(((1 - y) / 2) * height)];
 }
 
 /** Whether two sets of labels stand the same, to the pixel: what is the same need not be drawn again. */
