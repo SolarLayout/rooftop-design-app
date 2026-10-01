@@ -15,7 +15,7 @@ export const INPUT = classNames(
   "disabled:cursor-default",
 );
 
-export const UNIT = "type-caption text-text-2";
+export const UNIT = "type-caption text-text-2 whitespace-nowrap";
 
 /** What a field says under itself. It takes no room while it says nothing. */
 export const SAID = "type-caption text-text-2 not-empty:mt-1.5";

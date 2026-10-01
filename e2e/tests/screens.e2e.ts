@@ -301,8 +301,8 @@ test.describe("the shell", () => {
     await dialog.locator("input[type=file]").setInputFiles(path.resolve(__dirname, "../fixtures/roof-with-tank.dxf"));
     await expect(dialog.getByTestId("import-place")).toBeVisible();
     await expect(dialog.getByRole("button", { name: "Open the roof" })).toHaveAttribute("aria-disabled", "true");
-    // The focus leaves the dialog's field, so that no ring is in the picture.
-    await dialog.getByRole("heading").click();
+    // The focus leaves the dialog's field, so that no ring is in the picture; on phone the sheet's heading may be scrolled away.
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
 
     await expectScreen(page, "import-dxf");
   });
