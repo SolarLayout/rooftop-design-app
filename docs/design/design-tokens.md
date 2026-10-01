@@ -352,6 +352,9 @@ and the file equal.
 | `CLOSE_WITHIN_TOUCH` | `20` | The same on phone and tablet |
 | `NUDGE_MM` | `100` | Millimetres a selected corner moves by an arrow key |
 | `NUDGE_SHIFT_MM` | `1000` | The same with Shift held |
+| `STEM_TURN` | `44` | Pixels the turn handle of a selected obstacle stands off the middle of the north edge of its top, due north, on its stem |
+| `STEM_HEIGHT` | `40` | Pixels the height handle stands over the middle of the top, on its vertical stem, on desktop |
+| `STEM_HEIGHT_TOUCH` | `52` | The same on phone and tablet |
 
 ## Layers
 
