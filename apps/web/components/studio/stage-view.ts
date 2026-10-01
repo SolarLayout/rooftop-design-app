@@ -1,8 +1,10 @@
 // The words of the stage that are not the scene: the line under the lens's title (the boards "Studio,
-// Roof lens" and "Studio, Array lens"). Pure functions of the stores; the components draw what they give.
+// Roof lens" and "Studio, Array lens") and its states while a layout is on its way or failed (the board
+// "Studio, Array lens, states"). Pure functions of the stores; the components draw what they give.
 import { shown } from "../ui/number-entry";
 import type { LayoutReadouts } from "../../lib/api";
 import type { Lens } from "../../lib/routes";
+import { isLayoutUpdating, layoutFailureOf, readoutsOf, type ResultsState } from "../../lib/stores/results-store";
 
 const area = (squareMetres: number) => `${shown(Math.round(squareMetres), 0)} m²`;
 
@@ -19,4 +21,24 @@ export function subLineOf(lens: Lens, readouts: LayoutReadouts | null, obstacles
     return `${shown(readouts.positions, 0)} positions · ${shown(readouts.tables, 0)} tables · ${shown(readouts.rows, 0)} rows · ${area(readouts.module_area_m2)} of modules`;
   }
   return null;
+}
+
+export type StageLine = {
+  words: string;
+  /** A newer layout is on its way: the words are of the layout before, and stand dimmed with a ring. */
+  isUpdating: boolean;
+};
+
+/** The line under the title as the results stand: the last layout's words, dimmed while a newer one is asked for. */
+export function lineOf(lens: Lens, results: ResultsState, obstacles: number): StageLine | null {
+  const words = subLineOf(lens, readoutsOf(results), obstacles);
+  return words === null ? null : { words, isUpdating: isLayoutUpdating(results) };
+}
+
+export type LayoutFailed = { title: string; message: string; action: string };
+
+/** The chip on the stage when the layout asked for last did not come: what failed, in the API's words, and what to do. */
+export function layoutFailedOf(results: ResultsState): LayoutFailed | null {
+  const failure = layoutFailureOf(results);
+  return failure === null ? null : { title: "The layout was not updated", message: failure.message, action: "Try again" };
 }

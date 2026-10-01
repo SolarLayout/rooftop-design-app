@@ -1,4 +1,4 @@
-import type { Locator, Page } from "@playwright/test";
+import type { Locator, Page, Route } from "@playwright/test";
 import path from "node:path";
 import { expect, test } from "../fixtures";
 
@@ -19,6 +19,9 @@ type ArrayRequest = {
 const isPhone = (projectName: string) => projectName === "phone";
 
 const moduleCard = (page: Page) => page.getByTestId("module-card").filter({ visible: true });
+const subLine = (page: Page) => page.getByTestId("stage-subline");
+const modulesDrawn = (page: Page) => page.getByTestId("on-the-roof-modules");
+const layoutFailed = (page: Page) => page.getByTestId("layout-failed");
 const moduleTitle = (page: Page) => page.getByTestId("module-title").filter({ visible: true });
 
 /** The Array lens with the demo, its first run over: what /layout is asked next is an edit. */
@@ -254,5 +257,92 @@ test.describe("the spacing and the window", () => {
 
     expect((await asked).array.allow_shaded).toBe(true);
     await expect(page.getByText("On: positions shaded inside the window are used too")).toBeVisible();
+  });
+});
+
+test.describe("the states of the stage", () => {
+  const CROSSES = { error: { code: "engine_error", message: "The roof outline crosses itself. Give the corners in order around the roof.", field: null } };
+
+  /** One more module in tilt: an edit that asks for the layout again, and changes what it counts. */
+  async function edited(page: Page) {
+    const more = page.getByRole("button", { name: "More" });
+    await more.scrollIntoViewIfNeeded();
+    await more.click();
+  }
+
+  /** On phone the sheet is brought down to its peek, so that the stage can be pressed. */
+  async function stageUncovered(page: Page, projectName: string) {
+    if (!isPhone(projectName)) return;
+    await page.getByRole("separator", { name: "Inspector" }).focus();
+    await page.keyboard.press("Home");
+    await expect(page.getByRole("separator", { name: "Inspector" })).toHaveAttribute("aria-valuetext", "Closed");
+  }
+
+  test("while the layout is on its way the line is dimmed with a ring and the modules of before stay; released, the new ones land", async ({ page }, testInfo) => {
+    await arrayLensOpened(page, testInfo.project.name);
+    await expect(subLine(page)).toHaveAttribute("data-state", "settled");
+    await expect(modulesDrawn(page)).toHaveText("790 modules in 6 rows", { timeout: RUN });
+    const wordsBefore = (await subLine(page).textContent()) ?? "";
+    let held: Route | null = null;
+    await page.route("**/api/layout", (route) => {
+      held = route;
+    });
+
+    await edited(page);
+
+    await expect(subLine(page)).toHaveAttribute("data-state", "updating");
+    await expect(subLine(page).getByTestId("ring-arc")).toHaveCount(1);
+    await expect(subLine(page)).toHaveText(wordsBefore);
+    await expect(modulesDrawn(page)).toHaveText("790 modules in 6 rows");
+    await expect.poll(() => held !== null).toBe(true);
+
+    await held!.continue();
+
+    await expect(subLine(page)).toHaveAttribute("data-state", "settled", { timeout: RUN });
+    await expect(subLine(page).getByTestId("ring-arc")).toHaveCount(0);
+    await expect(subLine(page)).not.toHaveText(wordsBefore);
+    await expect(modulesDrawn(page)).not.toHaveText("790 modules in 6 rows");
+  });
+
+  test("a layout that failed is a chip with the words of the API; the last good modules stay; Try again asks again", async ({ page }, testInfo) => {
+    await arrayLensOpened(page, testInfo.project.name);
+    await expect(modulesDrawn(page)).toHaveText("790 modules in 6 rows", { timeout: RUN });
+    let fails = true;
+    const asked: string[] = [];
+    await page.route("**/api/layout", (route) => {
+      asked.push(route.request().url());
+      return fails ? route.fulfill({ status: 422, json: CROSSES }) : route.continue();
+    });
+
+    await edited(page);
+
+    await expect(layoutFailed(page)).toContainText("The layout was not updated");
+    await expect(layoutFailed(page)).toContainText(CROSSES.error.message);
+    await expect(modulesDrawn(page)).toHaveText("790 modules in 6 rows");
+    await expect(subLine(page)).toHaveAttribute("data-state", "settled");
+    expect(asked).toHaveLength(1);
+
+    fails = false;
+    await stageUncovered(page, testInfo.project.name);
+    await layoutFailed(page).getByRole("button", { name: "Try again" }).click();
+
+    await expect(layoutFailed(page)).toHaveCount(0, { timeout: RUN });
+    expect(asked).toHaveLength(2);
+    await expect(modulesDrawn(page)).not.toHaveText("790 modules in 6 rows", { timeout: RUN });
+  });
+
+  test("Escape closes the chip until the next failure", async ({ page }, testInfo) => {
+    await arrayLensOpened(page, testInfo.project.name);
+    await page.route("**/api/layout", (route) => route.fulfill({ status: 422, json: CROSSES }));
+    await edited(page);
+    await expect(layoutFailed(page)).toBeVisible();
+
+    await page.keyboard.press("Escape");
+
+    await expect(layoutFailed(page)).toHaveCount(0);
+
+    await edited(page);
+
+    await expect(layoutFailed(page)).toBeVisible();
   });
 });
