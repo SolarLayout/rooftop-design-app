@@ -1,9 +1,10 @@
 # Phase 5: Studio, the 3D roof, Roof and Array lenses
 
-**Status:** in progress, session 9 (2026-09-30). How it is built: `phase-05-plan.md` (five pull requests). Merged: #42 (the
-scene, the building, the obstacles, the ground, the camera and the view controls), #43 (the modules, the kept-clear areas,
-the sun, the plan without WebGL). In progress: the Roof lens inspector (pull request 3), the Array lens inspector (pull
-request 4), selection and direct manipulation (pull request 5). **Depends on:** phases 2, 3 and 4. Read `reference/r3f-notes.md` first.
+**Status:** in progress, session 9 (2026-09-30 and 2026-10-01). How it is built: `phase-05-plan.md` (five pull requests).
+Merged: #42 (the scene, the building, the obstacles, the ground, the camera and the view controls), #43 (the modules, the
+kept-clear areas, the sun, the plan without WebGL), #44 (the Roof lens inspector, the obstacles, the import of a drawing),
+#45 (the Array lens inspector, the states of the stage), #46 (a DXF's place asked). In progress: selection and direct
+manipulation (pull request 5). **Depends on:** phases 2, 3 and 4. Read `reference/r3f-notes.md` first.
 **Mockups:** "Studio, Roof lens" (desktop, tablet, phone), "Studio, Array lens" (desktop, tablet, phone), "Obstacle edited on
 the roof", "Roof types in 3D", "Studio, Array lens, states", "Import with missing heights".
 
@@ -66,6 +67,10 @@ Sun animation, strings colouring, energy.
 | The stage of the Studio: the lens's title with its line of read-outs, the attribution under the imagery, the text equivalent of what is drawn (the roof, the obstacles, the modules, the kept-clear areas, the sun, the ground), the state without WebGL | `components/studio/Stage.tsx`, `stage-view.ts` | #42, #43 |
 | The keep-out's parts count the positions each keeps clear (`Keepout.positions`); the sun of the scene from `/sun` at the view's time, asked by the flow when the design opens or the place or the time changes, kept in the results store | `apps/api/src/rooftop_core/keepout_parts.py`, `services/layouts.py`, `design.py`; `apps/web/lib/flow/design-flow.ts`, `lib/stores/results-store.ts` | #43 |
 | The modules of `/layout` as tilted quads, instanced, the frame casting and the glass taking the shadow, for the three roof types; the kept-clear areas as overlays that select, with the callout of what shades them and when; the sun light with its fitted shadow camera; the plan of the design without WebGL; the selection in the view store; a roof made sloped drops its parapet and gets a pitch | `components/scene/Modules.tsx`, `KeepOut.tsx`, `SunLight.tsx`; `components/studio/Callout.tsx`, `PlanFallback.tsx`; `lib/scene/modules.ts`, `keepout.ts`, `sun-light.ts`, `plan.ts`; `lib/studio/roof-type.ts` | #43 |
+| The inspector mounted once, in the container of the size (decision 9); the Roof lens: the card of four lines, the roof type, Edges and access as fields (pitch and faces when sloped); the obstacles as rows, the selected one open with every field of its kind, the points of a wall or a building as a table, the parapet read-only; the list and the scene share one selection, the scene outlines the selected (accent) and the hovered (lighter), the callout names it, Escape clears; Add opens the kinds and the new obstacle is a draft, dashed, that joins the design when its height is typed (decision 15) | `components/shell/Studio.tsx`, `components/studio/use-size.ts`, `RoofInspector.tsx`, `ObstaclePanel.tsx`, `inspector-look.tsx`, `use-escape-clears.ts`; `components/scene/Obstacles.tsx`; `lib/studio/roof-fields.ts`, `obstacle-fields.ts`, `roof-type.ts`; `lib/roof-card.ts`; the view store's `draft` | #44 |
+| Import a drawing from the project switcher: KMZ, KML or DXF with its units, held until Open the roof, sent as base64; `/roof/import` answers the whole document (decision 13), opened in the Roof lens; the heights the file could not give are a list to review: the engine's note under the card, Review and Next select each, a typed height takes it off, the rows and the roof mark them | `components/shell/ImportDrawing.tsx`, `ProjectSwitcher.tsx`; `lib/studio/import-drawing.ts`, `review-heights.ts`; `apps/api/src/rooftop_api/services/roof_files.py`, `schemas/roof_import.py`; the view store's `toReview` | #44 |
+| A DXF's place asked in the import dialog: the search field of Find as a form field, then Latitude and Longitude, empty until found or typed; Open the roof waits for them; nothing is guessed | `components/shell/ImportDrawing.tsx`; `components/find/Search.tsx` (`look`) | #46 |
+| The Array lens: the module card from the design's equipment with the Voc note, Replace through `/equipment/module` committing `pan_text` (a refused file leaves the equipment of before, D32); mounting by roof type (tilt with the latitude's hint, orientation, modules in tilt, clearance; east-west tilt and ridge gap; sloped follows the pitch); spacing with the switches of the pitch and the azimuth (null hands the choice to the engine, decision 16); the shade-free window by the quarter hour; the design day; shaded positions; the states of the stage: the line dimmed with a ring while a layout is on its way, a chip with the API's words and Try again when it failed | `components/studio/ArrayInspector.tsx`, `ModuleCard.tsx`, `ReplaceModuleDialog.tsx`, `ArrayMounting.tsx`, `ArraySpacing.tsx`, `LayoutFailed.tsx`, `stage-view.ts`; `lib/studio/array-fields.ts`, `array-view.ts`, `module-card.ts` | #45 |
 
 ### Acceptance, so far
 
@@ -74,7 +79,10 @@ Sun animation, strings colouring, energy.
 | Demo roof shows 790 positions in 6 rows | `e2e/tests/modules.e2e.ts`: the stage's text equivalent held equal to `/layout`'s answer, on three sizes |
 | All three roof types render and match `/layout` counts (790, 940, 1,068) | The same test: the roof type switched in the Roof lens, the counts read from the answer |
 | Playwright: canvas non-blank, screenshot baselines | `stage.e2e.ts`: a pixel of the roof read from a picture of the canvas; the baselines of the Studio on three sizes |
-| Changing tilt refits within 200 ms; drag the stair room; selection by click; inspector edits round-trip; 60 fps; 20 lens switches | Pull requests 3 to 5 |
+| Changing tilt to 10° refits within 200 ms of release | `e2e/tests/array-lens.e2e.ts`: the request of `/layout` within 200 ms of the pointer's release, on three sizes |
+| Inspector edits round-trip to the store | `roof-lens.e2e.ts`, `array-lens.e2e.ts`: every field read back in the request of `/layout` |
+| Selection by click works | `roof-lens.e2e.ts`, `modules.e2e.ts`: an obstacle and a kept-clear area pressed, the callout and the list follow |
+| Drag the stair room 5 m east, undo restores; 60 fps; 20 lens switches | Pull request 5 |
 
 ### Deviations from the plan as written
 
@@ -84,6 +92,12 @@ Sun animation, strings colouring, energy.
 | Step 7: the walkways drawn | The roof shows through the gaps of the layout | The gaps are the walkways; a strip of its own drew nothing new |
 | The Array lens's line says "1,646 m² of modules" (the board) | "2,038 m² of modules": the area of all the positions | The board's number was of the chosen option's 638 modules; the Array lens is about the positions |
 | The dimension labels along the edges (the board) | Chips at the middle of each edge, upright | Placed by projection as the map's labels are; a turned label needs the edge's on-screen angle, which the plan view makes moot |
+| The board groups the four AC units into one row of the obstacle list | A row each | Each is selected and edited alone |
+| The fields with the label inside are 40 high on the boards | 44, the number field's touch size | One component, one size; the touch target rule |
+| The Array lens's line "1,646 m² of modules" (the board) | "2,038 m² of modules" | As above: all the positions |
+| The east-west "Unit pitch" and the sloped "Row pitch" read-outs of the states board | Not built | The API gives no unit gap; the sentences are not the engine's (plan decision 16: only the fields of `spacingOf`) |
+| Try again in the chip of a failed layout is 32 high on the board | 36, the quiet button's size | One component |
+| The import board, as first approved, had no place for a DXF | The place is asked (the board changed and approved on 2026-10-01, `99532e9`) | A DXF holds no place; nothing is guessed |
 
 ### Found on the way
 
@@ -99,3 +113,11 @@ Sun animation, strings colouring, energy.
 - `bun tools/with-node.ts node` refuses "node" as a tool; the renderers of boards and pictures run with
   `/opt/homebrew/bin/node`.
 - drei's `Text` loads its font from the network; the labels of the stage are DOM.
+- A test of the API changed a module-scoped fixture in place (`test_coefficients_of_the_file_say_so`); it failed another
+  test only in the order testmon chose. The test works on a copy now. No other test changes a shared fixture.
+- A worktree has no `apps/web/.env.local`, so its Studio draws the plain ground and its pictures differ from the
+  repo's: the baselines are made in the main working tree. An agent copied the key file into its worktree once; the
+  copy was deleted unread.
+- Both lens agents wrote a module for the look the inspectors share; they are one now (`inspector-look.tsx`).
+- `git add -A` after a rebase takes conflict markers in: a file with markers broke the browser tests' import once.
+- The desktop app put every DXF at its own default place, Pune, silently (`main_window.py`, `_choose_roof_file`).

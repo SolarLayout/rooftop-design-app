@@ -3,9 +3,10 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-09-30, session 9, in the middle of Phase 5. Its plan `plan/phase-05-plan.md` (five pull requests,
-twenty-one decisions) and its six boards are approved; #42 (the 3D scene) and #43 (the modules, the kept-clear areas, the
-sun) are merged; the inspectors of the Roof and Array lenses and the direct manipulation are in progress on their branches.
+**Last updated:** 2026-10-01, session 9 (its second day), near the end of Phase 5. Its plan `plan/phase-05-plan.md` and its
+six boards are approved; #42 (the 3D scene), #43 (the modules, the kept-clear areas, the sun), #44 (the Roof lens, the
+obstacles, the import), #45 (the Array lens, the states of the stage) and #46 (a DXF's place) are merged; the direct
+manipulation (pull request 5) is in progress on its branch.
 
 ## Where we are
 
@@ -17,14 +18,13 @@ sun) are merged; the inspectors of the Roof and Array lenses and the direct mani
 | 3 Design system and shell | Done (PRs #24 to #33) | What exists, what was decided, what was found: `phase-03-design-system-shell.md`, "As built". How its second half was built: `phase-03-rest-plan.md` |
 | 4 Find and outline | Done (sessions 6 and 7: #35, #36, #38; the memo #37) | What exists, what was decided, what was found: `phase-04-find-and-outline.md`, "As built". How it was built: `phase-04-plan.md` |
 | 4.5 Caching of the checks | Done (session 8: #39, #40, #41) | What exists, the numbers before and after, what was found: `phase-04b-test-caching.md`, "As built". How it was built: `phase-04b-plan.md` |
-| 5 Studio, 3D roof, Roof and Array lenses | In progress (session 9: #42, #43 merged) | What exists so far: `phase-05-studio-roof-array.md`, "As built". How it is built: `phase-05-plan.md` |
+| 5 Studio, 3D roof, Roof and Array lenses | In progress (session 9: #42 to #46 merged; pull request 5 open) | What exists so far: `phase-05-studio-roof-array.md`, "As built". How it is built: `phase-05-plan.md` |
 | 6 to 11 | Not started | |
 
 ## In flight
 
-Phase 5, session 9. Branches stacked on `main`: `feat/phase-5-roof-lens` (pull request 3: the Roof lens inspector, the
-obstacles, the import), `feat/phase-5-array-lens` (pull request 4: the Array lens inspector), `feat/phase-5-manipulation`
-(pull request 5: undo, drag). `main` is green.
+Phase 5, session 9. One branch on `main`: `feat/phase-5-manipulation` (pull request 5: selection by raycast, the drag and
+the handles of an obstacle, undo and redo). `main` is green.
 
 ## What the web app has today
 
