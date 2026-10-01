@@ -68,7 +68,8 @@ test.describe("Build this roof", () => {
 
     await expect(page).toHaveURL(/\/studio\/roof$/, { timeout: RUN });
     await expect(page.getByRole("heading", { level: 1, name: "Roof", exact: true })).toBeVisible();
-    await expect(page.getByTestId("roof-how")).toHaveText("Outlined on satellite · 4 corners");
+    await expect(page.getByTestId("roof-how")).toHaveText("Outlined on satellite");
+    await expect(page.getByTestId("roof-count")).toHaveText("4 corners");
     await expect(page.getByTestId("roof-size")).toHaveText(/^(89|90)\.\d × (39|40)\.\d m · faces 180° S$/);
     await expect(page.getByTestId("roof-place")).toHaveText(/^18\.5\d{4}° N, 73\.8\d{4}° E$/);
     expect(Date.now() - began).toBeLessThan(UNDER);
@@ -113,7 +114,8 @@ test.describe("the Roof lens", () => {
       if (request.url().endsWith("/api/layout")) layouts.push(request.postDataJSON());
     });
     await page.goto("/studio/roof");
-    await expect(page.getByTestId("roof-how")).toHaveText("Entered by hand · 4 corners · 6 obstacles", { timeout: RUN });
+    await expect(page.getByTestId("roof-how")).toHaveText("Entered by hand", { timeout: RUN });
+    await expect(page.getByTestId("roof-count")).toHaveText("4 corners · 6 obstacles");
     await expect(page.getByTestId("roof-size")).toHaveText("90.0 × 40.0 m · faces 180° S");
 
     await page.getByRole("link", { name: "Edit" }).click();
@@ -128,7 +130,8 @@ test.describe("the Roof lens", () => {
 
     await expect(page).toHaveURL(/\/studio\/roof$/, { timeout: RUN });
     await expect(page.getByRole("banner").getByRole("button", { name: /Pune demo roof/ })).toBeVisible();
-    await expect(page.getByTestId("roof-how")).toHaveText("Outlined on satellite · 4 corners · 6 obstacles");
+    await expect(page.getByTestId("roof-how")).toHaveText("Outlined on satellite");
+    await expect(page.getByTestId("roof-count")).toHaveText("4 corners · 6 obstacles");
     await expect.poll(() => layouts.length, { timeout: RUN }).toBeGreaterThan(1);
     expect(layouts.at(-1)).toMatchObject({ name: "Pune demo roof", roof: { source: "map" } });
   });
@@ -139,7 +142,7 @@ test.describe("the Roof lens", () => {
       if (request.url().endsWith("/api/layout")) layouts.push(request.postDataJSON());
     });
     await page.goto("/studio/roof");
-    await expect(page.getByTestId("roof-how")).toHaveText("Entered by hand · 4 corners · 6 obstacles", { timeout: RUN });
+    await expect(page.getByTestId("roof-how")).toHaveText("Entered by hand", { timeout: RUN });
     await expect.poll(() => layouts.length, { timeout: RUN }).toBe(1);
     const group = page.getByRole("radiogroup", { name: "Roof type" });
     if (isPhone(testInfo.project.name)) await page.getByRole("separator", { name: "Inspector" }).press("End");
