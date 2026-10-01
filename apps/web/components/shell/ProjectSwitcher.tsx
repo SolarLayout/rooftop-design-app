@@ -50,13 +50,14 @@ export function ProjectTrigger({ name, place, open, className, ...rest }: Trigge
   );
 }
 
-type Action = { name: string; icon: IconName; fact?: string; href?: string };
+/** An action of the menu: it leads to an address, or it opens the import of a drawing; one that does neither comes with a later phase. */
+type Action = { name: string; icon: IconName; fact?: string; href?: string; opens?: "import" };
 
-// What has no address comes with a later phase: it is shown and cannot be used.
+// What has neither an address nor a thing to open comes with a later phase: it is shown and cannot be used.
 const ACTIONS: Action[] = [
   { name: "New design", icon: "plus", fact: "Find the roof", href: "/find" },
   { name: "Open a project", icon: "folder", fact: ".rtd" },
-  { name: "Import a drawing", icon: "upload", fact: "KMZ, KML, DXF" },
+  { name: "Import a drawing", icon: "upload", fact: "KMZ, KML, DXF", opens: "import" },
   { name: "Save a copy", icon: "download", fact: ".rtd" },
   { name: "Home", icon: "home", href: "/" },
 ];
@@ -71,12 +72,14 @@ const ROW = classNames(
 type MenuProps = Pick<Design, "name"> & {
   saving: Saving;
   onOpenNotes: () => void;
-  /** A row that leads somewhere was taken. */
+  /** Import a drawing was taken: the dialog of the import opens (plan/phase-05-plan.md, decision 13). */
+  onImport: () => void;
+  /** A row that leads somewhere, or opens something, was taken. */
   onTake: () => void;
 };
 
 /** What the project switcher holds: this design, the designs on this device, what can be done. */
-export function ProjectMenu({ name, saving, onOpenNotes, onTake }: MenuProps) {
+export function ProjectMenu({ name, saving, onOpenNotes, onImport, onTake }: MenuProps) {
   const rows = useRef<HTMLUListElement>(null);
 
   function onKeyDown(event: KeyboardEvent<HTMLUListElement>) {
@@ -110,7 +113,7 @@ export function ProjectMenu({ name, saving, onOpenNotes, onTake }: MenuProps) {
       <p className="px-2.5 pt-0.5 pb-2.5 type-small text-text-2">Designs you save appear here.</p>
       <span className={classNames(DIVIDER, "mb-1")} />
       <ul ref={rows} role="menu" aria-label="Project" onKeyDown={onKeyDown} className="flex flex-col gap-0.5">
-        {ACTIONS.map(({ name: action, icon, fact, href }) => {
+        {ACTIONS.map(({ name: action, icon, fact, href, opens }) => {
           const inside = (
             <>
               <Icon name={icon} size={18} stroke="light" className="text-text-2" />
@@ -120,14 +123,27 @@ export function ProjectMenu({ name, saving, onOpenNotes, onTake }: MenuProps) {
           );
           return (
             <li key={action} role="none">
-              {href === undefined ? (
-                <span role="menuitem" aria-disabled="true" tabIndex={-1} className={classNames(ROW, "cursor-default opacity-disabled")}>
-                  {inside}
-                </span>
-              ) : (
+              {href !== undefined ? (
                 <Link role="menuitem" tabIndex={-1} href={href} onClick={onTake} className={classNames(ROW, "cursor-pointer")}>
                   {inside}
                 </Link>
+              ) : opens !== undefined ? (
+                <button
+                  type="button"
+                  role="menuitem"
+                  tabIndex={-1}
+                  onClick={() => {
+                    onTake();
+                    onImport();
+                  }}
+                  className={classNames(ROW, "w-full cursor-pointer text-left")}
+                >
+                  {inside}
+                </button>
+              ) : (
+                <span role="menuitem" aria-disabled="true" tabIndex={-1} className={classNames(ROW, "cursor-default opacity-disabled")}>
+                  {inside}
+                </span>
               )}
             </li>
           );
@@ -137,10 +153,10 @@ export function ProjectMenu({ name, saving, onOpenNotes, onTake }: MenuProps) {
   );
 }
 
-type Props = Design & Pick<MenuProps, "saving" | "onOpenNotes">;
+type Props = Design & Pick<MenuProps, "saving" | "onOpenNotes" | "onImport">;
 
 /** The design that is open, and the way to another one. On phone and tablet it opens as a bottom sheet. */
-export function ProjectSwitcher({ name, place, saving, onOpenNotes }: Props) {
+export function ProjectSwitcher({ name, place, saving, onOpenNotes, onImport }: Props) {
   const [floating, trigger] = useFloating({ side: "below", align: "start", gap: LIST_GAP });
   const panel = useRef<HTMLDivElement>(null);
 
@@ -165,7 +181,7 @@ export function ProjectSwitcher({ name, place, saving, onOpenNotes }: Props) {
       />
       <FloatingPanel floating={floating} width="menu">
         <div ref={panel}>
-          <ProjectMenu name={name} saving={saving} onOpenNotes={onOpenNotes} onTake={floating.close} />
+          <ProjectMenu name={name} saving={saving} onOpenNotes={onOpenNotes} onImport={onImport} onTake={floating.close} />
         </div>
       </FloatingPanel>
     </>

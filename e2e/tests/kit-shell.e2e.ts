@@ -525,11 +525,13 @@ test.describe("Project switcher", () => {
 
     await expect(menu.getByRole("menuitem", { name: "Home" })).toHaveAttribute("href", "/");
     await expect(menu.getByRole("menuitem", { name: "New design" })).toHaveAttribute("href", "/find");
-    for (const name of ["Open a project", "Import a drawing", "Save a copy"]) {
+    for (const name of ["Open a project", "Save a copy"]) {
       const row = menu.getByRole("menuitem", { name });
       await expect(row).toHaveAttribute("aria-disabled", "true");
       await expect(row).toHaveCSS("opacity", "0.45");
     }
+    // Import a drawing opens its dialog (Phase 5, step 13): it is a row that can be pressed.
+    await expect(menu.getByRole("menuitem", { name: "Import a drawing" })).not.toHaveAttribute("aria-disabled", "true");
   });
 
   test("it opens, the focus goes to its first row, and Escape gives the focus back", async ({ page }) => {

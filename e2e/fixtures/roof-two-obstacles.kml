@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<kml xmlns='http://www.opengis.net/kml/2.2'><Document>
+<Placemark><name>Roof</name><Polygon><outerBoundaryIs><LinearRing><coordinates>
+73.8600,18.5200,0 73.8603,18.5200,0 73.8603,18.5202,0 73.8600,18.5202,0 73.8600,18.5200,0
+</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+<Placemark><name>Tank h=2.5</name><Polygon><outerBoundaryIs><LinearRing><coordinates>
+73.86010,18.52010,0 73.86012,18.52010,0 73.86012,18.52012,0 73.86010,18.52012,0 73.86010,18.52010,0
+</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+<Placemark><name>Vent</name><Polygon><outerBoundaryIs><LinearRing><coordinates>
+73.86002,18.52002,0 73.86003,18.52002,0 73.86003,18.52003,0 73.86002,18.52003,0 73.86002,18.52002,0
+</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+</Document></kml>

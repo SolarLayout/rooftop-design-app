@@ -3,7 +3,7 @@ import type { ImportedRoof, Project, RoofFile } from "../api";
 import { ApiError } from "../api";
 import { createProjectStore } from "../stores/project-store";
 import { createViewStore, toReviewOf } from "../stores/view-store";
-import { importDrawing, kindOfDrawing } from "./import-drawing";
+import { base64OfDataUrl, heldWordsOf, importDrawing, kindOfDrawing } from "./import-drawing";
 
 // Import a drawing (plan/phase-05-plan.md, step 13, decision 13): the file goes to /roof/import, the
 // document it answers is opened, and the heights it could not give go on the list to review.
@@ -60,5 +60,28 @@ describe("importing a drawing", () => {
 
     expect(asked[0]).toEqual({ name: "roof.kml", base64: "QUJD" });
     expect(toReviewOf(view.getState())).toEqual([]);
+  });
+});
+
+describe("a file held before it is read", () => {
+  test("is said by its kind, its size in whole kilobytes, and when it is read", () => {
+    expect(heldWordsOf("warehouse-roof.dxf", 48 * 1024)).toBe("DXF · 48 KB · read when the roof is opened");
+    expect(heldWordsOf("Roof.KMZ", 1536)).toBe("KMZ · 2 KB · read when the roof is opened");
+    expect(heldWordsOf("roof.kml", 300)).toBe("KML · 1 KB · read when the roof is opened");
+  });
+
+  test("a file of another kind is said by its ending, so that the refusal of the API is no surprise", () => {
+    expect(heldWordsOf("notes.txt", 2048)).toBe("TXT · 2 KB · read when the roof is opened");
+    expect(heldWordsOf("README", 10)).toBe("File · 1 KB · read when the roof is opened");
+  });
+});
+
+describe("the base64 of what the browser read", () => {
+  test("is what follows the comma of the data URL", () => {
+    expect(base64OfDataUrl("data:application/octet-stream;base64,QUJD")).toBe("QUJD");
+  });
+
+  test("a URL without one is refused", () => {
+    expect(() => base64OfDataUrl("QUJD")).toThrow("The file could not be read.");
   });
 });

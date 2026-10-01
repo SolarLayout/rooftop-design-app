@@ -21,6 +21,8 @@ type Props = {
   /** How many notes there are to review. */
   notes: number;
   onOpenNotes: () => void;
+  /** Import a drawing was taken in the project switcher. */
+  onImport: () => void;
 };
 
 const BAR = classNames(
@@ -64,12 +66,12 @@ export function Export() {
 const countOf = (notes: number) => (notes === 0 ? "Nothing to review" : notes === 1 ? "1 note to review" : `${notes} notes to review`);
 
 /** The bar at the top of the three workspaces. */
-export function TopBar({ name, place, workspace, lens, saving, notes, onOpenNotes }: Props) {
+export function TopBar({ name, place, workspace, lens, saving, notes, onOpenNotes, onImport }: Props) {
   return (
     <header className={BAR}>
       <Logo />
       <span className="hidden h-6 w-px shrink-0 bg-line desktop:block" />
-      <ProjectSwitcher name={name} place={place} saving={saving} onOpenNotes={onOpenNotes} />
+      <ProjectSwitcher name={name} place={place} saving={saving} onOpenNotes={onOpenNotes} onImport={onImport} />
       <span className="grow" />
       <WorkspaceNav current={workspace} lens={lens} />
       <span className="hidden grow tablet:block" />

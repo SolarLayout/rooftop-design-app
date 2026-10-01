@@ -43,6 +43,7 @@ export function TopBars({ onPress }: Props) {
             saving="not-kept"
             notes={1}
             onOpenNotes={() => onPress(OPEN_THE_NOTES)}
+            onImport={() => onPress("Import a drawing")}
           />
         </div>
       </Wide>
@@ -151,14 +152,14 @@ export function ProjectAndSaving({ onPress }: Props) {
     <Section title="Project switcher and state of saving">
       <Row label="The project switcher. On phone and tablet it opens as a bottom sheet">
         <Example name="switcher" caption="Closed; press it">
-          <ProjectSwitcher {...DESIGN} saving="not-kept" onOpenNotes={openNotes} />
+          <ProjectSwitcher {...DESIGN} saving="not-kept" onOpenNotes={openNotes} onImport={() => onPress("Import a drawing")} />
         </Example>
       </Row>
       <Row label="Open, as it looks">
         <Wide name="switcher-open" caption="This design, the designs on this device, what can be done">
           <ProjectTrigger {...DESIGN} open className="self-start" />
           <div className="desktop:w-85">
-            <ProjectMenu name={DESIGN.name} saving="not-kept" onOpenNotes={openNotes} onTake={() => undefined} />
+            <ProjectMenu name={DESIGN.name} saving="not-kept" onOpenNotes={openNotes} onImport={() => onPress("Import a drawing")} onTake={() => undefined} />
           </div>
         </Wide>
       </Row>

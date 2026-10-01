@@ -12,6 +12,7 @@ import { indexAfterKey } from "@/components/ui/list-keys";
 import { FACT, LIST, ROW as MENU_ROW, ROW_MARKED } from "@/components/ui/list-look";
 import { NumberField } from "@/components/ui/NumberField";
 import { shown } from "@/components/ui/number-entry";
+import { StatusMark } from "@/components/ui/StatusMark";
 import { useFloating } from "@/components/ui/use-floating";
 import type { Obstacle, Project, Roof } from "@/lib/api";
 import { centroidOf } from "@/lib/outline/measure";
@@ -34,7 +35,8 @@ import {
   type ObstacleFieldId,
   type ObstacleKind,
 } from "@/lib/studio/obstacle-fields";
-import { draftOf, selectionOf } from "@/lib/stores/view-store";
+import { indexToReview, REVIEW_HINT } from "@/lib/studio/review-heights";
+import { draftOf, selectionOf, toReviewOf } from "@/lib/stores/view-store";
 import { fieldsLayoutOf, SECTION } from "./inspector-look";
 import type { Size } from "./use-size";
 
@@ -124,6 +126,8 @@ type CardProps<Kind extends Obstacle | DraftObstacle> = {
   /** The focus goes into the height when the card opens: the height is what is asked. */
   focusHeight?: boolean;
   onRemove?: () => void;
+  /** A line under the fields: the hint of a height to review. */
+  hint?: ReactNode;
   /** The actions in the foot of the card. */
   foot?: ReactNode;
 };
@@ -133,7 +137,7 @@ type CardProps<Kind extends Obstacle | DraftObstacle> = {
  * head, the word of its kind, Remove, and its fields by its kind two to a row; a wall's and a building's
  * points as a table.
  */
-export function ObstacleCard<Kind extends Obstacle | DraftObstacle>({ obstacle, size, onChange, onHeight, focusHeight = false, onRemove, foot }: CardProps<Kind>) {
+export function ObstacleCard<Kind extends Obstacle | DraftObstacle>({ obstacle, size, onChange, onHeight, focusHeight = false, onRemove, hint, foot }: CardProps<Kind>) {
   const card = useRef<HTMLDivElement>(null);
   const hasPoints = obstacle.kind === "wall" || obstacle.kind === "building";
 
@@ -170,19 +174,34 @@ export function ObstacleCard<Kind extends Obstacle | DraftObstacle>({ obstacle, 
         ))}
       </div>
       {hasPoints ? <PointsTable obstacle={obstacle} onChange={onChange} /> : null}
+      {hint}
       {foot}
     </div>
   );
 }
 
-/** A row of the list: the icon of the kind, the name, the size and the height; a press selects. */
-function ObstacleRow({ obstacle, onSelect }: { obstacle: Obstacle; onSelect: () => void }) {
+/** A row of the list: the icon of the kind, the name, the size and the height, a mark where the height is to be reviewed; a press selects. */
+function ObstacleRow({ obstacle, isToReview, onSelect }: { obstacle: Obstacle; isToReview: boolean; onSelect: () => void }) {
   return (
     <button type="button" data-testid="obstacle-row" onClick={onSelect} className={ROW}>
       <Icon name={ICON_OF_KIND[obstacle.kind]} size={20} stroke="light" className="text-text-2" />
       <span className="grow truncate font-medium">{obstacle.name}</span>
       <code className="type-caption whitespace-nowrap text-text-2">{factsOf(obstacle)}</code>
+      {isToReview ? <StatusMark kind="note" label={HEIGHT_TO_REVIEW} wordsShown={false} size={14} /> : null}
     </button>
+  );
+}
+
+/** The words of the mark on a row whose height is to be reviewed. */
+const HEIGHT_TO_REVIEW = "Height to review";
+
+/** The hint in the open card of an obstacle whose height came from the import, not from the file. */
+function ReviewHint() {
+  return (
+    <p data-testid="review-hint" className="flex items-start gap-2 type-caption text-text-3">
+      <Icon name="note" size={14} className="mt-0.75 shrink-0 text-accent" />
+      {REVIEW_HINT}
+    </p>
   );
 }
 
@@ -264,6 +283,7 @@ export function ObstaclePanel({ roof, size }: Props) {
   const { project: store, view } = useStores();
   const selection = useView(selectionOf);
   const draft = useView(draftOf);
+  const toReview = useView(toReviewOf);
   const own = roof.obstacles.map((obstacle, index) => ({ obstacle, index })).filter(({ obstacle }) => !obstacle.auto);
   const selected = selection?.kind === "obstacle" ? selection.index : null;
 
@@ -286,6 +306,20 @@ export function ObstaclePanel({ roof, size }: Props) {
     commitRoof((before) => withoutObstacleAt(before, index));
     view.getState().clearSelection();
   }
+
+  /** An obstacle changed in its card; a height typed into one to review takes it off the list (decision 13). */
+  function change(index: number, next: Obstacle) {
+    const before = roof.obstacles[index];
+    commitRoof((roofBefore) => withObstacleAt(roofBefore, index, next));
+    if (before && next.height !== before.height) view.getState().reviewed(before.name);
+  }
+
+  /** Review and Next select the next obstacle to review; null when there is none. */
+  const nextToReview = (after?: string) => indexToReview(roof.obstacles, toReview, after);
+  const selectToReview = (after?: string) => {
+    const index = nextToReview(after);
+    if (index !== null) view.getState().select({ kind: "obstacle", index });
+  };
 
   return (
     <section aria-label="Obstacles" className="flex flex-col gap-2.5">
@@ -314,20 +348,34 @@ export function ObstaclePanel({ roof, size }: Props) {
       ) : null}
       {own.length === 0 && !draft ? <p className="type-small text-text-2">None yet. Add a box, a tank, a wall, a tree or a building.</p> : null}
       <ul className="flex flex-col gap-2.5">
-        {own.map(({ obstacle, index }) => (
-          <li key={index}>
-            {selected === index ? (
-              <ObstacleCard
-                obstacle={obstacle}
-                size={size}
-                onChange={(next) => commitRoof((before) => withObstacleAt(before, index, next))}
-                onRemove={() => remove(index)}
-              />
-            ) : (
-              <ObstacleRow obstacle={obstacle} onSelect={() => view.getState().select({ kind: "obstacle", index })} />
-            )}
-          </li>
-        ))}
+        {own.map(({ obstacle, index }) => {
+          const isToReview = toReview.includes(obstacle.name);
+          return (
+            <li key={index}>
+              {selected === index ? (
+                <ObstacleCard
+                  obstacle={obstacle}
+                  size={size}
+                  onChange={(next) => change(index, next)}
+                  onRemove={() => remove(index)}
+                  focusHeight={isToReview}
+                  hint={isToReview ? <ReviewHint /> : undefined}
+                  foot={
+                    isToReview && nextToReview(obstacle.name) !== null ? (
+                      <div className="flex justify-end">
+                        <Button kind="quiet" size="s" onClick={() => selectToReview(obstacle.name)}>
+                          Next
+                        </Button>
+                      </div>
+                    ) : undefined
+                  }
+                />
+              ) : (
+                <ObstacleRow obstacle={obstacle} isToReview={isToReview} onSelect={() => view.getState().select({ kind: "obstacle", index })} />
+              )}
+            </li>
+          );
+        })}
       </ul>
       {roof.parapet_h > 0 ? (
         <div data-testid="parapet-row" className="flex h-10 items-center gap-2.5 px-3 type-small text-text-3">

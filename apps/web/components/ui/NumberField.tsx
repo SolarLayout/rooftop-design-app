@@ -44,7 +44,7 @@ export function NumberField({ label, value, onCommit, range, unit, labelInside =
       data-initial-focus={initialFocus || undefined}
       aria-labelledby={names.label}
       aria-describedby={classNames(unit && names.unit, names.said)}
-      className={classNames(INPUT, "text-right", labelHidden ? "w-full grow" : wide ? "w-24" : labelInside ? "w-16" : "w-12")}
+      className={classNames(INPUT, "text-right", labelHidden ? "w-full grow" : wide ? "w-24" : "w-16")}
       {...entry.input}
     />
   );

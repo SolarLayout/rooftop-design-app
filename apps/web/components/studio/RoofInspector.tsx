@@ -2,18 +2,22 @@
 
 import Link from "next/link";
 import { ROOF_TYPES } from "@/components/find/RoofTypeChoice";
-import { useProject, useStores } from "@/components/shell/stores";
+import { useProject, useStores, useView } from "@/components/shell/stores";
+import { Button } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
 import { NumberField } from "@/components/ui/NumberField";
 import { Segmented } from "@/components/ui/Segmented";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { StatusMark } from "@/components/ui/StatusMark";
 import type { Project, Roof } from "@/lib/api";
 import { roofCardOf, type RoofCard } from "@/lib/roof-card";
 import { roofFieldsOf, withRoofField, type RoofFieldId } from "@/lib/studio/roof-fields";
+import { HEIGHTS_SET, indexToReview, namesToReview, toReviewWordsOf } from "@/lib/studio/review-heights";
 import { withRoofType } from "@/lib/studio/roof-type";
 import { projectOf } from "@/lib/stores/project-store";
+import { toReviewOf } from "@/lib/stores/view-store";
 import { fieldsLayoutOf, SECTION } from "./inspector-look";
 import { ObstaclePanel } from "./ObstaclePanel";
 import type { Size } from "./use-size";
@@ -91,14 +95,43 @@ function LocationCard({ card, size }: { card: RoofCard | null; size: Size }) {
 }
 
 /**
+ * The note under the card after an import (the board "Import with missing heights"): the engine's sentence,
+ * how many obstacles are to review, and Review, which selects the first of them (decision 13).
+ */
+function ReviewNote({ count, onReview }: { count: number; onReview: () => void }) {
+  return (
+    <div data-testid="review-note" className="flex gap-3 rounded-row border border-accent bg-note-surface px-3.5 py-3 shadow-halo-selected">
+      <StatusMark kind="note" label="Note" wordsShown={false} size={20} className="mt-px shrink-0" />
+      <div className="flex grow flex-col gap-2">
+        <span className="font-medium text-text">{HEIGHTS_SET}</span>
+        <div className="flex items-center gap-3">
+          <span className="grow type-caption text-text-2">{toReviewWordsOf(count)}</span>
+          <Button kind="primary" size="s" onClick={onReview}>
+            Review
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
  * The inspector of the Roof lens (plan/phase-05-plan.md, steps 11 to 13): the card of the roof with Edit,
  * the roof type, the edges and access as fields that commit as fields do (decision 16), and the obstacles.
  * On tablet it stands in two columns under the vitals, the obstacles in the second; on phone in the sheet.
  */
 export function RoofInspector({ size }: Props) {
   const project = useProject(projectOf);
-  const { project: store } = useStores();
+  const { project: store, view } = useStores();
+  const toReview = useView(toReviewOf);
   const card = project ? roofCardOf(project.roof, project.roof_input.file) : null;
+  const reviewing = project ? namesToReview(project.roof.obstacles, toReview) : [];
+
+  function review() {
+    if (!project) return;
+    const index = indexToReview(project.roof.obstacles, toReview);
+    if (index !== null) view.getState().select({ kind: "obstacle", index });
+  }
 
   function chooseRoofType(roofType: Roof["roof_type"]) {
     store.getState().commit((design) => withRoof(design, withRoofType(design.roof, roofType)));
@@ -112,6 +145,7 @@ export function RoofInspector({ size }: Props) {
     <div data-size={size} className="flex flex-col gap-4 tablet:grid tablet:grid-cols-2 tablet:gap-8 desktop:flex desktop:gap-4">
       <div className="flex flex-col gap-4 tablet:gap-5 desktop:contents">
         <LocationCard card={card} size={size} />
+        {reviewing.length > 0 ? <ReviewNote count={reviewing.length} onReview={review} /> : null}
 
         <section aria-label="Roof type" className="flex flex-col gap-2.5">
           <h2 className={SECTION}>Roof type</h2>

@@ -48,7 +48,9 @@ In code: `Segmented`. It is a group of radio buttons to a screen reader (`radiog
 stops at it once, at the choice that is taken; the arrows go through the choices and around the ends, Home and
 End to the first and the last; each takes the choice it goes to. A choice that cannot be taken is dim and is
 passed over. On phone and tablet the track has radius `radius-row`, the items `radius-seg-touch` and the size
-of body text. With `fill` the choices share the width in equal parts (the lens switch on phone).
+of body text. With `fill` the choices share the width in equal parts (the lens switch on phone). With
+`disabled` the whole control is dim and takes neither pointer nor key; only then may nothing be taken
+(`value` null), where the choice does not apply yet: the units of a drawing before the file is a DXF.
 
 ## Tabs
 The board "Tabs" (`mockups/Tabs.dc.html`), approved on 2026-09-29 (decision D35).
@@ -347,14 +349,15 @@ Height 88, radius `radius-row`, padding 0 18, gap 14. An icon of 20, a title in 
 |---|---|---|
 | Rest | no surface, 1 px dashed `line-strong` | Upload icon in text-2; "Drop the module file here"; "A PAN file of PVsyst"; "Choose a file" |
 | A file is held over it | `note-surface`, 1 px dashed accent, `halo-selected` | Upload icon in accent; "Let go to load the file"; what it replaces |
+| Held, to be read later | `surface-2`, border `line` | File icon in accent; the name of the file in mono; what it is and when it is read ("DXF · 48 KB · read when the roof is opened"); "Choose another" |
 | Reading | `color-well`, border `line`, `shadow-well` | Ring of 20; "Reading the file"; the name of the file in mono |
 | Refused | `note-surface`, border `note-line` | Note of 20; "This file was not loaded"; the reason in the words of the engine; "Choose another" |
 
 A file that is refused leaves the equipment of before in place. A file that is read becomes the equipment
 card. The button opens the file chooser, so the control works without dragging and by keyboard.
 
-In code: `FileDrop`. It gives the file to who uses it, and is told what becomes of it: reading, and refused
-with the reason. It takes one file, the first of several. What is no file of the device (a piece of text, a
+In code: `FileDrop`. It gives the file to who uses it, and is told what becomes of it: held for later (the
+drawing of an import, read when the roof is opened), reading, and refused with the reason. It takes one file, the first of several. What is no file of the device (a piece of text, a
 link) is not taken, and while a file is read no other is. The words of the field are a `status`, so that a
 screen reader hears that a file is read or was refused.
 On phone the button stands under the words and is as wide as the field, 44 high; the field is then higher
@@ -531,7 +534,8 @@ In code: `ProjectSwitcher`; `ProjectTrigger` and `ProjectMenu` for what is seen 
 - The actions are a `menu`: the arrows go through its rows, Home and End to its ends. Open, the focus is on
   its first row.
 - An action that comes with a later phase is shown and cannot be used (`aria-disabled`, opacity
-  `opacity-disabled`). It takes the focus, so that it is found. Today that is every action but Home.
+  `opacity-disabled`). It takes the focus, so that it is found. Today that is Open a project and Save a copy.
+  Import a drawing opens its dialog (Phase 5, step 13).
 - The icons of the rows have the stroke of the navigation, 1.7; the board draws 1.8.
 - The place of the design, "18.52° N · 73.86° E", has two decimals, as the mockups have it. It is shown on
   desktop from 1360 wide.

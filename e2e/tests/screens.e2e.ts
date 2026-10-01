@@ -1,4 +1,5 @@
 import type { Page } from "@playwright/test";
+import path from "node:path";
 import { expect, test } from "../fixtures";
 import { expectScreen } from "../screens";
 import { A_MAP, findOpened, roofMap, scaleLabel, searchField } from "../find";
@@ -145,6 +146,48 @@ test.describe("the shell", () => {
 
     await sceneSettled(page);
     await expectScreen(page, "studio-roof");
+  });
+
+  // The stair room selected from the list, as the board "Obstacle edited on the roof" draws it; on phone the
+  // sheet at its full stop, scrolled to the card.
+  test("studio, the Roof lens, an obstacle selected", async ({ page }, testInfo) => {
+    await page.goto("/studio/roof");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    if (isPhone(testInfo.project.name)) {
+      await page.getByRole("separator", { name: "Inspector" }).press("End");
+      await expect(page.getByRole("separator", { name: "Inspector" })).toHaveAttribute("aria-valuetext", "Open");
+    }
+    await page.getByTestId("obstacle-row").filter({ hasText: "Stair room" }).click();
+    await expect(page.getByTestId("obstacle-card")).toBeVisible();
+    await expect(page.getByTestId("stage-callout")).toContainText("Stair room · selected", { timeout: RUN });
+    // On phone the list heads the sheet, as the board draws it; where the sheet scrolls to is otherwise a matter of timing.
+    if (isPhone(testInfo.project.name)) await page.getByRole("heading", { name: "Obstacles · 6" }).evaluate((heading) => heading.scrollIntoView({ block: "start" }));
+
+    await sceneSettled(page);
+    await expectScreen(page, "studio-roof-obstacle");
+  });
+
+  // The Roof lens after a KML without every height is imported, as the board "Import with missing heights"
+  // draws it. The imported roof has no weather of its own and the tests never touch the network: the design
+  // run is answered as failed here, so that the picture is the same on every machine.
+  test("studio, the Roof lens after an import with heights to review", async ({ page }, testInfo) => {
+    await page.route("**/api/design", (route) =>
+      route.fulfill({ status: 503, json: { error: { code: "unavailable", message: "The weather could not be fetched.", field: null } } }),
+    );
+    await page.goto("/studio/roof");
+    await expect(page.getByTestId("roof-how")).toHaveText("Entered by hand", { timeout: RUN });
+    await design(page).click();
+    await page.getByRole("menu", { name: "Project" }).getByRole("menuitem", { name: "Import a drawing" }).click();
+    const dialog = page.getByRole("dialog", { name: "Import a drawing" });
+    await dialog.locator("input[type=file]").setInputFiles(path.resolve(__dirname, "../fixtures/roof-two-obstacles.kml"));
+    await dialog.getByRole("button", { name: "Open the roof" }).click();
+    await expect(page.getByTestId("roof-how")).toHaveText("From a file", { timeout: RUN });
+    await expect(page.getByTestId("review-note")).toContainText("1 to review");
+    await expect(vitals(page).getByText("Energy was not computed")).toBeVisible({ timeout: RUN });
+    if (isPhone(testInfo.project.name)) await page.getByRole("separator", { name: "Inspector" }).press("End");
+
+    await sceneSettled(page);
+    await expectScreen(page, "studio-import-heights");
   });
 
   test("studio, before a system voltage", async ({ page }) => {

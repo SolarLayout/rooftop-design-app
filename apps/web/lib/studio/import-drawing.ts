@@ -26,3 +26,23 @@ export async function importDrawing({ name, base64, units }: Drawing, { api, pro
   view.getState().setToReview(answer.missing_heights);
   return answer.notes;
 }
+
+const KILOBYTE = 1024;
+
+/** The ending of a file name in capitals, "DXF"; "File" where it has none. */
+function kindWordOf(name: string): string {
+  const dot = name.lastIndexOf(".");
+  return dot > 0 && dot < name.length - 1 ? name.slice(dot + 1).toUpperCase() : "File";
+}
+
+/** What the dialog says of a file it holds before it is read: "DXF · 48 KB · read when the roof is opened". */
+export function heldWordsOf(name: string, bytes: number): string {
+  return `${kindWordOf(name)} · ${Math.max(1, Math.round(bytes / KILOBYTE))} KB · read when the roof is opened`;
+}
+
+/** The base64 of a data URL, as FileReader.readAsDataURL gives one. */
+export function base64OfDataUrl(url: string): string {
+  const comma = url.indexOf(",");
+  if (!url.startsWith("data:") || comma === -1) throw new Error("The file could not be read.");
+  return url.slice(comma + 1);
+}

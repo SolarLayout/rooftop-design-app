@@ -1,4 +1,5 @@
 import type { Page } from "@playwright/test";
+import path from "node:path";
 import { expect, test } from "../fixtures";
 import { A_SCENE, sceneShown } from "../stage";
 
@@ -7,7 +8,8 @@ import { A_SCENE, sceneShown } from "../stage";
 // in the container of the size (decision 9); the card of the roof; the edges and access as fields that
 // commit as fields do (decision 16), each a committed edit that asks for the layout again; the obstacles
 // as a list whose selection is the scene's (decision 10), a new one a draft until its height is typed
-// (decision 15).
+// (decision 15); a drawing imported from the project switcher, with the heights it could not give to
+// review (decision 13).
 
 const RUN = 90_000;
 
@@ -243,5 +245,117 @@ test.describe("the obstacles", () => {
 
     await expect(page.getByTestId("parapet-row")).toHaveCount(0);
     await expect.poll(() => layouts.length, { timeout: RUN }).toBe(2);
+  });
+});
+
+const HEIGHTS_SET = "These obstacles have no height in the file and were set to 1.0 m.";
+const KML = path.resolve(__dirname, "../fixtures/roof-two-obstacles.kml");
+const DXF = path.resolve(__dirname, "../fixtures/roof-with-tank.dxf");
+
+const importDialog = (page: Page) => page.getByRole("dialog", { name: "Import a drawing" });
+const units = (page: Page) => importDialog(page).getByRole("radiogroup", { name: "DXF units" });
+const openTheRoof = (page: Page) => importDialog(page).getByRole("button", { name: "Open the roof" });
+const fileInput = (page: Page) => importDialog(page).locator("input[type=file]");
+
+/** The Studio open on the demo, the project switcher opened and Import a drawing taken: the dialog stands. */
+async function importOpened(page: Page) {
+  await page.goto("/studio/roof");
+  await expect(page.getByTestId("roof-how")).toHaveText("Entered by hand", { timeout: RUN });
+  await page.getByRole("banner").getByRole("button", { name: /Pune demo roof/ }).click();
+  await page.getByRole("menu", { name: "Project" }).getByRole("menuitem", { name: "Import a drawing" }).click();
+  await expect(importDialog(page)).toBeVisible();
+}
+
+test.describe("import a drawing", () => {
+  test("a KML held, then opened: the Studio opens the roof from the file, says the heights it lacked, Review selects the first, a typed height takes it off", async ({ page }) => {
+    const layouts = layoutsOf(page);
+    await importOpened(page);
+    const dialog = importDialog(page);
+    await expect(dialog.getByText("Drop the drawing here")).toBeVisible();
+    await expect(dialog.getByText("KMZ, KML or DXF")).toBeVisible();
+    await expect(units(page)).toHaveAttribute("aria-disabled", "true");
+    await expect(units(page).getByRole("radio", { checked: true })).toHaveCount(0);
+    await expect(openTheRoof(page)).toHaveAttribute("aria-disabled", "true");
+
+    await fileInput(page).setInputFiles(KML);
+
+    await expect(dialog.locator("code", { hasText: "roof-two-obstacles.kml" })).toBeVisible();
+    await expect(dialog.getByText("KML · 1 KB · read when the roof is opened")).toBeVisible();
+    await expect(dialog.getByRole("button", { name: "Choose another" })).toBeVisible();
+    await expect(units(page)).toHaveAttribute("aria-disabled", "true");
+    await expect(openTheRoof(page)).not.toHaveAttribute("aria-disabled", "true");
+
+    await openTheRoof(page).click();
+
+    await expect(dialog).toBeHidden({ timeout: RUN });
+    await expect(page).toHaveURL(/\/studio\/roof$/);
+    await expect(page.getByTestId("roof-how")).toHaveText("From a file", { timeout: RUN });
+    await expect(page.getByTestId("roof-count")).toHaveText("4 corners · 2 obstacles");
+    await expect(page.getByTestId("roof-file")).toHaveText("roof-two-obstacles.kml");
+    const note = page.getByTestId("review-note");
+    await expect(note).toContainText(HEIGHTS_SET);
+    await expect(note).toContainText("1 to review");
+    await expect(row(page, "Vent").getByRole("img", { name: "Height to review" })).toBeVisible();
+    await expect(row(page, "Tank").getByRole("img")).toHaveCount(0);
+    await expect(onTheRoof(page, "Vent")).toContainText("1.0 m high, height to review");
+    await expect.poll(() => layouts.length, { timeout: RUN }).toBeGreaterThan(0);
+    const before = layouts.length;
+
+    await note.getByRole("button", { name: "Review" }).click();
+
+    await expect(card(page).getByRole("textbox", { name: "Name" })).toHaveValue("Vent");
+    const height = card(page).getByRole("textbox", { name: "Height", exact: true });
+    await expect(height).toHaveValue("1.00");
+    await expect(height).toBeFocused();
+    await expect(card(page).getByTestId("review-hint")).toHaveText("Enter the real height. The file gave none; 1.0 m stands until you do");
+    await expect(card(page).getByRole("button", { name: "Next" })).toHaveCount(0);
+
+    await height.fill("0.8");
+    await height.press("Enter");
+
+    await expect(note).toHaveCount(0);
+    await expect(card(page).getByTestId("review-hint")).toHaveCount(0);
+    await expect(onTheRoof(page, "Vent")).toContainText("0.8 m high, selected");
+    await expect(onTheRoof(page, "Vent")).not.toContainText("height to review");
+    await expect.poll(() => layouts.length, { timeout: RUN }).toBe(before + 1);
+    expect(layouts[layouts.length - 1].roof.obstacles.find((obstacle) => obstacle.name === "Vent")).toMatchObject({ height: 0.8 });
+  });
+
+  test("a DXF: the units can be chosen, m suggested; without a place the API refuses it, in its words", async ({ page }) => {
+    await importOpened(page);
+
+    await fileInput(page).setInputFiles(DXF);
+
+    await expect(importDialog(page).getByText(/DXF · \d+ KB · read when the roof is opened/)).toBeVisible();
+    await expect(units(page)).not.toHaveAttribute("aria-disabled", "true");
+    await expect(units(page).getByRole("radio", { name: "m", exact: true })).toBeChecked();
+    await units(page).getByRole("radio", { name: "mm" }).click();
+    await expect(units(page).getByRole("radio", { name: "mm" })).toBeChecked();
+
+    await openTheRoof(page).click();
+
+    const field = importDialog(page).getByTestId("file-drop");
+    await expect(field).toContainText("This file was not loaded", { timeout: RUN });
+    await expect(field).toContainText("A DXF drawing does not say where the roof is. Give its latitude and longitude.");
+    await expect(field.getByRole("button", { name: "Choose another" })).toBeVisible();
+    await expect(openTheRoof(page)).toHaveAttribute("aria-disabled", "true");
+    await expect(page).toHaveURL(/\/studio\/roof$/);
+    await expect(page.getByTestId("roof-how")).toHaveText("Entered by hand");
+  });
+
+  test("a file that is no drawing is refused, in the words of the API; the design of before stays", async ({ page }) => {
+    await importOpened(page);
+
+    await fileInput(page).setInputFiles({ name: "notes.txt", mimeType: "text/plain", buffer: Buffer.from("not a roof") });
+    await expect(importDialog(page).getByText("TXT · 1 KB · read when the roof is opened")).toBeVisible();
+    await openTheRoof(page).click();
+
+    const field = importDialog(page).getByTestId("file-drop");
+    await expect(field).toContainText("notes.txt is not a KMZ, KML or DXF file. Choose a file with one of these endings.", { timeout: RUN });
+
+    await importDialog(page).getByRole("button", { name: "Cancel" }).click();
+
+    await expect(importDialog(page)).toBeHidden();
+    await expect(page.getByTestId("roof-how")).toHaveText("Entered by hand");
   });
 });

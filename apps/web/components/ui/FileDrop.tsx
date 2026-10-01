@@ -8,9 +8,11 @@ import { Icon } from "./Icon";
 import { ProgressRing } from "./ProgressRing";
 import { StatusMark } from "./StatusMark";
 
-/** What the field is told by who uses it: it waits, the file is read, or the file was refused. */
+/** What the field is told by who uses it: it waits, a file is held before it is read, the file is read, or the file was refused. */
 export type FileDropState =
   | { kind: "rest" }
+  /** A file is held and will be read later: its name, and `detail` says what it is and when it is read. */
+  | { kind: "held"; file: string; detail: string }
   | { kind: "reading"; file: string }
   /** `reason` is in the words of who refused: of the engine. */
   | { kind: "refused"; reason: string };
@@ -32,7 +34,7 @@ type Props = {
   className?: string;
 };
 
-type Look = { surface: string; mark: ReactNode; colourOfMark: string; title: string; detail: ReactNode; button: string | null };
+type Look = { surface: string; mark: ReactNode; colourOfMark: string; title: ReactNode; detail: ReactNode; button: string | null };
 
 // On phone the button stands under the words and is as wide as the field; from tablet on it stands at their right.
 const FRAME = "flex min-h-22 flex-col justify-center gap-3.5 rounded-row border px-4.5 py-3 tablet:flex-row tablet:items-center";
@@ -40,7 +42,7 @@ const FRAME = "flex min-h-22 flex-col justify-center gap-3.5 rounded-row border 
 /**
  * A field that takes one file, by a drop or through the file chooser: the button makes it usable
  * without dragging, and by keyboard. It gives the file to who uses it; what becomes of the file it is
- * told.
+ * told: held for later, read, or refused.
  */
 export function FileDrop({ title, detail, whenOver, accept, state, onFile, shownAs, className }: Props) {
   const input = useRef<HTMLInputElement>(null);
@@ -90,6 +92,16 @@ export function FileDrop({ title, detail, whenOver, accept, state, onFile, shown
         title: "Let go to load the file",
         detail: whenOver,
         button: null,
+      };
+    }
+    if (state.kind === "held") {
+      return {
+        surface: "border-line bg-surface-2",
+        mark: <Icon name="file" size={20} stroke="light" />,
+        colourOfMark: "text-accent",
+        title: <code className="type-value-s">{state.file}</code>,
+        detail: state.detail,
+        button: "Choose another",
       };
     }
     if (state.kind === "reading") {
