@@ -8,6 +8,7 @@ import { LensNav } from "./LensNav";
 import { ArrayInspector } from "@/components/studio/ArrayInspector";
 import { RoofInspector } from "@/components/studio/RoofInspector";
 import { Stage } from "@/components/studio/Stage";
+import { useHistoryKeys } from "@/components/studio/use-history-keys";
 import { useSize } from "@/components/studio/use-size";
 import { NotBuiltYet } from "./NotBuiltYet";
 import { useNotesOfTheShell } from "./Shell";
@@ -33,6 +34,8 @@ export function Studio({ lens }: Props) {
 
   // The Studio comes back to the lens that was opened last.
   useEffect(() => view.getState().showLens(lens), [view, lens]);
+  // Cmd or Ctrl with Z undoes the last committed edit, in every lens.
+  useHistoryKeys();
 
   return (
     <div className="relative flex min-h-0 grow flex-col desktop:flex-row">
