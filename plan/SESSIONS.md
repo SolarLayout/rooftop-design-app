@@ -56,6 +56,11 @@ previous one remembers. Everything a session needs is in the repo.
   the summary says so; `bun check --fresh` runs everything and rebuilds the caches. Push, open a pull request
   with `gh`, merge when the check is green.
 - A new decision gets a number in `plan/README.md` in the same pull request that acts on it.
+- Every pull request that changes a screen carries its screenshots against the approved boards: for each changed
+  screen a table with the board (`docs/design/previews`) over what is built (the baseline in
+  `e2e/baselines/darwin/<size>/` at the head commit), on desktop, tablet and phone, and a line on what does not
+  match yet and where it comes (the owner, 2026-10-01; #38 is the example). Baselines with the imagery are made in
+  the main working tree, which holds the map key; a worktree draws the plain ground.
 - Show the owner each finished part with what was built, what was decided, and what needs approval.
 
 ## End of a session
