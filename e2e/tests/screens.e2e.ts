@@ -631,7 +631,7 @@ test.describe("the shell", () => {
   // Performance with the demo (the board "Performance" on three sizes): the header, the KPIs and the summary of option A.
   test("performance", async ({ page }, testInfo) => {
     await page.goto("/performance");
-    await expect(page.getByTestId("kpi-energy").getByText("617.8")).toBeVisible({ timeout: RUN });
+    await expect(page.getByTestId("kpi-energy").getByText("617.8 MWh")).toBeVisible({ timeout: RUN });
     await settled(page, testInfo.project.name);
 
     await expectWholeScreen(page, "performance");
