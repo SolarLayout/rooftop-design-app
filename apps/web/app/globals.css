@@ -826,6 +826,10 @@
   Numbers of the data: a share of the width around, from 0 to 1, which a component sets with measures()
   (components/ui/measures.ts). Sizes, colours and shadows are tokens and never come this way.
 */
+/* A chip moved sideways from where it stands, in pixels: the callout held inside the stage on phone. */
+@utility nudged-x {
+  margin-left: var(--x);
+}
 @utility left-at {
   left: calc(var(--at) * 100%);
 }

@@ -11,12 +11,12 @@ export const ROOM_ABOVE = 160;
 
 /**
  * On phone the stage has no title: over its dot the callout needs to be clear of the time and the view controls
- * alone (48), with its line of 40 and its chip of about 60.
+ * alone (48), with its line of 24 and its chip of about 78, its words wrapping in 264.
  */
-export const ROOM_ABOVE_ON_PHONE = 148;
+export const ROOM_ABOVE_ON_PHONE = 150;
 
-/** Pixels the callout needs under its dot: its line and its chip, and clear of the legend and the attribution at the stage's bottom. */
-export const ROOM_BELOW = 154;
+/** Pixels the callout needs under its dot on phone: its line and its chip, and clear of the legend and the attribution at the stage's bottom. */
+export const ROOM_BELOW = 146;
 
 export type CalloutPlace = "above" | "below" | null;
 
@@ -37,4 +37,18 @@ export function calloutPlaceOf({ y, size, hasHandles, stageHeight }: Of): Callou
     return y >= ROOM_ABOVE_ON_PHONE ? "above" : "below";
   }
   return y < ROOM_ABOVE ? "below" : "above";
+}
+
+/** The chip of a callout on phone: as wide as the board draws it, its words wrapping (the board "Strings on the roof"). */
+export const CHIP_ON_PHONE = 264;
+const MARGIN = 8;
+
+/**
+ * How far the chip stands from its dot, sideways, on phone: centred on it where it fits, else shifted inward so
+ * that it stays 8 inside the stage; the line and the dot stay on their object.
+ */
+export function chipShiftOf({ x, stageWidth }: { x: number; stageWidth: number }): number {
+  const half = CHIP_ON_PHONE / 2;
+  const centre = Math.min(Math.max(x, MARGIN + half), stageWidth - MARGIN - half);
+  return centre - x;
 }

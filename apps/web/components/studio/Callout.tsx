@@ -12,7 +12,7 @@ import { calloutOfObstacle } from "@/lib/scene/obstacles";
 import { calloutOfModule, calloutOfRoof, calloutOfString } from "@/lib/scene/pick";
 import { categoryOf, seriesOf } from "@/lib/scene/string-colours";
 import type { Swatch } from "@/lib/scene/string-legend";
-import { calloutPlaceOf } from "@/lib/scene/callout-place";
+import { calloutPlaceOf, chipShiftOf } from "@/lib/scene/callout-place";
 import { cameraOf, labelsOf, type StageStore } from "@/lib/scene/stage-store";
 import { projectOf } from "@/lib/stores/project-store";
 import { shadeCalloutOf } from "@/lib/scene/shade-map";
@@ -83,7 +83,9 @@ export function Callout({ stage }: Props) {
   const layout = useResults(layoutOf);
   const labels = useStore(stage, labelsOf);
   const hung = labels.find((label) => label.kind === "callout");
-  const stageHeight = useStore(stage, cameraOf)?.height;
+  const camera = useStore(stage, cameraOf);
+  const stageHeight = camera?.height;
+  const stageWidth = camera?.width;
   const size = useSize();
   const map = useShadeMapShown();
   const design = useResults(designOf);
@@ -97,6 +99,8 @@ export function Callout({ stage }: Props) {
   if (!words || size === null) return null;
   const place = calloutPlaceOf({ y: hung.y, size, hasHandles: labels.some((label) => label.kind === "handle"), stageHeight });
   if (place === null) return null;
+  const isPhone = size === "phone";
+  const shift = isPhone ? chipShiftOf({ x: hung.x, stageWidth: stageWidth ?? hung.x * 2 }) : 0;
 
   return (
     <div className="pointer-events-none absolute inset-0 z-stage-overlay overflow-hidden contain-layout">
@@ -105,20 +109,23 @@ export function Callout({ stage }: Props) {
           hangs under it. */}
       <div className="placed size-0" style={measures({ x: hung.x, y: hung.y })}>
         <span className="absolute top-0 left-0 block size-2.25 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent" />
-        <span className={classNames("absolute left-0 block h-10 w-px -translate-x-1/2 bg-accent", place === "above" ? "bottom-0" : "top-0")} />
+        <span className={classNames("absolute left-0 block w-px -translate-x-1/2 bg-accent", isPhone ? "h-6" : "h-10", place === "above" ? "bottom-0" : "top-0")} />
         <div
           data-testid="stage-callout"
           role="status"
           className={classNames(
             "absolute left-0 flex -translate-x-1/2 flex-col gap-0.5 rounded-row border border-note-line bg-surface-1 px-3.5 py-2.5 shadow-float",
-            place === "above" ? "bottom-10" : "top-10",
+            place === "above" ? (isPhone ? "bottom-6" : "bottom-10") : isPhone ? "top-6" : "top-10",
+            // On phone the chip is the board's 264, its words wrapping, held inside the stage (plan/phase-07-plan.md, step 22).
+            isPhone && "nudged-x w-66",
           )}
+          style={measures({ x: shift })}
         >
-          <span className="flex items-center gap-2 type-small font-medium whitespace-nowrap text-text">
+          <span className={classNames("flex items-center gap-2 type-small font-medium text-text", !isPhone && "whitespace-nowrap")}>
             {words.swatch === undefined ? null : <span aria-hidden="true" className={classNames("block size-3 shrink-0 rounded-key", swatchClassOf(words.swatch))} />}
             {words.title}
           </span>
-          <span className={classNames("whitespace-nowrap text-text-2", words.swatch === undefined ? "type-caption" : "type-value-xs")}>{words.detail}</span>
+          <span className={classNames("text-text-2", !isPhone && "whitespace-nowrap", words.swatch === undefined ? "type-caption" : "type-value-xs")}>{words.detail}</span>
         </div>
       </div>
     </div>

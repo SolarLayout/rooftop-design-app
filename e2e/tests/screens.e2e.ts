@@ -563,7 +563,7 @@ test.describe("the shell", () => {
     await expect(page.getByTestId("series-range").filter({ visible: true })).toHaveAttribute("data-state", "updating", { timeout: RUN });
     await page.getByRole("radiogroup", { name: "System voltage" }).filter({ visible: true }).getByRole("radio", { name: "1000 V" }).blur();
     await sceneSettled(page);
-    await expectScreen(page, "studio-strings-updating");
+    await expectWholeScreen(page, "studio-strings-updating");
   });
 
   test("studio, before a system voltage", async ({ page }) => {
