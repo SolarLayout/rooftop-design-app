@@ -134,6 +134,14 @@ export const DOCUMENT = {
   chosen_option: "29x22x1",
   losses: LOSSES,
 } as unknown as Project;
+/** The twelve months of option A, as the engine gave them; the other options carry the same, which the tests do not read. */
+export const MONTHLY_MWH = [61.97682146826141, 58.79364133154329, 68.3587805746761, 64.06454328710302, 54.884438240387944, 46.89823325447351, 31.498840316903788, 38.46397750953585, 37.485927357567085, 53.41040182150799, 53.45558848406465, 48.54934374624629];
+
+/** The 25 years of option A at the default degradation of 0.5 %/yr. */
+export const YEARS_MWH = [617.8405373922709, 614.7513347053095, 611.677578031783, 608.6191901416241, 605.5760941909159, 602.5482137199614, 599.5354726513616, 596.5377952881047, 593.5551063116642, 590.5873307801058, 587.6343941262054, 584.6962221555743, 581.7727410447965, 578.8638773395725, 575.9695579528747, 573.0897101631102, 570.2242616122946, 567.3731403042332, 564.5362746027121, 561.7135932296984, 558.90502526355, 556.1105001372323, 553.3299476365461, 550.5632978983633, 547.8104814088715];
+
+/** The same at 0.70 %/yr: year 1 unchanged, the rest lower. */
+export const YEARS_MWH_AT_0_7 = [617.8405373922709, 613.515653630525, 609.2210440551113, 604.9564967467255, 600.7218012694984, 596.5167486606119, 592.3411314199877, 588.1947435000477, 584.0773802955474, 579.9888386334786, 575.9289167630442, 571.8974143457029, 567.894132445283, 563.918873518166, 559.9714414035388, 556.0516413137141, 552.1592798245181, 548.2941648657464, 544.4561057116862, 540.6449129717043, 536.8603985809025, 533.1023757908362, 529.3706591603003, 525.6650645461782, 521.985409094355];
 
 type Figures = {
   key: string;
@@ -169,6 +177,8 @@ const option = ({ mwh, ...figures }: Figures): DesignOption =>
       steps: STEPS,
       co2_t: 442.37382477286593,
       total_25_years_mwh: 14553.821678088736,
+      monthly_mwh: MONTHLY_MWH,
+      years_mwh: YEARS_MWH,
       p_values: [
         { level: 50, mwh: mwh[0] },
         { level: 75, mwh: mwh[1] },
@@ -228,6 +238,12 @@ export const BEFORE_A_VOLTAGE = {
     message: "600, 1000 or 1500 V. Nothing is sized until you choose.",
   },
 } as DesignResult;
+
+/** A's energy with a degradation of 0.70 %/yr entered: year 1 the same, year 25 and the total lower. */
+export const DEGRADATION_0_7 = {
+  ...A,
+  energy: { ...A.energy, years_mwh: YEARS_MWH_AT_0_7, total_25_years_mwh: 14215.575165939481 },
+} as DesignOption;
 
 /** A's energy with the levels P50, P90 and P99 asked for. */
 export const LEVELS_50_90_99 = {

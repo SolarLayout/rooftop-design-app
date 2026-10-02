@@ -2,7 +2,7 @@
 // docs/design/guidelines.md, "States"; the board "Performance, states"). The words of a run on its way, of the first
 // load and of a failure are the vitals' (components/shell/vitals-view.ts), not written a second time. Pure.
 import { ENERGY_NOT_COMPUTED, ENERGY_NOT_UPDATED, openingOf, TRY_AGAIN, UPDATING_ENERGY } from "../../components/shell/vitals-view";
-import type { DesignProgress, DesignResult, LayoutReadouts } from "../api";
+import type { DesignProgress, DesignResult, Energy, LayoutReadouts } from "../api";
 import { pathOfLens } from "../routes";
 import type { Failure, Status } from "../stores/results-store";
 import { headerOf, type HeaderView } from "./header";
@@ -19,8 +19,8 @@ export type FailedRow = { title: string; detail: string; action: string; message
 /** Why there are no options, in the API's words, and where that is decided. */
 export type Decision = { title: string; message: string; path: string };
 
-/** The figures of the chosen option. */
-export type Values = { kpis: KpisView; chain: ChainView; summary: SummaryRowView[] };
+/** The figures of the chosen option; its energy whole, for the charts. */
+export type Values = { kpis: KpisView; chain: ChainView; summary: SummaryRowView[]; energy: Energy };
 
 export type PageView =
   /** No value was ever there: skeletons in every place of a value, and what is opened under the title. */
@@ -45,7 +45,7 @@ type Asked = {
 
 function valuesOf(design: DesignResult): Values | null {
   const option = design.options.find((one) => one.key === design.chosen_option);
-  return option ? { kpis: kpisOf(option), chain: chainViewOf(option, design.equipment.module), summary: summaryRowsOf(option) } : null;
+  return option ? { kpis: kpisOf(option), chain: chainViewOf(option, design.equipment.module), summary: summaryRowsOf(option), energy: option.energy } : null;
 }
 
 function decisionOf(design: DesignResult): Decision | null {

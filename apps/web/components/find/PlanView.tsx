@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { classNames } from "@/components/ui/class-names";
 import { SCALE_BAR_MAX } from "@/components/ui/design-numbers";
 import { measures } from "@/components/ui/measures";
 import { shown } from "@/components/ui/number-entry";
 import { StatusMark } from "@/components/ui/StatusMark";
+import { useSize } from "@/components/ui/use-size";
 import { scaleBarOf, type ScaleBar } from "@/lib/map/scale-bar";
 import { edgesOf, midpointsOf, type XY } from "@/lib/outline/measure";
 import { NorthIcon } from "./NorthIcon";
@@ -28,22 +29,6 @@ const GRID_M = 10;
 const EXTENT_MIN_M = 20;
 
 const LABEL = "placed z-stage-overlay -translate-x-1/2 -translate-y-1/2 rounded-seg bg-ground px-2.25 py-0.75 type-value-small font-medium text-text shadow-tooltip select-none";
-
-/** The size of an element, followed as it changes. */
-function useSize(element: React.RefObject<HTMLDivElement | null>): { width: number; height: number } | null {
-  const [size, setSize] = useState<{ width: number; height: number } | null>(null);
-  useEffect(() => {
-    const node = element.current;
-    if (!node) return;
-    const observer = new ResizeObserver(([entry]) => {
-      const { width, height } = entry.contentRect;
-      setSize((was) => (was?.width === width && was?.height === height ? was : { width, height }));
-    });
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [element]);
-  return size;
-}
 
 /**
  * The stage without a map: the plan of the roof entered by hand, north up on a grid of 10 m, with its

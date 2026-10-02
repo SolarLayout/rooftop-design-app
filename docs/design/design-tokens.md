@@ -275,6 +275,7 @@ Reference widths: 390, 834, 1440.
 |---|---|---|
 | `--radius-swatch` | `3px` | The bars of the loss chain and the swatches of its legend |
 | `--radius-key` | `4px` | The box around a key in a tooltip |
+| `--radius-bar-end` | `4px` | The data end of a bar in a chart; its end on the baseline is square |
 | `--radius-xs` | `6px` | Inputs inside tables and the loss chain, format badges |
 | `--radius-seg` | `7px` | Item inside a segmented control |
 | `--radius-item` | `8px` | Rows of a list that floats, tooltips, the action of a toast |
@@ -343,6 +344,8 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--opacity-updating` | `0.55` | A value of before while the new one is on its way; a skeleton at the low point of its breath |
 | `--opacity-hint` | `0.35` | A hint on the map: the footprints that are known, while Detect building is the tool |
 | `--opacity-band` | `0.55` | The band of the series lengths that fit, in `color-ok` (components.md, "Series range bar") |
+| `--opacity-wash` | `0.14` | The wash under the line of a chart: the series colour at this opacity |
+| `--brightness-lift` | `1.14` | A bar of a chart under the pointer or with the keyboard focus: lifted |
 
 ## Focus
 
@@ -395,6 +398,10 @@ and the file equal.
 | `STEM_HEIGHT_TOUCH` | `52` | The same on phone and tablet |
 | `TIME_REST` | `150` | Milliseconds the time of the sun must stand still before the engine's shadow outlines are asked for it: a drag of the timeline passes forty quarter hours |
 | `DIM_TOWARD_STAGE` | `55` | Percent that the glass of every other position is mixed toward the stage's colour while a string is traced or selected (decision 13 of plan/phase-07-plan.md) |
+| `CHART_LINE_TOP` | `14` | Pixels between the top of the plot of the 25 years and the highest year, so that the marker and its ring have room |
+| `CHART_LINE_BAND` | `45` | Pixels the line of the 25 years falls from the highest year to the lowest: it is fitted to the run's own extremes, not to zero |
+| `MARKER_RADIUS` | `4` | Pixels: the marker of a point under the pointer is 8 across |
+| `MARKER_RING` | `2` | Pixels of the ring in the surface colour around a marker, so that it stays legible on the line |
 
 ## Layers
 
@@ -425,6 +432,7 @@ layer of their own.
 | `--shadow-*`, `--halo-*` | `shadow-` and the name | `shadow-raised`, `shadow-halo-focus`, `shadow-halo-selected` |
 | `--ring-focus`, `--ring-focus-offset` | `focus-ring` | on every control |
 | `--opacity-disabled`, `--opacity-updating` | `opacity-disabled`, `opacity-updating` | `disabled:opacity-disabled` |
+| `--opacity-wash`, `--brightness-lift` | `opacity-wash`, `lifted` | on the wash under the line of a chart; on the bar that is under the pointer |
 | `--duration-spin`, `--duration-breathe` | `turning`, `breathing` | on a ring that turns, on a skeleton |
 | `--duration-pulse-saved`, `--halo-saved`, `--halo-saved-out` | `pulsing` | on the saved dot |
 | `--duration-pulse-corner`, `--halo-corner`, `--halo-corner-out` | `pulsing-corner` | on the corner being edited |
@@ -432,7 +440,7 @@ layer of their own.
 | `--ease-out`, `--duration-*` | `ease-out`, `duration-` and the name | `duration-press` |
 | `--duration-press`, `--ease-out`, `--shift-press`, `--scale-press` | `press-motion`, `raised-by-hover`, `lowered-by-press` | on every control that is pressed |
 | `--duration-panel`, `--ease-out` | `sheet-motion` | on a sheet that goes to its stop |
-| `--stroke-*` | `stroke-icon`, `stroke-icon-light`, `stroke-tick` | on the `svg` of an icon |
+| `--stroke-*` | `stroke-icon`, `stroke-icon-light`, `stroke-tick`; `stroke-chart`, `stroke-hair` | on the `svg` of an icon; on the line, the gridlines and the crosshair of a chart |
 | `--z-*` | `z-` and the name | `z-float` |
 | `--border-*` | `border-` and the name; `border-b-tab` for the line under a tab | `border-handle-touch desktop:border-handle`, `border-dot`, `border-corner`, `border-outline` |
 | `--shadow-text-on-imagery` | `on-imagery` | on text that stands on the satellite imagery |
@@ -466,3 +474,5 @@ steps of `--spacing`. No emoji. No filled icons except the play triangle and the
 | `--stroke-icon-light` | `1.7` | Stroke of the icons of the navigation, which are larger |
 | `--stroke-tick` | `2.4` | Stroke of the tick |
 | `--stroke-pause` | `3.4` | The two bars of Pause on the round play button: as heavy as the play triangle beside them |
+| `--stroke-chart` | `2` | The line of a chart |
+| `--stroke-hair` | `1` | A gridline, the baseline and the crosshair of a chart: a hairline |

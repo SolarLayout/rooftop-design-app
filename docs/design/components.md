@@ -76,6 +76,9 @@ In code: `Tabs`. It shares the keys of `Segmented` (`choice-keys.ts`).
   the panel.
 - A row that is too long scrolls sideways and shows no bar; part of the next tab is seen. The tab that is
   taken is brought into view.
+- The row can stand in the line of a title (`head`: the title, and what stands after the row, as a unit or a
+  field): on desktop the title at the left, the row at the right with the rest after it; on phone and tablet the
+  title's line holds the rest, and the row stands under it across the width (the chart cards of Performance).
 
 ## Switch
 44 by 26, radius full. On: accent track, knob accent-ink. Off: line-strong track, knob text-2. Knob 20, inset 3,
@@ -536,6 +539,12 @@ In code: `Tooltip`, around its control. Radius `radius-item`, the key in `radius
 - It goes when the pointer leaves, when the focus leaves, when the control is pressed, and with Escape.
 - The control is described by it (`aria-describedby`); its name is its own.
 
+The value of a chart under the pointer, the finger or the keyboard focus (the board "Charts, tooltip and table"; plan
+phase 8, decision 18) is a tooltip of two lines, padding 4 10: the value first, in mono 12 Geist Mono 500 in text
+("68.4 MWh · 191 kWh/kWp"), then what it is of in `text-caption` text-2 ("Mar"). It stands over the bar or the marker,
+8 from it, at once; on touch a tap brings it, and a scroll takes it away. In code: `ValueTooltip`. It is never the
+only place: the Table tab of the chart holds every value.
+
 ## Toast
 `surface-1`, border `line-strong`, radius `radius-row`, `shadow-float`, 48 high or more, padding 8 8 8 14,
 gap 10. A status mark (tick 18 or note 20), the words, then an action in accent, Geist 500 (height 32), or a
@@ -577,6 +586,9 @@ In code: `Table`; a row as a card in `table-cells.ts`.
 - A column of words rather than figures (`words`: the summary of Performance) is in Geist at the left; on a card its
   value stands under the title across the width, without its head, since the title says the row (the board
   "Performance" on phone).
+- The row that sums the others up (`total`: the year under the months, the 25 years under six of them) stands over a
+  line `line`, without a line under it, its name in Geist 600 and its figures in Geist Mono 500; as a card it is one
+  more card, last.
 
 ## Progress ring
 | Form | Size | Use |

@@ -20,6 +20,7 @@ describe("the design (plan/phase-08-plan.md, decision 15)", () => {
     expect(view.values.summary).toHaveLength(14);
     expect(view.values.chain.rows).toHaveLength(21);
     expect(view.values.chain.run.module.is_bifacial).toBe(true);
+    expect(view.values.energy.monthly_mwh).toHaveLength(12);
     expect(view.isDimmed).toBe(false);
     expect(view.run).toBeNull();
   });
