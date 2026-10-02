@@ -862,6 +862,54 @@
 @utility h-span {
   height: calc(var(--span) * 100%);
 }
+/*
+  A row of the loss chain (components.md, "Loss chain"): on phone the label on a line of its own, then the field
+  with the change and the running total at the right, then the track across the width; from tablet up one line
+  of label, field, change, track and running total. Under the row, what the field says and the line of a
+  default or a note. Each cell names its place with `area-*`.
+*/
+@utility loss-row {
+  display: grid;
+  grid-template-columns: var(--columns-loss-chain-phone);
+  grid-template-areas:
+    "label label label"
+    "field change total"
+    "track track track"
+    "said said said"
+    "under under under";
+  @variant tablet {
+    grid-template-columns: var(--columns-loss-chain-tablet);
+    grid-template-areas:
+      "label field change track total"
+      ". said said said said"
+      ". under under under under";
+  }
+  @variant desktop {
+    grid-template-columns: var(--columns-loss-chain);
+  }
+}
+@utility area-label {
+  grid-area: label;
+}
+@utility area-field {
+  grid-area: field;
+}
+@utility area-change {
+  grid-area: change;
+}
+@utility area-track {
+  grid-area: track;
+}
+@utility area-total {
+  grid-area: total;
+}
+@utility area-said {
+  grid-area: said;
+}
+@utility area-under {
+  grid-area: under;
+}
+
 /* A place on the screen, in pixels, for what floats in the top layer of the browser. */
 @utility placed {
   position: fixed;
