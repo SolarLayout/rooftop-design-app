@@ -5,13 +5,13 @@ import { useThree } from "@react-three/fiber";
 import { useEffect, useRef, type ComponentRef } from "react";
 import { OrthographicCamera as Orthographic, TOUCH } from "three";
 import { useView } from "@/components/shell/stores";
-import { distanceLimitsOf, nearAndFarOf, planZoomOf, presetPositionOf, zoomLimitsOf, type Sun } from "@/lib/scene/camera";
+import { distanceLimitsOf, nearAndFarOf, planZoomOf, presetPositionOf, zoomLimitsOf } from "@/lib/scene/camera";
 import { cameraOf, cameraRequestOf, northRequestOf } from "@/lib/stores/view-store";
+import { useSun } from "./use-sun";
 
 type Props = {
   /** The roof's radius about the origin of the scene. */
   radius: number;
-  sun: Sun | null;
 };
 
 /** The pole is clamped this much above the roof plane, in radians: the camera never goes below it. */
@@ -37,7 +37,8 @@ function fitPlan(camera: Orthographic, zoom: number): void {
  * north up, that pans and zooms but does not turn (decision 17). The north control turns the orbit so
  * that the camera stands south of what it looks at, keeping its distance and its height.
  */
-export function CameraRig({ radius, sun }: Props) {
+export function CameraRig({ radius }: Props) {
+  const sun = useSun();
   const camera = useThree((state) => state.camera);
   const get = useThree((state) => state.get);
   const invalidate = useThree((state) => state.invalidate);

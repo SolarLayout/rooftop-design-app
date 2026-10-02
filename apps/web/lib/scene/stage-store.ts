@@ -26,12 +26,18 @@ export type StageState = {
   over: Record<string, Cursor>;
   /** The camera of the last drawn frame; null before the first. */
   camera: CameraOfTheStage | null;
+  /**
+   * How many times the matrices of the modules were written: in development only, the counter behind
+   * "scrubbing never rebuilds the modules" (plan/phase-06-plan.md, decision 6). Production counts nothing.
+   */
+  moduleWrites: number;
   setLabels: (labels: StageLabel[]) => void;
   setBearing: (bearingDeg: number) => void;
   setGround: (ground: Ground) => void;
   /** A thing of the scene says that the pointer came over it and what cursor it wants; null when the pointer left. */
   setOver: (name: string, cursor: Cursor | null) => void;
   setCamera: (camera: Camera, width: number, height: number) => void;
+  countModuleWrite: () => void;
 };
 
 export type StageStore = ReturnType<typeof createStageStore>;
@@ -46,6 +52,7 @@ export function createStageStore() {
     ground: "none",
     over: {},
     camera: null,
+    moduleWrites: 0,
     setLabels(labels) {
       if (!sameLabels(get().labels, labels)) set({ labels });
     },
@@ -66,6 +73,7 @@ export function createStageStore() {
       if (before && before.camera === camera && before.width === width && before.height === height) return;
       set({ camera: { camera, width, height } });
     },
+    countModuleWrite: () => set((state) => ({ moduleWrites: state.moduleWrites + 1 })),
   }));
 }
 
@@ -73,6 +81,7 @@ export const labelsOf = (state: StageState) => state.labels;
 export const bearingDegOf = (state: StageState) => state.bearingDeg;
 export const groundOf = (state: StageState) => state.ground;
 export const cameraOf = (state: StageState) => state.camera;
+export const moduleWritesOf = (state: StageState) => state.moduleWrites;
 
 /** The cursor to show over the stage: the strongest of what is under the pointer. */
 export function cursorOf(state: StageState): Cursor {

@@ -91,7 +91,7 @@ export async function sceneShown(page: Page): Promise<void> {
 export async function sceneSettled(page: Page): Promise<void> {
   await sceneShown(page);
   await expect(page.getByTestId("on-the-roof-modules")).toContainText("modules", { timeout: A_SCENE });
-  await expect(page.getByTestId("on-the-roof-sun")).toContainText("Sun", { timeout: A_SCENE });
+  await expect(page.getByTestId("on-the-roof-sun")).toContainText("solar time", { timeout: A_SCENE });
   await expect(page.getByTestId("on-the-roof-ground")).toContainText("The ground is", { timeout: A_SCENE });
 }
 

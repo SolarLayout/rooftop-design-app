@@ -12,11 +12,13 @@ import { ProgressRing } from "@/components/ui/ProgressRing";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
 import { calloutOf } from "@/lib/scene/keepout";
 import { calloutOfObstacle, wordsOf } from "@/lib/scene/obstacles";
-import { createStageStore, cursorOf, groundOf, type Cursor, type StageStore } from "@/lib/scene/stage-store";
+import { createStageStore, cursorOf, groundOf, moduleWritesOf, type Cursor, type StageStore } from "@/lib/scene/stage-store";
 import type { Lens } from "@/lib/routes";
 import { projectOf } from "@/lib/stores/project-store";
-import { layoutOf, readoutsOf, sunOf } from "@/lib/stores/results-store";
-import { draftOf, selectionOf, toReviewOf } from "@/lib/stores/view-store";
+import { layoutOf, readoutsOf, sunDayOf } from "@/lib/stores/results-store";
+import { draftOf, selectionOf, sunTimeOf, toReviewOf } from "@/lib/stores/view-store";
+import { readOutOf, sunLineOf } from "@/lib/studio/sun-time";
+import { useSun } from "@/components/scene/use-sun";
 import { Callout } from "./Callout";
 import { Handles } from "./Handles";
 import { Labels } from "./Labels";
@@ -24,6 +26,8 @@ import { LayoutFailed } from "./LayoutFailed";
 import { PlanFallback } from "./PlanFallback";
 import { lineOf } from "./stage-view";
 import { useEscapeClears } from "./use-escape-clears";
+import { TimePill, SunTimeline } from "./Time";
+import { useSize } from "./use-size";
 import { ViewControls } from "./ViewControls";
 
 // The scene draws with WebGL in the browser alone: it is loaded there, never on the server.
@@ -40,8 +44,20 @@ const CONTEXT_LOST = "The browser stopped drawing the roof in 3D.";
 /** The view controls stand at the top right of the stage, as the boards of each size place them. */
 const VIEW_CONTROLS = "top-1 right-3 tablet:top-4 tablet:right-5 desktop:top-5";
 
+/**
+ * The time on the stage (the boards "Time on the stage" and "Studio, Sun lens"): the pill of every lens at the
+ * top left on phone, at the bottom left of the stage on tablet, over the vitals on desktop (the panel's 20,
+ * the vitals' 78 and 18 between: 116); the timeline of the Sun lens across the stage there instead. On tablet
+ * both stand 28 over the stage's bottom, so that the imagery's attribution under them stays clear.
+ */
+const TIME_PILL = "absolute top-1 left-3 z-stage-overlay tablet:top-auto tablet:bottom-7 tablet:left-5 desktop:bottom-29 desktop:left-6";
+const TIMELINE = "absolute inset-x-5 bottom-7 z-stage-overlay desktop:bottom-29";
+
 /** The chip of a layout that failed stands under the title, in the middle of the stage: as wide as the board draws it, or as the phone allows. */
 const LAYOUT_FAILED = "absolute inset-x-4 top-16 z-stage-overlay tablet:inset-x-0 tablet:top-20 tablet:mx-auto tablet:w-95 desktop:top-24";
+
+/** In development the stage says how often the modules' matrices were written (plan/phase-06-plan.md, decision 6). */
+const SAYS_MODULE_WRITES = process.env.NODE_ENV !== "production";
 
 /** The cursor over the scene: a pointer over what can be selected, a hand over what can be dragged (plan step 17). */
 const CURSOR: Record<Cursor, string | false> = { default: false, pointer: "cursor-pointer", grab: "cursor-grab", grabbing: "cursor-grabbing" };
@@ -56,18 +72,28 @@ const CURSOR: Record<Cursor, string | false> = { default: false, pointer: "curso
 export function Stage({ lens, name, className }: Props) {
   const project = useProject(projectOf);
   const obstacles = project?.roof.obstacles.length ?? 0;
-  const line = useResults(useShallow((results) => lineOf(lens, results, obstacles)));
+  const layoutLine = useResults(useShallow((results) => lineOf(lens, results, obstacles)));
+  const sunDay = useResults(sunDayOf);
+  // The Sun lens's line says the day and the window (the board "Studio, Sun lens"), once the day has come.
+  const line =
+    lens === "sun"
+      ? sunDay && project
+        ? { words: sunLineOf(sunDay.dayOfYear, project.roof.lat, { from: project.array.window_start_h, to: project.array.window_end_h }), isUpdating: false }
+        : null
+      : layoutLine;
   const layout = useResults(layoutOf);
   const webGL = useWebGL();
   const [isLost, setLost] = useState(false);
   // What the scene tells the DOM over it, for this stage alone.
   const [stage] = useState(createStageStore);
   const cursor = useStore(stage, cursorOf);
+  const moduleWrites = useStore(stage, moduleWritesOf);
   const cannotDraw = webGL === false ? NO_WEBGL : isLost ? CONTEXT_LOST : null;
+  const size = useSize();
   useEscapeClears();
 
   return (
-    <div data-testid="stage" data-state={cannotDraw ? "plan" : "scene"} className={classNames("relative", className)}>
+    <div data-testid="stage" data-state={cannotDraw ? "plan" : "scene"} data-module-writes={SAYS_MODULE_WRITES ? moduleWrites : undefined} className={classNames("relative", className)}>
       <div className={classNames("absolute inset-0 z-stage", CURSOR[cursor])}>
         {cannotDraw ? (
           project ? <PlanFallback roof={project.roof} layout={layout?.layout ?? null} reason={cannotDraw} /> : null
@@ -89,6 +115,7 @@ export function Stage({ lens, name, className }: Props) {
       </div>
       <LayoutFailed className={LAYOUT_FAILED} />
       {cannotDraw ? null : <ViewControls stage={stage} className={VIEW_CONTROLS} />}
+      {cannotDraw || size === null ? null : lens === "sun" && size !== "phone" ? <SunTimeline size={size} className={TIMELINE} /> : <TimePill size={size} className={TIME_PILL} />}
       {cannotDraw ? null : ATTRIBUTION ? (
         <p data-testid="stage-attribution" className="pointer-events-none absolute bottom-1 left-4 z-stage-overlay max-w-full truncate type-label-s text-text-on-imagery on-imagery tablet:left-5 desktop:bottom-1.5 desktop:left-6">
           {ATTRIBUTION}
@@ -105,7 +132,9 @@ function OnTheRoof({ stage }: { stage: StageStore }) {
   const project = useProject(projectOf);
   const readouts = useResults(readoutsOf);
   const layout = useResults(layoutOf);
-  const sun = useResults(sunOf);
+  const sunDay = useResults(sunDayOf);
+  const sun = useSun();
+  const { hour } = useView(sunTimeOf);
   const selection = useView(selectionOf);
   const draft = useView(draftOf);
   const toReview = useView(toReviewOf);
@@ -140,11 +169,7 @@ function OnTheRoof({ stage }: { stage: StageStore }) {
       {ground === "none" ? null : (
         <li data-testid="on-the-roof-ground">{ground === "imagery" ? "The ground is the satellite imagery" : "The ground is plain, with a grid"}</li>
       )}
-      {sun ? (
-        <li data-testid="on-the-roof-sun">
-          Sun {shown(sun.elevationDeg, 1)}° over the horizon, {shown(sun.azimuthDeg, 1)}° from north
-        </li>
-      ) : null}
+      {sunDay ? <li data-testid="on-the-roof-sun">{readOutOf(sunDay.dayOfYear, hour, sun)}</li> : null}
       {layout?.layout.keepout.map((part, index) => (
         <li key={`keepout-${index}`} data-testid="on-the-roof-keepout">
           {calloutOf(part, window).title}: {calloutOf(part, window).detail}

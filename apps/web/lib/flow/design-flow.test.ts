@@ -16,9 +16,10 @@ import {
   layoutOf,
   layoutStatusOf,
   progressOf,
-  sunOf,
+  sunDayOf,
+  sunFailureOf,
 } from "../stores/results-store";
-import { createViewStore } from "../stores/view-store";
+import { createViewStore, sunTimeOf } from "../stores/view-store";
 import { createDesignFlow } from "./design-flow";
 
 type Asked<Answer> = {
@@ -560,32 +561,71 @@ describe("the flow is stopped", () => {
   });
 });
 
-// The sun of the scene (plan/phase-05-plan.md, decision 5): asked for the roof's place at the view's time
-// when a design opens, and again when the place or the time changes; not when anything else does.
+// The sun of the scene (plan/phase-05-plan.md, decision 5; plan/phase-06-plan.md, decisions 1 and 2): a
+// whole day of it, asked for the roof's place and the view's day when a design opens, and again when the
+// place or the day changes; never when the hour or anything else does.
 describe("the sun", () => {
-  const SUN = { day_of_year: 355, positions: [{ hour: 10.5, elevation_deg: 40.2, azimuth_deg: 151.3 }], sunrise_h: 6.8, sunset_h: 17.8, shadows: null } as SunResponse;
+  const SUN = {
+    day_of_year: 355,
+    positions: [
+      { hour: 10.5, elevation_deg: 40.2, azimuth_deg: 151.3 },
+      { hour: 10.75, elevation_deg: 42.1, azimuth_deg: 155.0 },
+    ],
+    sunrise_h: 6.8,
+    sunset_h: 17.8,
+    shadows: null,
+  } as SunResponse;
   const place = (lat: number) => (project: Project) => ({ ...project, roof: { ...project.roof, lat } });
+  const designDay = (doy: number | null) => (project: Project) => ({ ...project, array: { ...project.array, design_doy: doy } });
 
-  test("is asked for the roof's place at the view's time when a design opens", () => {
+  test("a whole day of it is asked for the roof's place on the view's day when a design opens, a quarter hour apart", () => {
     const { project, suns } = flow();
 
     project.getState().open(DEMO);
 
     expect(suns).toHaveLength(1);
-    expect(suns[0].request).toEqual({ lat: 18.52, lon: 73.86, day: "design_day", hours: [10.5] });
+    expect(suns[0].request).toEqual({ lat: 18.52, lon: 73.86, day: "design_day", step_h: 0.25 });
   });
 
-  test("arrived, it is kept, with the place and the time it is of", async () => {
+  test("arrived, the day is kept, with the place and the day it is of", async () => {
     const { project, results, suns } = flow();
     project.getState().open(DEMO);
 
     suns[0].answer(SUN);
     await settled();
 
-    expect(sunOf(results.getState())).toEqual({ elevationDeg: 40.2, azimuthDeg: 151.3, lat: 18.52, lon: 73.86, day: "design_day", hour: 10.5 });
+    expect(sunDayOf(results.getState())).toEqual({
+      lat: 18.52,
+      lon: 73.86,
+      day: "design_day",
+      dayOfYear: 355,
+      sunriseH: 6.8,
+      sunsetH: 17.8,
+      positions: [
+        { hour: 10.5, elevationDeg: 40.2, azimuthDeg: 151.3 },
+        { hour: 10.75, elevationDeg: 42.1, azimuthDeg: 155.0 },
+      ],
+    });
   });
 
-  test("an edit that leaves the place alone does not ask again", async () => {
+  test("the design day of the view is the array's when the array has one", () => {
+    const { project, suns } = flow();
+
+    project.getState().open(designDay(172)(DEMO));
+
+    expect(suns[0].request.day).toBe(172);
+  });
+
+  test("a change of the array's design day asks again while the view shows the design day", async () => {
+    const { project, suns } = await opened();
+
+    project.getState().commit(designDay(80));
+
+    expect(suns).toHaveLength(2);
+    expect(suns[1].request.day).toBe(80);
+  });
+
+  test("an edit that leaves the place and the day alone does not ask again", async () => {
     const { project, suns } = await opened();
 
     project.getState().commit(tilt(20));
@@ -603,24 +643,52 @@ describe("the sun", () => {
     expect(suns[1].request.lat).toBe(19);
   });
 
-  test("a change of the view's time asks again", async () => {
+  test("a change of the view's hour asks nothing: the day has every quarter hour", async () => {
+    const { view, suns } = await opened();
+
+    view.getState().setSunTime({ day: "design_day", hour: 16 });
+    view.getState().setSunTime({ day: "design_day", hour: 16.25 });
+
+    expect(suns).toHaveLength(1);
+  });
+
+  test("a change of the view's day asks again", async () => {
     const { view, suns } = await opened();
 
     view.getState().setSunTime({ day: 172, hour: 16 });
 
     expect(suns).toHaveLength(2);
-    expect(suns[1].request).toEqual({ lat: 18.52, lon: 73.86, day: 172, hours: [16] });
+    expect(suns[1].request).toEqual({ lat: 18.52, lon: 73.86, day: 172, step_h: 0.25 });
   });
 
-  test("a late answer for another place or time is not kept", async () => {
+  test("a day that comes holds the view's hour inside its hours, to the quarter hour", async () => {
+    const { view, suns } = await opened();
+    view.getState().setSunTime({ day: 172, hour: 5.5 });
+
+    suns[1].answer({ ...SUN, day_of_year: 172, sunrise_h: 6.8, sunset_h: 17.8 });
+    await settled();
+
+    expect(sunTimeOf(view.getState())).toEqual({ day: 172, hour: 7 });
+  });
+
+  test("an hour inside the day that comes is left as it is", async () => {
+    const { view, suns } = await opened();
+
+    suns[0].answer(SUN);
+    await settled();
+
+    expect(sunTimeOf(view.getState())).toEqual({ day: "design_day", hour: 10.5 });
+  });
+
+  test("a late answer for another place or day is not kept", async () => {
     const { project, results, suns } = await opened();
     project.getState().commit(place(19));
 
     suns[1].answer(SUN);
     await settled();
 
-    expect(sunOf(results.getState())?.lat).toBe(19);
-    expect(sunOf(results.getState())?.elevationDeg).toBe(40.2);
+    expect(sunDayOf(results.getState())?.lat).toBe(19);
+    expect(sunDayOf(results.getState())?.dayOfYear).toBe(355);
   });
 
   test("a sun that does not come leaves the scene without one, and says why in the store", async () => {
@@ -630,8 +698,8 @@ describe("the sun", () => {
     suns[0].refuse(new ApiError(null, "unreachable", UNREACHABLE, null));
     await settled();
 
-    expect(sunOf(results.getState())).toBeNull();
-    expect(results.getState().sun.failure?.message).toBe(UNREACHABLE);
+    expect(sunDayOf(results.getState())).toBeNull();
+    expect(sunFailureOf(results.getState())?.message).toBe(UNREACHABLE);
   });
 
   test("the flow stopped gives the sun up", async () => {
@@ -648,7 +716,7 @@ describe("the sun", () => {
 
     project.getState().open({ ...DEMO, roof: { lat: 19, lon: 73.86 } } as unknown as Project);
 
-    expect(sunOf(results.getState())).toBeNull();
+    expect(sunDayOf(results.getState())).toBeNull();
     expect(suns).toHaveLength(2);
   });
 });

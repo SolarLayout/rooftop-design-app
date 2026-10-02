@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { Obstacle } from "../api";
 import type { DraftObstacle } from "../studio/obstacle-fields";
-import { cameraOf, cameraRequestOf, createViewStore, draftOf, draggingOf, lensOf, northRequestOf, selectionOf, sunTimeOf, toReviewOf } from "./view-store";
+import { cameraOf, cameraRequestOf, createViewStore, draftOf, draggingOf, isPlayingOf, lensOf, northRequestOf, selectionOf, sunTimeOf, toReviewOf } from "./view-store";
 
 describe("the view", () => {
   test("it begins on the first lens, in 3D, on the design day", () => {
@@ -10,6 +10,18 @@ describe("the view", () => {
     expect(lensOf(state)).toBe("roof");
     expect(cameraOf(state)).toBe("3d");
     expect(sunTimeOf(state)).toEqual({ day: "design_day", hour: 10.5 });
+    expect(isPlayingOf(state)).toBe(false);
+  });
+
+  test("whether the time plays is kept; told again, nothing changes", () => {
+    const store = createViewStore();
+    store.getState().setPlaying(true);
+    const before = store.getState();
+
+    store.getState().setPlaying(true);
+
+    expect(isPlayingOf(store.getState())).toBe(true);
+    expect(store.getState()).toBe(before);
   });
 
   test("the lens that was opened is kept", () => {

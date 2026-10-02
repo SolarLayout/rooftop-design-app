@@ -25,18 +25,25 @@ type Kept<Value> = {
   failure: Failure | null;
 };
 
-/** Where the sun stands over the roof, and the place and the time it was asked for. */
-export type SunAt = SunTime & { lat: number; lon: number; elevationDeg: number; azimuthDeg: number };
+/** The place and the day a sun is asked for: what tells one request from another. */
+export type SunKey = { lat: number; lon: number; day: SunTime["day"] };
 
-/** The place and the time a sun is asked for: what tells one request from another. */
-export type SunKey = SunTime & { lat: number; lon: number };
+export const sunKeyOf = ({ lat, lon, day }: SunKey): string => `${lat},${lon},${day}`;
 
-export const sunKeyOf = ({ lat, lon, day, hour }: SunKey): string => `${lat},${lon},${day},${hour}`;
+/** The sun at one hour of the day, in solar time: above the horizon, clockwise from north. */
+export type SunPosition = { hour: number; elevationDeg: number; azimuthDeg: number };
+
+/**
+ * The sun of one day over the roof, as /sun answers it a quarter hour apart (plan/phase-06-plan.md,
+ * decision 1), with the place and the day it was asked for. Sunrise and sunset are null where the sun
+ * stays up or down.
+ */
+export type SunDay = SunKey & { dayOfYear: number; sunriseH: number | null; sunsetH: number | null; positions: SunPosition[] };
 
 type KeptSun = {
-  /** The last sun that came; null when none ever came, or another design was opened. */
-  value: SunAt | null;
-  /** The key of the place and the time asked for last. */
+  /** The last day that came; null when none ever came, or another design was opened. */
+  value: SunDay | null;
+  /** The key of the place and the day asked for last. */
   asked: string | null;
   failure: Failure | null;
 };
@@ -59,7 +66,7 @@ export type ResultsState = {
   designFailed: (edit: number, failure: Failure) => void;
 
   sunAsked: (key: SunKey) => void;
-  sunArrived: (sun: SunAt) => void;
+  sunArrived: (day: SunDay) => void;
   sunFailed: (key: SunKey, failure: Failure) => void;
 
   /** Another design is opened: nothing of the one before stays. */
@@ -138,8 +145,11 @@ export const designFailureOf = (state: ResultsState) => state.design.failure;
 export const isDesignUpdating = (state: ResultsState) => state.design.status === "waiting" || state.design.status === "running";
 export const progressOf = (state: ResultsState) => state.progress;
 
-/** The sun of the scene; null while none has come. */
-export const sunOf = (state: ResultsState) => state.sun.value;
+/** The sun's day over the roof; null while none has come. */
+export const sunDayOf = (state: ResultsState) => state.sun.value;
+
+/** Why the sun asked for last did not come, in the words of the API. */
+export const sunFailureOf = (state: ResultsState) => state.sun.failure;
 
 /** Why there are no options, in the words of the API; null when there are some, or no result. */
 export const noOptionsOf = (state: ResultsState) => state.design.value?.no_options ?? null;

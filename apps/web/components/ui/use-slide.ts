@@ -32,6 +32,11 @@ type Options = {
   apart: number;
   /** Hears the values once they are committed, and only when one is another than before. */
   onCommit: (values: number[]) => void;
+  /**
+   * Hears what is shown while a handle moves, and the values again when a drag is given up: for what
+   * follows a slider live (the time of the sun, plan/phase-06-plan.md). The commit is heard by `onCommit`.
+   */
+  onShow?: (values: readonly number[]) => void;
   disabled: boolean;
 };
 
@@ -39,7 +44,7 @@ type Options = {
  * Draft, then commit. A drag or a key changes what is shown; the values are committed when the drag
  * ends, when the key is released, or when the focus leaves. A drag that is broken off is given up.
  */
-export function useSlide({ values, scale, apart, onCommit, disabled }: Options): Slide {
+export function useSlide({ values, scale, apart, onCommit, onShow, disabled }: Options): Slide {
   const [draft, setDraft] = useState<number[] | null>(null);
   // Beside the state, so that a key that repeats before the next render goes on from the last draft.
   const latest = useRef<number[] | null>(null);
@@ -48,6 +53,7 @@ export function useSlide({ values, scale, apart, onCommit, disabled }: Options):
   function show(next: number[] | null) {
     latest.current = next;
     setDraft(next);
+    if (next !== null) onShow?.(next);
   }
 
   function commit() {
@@ -60,7 +66,9 @@ export function useSlide({ values, scale, apart, onCommit, disabled }: Options):
 
   function giveUp() {
     dragged.current = null;
+    const wasShown = latest.current !== null;
     show(null);
+    if (wasShown) onShow?.(values);
   }
 
   function shareUnder(event: PointerEvent<HTMLDivElement>): number {

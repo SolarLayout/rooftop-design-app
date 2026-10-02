@@ -418,10 +418,11 @@ that is disabled, nor to one that is shown and cannot be used (`aria-disabled="t
 
 ## Icons
 Stroke icons, 24 by 24 view box, round caps and joins, `currentColor`. Sizes 14, 16, 18, 20, 22, which are
-steps of `--spacing`. No emoji. No filled icons except the play triangle and the logo.
+steps of `--spacing`. No emoji. No filled icons except the play triangle and the logo; Pause, its other state, is two bars of `--stroke-pause`.
 
 | Token | Value | Use |
 |---|---|---|
 | `--stroke-icon` | `2` | Stroke of an icon |
 | `--stroke-icon-light` | `1.7` | Stroke of the icons of the navigation, which are larger |
 | `--stroke-tick` | `2.4` | Stroke of the tick |
+| `--stroke-pause` | `3.4` | The two bars of Pause on the round play button: as heavy as the play triangle beside them |

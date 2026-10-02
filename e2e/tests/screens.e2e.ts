@@ -198,6 +198,23 @@ test.describe("the shell", () => {
     await expectScreen(page, "studio-array-failed");
   });
 
+  // The Sun lens at 16:00 on 21 December, the end of the shade-free window, as the boards "Studio, Sun lens"
+  // draw it; the time set by the keys of the slider, a quarter hour each. On phone the sheet at half, with
+  // the timeline at its top.
+  test("studio, the Sun lens", async ({ page }) => {
+    await page.goto("/studio/sun");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await sceneSettled(page);
+    const slider = page.getByTestId("sun-timeline").filter({ visible: true }).getByRole("slider", { name: "Time of day" });
+    await slider.focus();
+    for (let step = 0; step < 22; step += 1) await page.keyboard.press("ArrowRight");
+    await expect(page.getByTestId("on-the-roof-sun")).toHaveText("21 Dec, 16:00 solar time, sun 18.0° high, 56.6° W of south");
+    await slider.blur();
+
+    await cameraSettled(page);
+    await expectScreen(page, "studio-sun");
+  });
+
   test("studio, the Roof lens", async ({ page }) => {
     await page.goto("/studio/roof");
     await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });

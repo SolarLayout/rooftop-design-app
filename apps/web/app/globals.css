@@ -234,6 +234,7 @@
   --stroke-icon: 2;
   --stroke-icon-light: 1.7;
   --stroke-tick: 2.4;
+  --stroke-pause: 3.4;
 
   --z-stage: 0;
   --z-stage-overlay: 1;
@@ -838,6 +839,9 @@
 }
 @utility stroke-tick {
   stroke-width: var(--stroke-tick);
+}
+@utility stroke-pause {
+  stroke-width: var(--stroke-pause);
 }
 
 @utility duration-press {

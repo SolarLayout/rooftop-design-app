@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { PerspectiveCamera } from "three";
-import { bearingDegOf, cameraOf, createStageStore, cursorOf, groundOf, labelsOf } from "./stage-store";
+import { bearingDegOf, cameraOf, createStageStore, cursorOf, groundOf, labelsOf, moduleWritesOf } from "./stage-store";
 
 // What the scene tells the DOM over it, written on each drawn frame: it must not wake React for nothing.
 
@@ -127,5 +127,16 @@ describe("the camera", () => {
 
     store.getState().setCamera(camera, 1000, 600);
     expect(cameraOf(store.getState())?.width).toBe(1000);
+  });
+
+  // The counter of development behind "scrubbing never rebuilds the modules" (plan/phase-06-plan.md, decision 6).
+  test("counts the writes of the modules' matrices, from none", () => {
+    const store = createStageStore();
+    expect(moduleWritesOf(store.getState())).toBe(0);
+
+    store.getState().countModuleWrite();
+    store.getState().countModuleWrite();
+
+    expect(moduleWritesOf(store.getState())).toBe(2);
   });
 });

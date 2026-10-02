@@ -5,10 +5,9 @@ import { DirectionalLight } from "three";
 import { sunDirectionOf, type Sun } from "@/lib/scene/camera";
 import { fadeOf, intensitiesOf, shadowBiasOf } from "@/lib/scene/sun-light";
 import { PALETTE } from "@/lib/scene-palette";
+import { useSun } from "./use-sun";
 
 type Props = {
-  /** Where the sun stands; null while it has not come, and the roof is lit without shadows. */
-  sun: Sun | null;
   /** The roof's radius about the origin: what the shadow camera is fitted to, once (fix 6). */
   radius: number;
 };
@@ -23,7 +22,9 @@ const BEFORE_THE_SUN: Sun = { elevationDeg: 55, azimuthDeg: 135 };
  * The sun light of the scene (plan step 6): along the sun's direction from the API, its shadow camera
  * fitted to the roof's sphere, the bias scaled with the sun's height, faded out at the horizon.
  */
-export function SunLight({ sun, radius }: Props) {
+export function SunLight({ radius }: Props) {
+  // Where the sun stands at the view's hour; null while its day has not come, and the roof is lit without shadows.
+  const sun = useSun();
   const light = useRef<DirectionalLight>(null);
   const at = sun ?? BEFORE_THE_SUN;
   const distance = radius * 2.2;
