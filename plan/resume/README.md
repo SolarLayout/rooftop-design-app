@@ -26,7 +26,8 @@ asks for one. Paste the block inside the file into a new session started in this
 | 006 | `006-shading-memo-and-phase-4-rest.md` | The shading memo (the check passed 6 min 30 s), then Phase 4's third pull request and its close | 2026-09-30 | used by session 7, 2026-09-30. The memo (#37), the boards, steps 14 and 15 (#38) and the close of the phase are done |
 | 007 | `007-phase-4-5-test-caching.md` | Phase 4.5: caching of the checks, here and on GitHub, for Python and TypeScript; the plan first | 2026-09-30 | used by session 8, 2026-09-30. The plan, the three pull requests (#39, #40, #41) and the close are done |
 | 008 | `008-phase-5-studio-roof-array.md` | Phase 5: the plan, the boards it lacks, the first pull request of the 3D roof and the lenses | 2026-09-30 | used by session 9, 2026-09-30 to 2026-10-02. The plan, the six boards, the five pull requests (#42 to #47) and the close are done |
-| 009 | `009-phase-6-studio-sun.md` | Phase 6: the plan, the boards it lacks, the pull requests of the Sun lens | 2026-10-02 | used by session 10 |
+| 009 | `009-phase-6-studio-sun.md` | Phase 6: the plan, the boards it lacks, the pull requests of the Sun lens | 2026-10-02 | used by session 10, 2026-10-02. The plan, the six boards, the four pull requests and the light's fix (#48 to #52) and the close are done |
+| 010 | `010-phase-7-studio-strings.md` | Phase 7: the plan, the boards it lacks, the pull requests of the Strings lens | 2026-10-02 | open; next |
 
 ## Shape of a prompt file
 

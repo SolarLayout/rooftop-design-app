@@ -80,7 +80,7 @@ changed; an export 0.2 to 0.9 s after a run.
 
 1. Phase 7: the Studio's Strings lens (`plan/phase-07-studio-strings.md`): the plan first, the way `phase-06-plan.md` was
    written, then the boards it lacks, then the pull requests. The shade map's selected module already says its string's
-   shade (`Option.system.strings[].shade_pct`); strings are not drawn yet. A resume prompt is written when the owner asks.
+   shade (`Option.system.strings[].shade_pct`); strings are not drawn yet. Work order: `plan/resume/010-phase-7-studio-strings.md`.
 2. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
 3. In parallel with any phase: the screens still to draw (Phase 0).
 
