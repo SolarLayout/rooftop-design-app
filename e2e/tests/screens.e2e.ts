@@ -481,6 +481,8 @@ test.describe("the shell", () => {
   test("import a drawing, a DXF held", async ({ page }) => {
     test.setTimeout(RUN + 30_000);
     await page.goto("/studio/roof");
+    // The picture holds the vitals behind the dialog: the run is waited for, as the baseline has it.
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
     await sceneSettled(page);
     await page.getByRole("banner").getByRole("button", { name: /Pune demo roof/ }).click();
     await page.getByRole("menu", { name: "Project" }).getByRole("menuitem", { name: "Import a drawing" }).click();
