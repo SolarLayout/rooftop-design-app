@@ -2,11 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { useProject, useResults, useStores } from "@/components/shell/stores";
+import { assumptionsOf, withAssumption, withLevel, type AssumptionId } from "@/lib/performance/assumption-fields";
 import { withDegradation } from "@/lib/performance/degradation";
 import { pageViewOf } from "@/lib/performance/page-view";
 import { loadingWordsOf } from "@/lib/performance/weather-source";
-import { degradationOf, latitudeOf, longitudeOf, nameOf, weatherCsvOf, weatherSourceOf } from "@/lib/stores/project-store";
+import { degradationOf, latitudeOf, longitudeOf, nameOf, projectOf, weatherCsvOf, weatherSourceOf } from "@/lib/stores/project-store";
 import { designFailureOf, designOf, designStatusOf, progressOf, readoutsOf } from "@/lib/stores/results-store";
+import { Assumptions } from "./Assumptions";
 import { Kpis, KpiSkeletons } from "./Kpis";
 import { LossChain } from "./LossChain";
 import { MonthlyChart } from "./MonthlyChart";
@@ -33,11 +35,14 @@ const CHARTS = "grid gap-3.5 tablet:grid-cols-2 tablet:gap-4 desktop:col-span-5 
  * of before; a run that failed leaving them with a note. An option chosen is an edit of the document and asks for
  * nothing: the run's answer holds every option (decision 4). The weather source is a select: a source chosen is loaded
  * first, the line dimmed and the load said under it, then committed once; a CSV is read in its dialog before Use
- * (decision 12). The engine's notes on the weather stand under the line of the run, in its words.
+ * (decision 12). The engine's notes on the weather stand under the line of the run, in its words. The assumptions are
+ * fields of the document in a card, under the charts on desktop, across the page before, and before a voltage under the
+ * decision card: they are inputs (decisions 6, 8 and 15).
  */
 export function Performance() {
   const { project, flow } = useStores();
   const name = useProject(nameOf);
+  const document = useProject(projectOf);
   const degradation = useProject(degradationOf);
   const weatherSource = useProject(weatherSourceOf);
   const weatherCsv = useProject(weatherCsvOf);
@@ -51,6 +56,7 @@ export function Performance() {
   const progress = useResults(progressOf);
   const failure = useResults(designFailureOf);
   const view = useMemo(() => pageViewOf({ name, design, readouts, designStatus, progress, failure }), [name, design, readouts, designStatus, progress, failure]);
+  const assumptions = useMemo(() => (document ? assumptionsOf(document, design?.sizing ?? null) : null), [document, design]);
 
   function choose(key: string) {
     project.getState().commit((document) => (document.chosen_option === key ? document : { ...document, chosen_option: key }));
@@ -58,6 +64,14 @@ export function Performance() {
 
   function setDegradation(pct: number) {
     project.getState().commit((document) => withDegradation(document, pct));
+  }
+
+  function setAssumption(id: AssumptionId, value: number | null) {
+    project.getState().commit((document) => withAssumption(document, id, value));
+  }
+
+  function setLevel(index: number, value: number) {
+    project.getState().commit((document) => withLevel(document, index, value));
   }
 
   const values = view.kind === "design" || view.kind === "failed" ? view.values : null;
@@ -93,10 +107,13 @@ export function Performance() {
             <div className={CHARTS}>
               <MonthlyChart energy={values.energy} isDimmed={isDimmed} />
               <YearsChart energy={values.energy} degradation={degradation} onDegradation={setDegradation} isDimmed={isDimmed} />
+              {assumptions ? <Assumptions assumptions={assumptions} onField={setAssumption} onLevel={setLevel} className="tablet:col-span-2 desktop:col-span-1 desktop:grow" /> : null}
             </div>
           </div>
           <SummaryTable rows={values.summary} isDimmed={isDimmed} />
         </>
+      ) : assumptions && view.kind !== "loading" ? (
+        <Assumptions assumptions={assumptions} onField={setAssumption} onLevel={setLevel} />
       ) : null}
       {lat !== null && lon !== null ? (
         <WeatherCsvDialog

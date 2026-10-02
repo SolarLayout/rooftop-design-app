@@ -6,10 +6,10 @@ import { classNames } from "./class-names";
 export type ButtonKind = "primary" | "secondary" | "quiet";
 
 /**
- * Heights on desktop: 36, 40, 44, 56. On phone and tablet nothing is lower than 44. `sheet` is for the
- * actions of a dialog: 40 on desktop, 44 on tablet, and on phone 48, a quiet one 44.
+ * Heights on desktop: 26, 36, 40, 44, 56. On phone and tablet nothing is lower than 44. `xs` is the quiet press
+ * inside a chip; `sheet` is for the actions of a dialog: 40 on desktop, 44 on tablet, and on phone 48, a quiet one 44.
  */
-export type ButtonSize = "s" | "m" | "l" | "xl" | "sheet";
+export type ButtonSize = "xs" | "s" | "m" | "l" | "xl" | "sheet";
 
 /** Sides on desktop: 32, 38, 40, 44. On phone and tablet nothing is smaller than 44. */
 export type IconButtonSize = "xs" | "s" | "m" | "l";
@@ -41,6 +41,7 @@ const KIND: Record<ButtonKind, string> = {
 };
 
 const HEIGHT: Record<ButtonSize, string> = {
+  xs: "h-touch rounded-row desktop:h-6.5 desktop:rounded-item",
   s: "h-touch rounded-row desktop:h-9 desktop:rounded-control",
   m: "h-touch rounded-row desktop:h-10 desktop:rounded-control",
   l: "h-touch rounded-row",
