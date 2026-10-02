@@ -119,6 +119,8 @@ test.describe("the energy to grid by month", () => {
   test("the keyboard reaches every bar, and the focus shows the same as the pointer", async ({ page }) => {
     const energy = await thePerformancePage(page);
 
+    // The focus must not scroll the page: a page that moves takes the tooltip away.
+    await monthly(page).scrollIntoViewIfNeeded();
     await monthly(page).getByRole("tab", { name: "Chart" }).focus();
     await page.keyboard.press("Tab");
     await expect(monthly(page).getByRole("tabpanel")).toBeFocused();
