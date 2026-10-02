@@ -21,3 +21,15 @@ test("the palette of the scene is that of the document, and no other", () => {
   expect(Object.keys(documented).length).toBeGreaterThan(20);
   expect<Record<string, string>>({ ...PALETTE }).toEqual(documented);
 });
+
+const STYLESHEET = path.resolve(import.meta.dir, "../app/globals.css");
+
+// The sun's marker is DOM over the stage (plan/phase-06-plan.md, decision 10), drawn with CSS tokens: they
+// are the palette's sun and its core, so that the marker and the arc in the scene are one colour.
+test("the marker's tokens are the palette's sun and its core", () => {
+  const css = readFileSync(STYLESHEET, "utf8");
+  const tokenOf = (name: string) => css.match(new RegExp(`^\\s*--color-${name}: (#[0-9A-F]{6});`, "m"))?.[1];
+
+  expect(tokenOf("accent")).toBe(PALETTE.sun);
+  expect(tokenOf("sun-core")).toBe(PALETTE.sunCore);
+});
