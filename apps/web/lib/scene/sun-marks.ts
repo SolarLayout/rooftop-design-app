@@ -61,8 +61,21 @@ const CHIP_OFFSET: Record<MarkRole, readonly [dx: number, dy: number]> = {
   sunset: [0, 18],
 };
 
+/** Whether a name is that of a mark: the projected marks carry their role as their name. */
+export function isMarkRole(name: string | undefined): name is MarkRole {
+  return name !== undefined && Object.hasOwn(CHIP_OFFSET, name);
+}
+
 /** The middle of a chip on the canvas, from the pixel its mark falls on. */
 export function chipPlaceOf(role: MarkRole, x: number, y: number): { x: number; y: number } {
   const [dx, dy] = CHIP_OFFSET[role];
   return { x: x + dx, y: y + dy };
+}
+
+/** The share of the stage's width up to which the marker's callout stands to its right, as the board has it. */
+const RIGHT_UP_TO = 0.6;
+
+/** Which side of the marker its callout stands: to the right, as the board has it, unless the stage's right edge would cut it. */
+export function calloutSideOf(x: number, width: number): "right" | "left" {
+  return x <= width * RIGHT_UP_TO ? "right" : "left";
 }

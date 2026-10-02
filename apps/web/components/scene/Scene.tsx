@@ -14,7 +14,7 @@ import { labelPlacesOf } from "@/lib/scene/projection";
 import type { Cursor, StageStore } from "@/lib/scene/stage-store";
 import { projectOf } from "@/lib/stores/project-store";
 import { layoutOf } from "@/lib/stores/results-store";
-import { draftOf, draggingOf, selectionOf, toReviewOf } from "@/lib/stores/view-store";
+import { draftOf, draggingOf, selectionOf, showsSunPathOf, toReviewOf } from "@/lib/stores/view-store";
 import { withDraftAt, withObstacleReplaced } from "@/lib/studio/obstacle-fields";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
 import { Building, BUILDING_DEPTH } from "./Building";
@@ -27,6 +27,7 @@ import { Projector, type Anchor } from "./Projector";
 import { SceneCanvas } from "./SceneCanvas";
 import { ShadowOutlines } from "./ShadowOutlines";
 import { SunLight } from "./SunLight";
+import { SunPath } from "./SunPath";
 
 type Props = {
   onContextLost: () => void;
@@ -48,8 +49,8 @@ const ON_THE_ROOF = new Set<Picked["what"]>(["roof", "module", "keepout"]);
  * (plan/phase-05-plan.md, decisions 1 and 2). It is loaded in the browser alone. A press selects what it
  * hit (decision 10); with a draft standing, a press on the roof places the draft there (decision 15); the
  * selected obstacle is dragged on the roof plane and drawn where the pointer has it (decision 12). The
- * scene reads nothing of the time: the light and the camera do, so that the time redraws them alone
- * (plan/reference/r3f-notes.md, fix 12).
+ * scene reads nothing of the time: the light, the camera and the sun path's marker do, so that the time
+ * redraws them alone (plan/reference/r3f-notes.md, fix 12). The sun path is drawn in the Sun lens alone.
  */
 export function Scene({ onContextLost, stage }: Props) {
   const project = useProject(projectOf);
@@ -58,6 +59,7 @@ export function Scene({ onContextLost, stage }: Props) {
   const draft = useView(draftOf);
   const toReview = useView(toReviewOf);
   const dragging = useView(draggingOf);
+  const showsSunPath = useView(showsSunPathOf);
   const { view, project: store } = useStores();
   const roof = project?.roof ?? null;
   const flushClearance = project?.array.flush_clearance_m ?? 0.1;
@@ -112,6 +114,7 @@ export function Scene({ onContextLost, stage }: Props) {
       <CameraRig radius={frame.radius} />
       <Projector anchors={anchors} stage={stage} />
       <SunLight radius={frame.radius} />
+      {showsSunPath ? <SunPath centre={frame.centroid} radius={frame.radius} stage={stage} /> : null}
       <group position={[ox, oy, oz]}>
         <Building roof={roof} onPressRoof={(event) => pressed({ what: "roof" }, event)} onOverRoof={over("roof", "pointer")} />
         <Obstacles

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { SunDay } from "../stores/results-store";
-import { chipPlaceOf, hourMarksOf, marksShownOf } from "./sun-marks";
+import { calloutSideOf, chipPlaceOf, hourMarksOf, isMarkRole, marksShownOf } from "./sun-marks";
 import { arcOf, pointOnDomeOf } from "./sun-path";
 
 // The hour marks of the sun path (plan/phase-06-plan.md, decision 10; the board "Sun path and shadow
@@ -94,5 +94,21 @@ describe("where a chip stands", () => {
     expect(chipPlaceOf("noon", 100, 100)).toEqual({ x: 100, y: 80 });
     expect(chipPlaceOf("end", 100, 100)).toEqual({ x: 136, y: 86 });
     expect(chipPlaceOf("sunset", 100, 100)).toEqual({ x: 100, y: 118 });
+  });
+});
+
+test("a projected mark is known by its role; any other name is not a mark", () => {
+  expect(isMarkRole("sunrise")).toBe(true);
+  expect(isMarkRole("corner-2")).toBe(false);
+  expect(isMarkRole("toString")).toBe(false);
+  expect(isMarkRole(undefined)).toBe(false);
+});
+
+describe("the side of the marker's callout", () => {
+  // The board stands it to the right of the marker; near the right edge of the stage it would be cut.
+  test("to the right of a marker in the left three fifths of the stage, to the left beyond", () => {
+    expect(calloutSideOf(270, 984)).toBe("right");
+    expect(calloutSideOf(590, 984)).toBe("right");
+    expect(calloutSideOf(600, 984)).toBe("left");
   });
 });
