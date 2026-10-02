@@ -62,7 +62,7 @@ export function Stat({ label, value, unit, more, mark, dimmed = false, beside, l
   return (
     <div className={classNames("flex min-w-0 flex-col justify-center whitespace-nowrap", FRAME[look], className)} {...rest}>
       <dt className={classNames("text-text-2", LABEL[look])}>{label}</dt>
-      <dd className={classNames("flex flex-wrap items-center text-text", BESIDE[look], VALUE[look])}>
+      <dd className={classNames("flex items-center text-text", more && "flex-wrap", BESIDE[look], VALUE[look])}>
         <span data-testid="stat-value" className={classNames("flex items-center gap-1.5", dimmed && "opacity-updating")}>
           <span>
             {value}
