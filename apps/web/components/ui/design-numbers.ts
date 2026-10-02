@@ -52,3 +52,6 @@ export const STEM_HEIGHT_TOUCH = 52;
 
 /** The time of the sun must stand still this long, in milliseconds, before the engine's shadow outlines are asked for it. */
 export const TIME_REST = 150;
+
+/** Percent that the glass of every other position is mixed toward the stage's colour while a string is traced or selected. */
+export const DIM_TOWARD_STAGE = 55;

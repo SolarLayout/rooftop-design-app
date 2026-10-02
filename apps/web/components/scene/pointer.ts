@@ -13,3 +13,21 @@ export function onPress(event: ThreeEvent<MouseEvent>, then: () => void): void {
   event.stopPropagation();
   if (isAPress(event.delta)) then();
 }
+
+/**
+ * A handler that takes what it is told at most once a frame: the last of what came between two frames, on the
+ * frame (plan/phase-07-plan.md, step 15: the string under the pointer is read once a frame, not on every move).
+ */
+export function oncePerFrame<T>(take: (value: T) => void, schedule: (run: () => void) => void = (run) => void requestAnimationFrame(run)): (value: T) => void {
+  let waiting = false;
+  let last: T;
+  return (value) => {
+    last = value;
+    if (waiting) return;
+    waiting = true;
+    schedule(() => {
+      waiting = false;
+      take(last);
+    });
+  };
+}

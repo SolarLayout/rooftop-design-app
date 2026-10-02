@@ -386,14 +386,79 @@ test.describe("the shell", () => {
     await expectScreen(page, "studio-import-heights");
   });
 
-  // The Strings lens at the demo's 1500 V, option A chosen (the board "Studio, Strings lens"): the inspector of
-  // part 1 of Phase 7, the voltage, the series range and the sizing; the strings on the roof come with part 3.
+  // The Strings lens at the demo's 1500 V, option A chosen (the board "Studio, Strings lens"): the inspector, and the
+  // strings on the roof coloured by MPPT with the legend and INV-1.
   test("studio, the Strings lens", async ({ page }) => {
     await page.goto("/studio/strings");
     await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
     await expect(page.getByTestId("series-verdict").filter({ visible: true })).toBeVisible();
     await sceneSettled(page);
     await expectScreen(page, "studio-strings");
+  });
+
+  // The colour switch, on phone in the sheet, which is let down again after so that the stage is in the picture.
+  async function colourTheStringsBy(page: Page, projectName: string, name: "String" | "MPPT" | "Inverter") {
+    const separator = page.getByRole("separator", { name: "Inspector" });
+    if (isPhone(projectName)) await separator.press("End");
+    const choice = page.getByRole("radiogroup", { name: "Colour the strings by" }).filter({ visible: true }).getByRole("radio", { name });
+    await choice.click();
+    await expect(choice).toHaveAttribute("aria-checked", "true");
+    await choice.blur();
+    if (isPhone(projectName)) await separator.press("Home");
+  }
+
+  // Option A coloured by string (the board "Strings on the roof"): the six colours in turn, the legend on its own line.
+  test("studio, the Strings lens by string", async ({ page }, testInfo) => {
+    await page.goto("/studio/strings");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await expect(page.getByTestId("on-the-roof-strings")).toContainText("coloured by MPPT", { timeout: RUN });
+    await colourTheStringsBy(page, testInfo.project.name, "String");
+    await expect(page.getByTestId("on-the-roof-strings")).toContainText("coloured by string");
+    await page.mouse.move(0, 0);
+    await sceneSettled(page);
+    await expectScreen(page, "studio-strings-by-string");
+  });
+
+  // Option D coloured by inverter, its two inverters on the roof with their chips (the board "Strings on the roof").
+  test("studio, the Strings lens by inverter, option D", async ({ page }, testInfo) => {
+    await page.goto("/studio/strings");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    if (isPhone(testInfo.project.name)) await page.getByRole("separator", { name: "Inspector" }).press("End");
+    const d = page.getByTestId("option-card").filter({ visible: true }).filter({ has: page.getByText("D", { exact: true }) });
+    await d.click();
+    await expect(d).toHaveAttribute("aria-checked", "true");
+    await d.blur();
+    await colourTheStringsBy(page, testInfo.project.name, "Inverter");
+    await expect(page.getByTestId("inverter-chip")).toHaveCount(2, { timeout: RUN });
+    await page.mouse.move(0, 0);
+    await sceneSettled(page);
+    await expectScreen(page, "studio-strings-by-inverter");
+  });
+
+  // String 12 of option A selected, white with its line and its callout (the board "Strings on the roof"), pressed in
+  // the plan at the middle of its modules as the run places them, then seen in 3D.
+  test("studio, the Strings lens, a string selected", async ({ page }, testInfo) => {
+    const answered = page.waitForResponse((response) => response.url().endsWith("/api/design"), { timeout: RUN });
+    await page.goto("/studio/strings");
+    const events = (await (await answered).text()).split("\n").filter((line) => line.startsWith("data:"));
+    type Answer = { layout: { modules: { idx: number; outline: [number, number][] }[] }; chosen_option: string; options: { key: string; system: { strings: { label: string; modules: number[] }[] } }[] };
+    const answer = events.map((line) => JSON.parse(line.slice(5)) as { type: string; result?: Answer }).find((event) => event.type === "result")!.result!;
+    const s12 = answer.options.find((option) => option.key === answer.chosen_option)!.system.strings.find((string) => string.label === "S12")!;
+    const position = answer.layout.modules.find((one) => one.idx === s12.modules[Math.floor(s12.modules.length / 2)])!;
+    await sceneSettled(page);
+    if (isPhone(testInfo.project.name)) await page.getByRole("separator", { name: "Inspector" }).press("Home");
+    const point = await inThePlan(page);
+    const [x, y] = position.outline.reduce(([sx, sy], [px, py]) => [sx + px / 4, sy + py / 4], [0, 0]);
+    const at = point(x, y);
+    if (testInfo.project.use.hasTouch) await page.touchscreen.tap(at.x, at.y);
+    else await page.mouse.click(at.x, at.y);
+    await expect(page.getByTestId("stage-callout")).toContainText("String 12", { timeout: RUN });
+    await page.getByRole("radio", { name: "3D view" }).filter({ visible: true }).click();
+    await page.getByRole("radio", { name: "3D view" }).filter({ visible: true }).blur();
+    await page.mouse.move(0, 0);
+    await cameraSettled(page);
+    await sceneSettled(page);
+    await expectScreen(page, "studio-strings-selected");
   });
 
   // Your own 26 × 24 × 1 added and chosen (the board "Options and your own").

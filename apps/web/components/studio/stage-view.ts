@@ -2,7 +2,9 @@
 // Roof lens" and "Studio, Array lens") and its states while a layout is on its way or failed (the board
 // "Studio, Array lens, states"). Pure functions of the stores; the components draw what they give.
 import { shown } from "../ui/number-entry";
-import type { DesignOption, LayoutReadouts, NoOptions } from "../../lib/api";
+import type { CableRow, DesignOption, InverterPlace, LayoutReadouts, NoOptions } from "../../lib/api";
+import { calloutOfString } from "../../lib/scene/pick";
+import { categoryOf, numberOfString, seriesOf, type Colouring, type Wired } from "../../lib/scene/string-colours";
 import type { Lens } from "../../lib/routes";
 import { isLayoutUpdating, layoutFailureOf, readoutsOf, sunFailureOf, type ResultsState } from "../../lib/stores/results-store";
 
@@ -80,4 +82,56 @@ export function layoutFailedOf(results: ResultsState): FailedWords | null {
 export function sunFailedOf(results: ResultsState): FailedWords | null {
   const failure = sunFailureOf(results);
   return failure === null ? null : { title: "The sun was not updated", message: failure.message, action: "Try again" };
+}
+
+/** A list in words: "a", "a and b", "a, b and c". */
+function listed(items: readonly string[]): string {
+  return items.length < 2 ? (items[0] ?? "") : `${items.slice(0, -1).join(", ")} and ${items.at(-1)}`;
+}
+
+const COLOURS_COUNTED = ["no", "one", "two", "three", "four", "five", "six"];
+
+type StringsWordsOf = {
+  option: Pick<DesignOption, "letter"> & { system: { inverters: readonly InverterPlace[] }; cable_schedule: readonly CableRow[] };
+  /** The option's strings on the roof. */
+  strings: readonly Wired[];
+  colouring: Colouring;
+  /** The positions of the layout shown. */
+  positions: number;
+  /** The label of the string selected; null for none. */
+  selected: string | null;
+};
+
+export type StringsWords = { strings: string; unused: string; inverters: string; selected: string | null };
+
+/**
+ * The strings on the roof in words, for the text equivalent of the stage (plan/phase-07-plan.md, step 16): the
+ * strings and what they are coloured by, with each colour's strings; the positions not used; the inverters and where
+ * the engine places them, in the roof's metres; the string selected, in the words of its callout.
+ */
+export function stringsWordsOf({ option, strings, colouring, positions, selected }: StringsWordsOf): StringsWords {
+  const head = `${counted(strings.length, "string", "strings")} of option ${option.letter}, coloured by ${colouring === "mppt" ? "MPPT" : colouring}`;
+  const categories = [...new Set(strings.map((string) => (colouring === "string" ? seriesOf(numberOfString(string.label)) : categoryOf(string, colouring))))].sort((a, b) => a - b);
+  const ofCategory = (category: number) =>
+    strings
+      .filter((string) => (colouring === "string" ? seriesOf(numberOfString(string.label)) : categoryOf(string, colouring)) === category)
+      .sort((a, b) => numberOfString(a.label) - numberOfString(b.label));
+  const named = (category: number) => (colouring === "mppt" ? `MPPT ${category}` : colouring === "inverter" ? `INV-${category}` : `colour ${category}`);
+  const parts = categories.map((category) => {
+    const own = ofCategory(category);
+    const count = `${named(category)}, ${counted(own.length, "string", "strings")}`;
+    return colouring === "string" ? `${count}, ${listed(own.map((string) => string.label))}` : count;
+  });
+  const turn = colouring === "string" ? `, ${COLOURS_COUNTED[categories.length]} colours in turn` : "";
+  const used = strings.reduce((sum, string) => sum + string.modules.length, 0);
+  const unused = positions - used;
+  const places = option.system.inverters.map(({ label, position: [x, y] }) => `${label} at ${shown(x, 1)} m east, ${shown(y, 1)} m north`);
+  const string = selected === null ? undefined : strings.find((one) => one.label === selected);
+  const callout = string ? calloutOfString(string, option.cable_schedule.find((row) => row.string === string.label)) : null;
+  return {
+    strings: `${head}${turn}: ${parts.join("; ")}`,
+    unused: unused > 0 ? `${counted(unused, "position", "positions")} not used` : "Every position used",
+    inverters: `${places.length === 1 ? "Inverter" : "Inverters"} ${places.join("; ")}`,
+    selected: callout ? `${callout.title}, selected: ${callout.detail}` : null,
+  };
 }

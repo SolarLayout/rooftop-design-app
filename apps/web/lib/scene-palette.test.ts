@@ -33,3 +33,17 @@ test("the marker's tokens are the palette's sun and its core", () => {
   expect(tokenOf("accent")).toBe(PALETTE.sun);
   expect(tokenOf("sun-core")).toBe(PALETTE.sunCore);
 });
+
+// The strings take the series colours on the roof (plan/phase-07-plan.md, decision 12) and the legend over the
+// stage draws its swatches with the CSS tokens: the two are one colour, the positions not used too, and the
+// inverter's box is the accent.
+test("the strings' colours are the series tokens, the unused grey and the inverter's box the accent", () => {
+  const css = readFileSync(STYLESHEET, "utf8");
+  const tokenOf = (name: string) => css.match(new RegExp(`^\\s*--color-${name}: (#[0-9A-F]{6});`, "m"))?.[1];
+
+  expect([PALETTE.series1, PALETTE.series2, PALETTE.series3, PALETTE.series4, PALETTE.series5, PALETTE.series6]).toEqual(
+    [1, 2, 3, 4, 5, 6].map((n) => tokenOf(`series-${n}`) as "#3987E5"),
+  );
+  expect(tokenOf("series-unused")).toBe(PALETTE.moduleUnused);
+  expect(tokenOf("accent")).toBe(PALETTE.inverterMarker);
+});

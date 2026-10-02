@@ -267,6 +267,33 @@ over the year. A module selected says its loss and its string's: "Position 423 �
 the year · string S12, 5.00 %", or "· not used by option A"; without an option no string. Leaving the Sun lens takes
 the map off.
 
+## Strings on the roof (Strings lens)
+The boards "Strings on the roof" and "Studio, Strings lens" on three sizes. The Strings lens colours the glass of
+every position by the chosen option's strings (`system.strings` of the design run): by string, by MPPT (at first)
+or by inverter, in the series colours in their fixed order; the positions the option does not use `moduleUnused`;
+the frames stay. Only while the run is of the layout shown; otherwise the modules are their blue and the legend says
+"The strings follow the design run" with the ring. Leaving the Strings lens takes the colours off.
+
+The colour switch is a Segmented control "Colour the strings by": String, MPPT, Inverter. On desktop it stands with
+the legend in a card of 48 (`surface-1`, border `line`, `radius-card-s`, `shadow-float`) at the stage's bottom left,
+12 over the time pill; by string the legend takes a second line under it, after "By string: six colours in turn
+along the rows". On tablet the card is 384 wide at the bottom right, 28 over the stage's bottom, the switch filling
+it, the compact legend under it. On phone the switch is the first thing of the Strings inspector in the sheet, and
+the compact legend stands at the stage's bottom left, 28 over its bottom. The legend: by MPPT "MPPT 1" to "MPPT 6";
+by inverter "INV-1", "INV-2"; by string the six colours, each with the strings it marks ("S1 · S7 · S13 · S19");
+then "Not used" while positions are not used. Compact: "MPPT" (or "INV", "Strings") and the numbers, each beside its
+swatch. Swatches of 12 (10 compact), radius 3; the words text-2, never a series colour.
+
+Each inverter of the option is a small box on the roof in `inverterMarker` where the engine places it, with a chip
+"INV-1" over it (accent, `accent-ink`, mono 11, `radius-xs`), placed by the Projector. On a pointer device the
+pointer over a used position traces its string: its glass `stringSelected`, every other position mixed
+`DIM_TOWARD_STAGE` % toward the stage, a line of 2 in white on a casing of 4 in the stage's colour through its
+modules in the order they are wired. A press selects it, a tap on touch: the callout says "String 12 · INV-1, MPPT 3"
+with a swatch of the string's colour of the moment, and "29 modules · Voc cold 1,480 V · 93 m of cable" in mono from
+the cable schedule; its line and dot in the accent. Escape clears it. A press on a position not used selects the
+module. The text equivalent says the strings, what they are coloured by with each colour's strings, the positions
+not used, the inverters and where, and the string selected.
+
 ## Shading over the year (Sun lens)
 Four stat tiles, two to a row: Near, linear; Electrical, beyond linear; Far, horizon (in %); Kept clear (m²). With an
 option they are its loss chain's ("Of the 638 modules of option A"); without, near and far over all positions ("Of

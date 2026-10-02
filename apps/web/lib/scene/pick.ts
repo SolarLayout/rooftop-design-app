@@ -2,13 +2,14 @@
 // scene selects, and the callouts of a module and of the roof. Pure functions; the components raycast
 // and the view store keeps the selection.
 import { shown } from "../../components/ui/number-entry";
-import type { Layout, PlacedModule } from "../api";
+import type { CableRow, Layout, PlacedModule } from "../api";
 import { areaOf, centroidOf, edgesOf } from "../outline/measure";
 import { isRectangle } from "../outline/typed-length";
 import type { Selection } from "../stores/view-store";
 import type { XY, XYZ } from "./adapter";
 import type { Callout } from "./keepout";
 import type { HeightAt } from "./obstacles";
+import { numberOfString, type Wired } from "./string-colours";
 
 /** What a press of the pointer hit in the scene. A module is known by the instance of the instanced mesh. */
 export type Picked = { what: "roof" } | { what: "obstacle" | "keepout"; index: number } | { what: "module"; instanceId: number | undefined } | { what: "ground" };
@@ -62,4 +63,43 @@ export function calloutOfRoof(outline: readonly XY[]): Callout {
 export function anchorOfRoof(outline: readonly XY[], heightAt: HeightAt): XYZ {
   const { x, y } = centroidOf(outline.map(([px, py]) => ({ x: px, y: py })));
   return [x, y, heightAt([x, y])];
+}
+
+/** The string that wires a position, by the position's idx; null for a position the option does not use. */
+export function stringOfPosition<S extends Pick<Wired, "modules">>(strings: readonly S[], idx: number): S | null {
+  return strings.find((string) => string.modules.includes(idx)) ?? null;
+}
+
+/**
+ * What a press selects in the Strings lens while the strings are on the roof (plan/phase-07-plan.md, decision 13): on
+ * a position an option's string wires, the string; on any other, what it selects in every lens. The instance is the
+ * position's index in the layout, *idxs* the idx of each.
+ */
+export function selectionOfPickedString(picked: Picked, idxs: readonly number[], strings: readonly Pick<Wired, "label" | "modules">[]): Selection | null {
+  if (picked.what === "module" && picked.instanceId !== undefined) {
+    const idx = idxs[picked.instanceId];
+    const string = idx === undefined ? null : stringOfPosition(strings, idx);
+    if (string) return { kind: "string", label: string.label };
+  }
+  return selectionOfPick(picked);
+}
+
+/**
+ * The callout of a string (the board "Strings on the roof"): its number, its inverter and its MPPT; its modules,
+ * its Voc cold and its metres of cable as the engine's cable schedule has them, to the whole volt and metre.
+ */
+export function calloutOfString(string: Pick<Wired, "label" | "modules" | "inverter" | "mppt">, cable: CableRow | undefined): Callout {
+  const title = `String ${shown(numberOfString(string.label), 0)} · ${cable?.inverter ?? `INV-${string.inverter}`}, MPPT ${shown(string.mppt, 0)}`;
+  if (!cable) return { title, detail: `${shown(string.modules.length, 0)} modules` };
+  return { title, detail: `${shown(cable.modules, 0)} modules · Voc cold ${shown(cable.voc_cold_v, 0)} V · ${shown(cable.length_m, 0)} m of cable` };
+}
+
+/** Where the callout of a string is hung: over its module nearest the middle of its modules; null for a string of none. */
+export function anchorOfString(string: Pick<Wired, "modules">, modules: readonly PlacedModule[], heightAt: HeightAt): XYZ | null {
+  const own = modules.filter((module) => string.modules.includes(module.idx));
+  if (own.length === 0) return null;
+  const middles = own.map((module) => anchorOfModule(module, heightAt));
+  const [mx, my] = [middles.reduce((sum, [x]) => sum + x, 0) / middles.length, middles.reduce((sum, [, y]) => sum + y, 0) / middles.length];
+  const nearest = middles.reduce((best, at) => (Math.hypot(at[0] - mx, at[1] - my) < Math.hypot(best[0] - mx, best[1] - my) ? at : best));
+  return nearest;
 }

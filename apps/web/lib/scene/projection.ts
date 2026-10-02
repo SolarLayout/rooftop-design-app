@@ -7,9 +7,10 @@ import type { SceneXYZ, XY, XYZ } from "./adapter";
 
 /**
  * A label of a dimension, the anchor of the callout of what is selected, a point a handle of the selected
- * obstacle is placed by, the sun's marker on its path, or a mark of an hour on the path.
+ * obstacle is placed by, the sun's marker on its path, a mark of an hour on the path, or the chip of an
+ * inverter over its box on the roof.
  */
-export type LabelKind = "label" | "callout" | "handle" | "sun" | "hour";
+export type LabelKind = "label" | "callout" | "handle" | "sun" | "hour" | "inverter";
 
 /**
  * A label of the stage: its words and where it stands on the canvas, in pixels from its top left. A

@@ -17,6 +17,7 @@ import {
   noOptionsOf,
   progressOf,
   readoutsOf,
+  stringsOnTheRoofOf,
 } from "./results-store";
 
 // Answers as the API hands them out; what the tests do not read is left out.
@@ -441,5 +442,45 @@ describe("an option chosen (plan/phase-07-plan.md, step 9, decision 3)", () => {
     const results = createResultsStore();
     results.getState().optionChosen("26x24x1");
     expect(designOf(results.getState())).toBeNull();
+  });
+});
+
+// The strings on the roof (plan/phase-07-plan.md, decision 12): the chosen option's, while the run is of the layout shown.
+describe("the strings on the roof", () => {
+  const S1 = { label: "S1", modules: [0, 1], inverter: 1, mppt: 1 };
+  const wired = (positions: number): DesignResult => {
+    const run = design(positions);
+    return { ...run, layout: { modules: Array.from({ length: positions }, (_, idx) => ({ idx })) }, options: run.options.map((option) => ({ ...option, system: { strings: [S1] } })) } as unknown as DesignResult;
+  };
+  const shown = (positions: number) => ({ ...layout(positions), layout: { notes: [], modules: Array.from({ length: positions }, (_, idx) => ({ idx })) } }) as unknown as LayoutResponse;
+
+  test("are the chosen option's while the run is of the layout shown, the same each time they are read", () => {
+    const store = fresh();
+    store.getState().layoutAsked(1);
+    store.getState().layoutArrived(1, shown(790));
+    store.getState().designBegan(1);
+    store.getState().designArrived(1, wired(790));
+
+    expect(stringsOnTheRoofOf(store.getState())).toEqual([S1] as unknown as ReturnType<typeof stringsOnTheRoofOf>);
+    expect(stringsOnTheRoofOf(store.getState())).toBe(stringsOnTheRoofOf(store.getState()));
+  });
+
+  test("are none while a newer layout is shown, or one of another count of positions", () => {
+    const store = fresh();
+    store.getState().layoutAsked(1);
+    store.getState().layoutArrived(1, shown(790));
+    store.getState().designBegan(1);
+    store.getState().designArrived(1, wired(790));
+    store.getState().layoutAsked(2);
+    store.getState().layoutArrived(2, shown(790));
+    expect(stringsOnTheRoofOf(store.getState())).toBeNull();
+
+    store.getState().designBegan(2);
+    store.getState().designArrived(2, wired(780));
+    expect(stringsOnTheRoofOf(store.getState())).toBeNull();
+  });
+
+  test("are none before a run", () => {
+    expect(stringsOnTheRoofOf(fresh().getState())).toBeNull();
   });
 });
