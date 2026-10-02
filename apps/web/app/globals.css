@@ -196,7 +196,11 @@
   --columns-vitals: 1.25fr 1.15fr 0.85fr 0.85fr 1fr 0.8fr 1.25fr 1.55fr;
   --columns-vitals-waiting: 1fr 1fr 1fr 2.4fr;
   --columns-p-values-phone: 1fr 1fr 1.5fr;
+  --columns-loss-chain: 210px 84px 64px 232px minmax(0, 1fr);
+  --columns-loss-chain-tablet: 230px 96px 72px 196px minmax(0, 1fr);
+  --columns-loss-chain-phone: minmax(0, 1fr) auto auto;
 
+  --radius-swatch: 3px;
   --radius-key: 4px;
   --radius-xs: 6px;
   --radius-seg: 7px;
@@ -386,12 +390,16 @@
   --grid-template-columns-vitals: var(--columns-vitals);
   --grid-template-columns-vitals-waiting: var(--columns-vitals-waiting);
   --grid-template-columns-p-values-phone: var(--columns-p-values-phone);
+  --grid-template-columns-loss-chain: var(--columns-loss-chain);
+  --grid-template-columns-loss-chain-tablet: var(--columns-loss-chain-tablet);
+  --grid-template-columns-loss-chain-phone: var(--columns-loss-chain-phone);
 
   --breakpoint-tablet: 640px;
   --breakpoint-desktop: 1101px;
   --breakpoint-tablet-wide: 820px;
   --breakpoint-desktop-wide: 1360px;
 
+  --radius-swatch: var(--radius-swatch);
   --radius-key: var(--radius-key);
   --radius-xs: var(--radius-xs);
   --radius-seg: var(--radius-seg);
