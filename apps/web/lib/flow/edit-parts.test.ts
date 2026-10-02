@@ -4,7 +4,7 @@ import { partsOfAnEdit } from "./edit-parts";
 
 const DOCUMENT = {
   name: "Pune demo roof",
-  roof: { lat: 18.52, lon: 73.86, roof_type: "flat_tilted" },
+  roof: { lat: 18.52, lon: 73.86, roof_type: "flat_tilted", albedo: 0.2 },
   array: { tilt_deg: 15 },
   pan_text: "",
   pan_path: "",
@@ -19,7 +19,7 @@ const changed = (change: Partial<Project>) => ({ ...DOCUMENT, ...change }) as Pr
 
 describe("what an edit changes (plan/phase-07-plan.md, decision 2)", () => {
   test("the roof, the array and the module ask for the layout and the run", () => {
-    for (const change of [{ roof: { ...DOCUMENT.roof } }, { array: { ...DOCUMENT.array } }, { pan_text: "PVObject_=pvModule" }, { pan_path: "other.PAN" }]) {
+    for (const change of [{ roof: { ...DOCUMENT.roof, lat: 18.53 } }, { array: { ...DOCUMENT.array } }, { pan_text: "PVObject_=pvModule" }, { pan_path: "other.PAN" }]) {
       expect(partsOfAnEdit(DOCUMENT, changed(change as Partial<Project>))).toEqual({ layout: true, run: true });
     }
   });
@@ -35,6 +35,14 @@ describe("what an edit changes (plan/phase-07-plan.md, decision 2)", () => {
       { ac_cable_m: 40 },
     ];
     for (const change of changes) expect(partsOfAnEdit(DOCUMENT, changed(change))).toEqual({ layout: false, run: true });
+  });
+
+  test("the roof's albedo asks for the run and not the layout: the layout does not read it (plan/phase-08-plan.md, decision 7)", () => {
+    expect(partsOfAnEdit(DOCUMENT, changed({ roof: { ...DOCUMENT.roof, albedo: 0.3 } }))).toEqual({ layout: false, run: true });
+  });
+
+  test("the albedo with another field of the roof is a change of the roof", () => {
+    expect(partsOfAnEdit(DOCUMENT, changed({ roof: { ...DOCUMENT.roof, albedo: 0.3, parapet_h: 1.2 } as Project["roof"] }))).toEqual({ layout: true, run: true });
   });
 
   test("the chosen option alone asks for nothing: the run's answer already holds every option", () => {
