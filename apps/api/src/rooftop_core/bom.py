@@ -6,7 +6,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .io.pvsyst import Inverter, Module
-from .onediode import ModuleModel
 from .placement import Layout
 from .stringing import System, dc_cable_m
 
@@ -53,18 +52,19 @@ def dc_cable_label(system_voltage: float) -> str:
     return f"{DC_CABLE_MM2:g} mm² Cu, {system_voltage:.0f} V DC"
 
 
-def cable_schedule(layout: Layout, system: System, module: Module, mm: ModuleModel, t_min: float,
+def cable_schedule(layout: Layout, system: System, module: Module, voc_cold: float,
                    system_voltage: float) -> list[CableRow]:
+    """*voc_cold*: of one module at the lowest ambient, as the series range of the design has it."""
     lengths = dc_cable_m(system, layout)
-    voc = float(mm.voc(1000.0, t_min)[0]) * system.n_series
+    voc = voc_cold * system.n_series
     return [CableRow(f"S{i + 1}", f"INV-{system.inverter_of[i] + 1}", system.mppt_of[i] + 1, system.n_series,
                      voc, module.isc, round(lengths[i], 1), dc_cable_label(system_voltage))
             for i in range(system.n_strings)]
 
 
-def bom(layout: Layout, system: System, module: Module, inv: Inverter, mm: ModuleModel, t_min: float,
+def bom(layout: Layout, system: System, module: Module, inv: Inverter, voc_cold: float,
         tilt_label: str, ac_cable_m: float, system_voltage: float) -> list[BomLine]:
-    cables = cable_schedule(layout, system, module, mm, t_min, system_voltage)
+    cables = cable_schedule(layout, system, module, voc_cold, system_voltage)
     dc_total = sum(c.length_m for c in cables)
     lines = [
         BomLine("PV module", f"{module.manufacturer} {module.model}, {module.pnom_w:g} Wp"

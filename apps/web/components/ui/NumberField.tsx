@@ -23,15 +23,17 @@ type Props = {
   disabled?: boolean;
   /** For the kit: the field as it looks with the focus inside. */
   shownAs?: "focus";
+  /** A line under the label, where the label stands before the field: where the value comes from ("11.9 °C from the weather"). */
+  detail?: string | null;
   /** In a dialog, the focus goes into this field when it opens: it is the one to answer. */
   initialFocus?: boolean;
   className?: string;
 };
 
-export function NumberField({ label, value, onCommit, range, unit, labelInside = false, labelHidden = false, wide = false, disabled = false, shownAs, initialFocus, className }: Props) {
+export function NumberField({ label, value, onCommit, range, unit, labelInside = false, labelHidden = false, wide = false, disabled = false, detail = null, shownAs, initialFocus, className }: Props) {
   const id = useId();
   const entry = useNumberEntry(value, range, unit, onCommit);
-  const names = { label: `${id}-label`, unit: `${id}-unit`, said: `${id}-said` };
+  const names = { label: `${id}-label`, unit: `${id}-unit`, said: `${id}-said`, detail: `${id}-detail` };
 
   const input = (
     <input
@@ -43,7 +45,7 @@ export function NumberField({ label, value, onCommit, range, unit, labelInside =
       disabled={disabled}
       data-initial-focus={initialFocus || undefined}
       aria-labelledby={names.label}
-      aria-describedby={classNames(unit && names.unit, names.said)}
+      aria-describedby={classNames(unit && names.unit, detail && !labelInside && names.detail, names.said)}
       className={classNames(INPUT, "text-right", labelHidden ? "w-full grow" : wide ? "w-24" : "w-16")}
       {...entry.input}
     />
@@ -82,9 +84,20 @@ export function NumberField({ label, value, onCommit, range, unit, labelInside =
   return (
     <div className={className}>
       <div className="flex min-h-10 items-center justify-between gap-row">
-        <label id={names.label} htmlFor={id} className="text-text-2">
-          {label}
-        </label>
+        {detail ? (
+          <span className="flex min-w-0 flex-col gap-0.5">
+            <label id={names.label} htmlFor={id} className="text-text-2">
+              {label}
+            </label>
+            <span id={names.detail} className="type-caption text-text-3">
+              {detail}
+            </span>
+          </span>
+        ) : (
+          <label id={names.label} htmlFor={id} className="text-text-2">
+            {label}
+          </label>
+        )}
         <label
           data-testid="well"
           data-shown-as={shownAs}

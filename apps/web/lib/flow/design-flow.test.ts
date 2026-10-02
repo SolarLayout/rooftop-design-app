@@ -425,6 +425,68 @@ describe("a committed edit", () => {
   });
 });
 
+describe("an edit asks for what it changes (plan/phase-07-plan.md, decision 2)", () => {
+  const voltage = (volts: 600 | 1000 | 1500) => (document: Project) => ({ ...document, system_voltage: volts });
+  const choice = (key: string) => (document: Project) => ({ ...document, chosen_option: key });
+
+  test("a system voltage asks for the run after the pause, and not for the layout", async () => {
+    const { project, layouts, runs, results, pass } = await opened();
+
+    project.getState().commit(voltage(1000));
+    pass(DESIGN_PAUSE);
+
+    expect(layouts).toHaveLength(1);
+    expect(runs).toHaveLength(2);
+    expect(runs[1]?.project.system_voltage).toBe(1000);
+    expect(layoutStatusOf(results.getState())).toBe("idle");
+  });
+
+  test("an edit of the roof or the array asks for both", async () => {
+    const { project, layouts, runs, pass } = await opened();
+
+    project.getState().commit(tilt(20));
+    pass(DESIGN_PAUSE);
+
+    expect(layouts).toHaveLength(2);
+    expect(runs).toHaveLength(2);
+  });
+
+  test("an option chosen asks for nothing, and the design does not wait", async () => {
+    const { project, layouts, runs, results, pass } = await opened();
+
+    project.getState().commit(choice("26x24x1"));
+    pass(DESIGN_PAUSE);
+
+    expect(layouts).toHaveLength(1);
+    expect(runs).toHaveLength(1);
+    expect(designStatusOf(results.getState())).toBe("idle");
+  });
+
+  test("undo and redo of a choice ask for nothing either", async () => {
+    const { project, layouts, runs, pass } = await opened();
+
+    project.getState().commit(choice("26x24x1"));
+    project.getState().undo();
+    project.getState().redo();
+    pass(DESIGN_PAUSE);
+
+    expect(layouts).toHaveLength(1);
+    expect(runs).toHaveLength(1);
+  });
+
+  test("an option chosen while a run waits leaves the run to go on", async () => {
+    const { project, runs, results, pass } = await opened();
+
+    project.getState().commit(voltage(1000));
+    project.getState().commit(choice("19x37x2"));
+    pass(DESIGN_PAUSE);
+
+    expect(runs).toHaveLength(2);
+    expect(runs[1]?.project.system_voltage).toBe(1000);
+    expect(designStatusOf(results.getState())).toBe("running");
+  });
+});
+
 describe("a call that fails", () => {
   test("the run: the last good result stays, and what failed is said in the words of the API", async () => {
     const { project, results, runs, pass, last } = await opened();

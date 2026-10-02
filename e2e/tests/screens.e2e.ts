@@ -122,6 +122,19 @@ test("find, the roof by hand", async ({ page }) => {
   await expectScreen(page, "find-by-hand");
 });
 
+/**
+ * On phone, scrolling to a control in the sheet moves what holds it, sideways too, also where the overflow is
+ * hidden: every scroll is put back before a picture, the sheet's to its top.
+ */
+async function scrollsBack(page: Page): Promise<void> {
+  await page.evaluate(() =>
+    document.querySelectorAll("*").forEach((node) => {
+      if (node.scrollLeft !== 0) node.scrollLeft = 0;
+      if (node.scrollTop !== 0 && node.closest("[data-sheet]")) node.scrollTop = 0;
+    }),
+  );
+}
+
 // The shell, with the demo from the API of the test stack. A picture is taken once the result is there.
 test.describe("the shell", () => {
   const RUN = 90_000;
@@ -238,13 +251,7 @@ test.describe("the shell", () => {
       await page.keyboard.press("ArrowDown");
       await expect(sheet).not.toHaveAttribute("aria-valuetext", "Open");
       await sheet.blur();
-      // Scrolling to the switch moved what holds it, sideways too, also where the overflow is hidden: all back.
-      await page.evaluate(() =>
-        document.querySelectorAll("*").forEach((node) => {
-          if (node.scrollLeft !== 0) node.scrollLeft = 0;
-          if (node.scrollTop !== 0 && node.closest("[data-sheet]")) node.scrollTop = 0;
-        }),
-      );
+      await scrollsBack(page);
     } else await page.getByRole("switch", { name: "Calculated shadow outlines" }).blur();
 
     await cameraSettled(page);
@@ -267,7 +274,9 @@ test.describe("the shell", () => {
     if (isPhone(testInfo.project.name)) {
       await sheet.focus();
       await page.keyboard.press("ArrowDown");
+      await expect(sheet).not.toHaveAttribute("aria-valuetext", "Open");
       await sheet.blur();
+      await scrollsBack(page);
     } else await page.getByRole("radiogroup", { name: "Sun lens" }).getByRole("radio", { name: "Shade map" }).blur();
 
     await cameraSettled(page);
@@ -377,6 +386,16 @@ test.describe("the shell", () => {
     await expectScreen(page, "studio-import-heights");
   });
 
+  // The Strings lens at the demo's 1500 V, option A chosen (the board "Studio, Strings lens"): the inspector of
+  // part 1 of Phase 7, the voltage, the series range and the sizing; the strings on the roof come with part 3.
+  test("studio, the Strings lens", async ({ page }) => {
+    await page.goto("/studio/strings");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await expect(page.getByTestId("series-verdict").filter({ visible: true })).toBeVisible();
+    await sceneSettled(page);
+    await expectScreen(page, "studio-strings");
+  });
+
   test("studio, before a system voltage", async ({ page }) => {
     await page.route("**/api/demo", async (route) => {
       const answer = await route.fetch();
@@ -385,6 +404,7 @@ test.describe("the shell", () => {
     });
     await page.goto("/studio/strings");
     await expect(vitals(page).getByText("442.40")).toBeVisible({ timeout: RUN });
+    await expect(page.getByText("Shading for every module").filter({ visible: true })).toBeVisible();
 
     await sceneSettled(page);
     await expectScreen(page, "studio-before-a-voltage");

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { layoutFailedOf, lineOf, subLineOf, sunFailedOf } from "./stage-view";
+import { layoutFailedOf, lineOf, stringsLineOf, subLineOf, sunFailedOf } from "./stage-view";
 import type { LayoutReadouts, LayoutResponse } from "@/lib/api";
 import { createResultsStore } from "@/lib/stores/results-store";
 
@@ -108,5 +108,26 @@ describe("a sun that failed", () => {
     const store = createResultsStore();
     store.getState().sunAsked(KEY);
     expect(sunFailedOf(store.getState())).toBeNull();
+  });
+});
+
+describe("the line under the Strings lens's title (plan/phase-07-plan.md, decision 14)", () => {
+  const A = { n_series: 29, n_strings: 22, n_inverters: 1, n_modules: 638 } as never;
+  const D = { n_series: 26, n_strings: 27, n_inverters: 2, n_modules: 702 } as never;
+
+  test("with an option: its strings, its inverters with their MPPTs, and the positions it leaves", () => {
+    expect(stringsLineOf({ positions: 790, mppts: 6, option: A, noOptions: null })).toBe("22 strings of 29 modules · 1 inverter, 6 MPPT · 152 positions not used");
+    expect(stringsLineOf({ positions: 790, mppts: 6, option: D, noOptions: null })).toBe("27 strings of 26 modules · 2 inverters, 6 MPPT each · 88 positions not used");
+    expect(stringsLineOf({ positions: 29, mppts: 6, option: { n_series: 29, n_strings: 1, n_inverters: 1, n_modules: 29 } as never, noOptions: null })).toBe("1 string of 29 modules · 1 inverter, 6 MPPT · every position used");
+  });
+
+  test("before a voltage, and where no length fits, the positions are ready", () => {
+    expect(stringsLineOf({ positions: 790, mppts: 6, option: null, noOptions: "system_voltage_missing" })).toBe("790 positions ready · no strings yet");
+    expect(stringsLineOf({ positions: 790, mppts: 6, option: null, noOptions: "no_string_length_fits" })).toBe("790 positions ready · no string length fits");
+    expect(stringsLineOf({ positions: 12, mppts: 6, option: null, noOptions: "too_few_positions" })).toBe("12 positions ready · too few for a string");
+  });
+
+  test("before any run, nothing", () => {
+    expect(stringsLineOf({ positions: null, mppts: null, option: null, noOptions: null })).toBeNull();
   });
 });

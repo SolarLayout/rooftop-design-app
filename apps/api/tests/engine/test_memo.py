@@ -224,6 +224,7 @@ NEITHER, OPTIONS_ONLY, BOTH = (False, False), (False, True), (True, True)
         ("the rise of the cell", _set("cell_rise_c", 30.0), OPTIONS_ONLY),
         ("the current per MPPT", _set("imax_mppt_override", 30.0), OPTIONS_ONLY),
         ("a custom option", _set("custom", (20, 2, 1)), OPTIONS_ONLY),
+        ("the Voc coefficient", _set("voc_coefficient_pct", -0.29), OPTIONS_ONLY),
         ("the inverter", _other_inverter, OPTIONS_ONLY),
         ("the air temperature", _weather(_warmer), OPTIONS_ONLY),
         ("the beam irradiance", _weather(_brighter), OPTIONS_ONLY),

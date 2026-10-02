@@ -55,3 +55,32 @@ export async function withTheFootprints(page: Page): Promise<string[]> {
   });
   return asked;
 }
+
+/** The scale of the map at the demo's place once it has flown there: metres in a CSS pixel. */
+const METRES_PER_PX = 0.28313;
+const PX_PER_M = 1 / METRES_PER_PX;
+
+/** The 90 by 40 rectangle drawn by corners around the centre of the map, closed on the first. */
+export async function drawTheRectangle(page: Page) {
+  const box = (await roofMap(page).boundingBox())!;
+  const cx = box.x + box.width / 2;
+  const cy = box.y + box.height / 2;
+  for (const [east, north] of [
+    [-45, -20],
+    [45, -20],
+    [45, 20],
+    [-45, 20],
+  ]) {
+    await page.mouse.click(Math.round(cx + east * PX_PER_M), Math.round(cy - north * PX_PER_M));
+  }
+  await page.getByTestId("corner").first().click();
+  await expect(page.getByRole("textbox", { name: "South" })).toBeVisible();
+}
+
+/** The map flown to the demo's place by its coordinates, at the scale the rectangle is drawn at. */
+export async function atTheRoof(page: Page) {
+  await searchField(page).fill("18.52000, 73.86000");
+  await searchField(page).press("Enter");
+  await expect(scaleLabel(page)).toHaveText("20 m", { timeout: A_MAP });
+  await expect(roofMap(page)).toHaveAttribute("aria-busy", "false", { timeout: A_MAP });
+}

@@ -15,7 +15,7 @@ import { calloutOfObstacle, wordsOf } from "@/lib/scene/obstacles";
 import { createStageStore, cursorOf, groundOf, moduleWritesOf, type Cursor, type StageStore } from "@/lib/scene/stage-store";
 import type { Lens } from "@/lib/routes";
 import { projectOf } from "@/lib/stores/project-store";
-import { layoutOf, readoutsOf, shadowOutlinesOf, sunDayOf } from "@/lib/stores/results-store";
+import { chosenOptionOf, designOf, isDesignUpdating, layoutOf, readoutsOf, shadowOutlinesOf, sunDayOf } from "@/lib/stores/results-store";
 import { draftOf, isShadeMapShownOf, lensOf, onTheRoofOf, selectionOf, showsSunPathOf, sunTimeOf, toReviewOf } from "@/lib/stores/view-store";
 import { shadeMapWordsOf } from "@/lib/scene/shade-map";
 import { useShadeMapOfTheRun } from "@/components/scene/use-shade-map";
@@ -28,7 +28,7 @@ import { ShadeLegend } from "./ShadeLegend";
 import { SunMarks } from "./SunMarks";
 import { LayoutFailed, SunFailed } from "./LayoutFailed";
 import { PlanFallback } from "./PlanFallback";
-import { lineOf } from "./stage-view";
+import { lineOf, stringsLineOf } from "./stage-view";
 import { useEscapeClears } from "./use-escape-clears";
 import { TimePill, SunTimeline } from "./Time";
 import { useSize } from "./use-size";
@@ -82,12 +82,22 @@ export function Stage({ lens, name, className }: Props) {
   const layoutLine = useResults(useShallow((results) => lineOf(lens, results, obstacles)));
   const sunDay = useResults(sunDayOf);
   // The Sun lens's line says the day and the window (the board "Studio, Sun lens"), once the day has come.
+  const design = useResults(designOf);
+  const option = useResults(chosenOptionOf);
+  const positions = useResults((results) => readoutsOf(results)?.positions ?? null);
+  const isRunning = useResults(isDesignUpdating);
+  // The Strings lens's line says the chosen option's strings, or why there are none (plan/phase-07-plan.md, decision 14).
+  const stringsWords = stringsLineOf({ positions, mppts: design?.equipment.inverter.n_mppt ?? null, option, noOptions: design?.no_options?.code ?? null });
   const line =
     lens === "sun"
       ? sunDay && project
         ? { words: sunLineOf(sunDay.dayOfYear, project.roof.lat, { from: project.array.window_start_h, to: project.array.window_end_h }), isUpdating: false }
         : null
-      : layoutLine;
+      : lens === "strings"
+        ? stringsWords === null
+          ? null
+          : { words: stringsWords, isUpdating: isRunning }
+        : layoutLine;
   const layout = useResults(layoutOf);
   const webGL = useWebGL();
   const [isLost, setLost] = useState(false);

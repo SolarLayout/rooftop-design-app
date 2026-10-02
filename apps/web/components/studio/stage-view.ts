@@ -2,7 +2,7 @@
 // Roof lens" and "Studio, Array lens") and its states while a layout is on its way or failed (the board
 // "Studio, Array lens, states"). Pure functions of the stores; the components draw what they give.
 import { shown } from "../ui/number-entry";
-import type { LayoutReadouts } from "../../lib/api";
+import type { DesignOption, LayoutReadouts, NoOptions } from "../../lib/api";
 import type { Lens } from "../../lib/routes";
 import { isLayoutUpdating, layoutFailureOf, readoutsOf, sunFailureOf, type ResultsState } from "../../lib/stores/results-store";
 
@@ -21,6 +21,39 @@ export function subLineOf(lens: Lens, readouts: LayoutReadouts | null, obstacles
     return `${shown(readouts.positions, 0)} positions · ${shown(readouts.tables, 0)} tables · ${shown(readouts.rows, 0)} rows · ${area(readouts.module_area_m2)} of modules`;
   }
   return null;
+}
+
+const counted = (count: number, one: string, many: string) => `${shown(count, 0)} ${count === 1 ? one : many}`;
+
+/** Why there are no strings, in a few words after the positions (plan/phase-07-plan.md, decision 14). */
+const NO_STRINGS: Record<NoOptions["code"], string> = {
+  system_voltage_missing: "no strings yet",
+  no_string_length_fits: "no string length fits",
+  too_few_positions: "too few for a string",
+  no_positions: "no strings yet",
+};
+
+type StringsOf = {
+  /** The positions of the layout shown; null before any. */
+  positions: number | null;
+  /** The MPPTs of one inverter. */
+  mppts: number | null;
+  /** The option shown as chosen. */
+  option: Pick<DesignOption, "n_series" | "n_strings" | "n_inverters" | "n_modules"> | null;
+  /** Why the run has no options; null when it has some, or there is no run. */
+  noOptions: NoOptions["code"] | null;
+};
+
+/** The line under the Strings lens's title (the boards "Studio, Strings lens" and its "no system voltage yet"). */
+export function stringsLineOf({ positions, mppts, option, noOptions }: StringsOf): string | null {
+  if (positions === null) return null;
+  if (option && mppts !== null) {
+    const unused = positions - option.n_modules;
+    const inverters = `${counted(option.n_inverters, "inverter", "inverters")}, ${shown(mppts, 0)} MPPT${option.n_inverters === 1 ? "" : " each"}`;
+    const left = unused > 0 ? `${counted(unused, "position", "positions")} not used` : "every position used";
+    return `${counted(option.n_strings, "string", "strings")} of ${shown(option.n_series, 0)} modules · ${inverters} · ${left}`;
+  }
+  return noOptions === null ? null : `${shown(positions, 0)} positions ready · ${NO_STRINGS[noOptions]}`;
 }
 
 export type StageLine = {

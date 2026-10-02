@@ -82,6 +82,7 @@ def test_saved_overrides_come_back_exactly():
         custom=(27, 20, 1),
         cell_rise_c=25.0,
         imax_mppt_override=32.5,
+        voc_coefficient_pct=-0.29,
     )
 
     back = _through_a_file(project)
@@ -91,6 +92,7 @@ def test_saved_overrides_come_back_exactly():
     assert back.custom == (27, 20, 1) and isinstance(back.custom, tuple)
     assert back.cell_rise_c == 25.0
     assert back.imax_mppt_override == 32.5
+    assert back.voc_coefficient_pct == -0.29
 
 
 def test_overrides_that_were_not_set_stay_unset():
@@ -98,17 +100,35 @@ def test_overrides_that_were_not_set_stay_unset():
 
     assert back.t_min_override is None and back.t_max_override is None
     assert back.custom is None and back.cell_rise_c is None and back.imax_mppt_override is None
+    assert back.voc_coefficient_pct is None
 
 
 def test_restored_overrides_reach_the_design():
     project = _light_project(
-        t_min_override=7.25, t_max_override=43.5, cell_rise_c=30.0, imax_mppt_override=32.5
+        t_min_override=7.25,
+        t_max_override=43.5,
+        cell_rise_c=30.0,
+        imax_mppt_override=32.5,
+        voc_coefficient_pct=-0.29,
     )
 
     design = Design(_through_a_file(project))
 
     assert (design.t_min, design.t_max, design.cell_rise) == (7.25, 43.5, 30.0)
     assert design.inverter.mppt_current_limit == 32.5
+    assert design.coeffs.entered and design.coeffs.mu_voc_pct == -0.29
+
+
+@pytest.mark.parametrize("fmt", [1, 2])
+def test_a_file_written_before_the_voc_coefficient_opens_without_one(fmt):
+    written = json.loads(json.dumps(_light_project().to_json()))
+    del written["voc_coefficient_pct"]
+    written["format"] = fmt
+
+    back = Project.from_json(written)
+
+    assert back.voc_coefficient_pct is None
+    assert not Design(back).coeffs.entered
 
 
 # ── format 1 ─────────────────────────────────────────────────────────────────

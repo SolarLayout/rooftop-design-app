@@ -230,6 +230,7 @@
   --opacity-disabled: 0.45;
   --opacity-updating: 0.55;
   --opacity-hint: 0.35;
+  --opacity-band: 0.55;
 
   --stroke-icon: 2;
   --stroke-icon-light: 1.7;
@@ -326,6 +327,7 @@
   --shadow-text-on-imagery: 0 1px 3px rgba(0,0,0,.9);
   --halo-focus: 0 0 0 3px rgba(255,176,32,.18);
   --halo-selected: 0 0 0 3px rgba(255,176,32,.14);
+  --halo-decision: 0 0 0 4px rgba(255,176,32,.14);
   --halo-saved: 0 0 0 0 rgba(61,214,160,.5);
   --halo-saved-out: 0 0 0 5px rgba(61,214,160,0);
   --halo-corner: 0 0 0 0 rgba(255,176,32,.55);
@@ -468,6 +470,7 @@
   --shadow-text-on-imagery: var(--shadow-text-on-imagery);
   --shadow-halo-focus: var(--halo-focus);
   --shadow-halo-selected: var(--halo-selected);
+  --shadow-halo-decision: var(--halo-decision);
   --shadow-halo-saved: var(--halo-saved);
   --shadow-halo-saved-out: var(--halo-saved-out);
   --shadow-halo-corner: var(--halo-corner);
@@ -708,6 +711,9 @@
 
 @utility opacity-disabled {
   opacity: var(--opacity-disabled);
+}
+@utility opacity-band {
+  opacity: var(--opacity-band);
 }
 @utility opacity-updating {
   opacity: var(--opacity-updating);

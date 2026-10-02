@@ -5,6 +5,7 @@
 //
 // The calls go through the client of the API (lib/api) and nothing else.
 import { DESIGN_PAUSE, TIME_REST } from "../../components/ui/design-numbers";
+import { partsOfAnEdit } from "./edit-parts";
 import { api as apiOfTheApp, ApiError, type Api, type Project } from "../api";
 import { CLOCK_OF_THE_BROWSER, type Clock } from "../clock";
 import { hoursOf, QUARTER_HOUR } from "../scene/sun-day";
@@ -45,6 +46,8 @@ function failureOf(error: unknown): Failure {
 
 export function createDesignFlow({ project, results, view, api = apiOfTheApp, clock = CLOCK_OF_THE_BROWSER }: Options): DesignFlow {
   let followed = 0;
+  /** The document of the edit followed last: what the next edit is compared with. */
+  let documentFollowed: Project | null = null;
   let sunCall: AbortController | null = null;
   let sunAsked: string | null = null;
   let stopFollowingTheView: (() => void) | null = null;
@@ -266,15 +269,21 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
     giveUpTheDemo();
     hasTheDemoFailed = false;
     const isOpened = openedAt === edit;
+    const before = documentFollowed;
+    documentFollowed = document;
     if (isOpened) {
       giveUpTheLayout();
       giveUpTheRun();
       giveUpTheSun();
       results.getState().clear();
     }
-    askForTheLayout(document, edit);
+    // An edit asks for what it changes (plan/phase-07-plan.md, decision 2): the layout only for the roof, the
+    // array or the module; nothing at all for the option chosen, which the run's answer already holds.
+    const parts = isOpened || before === null ? { layout: true, run: true } : partsOfAnEdit(before, document);
+    if (parts.layout) askForTheLayout(document, edit);
     askForTheSun();
     followTheShadows();
+    if (!parts.run) return;
     // Nobody edits a design that is just opened: its run need not wait.
     if (isOpened) run(document, edit);
     else runAfterThePause(document, edit);

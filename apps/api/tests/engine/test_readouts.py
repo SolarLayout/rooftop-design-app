@@ -6,6 +6,7 @@ from rooftop_core import readouts
 from rooftop_core.demo import demo_project, rectangle
 from rooftop_core.geometry import Roof
 from rooftop_core.project import Design
+from tests.kept import KEPT
 
 pytestmark = pytest.mark.slow
 
@@ -138,6 +139,39 @@ def test_the_cable_schedule_of_option_a(demo_design, option_a):
     assert {row.inverter for row in rows} == {"INV-1"}
     assert rows[0].voc_cold_v == pytest.approx(1480, abs=0.5)
     assert {row.size for row in rows} == {"4 mm² Cu, 1500 V DC"}
+
+
+@pytest.fixture(scope="module")
+def entered_design():
+    """The demo with the Voc coefficient of a datasheet entered: −0.29 %/°C."""
+    project = demo_project()
+    project.voc_coefficient_pct = -0.29
+    design = Design(project, memo=KEPT)
+    design.run_options()
+    return design
+
+
+def _longest(design):
+    return max(design.options, key=lambda option: option.n_series)
+
+
+def test_an_entered_voc_coefficient_gives_the_verdict_its_voc(entered_design):
+    rng, option = entered_design.range, _longest(entered_design)
+
+    verdict = readouts.verdict(entered_design, option)
+
+    assert rng.voc_cold == pytest.approx(51.84, abs=0.01)
+    assert option.n_series == 28
+    assert verdict.detail.startswith("Voc at 11.9 °C is 1,452 V (limit 1500 V); ")
+
+
+def test_an_entered_voc_coefficient_gives_the_cable_schedule_its_voc(entered_design):
+    option = _longest(entered_design)
+
+    rows = readouts.cables(entered_design, option)
+
+    assert all(row.voc_cold_v == pytest.approx(28 * 51.84, abs=0.3) for row in rows)
+    assert rows[0].voc_cold_v == 28 * entered_design.range.voc_cold
 
 
 def test_the_summary_has_the_fourteen_rows_of_the_desktop(demo_design, option_a):

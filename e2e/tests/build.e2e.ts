@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { A_MAP, findOpened, roofMap, scaleLabel, searchField } from "../find";
+import { A_MAP, atTheRoof, drawTheRectangle, findOpened, roofMap, scaleLabel } from "../find";
 import { expect, test } from "../fixtures";
 
 // "Build this roof" (plan/phase-04-plan.md, step 11): the roof type, the document from the API, the
@@ -7,37 +7,11 @@ import { expect, test } from "../fixtures";
 // committed edit. The acceptance of the phase: from Home to the Studio in under 60 s; the 90.0 by 40.0 m
 // rectangle within 0.5 m per edge and 2 % of area in the request the web app sends.
 
-const METRES_PER_PX = 0.28313;
-const PX_PER_M = 1 / METRES_PER_PX;
 const RUN = 90_000;
 const UNDER = 60_000;
 
 const isPhone = (projectName: string) => projectName === "phone";
 const isDesktop = (projectName: string) => projectName === "desktop";
-
-/** The 90 by 40 rectangle drawn by corners around the centre of the map, closed on the first. */
-async function drawTheRectangle(page: Page) {
-  const box = (await roofMap(page).boundingBox())!;
-  const cx = box.x + box.width / 2;
-  const cy = box.y + box.height / 2;
-  for (const [east, north] of [
-    [-45, -20],
-    [45, -20],
-    [45, 20],
-    [-45, 20],
-  ]) {
-    await page.mouse.click(Math.round(cx + east * PX_PER_M), Math.round(cy - north * PX_PER_M));
-  }
-  await page.getByTestId("corner").first().click();
-  await expect(page.getByRole("textbox", { name: "South" })).toBeVisible();
-}
-
-async function atTheRoof(page: Page) {
-  await searchField(page).fill("18.52000, 73.86000");
-  await searchField(page).press("Enter");
-  await expect(scaleLabel(page)).toHaveText("20 m", { timeout: A_MAP });
-  await expect(roofMap(page)).toHaveAttribute("aria-busy", "false", { timeout: A_MAP });
-}
 
 /** The roof type chosen, as the size offers it: a card on desktop, a segmented control on touch. */
 async function chooseRoofType(page: Page, projectName: string, name: string, short: string) {

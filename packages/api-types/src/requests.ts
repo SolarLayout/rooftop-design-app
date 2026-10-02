@@ -369,7 +369,8 @@ export interface components {
         };
         /**
          * Coefficients
-         * @description Temperature coefficients, and whether the file gave them or the one-diode model.
+         * @description Temperature coefficients, and whether the file gave them, the one-diode model, or the user (the Voc
+         *     coefficient entered in the project).
          */
         Coefficients: {
             /** Mu Pmpp Pct */
@@ -384,7 +385,7 @@ export interface components {
              * Source
              * @enum {string}
              */
-            source: "one-diode model" | "PAN file";
+            source: "one-diode model" | "PAN file" | "entered";
         };
         /**
          * CurrentPerMppt
@@ -1487,6 +1488,8 @@ export interface components {
             t_max_override?: number | null;
             /** T Min Override */
             t_min_override?: number | null;
+            /** Voc Coefficient Pct */
+            voc_coefficient_pct?: number | null;
             /**
              * Weather Csv
              * @default

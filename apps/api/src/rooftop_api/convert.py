@@ -139,8 +139,14 @@ def coefficients_from_engine(c: onediode.Coefficients) -> schemas.Coefficients:
         mu_voc_pct=c.mu_voc_pct,
         mu_vmp_pct=c.mu_vmp_pct,
         mu_pmpp_pct=c.mu_pmpp_pct,
-        source="one-diode model" if c.derived else "PAN file",
+        source=_coefficient_source(c),
     )
+
+
+def _coefficient_source(c: onediode.Coefficients) -> schemas.CoefficientSource:
+    if c.entered:
+        return "entered"
+    return "one-diode model" if c.derived else "PAN file"
 
 
 def inverter_from_engine(inverter: pvsyst.Inverter) -> schemas.Inverter:

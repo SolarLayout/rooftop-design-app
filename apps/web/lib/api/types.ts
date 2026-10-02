@@ -35,6 +35,8 @@ export type Module = Answers["Module"];
 export type Coefficients = Answers["Coefficients"];
 export type Equipment = Answers["Equipment"];
 export type InverterResponse = Answers["InverterResponse"];
+export type Inverter = Answers["Inverter"];
+export type CurrentPerMppt = Answers["CurrentPerMppt"];
 export type ImportedRoof = Answers["ImportedRoof"];
 export type RoofOnMap = Answers["RoofOnMap"];
 export type MapShape = Answers["MapShape"];
@@ -53,5 +55,7 @@ export type DesignEvent = DesignProgress | DesignDone | DesignFailed;
 export type DesignResult = Answers["DesignResult"];
 export type DesignOption = Answers["Option"];
 export type NoOptions = Answers["NoOptions"];
+export type SeriesRange = Answers["SeriesRange"];
+export type Verdict = Answers["Verdict"];
 
 export type ExportKind = "pdf" | "dxf" | "kmz" | "csv" | "sld";
