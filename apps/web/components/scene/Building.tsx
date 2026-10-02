@@ -2,7 +2,7 @@
 
 import type { ThreeEvent } from "@react-three/fiber";
 import { useMemo } from "react";
-import { BufferGeometry, DoubleSide, Float32BufferAttribute, Shape, ShapeGeometry } from "three";
+import { BackSide, BufferGeometry, DoubleSide, Float32BufferAttribute, Shape, ShapeGeometry } from "three";
 import { FLAT, toScene, toScenePoint, type XY } from "@/lib/scene/adapter";
 import { frameOf, parapetWallsOf, wallOf, type RoofOfTheScene } from "@/lib/scene/building";
 import { PALETTE } from "@/lib/scene-palette";
@@ -79,7 +79,7 @@ export function Building({ roof, onPressRoof, onOverRoof }: Props) {
         <meshStandardMaterial color={PALETTE.roof} roughness={0.95} side={DoubleSide} />
       </mesh>
       <mesh geometry={walls} castShadow>
-        <meshStandardMaterial color={PALETTE.wallLit} roughness={0.9} side={DoubleSide} />
+        <meshStandardMaterial color={PALETTE.wallLit} roughness={0.9} side={DoubleSide} shadowSide={BackSide} />
       </mesh>
       <lineLoop geometry={edge}>
         <lineBasicMaterial color={PALETTE.roofEdge} toneMapped={false} />
@@ -94,7 +94,7 @@ export function Building({ roof, onPressRoof, onOverRoof }: Props) {
           receiveShadow
         >
           <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial color={PALETTE.parapetLit} roughness={0.9} />
+          <meshStandardMaterial color={PALETTE.parapetLit} roughness={0.9} shadowSide={BackSide} />
         </mesh>
       ))}
     </group>
