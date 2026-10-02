@@ -7,6 +7,7 @@ import { frameOf } from "@/lib/scene/building";
 import { toScene, type XY, type XYZ } from "@/lib/scene/adapter";
 import { onTheRoofPlane } from "@/lib/scene/drag";
 import { handlePointsOf, type About } from "@/lib/scene/handles";
+import { inverterMarkersOf } from "@/lib/scene/inverter-markers";
 import { anchorOf } from "@/lib/scene/keepout";
 import { anchorOfObstacle, canBeDragged } from "@/lib/scene/obstacles";
 import { anchorOfModule, anchorOfRoof, selectionOfPick, type Picked } from "@/lib/scene/pick";
@@ -21,6 +22,7 @@ import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
 import { Building, BUILDING_DEPTH } from "./Building";
 import { CameraRig } from "./CameraRig";
 import { Ground } from "./Ground";
+import { InverterMarkers } from "./InverterMarkers";
 import { KeepOut } from "./KeepOut";
 import { Modules } from "./Modules";
 import { Footprint, Obstacles } from "./Obstacles";
@@ -29,7 +31,7 @@ import { SceneCanvas } from "./SceneCanvas";
 import { ShadowOutlines } from "./ShadowOutlines";
 import { SunLight } from "./SunLight";
 import { SunPath } from "./SunPath";
-import { useGlassOfTheStage } from "./use-strings";
+import { useGlassOfTheStage, useStringsShown } from "./use-strings";
 
 type Props = {
   onContextLost: () => void;
@@ -63,20 +65,25 @@ export function Scene({ onContextLost, stage }: Props) {
   const dragging = useView(draggingOf);
   const showsSunPath = useView(showsSunPathOf);
   const glass = useGlassOfTheStage();
+  const strings = useStringsShown();
   const drawn = whatIsDrawnOf(useView(lensOf), useView(cameraOf));
   const { view, project: store } = useStores();
   const roof = project?.roof ?? null;
   const flushClearance = project?.array.flush_clearance_m ?? 0.1;
   const frame = useMemo(() => (roof ? frameOf(roof) : null), [roof]);
   const about = useMemo<About | null>(() => (frame ? { centroid: frame.centroid, heightAt: frame.heightAt } : null), [frame]);
-  // The labels of the roof's edges and the callout of what is selected (a kept-clear area, an obstacle, a
+  // The inverters of the chosen option, while its strings are on the roof (plan/phase-07-plan.md, decision 13).
+  const inverters = strings?.option.system.inverters ?? null;
+  const markers = useMemo(() => (inverters && frame ? inverterMarkersOf(inverters, frame.heightAt) : []), [inverters, frame]);
+  // The labels of the roof's edges, the chips of the inverters, and the callout of what is selected (a kept-clear area, an obstacle, a
   // draft obstacle, a module, the roof), anchored about the origin of the scene as the building is; the
   // points the handles of the selected obstacle are placed by, of the obstacle as the pointer has it.
   const anchors = useMemo<Anchor[]>(() => {
     if (!roof || !frame) return [];
     const [cx, cy] = frame.centroid;
     const about = ([x, y, z]: XYZ) => toScene([x - cx, y - cy, z]);
-    const labels = drawn.edgeLabels ? labelPlacesOf(roof.outline, frame.heightAt).map(({ words, at }) => ({ words, at: about(at) })) : [];
+    const edges = drawn.edgeLabels ? labelPlacesOf(roof.outline, frame.heightAt).map(({ words, at }) => ({ words, at: about(at) })) : [];
+    const labels = [...edges, ...markers.map(({ label, top }): Anchor => ({ words: label, at: about(top), kind: "inverter" }))];
     const callout = (at: XYZ): Anchor => ({ words: "", at: about(at), kind: "callout" });
     if (draft) return [...labels, callout(anchorOfObstacle(draft, frame.heightAt))];
     if (selection?.kind === "roof") return [...labels, callout(anchorOfRoof(roof.outline, frame.heightAt))];
@@ -90,7 +97,7 @@ export function Scene({ onContextLost, stage }: Props) {
     const part = selection?.kind === "keepout" ? layout?.layout.keepout[selection.index] : undefined;
     const hung = part ? anchorOf(part) : null;
     return hung ? [...labels, callout([hung[0], hung[1], frame.heightAt(hung)])] : labels;
-  }, [roof, frame, layout, selection, draft, dragging, drawn.edgeLabels]);
+  }, [roof, frame, layout, selection, draft, dragging, drawn.edgeLabels, markers]);
 
   if (!roof || !frame || !about) return null;
   const [cx, cy] = frame.centroid;
@@ -149,6 +156,7 @@ export function Scene({ onContextLost, stage }: Props) {
             glassColours={glass}
           />
         ) : null}
+        {markers.length ? <InverterMarkers markers={markers} /> : null}
         <ShadowOutlines heightAt={frame.heightAt} />
         {layout && drawn.keptClear ? (
           <KeepOut

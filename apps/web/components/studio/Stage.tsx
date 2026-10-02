@@ -23,8 +23,10 @@ import { readOutOf, sunLineOf, sunPathLineOf } from "@/lib/studio/sun-time";
 import { useSun } from "@/components/scene/use-sun";
 import { Callout } from "./Callout";
 import { Handles } from "./Handles";
+import { InverterChips } from "./InverterChips";
 import { Labels } from "./Labels";
 import { ShadeLegend } from "./ShadeLegend";
+import { StringLegend } from "./StringLegend";
 import { SunMarks } from "./SunMarks";
 import { LayoutFailed, SunFailed } from "./LayoutFailed";
 import { PlanFallback } from "./PlanFallback";
@@ -59,6 +61,13 @@ const TIMELINE = "absolute inset-x-5 bottom-7 z-stage-overlay desktop:bottom-29"
 
 /** The legend of the shade map: 12 over the timeline on tablet and desktop; on phone at the stage's bottom left, over the attribution. */
 const SHADE_LEGEND = "absolute bottom-7 left-3 z-stage-overlay tablet:bottom-26 tablet:left-5 desktop:bottom-48";
+
+/**
+ * The strings' colour switch and legend (the boards "Studio, Strings lens" on three sizes): 12 over the time pill on
+ * desktop (the pill's 116 and 44: 172), at the bottom right on tablet and at the bottom left on phone, 28 over the
+ * stage's bottom there, so that the imagery's attribution under it stays clear.
+ */
+const STRING_LEGEND = "absolute bottom-7 left-3 z-stage-overlay tablet:right-5 tablet:left-auto desktop:right-auto desktop:bottom-43 desktop:left-6";
 
 /** The chip of a layout that failed stands under the title, in the middle of the stage: as wide as the board draws it, or as the phone allows. */
 const LAYOUT_FAILED = "absolute inset-x-4 top-16 z-stage-overlay tablet:inset-x-0 tablet:top-20 tablet:mx-auto tablet:w-95 desktop:top-24";
@@ -120,6 +129,7 @@ export function Stage({ lens, name, className }: Props) {
       </div>
       {cannotDraw ? null : <SunMarks stage={stage} />}
       {cannotDraw ? null : <Labels stage={stage} />}
+      {cannotDraw ? null : <InverterChips stage={stage} />}
       {cannotDraw ? null : <Callout stage={stage} />}
       {cannotDraw ? null : <Handles stage={stage} />}
       <div className="pointer-events-none absolute inset-x-4 top-4 z-stage-overlay flex flex-col gap-0.5 tablet:inset-x-5 desktop:top-5 desktop:left-6">
@@ -136,6 +146,7 @@ export function Stage({ lens, name, className }: Props) {
       {cannotDraw ? null : <ViewControls stage={stage} className={VIEW_CONTROLS} />}
       {cannotDraw || size === null ? null : lens === "sun" && size !== "phone" ? <SunTimeline size={size} className={TIMELINE} /> : <TimePill size={size} className={TIME_PILL} />}
       {cannotDraw || size === null ? null : <ShadeLegend size={size} className={SHADE_LEGEND} />}
+      {cannotDraw || size === null ? null : <StringLegend size={size} className={STRING_LEGEND} />}
       {cannotDraw ? null : ATTRIBUTION ? (
         <p data-testid="stage-attribution" className="pointer-events-none absolute bottom-1 left-4 z-stage-overlay max-w-full truncate type-label-s text-text-on-imagery on-imagery tablet:left-5 desktop:bottom-1.5 desktop:left-6">
           {ATTRIBUTION}
