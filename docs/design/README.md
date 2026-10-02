@@ -51,7 +51,10 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | Roof types in 3D | `RoofTypes3D.dc.html` | `studio-roof-types-3d.png` | desktop |
 | Studio, Array lens, states | `ArrayLensStates.dc.html` | `studio-array-lens-states.png` | desktop in parts |
 | Import with missing heights | `ImportHeights.dc.html` | `studio-import-heights.png` | desktop, phone in parts |
-| Studio, Sun lens | `SunLens.dc.html` | `studio-sun-lens-desktop.png` | desktop |
+| Studio, Sun lens | `SunLens.dc.html`, `SunLensTablet.dc.html`, `SunLensPhone.dc.html` | `studio-sun-lens-desktop.png`, `studio-sun-lens-tablet.png`, `studio-sun-lens-phone.png` | desktop, tablet, phone |
+| Time on the stage | `SunTime.dc.html` | `studio-sun-time.png` | desktop, tablet, phone in parts |
+| Sun path and shadow outlines | `SunPathShadows.dc.html` | `studio-sun-path-shadows.png` | desktop in parts |
+| Shade map | `ShadeMap.dc.html` | `studio-shade-map.png` | desktop, phone in parts |
 | Studio, Strings lens | `StringsLens.dc.html` | `studio-strings-lens-desktop.png` | desktop |
 | Studio, Strings lens, no system voltage yet | `StringsLensNoVoltage.dc.html` | `studio-strings-lens-no-voltage.png` | desktop |
 | Performance | `Performance.dc.html` | `performance-desktop.png` | desktop |
@@ -70,8 +73,8 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
 - All numbers are real results of the engine for the Pune demo (`plan/reference/demo-numbers.md`). The
   equipment is shown by its real names (decision D24). The placement
   of strings on the roof in the Strings lens is illustrative.
-- `mockups/build_lenses.py` generated the Sun and Strings boards from the Array board. It is kept so the boards
-  can be regenerated; it is not part of the product.
+- `mockups/build_lenses.py` generated the Strings board, and once the sketch of the Sun board, from the Array board. It
+  is kept so the boards can be regenerated; it is not part of the product.
 - `mockups/build_phase3_boards.py` writes the two boards of round 4, "Controls, part 2" and "Shell states",
   approved on 2026-09-29 (decision D32), and the board "Tabs", approved the same day (decision D35). It is
   kept so that the boards can be written again.
@@ -84,5 +87,11 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   (its states, the roof types in 3D, the import with missing heights), drawn on 2026-09-30 by session 9
   (`plan/phase-05-plan.md`, step 0). The 3D crops are drawn from the engine's own positions, kept in
   `mockups/roof_types_positions.json`, so that the boards can be written again without the engine.
-- `mockups/canvas.json` is the layout of the boards on the canvas. The canvas and the repo hold the same 27 boards
-  since 2026-09-30 (session 9 published the six of Phase 5).
+- `mockups/build_phase6_sun_boards.py` writes the three boards of the Sun lens (desktop, tablet, phone; the desktop board
+  replaces the sketch) and `mockups/build_phase6_state_boards.py` the three of its parts (the time on the stage, the sun
+  path and the shadow outlines, the shade map), drawn on 2026-10-02 by session 10 (`plan/phase-06-plan.md`, step 0). The
+  sun, the shadows and the shade of every module are the engine's for the Pune demo, kept in `mockups/sun_lens_data.json`,
+  so that the boards can be written again without the engine.
+- `mockups/canvas.json` is the layout of the boards on the canvas: 32 boards. The canvas at claude.ai holds 27 of them,
+  published on 2026-09-30, and is behind the repo by the board ImportHeights changed on 2026-10-01 and the five new boards
+  of Phase 6 with the redrawn Sun lens: sessions on Bedrock have no Artifact tool to publish them.

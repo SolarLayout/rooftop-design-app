@@ -191,6 +191,41 @@
    "w": 1440,
    "h": 2110,
    "title": "Import with missing heights"
+  },
+  "SunLensTablet.dc.html": {
+   "h": 1194,
+   "title": "Studio, Sun lens · tablet 834",
+   "w": 834,
+   "x": 0,
+   "y": 19340
+  },
+  "SunLensPhone.dc.html": {
+   "h": 1500,
+   "title": "Studio, Sun lens · phone 390",
+   "w": 390,
+   "x": 914,
+   "y": 19340
+  },
+  "SunTime.dc.html": {
+   "h": 3920,
+   "title": "Time on the stage",
+   "w": 1440,
+   "x": 1384,
+   "y": 19340
+  },
+  "SunPathShadows.dc.html": {
+   "h": 2590,
+   "title": "Sun path and shadow outlines",
+   "w": 1440,
+   "x": 2904,
+   "y": 19340
+  },
+  "ShadeMap.dc.html": {
+   "h": 3600,
+   "title": "Shade map",
+   "w": 1440,
+   "x": 4424,
+   "y": 19340
   }
  },
  "createdOnFiles": {
@@ -257,6 +292,14 @@
    "w": 240,
    "x": 0,
    "y": 12700
+  },
+  "t8": {
+   "kind": "title1",
+   "maxW": 5864,
+   "text": "8 · Studio, Sun lens: the lens on every size, the time, the sun path and the shadow outlines, the shade map",
+   "w": 240,
+   "x": 0,
+   "y": 19040
   }
  },
  "order": [
@@ -286,7 +329,12 @@
   "ObstacleOnRoof.dc.html",
   "RoofTypes3D.dc.html",
   "ArrayLensStates.dc.html",
-  "ImportHeights.dc.html"
+  "ImportHeights.dc.html",
+  "SunLensTablet.dc.html",
+  "SunLensPhone.dc.html",
+  "SunTime.dc.html",
+  "SunPathShadows.dc.html",
+  "ShadeMap.dc.html"
  ],
  "pages": [],
  "title": "SolarLayout Rooftop — Web Design"
