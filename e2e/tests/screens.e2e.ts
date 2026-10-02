@@ -238,6 +238,8 @@ test.describe("the shell", () => {
       await page.keyboard.press("ArrowDown");
       await expect(sheet).not.toHaveAttribute("aria-valuetext", "Open");
       await sheet.blur();
+      // The sheet's content back at its top, as it scrolled to the switch.
+      await page.locator("[data-sheet] *").evaluateAll((nodes) => nodes.forEach((node) => node.scrollTo({ top: 0 })));
     } else await page.getByRole("switch", { name: "Calculated shadow outlines" }).blur();
 
     await cameraSettled(page);
