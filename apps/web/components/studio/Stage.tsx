@@ -15,8 +15,10 @@ import { calloutOfObstacle, wordsOf } from "@/lib/scene/obstacles";
 import { createStageStore, cursorOf, groundOf, type Cursor, type StageStore } from "@/lib/scene/stage-store";
 import type { Lens } from "@/lib/routes";
 import { projectOf } from "@/lib/stores/project-store";
-import { layoutOf, readoutsOf, sunOf } from "@/lib/stores/results-store";
-import { draftOf, selectionOf, toReviewOf } from "@/lib/stores/view-store";
+import { layoutOf, readoutsOf, sunDayOf } from "@/lib/stores/results-store";
+import { draftOf, selectionOf, sunTimeOf, toReviewOf } from "@/lib/stores/view-store";
+import { readOutOf } from "@/lib/studio/sun-time";
+import { useSun } from "@/components/scene/use-sun";
 import { Callout } from "./Callout";
 import { Handles } from "./Handles";
 import { Labels } from "./Labels";
@@ -105,7 +107,9 @@ function OnTheRoof({ stage }: { stage: StageStore }) {
   const project = useProject(projectOf);
   const readouts = useResults(readoutsOf);
   const layout = useResults(layoutOf);
-  const sun = useResults(sunOf);
+  const sunDay = useResults(sunDayOf);
+  const sun = useSun();
+  const { hour } = useView(sunTimeOf);
   const selection = useView(selectionOf);
   const draft = useView(draftOf);
   const toReview = useView(toReviewOf);
@@ -140,11 +144,7 @@ function OnTheRoof({ stage }: { stage: StageStore }) {
       {ground === "none" ? null : (
         <li data-testid="on-the-roof-ground">{ground === "imagery" ? "The ground is the satellite imagery" : "The ground is plain, with a grid"}</li>
       )}
-      {sun ? (
-        <li data-testid="on-the-roof-sun">
-          Sun {shown(sun.elevationDeg, 1)}° over the horizon, {shown(sun.azimuthDeg, 1)}° from north
-        </li>
-      ) : null}
+      {sunDay ? <li data-testid="on-the-roof-sun">{readOutOf(sunDay.dayOfYear, hour, sun)}</li> : null}
       {layout?.layout.keepout.map((part, index) => (
         <li key={`keepout-${index}`} data-testid="on-the-roof-keepout">
           {calloutOf(part, window).title}: {calloutOf(part, window).detail}

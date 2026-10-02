@@ -13,7 +13,7 @@ import { anchorOfModule, anchorOfRoof, selectionOfPick, type Picked } from "@/li
 import { labelPlacesOf } from "@/lib/scene/projection";
 import type { Cursor, StageStore } from "@/lib/scene/stage-store";
 import { projectOf } from "@/lib/stores/project-store";
-import { layoutOf, sunOf } from "@/lib/stores/results-store";
+import { layoutOf } from "@/lib/stores/results-store";
 import { draftOf, draggingOf, selectionOf, toReviewOf } from "@/lib/stores/view-store";
 import { withDraftAt, withObstacleReplaced } from "@/lib/studio/obstacle-fields";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
@@ -26,6 +26,7 @@ import { Footprint, Obstacles } from "./Obstacles";
 import { Projector, type Anchor } from "./Projector";
 import { SceneCanvas } from "./SceneCanvas";
 import { SunLight } from "./SunLight";
+import { useSun } from "./use-sun";
 
 type Props = {
   onContextLost: () => void;
@@ -48,7 +49,7 @@ const ON_THE_ROOF = new Set<Picked["what"]>(["roof", "module", "keepout"]);
 export function Scene({ onContextLost, stage }: Props) {
   const project = useProject(projectOf);
   const layout = useResults(layoutOf);
-  const sun = useResults(sunOf);
+  const sunAt = useSun();
   const selection = useView(selectionOf);
   const draft = useView(draftOf);
   const toReview = useView(toReviewOf);
@@ -84,7 +85,6 @@ export function Scene({ onContextLost, stage }: Props) {
   if (!roof || !frame || !about) return null;
   const [cx, cy] = frame.centroid;
   const [ox, oy, oz] = toScene([-cx, -cy, 0]);
-  const sunAt = sun ? { elevationDeg: sun.elevationDeg, azimuthDeg: sun.azimuthDeg } : null;
 
   /** Where a ray of the pointer meets the roof plane, in the document's metres; null when it never does. */
   function onTheRoof(event: ThreeEvent<MouseEvent>): XY | null {
