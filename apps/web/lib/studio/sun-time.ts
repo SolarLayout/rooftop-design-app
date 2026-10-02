@@ -3,6 +3,9 @@
 import { shown } from "../../components/ui/number-entry";
 import type { Sun } from "../scene/camera";
 import { hourOf } from "../scene/keepout";
+import { QUARTER_HOUR, type DayHours } from "../scene/sun-day";
+import type { SunDay } from "../stores/results-store";
+import type { SunTime } from "../stores/view-store";
 
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -11,13 +14,9 @@ const DAYS_IN = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
 /** The date of a day of the year, short ("21 Dec") and long ("21 December"). Day 366 is the last day. */
 export function dateOf(dayOfYear: number): { short: string; long: string } {
-  let left = Math.min(dayOfYear, 365);
-  let month = 0;
-  while (left > DAYS_IN[month]) {
-    left -= DAYS_IN[month];
-    month += 1;
-  }
-  return { short: `${left} ${MONTHS[month].slice(0, 3)}`, long: `${left} ${MONTHS[month]}` };
+  const { day, month } = partsOf(dayOfYear);
+  const name = MONTHS[month - 1];
+  return { short: `${day} ${name.slice(0, 3)}`, long: `${day} ${name}` };
 }
 
 /** Where the sun stands from the nearer of south and north: "56.6° W of south"; "due south" on the line. */
@@ -40,4 +39,85 @@ export function readOutOf(dayOfYear: number, hour: number, sun: Sun | null): str
   const when = `${dateOf(dayOfYear).short}, ${hourOf(hour)} solar time`;
   if (sun === null || sun.elevationDeg <= 0) return `${when}, the sun is down`;
   return `${when}, sun ${shown(sun.elevationDeg, 1)}° high, ${bearingOf(sun.azimuthDeg)}`;
+}
+
+/** A mark under the timeline: where it stands on the track, in hours, and what it says. */
+export type Tick = { hour: number; words: string };
+
+/**
+ * The ticks of the timeline (docs/design/components.md, "Timeline (Sun lens)"): sunrise and sunset at the
+ * ends of the track, saying the times the engine gives; the ends of the shade-free window and noon between,
+ * where the day has them. A day the sun stays up or down runs from midnight to midnight.
+ */
+export function ticksOf(hours: DayHours, { sunriseH, sunsetH }: Pick<SunDay, "sunriseH" | "sunsetH">, window: { from: number; to: number }): Tick[] {
+  const inside = [window.from, 12, window.to].filter((hour) => hour > hours.from && hour < hours.to).sort((a, b) => a - b);
+  const between = [...new Set(inside)].map((hour) => ({ hour, words: hourOf(hour) }));
+  if (sunriseH === null || sunsetH === null) return [{ hour: 0, words: "00:00" }, ...between, { hour: 24, words: "24:00" }];
+  return [{ hour: hours.from, words: `${hourOf(sunriseH)} sunrise` }, ...between, { hour: hours.to, words: `sunset ${hourOf(sunsetH)}` }];
+}
+
+/** An hour taken to the nearest quarter hour and held inside the hours of the day. */
+export function heldHourOf(hour: number, hours: DayHours): number {
+  const quarter = Math.round(hour / QUARTER_HOUR) * QUARTER_HOUR;
+  return Math.min(hours.to, Math.max(hours.from, quarter));
+}
+
+/** The winter solstice of the hemisphere: the engine's design day when the array has none of its own. */
+const solsticeOf = (lat: number) => (lat >= 0 ? 355 : 172);
+
+/** The design day of an array: its own, or the winter solstice of its hemisphere. */
+export const designDayOfYear = (designDoy: number | null, lat: number) => designDoy ?? solsticeOf(lat);
+
+/** A day to choose in the Sun lens, and whether it is the design day. */
+export type DayChoice = { label: string; dayOfYear: number; isDesignDay: boolean };
+
+const CHOICES = [355, 80, 172];
+
+/** The days of the Day control (decision 2): the solstices and the equinox, the design day marked. */
+export function daysOf(designDoy: number | null, lat: number): DayChoice[] {
+  const design = designDayOfYear(designDoy, lat);
+  return CHOICES.map((dayOfYear) => ({ label: dateOf(dayOfYear).short, dayOfYear, isDesignDay: dayOfYear === design }));
+}
+
+/** The line under the Day control: which day is the design day, and why. */
+export function designDayLineOf(designDoy: number | null, lat: number): string {
+  const { long } = dateOf(designDayOfYear(designDoy, lat));
+  return designDoy === null ? `${long} is the design day: the winter solstice for this hemisphere` : `${long} is the design day of the array`;
+}
+
+/** The day of the view that a chosen day sets: the design day as such, so that it follows the array's. */
+export function dayOfChoice(dayOfYear: number, designDoy: number | null, lat: number): SunTime["day"] {
+  return dayOfYear === designDayOfYear(designDoy, lat) ? "design_day" : dayOfYear;
+}
+
+/** The day of the year of a day of a month (from 1); a day past the month's end is its last. */
+export function dayOfYearOf(day: number, month: number): number {
+  const before = DAYS_IN.slice(0, month - 1).reduce((sum, days) => sum + days, 0);
+  return before + Math.min(Math.max(1, day), DAYS_IN[month - 1]);
+}
+
+/** The day and the month (from 1) of a day of the year. */
+export function partsOf(dayOfYear: number): { day: number; month: number } {
+  let left = Math.min(Math.max(1, dayOfYear), 365);
+  let month = 0;
+  while (left > DAYS_IN[month]) {
+    left -= DAYS_IN[month];
+    month += 1;
+  }
+  return { day: left, month: month + 1 };
+}
+
+const DAYS_IN_YEAR = 365;
+
+/**
+ * The time a key of the Studio gives (decision 17): `,` and `.` an hour back and forward, held to the
+ * day; `[` and `]` a day back and forward, round the year. Null for any other key.
+ */
+export function timeOfKey(key: string, time: SunTime, dayOfYear: number, hours: DayHours): SunTime | null {
+  if (key === "," || key === ".") return { day: time.day, hour: heldHourOf(time.hour + (key === "," ? -1 : 1), hours) };
+  if (key === "[" || key === "]") {
+    const next = dayOfYear + (key === "[" ? -1 : 1);
+    return { day: next < 1 ? DAYS_IN_YEAR : next > DAYS_IN_YEAR ? 1 : next, hour: time.hour };
+  }
+  return null;
 }

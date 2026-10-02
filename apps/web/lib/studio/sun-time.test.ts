@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { bearingOf, dateOf, readOutOf } from "./sun-time";
+import { bearingOf, dateOf, dayOfChoice, dayOfYearOf, daysOf, designDayLineOf, heldHourOf, partsOf, readOutOf, ticksOf, timeOfKey } from "./sun-time";
 
 describe("the date of a day of the year", () => {
   test.each([
@@ -40,5 +40,107 @@ describe("the read-out of the time", () => {
   test("says when the sun is down", () => {
     expect(readOutOf(355, 6, { elevationDeg: -5.5, azimuthDeg: 113 })).toBe("21 Dec, 06:00 solar time, the sun is down");
     expect(readOutOf(355, 6, null)).toBe("21 Dec, 06:00 solar time, the sun is down");
+  });
+});
+
+const PUNE_DEC = { from: 6.75, to: 17.25, sky: "rises and sets" } as const;
+const SUN_DEC = { sunriseH: 6.557, sunsetH: 17.443 };
+const WINDOW = { from: 9, to: 16 };
+
+describe("the ticks of the timeline", () => {
+  test("stand at sunrise, the window's ends, noon and sunset, at the ends of the track", () => {
+    expect(ticksOf(PUNE_DEC, SUN_DEC, WINDOW)).toEqual([
+      { hour: 6.75, words: "06:33 sunrise" },
+      { hour: 9, words: "09:00" },
+      { hour: 12, words: "12:00" },
+      { hour: 16, words: "16:00" },
+      { hour: 17.25, words: "sunset 17:27" },
+    ]);
+  });
+
+  test("a window's end outside the day has no tick", () => {
+    const short = { from: 9.25, to: 15.75, sky: "rises and sets" } as const;
+    expect(ticksOf(short, { sunriseH: 9.1, sunsetH: 15.9 }, WINDOW).map((tick) => tick.words)).toEqual(["09:06 sunrise", "12:00", "sunset 15:54"]);
+  });
+
+  test("a day the sun stays up or down runs from midnight to midnight", () => {
+    expect(ticksOf({ from: 0, to: 24, sky: "stays down" }, { sunriseH: null, sunsetH: null }, WINDOW).map((tick) => tick.words)).toEqual(["00:00", "09:00", "12:00", "16:00", "24:00"]);
+  });
+});
+
+describe("an hour held to the day", () => {
+  test.each([
+    [10.5, 10.5],
+    [10.6, 10.5],
+    [10.63, 10.75],
+    [5, 6.75],
+    [18, 17.25],
+  ])("%d is %d", (hour, held) => {
+    expect(heldHourOf(hour, PUNE_DEC)).toBe(held);
+  });
+});
+
+describe("the days to choose", () => {
+  test("are 21 Dec, 21 Mar and 21 Jun; in the north the design day is 21 Dec", () => {
+    expect(daysOf(null, 18.52)).toEqual([
+      { label: "21 Dec", dayOfYear: 355, isDesignDay: true },
+      { label: "21 Mar", dayOfYear: 80, isDesignDay: false },
+      { label: "21 Jun", dayOfYear: 172, isDesignDay: false },
+    ]);
+  });
+
+  test("in the south the design day is 21 Jun", () => {
+    expect(daysOf(null, -33.9).find((day) => day.isDesignDay)?.label).toBe("21 Jun");
+  });
+
+  test("an array's own design day is the design day", () => {
+    expect(daysOf(80, 18.52).find((day) => day.isDesignDay)?.label).toBe("21 Mar");
+  });
+
+  test("the line says which day is the design day", () => {
+    expect(designDayLineOf(null, 18.52)).toBe("21 December is the design day: the winter solstice for this hemisphere");
+    expect(designDayLineOf(172, 18.52)).toBe("21 June is the design day of the array");
+  });
+
+  test("the day a chip sets: the design day as such, so that it follows the array", () => {
+    expect(dayOfChoice(355, null, 18.52)).toBe("design_day");
+    expect(dayOfChoice(172, null, 18.52)).toBe(172);
+  });
+});
+
+describe("a date of a day and a month", () => {
+  test.each([
+    [1, 1, 1],
+    [4, 2, 35],
+    [21, 12, 355],
+    [31, 2, 59],
+  ])("day %d of month %d is day %d of the year (a day past the month's end is its last)", (day, month, dayOfYear) => {
+    expect(dayOfYearOf(day, month)).toBe(dayOfYear);
+  });
+
+  test("and back", () => {
+    expect(partsOf(35)).toEqual({ day: 4, month: 2 });
+    expect(partsOf(355)).toEqual({ day: 21, month: 12 });
+  });
+});
+
+describe("the keys of the time", () => {
+  const at = (hour: number, day: number | "design_day" = "design_day") => ({ day, hour });
+
+  test(", and . move an hour, held to the day", () => {
+    expect(timeOfKey(",", at(10.5), 355, PUNE_DEC)).toEqual(at(9.5));
+    expect(timeOfKey(".", at(10.5), 355, PUNE_DEC)).toEqual(at(11.5));
+    expect(timeOfKey(",", at(7), 355, PUNE_DEC)).toEqual(at(6.75));
+    expect(timeOfKey(".", at(16.75), 355, PUNE_DEC)).toEqual(at(17.25));
+  });
+
+  test("[ and ] move a day, round the year", () => {
+    expect(timeOfKey("[", at(10.5), 355, PUNE_DEC)).toEqual(at(10.5, 354));
+    expect(timeOfKey("]", at(10.5), 365, PUNE_DEC)).toEqual(at(10.5, 1));
+    expect(timeOfKey("[", at(10.5, 1), 1, PUNE_DEC)).toEqual(at(10.5, 365));
+  });
+
+  test("other keys are none of the time's", () => {
+    expect(timeOfKey("a", at(10.5), 355, PUNE_DEC)).toBeNull();
   });
 });
