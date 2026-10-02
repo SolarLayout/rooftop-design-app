@@ -80,3 +80,4 @@ export const nameOf = (state: ProjectState) => state.project?.name ?? null;
 export const latitudeOf = (state: ProjectState) => state.project?.roof.lat ?? null;
 export const longitudeOf = (state: ProjectState) => state.project?.roof.lon ?? null;
 export const systemVoltageOf = (state: ProjectState) => state.project?.system_voltage ?? null;
+export const degradationOf = (state: ProjectState) => state.project?.losses.degradation_pct ?? null;

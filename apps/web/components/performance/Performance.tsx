@@ -2,8 +2,9 @@
 
 import { useMemo } from "react";
 import { useProject, useResults, useStores } from "@/components/shell/stores";
+import { withDegradation } from "@/lib/performance/degradation";
 import { pageViewOf } from "@/lib/performance/page-view";
-import { nameOf } from "@/lib/stores/project-store";
+import { degradationOf, nameOf } from "@/lib/stores/project-store";
 import { designFailureOf, designOf, designStatusOf, progressOf, readoutsOf } from "@/lib/stores/results-store";
 import { Kpis, KpiSkeletons } from "./Kpis";
 import { LossChain } from "./LossChain";
@@ -12,6 +13,7 @@ import { NoOptionsCard } from "./NoOptionsCard";
 import { PerformanceHeader } from "./PerformanceHeader";
 import { SummaryTable } from "./SummaryTable";
 import { FailedRow, RunRow } from "./UnderTheTitle";
+import { YearsChart } from "./YearsChart";
 
 // The page's padding and the gaps between its parts, as the boards draw them on each size.
 const PAGE = "flex flex-col gap-3.5 px-page-x-phone pt-2 pb-6 tablet:gap-4 tablet:px-page-x-tablet tablet:pt-6 tablet:pb-8 desktop:gap-5 desktop:px-page-x-desktop desktop:pt-page-y";
@@ -30,6 +32,7 @@ const CHARTS = "grid gap-3.5 tablet:grid-cols-2 tablet:gap-4 desktop:col-span-5 
 export function Performance() {
   const { project, flow } = useStores();
   const name = useProject(nameOf);
+  const degradation = useProject(degradationOf);
   const design = useResults(designOf);
   const readouts = useResults(readoutsOf);
   const designStatus = useResults(designStatusOf);
@@ -39,6 +42,10 @@ export function Performance() {
 
   function choose(key: string) {
     project.getState().commit((document) => (document.chosen_option === key ? document : { ...document, chosen_option: key }));
+  }
+
+  function setDegradation(pct: number) {
+    project.getState().commit((document) => withDegradation(document, pct));
   }
 
   const values = view.kind === "design" || view.kind === "failed" ? view.values : null;
@@ -58,6 +65,7 @@ export function Performance() {
             <LossChain view={values.chain} isDimmed={isDimmed} className="desktop:col-span-7" />
             <div className={CHARTS}>
               <MonthlyChart energy={values.energy} isDimmed={isDimmed} />
+              <YearsChart energy={values.energy} degradation={degradation} onDegradation={setDegradation} isDimmed={isDimmed} />
             </div>
           </div>
           <SummaryTable rows={values.summary} isDimmed={isDimmed} />

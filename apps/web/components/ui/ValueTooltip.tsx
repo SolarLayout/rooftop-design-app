@@ -50,15 +50,16 @@ export function ValueTooltip({ anchor, value, label, onLeave }: Props) {
     Object.assign(floating.style, measures({ x, y }));
   }, [anchor, value, label]);
 
+  const isShown = anchor !== null;
   useEffect(() => {
-    if (anchor === null) return;
+    if (!isShown) return;
     window.addEventListener("resize", onLeave);
     window.addEventListener("scroll", onLeave, true);
     return () => {
       window.removeEventListener("resize", onLeave);
       window.removeEventListener("scroll", onLeave, true);
     };
-  }, [anchor, onLeave]);
+  }, [isShown, onLeave]);
 
   return (
     <div ref={bubble} role="tooltip" popover="manual" data-testid="value-tooltip" className={BUBBLE}>
