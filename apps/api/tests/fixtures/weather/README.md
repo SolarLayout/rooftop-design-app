@@ -13,5 +13,9 @@ of the network. The `.gz` files are gzip of the body, nothing else changed.
 The PVGIS answer for Pune is the source of the bundled `rooftop_core/samples/pune_weather.json`: read by the
 engine it gives the same 8,760 hours and the same horizon. A test holds that.
 
+The browser tests have the API's own answers to `POST /weather` for Pune, `e2e/fixtures/weather-pvgis-pune.json` and
+`e2e/fixtures/weather-nasa-pune.json`, made from these recordings by `uv run python -m tests.weather_fixtures` (run in
+`apps/api`). `tests/api/test_weather_fixtures.py` holds that they are what the API answers now.
+
 PVGIS: European Commission, Joint Research Centre. NASA POWER: NASA Langley Research Center. Both allow
 reuse with the source named.

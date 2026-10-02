@@ -207,6 +207,7 @@
   --radius-seg: 7px;
   --radius-item: 8px;
   --radius-seg-touch: 9px;
+  --radius-chip: 9px;
   --radius-control: 10px;
   --radius-row: 12px;
   --radius-card-s: 14px;
@@ -411,6 +412,7 @@
   --radius-seg: var(--radius-seg);
   --radius-item: var(--radius-item);
   --radius-seg-touch: var(--radius-seg-touch);
+  --radius-chip: var(--radius-chip);
   --radius-control: var(--radius-control);
   --radius-row: var(--radius-row);
   --radius-card-s: var(--radius-card-s);

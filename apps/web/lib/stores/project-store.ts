@@ -23,6 +23,13 @@ export type ProjectState = {
   future: Project[];
   open: (project: Project) => void;
   commit: (edit: Edit) => void;
+  /**
+   * Replaces the document of the edit that is current, without an edit of its own: nothing is counted, nothing is
+   * kept for undo. For what belongs to the document of that edit and the user did not do: the weather the flow
+   * loaded for it (plan/phase-08-plan.md, decision 11). Gives the document back; null once another edit is current,
+   * or before a design is open.
+   */
+  amend: (edit: number, change: Edit) => Project | null;
   undo: () => void;
   redo: () => void;
 };
@@ -55,6 +62,14 @@ export function createProjectStore() {
       set({ project: after, edit: get().edit + 1, past: [...get().past, before].slice(-KEPT_EDITS), future: [] });
     },
 
+    amend(edit, change) {
+      const before = get().project;
+      if (before === null || get().edit !== edit) return null;
+      const after = change(before);
+      if (after !== before) set({ project: after });
+      return after;
+    },
+
     undo() {
       const { project, past, future } = get();
       const before = past.at(-1);
@@ -81,3 +96,6 @@ export const latitudeOf = (state: ProjectState) => state.project?.roof.lat ?? nu
 export const longitudeOf = (state: ProjectState) => state.project?.roof.lon ?? null;
 export const systemVoltageOf = (state: ProjectState) => state.project?.system_voltage ?? null;
 export const degradationOf = (state: ProjectState) => state.project?.losses.degradation_pct ?? null;
+export const weatherSourceOf = (state: ProjectState) => state.project?.weather_source ?? null;
+/** The name of the document's CSV weather file; empty for PVGIS and NASA. */
+export const weatherCsvOf = (state: ProjectState) => state.project?.weather_csv ?? null;

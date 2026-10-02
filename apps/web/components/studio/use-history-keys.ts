@@ -3,9 +3,9 @@
 import { useEffect } from "react";
 import { useStores } from "@/components/shell/stores";
 
-// The keys of the Studio's history (plan/phase-05-plan.md, step 18, decision 11): Cmd or Ctrl with Z undoes the
-// last committed edit, with Shift redoes it; Ctrl with Y redoes too. Keys typed into a field are the field's: a
-// field's own undo works on what is being typed.
+// The keys of the history (plan/phase-05-plan.md, step 18, decision 11): Cmd or Ctrl with Z undoes the last
+// committed edit, with Shift redoes it; Ctrl with Y redoes too. Keys typed into a field are the field's: a field's
+// own undo works on what is being typed. The Studio and Performance listen; their edits are the same document's.
 
 export type HistoryStep = "undo" | "redo";
 
@@ -22,7 +22,7 @@ export function historyOfKey(event: Pick<KeyboardEvent, "key" | "shiftKey" | "me
   return null;
 }
 
-/** Listens to the keys of the history while the Studio is shown. */
+/** Listens to the keys of the history while the Studio or Performance is shown. */
 export function useHistoryKeys(): void {
   const { project } = useStores();
   useEffect(() => {

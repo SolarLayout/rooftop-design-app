@@ -280,6 +280,7 @@ Reference widths: 390, 834, 1440.
 | `--radius-seg` | `7px` | Item inside a segmented control |
 | `--radius-item` | `8px` | Rows of a list that floats, tooltips, the action of a toast |
 | `--radius-seg-touch` | `9px` | The same on phone and tablet |
+| `--radius-chip` | `9px` | A chip of Performance's assumptions: a label with its field |
 | `--radius-control` | `10px` | Buttons, fields, segmented track |
 | `--radius-row` | `12px` | List rows, option cards, stat tiles |
 | `--radius-card-s` | `14px` | Compact cards, floating controls |

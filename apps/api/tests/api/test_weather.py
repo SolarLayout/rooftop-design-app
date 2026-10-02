@@ -176,16 +176,20 @@ def test_a_csv_that_is_not_a_year_is_read_and_says_so(client):
     ]
 
 
-def test_a_csv_with_irradiance_alone_says_how_it_was_split(client):
+def test_a_csv_of_time_and_irradiance_alone_says_what_was_taken_for_the_rest(client):
     text = "\n".join(",".join(line.split(",")[:2]) for line in CSV.splitlines())
 
     body = client.post("/weather", json=_csv(text)).json()
 
     assert sum(body["weather"]["dni"]) > 0 and sum(body["weather"]["dhi"]) > 0
-    assert body["notes"][0] == (
+    assert body["notes"] == [
         "site.csv has no beam and diffuse irradiance. They were worked out from the global irradiance "
-        "(Erbs model), which is less exact than measured values."
-    )
+        "(Erbs model), which is less exact than measured values.",
+        "site.csv has no air temperature. 25 °C was taken for every hour, so the strings are sized for "
+        "25 °C. Enter the site's lowest and highest ambient in the Strings lens.",
+        "site.csv has no wind speed. 1 m/s was taken for every hour.",
+        "site.csv has 4 hours, not the 8,760 of a year. Energy of a year needs every hour of it.",
+    ]
 
 
 def test_a_csv_without_a_name_is_called_a_csv_file(client):
@@ -245,6 +249,37 @@ def test_a_csv_that_cannot_be_used_is_refused_with_the_reason(client, text, code
 
     assert response.status_code == 422
     assert error_of(response) == {"code": code, "message": message, "field": "csv_text"}
+
+
+# ── downloads off (decision 13 of Phase 8: the test stack never reaches PVGIS or NASA) ──────
+@pytest.fixture
+def downloads_off(monkeypatch):
+    from rooftop_api import settings
+
+    monkeypatch.setenv(settings.WEATHER_DOWNLOADS, "off")
+
+
+@pytest.mark.parametrize(
+    ("source", "label"), [("pvgis", "PVGIS TMY"), ("nasa", "NASA POWER")], ids=["pvgis", "nasa"]
+)
+def test_with_downloads_off_a_download_is_refused_in_words(client, services, downloads_off, source, label):
+    response = client.post("/weather", json={"source": source, **PUNE})
+
+    assert response.status_code == 422
+    assert error_of(response) == {
+        "code": "weather_downloads_off",
+        "message": f"Downloads of weather are off on this server: {label} was not asked. Load a CSV "
+        "file, or turn downloads on.",
+        "field": "source",
+    }
+    assert services.asked == []
+
+
+def test_with_downloads_off_a_csv_is_still_read(client, services, downloads_off):
+    body = client.post("/weather", json=_csv(CSV)).json()
+
+    assert body["weather"]["label"] == "site.csv" and body["summary"]["hours"] == 4
+    assert services.asked == []
 
 
 # ── the request ──────────────────────────────────────────────────────────────

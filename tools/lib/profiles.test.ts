@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { choosePair, mapKeyNote, pairsOf, PROFILES, rangeOf, roleOf, selectProfiles, urlsOf } from "./profiles.ts";
+import { apiEnvOf, choosePair, mapKeyNote, pairsOf, PROFILES, rangeOf, roleOf, selectProfiles, urlsOf } from "./profiles.ts";
 
 const { dev, test: testProfile } = PROFILES;
 const busy = (...ports: number[]) => new Set(ports);
@@ -104,6 +104,16 @@ describe("urlsOf", () => {
       api: "http://127.0.0.1:4703",
       apiHealth: "http://127.0.0.1:4703/health",
     });
+  });
+});
+
+describe("apiEnvOf", () => {
+  test("the test stack's API has downloads of weather off", () => {
+    expect(apiEnvOf(testProfile)).toEqual({ ROOFTOP_WEATHER_DOWNLOADS: "off" });
+  });
+
+  test("the dev stack's API is told nothing", () => {
+    expect(apiEnvOf(dev)).toEqual({});
   });
 });
 

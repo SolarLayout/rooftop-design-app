@@ -671,7 +671,10 @@ def test_csv_weather_in_the_project_is_checked_and_used(client, demo):
     assert (result["weather"]["label"], result["weather"]["hours"]) == ("site.csv", 8760)
     assert result["weather_notes"] == [
         "site.csv has no beam and diffuse irradiance. They were worked out from the global irradiance "
-        "(Erbs model), which is less exact than measured values."
+        "(Erbs model), which is less exact than measured values.",
+        "site.csv has no air temperature. 25 °C was taken for every hour, so the strings are sized for "
+        "25 °C. Enter the site's lowest and highest ambient in the Strings lens.",
+        "site.csv has no wind speed. 1 m/s was taken for every hour.",
     ]
     assert "Loading CSV file weather" not in [e.data.get("step") for e in events_of(response)]
 

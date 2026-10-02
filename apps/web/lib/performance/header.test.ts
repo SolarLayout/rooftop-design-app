@@ -30,6 +30,15 @@ describe("the line of the run (plan/phase-08-plan.md, decision 2)", () => {
   });
 });
 
+describe("the notes on the weather (step 19)", () => {
+  test("are the run's, in the engine's words; none for a weather without any", () => {
+    const erbs = "pune-ghi.csv has no beam and diffuse irradiance. They were worked out from the global irradiance (Erbs model), which is less exact than measured values.";
+
+    expect(headerOf(DEMO, READOUTS).notes).toEqual([]);
+    expect(headerOf({ ...DEMO, weather_notes: [erbs] } as DesignResult, READOUTS).notes).toEqual([erbs]);
+  });
+});
+
 describe("the option switch (decision 4)", () => {
   test("the run's options by their letter; the chosen one with its caption; the mark of the verdict, said to a screen reader", () => {
     const { items, chosen } = headerOf(DEMO, READOUTS);
@@ -76,12 +85,5 @@ describe("the option switch (decision 4)", () => {
 
     expect(items).toEqual([]);
     expect(chosen).toBeNull();
-  });
-});
-
-describe("the weather chip", () => {
-  test("says the source's label, as the API gives it", () => {
-    expect(headerOf(DEMO, READOUTS).weather).toEqual({ label: "Weather", value: "PVGIS TMY" });
-    expect(headerOf({ ...DEMO, weather: NASA } as DesignResult, READOUTS).weather).toEqual({ label: "Weather", value: "NASA POWER 2023" });
   });
 });

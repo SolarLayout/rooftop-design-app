@@ -7,6 +7,7 @@ import { FloatingPanel } from "./FloatingPanel";
 import { Icon } from "./Icon";
 import { indexAfterKey, indexOfTyped } from "./list-keys";
 import { FACT, LIST, ROW, ROW_MARKED } from "./list-look";
+import { ProgressRing } from "./ProgressRing";
 import { StatusMark } from "./StatusMark";
 import type { Mark } from "./table-cells";
 import { useFloating } from "./use-floating";
@@ -44,10 +45,12 @@ type TriggerProps = Omit<ComponentProps<"button">, "children" | "value"> & {
   /** The mark of the choice that is taken, after its words. */
   mark?: Mark;
   open: boolean;
+  /** What was chosen is being loaded: a turning ring stands where the chevron was. */
+  busy?: boolean;
 };
 
-/** What opens the list: the label, the choice that is taken, its mark where it has one, a chevron. */
-export function SelectTrigger({ label, value, mark, open, className, ...rest }: TriggerProps) {
+/** What opens the list: the label, the choice that is taken, its mark where it has one, a chevron; a turning ring while busy. */
+export function SelectTrigger({ label, value, mark, open, busy = false, className, ...rest }: TriggerProps) {
   return (
     <button
       type="button"
@@ -59,7 +62,7 @@ export function SelectTrigger({ label, value, mark, open, className, ...rest }: 
       <span className="text-text-2">{label}</span>
       <span className="min-w-0 truncate font-medium">{value}</span>
       {mark ? <StatusMark kind={mark.kind} label={mark.label} wordsShown={false} size={16} /> : null}
-      <Icon name={open ? "chevron-up" : "chevron-down"} size={16} className="ml-auto text-text-3" />
+      {busy ? <ProgressRing size={16} className="ml-auto" /> : <Icon name={open ? "chevron-up" : "chevron-down"} size={16} className="ml-auto text-text-3" />}
     </button>
   );
 }
@@ -122,11 +125,15 @@ type Props<T extends string> = {
   /** Hears a choice once it is taken, and only when it is another than before. */
   onChange: (value: T) => void;
   disabled?: boolean;
+  /** The words of the trigger where they are not the label of the choice that is taken: the name of the CSV file that is the weather. */
+  valueShown?: string;
+  /** What was chosen is being loaded: the trigger says it with a turning ring, and the list does not open until it is over. */
+  busy?: boolean;
   className?: string;
 };
 
 /** One of several choices, of which each may need more than a word. For two to four short ones there is Segmented. */
-export function Select<T extends string>({ label, options, value, onChange, disabled = false, className }: Props<T>) {
+export function Select<T extends string>({ label, options, value, onChange, disabled = false, valueShown, busy = false, className }: Props<T>) {
   const id = useId();
   const [floating, trigger] = useFloating({ side: "below", align: "start", gap: LIST_GAP });
   const list = useRef<HTMLUListElement>(null);
@@ -137,6 +144,7 @@ export function Select<T extends string>({ label, options, value, onChange, disa
   const unavailable = new Set(options.flatMap((option, index) => (option.disabled ? [index] : [])));
 
   function open() {
+    if (busy) return;
     setMarked(taken === -1 ? null : taken);
     floating.open();
     list.current?.focus();
@@ -176,9 +184,10 @@ export function Select<T extends string>({ label, options, value, onChange, disa
       <SelectTrigger
         ref={trigger}
         label={label}
-        value={options[taken]?.label ?? ""}
+        value={valueShown ?? options[taken]?.label ?? ""}
         mark={options[taken]?.mark}
         open={floating.isOpen}
+        busy={busy}
         disabled={disabled}
         aria-controls={id}
         className={className}

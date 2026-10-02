@@ -10,8 +10,8 @@ import { kpisOf, type KpisView } from "./kpis";
 import { chainViewOf, type ChainView } from "./loss-chain";
 import { summaryRowsOf, type SummaryRowView } from "./summary";
 
-/** A run on its way: what is done in a word, the engine's step, and how far from 0 to 1. */
-export type RunRow = { title: string; step: string | null; share: number };
+/** A run on its way: what is done in a word, the engine's step, and how far from 0 to 1; null where how far is not known, and the ring turns. */
+export type RunRow = { title: string; step: string | null; share: number | null };
 
 /** A run that failed: what did not happen, what the values are, the action, and why in the API's words. */
 export type FailedRow = { title: string; detail: string; action: string; message: string };
