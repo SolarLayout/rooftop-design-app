@@ -628,11 +628,61 @@ test.describe("the shell", () => {
     await expectScreen(page, "import-dxf");
   });
 
+  // Performance with the demo (the board "Performance" on three sizes): the header, the KPIs and the summary of option A.
   test("performance", async ({ page }, testInfo) => {
     await page.goto("/performance");
+    await expect(page.getByTestId("kpi-energy").getByText("617.8")).toBeVisible({ timeout: RUN });
     await settled(page, testInfo.project.name);
 
-    await expectScreen(page, "performance");
+    await expectWholeScreen(page, "performance");
+  });
+
+  // Before a system voltage (the board "Performance, states"): the API's words in place of the KPIs, no energy.
+  test("performance, before a system voltage", async ({ page }) => {
+    await page.route("**/api/demo", async (route) => {
+      const answer = await route.fetch();
+      const demo: Record<string, unknown> = await answer.json();
+      await route.fulfill({ response: answer, json: { ...demo, system_voltage: null } });
+    });
+    await page.goto("/performance");
+    await expect(page.getByTestId("energy-waits")).toContainText("Choose a system voltage to size the strings", { timeout: RUN });
+
+    await expectWholeScreen(page, "performance-no-voltage");
+  });
+
+  /**
+   * A system voltage of 1000 V chosen in the Strings lens with the run that follows answered by `design`, then
+   * Performance reached through the workspaces, so that the design that is open stays open.
+   */
+  const aVoltageChangedThenPerformance = async (page: Page, design: (route: Route) => void) => {
+    await page.goto("/studio/strings");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await expect(page.getByTestId("option-card").filter({ visible: true }).first()).toBeVisible({ timeout: RUN });
+    await page.route("**/api/design", design);
+    await page.getByRole("radiogroup", { name: "System voltage" }).filter({ visible: true }).getByRole("radio", { name: "1000 V" }).click();
+    await page.getByRole("navigation", { name: "Workspaces" }).filter({ visible: true }).getByRole("link", { name: "Performance" }).click();
+    await expect(page).toHaveURL(/\/performance$/);
+    // No focus ring in the picture.
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+  };
+
+  // A run on its way (the same board): the values of before dimmed, the ring beside the energy, the step under the title.
+  test("performance, a run on its way", async ({ page }) => {
+    await aVoltageChangedThenPerformance(page, () => {
+      // Held: the run stays on its way for the picture.
+    });
+    await expect(page.getByTestId("run-step")).toContainText("Updating energy", { timeout: RUN });
+
+    await expectWholeScreen(page, "performance-updating");
+  });
+
+  // A run that failed (the same board): the values of before, not dimmed, the note with Try again and the API's words.
+  test("performance, the run failed", async ({ page }) => {
+    const NO_WEATHER = { error: { code: "weather_not_loaded", message: "This project has no weather for 18.5200, 73.8600 yet. Load the PVGIS TMY weather first.", field: "weather_json" } };
+    await aVoltageChangedThenPerformance(page, (route) => route.fulfill({ status: 422, json: NO_WEATHER }));
+    await expect(page.getByTestId("run-failed")).toContainText("Energy was not updated", { timeout: RUN });
+
+    await expectWholeScreen(page, "performance-failed");
   });
 
   test("handover", async ({ page }, testInfo) => {

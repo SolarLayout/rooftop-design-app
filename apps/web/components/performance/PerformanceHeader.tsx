@@ -7,6 +7,8 @@ import { OptionSwitch } from "./OptionSwitch";
 type Props = {
   /** The header from the run; null while no run ever answered. */
   header: HeaderView | null;
+  /** No run ever answered and one is on its way: a skeleton stands for the line. */
+  isLoading: boolean;
   /** The line of the run is of before, and a new run is on its way. */
   isDimmed: boolean;
   /** What stands under the line: a run on its way, or one that failed. */
@@ -25,7 +27,7 @@ const CHIP = classNames(
  * stand at the right of the title, the weather before the options; on tablet under it in a row, the options first;
  * on phone under it, each across the width.
  */
-export function PerformanceHeader({ header, isDimmed, under, onChoose }: Props) {
+export function PerformanceHeader({ header, isLoading, isDimmed, under, onChoose }: Props) {
   return (
     <header className="flex flex-col gap-3 tablet:gap-4 desktop:flex-row desktop:items-end desktop:gap-4">
       <div className="flex min-w-0 flex-col gap-1">
@@ -34,9 +36,9 @@ export function PerformanceHeader({ header, isDimmed, under, onChoose }: Props) 
           <p data-testid="run-line" className={classNames("type-small text-text-2 tablet:type-body-touch desktop:type-body", isDimmed && "opacity-updating")}>
             {header.runLine}
           </p>
-        ) : (
+        ) : isLoading ? (
           <Skeleton kind="text" className="my-1 w-140" />
-        )}
+        ) : null}
         {under}
       </div>
       {header ? (
