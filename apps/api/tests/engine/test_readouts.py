@@ -9,6 +9,7 @@ from rooftop_core import readouts
 from rooftop_core.demo import demo_project, rectangle
 from rooftop_core.geometry import Roof
 from rooftop_core.project import Design
+from rooftop_core.resources import SAMPLE_OND, sample_path
 from tests.kept import KEPT
 
 pytestmark = pytest.mark.slow
@@ -50,6 +51,98 @@ def test_the_verdict_of_an_option_below_target_says_so(demo_design, option_d):
     assert not verdict.ok
     assert verdict.title.startswith("26 in series fits: Vmp 1,075 V at STC")
     assert verdict.detail.endswith("27 strings on 2 inverter(s), DC/AC 0.71 (below target).")
+
+
+# ── the verdict counts the MPPT loads (decision 18) ──────────────────────────
+NO_LIMIT = "The OND gives no current limit per MPPT: enter the datasheet value."
+
+
+def demo_ond_without_imaxdc() -> str:
+    text = open(sample_path(SAMPLE_OND)).read()
+    return "\n".join(line for line in text.splitlines() if "IMaxDC=" not in line)
+
+
+@pytest.fixture(scope="module")
+def overloaded():
+    """The demo with the custom 20 × 37 × 1: 37 strings on one inverter that takes 24."""
+    project = demo_project()
+    project.custom, project.chosen_option = (20, 37, 1), "custom"
+    design = Design(project, memo=KEPT)
+    design.run_options()
+    return design
+
+
+@pytest.fixture(scope="module")
+def without_limit():
+    """The demo with its OND's IMaxDC line taken out: no current limit per MPPT is known."""
+    project = demo_project()
+    project.ond_text, project.ond_path = demo_ond_without_imaxdc(), "wattpower-without-imaxdc.OND"
+    design = Design(project, memo=KEPT)
+    design.run_options()
+    return design
+
+
+def test_an_option_over_the_current_limit_names_its_mppts(overloaded):
+    own = overloaded.options[-1]
+
+    verdict = readouts.verdict(overloaded, own)
+
+    assert own.custom and own.n_strings == 37
+    assert not verdict.ok
+    assert verdict.title.startswith("20 in series fits: ")
+    assert verdict.detail.endswith(
+        "37 strings on 1 inverter(s), DC/AC 1.51 (heavy clipping). "
+        "INV-1 · MPPT 1 carries 95.1 A and MPPT 2 to 6 carry 81.5 A, over the limit of 65.0 A."
+    )
+
+
+def test_an_option_in_target_over_the_current_limit_is_not_ok(demo_design, option_a):
+    crowded = replace(option_a, system=replace(option_a.system, mppt_of=[0] * len(option_a.system.mppt_of)))
+
+    verdict = readouts.verdict(demo_design, crowded)
+
+    assert crowded.ok, "DC/AC in target"
+    assert not verdict.ok
+    assert verdict.detail.endswith(
+        "22 strings on 1 inverter(s), DC/AC 1.30. INV-1 · MPPT 1 carries 298.8 A, over the limit of 65.0 A."
+    )
+
+
+def test_the_mppts_over_their_limit_are_named_once_for_those_alike():
+    loads = [
+        readouts.MpptLoad(1, 1, "INV-1 · MPPT 1", 5, 67.9, 65.0, 71.5, 65.0, 81.2, False),
+        readouts.MpptLoad(1, 2, "INV-1 · MPPT 2", 5, 67.9, 65.0, 71.5, 65.0, 81.2, False),
+        readouts.MpptLoad(1, 3, "INV-1 · MPPT 3", 4, 54.3, 65.0, 57.2, 65.0, 64.96, True),
+        readouts.MpptLoad(1, 4, "INV-1 · MPPT 4", 5, 67.9, 65.0, 71.5, 65.0, 81.2, False),
+        readouts.MpptLoad(2, 1, "INV-2 · MPPT 1", 5, 67.9, 65.0, 71.5, 65.0, 81.2, False),
+        readouts.MpptLoad(2, 2, "INV-2 · MPPT 2", 5, 67.9, 65.0, 71.5, 65.0, 81.2, False),
+        readouts.MpptLoad(2, 3, "INV-2 · MPPT 3", 5, 67.9, 65.0, 71.5, 65.0, 81.2, False),
+    ]
+
+    assert readouts.over_the_limit(loads) == (
+        "INV-1 · MPPT 1, 2 and 4 carry 67.9 A and INV-2 · MPPT 1 to 3 carry 67.9 A, over the limit of 65.0 A."
+    )
+
+
+def test_an_mppt_over_its_isc_limit_alone_says_its_isc():
+    loads = [readouts.MpptLoad(1, 1, "INV-1 · MPPT 1", 4, 54.3, 65.0, 57.2, 56.0, 64.96, False)]
+
+    assert readouts.over_the_limit(loads) == "INV-1 · MPPT 1 has an Isc of 57.2 A, over the limit of 56.0 A."
+
+
+def test_without_a_current_limit_every_option_is_not_ok_and_says_so(without_limit):
+    verdicts = [readouts.verdict(without_limit, option) for option in without_limit.options]
+
+    assert [option.key for option in without_limit.options] == [
+        "29x22x1",
+        "26x24x1",
+        "28x22x1",
+        "26x27x2",
+        "28x25x2",
+    ]
+    assert all(not verdict.ok for verdict in verdicts)
+    assert all(verdict.detail.endswith(f". {NO_LIMIT}") for verdict in verdicts)
+    assert verdicts[0].detail.endswith(f"22 strings on 1 inverter(s), DC/AC 1.30. {NO_LIMIT}")
 
 
 def test_the_verdict_when_no_length_fits():

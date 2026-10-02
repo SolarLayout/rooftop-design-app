@@ -6,6 +6,7 @@ section 2.8), so that every screen and every export says the same.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 
 from .bom import BomLine, CableRow, bom, cable_schedule
@@ -19,6 +20,7 @@ CHOOSE_VOLTAGE = "Choose a system voltage to size the strings"
 CHOOSE_VOLTAGE_DETAIL = "600, 1000 or 1500 V. Nothing is sized until you choose."
 NO_LENGTH_FITS = "No string length fits this inverter"
 CHANGE_OR_REMOVE = "Change your option or remove it."
+NO_CURRENT_LIMIT = "The OND gives no current limit per MPPT: enter the datasheet value."
 LOSSES_ROW = 9  # where the desktop app put the row "Losses" among the rows of the summary
 CURRENT_TOLERANCE_A = 1e-6
 
@@ -61,16 +63,83 @@ def verdict(design: Design, option: StringOption | None) -> Verdict:
         return Verdict(False, NO_LENGTH_FITS, rng.message)
     n = option.n_series
     nominal = f", inverter nominal {inverter.vmpp_nom:,.0f} V" if inverter.vmpp_nom else ""
+    loads = mppt_loads(design, option)
+    currents = _currents(loads)
     return Verdict(
-        ok=option.ok,
+        ok=option.ok and all(load.ok for load in loads),
         title=f"{n} in series fits: Vmp {n * rng.vmp_stc:,.0f} V at STC{nominal}",
         detail=(
             f"Voc at {rng.t_min:.1f} °C is {n * rng.voc_cold:,.0f} V (limit {rng.limit_v:.0f} V); "
             f"Vmp at {rng.t_cell_hot:.1f} °C cell is {n * rng.vmp_hot:,.0f} V (MPPT minimum "
             f"{inverter.vmpp_min:.0f} V). {option.n_strings} strings on {option.n_inverters} inverter(s), "
-            f"DC/AC {option.dcac:.2f}" + ("" if option.ok else f" ({option.note})") + "."
+            f"DC/AC {option.dcac:.2f}"
+            + ("" if option.ok else f" ({option.note})")
+            + "."
+            + (f" {currents}" if currents else "")
         ),
     )
+
+
+def _currents(loads: list[MpptLoad]) -> str:
+    """What the verdict says of the MPPT loads: nothing when every MPPT is within its limits."""
+    if any(load.imp_limit_a is None or load.isc_limit_a is None for load in loads):
+        return NO_CURRENT_LIMIT
+    return over_the_limit(loads)
+
+
+def over_the_limit(loads: list[MpptLoad]) -> str:
+    """The MPPTs over their current limit, named once for those that carry the same (decision 18).
+
+    Imp is said against its limit; an MPPT whose Imp is within it and whose Isc is not says its Isc.
+    Every limit must be known. Empty when no MPPT is over.
+    """
+    over_imp = [load for load in loads if not _within(load.imp_a, load.imp_limit_a)]
+    over_isc = [load for load in loads if load not in over_imp and not _within(load.isc_a, load.isc_limit_a)]
+    sentences = []
+    if over_imp:
+        groups = _alike(over_imp, lambda load: load.imp_a)
+        said = [f"{who} {'carries' if one else 'carry'} {amps:.1f} A" for who, one, amps in groups]
+        sentences.append(f"{_and(said)}, over the limit of {over_imp[0].imp_limit_a:.1f} A.")
+    if over_isc:
+        groups = _alike(over_isc, lambda load: load.isc_a)
+        said = [f"{who} {'has' if one else 'have'} an Isc of {amps:.1f} A" for who, one, amps in groups]
+        sentences.append(f"{_and(said)}, over the limit of {over_isc[0].isc_limit_a:.1f} A.")
+    return " ".join(sentences)
+
+
+def _alike(loads: list[MpptLoad], amps_of: Callable[[MpptLoad], float]) -> list[tuple[str, bool, float]]:
+    """(who, whether one MPPT, the current) for each inverter and current, in the order of the loads.
+
+    The inverter is named before the first of its MPPTs in the sentence.
+    """
+    groups: dict[tuple[int, float], list[int]] = {}
+    for load in loads:
+        groups.setdefault((load.inverter, round(amps_of(load), 1)), []).append(load.mppt)
+    named: set[int] = set()
+    said = []
+    for (inverter, amps), mppts in groups.items():
+        prefix = "" if inverter in named else f"INV-{inverter} · "
+        named.add(inverter)
+        said.append((f"{prefix}MPPT {_numbers(mppts)}", len(mppts) == 1, amps))
+    return said
+
+
+def _numbers(numbers: list[int]) -> str:
+    """1, 2 and 4; 1 to 6; runs of three or more as a range."""
+    runs: list[list[int]] = []
+    for number in numbers:
+        if runs and number == runs[-1][-1] + 1:
+            runs[-1].append(number)
+        else:
+            runs.append([number])
+    parts: list[str] = []
+    for run in runs:
+        parts.extend([f"{run[0]} to {run[-1]}"] if len(run) >= 3 else [str(n) for n in run])
+    return _and(parts)
+
+
+def _and(parts: list[str]) -> str:
+    return parts[0] if len(parts) == 1 else f"{', '.join(parts[:-1])} and {parts[-1]}"
 
 
 def caption(design: Design, option: StringOption) -> str:
