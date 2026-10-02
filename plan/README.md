@@ -27,7 +27,7 @@ Always:
 | 5 | Studio: 3D roof, Roof and Array lenses | `phase-05-studio-roof-array.md` | done (#42 to #47); how: `phase-05-plan.md` |
 | 6 | Studio: Sun lens | `phase-06-studio-sun.md` | done (#48 to #52); how: `phase-06-plan.md` |
 | 7 | Studio: Strings lens | `phase-07-studio-strings.md` | done (#53 to #57); how: `phase-07-plan.md` |
-| 8 | Performance | `phase-08-performance.md` | not started |
+| 8 | Performance | `phase-08-performance.md` | planned; how: `phase-08-plan.md` |
 | 9 | Handover and exports | `phase-09-handover.md` | not started |
 | 10 | Home, projects on the device, Present mode | `phase-10-home-projects-present.md` | not started |
 | 11 | Hardening for the tradeshow | `phase-11-hardening.md` | not started |
@@ -113,6 +113,7 @@ plan/
   phase-05-plan.md              how Phase 5 is built: what was found, five pull requests, the decisions, the risks
   phase-06-plan.md              how Phase 6 is built: what was found, the boards, four pull requests, the decisions, the risks
   phase-07-plan.md              how Phase 7 is built: what was found, the boards, five pull requests, the decisions, the risks
+  phase-08-plan.md              how Phase 8 is built: what was found, the boards, four pull requests, the decisions, the risks
   reference/
     functional-inventory.md     every input, output, export and message of the desktop app
     r3f-notes.md                3D fixes already paid for in solar-mms-modeller

@@ -24,7 +24,8 @@ the phone) are merged. `main` is green.
 
 ## In flight
 
-Nothing. No branch stands on `main`; `main` is green.
+Phase 8, session 12: the plan is written (`plan/phase-08-plan.md`) and waits for the owner's yes; then the six boards of
+its step 0. No branch stands on `main`; `main` is green.
 
 ## What the web app has today
 
