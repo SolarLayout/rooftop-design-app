@@ -263,6 +263,9 @@ Base 2 px. Steps in use: 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48,
 | `--columns-vitals` | `1.25fr 1.15fr 0.85fr 0.85fr 1fr 0.8fr 1.25fr 1.55fr` | The columns of the vitals bar on desktop: seven values and the last cell |
 | `--columns-vitals-waiting` | `1fr 1fr 1fr 2.4fr` | The same before there are options: three values and what is waited for |
 | `--columns-p-values-phone` | `1fr 1fr 1.5fr` | The three exceedance values of the lead tile on phone: the last cell, which carries the sigma too, is wider |
+| `--columns-loss-chain` | `210px 84px 64px 232px minmax(0, 1fr)` | A row of the loss chain on desktop: the label, the field where the step is the user's, the change, the track, the running total |
+| `--columns-loss-chain-tablet` | `230px 96px 72px 196px minmax(0, 1fr)` | The same on tablet |
+| `--columns-loss-chain-phone` | `minmax(0, 1fr) auto auto` | On phone: the field, then the change and the running total at the right; the label over them and the track under them take the width |
 
 Reference widths: 390, 834, 1440.
 
@@ -270,6 +273,7 @@ Reference widths: 390, 834, 1440.
 
 | Token | Value | Use |
 |---|---|---|
+| `--radius-swatch` | `3px` | The bars of the loss chain and the swatches of its legend |
 | `--radius-key` | `4px` | The box around a key in a tooltip |
 | `--radius-xs` | `6px` | Inputs inside tables and the loss chain, format badges |
 | `--radius-seg` | `7px` | Item inside a segmented control |
