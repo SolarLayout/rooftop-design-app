@@ -28,8 +28,19 @@ async function resultOf(request: Request): Promise<Answer> {
 
 const decision = (page: Page) => page.getByTestId("voltage-decision").filter({ visible: true });
 
-/** A new design: the 90 by 40 roof outlined on the map and built; then its Strings lens with its first run over. */
+/**
+ * A new design: the 90 by 40 roof outlined on the map and built; then its Strings lens with its first run over.
+ * The tests have no network, so the design takes the demo's weather, of the same place, as if it had been
+ * loaded; what the API answers for the roof is kept as it is, its system voltage none.
+ */
 async function aNewDesignInTheStringsLens(page: Page): Promise<void> {
+  const { weather_json: weather } = await (await page.request.get("/api/demo")).json();
+  await page.route("**/api/roof/from-map", async (route) => {
+    const answer = await route.fetch();
+    const project = await answer.json();
+    expect(project.system_voltage).toBeNull();
+    await route.fulfill({ response: answer, json: { ...project, weather_json: weather } });
+  });
   await page.goto("/find");
   await expect(roofMap(page)).toHaveAttribute("data-state", "ready", { timeout: A_MAP });
   await atTheRoof(page);
