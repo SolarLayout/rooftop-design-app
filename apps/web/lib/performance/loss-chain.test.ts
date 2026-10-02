@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { chainViewOf, changeOf } from "./loss-chain";
+import { chainViewOf, changeOf, readoutOf } from "./loss-chain";
 import { A, MODULE, STEPS } from "./test-fixtures";
 
 describe("the rows of the chain (plan/phase-08-plan.md, decision 3; guidelines.md, \"Numbers and units\")", () => {
@@ -36,6 +36,25 @@ describe("the rows of the chain (plan/phase-08-plan.md, decision 3; guidelines.m
   test("what the fields read of the run: the LID the engine took, and the module", () => {
     expect(run.energy.lid_pct).toBe(0.2);
     expect(run.module).toBe(MODULE);
+  });
+});
+
+describe("the readout under the pointer (plan/phase-08-plan.md, decision 18)", () => {
+  test("a step: its running total with its unit and its change on one line, then its label", () => {
+    expect(readoutOf(STEPS[9]!)).toEqual({ figure: "674.3 MWh · −4.08 %", label: "Temperature" });
+    expect(readoutOf(STEPS[1]!)).toEqual({ figure: "1,998.0 kWh/m² · +9.60 %", label: "Transposition to plane (15°)" });
+    expect(readoutOf(STEPS[11]!)).toEqual({ figure: "670.5 MWh · 0.00 %", label: "Module quality" });
+  });
+
+  test("a total: its value with its unit alone", () => {
+    expect(readoutOf(STEPS[0]!)).toEqual({ figure: "1,822.9 kWh/m²", label: "Global horizontal irradiation" });
+    expect(readoutOf(STEPS[20]!)).toEqual({ figure: "617.8 MWh", label: "Energy to grid" });
+  });
+
+  test("each row carries its readout", () => {
+    const { rows } = chainViewOf(A, MODULE);
+
+    expect(rows[9]!.readout).toEqual({ figure: "674.3 MWh · −4.08 %", label: "Temperature" });
   });
 });
 

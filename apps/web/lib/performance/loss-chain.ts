@@ -17,7 +17,11 @@ export type ChainRow = {
   /** The unit of the running total, said on the totals alone; null on a step. */
   unit: string | null;
   mark: Mark;
+  /** What the readout under the pointer says (decision 18): the running total with its unit and the change, then the label. */
+  readout: Readout;
 };
+
+export type Readout = { figure: string; label: string };
 
 export type ChainView = {
   rows: ChainRow[];
@@ -34,13 +38,19 @@ export function changeOf(pct: number): string {
 const isTotal = (step: LossStep) => step.kind === "irr_total" || step.kind === "energy_total" || step.kind === "result";
 const unitOf = (step: LossStep) => (step.kind === "irr_total" || step.kind === "irr" ? "kWh/m²" : "MWh");
 
+/** The readout of a step: "674.3 MWh · −4.08 %" then "Temperature"; of a total, its running total with its unit alone. */
+export function readoutOf(step: LossStep): Readout {
+  const total = `${shown(step.value, 1)} ${unitOf(step)}`;
+  return { figure: isTotal(step) ? total : `${total} · ${changeOf(step.pct)}`, label: step.label };
+}
+
 export function chainViewOf(option: DesignOption, module: Module): ChainView {
   const { steps } = option.energy;
   const marks = cascadeOf(steps);
   return {
     rows: steps.map((step, index) => {
       const total = isTotal(step);
-      return { label: step.label, isTotal: total, change: total ? null : changeOf(step.pct), total: shown(step.value, 1), unit: total ? unitOf(step) : null, mark: marks[index]! };
+      return { label: step.label, isTotal: total, change: total ? null : changeOf(step.pct), total: shown(step.value, 1), unit: total ? unitOf(step) : null, mark: marks[index]!, readout: readoutOf(step) };
     }),
     run: { energy: option.energy, module },
   };

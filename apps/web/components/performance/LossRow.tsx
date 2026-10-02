@@ -6,8 +6,11 @@ import { measures } from "@/components/ui/measures";
 import { NumberField } from "@/components/ui/NumberField";
 import { Switch } from "@/components/ui/Switch";
 import type { BarLook, Mark } from "@/lib/performance/cascade";
-import type { ChainRow } from "@/lib/performance/loss-chain";
+import type { ChainRow, Readout as ReadoutWords } from "@/lib/performance/loss-chain";
 import type { LossControl, LossFieldId } from "@/lib/performance/loss-fields";
+import type { RefObject } from "react";
+import type { Place } from "@/components/ui/place-floating";
+import { useReadout } from "./use-readout";
 
 type Props = {
   row: ChainRow;
@@ -72,27 +75,49 @@ function Control({ control, onField, onSwitch }: Pick<Props, "control" | "onFiel
   );
 }
 
-/** One row of the chain: the label, the control where the step is the user's, the change, the track, the running total. */
-export function LossRow({ row, control, isDimmed, onField, onSwitch }: Props) {
-  const dim = isDimmed && "opacity-updating";
-  if (row.isTotal) {
-    return (
-      <div data-testid="loss-row" data-step={row.label} className={classNames(ROW, "border-t border-line pt-1.5 first:border-t-0 tablet:pt-0")}>
-        <span className={classNames(LABEL, TOTAL_LINE, "font-semibold text-text")}>{row.label}</span>
-        <span className={classNames(TRACK, "h-5", TOTAL_LINE, dim)}>
-          <span className="relative block h-full">
-            <TrackMark mark={row.mark} />
-          </span>
-        </span>
-        <span data-testid="running-total" className={classNames("area-total", FIGURE, TOTAL_LINE, "flex items-center justify-end gap-1.5 font-medium text-text", dim)}>
-          {row.total}
-          <span className="font-normal text-text-2">{row.unit}</span>
-        </span>
-      </div>
-    );
-  }
+const READOUT = classNames(
+  "pointer-events-none placed flex flex-col rounded-item border border-line-strong bg-control-active px-2.5 py-1",
+  "type-caption whitespace-nowrap text-text shadow-tooltip",
+);
+
+/** The readout over the row (decision 18), in the tooltip's look: the figure, then the label. Never the only place. */
+function Readout({ ref, place, words }: { ref: RefObject<HTMLDivElement | null>; place: Place | null; words: ReadoutWords }) {
   return (
-    <div data-testid="loss-row" data-step={row.label} className={ROW}>
+    <div
+      ref={ref}
+      role="tooltip"
+      popover="manual"
+      data-testid="readout"
+      // It is measured where it is not seen, then shown at its place.
+      className={classNames(READOUT, place === null && "invisible")}
+      style={measures(place === null ? {} : { x: place.x, y: place.y })}
+    >
+      <span className="type-value-xs font-medium">{words.figure}</span>
+      <span className="text-text-2">{words.label}</span>
+    </div>
+  );
+}
+
+function TotalCells({ row, dim }: { row: ChainRow; dim: string | false }) {
+  return (
+    <>
+      <span className={classNames(LABEL, TOTAL_LINE, "font-semibold text-text")}>{row.label}</span>
+      <span className={classNames(TRACK, "h-5", TOTAL_LINE, dim)}>
+        <span className="relative block h-full">
+          <TrackMark mark={row.mark} />
+        </span>
+      </span>
+      <span data-testid="running-total" className={classNames("area-total", FIGURE, TOTAL_LINE, "flex items-center justify-end gap-1.5 font-medium text-text", dim)}>
+        {row.total}
+        <span className="font-normal text-text-2">{row.unit}</span>
+      </span>
+    </>
+  );
+}
+
+function StepCells({ row, dim, control, onField, onSwitch }: { row: ChainRow; dim: string | false } & Pick<Props, "control" | "onField" | "onSwitch">) {
+  return (
+    <>
       <span className={classNames(LABEL, LINE, "text-text-2")}>{row.label}</span>
       <Control control={control} onField={onField} onSwitch={onSwitch} />
       <span data-testid="change" className={classNames("area-change", FIGURE, LINE, "flex items-center justify-end text-text", dim)}>
@@ -106,6 +131,21 @@ export function LossRow({ row, control, isDimmed, onField, onSwitch }: Props) {
       <span data-testid="running-total" className={classNames("area-total", FIGURE, LINE, "flex min-w-14 items-center justify-end text-text-2", dim)}>
         {row.total}
       </span>
+    </>
+  );
+}
+
+/**
+ * One row of the chain: the label, the control where the step is the user's, the change, the track, the running
+ * total. The whole row is the target of the pointer, and shows its readout over its middle.
+ */
+export function LossRow({ row, control, isDimmed, onField, onSwitch }: Props) {
+  const { target, bubble, place } = useReadout();
+  const dim = isDimmed && "opacity-updating";
+  return (
+    <div data-testid="loss-row" data-step={row.label} {...target} className={classNames(ROW, row.isTotal && "border-t border-line pt-1.5 first:border-t-0 tablet:pt-0")}>
+      {row.isTotal ? <TotalCells row={row} dim={dim} /> : <StepCells row={row} dim={dim} control={control} onField={onField} onSwitch={onSwitch} />}
+      <Readout ref={bubble} place={place} words={row.readout} />
     </div>
   );
 }
