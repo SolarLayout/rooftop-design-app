@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "../fixtures";
-import { A_SCENE, fit, inThePlan, isBright, isDrawn, isNear, north, pixelOnce, pixelsAt, planView, sceneCanvas, sceneSettled, sceneShown, stage, STAGE, threeDView, withoutWebGL, type Pixel, type Share } from "../stage";
+import { A_SCENE, fit, inThePlan, isDrawn, isNear, north, pixelOnce, pixelsAt, planView, sceneCanvas, sceneSettled, sceneShown, stage, STAGE, threeDView, withoutWebGL, type Pixel, type Share } from "../stage";
 
 // The 3D stage of the Studio (plan/phase-05-plan.md, steps 1 to 4): the scene is drawn in the browser
 // with software WebGL, on three sizes; its text equivalent names what is on the roof; without WebGL the
