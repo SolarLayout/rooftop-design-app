@@ -28,6 +28,7 @@ from rooftop_api.schemas.design import (
 )
 from rooftop_api.schemas.equipment import (
     Coefficients,
+    CoefficientSource,
     CurrentPerMppt,
     EfficiencyCurve,
     EquipmentFile,
@@ -51,6 +52,7 @@ __all__ = [
     "ArraySpec",
     "BomLine",
     "CableRow",
+    "CoefficientSource",
     "Coefficients",
     "CurrentPerMppt",
     "DesignDone",

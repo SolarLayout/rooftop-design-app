@@ -301,6 +301,61 @@ def test_the_equipment_of_the_demo(demo_result):
     }
 
 
+# ── the Voc coefficient of a datasheet ───────────────────────────────────────
+@pytest.fixture(scope="module")
+def entered_result(client, _demo):
+    """The demo at 1500 V with the Voc coefficient of a datasheet entered, run once."""
+    project = copy.deepcopy(_demo)
+    project["voc_coefficient_pct"] = -0.29
+    return result_of(client.post("/design", json=project))
+
+
+def test_an_entered_voc_coefficient_is_the_coefficient_and_drops_the_note(entered_result):
+    equipment = entered_result["equipment"]
+
+    assert equipment["coefficients"]["source"] == "entered"
+    assert equipment["coefficients"]["mu_voc_pct"] == -0.29
+    assert equipment["coefficients"]["mu_voc_mv"] == pytest.approx(-0.29 / 100 * 49.95 * 1000, abs=0.05)
+    assert equipment["module_notes"] == []
+
+
+def test_an_entered_voc_coefficient_sizes_the_strings(entered_result):
+    series = entered_result["series_range"]
+
+    assert (series["n_min"], series["n_max"]) == (14, 28)
+    assert series["voc_cold"] == pytest.approx(51.84, abs=0.01)
+    assert all(option["n_series"] <= 28 for option in entered_result["options"])
+    option_a = entered_result["options"][0]
+    assert option_a["cable_schedule"][0]["voc_cold_v"] == pytest.approx(
+        option_a["n_series"] * series["voc_cold"]
+    )
+
+
+@pytest.mark.parametrize("value", [0, -1, -1.5, 0.1])
+def test_a_voc_coefficient_out_of_its_range_is_refused(client, light_demo, value):
+    light_demo["voc_coefficient_pct"] = value
+
+    response = client.post("/design", json=light_demo)
+
+    assert response.status_code == 422
+    assert (error_of(response)["code"], error_of(response)["field"]) == (
+        "invalid_request",
+        "voc_coefficient_pct",
+    )
+
+
+def test_a_run_with_a_voc_coefficient_is_not_the_run_without(client, demo):
+    plain = small(demo)
+    entered = {**small(demo), "voc_coefficient_pct": -0.29}
+
+    without = result_of(client.post("/design", json=plain))
+    with_it = result_of(client.post("/design", json=entered))
+
+    assert (without["series_range"]["n_max"], with_it["series_range"]["n_max"]) == (29, 28)
+    assert max(option["n_series"] for option in without["options"]) == 29
+    assert max(option["n_series"] for option in with_it["options"]) <= 28
+
+
 # ── without a system voltage ─────────────────────────────────────────────────
 def test_without_a_system_voltage_the_layout_and_the_shading_are_there(waiting_result):
     assert len(waiting_result["layout"]["modules"]) == waiting_result["readouts"]["positions"] > 0

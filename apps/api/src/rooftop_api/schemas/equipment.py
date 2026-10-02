@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, model_validator
 
 from rooftop_api.schemas.common import Input, Point
 
-CoefficientSource = Literal["one-diode model", "PAN file"]
+CoefficientSource = Literal["one-diode model", "PAN file", "entered"]
 CurrentSource = Literal["OND file", "IMaxDC over the MPPT count", "not in the OND"]
 MAX_TEXT = 2_000_000
 MAX_BASE64 = 2_800_000
@@ -65,7 +65,8 @@ class Module(BaseModel):
 
 
 class Coefficients(BaseModel):
-    """Temperature coefficients, and whether the file gave them or the one-diode model."""
+    """Temperature coefficients, and whether the file gave them, the one-diode model, or the user (the Voc
+    coefficient entered in the project)."""
 
     mu_voc_mv: float
     mu_voc_pct: float

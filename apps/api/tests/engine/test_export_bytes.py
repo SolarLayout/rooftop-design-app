@@ -158,7 +158,7 @@ def test_the_pdf_of_the_demo_lists_its_22_strings_on_one_page(demo_design):
 def test_the_cable_schedule_names_the_system_voltage(demo_design, volts):
     d = demo_design
 
-    rows = cable_schedule(d.layout, d.chosen.system, d.module, d.mm, d.t_min, volts)
+    rows = cable_schedule(d.layout, d.chosen.system, d.module, d.range.voc_cold, volts)
 
     assert {row.size for row in rows} == {f"4 mm² Cu, {volts:.0f} V DC"}
 
@@ -167,7 +167,7 @@ def test_the_cable_schedule_names_the_system_voltage(demo_design, volts):
 def test_the_bill_of_materials_names_the_system_voltage(demo_design, volts):
     d = demo_design
 
-    lines = bom(d.layout, d.chosen.system, d.module, d.inverter, d.mm, d.t_min, "Fixed tilt", 30.0, volts)
+    lines = bom(d.layout, d.chosen.system, d.module, d.inverter, d.range.voc_cold, "Fixed tilt", 30.0, volts)
 
     cable = next(line for line in lines if line.item == "DC cable")
     assert cable.spec == f"4 mm² Cu, {volts:.0f} V DC, red + black"

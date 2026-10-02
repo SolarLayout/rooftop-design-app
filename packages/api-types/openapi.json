@@ -200,7 +200,7 @@
         "type": "object"
       },
       "Coefficients": {
-        "description": "Temperature coefficients, and whether the file gave them or the one-diode model.",
+        "description": "Temperature coefficients, and whether the file gave them, the one-diode model, or the user (the Voc\ncoefficient entered in the project).",
         "properties": {
           "mu_pmpp_pct": {
             "title": "Mu Pmpp Pct",
@@ -221,7 +221,8 @@
           "source": {
             "enum": [
               "one-diode model",
-              "PAN file"
+              "PAN file",
+              "entered"
             ],
             "title": "Source",
             "type": "string"
@@ -2562,6 +2563,20 @@
               }
             ],
             "title": "T Min Override"
+          },
+          "voc_coefficient_pct": {
+            "anyOf": [
+              {
+                "description": "%/degC. Entered by the user from the datasheet; null: the one-diode model's Voc",
+                "exclusiveMaximum": 0.0,
+                "exclusiveMinimum": -1.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Voc Coefficient Pct"
           },
           "weather_csv": {
             "default": "",

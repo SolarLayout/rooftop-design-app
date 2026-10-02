@@ -85,6 +85,7 @@ def test_losses_survive_both_ways():
 def test_the_demo_project_survives_both_ways():
     project = demo_project()
     project.custom, project.t_min_override, project.imax_mppt_override = (27, 20, 1), 7.25, 32.5
+    project.voc_coefficient_pct = -0.29
     project.pan_path, project.pan_text = "Test.PAN", "PVObject_=pvModule\n"
 
     schema = convert.project_from_engine(project)
@@ -139,6 +140,16 @@ def test_a_format_1_file_is_a_request_body_too():
     assert convert.project_to_engine(schema) == project
 
 
+def test_a_project_without_a_voc_coefficient_is_a_request_body():
+    written = json.loads(json.dumps(demo_project().to_json()))
+    del written["voc_coefficient_pct"]
+
+    schema = schemas.Project.model_validate(written)
+
+    assert schema.voc_coefficient_pct is None
+    assert convert.project_to_engine(schema).voc_coefficient_pct is None
+
+
 # ── results, from the engine ─────────────────────────────────────────────────
 def test_a_module_carries_its_fields_and_what_follows_from_them(module):
     schema = convert.module_from_engine(module)
@@ -172,6 +183,14 @@ def test_coefficients_of_the_file_say_so(module):
 
     assert from_file.source == "PAN file"
     assert from_file.mu_voc_mv == -130.0
+
+
+def test_entered_coefficients_say_so(module):
+    entered = convert.coefficients_from_engine(ModuleModel(module).coefficients(mu_voc_pct=-0.29))
+
+    assert entered.source == "entered"
+    assert entered.mu_voc_pct == -0.29
+    assert entered.mu_voc_mv == pytest.approx(-0.29 / 100 * module.voc * 1000)
 
 
 def test_an_inverter_carries_its_fields_curves_and_limits():

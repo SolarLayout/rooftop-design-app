@@ -48,10 +48,11 @@ class SeriesRange:
 
 
 def series_range(mm: ModuleModel, inv: Inverter, system_v: float, t_min: float, t_max: float,
-                 cell_rise: float) -> SeriesRange:
+                 cell_rise: float, mu_voc_pct: float | None = None) -> SeriesRange:
+    """*mu_voc_pct*: the Voc coefficient the user entered (%/°C), else None for the model's Voc."""
     m = mm.m
     t_hot = t_max + cell_rise
-    voc_cold = float(mm.voc(1000.0, t_min)[0])
+    voc_cold = mm.voc_cold(t_min, mu_voc_pct)
     (_, _, _), (vmp_cold, vmp_hot, vmp_stc), _ = mm.mpp([1000.0] * 3, [t_min, t_hot, 25.0])
     limit_v = min(v for v in (system_v, inv.vabs_max or system_v, m.v_max_iec or system_v) if v)
     n_max_voc = math.floor(limit_v / voc_cold)

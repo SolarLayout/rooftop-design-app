@@ -33,6 +33,7 @@ class Coefficients:
     mu_pmpp_pct: float      # %/°C
     derived: bool           # True when computed from the one-diode model
     warning: str = ""
+    entered: bool = False   # True when the user entered the Voc coefficient (decision 6 of Phase 7)
 
 
 class ModuleModel:
@@ -71,7 +72,23 @@ class ModuleModel:
         il, io, rs, rsh, nnsvth = self.params(g, t)
         return np.asarray(pvsystem.singlediode(il, io, rs, rsh, nnsvth)["v_oc"], dtype=float)
 
-    def coefficients(self) -> Coefficients:
+    def voc_cold(self, t_min: float, mu_voc_pct: float | None = None) -> float:
+        """Voc of one module at 1000 W/m² and *t_min* °C, which sizes the strings.
+
+        Without *mu_voc_pct* it is the one-diode model's, as the desktop app and PVsyst size them. With
+        the datasheet's coefficient (%/°C) it is the datasheet's way, IEC 62548-1 Annex F:
+        Voc at STC × (1 + μ/100 × (t_min − 25)).
+        """
+        if mu_voc_pct is None:
+            return float(self.voc(1000.0, t_min)[0])
+        return self.m.voc * (1.0 + mu_voc_pct / 100.0 * (t_min - 25.0))
+
+    def coefficients(self, mu_voc_pct: float | None = None) -> Coefficients:
+        """The temperature coefficients: the PAN's where it states them, else the model's.
+
+        A Voc coefficient the user entered (*mu_voc_pct*, %/°C) takes the place of either and has no
+        warning: the user has read the datasheet.
+        """
         m = self.m
         (p0, p50, p25), (v0, v50, v25), _ = self.mpp([1000.0] * 3, [0.0, 50.0, 25.0])
         voc0, voc50 = self.voc([1000.0] * 2, [0.0, 50.0])
@@ -89,4 +106,7 @@ class ModuleModel:
         if not lo <= pct <= hi:
             warn = (f"Voc coefficient {pct:.3f} %/°C is outside the usual {lo:.2f} to {hi:.2f} %/°C "
                     "for crystalline silicon. Check the datasheet and enter it if it differs.")
+        if mu_voc_pct is not None:
+            return Coefficients(mu_voc_pct / 100.0 * m.voc * 1000.0, mu_voc_pct, float(mu_vmp), float(mu_p),
+                                derived=False, entered=True)
         return Coefficients(float(mu_voc_mv), float(pct), float(mu_vmp), float(mu_p), derived, warn)

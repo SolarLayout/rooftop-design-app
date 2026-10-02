@@ -144,8 +144,7 @@ def bill_of_materials(design: Design, option: StringOption) -> list[BomLine]:
         option.system,
         d.module,
         d.inverter,
-        d.mm,
-        d.t_min,
+        d.range.voc_cold,
         structure_label(d),
         d.p.ac_cable_m,
         d.p.system_voltage,
@@ -154,7 +153,7 @@ def bill_of_materials(design: Design, option: StringOption) -> list[BomLine]:
 
 def cables(design: Design, option: StringOption) -> list[CableRow]:
     d = design
-    return cable_schedule(d.layout, option.system, d.module, d.mm, d.t_min, d.p.system_voltage)
+    return cable_schedule(d.layout, option.system, d.module, d.range.voc_cold, d.p.system_voltage)
 
 
 def summary(design: Design, option: StringOption) -> list[tuple[str, str]]:

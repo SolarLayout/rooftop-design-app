@@ -45,6 +45,7 @@ class Project:
     t_min_override: float | None = None
     t_max_override: float | None = None
     imax_mppt_override: float | None = None  # datasheet value when the OND lacks it
+    voc_coefficient_pct: float | None = None  # %/°C from the datasheet; None: the one-diode model's Voc
     chosen_option: str = ""                  # StringOption.key
     custom: tuple[int, int, int] | None = None
     ac_cable_m: float = 30.0
@@ -146,7 +147,7 @@ class Design:
         self._ond_iscmax = self.inverter.isc_max_mppt_a
         self.apply_imax(project.imax_mppt_override)
         self.mm = ModuleModel(self.module)
-        self.coeffs: Coefficients = self.mm.coefficients()
+        self.coeffs: Coefficients = self.mm.coefficients(project.voc_coefficient_pct)
         self.weather: wx.Weather | None = None
         self.layout: Layout | None = None
         self.pre: Precomputed | None = None
@@ -231,7 +232,7 @@ class Design:
             self.range = None
             return None
         self.range = series_range(self.mm, self.inverter, self.p.system_voltage, self.t_min, self.t_max,
-                                  self.cell_rise)
+                                  self.cell_rise, self.p.voc_coefficient_pct)
         return self.range
 
     def prepare(self, on_progress: progress.ProgressCallback | None = None) -> Precomputed:

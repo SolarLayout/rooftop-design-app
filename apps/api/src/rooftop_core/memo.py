@@ -122,7 +122,7 @@ def options_key(design: Design) -> str:
         {name: getattr(p.roof, name) for name in NOT_FOR_SHADING},
         p.losses,
         _without(design.inverter, NAMES),
-        [p.system_voltage, design.t_min, design.t_max, design.cell_rise, p.custom],
+        [p.system_voltage, design.t_min, design.t_max, design.cell_rise, p.custom, p.voc_coefficient_pct],
         hashlib.sha256(pd.util.hash_pandas_object(weather.data, index=True).to_numpy().tobytes()).hexdigest(),
     )
 

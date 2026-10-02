@@ -170,10 +170,10 @@ def export_pdf_bytes(d: Design) -> bytes:
         # 5 · strings + BOM
         fig = plt.figure(figsize=A4_L)
         fig.text(0.05, 0.94, "String schedule and bill of materials", fontsize=14, color=plots.TEXT, fontweight="bold")
-        first, *more = schedule_pages(cable_schedule(d.layout, o.system, d.module, d.mm, d.t_min, p.system_voltage))
+        first, *more = schedule_pages(cable_schedule(d.layout, o.system, d.module, d.range.voc_cold, p.system_voltage))
         _schedule_table(fig.add_axes([0.05, 0.40, 0.9, 0.5]), first)
         ax = fig.add_axes([0.05, 0.03, 0.9, 0.33])
-        b = bom(d.layout, o.system, d.module, d.inverter, d.mm, d.t_min, structure_label(d), p.ac_cable_m,
+        b = bom(d.layout, o.system, d.module, d.inverter, d.range.voc_cold, structure_label(d), p.ac_cable_m,
                 p.system_voltage)
         _table(ax, [[x.item, x.spec, f"{x.qty:,.0f}", x.unit] for x in b], [0.2, 0.58, 0.1, 0.12], fs=8,
                header=["Item", "Specification", "Qty", "Unit"])

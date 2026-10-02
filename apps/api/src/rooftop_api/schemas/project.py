@@ -15,6 +15,14 @@ SystemVoltage = Annotated[
     Literal[600, 1000, 1500],
     Field(description="Volts. There is no default: the user chooses, and nothing is sized before."),
 ]
+VocCoefficient = Annotated[
+    float,
+    Field(
+        gt=-1,
+        lt=0,
+        description="%/degC. Entered by the user from the datasheet; null: the one-diode model's Voc",
+    ),
+]
 FileName = Annotated[str, Field(max_length=1024)]
 FileText = Annotated[str, Field(max_length=2_000_000)]
 CsvText = Annotated[str, Field(max_length=8_000_000)]
@@ -55,6 +63,7 @@ class Project(Input):
     t_min_override: Annotated[float, Field(ge=-90, le=60)] | None = None
     t_max_override: Annotated[float, Field(ge=-90, le=70)] | None = None
     imax_mppt_override: Annotated[float, Field(gt=0)] | None = None
+    voc_coefficient_pct: VocCoefficient | None = None
     chosen_option: Annotated[str, Field(max_length=40)] = ""
     custom: tuple[PositiveInt, PositiveInt, PositiveInt] | None = None
     ac_cable_m: Annotated[float, Field(ge=0)] = 30.0
