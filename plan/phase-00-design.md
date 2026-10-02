@@ -102,7 +102,7 @@ For Phase 3, by session 4. Approved by the owner on 2026-09-29 (decision D35).
 - Studio: Sun lens shade map; Strings lens MPPT loading table, custom option and "no string length fits".
 - Studio Roof, Sun and Strings lenses on phone and tablet.
 - Roof types: flat east-west and sloped flush variants of the 3D.
-- Performance and Handover on phone and tablet; Home on phone.
+- Handover on phone and tablet; Home on phone.
 - States: computing, import with missing obstacle heights, errors.
 - Present mode.
 

@@ -53,7 +53,7 @@
    "y": 0
   },
   "Performance.dc.html": {
-   "h": 1160,
+   "h": 2024,
    "title": "Performance · desktop 1440",
    "w": 1440,
    "x": 0,
@@ -261,6 +261,48 @@
    "w": 1440,
    "x": 5144,
    "y": 23560
+  },
+  "PerformanceTablet.dc.html": {
+   "h": 3181,
+   "title": "Performance · tablet 834",
+   "w": 834,
+   "x": 0,
+   "y": 27900
+  },
+  "PerformancePhone.dc.html": {
+   "h": 4685,
+   "title": "Performance · phone 390",
+   "w": 390,
+   "x": 914,
+   "y": 27900
+  },
+  "PerformanceLossChain.dc.html": {
+   "h": 5310,
+   "title": "Loss chain, edited",
+   "w": 1440,
+   "x": 1384,
+   "y": 27900
+  },
+  "PerformanceCharts.dc.html": {
+   "h": 3838,
+   "title": "Charts, tooltip and table",
+   "w": 1440,
+   "x": 2904,
+   "y": 27900
+  },
+  "PerformanceWeather.dc.html": {
+   "h": 4358,
+   "title": "Weather and assumptions",
+   "w": 1440,
+   "x": 4424,
+   "y": 27900
+  },
+  "PerformanceStates.dc.html": {
+   "h": 3846,
+   "title": "Performance, states",
+   "w": 1440,
+   "x": 5944,
+   "y": 27900
   }
  },
  "createdOnFiles": {
@@ -338,11 +380,11 @@
   },
   "t9": {
    "kind": "title1",
-   "maxW": 6584,
-   "text": "9 · Studio, Strings lens: the lens on every size, the strings on the roof, the options and your own, the inverter and the sizing",
+   "maxW": 7464,
+   "text": "6 · Performance — three sizes, the chain, the charts, the weather, the states",
    "w": 240,
    "x": 0,
-   "y": 23260
+   "y": 27600
   }
  },
  "order": [
@@ -382,7 +424,13 @@
   "StringsLensPhone.dc.html",
   "StringsOnRoof.dc.html",
   "StringsOptions.dc.html",
-  "StringsInverterSizing.dc.html"
+  "StringsInverterSizing.dc.html",
+  "PerformanceTablet.dc.html",
+  "PerformancePhone.dc.html",
+  "PerformanceLossChain.dc.html",
+  "PerformanceCharts.dc.html",
+  "PerformanceWeather.dc.html",
+  "PerformanceStates.dc.html"
  ],
  "pages": [],
  "title": "SolarLayout Rooftop — Web Design"

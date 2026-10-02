@@ -60,7 +60,11 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | Strings on the roof | `StringsOnRoof.dc.html` | `studio-strings-on-roof.png` | desktop, phone in parts |
 | Options and your own | `StringsOptions.dc.html` | `studio-strings-options.png` | desktop, phone in parts |
 | Inverter and sizing | `StringsInverterSizing.dc.html` | `studio-strings-inverter-sizing.png` | desktop, phone in parts |
-| Performance | `Performance.dc.html` | `performance-desktop.png` | desktop |
+| Performance | `Performance.dc.html`, `PerformanceTablet.dc.html`, `PerformancePhone.dc.html` | `performance-desktop.png`, `performance-tablet.png`, `performance-phone.png` | desktop, tablet, phone |
+| Loss chain, edited | `PerformanceLossChain.dc.html` | `performance-loss-chain.png` | desktop, phone in parts |
+| Charts, tooltip and table | `PerformanceCharts.dc.html` | `performance-charts.png` | desktop, phone in parts |
+| Weather and assumptions | `PerformanceWeather.dc.html` | `performance-weather.png` | desktop, phone in parts |
+| Performance, states | `PerformanceStates.dc.html` | `performance-states.png` | desktop, phone in parts |
 | Handover | `Handover.dc.html` | `handover-desktop.png` | desktop |
 | Controls, depth and motion | `Kit.dc.html` | `controls-depth-motion.png` | |
 | Controls, part 2 | `Controls2.dc.html` | `controls-part-2.png` | |
@@ -100,7 +104,14 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   parts (the strings on the roof, the options and your own, the inverter and the sizing), drawn on 2026-10-02 by session 11
   (`plan/phase-07-plan.md`, step 0). The strings, the inverters, the loads and the figures are the engine's for the Pune demo, kept
   in `mockups/strings_lens_data.json`, so that the boards can be written again without the engine.
-- `mockups/canvas.json` is the layout of the boards on the canvas: 37 boards. The canvas at claude.ai holds 27 of them,
+- `mockups/build_phase8_performance_boards.py` writes the three boards of Performance (desktop, tablet, phone; the desktop board
+  replaces the one drawn by hand, its top as approved, with the engine's labels of the chain, Chart and Table as tabs and the summary
+  table) and `mockups/build_phase8_part_boards.py` the four of its parts and states (the loss chain edited, the charts with their
+  tooltips and tables, the weather and the assumptions, the states), drawn on 2026-10-02 by session 12 (`plan/phase-08-plan.md`, step 0).
+  Every figure is the engine's for the Pune demo, kept in `mockups/performance_data.json` (the demo, soiling 3 %, degradation 0.7,
+  the rear gain off, the levels P50 · P90 · P99 with Uc 25, NASA POWER, a CSV of GHI alone, the run before a voltage, and the API's
+  words for a refused download, a refused file and missing weather), so that the boards can be written again without the engine.
+- `mockups/canvas.json` is the layout of the boards on the canvas: 43 boards. The canvas at claude.ai holds 27 of them,
   published on 2026-09-30, and is behind the repo by the board ImportHeights changed on 2026-10-01 and the five new boards
-  of Phase 6 with the redrawn Sun lens, and the five new boards of Phase 7 with the redrawn Strings lens: sessions on Bedrock
-  have no Artifact tool to publish them.
+  of Phase 6 with the redrawn Sun lens, the five new boards of Phase 7 with the redrawn Strings lens, and the six new boards of Phase 8 with the redrawn
+  Performance: sessions on Bedrock have no Artifact tool to publish them.
