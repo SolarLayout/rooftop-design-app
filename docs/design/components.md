@@ -533,6 +533,12 @@ In code: `Table`; a row as a card in `table-cells.ts`.
 - The row that is chosen says so to a screen reader (`aria-current`). Its card has the line and the halo
   of a selected card.
 - The cards are a list with the caption of the table as its name; the caption stands under them.
+- A cell can hold a quieter second line under its value, in `text-caption` text-3 (the inverter under its MPPT),
+  or lines of its own, each with its label in `text-label-s` text-3 before a value in mono 12 and words after it
+  in Geist text-2 ("Imp 54.3 of 65.0 A", "Isc 57.2 A of not known"); in the table only, the card shows the value
+  (the board "Inverter and sizing").
+- A table at the inspector's width pads its cells 6 rather than 8 (`dense`); a card whose values are long lays
+  them in two columns rather than three (`cardColumns`).
 
 ## Progress ring
 | Form | Size | Use |

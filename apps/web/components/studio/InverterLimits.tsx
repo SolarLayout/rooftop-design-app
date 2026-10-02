@@ -1,6 +1,6 @@
 "use client";
 
-import { useId } from "react";
+import { useEffect, useId, useRef } from "react";
 import { Button } from "@/components/ui/Button";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
@@ -18,6 +18,8 @@ type Props = {
   inverter: InverterShown | null;
   isOpen: boolean;
   onOpen: (isOpen: boolean) => void;
+  /** Grows by one for each request to put the focus in the current per MPPT (the MPPT table's link). */
+  focusCurrent: number;
   /** The current per MPPT entered, or given back to the file's (null). */
   onCurrent: (value: number | null) => void;
   onCable: (value: number) => void;
@@ -29,10 +31,18 @@ type Props = {
  * empty for the file's with where that comes from and the API's note, a value entered with "Use the file's"; and
  * the AC cable per inverter in metres. A value entered commits an edit of the document; the run follows.
  */
-export function InverterLimits({ document, inverter, isOpen, onOpen, onCurrent, onCable }: Props) {
+export function InverterLimits({ document, inverter, isOpen, onOpen, focusCurrent, onCurrent, onCable }: Props) {
   const body = useId();
+  const current = useRef<HTMLDivElement>(null);
   const field = currentFieldOf(document, inverter);
   const cable = acCableFieldOf(document);
+
+  useEffect(() => {
+    if (focusCurrent === 0) return;
+    const input = current.current?.querySelector("input");
+    input?.scrollIntoView({ block: "center" });
+    input?.focus();
+  }, [focusCurrent]);
 
   return (
     <section aria-label="Inverter limits and cabling" className={classNames("rounded-row border border-line bg-surface-1", isOpen ? "shadow-card" : "shadow-row")}>
@@ -45,7 +55,7 @@ export function InverterLimits({ document, inverter, isOpen, onOpen, onCurrent, 
       </button>
       {isOpen ? (
         <div id={body} className="flex flex-col gap-3 border-t border-line-subtle px-3 pt-3 pb-4">
-          <div className="flex flex-col gap-1.5">
+          <div ref={current} className="flex flex-col gap-1.5">
             <NumberField label="Current per MPPT" detail={field.detail} value={field.value} unit="A" range={INVERTER_RANGES.imax_mppt_override} onCommit={onCurrent} />
             {field.reset ? (
               <Button kind="quiet" size="s" className="self-end" onClick={() => onCurrent(null)}>
