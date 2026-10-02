@@ -309,6 +309,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--shadow-text-on-imagery` | `0 1px 3px rgba(0,0,0,.9)` | Under text that stands on the satellite imagery: the scale, the attribution |
 | `--halo-focus` | `0 0 0 3px rgba(255,176,32,.18)` | Focused field (with an accent border) |
 | `--halo-selected` | `0 0 0 3px rgba(255,176,32,.14)` | Selected card (with an accent border) |
+| `--halo-decision` | `0 0 0 4px rgba(255,176,32,.14)` | A choice only the user can make: the decision card (with an accent border) |
 | `--halo-saved` | `0 0 0 0 rgba(61,214,160,.5)` | Around the saved dot, where its pulse begins and ends |
 | `--halo-saved-out` | `0 0 0 5px rgba(61,214,160,0)` | Around the saved dot, at the middle of its pulse |
 | `--halo-corner` | `0 0 0 0 rgba(255,176,32,.55)` | Around the corner being edited, where its pulse begins and ends |
@@ -322,6 +323,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--opacity-disabled` | `0.45` | A control that cannot be used. It has no shadow either |
 | `--opacity-updating` | `0.55` | A value of before while the new one is on its way; a skeleton at the low point of its breath |
 | `--opacity-hint` | `0.35` | A hint on the map: the footprints that are known, while Detect building is the tool |
+| `--opacity-band` | `0.55` | The band of the series lengths that fit, in `color-ok` (components.md, "Series range bar") |
 
 ## Focus
 
