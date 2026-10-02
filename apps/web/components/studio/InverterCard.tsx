@@ -1,17 +1,19 @@
 "use client";
 
+import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
-import type { CurrentPerMppt, Inverter } from "@/lib/api";
-import { inverterCardOf } from "@/lib/studio/inverter-card";
+import { StatusMark } from "@/components/ui/StatusMark";
+import { inverterCardOf, type InverterShown } from "@/lib/studio/inverter-card";
 
 type Props = {
-  /** The inverter of the run, with the current per MPPT of its file; null before a run read one. */
-  inverter: { inverter: Inverter; current: CurrentPerMppt } | null;
+  /** The inverter shown, with the current per MPPT of its file; null before a run or a file gave one. */
+  inverter: InverterShown | null;
   /** The current per MPPT the user entered in place of the file's; null for none. */
   entered: number | null;
+  onReplace: () => void;
 };
 
-const CARD = "flex items-center gap-3.5 rounded-card-s border border-line bg-surface-1 p-card-compact shadow-card";
+const CARD = "flex flex-col gap-2.5 rounded-card-s border border-line bg-surface-1 p-card-compact shadow-card";
 
 /** The inverter as a drawing: a box with its three lines, the first in the accent (the board "Studio, Strings lens"). */
 function InverterGlyph() {
@@ -25,38 +27,56 @@ function InverterGlyph() {
 }
 
 /**
- * The inverter of the design (the board "Studio, Strings lens"; docs/design/components.md, "Cards"): the model,
- * the maker as the file states it with the power and the MPPTs, the current per MPPT and the inputs. Before a run
- * read the inverter, skeletons.
+ * The inverter of the design (the boards "Studio, Strings lens" and "Inverter and sizing"; docs/design/components.md,
+ * "Cards"): the model, the maker as the file states it with the power and the MPPTs, the current per MPPT and the
+ * inputs, Replace, and the file's name under the card. A current per MPPT that is not known has its line under
+ * the rest, with a note mark. Before a run read the inverter, skeletons.
  */
-export function InverterCard({ inverter, entered }: Props) {
+export function InverterCard({ inverter, entered, onReplace }: Props) {
   if (!inverter) {
     return (
       <section aria-label="Inverter" data-testid="inverter-card" className={CARD}>
-        <InverterGlyph />
-        <div className="flex grow flex-col gap-2">
-          <Skeleton kind="value" className="w-30" />
-          <Skeleton kind="label" className="w-45" />
-          <Skeleton kind="label" className="w-40" />
+        <div className="flex items-center gap-3.5">
+          <InverterGlyph />
+          <div className="flex grow flex-col gap-2">
+            <Skeleton kind="value" className="w-30" />
+            <Skeleton kind="label" className="w-45" />
+            <Skeleton kind="label" className="w-40" />
+          </div>
         </div>
       </section>
     );
   }
   const card = inverterCardOf(inverter.inverter, inverter.current, entered);
+  const facts = (
+    <p data-testid="inverter-facts" className={card.isCurrentKnown ? "truncate type-value-xs text-text-3" : "flex items-center gap-2 type-caption text-text-2"}>
+      {card.isCurrentKnown ? null : <StatusMark kind="note" label="Note" wordsShown={false} size={14} />}
+      <span>{card.facts}</span>
+    </p>
+  );
   return (
-    <section aria-label="Inverter" data-testid="inverter-card" className={CARD}>
-      <InverterGlyph />
-      <div className="flex min-w-0 grow flex-col gap-0.5">
-        <p data-testid="inverter-name" className="truncate font-semibold">
-          {card.name}
-        </p>
-        <p data-testid="inverter-line" className="truncate type-caption text-text-2">
-          {card.line}
-        </p>
-        <p data-testid="inverter-facts" className="truncate type-value-xs text-text-3">
-          {card.facts}
-        </p>
-      </div>
-    </section>
+    <div className="flex flex-col gap-2">
+      <section aria-label="Inverter" data-testid="inverter-card" className={CARD}>
+        <div className="flex items-center gap-3.5">
+          <InverterGlyph />
+          <div className="flex min-w-0 grow flex-col gap-0.5">
+            <p data-testid="inverter-name" className="truncate font-semibold">
+              {card.name}
+            </p>
+            <p data-testid="inverter-line" className="truncate type-caption text-text-2">
+              {card.line}
+            </p>
+            {card.isCurrentKnown ? facts : null}
+          </div>
+          <Button size="s" onClick={onReplace}>
+            Replace
+          </Button>
+        </div>
+        {card.isCurrentKnown ? null : facts}
+      </section>
+      <code data-testid="inverter-file" className="type-value-xs text-text-3">
+        {card.file}
+      </code>
+    </div>
   );
 }
