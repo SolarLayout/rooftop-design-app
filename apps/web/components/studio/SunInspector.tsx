@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { useProject, useStores, useView } from "@/components/shell/stores";
+import { useProject, useResults, useStores, useView } from "@/components/shell/stores";
 import { useSun } from "@/components/scene/use-sun";
 import { classNames } from "@/components/ui/class-names";
 import { NumberField } from "@/components/ui/NumberField";
@@ -11,6 +11,7 @@ import { Stat } from "@/components/ui/Stat";
 import { Switch } from "@/components/ui/Switch";
 import { hourOf } from "@/lib/scene/keepout";
 import { projectOf } from "@/lib/stores/project-store";
+import { sunFailureOf } from "@/lib/stores/results-store";
 import { onTheRoofOf, sunTabOf, type OnTheRoof, type SunTab } from "@/lib/stores/view-store";
 import { dateOf, dayOfChoice, dayOfYearOf, daysOf, designDayLineOf, designDayOfYear, partsOf, sunAtOf } from "@/lib/studio/sun-time";
 import { ReadOut, SECTION } from "./inspector-look";
@@ -82,6 +83,7 @@ function SunAtSection() {
   const sun = useSun();
   const time = useTime();
   const tiles = sunAtOf(sun);
+  const failure = useResults(sunFailureOf);
   const heading = useId();
   return (
     <section aria-labelledby={heading} className="flex flex-col gap-3">
@@ -94,7 +96,7 @@ function SunAtSection() {
           <Stat look="tile" label="Bearing" value={tiles.bearing.value} unit={tiles.bearing.unit} />
         </dl>
       ) : (
-        <p className="type-caption text-text-2">{time.day ? "The sun is down" : "The sun's day is on its way"}</p>
+        <p className="type-caption text-text-2">{time.day ? "The sun is down" : failure ? "The sun was not fetched" : "The sun's day is on its way"}</p>
       )}
     </section>
   );

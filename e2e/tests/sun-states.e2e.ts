@@ -39,6 +39,7 @@ test.describe("the states of the Sun lens", () => {
     await expect(chip).toContainText("The sun was not updated", { timeout: RUN });
     await expect(chip).toContainText("Try again");
     await expect(page.getByTestId("on-the-roof-sun")).toHaveCount(0);
+    await expect(page.getByRole("region", { name: "Sun at 10:30" })).toContainText("The sun was not fetched");
 
     await chip.getByRole("button", { name: "Try again" }).click();
 
