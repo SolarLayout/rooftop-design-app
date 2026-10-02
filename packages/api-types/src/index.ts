@@ -445,6 +445,8 @@ export interface components {
         DesignResult: {
             /** Chosen Option */
             chosen_option: string | null;
+            /** @description Why the custom option was not simulated; null when it was or there is none */
+            custom_refused: components["schemas"]["Verdict"] | null;
             equipment: components["schemas"]["Equipment"];
             /** Far Shading Note */
             far_shading_note: string;
@@ -1200,7 +1202,7 @@ export interface components {
             energy: components["schemas"]["Energy"];
             /**
              * Key
-             * @description series x strings x inverters, as in 29x22x1
+             * @description series x strings x inverters, as in 29x22x1; "custom" for the custom option
              */
             key: string;
             /** Letter */

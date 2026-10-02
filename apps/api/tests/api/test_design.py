@@ -101,6 +101,7 @@ def test_the_result_has_its_parts(demo_result):
         "series_range",
         "options",
         "options_note",
+        "custom_refused",
         "chosen_option",
         "no_options",
     ]
@@ -136,6 +137,7 @@ def test_the_five_options_of_the_demo(demo_result):
     ]
     assert demo_result["chosen_option"] == "29x22x1"
     assert demo_result["no_options"] is None
+    assert demo_result["custom_refused"] is None
 
 
 def test_the_energy_of_option_a(option_a):
@@ -490,9 +492,39 @@ def test_a_custom_option_is_added_to_those_of_the_engine(client, demo):
 
     custom = result["options"][-1]
     assert len(result["options"]) == len(plain["options"]) + 1
-    assert (custom["key"], custom["custom"], custom["recommended"]) == ("20x2x1", True, False)
+    assert (custom["key"], custom["custom"], custom["recommended"]) == ("custom", True, False)
+    assert (custom["n_series"], custom["n_strings"], custom["n_inverters"]) == (20, 2, 1)
     assert custom["title"] == f"{custom['letter']} · Custom"
     assert custom["energy"]["dc_kwp"] == pytest.approx(20 * 2 * 0.560)
+    assert result["custom_refused"] is None
+
+
+def test_a_custom_equal_to_option_b_is_a_sixth_option_that_custom_chooses(client, demo):
+    demo["custom"], demo["chosen_option"] = [26, 24, 1], "custom"
+
+    result = result_of(client.post("/design", json=demo))
+
+    options = result["options"]
+    assert [o["key"] for o in options] == ["29x22x1", "26x24x1", "28x22x1", "26x27x2", "28x25x2", "custom"]
+    assert [o["custom"] for o in options] == [False] * 5 + [True]
+    assert (options[5]["n_series"], options[5]["n_strings"], options[5]["n_inverters"]) == (26, 24, 1)
+    assert result["chosen_option"] == "custom"
+
+
+def test_a_custom_that_cannot_be_built_is_not_simulated_and_the_answer_says_why(client, demo):
+    project = small(demo, system_voltage=1000)
+    project["custom"], project["chosen_option"] = [29, 22, 1], "custom"
+
+    result = result_of(client.post("/design", json=project))
+
+    assert not any(option["custom"] for option in result["options"])
+    assert result["chosen_option"] == result["options"][0]["key"]
+    assert result["custom_refused"] == {
+        "ok": False,
+        "title": "29 in series does not fit at 1000 V",
+        "detail": "At most 19 fit: Voc at 11.9 °C is 1,480 V, over the limit of 1000 V. "
+        "Change your option or remove it.",
+    }
 
 
 def test_the_chosen_option_of_the_project_is_kept_when_it_is_there(client, demo):

@@ -4,6 +4,7 @@ import logging
 import queue
 import threading
 from collections.abc import Callable, Iterator
+from dataclasses import asdict
 
 from fastapi.sse import ServerSentEvent
 
@@ -107,6 +108,7 @@ def result(run: Run, on_progress: Callable[[ProgressEvent], None] | None = None)
         series_range=_series_range(design),
         options=[_option(design, option) for option in design.options],
         options_note=readouts.options_note(design) if design.options else None,
+        custom_refused=_custom_refused(design),
         chosen_option=design.chosen.key if design.chosen else None,
         no_options=no_options(design),
     )
@@ -182,6 +184,11 @@ def _series_range(design: Design) -> schemas.SeriesRange | None:
     if design.range is None:
         return None
     return convert.series_range_from_engine(design.range, readouts.limit_note(design))
+
+
+def _custom_refused(design: Design) -> schemas.Verdict | None:
+    refused = readouts.custom_refused(design)
+    return None if refused is None else schemas.Verdict.model_construct(**asdict(refused))
 
 
 def _option(design: Design, option) -> schemas.Option:

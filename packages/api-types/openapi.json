@@ -350,6 +350,17 @@
             ],
             "title": "Chosen Option"
           },
+          "custom_refused": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Verdict"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the custom option was not simulated; null when it was or there is none"
+          },
           "equipment": {
             "$ref": "#/components/schemas/Equipment"
           },
@@ -430,6 +441,7 @@
           "series_range",
           "options",
           "options_note",
+          "custom_refused",
           "chosen_option",
           "no_options"
         ],
@@ -1981,7 +1993,7 @@
             "$ref": "#/components/schemas/Energy"
           },
           "key": {
-            "description": "series x strings x inverters, as in 29x22x1",
+            "description": "series x strings x inverters, as in 29x22x1; \"custom\" for the custom option",
             "title": "Key",
             "type": "string"
           },

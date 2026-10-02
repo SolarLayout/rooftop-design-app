@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from typing import Literal
 
 import numpy as np
 
@@ -28,6 +29,9 @@ from .stringing import (
     form_strings,
     max_strings_per_inverter,
 )
+
+CUSTOM_KEY = "custom"  # there is one custom option at most (decision 8)
+Misfit = Literal["voc", "mppt_max", "mppt_min", "strings"]
 
 
 @dataclass
@@ -140,9 +144,34 @@ def build_options(pre: Precomputed, layout: Layout, module: Module, mm: ModuleMo
     return opts
 
 
+@dataclass(frozen=True)
+class CustomMisfit:
+    """Why a custom option cannot be built, with the numbers it was asked with."""
+
+    reason: Misfit
+    n_series: int
+    n_strings: int  # as many of those asked as the roof holds
+    n_inverters: int
+
+
+def custom_misfit(rng: SeriesRange, layout: Layout, n: int, s: int, k: int) -> CustomMisfit | None:
+    """Why *n* in series × *s* strings × *k* inverters cannot be built, or None when it can.
+
+    Needs a series range that fits. Strings asked beyond what the roof holds count as what it holds.
+    """
+    if n > rng.n_max_voc:
+        return CustomMisfit("voc", n, s, k)
+    if n > rng.n_max_mppt:
+        return CustomMisfit("mppt_max", n, s, k)
+    if n < rng.n_min:
+        return CustomMisfit("mppt_min", n, s, k)
+    held = min(s, len(form_strings(layout, n)))
+    return CustomMisfit("strings", n, held, k) if held < k else None
+
+
 def custom_option(pre, layout, module, mm, inv, losses, roof, n: int, s: int, k: int, letter: str = "X") -> StringOption:
     ranked = ranked_strings(pre, layout, n)
     s = min(s, len(ranked))
     o = make_option(pre, layout, module, mm, inv, losses, roof, n, s, k, ranked, custom=True)
-    o.letter = letter
+    o.key, o.letter = CUSTOM_KEY, letter
     return o

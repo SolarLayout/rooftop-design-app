@@ -18,6 +18,7 @@ from .weather import Weather
 CHOOSE_VOLTAGE = "Choose a system voltage to size the strings"
 CHOOSE_VOLTAGE_DETAIL = "600, 1000 or 1500 V. Nothing is sized until you choose."
 NO_LENGTH_FITS = "No string length fits this inverter"
+CHANGE_OR_REMOVE = "Change your option or remove it."
 LOSSES_ROW = 9  # where the desktop app put the row "Losses" among the rows of the summary
 CURRENT_TOLERANCE_A = 1e-6
 
@@ -64,6 +65,45 @@ def verdict(design: Design, option: StringOption | None) -> Verdict:
             f"DC/AC {option.dcac:.2f}" + ("" if option.ok else f" ({option.note})") + "."
         ),
     )
+
+
+def custom_refused(design: Design) -> Verdict | None:
+    """Why the custom option of the design was not simulated, or None when it was or there is none."""
+    misfit = design.custom_misfit
+    if misfit is None:
+        return None
+    rng, inverter, n = design.range, design.inverter, misfit.n_series
+    if misfit.reason == "strings":
+        strings, inverters = misfit.n_strings, misfit.n_inverters
+        return Verdict(
+            ok=False,
+            title=f"{_count(strings, 'string')} cannot fill {_count(inverters, 'inverter')}",
+            detail=f"Each inverter needs a string at least. {CHANGE_OR_REMOVE}",
+        )
+    if misfit.reason == "voc":
+        why = (
+            f"At most {rng.n_max} fit: Voc at {rng.t_min:.1f} °C is {n * rng.voc_cold:,.0f} V, over the "
+            f"limit of {rng.limit_v:.0f} V."
+        )
+    elif misfit.reason == "mppt_max":
+        why = (
+            f"At most {rng.n_max} fit: Vmp at {rng.t_min:.1f} °C is {n * rng.vmp_cold:,.0f} V, over the "
+            f"inverter's MPPT maximum of {inverter.vmpp_max:.0f} V."
+        )
+    else:
+        why = (
+            f"At least {rng.n_min} are needed: Vmp at {rng.t_cell_hot:.1f} °C cell is "
+            f"{n * rng.vmp_hot:,.0f} V, under the MPPT minimum of {inverter.vmpp_min:.0f} V."
+        )
+    return Verdict(
+        ok=False,
+        title=f"{n} in series does not fit at {rng.system_v:.0f} V",
+        detail=f"{why} {CHANGE_OR_REMOVE}",
+    )
+
+
+def _count(number: int, thing: str) -> str:
+    return f"{number} {thing}" + ("" if number == 1 else "s")
 
 
 def limit_note(design: Design) -> str:

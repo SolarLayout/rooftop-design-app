@@ -189,7 +189,9 @@ class SummaryRow(BaseModel):
 class Option(BaseModel):
     """A stringing the user may choose, with its full results."""
 
-    key: str = Field(description="series x strings x inverters, as in 29x22x1")
+    key: str = Field(
+        description='series x strings x inverters, as in 29x22x1; "custom" for the custom option'
+    )
     letter: str
     title: str
     n_series: int
@@ -236,6 +238,9 @@ class DesignResult(BaseModel):
     series_range: SeriesRange | None
     options: list[Option]
     options_note: str | None
+    custom_refused: Verdict | None = Field(
+        description="Why the custom option was not simulated; null when it was or there is none"
+    )
     chosen_option: str | None
     no_options: NoOptions | None
 
