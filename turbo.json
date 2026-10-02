@@ -40,6 +40,10 @@
       "outputs": []
     },
     "test": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/e2e/fixtures/weather-*.json"
+      ],
       "outputs": [],
       "passThroughEnv": [
         "ROOFTOP_CHECK_FRESH",

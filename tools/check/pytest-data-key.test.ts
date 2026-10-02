@@ -1,5 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import { dataKey, isDataInput, lockedVersion, type DataKeyInputs } from "./pytest-data-key.ts";
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { dataKey, e2eWeatherFixtures, isDataInput, lockedVersion, type DataKeyInputs } from "./pytest-data-key.ts";
 
 const inputs: DataKeyInputs = {
   files: [
@@ -53,6 +56,22 @@ describe("dataKey", () => {
 
   test("does not depend on the order the files are listed in", () => {
     expect(dataKey({ ...inputs, files: [inputs.files[1]!, inputs.files[0]!] })).toBe(dataKey(inputs));
+  });
+});
+
+describe("e2eWeatherFixtures", () => {
+  test("the weather fixtures of e2e/fixtures, named from the root, sorted; nothing else of the directory", () => {
+    const e2eDir = mkdtempSync(join(tmpdir(), "e2e-"));
+    mkdirSync(join(e2eDir, "fixtures"));
+    writeFileSync(join(e2eDir, "fixtures", "weather-pvgis-pune.json"), "{}");
+    writeFileSync(join(e2eDir, "fixtures", "weather-nasa-pune.json"), "[]");
+    writeFileSync(join(e2eDir, "fixtures", "geocode-nothing.json"), "{}");
+    writeFileSync(join(e2eDir, "fixtures", "imagery-tile.png"), "");
+
+    expect(e2eWeatherFixtures(e2eDir)).toEqual([
+      { path: "e2e/fixtures/weather-nasa-pune.json", bytes: new TextEncoder().encode("[]") },
+      { path: "e2e/fixtures/weather-pvgis-pune.json", bytes: new TextEncoder().encode("{}") },
+    ]);
   });
 });
 
