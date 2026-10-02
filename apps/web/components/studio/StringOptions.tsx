@@ -81,19 +81,32 @@ export function OptionCards({ cards, onChoose }: { cards: readonly OptionCard[];
 
 /**
  * The options of the Strings lens where there are none to offer (the board "Options and your own", "No string
- * length fits"): the engine's words stand under the bar as its verdict; here what can change it.
+ * length fits"): the engine's words stand under the bar as its verdict; here what can change it. Too few positions or
+ * none: the API's words here, in the same place.
  */
 export function NothingFits({ view }: { view: Sized }) {
   const heading = useId();
-  if (!view.noOptions?.change) return null;
+  if (!view.noOptions) return null;
+  const { title, message, change } = view.noOptions;
   return (
     <section aria-labelledby={heading} className="flex flex-col gap-2">
       <h2 id={heading} className={SECTION}>
         Options
       </h2>
-      <p data-testid="nothing-fits" className="rounded-row border border-line bg-surface-1 px-4 py-3 text-center type-small text-text-2">
-        {view.noOptions.change}
-      </p>
+      {change ? (
+        <p data-testid="nothing-fits" className="rounded-row border border-line bg-surface-1 px-4 py-3 text-center type-small text-text-2">
+          {change}
+        </p>
+      ) : (
+        // Too few positions, or none: the API's words, the verdict under the bar having none to say (step 21).
+        <p data-testid="no-options" className="flex items-start gap-2.5 rounded-row border border-note-line bg-surface-1 px-4 py-3 type-small">
+          <StatusMark kind="note" label={title} wordsShown={false} size={16} />
+          <span className="flex flex-col gap-0.5">
+            <span className="font-medium">{title}</span>
+            <span className="type-caption text-text-2">{message}</span>
+          </span>
+        </p>
+      )}
     </section>
   );
 }

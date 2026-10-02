@@ -24,8 +24,10 @@ export type BeforeAVoltage = {
 export type Sized = {
   kind: "sized";
   voltage: Volts;
-  /** The range of the run, when the run is of the voltage chosen; null while the run for it is on its way. */
+  /** The range of the run; null before a run sized the strings. */
   range: SeriesRange | null;
+  /** The range is of the voltage chosen; not while the run for a voltage chosen since is on its way, or failed. */
+  isOfTheVoltage: boolean;
   /** The length of the chosen option, for the marker; null when there is no option. */
   chosen: number | null;
   /** The verdict under the bar: the chosen option's, or why no length fits; null without either. */
@@ -70,13 +72,15 @@ export function stringsViewOf({ voltage, design, readouts, option }: Of): String
     return { kind: "before-a-voltage", limitLine: design ? ratingsLineOf(design) : null, waiting: WAITING, done: design ? doneOf(design, readouts) : [] };
   }
   const volts = voltage as Volts;
-  const range = design?.series_range && design.series_range.system_v === voltage ? design.series_range : null;
-  if (!range || !design) return { kind: "sized", voltage: volts, range: null, chosen: null, verdict: null, noOptions: null };
+  // The range of before stays while the run of another voltage is on its way, as every value of before does (step 21).
+  const range = design?.series_range ?? null;
+  if (!range || !design) return { kind: "sized", voltage: volts, range: null, isOfTheVoltage: false, chosen: null, verdict: null, noOptions: null };
+  const isOfTheVoltage = range.system_v === voltage;
   const reason = design.no_options;
   if (reason && reason.code !== "system_voltage_missing") {
     const change = reason.code === "no_string_length_fits" ? CHANGE_WHEN_NOTHING_FITS : null;
     const verdict = reason.code === "no_string_length_fits" ? { ok: false, title: reason.title, detail: reason.message } : null;
-    return { kind: "sized", voltage: volts, range, chosen: null, verdict, noOptions: { title: reason.title, message: reason.message, change } };
+    return { kind: "sized", voltage: volts, range, isOfTheVoltage, chosen: null, verdict, noOptions: { title: reason.title, message: reason.message, change } };
   }
-  return { kind: "sized", voltage: volts, range, chosen: option?.n_series ?? null, verdict: option?.verdict ?? null, noOptions: null };
+  return { kind: "sized", voltage: volts, range, isOfTheVoltage, chosen: option?.n_series ?? null, verdict: option?.verdict ?? null, noOptions: null };
 }

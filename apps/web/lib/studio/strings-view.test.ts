@@ -57,15 +57,16 @@ describe("with a system voltage", () => {
       kind: "sized",
       voltage: 1500,
       range: RANGE_1500,
+      isOfTheVoltage: true,
       chosen: 29,
       verdict: VERDICT_A,
       noOptions: null,
     } as never);
   });
 
-  test("while the run of the voltage chosen is on its way, the range of another voltage is not shown", () => {
+  test("while the run of the voltage chosen is on its way, the range of before stays, said to be of another voltage", () => {
     const view = stringsViewOf({ voltage: 1000, design: run(), readouts: null, option: OPTION_A });
-    expect(view).toEqual({ kind: "sized", voltage: 1000, range: null, chosen: null, verdict: null, noOptions: null });
+    expect(view).toEqual({ kind: "sized", voltage: 1000, range: RANGE_1500, isOfTheVoltage: false, chosen: 29, verdict: VERDICT_A, noOptions: null } as never);
   });
 
   test("the voltage chosen while the run before had none: the decision is not shown again", () => {
