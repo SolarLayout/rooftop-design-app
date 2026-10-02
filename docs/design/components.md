@@ -24,7 +24,7 @@ In code (`apps/web/components/ui`): `Button`, `ButtonLink` (a link that looks li
 
 | Size | Button, height on desktop | Icon button, side on desktop | Radius | On phone and tablet |
 |---|---|---|---|---|
-| `xs` | | 32 | control | 44, radius row |
+| `xs` | 26, the quiet press inside a chip ("Use the roof type's") | 32 | item for the button, control for the icon button | 44, radius row |
 | `s` | 36 | 38 | control | 44, radius row |
 | `m` | 40 | 40 | control | 44, radius row |
 | `l` | 44 | 44 | row | the same |
