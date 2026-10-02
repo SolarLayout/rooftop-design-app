@@ -77,7 +77,8 @@ changed; an export 0.2 to 0.9 s after a run.
 
 1. Phase 6: the Studio's Sun lens (`plan/phase-06-studio-sun.md`): the plan first, the way `phase-05-plan.md` was written,
    then the boards it lacks, then the pull requests. The scene already takes the sun from `/sun` at the view's time
-   (`sunTime` in the view store) and has the Sun's eye preset: the time control of the stage is Phase 6's.
+   (`sunTime` in the view store) and has the Sun's eye preset: the time control of the stage is Phase 6's. Work
+   order: `plan/resume/009-phase-6-studio-sun.md`.
 2. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
 3. In parallel with any phase: the screens still to draw (Phase 0).
 
