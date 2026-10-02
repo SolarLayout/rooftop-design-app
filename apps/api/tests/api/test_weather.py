@@ -247,6 +247,37 @@ def test_a_csv_that_cannot_be_used_is_refused_with_the_reason(client, text, code
     assert error_of(response) == {"code": code, "message": message, "field": "csv_text"}
 
 
+# ── downloads off (decision 13 of Phase 8: the test stack never reaches PVGIS or NASA) ──────
+@pytest.fixture
+def downloads_off(monkeypatch):
+    from rooftop_api import settings
+
+    monkeypatch.setenv(settings.WEATHER_DOWNLOADS, "off")
+
+
+@pytest.mark.parametrize(
+    ("source", "label"), [("pvgis", "PVGIS TMY"), ("nasa", "NASA POWER")], ids=["pvgis", "nasa"]
+)
+def test_with_downloads_off_a_download_is_refused_in_words(client, services, downloads_off, source, label):
+    response = client.post("/weather", json={"source": source, **PUNE})
+
+    assert response.status_code == 422
+    assert error_of(response) == {
+        "code": "weather_downloads_off",
+        "message": f"Downloads of weather are off on this server: {label} was not asked. Load a CSV "
+        "file, or turn downloads on.",
+        "field": "source",
+    }
+    assert services.asked == []
+
+
+def test_with_downloads_off_a_csv_is_still_read(client, services, downloads_off):
+    body = client.post("/weather", json=_csv(CSV)).json()
+
+    assert body["weather"]["label"] == "site.csv" and body["summary"]["hours"] == 4
+    assert services.asked == []
+
+
 # ── the request ──────────────────────────────────────────────────────────────
 def test_a_source_that_is_none_of_the_three_is_refused(client):
     response = client.post("/weather", json={"source": "meteonorm", **PUNE})

@@ -2,7 +2,7 @@
 
 import requests
 
-from rooftop_api import convert, schemas
+from rooftop_api import convert, schemas, settings
 from rooftop_api.errors import BAD_GATEWAY, UNPROCESSABLE, ApiError
 from rooftop_api.services.uploads import file_name
 from rooftop_core import csv_weather
@@ -65,6 +65,14 @@ def _from_csv(request: schemas.WeatherRequest) -> schemas.WeatherResponse:
 
 def _download(request: schemas.WeatherRequest) -> wx.Weather:
     label = wx.SOURCE_LABELS[request.source]
+    if not settings.weather_downloads_on():
+        raise ApiError(
+            UNPROCESSABLE,
+            "weather_downloads_off",
+            f"Downloads of weather are off on this server: {label} was not asked. Load a CSV file, or turn "
+            "downloads on.",
+            "source",
+        )
     try:
         return wx.load(request.source, request.lat, request.lon, cache=CACHE)
     except wx.WeatherServiceError as error:

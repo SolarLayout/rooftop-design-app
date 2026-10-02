@@ -31,6 +31,7 @@ import {
   type Service,
 } from "./lib/ports.ts";
 import {
+  apiEnvOf,
   choosePair,
   mapKeyNote,
   pairsOf,
@@ -409,6 +410,7 @@ function launch(service: Service, profile: Profile, pair: Pair, node: ResolvedNo
     ROOFTOP_API_PORT: String(pair.api),
     ROOFTOP_DIST_DIR: profile.distDir,
     PORT: String(pair[service]),
+    ...(service === "api" ? apiEnvOf(profile) : {}),
   };
   delete env.VIRTUAL_ENV;
   if (!detach && useColour) env.FORCE_COLOR = "1";

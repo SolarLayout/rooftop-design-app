@@ -69,6 +69,16 @@ export function choosePair(profile: Profile, busy: ReadonlySet<number>): PairCho
   return { ok: false, passedOver };
 }
 
+/**
+ * What the API of a profile is told through its environment, besides its port. The test stack never
+ * downloads weather: a browser test that misses a route is refused in words by the API
+ * (rooftop_api.settings) instead of reaching PVGIS unseen (plan/phase-08-plan.md, decision 13). The dev
+ * stack is told nothing, so the owner's app downloads as it should.
+ */
+export function apiEnvOf(profile: Profile): Record<string, string> {
+  return profile.name === "test" ? { ROOFTOP_WEATHER_DOWNLOADS: "off" } : {};
+}
+
 export function urlsOf(pair: Pair): { web: string; api: string; apiHealth: string } {
   return {
     web: `http://localhost:${pair.web}`,
