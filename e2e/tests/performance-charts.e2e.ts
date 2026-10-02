@@ -116,11 +116,14 @@ test.describe("the energy to grid by month", () => {
     await expect(monthly(page).getByTestId("bar-label")).toHaveCount(2);
   });
 
-  test("the keyboard reaches every bar, and the focus shows the same as the pointer", async ({ page }) => {
+  test("the keyboard reaches every bar, and the focus shows the same as the pointer", async ({ page }, testInfo) => {
+    // On a touch size the keyboard is not the way in, and the focus can scroll the frame, which takes the tooltip away by design.
+    test.skip(Boolean(testInfo.project.use.hasTouch), "the keyboard's path is the desktop's");
     const energy = await thePerformancePage(page);
 
-    // The focus must not scroll the page: a page that moves takes the tooltip away.
-    await monthly(page).scrollIntoViewIfNeeded();
+    // The focus must not scroll the page: a page that moves takes the tooltip away. The card is centred, so that the bars
+    // under its head are in the window too.
+    await monthly(page).evaluate((card) => card.scrollIntoView({ block: "center", behavior: "instant" }));
     await monthly(page).getByRole("tab", { name: "Chart" }).focus();
     await page.keyboard.press("Tab");
     await expect(monthly(page).getByRole("tabpanel")).toBeFocused();
@@ -175,12 +178,14 @@ test.describe("the 25 years", () => {
     await expect(plot(page).getByRole("slider")).toHaveAttribute("aria-valuenow", "10");
   });
 
-  test("the plot takes the keyboard focus and the arrows move the year", async ({ page }) => {
+  test("the plot takes the keyboard focus and the arrows move the year", async ({ page }, testInfo) => {
+    test.skip(Boolean(testInfo.project.use.hasTouch), "the keyboard's path is the desktop's");
     const energy = await thePerformancePage(page);
     const slider = plot(page).getByRole("slider");
 
-    // The focus must not scroll the page: a page that moves takes the tooltip away.
-    await plot(page).scrollIntoViewIfNeeded();
+    // The focus must not scroll the page: a page that moves takes the tooltip away. The card is centred, so that the plot
+    // and its tabs are in the window together.
+    await years(page).evaluate((card) => card.scrollIntoView({ block: "center", behavior: "instant" }));
     await years(page).getByRole("tab", { name: "Chart" }).focus();
     await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");

@@ -50,6 +50,8 @@ export function YearsChart({ energy, degradation, onDegradation, isDimmed }: Pro
   const [kept, setKept] = useState(FIRST_YEAR);
 
   const leave = useCallback(() => setActive(null), []);
+  /** Whether the focus about to come was brought by a pointer: the browser's own :focus-visible is not settled at focus time. */
+  const byPointer = useRef(false);
 
   function show(year: number, element: HTMLElement) {
     if (year === active) return;
@@ -137,10 +139,13 @@ export function YearsChart({ energy, degradation, onDegradation, isDimmed }: Pro
                   if (event.pointerType === "mouse") leave();
                 }}
                 onPointerDown={(event) => {
+                  byPointer.current = true;
                   if (event.pointerType !== "mouse") show(yearAt(event), event.currentTarget);
                 }}
                 onFocus={(event) => {
-                  if (event.target.matches(":focus-visible")) show(kept, event.currentTarget);
+                  // The keyboard's focus shows the year kept; a pointer's shows what it points at itself.
+                  if (!byPointer.current) show(kept, event.currentTarget);
+                  byPointer.current = false;
                 }}
                 onBlur={leave}
                 onKeyDown={onKeyDown}
