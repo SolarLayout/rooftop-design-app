@@ -41,7 +41,7 @@ Nothing. No branch stands on `main`; `main` is green.
 | The places that have an address: workspaces, lenses, items of Handover | `apps/web/lib/routes.ts` |
 | The shell: top bar, navigation, project switcher, state of saving, vitals, notes; the frame of the Studio | `apps/web/components/shell`; around `apps/web/app/(workspaces)` |
 | The stores for React, and the hooks that read them | `apps/web/components/shell/stores.tsx` |
-| Routes | `/` (a placeholder with "Find my roof"), `/find` (the map, the search, the outline), `/studio/[lens]` (Roof and Array built; Sun and Strings say not built yet), `/performance`, `/handover/[item]` (the shell, with placeholders inside) |
+| Routes | `/` (a placeholder with "Find my roof"), `/find` (the map, the search, the outline), `/studio/[lens]` (Roof, Array and Sun built; Strings says not built yet), `/performance`, `/handover/[item]` (the shell, with placeholders inside) |
 | The map: the provider, Esri, the search's reading of what is typed, the scale bar, the states without a map | `apps/web/lib/map` |
 | The outline: the frame of metres, the measures, snapping, typed lengths, the rectangle, the history, the nudge, the obstacles, the roof by hand, the reducer | `apps/web/lib/outline` |
 | Find and outline: the screen, the map (MapLibre), the search, the outline drawn on the map, the panel, the tools (the ways to outline while the roof is open; the obstacles once it is closed), the height dialog, the obstacle list, the roof type, Build; the roof by hand and the plan drawn without a map | `apps/web/components/find` |
