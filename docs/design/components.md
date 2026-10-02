@@ -249,6 +249,25 @@ the roof alone), dashed in `keepOutLine` without a fill, on the roof under the m
 shadows: where the two agree, the view is true. Asked once the time has stood still for `TIME_REST`, shown only while
 the time is the one they are of; off at first.
 
+## Shade map (Sun lens)
+The board "Shade map". The Sun lens's tab Shade map colours the glass of every position by its near shading over the
+year (`Shading.near_pct_by_module` of the design run), in the five steps of `--color-shade-1` to `-5` from 0 to the
+next round value over the largest loss (1, 2, 5, 10, 20 %); the frames stay. Only while the run is of the layout
+shown; otherwise the modules are their blue and the legend says "The shade map follows the design run" with the
+ring. The legend on the stage, 12 over the timeline (at the stage's bottom left on phone): "Near shading over the
+year", five swatches of 40 by 10 (24 on phone) with the marks of the scale under them, the unit after the last
+("0 1 2 3 4 5 %"; on phone the ends alone), and "Of all 790 positions". The inspector in the tab: what the map
+colours ("Select a module for its value", "Tap" on touch) and each step with its range and its count, then Shading
+over the year. A module selected says its loss and its string's: "Position 423 · row 4", "Near shading 3.57 % over
+the year · string S12, 5.00 %", or "· not used by option A"; without an option no string. Leaving the Sun lens takes
+the map off.
+
+## Shading over the year (Sun lens)
+Four stat tiles, two to a row: Near, linear; Electrical, beyond linear; Far, horizon (in %); Kept clear (m²). With an
+option they are its loss chain's ("Of the 638 modules of option A"); without, near and far over all positions ("Of
+all 790 positions") and Electrical says what it waits for, in the API's words. Under them the engine's note on the
+horizon as it says it. Before any run, skeletons on the tiles.
+
 ## Time pill (every lens)
 The time on the stage of the Roof, Array and Strings lenses, as the approved Array boards draw it: a pill of 44
 (48 on tablet), `surface-1`, border `line`, `shadow-raised`: round play 32 (36 on tablet), the day and the time in

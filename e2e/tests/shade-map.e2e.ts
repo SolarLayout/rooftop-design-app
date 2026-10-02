@@ -75,15 +75,43 @@ test.describe("the shade map", () => {
     const losses = result.shading.near_pct_by_module;
     const counts = [0, 1, 2, 3, 4].map((step) => losses.filter((loss) => Math.min(4, Math.floor(loss)) === step).length);
     const writes = await moduleWrites(page);
-    const middle: Share[] = [0.45, 0.5, 0.55].flatMap((y) => [0.4, 0.5, 0.6].map((x): Share => [x, y]));
-    const before = await pixelsAt(page, middle);
+    if (isPhone(testInfo.project.name)) {
+      await page.getByRole("separator", { name: "Inspector" }).focus();
+      await page.keyboard.press("Home");
+    }
+    // The most shaded position, seen in the plan: its glass is the modules' blue, then its step of the map.
+    const idx = losses.indexOf(Math.max(...losses));
+    const position = result.layout.modules.find((one) => one.idx === idx)!;
+    const point = await inThePlan(page);
+    const [x, y] = position.outline.reduce(([sx, sy], [px, py]) => [sx + px / 4, sy + py / 4], [0, 0]);
+    const at = point(x, y);
+    const box = (await sceneCanvas(page).boundingBox())!;
+    const share: Share = [(at.x - box.x) / box.width, (at.y - box.y) / box.height];
+    const [before] = await pixelsAt(page, [share]);
+    if (isPhone(testInfo.project.name)) {
+      await page.getByRole("separator", { name: "Inspector" }).focus();
+      await page.keyboard.press("End");
+    }
 
     await tab(page, "Shade map").click();
 
     await expect(page.getByTestId("on-the-roof-shade-map")).toHaveText(`The shade map: near shading over the year from 0 to 5 %, by steps of 1 %: ${counts.slice(0, 4).join(", ")} and ${counts[4]} positions`, { timeout: RUN });
     await expect(page.getByTestId("shade-legend")).toContainText("Near shading over the year");
     await expect(page.getByTestId("shade-step")).toHaveCount(5);
-    await expect.poll(async () => (await pixelsAt(page, middle)).filter(isViolet).length, { timeout: RUN }).toBeGreaterThan(before.filter(isViolet).length);
+    if (isPhone(testInfo.project.name)) {
+      await page.getByRole("separator", { name: "Inspector" }).focus();
+      await page.keyboard.press("Home");
+    }
+    const brightness = ([red, green, blue]: Pixel) => red + green + blue;
+    await expect
+      .poll(
+        async () => {
+          const [after] = await pixelsAt(page, [share]);
+          return isViolet(after) && brightness(after) > brightness(before) + 60;
+        },
+        { timeout: RUN },
+      )
+      .toBe(true);
     expect(await moduleWrites(page)).toBe(writes);
 
     await tab(page, "Shadows").click();
