@@ -98,9 +98,9 @@ export function StringsInspector() {
                 <OptionCards cards={optionCardsOf(design)} onChoose={chooseOption} />
                 <YourOwn document={project} design={design} onSave={(custom) => store.getState().commit((document) => withCustom(document, custom))} onRemove={() => store.getState().commit(withoutCustom)} />
                 <OptionsNote note={design.options_note ?? null} />
-                {option ? <MpptTable table={mpptTableOf(option, view.voltage, design.equipment.max_current_per_mppt)} onEnterCurrent={enterCurrent} /> : null}
               </div>
             ) : null}
+            {view.range && !view.noOptions && design && option ? <MpptTable table={mpptTableOf(option, view.voltage, design.equipment.max_current_per_mppt)} onEnterCurrent={enterCurrent} /> : null}
             <SizingTemperatures />
             <InverterLimits
               document={project}
