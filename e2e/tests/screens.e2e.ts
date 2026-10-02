@@ -274,6 +274,20 @@ test.describe("the shell", () => {
     await expectScreen(page, "studio-sun-shade-map");
   });
 
+  // A sun that could not be fetched, as the board "Time on the stage" draws it: the chip of the stage with the
+  // API's sentence and Try again.
+  test("studio, the Sun lens, the sun not fetched", async ({ page }) => {
+    await page.route("**/api/sun", (route) => route.abort("connectionrefused"));
+    await page.goto("/studio/sun");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await expect(page.getByTestId("sun-failed")).toContainText("The sun was not updated", { timeout: RUN });
+    await expect(page.getByTestId("on-the-roof-modules")).toContainText("modules", { timeout: RUN });
+    await expect(page.getByTestId("on-the-roof-ground")).toContainText("The ground is", { timeout: RUN });
+
+    await cameraSettled(page);
+    await expectScreen(page, "studio-sun-failed");
+  });
+
   test("studio, the Roof lens", async ({ page }) => {
     await page.goto("/studio/roof");
     await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
