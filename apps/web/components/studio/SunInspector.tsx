@@ -11,9 +11,10 @@ import { Stat } from "@/components/ui/Stat";
 import { Switch } from "@/components/ui/Switch";
 import { hourOf } from "@/lib/scene/keepout";
 import { projectOf } from "@/lib/stores/project-store";
-import { onTheRoofOf, type OnTheRoof } from "@/lib/stores/view-store";
+import { onTheRoofOf, sunTabOf, type OnTheRoof, type SunTab } from "@/lib/stores/view-store";
 import { dateOf, dayOfChoice, dayOfYearOf, daysOf, designDayLineOf, designDayOfYear, partsOf, sunAtOf } from "@/lib/studio/sun-time";
 import { ReadOut, SECTION } from "./inspector-look";
+import { ShadeMapSection, ShadingSection } from "./SunShading";
 import { SunTimeline } from "./Time";
 import type { Size } from "./use-size";
 import { useTime } from "./use-time";
@@ -137,20 +138,45 @@ function OnTheRoofSection({ size }: { size: Size }) {
   );
 }
 
+const TABS = [
+  { value: "shadows", label: "Shadows" },
+  { value: "shade-map", label: "Shade map" },
+] as const satisfies ReadonlyArray<{ value: SunTab; label: string }>;
+
 /**
- * The inspector of the Sun lens (the board "Studio, Sun lens" on three sizes): the day and where the sun
- * stands, what is drawn on the roof; the shading figures come with their pull request. On phone the
- * timeline stands at the top, since the stage of 252 has no room for it.
+ * The inspector of the Sun lens (the boards "Studio, Sun lens" on three sizes and "Shade map"): Shadows or
+ * Shade map at its top. Shadows: the day, where the sun stands, shading over the year, what is drawn on the
+ * roof. Shade map: what the map colours with its steps, and shading over the year. On phone the timeline
+ * stands at the top, since the stage of 252 has no room for it. On tablet two columns.
  */
 export function SunInspector({ size }: { size: Size }) {
+  const { view } = useStores();
+  const tab = useView(sunTabOf);
+  const tabs = <Segmented label="Sun lens" fill options={TABS} value={tab} onChange={(chosen) => view.getState().showSunTab(chosen)} />;
   return (
     <div className="flex flex-col gap-section tablet:grid tablet:grid-cols-2 tablet:gap-x-8 desktop:flex desktop:flex-col">
       {size === "phone" ? <SunTimeline size="phone" className="border-b border-line-subtle pb-4" /> : null}
-      <div className="flex flex-col gap-section">
-        <DaySection size={size} />
-        <SunAtSection />
-      </div>
-      <OnTheRoofSection size={size} />
+      {tab === "shadows" ? (
+        <>
+          <div className="flex flex-col gap-section">
+            {tabs}
+            <DaySection size={size} />
+            <SunAtSection />
+          </div>
+          <div className="flex flex-col gap-section">
+            <ShadingSection />
+            <OnTheRoofSection size={size} />
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="flex flex-col gap-section">
+            {tabs}
+            <ShadeMapSection size={size} />
+          </div>
+          <ShadingSection />
+        </>
+      )}
     </div>
   );
 }

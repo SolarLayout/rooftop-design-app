@@ -251,6 +251,29 @@ test.describe("the shell", () => {
     await expectScreen(page, "studio-sun-outlines");
   });
 
+  // The Shade map tab of the Sun lens, as the board "Shade map" draws it: the modules by their near shading over
+  // the year, the legend on the stage, the steps in the inspector; on phone the sheet at half.
+  test("studio, the Sun lens, the shade map", async ({ page }, testInfo) => {
+    await page.goto("/studio/sun");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await sceneSettled(page);
+    const sheet = page.getByRole("separator", { name: "Inspector" });
+    if (isPhone(testInfo.project.name)) {
+      await sheet.focus();
+      await page.keyboard.press("End");
+    }
+    await page.getByRole("radiogroup", { name: "Sun lens" }).getByRole("radio", { name: "Shade map" }).click();
+    await expect(page.getByTestId("on-the-roof-shade-map")).toContainText("776", { timeout: RUN });
+    if (isPhone(testInfo.project.name)) {
+      await sheet.focus();
+      await page.keyboard.press("ArrowDown");
+      await sheet.blur();
+    } else await page.getByRole("radiogroup", { name: "Sun lens" }).getByRole("radio", { name: "Shade map" }).blur();
+
+    await cameraSettled(page);
+    await expectScreen(page, "studio-sun-shade-map");
+  });
+
   test("studio, the Roof lens", async ({ page }) => {
     await page.goto("/studio/roof");
     await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });

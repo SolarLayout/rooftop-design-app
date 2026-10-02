@@ -29,6 +29,7 @@ import { SceneCanvas } from "./SceneCanvas";
 import { ShadowOutlines } from "./ShadowOutlines";
 import { SunLight } from "./SunLight";
 import { SunPath } from "./SunPath";
+import { useShadeMapShown } from "./use-shade-map";
 
 type Props = {
   onContextLost: () => void;
@@ -61,6 +62,7 @@ export function Scene({ onContextLost, stage }: Props) {
   const toReview = useView(toReviewOf);
   const dragging = useView(draggingOf);
   const showsSunPath = useView(showsSunPathOf);
+  const shadeMap = useShadeMapShown();
   const drawn = whatIsDrawnOf(useView(lensOf), useView(cameraOf));
   const { view, project: store } = useStores();
   const roof = project?.roof ?? null;
@@ -144,6 +146,7 @@ export function Scene({ onContextLost, stage }: Props) {
             onPressModule={(instanceId, event) => pressed({ what: "module", instanceId }, event)}
             onOverModules={over("modules", "pointer")}
             onWrite={COUNTS_MODULE_WRITES ? stage.getState().countModuleWrite : undefined}
+            shadeSteps={shadeMap?.steps ?? null}
           />
         ) : null}
         <ShadowOutlines heightAt={frame.heightAt} />

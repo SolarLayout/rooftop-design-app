@@ -11,7 +11,7 @@ const DOCUMENT = path.resolve(import.meta.dir, "../../../docs/design/design-toke
 function paletteOfDocument(): Record<string, string> {
   const markdown = readFileSync(DOCUMENT, "utf8");
   const section = markdown.slice(markdown.indexOf("## 3D scene palette")).split("\n## ")[0] ?? "";
-  const rows = [...section.matchAll(/^\| `([a-zA-Z]+)` \| `(#[0-9A-F]{6}(?:[0-9A-F]{2})?)` \|/gm)];
+  const rows = [...section.matchAll(/^\| `([a-zA-Z][a-zA-Z0-9]*)` \| `(#[0-9A-F]{6}(?:[0-9A-F]{2})?)` \|/gm)];
   return Object.fromEntries(rows.map(([, name, value]) => [name, value]));
 }
 

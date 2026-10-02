@@ -22,6 +22,9 @@ export type SunTime = {
  */
 export type OnTheRoof = { sunPath: boolean; window: boolean; shadowOutlines: boolean };
 
+/** The tab of the Sun lens: its shadows, or the shade map of the modules (decision 16). */
+export type SunTab = "shadows" | "shade-map";
+
 /** What is selected on the roof: the roof, an obstacle, a kept-clear area or a module, by its index in its list. */
 export type Selection = { kind: "roof" } | { kind: "obstacle" | "keepout" | "module"; index: number };
 
@@ -37,6 +40,8 @@ export type ViewState = {
   /** Whether the time plays (plan/phase-06-plan.md, decision 4): of the view, as the time is. */
   isPlaying: boolean;
   onTheRoof: OnTheRoof;
+  /** The tab of the Sun lens; leaving the lens takes it back to the shadows. */
+  sunTab: SunTab;
   selection: Selection | null;
   /**
    * A new obstacle before its height is typed (decision 15): of the view until then, and the one thing
@@ -61,12 +66,13 @@ export type ViewState = {
   setSunTime: (sunTime: SunTime) => void;
   setPlaying: (isPlaying: boolean) => void;
   showOnTheRoof: (what: keyof OnTheRoof, on: boolean) => void;
+  showSunTab: (tab: SunTab) => void;
 };
 
 export type ViewStore = ReturnType<typeof createViewStore>;
 
 // As the approved mockups open: the first lens, in 3D, the design day at 10:30.
-const AT_THE_START = { lens: "roof", camera: "3d", cameraRequest: 0, northRequest: 0, sunTime: { day: "design_day", hour: 10.5 }, isPlaying: false, onTheRoof: { sunPath: true, window: true, shadowOutlines: false }, selection: null, draft: null, toReview: [] as string[], dragging: null } as const;
+const AT_THE_START = { lens: "roof", camera: "3d", cameraRequest: 0, northRequest: 0, sunTime: { day: "design_day", hour: 10.5 }, isPlaying: false, onTheRoof: { sunPath: true, window: true, shadowOutlines: false }, sunTab: "shadows", selection: null, draft: null, toReview: [] as string[], dragging: null } as const;
 
 function refuseWhatIsNoTime({ day, hour }: SunTime): void {
   if (!(hour >= 0 && hour <= 24)) throw new RangeError(`${hour} is no hour of a day: from 0 to 24.`);
@@ -78,7 +84,7 @@ function refuseWhatIsNoTime({ day, hour }: SunTime): void {
 export function createViewStore() {
   return createStore<ViewState>()((set) => ({
     ...AT_THE_START,
-    showLens: (lens) => set({ lens }),
+    showLens: (lens) => set((state) => (lens === state.lens ? state : { lens, sunTab: "shadows" })),
     select: (selection) => set({ selection, draft: null }),
     clearSelection: () => set({ selection: null, draft: null }),
     setDraft: (draft) => set(draft === null ? { draft } : { draft, selection: null }),
@@ -97,6 +103,7 @@ export function createViewStore() {
       set({ sunTime });
     },
     setPlaying: (isPlaying) => set((state) => (state.isPlaying === isPlaying ? state : { isPlaying })),
+    showSunTab: (sunTab) => set((state) => (state.sunTab === sunTab ? state : { sunTab })),
     showOnTheRoof: (what, on) => set((state) => (state.onTheRoof[what] === on ? state : { onTheRoof: { ...state.onTheRoof, [what]: on } })),
   }));
 }
@@ -108,6 +115,9 @@ export const northRequestOf = (state: ViewState) => state.northRequest;
 export const sunTimeOf = (state: ViewState) => state.sunTime;
 export const isPlayingOf = (state: ViewState) => state.isPlaying;
 export const onTheRoofOf = (state: ViewState) => state.onTheRoof;
+export const sunTabOf = (state: ViewState) => state.sunTab;
+/** Whether the modules are coloured by their shade: in the Sun lens alone, while its Shade map tab is taken. */
+export const isShadeMapShownOf = (state: ViewState) => state.lens === "sun" && state.sunTab === "shade-map";
 /** Whether the stage draws the sun path: in the Sun lens alone, while its switch is on (decision 16). */
 export const showsSunPathOf = (state: ViewState) => state.lens === "sun" && state.onTheRoof.sunPath;
 export const selectionOf = (state: ViewState) => state.selection;
