@@ -299,6 +299,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--shadow-well` | `inset 0 1px 3px rgba(0,0,0,.65), 0 1px 0 rgba(255,255,255,.04)` | Fields, segmented track |
 | `--shadow-well-focus` | `inset 0 1px 3px rgba(0,0,0,.65), 0 0 0 3px rgba(255,176,32,.18)` | A field that has the focus: the well and the halo (with an accent border) |
 | `--shadow-card` | `inset 0 1px 0 rgba(255,255,255,.05), 0 1px 2px rgba(0,0,0,.35), 0 16px 40px rgba(0,0,0,.28)` | Cards |
+| `--shadow-row` | `inset 0 1px 0 rgba(255,255,255,.05)` | A row of the inspector that is pressed: an option card, a closed row (the board "Studio, Strings lens") |
 | `--shadow-float` | `inset 0 1px 0 rgba(255,255,255,.06), 0 1px 2px rgba(0,0,0,.45), 0 16px 40px rgba(0,0,0,.5)` | Anything over the 3D or the map |
 | `--shadow-tooltip` | `0 1px 2px rgba(0,0,0,.45), 0 8px 20px rgba(0,0,0,.35)` | Tooltips |
 | `--shadow-panel` | `inset 0 1px 0 rgba(255,255,255,.06), 0 2px 4px rgba(0,0,0,.4), 0 24px 64px rgba(0,0,0,.55)` | Large floating panels |
