@@ -19,7 +19,8 @@ the owner's finding) and #52 (the states) are merged. `main` is green.
 | 4.5 Caching of the checks | Done (session 8: #39, #40, #41) | What exists, the numbers before and after, what was found: `phase-04b-test-caching.md`, "As built". How it was built: `phase-04b-plan.md` |
 | 5 Studio, 3D roof, Roof and Array lenses | Done (session 9: #42 to #47) | What exists, what was decided, what was found: `phase-05-studio-roof-array.md`, "As built". How it was built: `phase-05-plan.md` |
 | 6 Studio, Sun lens | Done (session 10: #48 to #52) | What exists, what was decided, what was found: `phase-06-studio-sun.md`, "As built". How it was built: `phase-06-plan.md` |
-| 7 to 11 | Not started | |
+| 7 Studio, Strings lens | Planned (session 11): `phase-07-plan.md`, waiting for the owner's yes; then the boards | |
+| 8 to 11 | Not started | |
 
 ## In flight
 
