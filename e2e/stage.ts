@@ -303,3 +303,17 @@ export const metresFrom = ({ x, y, east, north }: BoxFrame, metresEast: number, 
   x: x + east[0] * metresEast + north[0] * metresNorth,
   y: y + east[1] * metresEast + north[1] * metresNorth,
 });
+
+/**
+ * The obstacle selected, as the stage shows it: its callout on tablet and desktop; on phone its handles alone,
+ * as the board "Obstacle edited on the roof" draws it (the handles and the time fill the top of a stage of 252).
+ */
+export async function obstacleSelectedOnStage(page: Page, name: string, isPhone: boolean): Promise<void> {
+  const callout = page.getByTestId("stage-callout");
+  if (isPhone) {
+    await expect(page.getByTestId("stage-handle").first()).toBeVisible({ timeout: A_SCENE });
+    await expect(callout).toHaveCount(0);
+    return;
+  }
+  await expect(callout).toContainText(`${name} · selected`, { timeout: A_SCENE });
+}

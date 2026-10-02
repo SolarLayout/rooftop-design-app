@@ -4,7 +4,7 @@
 import { shown } from "../ui/number-entry";
 import type { LayoutReadouts } from "../../lib/api";
 import type { Lens } from "../../lib/routes";
-import { isLayoutUpdating, layoutFailureOf, readoutsOf, type ResultsState } from "../../lib/stores/results-store";
+import { isLayoutUpdating, layoutFailureOf, readoutsOf, sunFailureOf, type ResultsState } from "../../lib/stores/results-store";
 
 const area = (squareMetres: number) => `${shown(Math.round(squareMetres), 0)} m²`;
 
@@ -35,10 +35,16 @@ export function lineOf(lens: Lens, results: ResultsState, obstacles: number): St
   return words === null ? null : { words, isUpdating: isLayoutUpdating(results) };
 }
 
-export type LayoutFailed = { title: string; message: string; action: string };
+export type FailedWords = { title: string; message: string; action: string };
 
 /** The chip on the stage when the layout asked for last did not come: what failed, in the API's words, and what to do. */
-export function layoutFailedOf(results: ResultsState): LayoutFailed | null {
+export function layoutFailedOf(results: ResultsState): FailedWords | null {
   const failure = layoutFailureOf(results);
   return failure === null ? null : { title: "The layout was not updated", message: failure.message, action: "Try again" };
+}
+
+/** The chip on the stage when the sun asked for last did not come (the board "Time on the stage"). */
+export function sunFailedOf(results: ResultsState): FailedWords | null {
+  const failure = sunFailureOf(results);
+  return failure === null ? null : { title: "The sun was not updated", message: failure.message, action: "Try again" };
 }

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { layoutFailedOf, lineOf, subLineOf } from "./stage-view";
+import { layoutFailedOf, lineOf, subLineOf, sunFailedOf } from "./stage-view";
 import type { LayoutReadouts, LayoutResponse } from "@/lib/api";
 import { createResultsStore } from "@/lib/stores/results-store";
 
@@ -88,5 +88,25 @@ describe("a layout that failed", () => {
     expect(layoutFailedOf(store.getState())).toBeNull();
     store.getState().layoutArrived(1, { readouts: DEMO, layout: { notes: [] } } as unknown as LayoutResponse);
     expect(layoutFailedOf(store.getState())).toBeNull();
+  });
+});
+
+// A sun that could not be fetched (the board "Time on the stage"): the chip of the stage in the API's words.
+describe("a sun that failed", () => {
+  const UNREACHABLE = { code: "api_unreachable", message: "The server cannot be reached. Check the connection and try again." };
+  const KEY = { lat: 18.52, lon: 73.86, day: "design_day" as const };
+
+  test("is a chip with what failed, the message of the API and what to do", () => {
+    const store = createResultsStore();
+    store.getState().sunAsked(KEY);
+    store.getState().sunFailed(KEY, UNREACHABLE);
+
+    expect(sunFailedOf(store.getState())).toEqual({ title: "The sun was not updated", message: UNREACHABLE.message, action: "Try again" });
+  });
+
+  test("nothing while the sun is on its way or has come", () => {
+    const store = createResultsStore();
+    store.getState().sunAsked(KEY);
+    expect(sunFailedOf(store.getState())).toBeNull();
   });
 });

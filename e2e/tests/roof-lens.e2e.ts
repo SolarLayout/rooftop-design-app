@@ -1,7 +1,7 @@
 import type { Page } from "@playwright/test";
 import path from "node:path";
 import { expect, test } from "../fixtures";
-import { A_SCENE, sceneShown } from "../stage";
+import { A_SCENE, obstacleSelectedOnStage, sceneShown } from "../stage";
 
 // The Roof lens of the Studio (plan/phase-05-plan.md, steps 10 to 13; the boards "Studio, Roof lens" on
 // three sizes, "Obstacle edited on the roof" and "Import with missing heights"): the inspector mounted once,
@@ -133,8 +133,8 @@ test.describe("the obstacles", () => {
     await expect(onTheRoof(page, "Stair room")).toHaveText("Stair room, box 5.0 × 4.0 m, 3.0 m high, selected");
     await sceneShown(page);
     const callout = page.getByTestId("stage-callout");
-    await expect(callout).toContainText("Stair room · selected", { timeout: A_SCENE });
-    await expect(callout).toContainText("5.0 × 4.0 m · 3.0 m high");
+    await obstacleSelectedOnStage(page, "Stair room", testInfo.project.name === "phone");
+    if (testInfo.project.name !== "phone") await expect(callout).toContainText("5.0 × 4.0 m · 3.0 m high");
 
     await page.keyboard.press("Escape");
 
