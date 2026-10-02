@@ -23,5 +23,7 @@ def assert_same_results(one: Design, other: Design) -> None:
         assert mine.result.monthly_mwh == theirs.result.monthly_mwh
         assert mine.result.p_values == theirs.result.p_values
         assert mine.result.years == theirs.result.years
+        assert mine.result.co2_t == theirs.result.co2_t
+        assert mine.result.sigma_pct == theirs.result.sigma_pct
         np.testing.assert_array_equal(mine.result.per_string_shade, theirs.result.per_string_shade)
         pd.testing.assert_frame_equal(mine.result.hourly, theirs.result.hourly, check_exact=True)

@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
-from dataclasses import asdict, dataclass, field, fields
+from dataclasses import asdict, dataclass, field, fields, replace
 from pathlib import Path
 
 from . import memo as memo_mod
@@ -20,7 +20,7 @@ from .options import CustomMisfit, StringOption, build_options, custom_misfit, c
 from .paths import file_name
 from .placement import ArraySpec, Layout, place
 from .resources import SAMPLE_OND, SAMPLE_PAN, sample_path
-from .simulation import Losses, Precomputed, precompute
+from .simulation import Losses, Precomputed, after_the_year, precompute
 from .stringing import CELL_RISE, SeriesRange, series_range
 
 FILE_SUFFIX = ".rtd"
@@ -315,7 +315,9 @@ class Design:
                                       self.p.losses, self.p.roof, n, s, k, "ABCDEFGH"[len(offered)])]
 
             offered = offered + self._kept(memo_mod.custom_key, build_custom)
-        self.options = offered
+        # The memo keeps the options as simulated; the figures after the year are this project's. Each
+        # option is a copy of the kept one (MemoryMemo.options), so the kept one is left as it is.
+        self.options = [replace(o, result=after_the_year(o.result, self.p.losses)) for o in offered]
         keys = [o.key for o in self.options]
         if self.p.chosen_option not in keys and self.options:
             self.p.chosen_option = self.options[0].key
