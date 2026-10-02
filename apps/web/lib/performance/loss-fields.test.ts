@@ -40,7 +40,7 @@ describe("the fields of the chain (plan/phase-08-plan.md, decision 6; functional
       unit: "%",
       range: { min: 0, max: 10, decimals: 1 },
       value: null,
-      detail: "PAN 0.2 %",
+      detail: "PAN 0.2",
       reset: null,
     });
   });
@@ -54,7 +54,7 @@ describe("the fields of the chain (plan/phase-08-plan.md, decision 6; functional
   test("a PAN without a LID: the engine's default, said as such; entered, the default is given back", () => {
     const run = { energy: { lid_pct: 1.5 }, module: MONOFACIAL_MODULE };
 
-    expect(field(lossControlOf("LID", DOCUMENT, run))).toMatchObject({ value: null, detail: "1.5 % by default", reset: null });
+    expect(field(lossControlOf("LID", DOCUMENT, run))).toMatchObject({ value: null, detail: "default 1.5", reset: null });
     expect(field(lossControlOf("LID", withLosses({ lid_pct: 1 }), { ...run, energy: { lid_pct: 1 } }))).toMatchObject({ value: 1, detail: null, reset: "Use the default" });
   });
 

@@ -108,7 +108,7 @@ test.describe("the rows", () => {
     await expect(chain(page).getByRole("textbox", { name: "Availability" })).toHaveValue("99.5");
     const lidField = chain(page).getByRole("textbox", { name: "LID (PAN)" });
     await expect(lidField).toHaveValue("");
-    await expect(lidField).toHaveAttribute("placeholder", `PAN ${fixed(chosenOf(answer).energy.lid_pct, 1)} %`);
+    await expect(lidField).toHaveAttribute("placeholder", `PAN ${fixed(chosenOf(answer).energy.lid_pct, 1)}`);
     await expect(chain(page).getByRole("switch", { name: "Bifacial rear gain" })).toHaveAttribute("aria-checked", "true");
     await expect(chain(page).getByRole("switch", { name: "Bifacial rear gain" })).toBeEnabled();
   });
@@ -177,7 +177,7 @@ test.describe("the other steps of the user's", () => {
 
   test("LID entered takes the field and names the step LID; Use the PAN's gives it back", async ({ page }) => {
     const before = await thePerformancePage(page);
-    const pan = `PAN ${fixed(chosenOf(before).energy.lid_pct, 1)} %`;
+    const pan = `PAN ${fixed(chosenOf(before).energy.lid_pct, 1)}`;
     const entered = ranWith(page, { lid_pct: 1 });
 
     await enter(chain(page).getByRole("textbox", { name: "LID (PAN)" }), "1");

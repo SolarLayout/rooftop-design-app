@@ -38,7 +38,7 @@ type Props = {
   className?: string;
 };
 
-const CHAIN_WELL = "flex h-touch w-24 items-center gap-1 rounded-control px-3 tablet:h-10 tablet:w-full tablet:rounded-xs tablet:px-2 desktop:h-5.5";
+const CHAIN_WELL = "flex h-touch w-28 items-center gap-1 rounded-control px-3 tablet:h-10 tablet:w-full tablet:rounded-xs tablet:px-2 desktop:h-5.5";
 
 export function NumberField({ label, value, onCommit, range, unit, labelInside = false, labelHidden = false, wide = false, disabled = false, detail = null, shownAs, initialFocus, form, placeholder, className }: Props) {
   const id = useId();

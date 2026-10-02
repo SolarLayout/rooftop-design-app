@@ -28,7 +28,7 @@ export type LossField = {
   range: Range & { min: number; max: number };
   /** The document's value; null while the default holds (LID). */
   value: number | null;
-  /** Empty: the default, said inside the field ("PAN 0.2 %"). Entered: the default, said under the row ("PAN gives 0.2 %"). Null for a field that has no default to say. */
+  /** Empty: the default, said inside the field before its unit ("PAN 0.2"). Entered: the default, said under the row ("PAN gives 0.2 %"). Null for a field that has no default to say. */
   detail: string | null;
   /** The words of the press that gives the field back to its default; null while it holds, or where there is none. */
   reset: string | null;
@@ -69,7 +69,8 @@ const percent = (value: number) => `${shown(value, 1)} %`;
 /** LID while the PAN's or the engine's default holds, and once entered: what is said and what gives it back. */
 function lidWords(value: number | null, { energy, module }: RunOfTheChain): Pick<LossField, "detail" | "reset"> {
   const pan = module.lid_loss_pct;
-  if (value === null) return { detail: pan === null ? `${percent(energy.lid_pct)} by default` : `PAN ${percent(pan)}`, reset: null };
+  // Inside the field the unit follows, as for every field: "PAN 0.2" and "default 1.5" read "PAN 0.2 %", "default 1.5 %".
+  if (value === null) return { detail: pan === null ? `default ${shown(energy.lid_pct, 1)}` : `PAN ${shown(pan, 1)}`, reset: null };
   return pan === null ? { detail: null, reset: "Use the default" } : { detail: `PAN gives ${percent(pan)}`, reset: "Use the PAN's" };
 }
 

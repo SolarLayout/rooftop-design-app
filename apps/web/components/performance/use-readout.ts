@@ -7,7 +7,7 @@ import { placeOf, type Place } from "@/components/ui/place-floating";
 export type ReadoutTarget = {
   ref: RefObject<HTMLDivElement | null>;
   onPointerEnter: (event: PointerEvent<HTMLDivElement>) => void;
-  onPointerLeave: () => void;
+  onPointerLeave: (event: PointerEvent<HTMLDivElement>) => void;
   onPointerUp: (event: PointerEvent<HTMLDivElement>) => void;
   onFocus: (event: FocusEvent<HTMLDivElement>) => void;
   onBlur: () => void;
@@ -71,7 +71,11 @@ export function useReadout(): Readout {
       stopWaiting();
       waiting.current = setTimeout(show, TOOLTIP_DELAY);
     },
-    onPointerLeave: hide,
+    onPointerLeave(event) {
+      // A touch pointer leaves the moment the finger lifts: what a tap showed stays until another tap.
+      if (event.pointerType !== "mouse") return;
+      hide();
+    },
     onPointerUp(event) {
       // A tap on the row shows it, and another takes it away; a tap on the row's field or switch is theirs.
       if (event.pointerType === "mouse") return;
