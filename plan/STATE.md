@@ -24,8 +24,11 @@ the phone) are merged. `main` is green.
 
 ## In flight
 
-Phase 8, session 12: the plan is written (`plan/phase-08-plan.md`) and waits for the owner's yes; then the six boards of
-its step 0. No branch stands on `main`; `main` is green.
+Phase 8, session 12. The plan (`plan/phase-08-plan.md`) and the six boards of its step 0 are on `main`, approved. Pull request 1
+(`feat/phase-8-kpis`, draft #58) holds step 1, the engine's figures after the year (a change of degradation, the CO2 factor, the
+levels or a sigma answers in 0.28 s, before 4.0 s); its web steps 2 to 6 are being built. The engine and test-stack parts of pull
+request 4 (downloads off in the test stack, weather fixtures for the browser tests, the two notes for a CSV) are being built on
+`feat/phase-8-weather-assumptions`.
 
 ## What the web app has today
 

@@ -111,6 +111,9 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   Every figure is the engine's for the Pune demo, kept in `mockups/performance_data.json` (the demo, soiling 3 %, degradation 0.7,
   the rear gain off, the levels P50 · P90 · P99 with Uc 25, NASA POWER, a CSV of GHI alone, the run before a voltage, and the API's
   words for a refused download, a refused file and missing weather), so that the boards can be written again without the engine.
+- A preview is the board rendered at its `$preview` size (the tail of each `.dc.html`) by a scratch Playwright script outside the
+  repo: Chromium from `e2e/node_modules/@playwright/test`, the fonts served from `apps/web/app/fonts` and `apps/web/node_modules/geist`
+  in place of the Google link in the board's `helmet`, `support.js` stubbed, everything else off the machine refused.
 - `mockups/canvas.json` is the layout of the boards on the canvas: 43 boards. The canvas at claude.ai holds 27 of them,
   published on 2026-09-30, and is behind the repo by the board ImportHeights changed on 2026-10-01 and the five new boards
   of Phase 6 with the redrawn Sun lens, the five new boards of Phase 7 with the redrawn Strings lens, and the six new boards of Phase 8 with the redrawn
