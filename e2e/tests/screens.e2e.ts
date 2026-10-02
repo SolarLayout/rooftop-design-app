@@ -656,6 +656,37 @@ test.describe("the shell", () => {
     await expectWholeScreen(page, "performance-chain-edited");
   });
 
+  // The Table tab of the months (the board "Charts, tooltip and table"): twelve rows and the year, beside the 25 years.
+  test("performance, the months as a table", async ({ page }, testInfo) => {
+    await page.goto("/performance");
+    await expect(page.getByTestId("kpi-energy").getByText("617.8 MWh")).toBeVisible({ timeout: RUN });
+    await settled(page, testInfo.project.name);
+    const chart = page.getByTestId("monthly-chart");
+    await chart.getByRole("tab", { name: "Table" }).click();
+    await expect(chart.getByRole("tabpanel", { name: "Table" })).toBeVisible();
+    // No focus ring in the picture.
+    await chart.getByRole("tab", { name: "Table" }).blur();
+
+    await expectWholeScreen(page, "performance-month-table");
+  });
+
+  // Degradation 0.70 %/yr entered and landed (the same board): year 1 unchanged, the other years and the total of that run,
+  // the field with the focus still inside it.
+  test("performance, the degradation entered", async ({ page }, testInfo) => {
+    await page.goto("/performance");
+    await expect(page.getByTestId("kpi-energy").getByText("617.8 MWh")).toBeVisible({ timeout: RUN });
+    await settled(page, testInfo.project.name);
+    const field = page.getByTestId("years-chart").getByRole("textbox", { name: "Degradation" });
+    const next = page.waitForRequest((request) => request.url().endsWith("/api/design"), { timeout: RUN });
+    await field.fill("0.70");
+    await field.press("Enter");
+    await next;
+    await expect(page.getByTestId("years-chart").getByTestId("year-value").last()).toHaveText("522.0", { timeout: RUN });
+    await expect(page.getByTestId("run-step")).toHaveCount(0);
+
+    await expectWholeScreen(page, "performance-years-degraded");
+  });
+
   // Before a system voltage (the board "Performance, states"): the API's words in place of the KPIs, no energy.
   test("performance, before a system voltage", async ({ page }) => {
     await page.route("**/api/demo", async (route) => {
