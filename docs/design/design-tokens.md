@@ -82,9 +82,19 @@ the reason.
 | `--color-series-5` | `#D55181` | Fifth category |
 | `--color-series-6` | `#008300` | Sixth category |
 | `--color-series-unused` | `#8C93A0` | Positions not used |
+| `--color-shade-1` | `#3C324E` | The shade map, its first step: the least near shading over the year (0 to a fifth of the scale) |
+| `--color-shade-2` | `#634E86` | The shade map, its second step |
+| `--color-shade-3` | `#8D6CC2` | The shade map, its third step |
+| `--color-shade-4` | `#B692F2` | The shade map, its fourth step |
+| `--color-shade-5` | `#D8C7F9` | The shade map, its fifth step: the most |
 
 Categories take the series colours in this fixed order. Text never takes a series colour. A coloured mark
 beside the text carries identity.
+
+The shade map is one hue in five steps, its lightness rising with the loss (OKLCH L 0.34 to 0.86, hue 300), so that
+the most shaded positions stand out on the dark stage and the order reads without the hue. Violet stands apart from
+the amber of the sun and the selection, the orange of the losses and the blue of the modules. The colour is never
+alone: the legend says the range and a selected module its value (plan/phase-06-plan.md, decision 11).
 
 ## Colour: paper (report preview)
 
@@ -122,6 +132,11 @@ a colour as three.js takes it: a hex, or a hex with an alpha for what is see-thr
 | `moduleCellLine` | `#2A4675` | Module detail |
 | `moduleFrame` | `#33558C` | Module frame |
 | `moduleUnused` | `#8C93A0` | Position not used |
+| `shade1` | `#3C324E` | The glass of a position in the shade map's first step; the same as `--color-shade-1` |
+| `shade2` | `#634E86` | Its second step |
+| `shade3` | `#8D6CC2` | Its third step |
+| `shade4` | `#B692F2` | Its fourth step |
+| `shade5` | `#D8C7F9` | Its fifth step |
 | `walkway` | `#C4C8CE` | A walkway across the array |
 | `keepOutFill` | `#FFB02030` | Kept-clear zones: accent at 18 % |
 | `keepOutLine` | `#FFB020` | Kept-clear zones, the dashed line |
