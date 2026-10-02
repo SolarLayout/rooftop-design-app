@@ -153,7 +153,10 @@ A status mark may follow the value. Tiles inside a card are flat: `surface-2`, r
 10 by 14.
 
 In code: `Stats` is the list, `Stat` one label with its value. Looks: `cell` (vitals: value 16, 17 on tablet),
-`lead` (the energy: display 26, 22 on phone), `tile`.
+`lead` (the energy: display 26, 22 on phone), `tile`, `hero` (the energy on Performance: display 76, its unit
+`text-unit-hero`, the label in body text) and `figure` (a KPI tile of Performance, a card of its own: display 34,
+26 on phone, the label in body text). A quieter figure may follow the unit (`more`: "· 19.7 % DC"); on phone it
+takes a line under the value.
 
 ## Vitals bar
 Desktop: floating, `surface-1`, `radius-bar`, `shadow-float`, height 78, cells separated by 1 px lines. Order:
