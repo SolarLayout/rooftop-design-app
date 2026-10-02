@@ -202,3 +202,74 @@ describe("undo and redo", () => {
     expect(canUndo(store.getState())).toBe(false);
   });
 });
+
+// An amendment (plan/phase-08-plan.md, decision 11): what belongs to the document of an edit and the user did not
+// do, the weather the flow loaded for it. It counts no edit and is no step of undo.
+describe("an amendment of the edit that is current", () => {
+  const weather = { label: "PVGIS TMY" } as unknown as Project["weather_json"];
+  const withWeather = (project: Project) => ({ ...project, weather_json: weather });
+
+  test("replaces the document while the edit is the current one, and gives the document back", () => {
+    const store = createProjectStore();
+    store.getState().open(DEMO);
+
+    const amended = store.getState().amend(1, withWeather);
+
+    expect(amended).toBe(projectOf(store.getState()));
+    expect(projectOf(store.getState())?.weather_json).toBe(weather);
+    expect(DEMO.weather_json).toBeUndefined();
+  });
+
+  test("counts no edit, and is no step of undo: an undo goes back to the document before the edit", () => {
+    const store = createProjectStore();
+    store.getState().open(DEMO);
+    store.getState().commit((project) => ({ ...project, name: "Renamed" }));
+
+    store.getState().amend(2, withWeather);
+
+    expect(editOf(store.getState())).toBe(2);
+    expect(canUndo(store.getState())).toBe(true);
+    store.getState().undo();
+    expect(projectOf(store.getState())).toBe(DEMO);
+    expect(canRedo(store.getState())).toBe(true);
+    store.getState().redo();
+    expect(projectOf(store.getState())?.weather_json).toBe(weather);
+  });
+
+  test("does nothing once another edit is current, and says so with null", () => {
+    const store = createProjectStore();
+    store.getState().open(DEMO);
+    store.getState().commit((project) => ({ ...project, name: "Renamed" }));
+
+    expect(store.getState().amend(1, withWeather)).toBeNull();
+
+    expect(projectOf(store.getState())?.weather_json).toBeUndefined();
+    expect(editOf(store.getState())).toBe(2);
+  });
+
+  test("does nothing before a design is open", () => {
+    const store = createProjectStore();
+
+    expect(store.getState().amend(0, withWeather)).toBeNull();
+    expect(projectOf(store.getState())).toBeNull();
+  });
+
+  test("a change that changes nothing leaves the document as it was", () => {
+    const store = createProjectStore();
+    store.getState().open(DEMO);
+
+    expect(store.getState().amend(1, (project) => project)).toBe(DEMO);
+    expect(projectOf(store.getState())).toBe(DEMO);
+  });
+
+  test("who listens hears it, with the edit unchanged", () => {
+    const store = createProjectStore();
+    store.getState().open(DEMO);
+    const heard: number[] = [];
+    store.subscribe((state) => heard.push(editOf(state)));
+
+    store.getState().amend(1, withWeather);
+
+    expect(heard).toEqual([1]);
+  });
+});

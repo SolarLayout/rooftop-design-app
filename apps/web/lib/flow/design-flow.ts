@@ -3,18 +3,22 @@
 // was overtaken is given up by its signal. The results of before stay in their store until newer ones
 // are there.
 //
+// A run refused for want of weather loads the weather of the document's source for its site, puts it into the
+// document of that edit (no step of undo) and runs again, once per edit (plan/phase-08-plan.md, decision 11).
+//
 // The calls go through the client of the API (lib/api) and nothing else.
 import { DESIGN_PAUSE, TIME_REST } from "../../components/ui/design-numbers";
 import { partsOfAnEdit } from "./edit-parts";
 import { api as apiOfTheApp, ApiError, type Api, type Project } from "../api";
 import { CLOCK_OF_THE_BROWSER, type Clock } from "../clock";
+import { stepOfLoading, weatherRequestOf, withWeatherLoaded } from "../performance/weather-source";
 import { hoursOf, QUARTER_HOUR } from "../scene/sun-day";
 import { heldHourOf } from "../studio/sun-time";
 import type { ProjectState, ProjectStore } from "../stores/project-store";
 import { sunKeyOf, withTheChoice, type Failure, type ResultsStore, type SunDay, type SunKey } from "../stores/results-store";
 import type { ViewStore } from "../stores/view-store";
 
-export type FlowApi = Pick<Api, "getDemo" | "computeLayout" | "runDesign" | "computeSun">;
+export type FlowApi = Pick<Api, "getDemo" | "computeLayout" | "runDesign" | "computeSun" | "loadWeather">;
 
 type Options = {
   project: ProjectStore;
@@ -34,6 +38,11 @@ export type DesignFlow = {
   /** Gives up what is on its way and listens no longer. */
   stop: () => void;
 };
+
+/** The API's refusal of a run whose document holds no weather for its site: the one the flow answers itself. */
+const NO_WEATHER = "weather_not_loaded";
+
+const isForWantOfWeather = (error: unknown): boolean => error instanceof ApiError && error.code === NO_WEATHER;
 
 function failureOf(error: unknown): Failure {
   if (error instanceof ApiError) return { code: error.code, message: error.message };
@@ -59,6 +68,9 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
   let roofsSeen = 0;
   let layoutCall: AbortController | null = null;
   let designCall: AbortController | null = null;
+  let weatherCall: AbortController | null = null;
+  /** The edit whose weather came: a second refusal of it is the run's failure (decision 11, and its risk). A load that failed may be tried again. */
+  let weatherLoadedFor: number | null = null;
   let giveUpThePause: (() => void) | null = null;
   let stopListening: (() => void) | null = null;
   let demoCall: AbortController | null = null;
@@ -74,6 +86,8 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
     giveUpThePause = null;
     designCall?.abort();
     designCall = null;
+    weatherCall?.abort();
+    weatherCall = null;
   }
 
   function giveUpTheDemo() {
@@ -230,6 +244,37 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
       });
   }
 
+  /**
+   * The weather of the document's source for its site, for a run refused for want of it (decision 11): the step says
+   * what is loaded; what comes goes into the document of the edit without a step of undo, and the run is asked again
+   * with it under the same edit. What does not come is the run's failure, in the API's words. An edit meanwhile gives
+   * the load up, as it gives up the run.
+   */
+  function loadTheWeatherThenRun(document: Project, edit: number) {
+    const call = new AbortController();
+    weatherCall = call;
+    results.getState().designProgressed(edit, { type: "progress", step: stepOfLoading(document), fraction: 0 });
+    api
+      .loadWeather(weatherRequestOf(document), { signal: call.signal })
+      .then(
+        (answer) => {
+          if (call.signal.aborted) return;
+          weatherCall = null;
+          weatherLoadedFor = edit;
+          const withTheWeather = withWeatherLoaded(answer.weather);
+          // Once another edit is current the document is no longer this one; the run of this edit still has its weather.
+          const amended = project.getState().amend(edit, withTheWeather) ?? withTheWeather(document);
+          run(amended, edit);
+        },
+        (error: unknown) => {
+          if (!call.signal.aborted) results.getState().designFailed(edit, failureOf(error));
+        },
+      )
+      .finally(() => {
+        if (weatherCall === call) weatherCall = null;
+      });
+  }
+
   function run(document: Project, edit: number) {
     giveUpTheRun();
     const call = new AbortController();
@@ -246,7 +291,9 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
         // An option chosen while the run was on its way is the one the run lands with (plan/phase-07-plan.md, decision 3).
         (design) => results.getState().designArrived(edit, withTheChoice(design, project.getState().project?.chosen_option)),
         (error: unknown) => {
-          if (!call.signal.aborted) results.getState().designFailed(edit, failureOf(error));
+          if (call.signal.aborted) return;
+          if (isForWantOfWeather(error) && weatherLoadedFor !== edit) return loadTheWeatherThenRun(document, edit);
+          results.getState().designFailed(edit, failureOf(error));
         },
       )
       .finally(() => {
@@ -264,7 +311,12 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
   }
 
   function follow({ project: document, edit, openedAt }: ProjectState) {
-    if (document === null || edit === followed) return;
+    if (document === null) return;
+    if (edit === followed) {
+      // The edit followed was amended (the weather loaded for it): the next edit is compared with the document as it is.
+      documentFollowed = document;
+      return;
+    }
     followed = edit;
     // A design was opened, by whatever way: a demo that is still on its way is not waited for.
     giveUpTheDemo();

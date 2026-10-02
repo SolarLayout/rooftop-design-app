@@ -23,6 +23,13 @@ export type ProjectState = {
   future: Project[];
   open: (project: Project) => void;
   commit: (edit: Edit) => void;
+  /**
+   * Replaces the document of the edit that is current, without an edit of its own: nothing is counted, nothing is
+   * kept for undo. For what belongs to the document of that edit and the user did not do: the weather the flow
+   * loaded for it (plan/phase-08-plan.md, decision 11). Gives the document back; null once another edit is current,
+   * or before a design is open.
+   */
+  amend: (edit: number, change: Edit) => Project | null;
   undo: () => void;
   redo: () => void;
 };
@@ -53,6 +60,14 @@ export function createProjectStore() {
       const after = change(before);
       if (after === before) return;
       set({ project: after, edit: get().edit + 1, past: [...get().past, before].slice(-KEPT_EDITS), future: [] });
+    },
+
+    amend(edit, change) {
+      const before = get().project;
+      if (before === null || get().edit !== edit) return null;
+      const after = change(before);
+      if (after !== before) set({ project: after });
+      return after;
     },
 
     undo() {

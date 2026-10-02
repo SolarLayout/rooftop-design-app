@@ -1,9 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import { DESIGN_PAUSE, TIME_REST } from "../../components/ui/design-numbers";
 import { ApiError } from "../api";
-import type { CallOptions, DesignProgress, DesignResult, LayoutResponse, Project, ProjectRequest, RunOptions, SunRequest, SunResponse } from "../api";
+import type { CallOptions, DesignProgress, DesignResult, LayoutResponse, Project, ProjectRequest, RunOptions, SunRequest, SunResponse, Weather, WeatherRequest, WeatherResponse } from "../api";
 import { clockOfTheTest } from "../clock-of-the-test";
-import { createProjectStore } from "../stores/project-store";
+import { canUndo, createProjectStore } from "../stores/project-store";
 import {
   createResultsStore,
   designEditOf,
@@ -47,12 +47,14 @@ function standIn() {
 
   const demos: Array<Asked<Project>> = [];
   const suns: Array<Asked<SunResponse> & { request: SunRequest }> = [];
+  const weathers: Array<Asked<WeatherResponse> & { request: WeatherRequest }> = [];
 
   return {
     layouts,
     runs,
     demos,
     suns,
+    weathers,
     api: {
       getDemo: (options?: CallOptions) => asked(demos, {} as ProjectRequest, options),
       computeLayout: (project: ProjectRequest, options?: CallOptions) => asked(layouts, project, options),
@@ -60,6 +62,11 @@ function standIn() {
       computeSun(request: SunRequest, options?: CallOptions) {
         const promise = asked(suns, {} as ProjectRequest, options);
         suns[suns.length - 1] = { ...suns[suns.length - 1], request };
+        return promise;
+      },
+      loadWeather(request: WeatherRequest, options?: CallOptions) {
+        const promise = asked(weathers, {} as ProjectRequest, options);
+        weathers[weathers.length - 1] = { ...weathers[weathers.length - 1], request };
         return promise;
       },
     },
@@ -904,5 +911,171 @@ describe("the shadow outlines", () => {
     project.getState().commit(roofAndTilt);
     pass(TIME_REST);
     expect(asked(suns)).toHaveLength(2);
+  });
+});
+
+// Weather for a design that has none (plan/phase-08-plan.md, step 16, decision 11): the API says when the document
+// holds no weather for its site; the flow loads the weather of the document's source, puts it into the document of
+// that edit without a step of undo, and runs again. Once per edit: a second refusal is the run's failure.
+describe("weather for a design that has none", () => {
+  const WITHOUT_WEATHER = { ...DEMO, weather_source: "pvgis", weather_csv: "", weather_csv_text: "", weather_json: null } as Project;
+  const NO_WEATHER_YET = "This project has no weather for 18.5200, 73.8600 yet. Load the PVGIS TMY weather first.";
+  const refusedForWeather = () => new ApiError(422, "weather_not_loaded", NO_WEATHER_YET, "weather_json");
+  const HOURS = { source: "pvgis", label: "PVGIS TMY", lat: 18.52, lon: 73.86, time: ["2019-01-01T00:00:00+00:00"] } as unknown as Weather;
+  const LOADED = { weather: HOURS, summary: {}, notes: [] } as unknown as WeatherResponse;
+  const OVER_THE_SEA = "PVGIS TMY has no weather for 10.0000, 65.0000: Location over the sea. Please, select another location. Check the site, or choose another weather source.";
+
+  /** The design without weather is open, and its first run was refused for want of it. */
+  async function refused(document: Project = WITHOUT_WEATHER) {
+    const all = flow();
+    all.project.getState().open(document);
+    all.last(all.layouts).answer(layout(790));
+    all.last(all.runs).refuse(refusedForWeather());
+    await settled();
+    return all;
+  }
+
+  test("a run refused for want of weather asks /weather for the document's source at the roof's place, and the step says so", async () => {
+    const { weathers, results } = await refused();
+
+    expect(weathers.map((call) => call.request)).toEqual([{ source: "pvgis", lat: 18.52, lon: 73.86, csv_name: "", csv_text: "" }]);
+    expect(designStatusOf(results.getState())).toBe("running");
+    expect(designFailureOf(results.getState())).toBeNull();
+    expect(progressOf(results.getState())).toEqual({ type: "progress", step: "Loading PVGIS TMY weather", fraction: 0 });
+  });
+
+  test("a NASA document asks for NASA's", async () => {
+    const { weathers, results } = await refused({ ...WITHOUT_WEATHER, weather_source: "nasa" } as Project);
+
+    expect(weathers[0]?.request.source).toBe("nasa");
+    expect(progressOf(results.getState())?.step).toBe("Loading NASA POWER 2023 weather");
+  });
+
+  test("the weather that comes goes into the document of that edit, and the run is asked again with it, under the same edit", async () => {
+    const { weathers, runs, project, results, last } = await refused();
+
+    last(weathers).answer(LOADED);
+    await settled();
+
+    expect(runs).toHaveLength(2);
+    expect(runs[1]?.project.weather_json).toBe(HOURS);
+    expect(runs[1]?.project.weather_source).toBe("pvgis");
+    expect(project.getState().project?.weather_json).toBe(HOURS);
+    expect(project.getState().edit).toBe(1);
+    expect(canUndo(project.getState())).toBe(false);
+    expect(designStatusOf(results.getState())).toBe("running");
+
+    last(runs).answer(design(790));
+    await settled();
+    expect(designOf(results.getState())?.readouts.positions).toBe(790);
+    expect(designEditOf(results.getState())).toBe(1);
+  });
+
+  test("the weather loaded asks for no layout: it is of the run alone", async () => {
+    const { weathers, layouts, last } = await refused();
+
+    last(weathers).answer(LOADED);
+    await settled();
+
+    expect(layouts).toHaveLength(1);
+  });
+
+  test("an option chosen after the weather came asks for nothing, as before", async () => {
+    const { weathers, runs, layouts, project, last, pass } = await refused();
+    last(weathers).answer(LOADED);
+    await settled();
+    last(runs).answer(design(790));
+    await settled();
+
+    project.getState().commit((document) => ({ ...document, chosen_option: "26x24x1" }));
+    pass(DESIGN_PAUSE);
+
+    expect(runs).toHaveLength(2);
+    expect(layouts).toHaveLength(1);
+  });
+
+  test("a weather that does not come is the run's failure, in the words of the API", async () => {
+    const { weathers, runs, results, project, last } = await refused();
+
+    last(weathers).refuse(new ApiError(422, "no_weather_for_site", OVER_THE_SEA, null));
+    await settled();
+
+    expect(designStatusOf(results.getState())).toBe("failed");
+    expect(designFailureOf(results.getState())).toEqual({ code: "no_weather_for_site", message: OVER_THE_SEA });
+    expect(runs).toHaveLength(1);
+    expect(project.getState().project?.weather_json).toBeNull();
+  });
+
+  test("an edit while the weather loads gives it up, and is no failure", async () => {
+    const { weathers, runs, results, project, pass } = await refused();
+
+    project.getState().commit(tilt(20));
+
+    expect(weathers[0]?.signal.aborted).toBe(true);
+    await settled();
+    expect(designFailureOf(results.getState())).toBeNull();
+    expect(designStatusOf(results.getState())).toBe("waiting");
+    pass(DESIGN_PAUSE);
+    expect(runs).toHaveLength(2);
+    expect(runs[1]?.project.weather_json).toBeNull();
+  });
+
+  test("the run of the next edit, refused again, loads once more: once per edit", async () => {
+    const { weathers, runs, project, pass, last } = await refused();
+    project.getState().commit(tilt(20));
+    pass(DESIGN_PAUSE);
+
+    last(runs).refuse(refusedForWeather());
+    await settled();
+
+    expect(weathers).toHaveLength(2);
+    expect(weathers[1]?.signal.aborted).toBe(false);
+  });
+
+  test("a second refusal of the same edit is the run's failure, in the words of the API", async () => {
+    const { weathers, runs, results, last } = await refused();
+    last(weathers).answer(LOADED);
+    await settled();
+
+    last(runs).refuse(refusedForWeather());
+    await settled();
+
+    expect(weathers).toHaveLength(1);
+    expect(designStatusOf(results.getState())).toBe("failed");
+    expect(designFailureOf(results.getState())).toEqual({ code: "weather_not_loaded", message: NO_WEATHER_YET });
+  });
+
+  test("tried again after that, the run is asked once more and may load again", async () => {
+    const { weathers, runs, results, last, designFlow } = await refused();
+    last(weathers).refuse(ApiError.unreachable(new TypeError("fetch failed")));
+    await settled();
+    expect(designStatusOf(results.getState())).toBe("failed");
+
+    designFlow.tryAgain();
+    expect(runs).toHaveLength(2);
+    last(runs).refuse(refusedForWeather());
+    await settled();
+
+    expect(weathers).toHaveLength(2);
+  });
+
+  test("the flow stopped gives the weather up, and one that comes late changes nothing", async () => {
+    const { weathers, runs, project, last, designFlow } = await refused();
+
+    designFlow.stop();
+    last(weathers).answer(LOADED);
+    await settled();
+
+    expect(weathers[0]?.signal.aborted).toBe(true);
+    expect(runs).toHaveLength(1);
+    expect(project.getState().project?.weather_json).toBeNull();
+  });
+
+  test("a CSV document is never refused so by the API; were it, its text would be sent to be read", async () => {
+    const csv = { ...WITHOUT_WEATHER, weather_source: "csv", weather_csv: "pune.csv", weather_csv_text: "time,ghi" } as Project;
+    const { weathers, results } = await refused(csv);
+
+    expect(weathers[0]?.request).toEqual({ source: "csv", lat: 18.52, lon: 73.86, csv_name: "pune.csv", csv_text: "time,ghi" });
+    expect(progressOf(results.getState())?.step).toBe("Reading pune.csv");
   });
 });

@@ -30,22 +30,17 @@ const decision = (page: Page) => page.getByTestId("voltage-decision").filter({ v
 
 /**
  * A new design: the 90 by 40 roof outlined on the map and built; then its Strings lens with its first run over.
- * The tests have no network, so the design takes the demo's weather, of the same place, as if it had been
- * loaded; what the API answers for the roof is kept as it is, its system voltage none.
+ * The roof has no weather: the flow loads it (plan/phase-08-plan.md, decision 11), answered from the fixture of
+ * Pune (e2e/fixtures.ts). What the API answers for the roof is kept as it is, its system voltage none.
  */
 async function aNewDesignInTheStringsLens(page: Page): Promise<void> {
-  const { weather_json: weather } = await (await page.request.get("/api/demo")).json();
-  await page.route("**/api/roof/from-map", async (route) => {
-    const answer = await route.fetch();
-    const project = await answer.json();
-    expect(project.system_voltage).toBeNull();
-    await route.fulfill({ response: answer, json: { ...project, weather_json: weather } });
-  });
+  const built = page.waitForResponse((response) => response.url().endsWith("/api/roof/from-map"));
   await page.goto("/find");
   await expect(roofMap(page)).toHaveAttribute("data-state", "ready", { timeout: A_MAP });
   await atTheRoof(page);
   await drawTheRectangle(page);
   await page.getByRole("button", { name: "Build this roof" }).click();
+  expect((await (await built).json()).system_voltage).toBeNull();
   await expect(page).toHaveURL(/\/studio\/roof$/, { timeout: RUN });
   await switchLens(page, "Strings");
   await expect(page.getByText("Shading for every module").filter({ visible: true })).toBeVisible({ timeout: RUN });
