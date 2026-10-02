@@ -1,5 +1,6 @@
 """Results that are kept between runs (decision D6): with them a run is faster, and nothing else."""
 
+import threading
 from concurrent.futures import ThreadPoolExecutor
 
 import pytest
@@ -33,15 +34,17 @@ def run(project: Project, kept: memo.Memo | None) -> Design:
 
 
 class Counted:
-    """Counts the calls of a function of the engine, and lets them through."""
+    """Counts the calls of a function of the engine, and lets them through; simulations call from threads."""
 
     def __init__(self, monkeypatch, module, name: str):
         self.calls = 0
+        self._lock = threading.Lock()
         self._real = getattr(module, name)
         monkeypatch.setattr(module, name, self)
 
     def __call__(self, *args, **kwargs):
-        self.calls += 1
+        with self._lock:
+            self.calls += 1
         return self._real(*args, **kwargs)
 
 
