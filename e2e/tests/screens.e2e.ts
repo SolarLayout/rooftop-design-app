@@ -499,6 +499,59 @@ test.describe("the shell", () => {
     await expectScreen(page, "studio-strings-nothing-fits");
   });
 
+  // The MPPT loading of option A under the options (the board "Inverter and sizing").
+  test("studio, the Strings lens, the MPPT loading", async ({ page }) => {
+    await page.goto("/studio/strings");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    const table = page.getByTestId("mppt-table").filter({ visible: true });
+    await expect(table).toContainText("of option A");
+    await table.scrollIntoViewIfNeeded();
+    await sceneSettled(page);
+    await expectScreen(page, "studio-strings-mppt");
+  });
+
+  // The demo's OND without IMaxDC: every limit not known, the API's note under the table (the board "Inverter and sizing").
+  test("studio, the Strings lens, the current limit not known", async ({ page }) => {
+    await page.goto("/studio/strings");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await page.getByTestId("inverter-card").filter({ visible: true }).getByRole("button", { name: "Replace" }).click();
+    const dialog = page.getByRole("dialog", { name: "Replace the inverter" });
+    await dialog.locator("input[type=file]").setInputFiles(path.resolve(__dirname, "../fixtures/wattpower-without-imaxdc.OND"));
+    await expect(dialog).toBeHidden();
+    const note = page.getByTestId("mppt-note").filter({ visible: true });
+    await expect(note).toBeVisible({ timeout: RUN });
+    await note.scrollIntoViewIfNeeded();
+    await page.mouse.move(0, 0);
+    await sceneSettled(page);
+    await expectScreen(page, "studio-strings-limit-not-known");
+  });
+
+  // A PAN given as the inverter, refused in the engine's words (the board "Inverter and sizing").
+  test("studio, the Strings lens, an inverter file refused", async ({ page }) => {
+    await page.goto("/studio/strings");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await page.getByTestId("inverter-card").filter({ visible: true }).getByRole("button", { name: "Replace" }).click();
+    const dialog = page.getByRole("dialog", { name: "Replace the inverter" });
+    await dialog.locator("input[type=file]").setInputFiles(path.resolve(__dirname, "../fixtures/test-module.PAN"));
+    await expect(dialog.getByRole("status")).toContainText("This file was not loaded", { timeout: RUN });
+    await sceneSettled(page);
+    await expectScreen(page, "studio-strings-inverter-refused");
+  });
+
+  // Inverter limits and cabling opened, every value the file's and the document's (the board "Inverter and sizing").
+  test("studio, the Strings lens, the inverter limits opened", async ({ page }) => {
+    await page.goto("/studio/strings");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    const limits = page.getByRole("region", { name: "Inverter limits and cabling" }).filter({ visible: true });
+    await limits.getByRole("button", { name: /Inverter limits and cabling/ }).click();
+    await expect(limits.getByTestId("current-note")).toBeVisible();
+    await limits.scrollIntoViewIfNeeded();
+    await limits.getByRole("button", { name: /Inverter limits and cabling/ }).blur();
+    await page.mouse.move(0, 0);
+    await sceneSettled(page);
+    await expectScreen(page, "studio-strings-inverter-limits");
+  });
+
   test("studio, before a system voltage", async ({ page }) => {
     await page.route("**/api/demo", async (route) => {
       const answer = await route.fetch();
