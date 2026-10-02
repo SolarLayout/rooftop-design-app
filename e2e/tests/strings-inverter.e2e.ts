@@ -3,8 +3,9 @@ import path from "node:path";
 import { expect, test } from "../fixtures";
 
 // The inverter of the Strings lens (plan/phase-07-plan.md, steps 17 to 20; the board "Inverter and sizing"): the
-// inverter replaced from an OND, a file that is no OND refused in the engine's words. Every number and every
-// word of the engine is read from its answer, never written into the test.
+// inverter replaced from an OND, a file that is no OND refused in the engine's words; the current per MPPT and the
+// AC cable per inverter in "Inverter limits and cabling". Every number and every word of the engine is read from
+// its answer, never written into the test.
 
 const RUN = 90_000;
 /** The demo's OND with its IMaxDC line taken out: no current limit per MPPT is known. */
@@ -13,7 +14,7 @@ const PAN = path.resolve(__dirname, "../fixtures/test-module.PAN");
 
 type CurrentPerMppt = { value_a: number | null; source: string; note: string };
 type Inverter = { manufacturer: string; model: string; source: string };
-type Answer = { equipment: { inverter: Inverter; max_current_per_mppt: CurrentPerMppt } };
+type Answer = { equipment: { inverter: Inverter; max_current_per_mppt: CurrentPerMppt }; options_note: string | null };
 
 async function resultOf(request: Request): Promise<Answer> {
   const events = (await (await request.response())!.text())
@@ -38,6 +39,16 @@ async function theStringsLens(page: Page): Promise<Answer> {
   const answer = await resultOf(await first);
   await expect(inverterName(page)).toHaveText(answer.equipment.inverter.model, { timeout: RUN });
   return answer;
+}
+
+const one = (value: number) => value.toLocaleString("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const limits = (page: Page) => page.getByRole("region", { name: "Inverter limits and cabling" }).filter({ visible: true });
+
+/** Inverter limits and cabling, opened in place. */
+async function limitsOpened(page: Page) {
+  await limits(page).getByRole("button", { name: /Inverter limits and cabling/ }).click();
+  await expect(limits(page).getByRole("textbox", { name: "Current per MPPT" })).toBeVisible();
+  return limits(page);
 }
 
 async function replaceDialogOpened(page: Page) {
@@ -94,5 +105,57 @@ test.describe("replace the inverter", () => {
     await expect(inverterName(page)).toHaveText(answer.equipment.inverter.model);
     await expect(inverterFile(page)).toHaveText(answer.equipment.inverter.source);
     expect(runs).toEqual([]);
+  });
+});
+
+test.describe("inverter limits and cabling", () => {
+  test("closed, the row says the current per MPPT of the file and the cable; opened, where the current comes from and the API's note", async ({ page }) => {
+    const answer = await theStringsLens(page);
+    const current = answer.equipment.max_current_per_mppt;
+    await expect(limits(page).getByTestId("limits-row")).toHaveText(`${one(current.value_a!)} A · 30 m`);
+
+    const opened = await limitsOpened(page);
+
+    await expect(opened.getByRole("textbox", { name: "Current per MPPT" })).toHaveValue("");
+    await expect(opened).toContainText(`${one(current.value_a!)} A · IMaxDC`);
+    await expect(opened.getByTestId("current-note")).toHaveText(current.note);
+    await expect(opened.getByRole("textbox", { name: "AC cable per inverter" })).toHaveValue("30.00");
+    await expect(opened).toContainText("1 to 2,000 m");
+  });
+
+  test("60 A entered: the run's options note says it, the card says entered; Use the file's gives it back", async ({ page }) => {
+    const answer = await theStringsLens(page);
+    const opened = await limitsOpened(page);
+    const entered = ran(page, (body) => body.imax_mppt_override === 60);
+
+    await opened.getByRole("textbox", { name: "Current per MPPT" }).fill("60");
+    await opened.getByRole("textbox", { name: "Current per MPPT" }).press("Enter");
+
+    const after = await resultOf(await entered);
+    expect(after.options_note).toContain("60.0 A");
+    await expect(page.getByTestId("options-note").filter({ visible: true })).toContainText(after.options_note!.split(" ! ")[0]!, { timeout: RUN });
+    await expect(page.getByTestId("inverter-facts").filter({ visible: true })).toContainText("60.0 A per MPPT, entered");
+    await expect(opened).toContainText("entered");
+    await expect(opened.getByTestId("current-note")).toHaveCount(0);
+    await expect(limits(page).getByTestId("limits-row")).toHaveText("60.0 A · 30 m");
+
+    const givenBack = ran(page, (body) => body.imax_mppt_override === null);
+    await opened.getByRole("button", { name: `Use the file's ${one(answer.equipment.max_current_per_mppt.value_a!)} A` }).click();
+    const back = await resultOf(await givenBack);
+    expect(back.options_note).toBe(answer.options_note);
+    await expect(page.getByTestId("inverter-facts").filter({ visible: true })).not.toContainText("entered", { timeout: RUN });
+    await expect(opened.getByRole("textbox", { name: "Current per MPPT" })).toHaveValue("");
+  });
+
+  test("the AC cable entered at 40 m reaches the run's request", async ({ page }) => {
+    await theStringsLens(page);
+    const opened = await limitsOpened(page);
+    const entered = ran(page, (body) => body.ac_cable_m === 40);
+
+    await opened.getByRole("textbox", { name: "AC cable per inverter" }).fill("40");
+    await opened.getByRole("textbox", { name: "AC cable per inverter" }).press("Enter");
+
+    await entered;
+    await expect(limits(page).getByTestId("limits-row")).toContainText("· 40 m");
   });
 });

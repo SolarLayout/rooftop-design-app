@@ -7,9 +7,11 @@ import { editOf, openedAtOf, projectOf } from "@/lib/stores/project-store";
 import { chosenOptionOf, designEditOf, designOf, readoutsOf } from "@/lib/stores/results-store";
 import { withCustom, withoutCustom } from "@/lib/studio/custom-fields";
 import { inverterShownOf, withInverterRead, type ReplacedInverter } from "@/lib/studio/inverter-card";
+import { withAcCable, withCurrentPerMppt } from "@/lib/studio/inverter-fields";
 import { optionCardsOf } from "@/lib/studio/option-cards";
 import { stringsViewOf, type Volts } from "@/lib/studio/strings-view";
 import { InverterCard } from "./InverterCard";
+import { InverterLimits } from "./InverterLimits";
 import { SeriesRange } from "./SeriesRange";
 import { SizingTemperatures } from "./SizingTemperatures";
 import { StringColourSwitch } from "./StringLegend";
@@ -24,7 +26,7 @@ type Replaced = ReplacedInverter & { openedAt: number | null };
 /**
  * The inspector of the Strings lens (the boards "Studio, Strings lens" on three sizes and "Studio, Strings
  * lens, no system voltage yet"): the inverter with Replace; before a system voltage the decision and what waits for it;
- * after, the voltage chosen and the series range with its verdict; where no length fits, what can change it; the sizing temperatures and the Voc coefficient. The voltage is the document's, the user's alone (plan/phase-07-plan.md,
+ * after, the voltage chosen and the series range with its verdict; where no length fits, what can change it; the sizing temperatures and the Voc coefficient; the inverter's limits and cabling. The voltage is the document's, the user's alone (plan/phase-07-plan.md,
  * decision 1): a choice commits it, and the run follows. On phone the strings' colour switch stands first, the stage
  * holding only the legend.
  */
@@ -39,6 +41,7 @@ export function StringsInspector() {
   const designEdit = useResults(designEditOf);
   const [replaced, setReplaced] = useState<Replaced | null>(null);
   const [isReplacing, setReplacing] = useState(false);
+  const [isLimitsOpen, setLimitsOpen] = useState(false);
   if (!project) return null;
   const view = stringsViewOf({ voltage: project.system_voltage ?? null, design, readouts, option });
   // A file read for another design says nothing about this one.
@@ -89,6 +92,14 @@ export function StringsInspector() {
               </div>
             ) : null}
             <SizingTemperatures />
+            <InverterLimits
+              document={project}
+              inverter={inverter}
+              isOpen={isLimitsOpen}
+              onOpen={setLimitsOpen}
+              onCurrent={(value) => store.getState().commit((document) => withCurrentPerMppt(document, value))}
+              onCable={(value) => store.getState().commit((document) => withAcCable(document, value))}
+            />
           </>
         )}
       </div>
