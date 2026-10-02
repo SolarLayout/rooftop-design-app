@@ -28,8 +28,8 @@ export function summaryRowsOf({ summary }: DesignOption): SummaryRowView[] {
   });
 }
 
-/** The item as the name of its row, the value as text; on phone a card with the item as its title. */
+/** The item as the name of its row, the value as words in Geist; on phone a card with the item as its title and the value under it. */
 export const SUMMARY_COLUMNS: ReadonlyArray<Column<SummaryRowView>> = [
   { key: "item", head: "Item", kind: "name", value: (row) => row.label },
-  { key: "value", head: "Value", kind: "text", value: (row) => row.value },
+  { key: "value", head: "Value", kind: "text", words: true, value: (row) => row.value },
 ];

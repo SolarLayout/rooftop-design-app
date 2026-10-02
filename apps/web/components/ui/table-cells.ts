@@ -24,12 +24,18 @@ export type Column<Row> = {
   mark?: (row: Row) => Mark | null;
   /** Where the column is shown; without it, in both. */
   shown?: "table" | "card";
+  /**
+   * The value is words, not a figure: in Geist, at the left; on a card under the title across the width, without
+   * the head, since the title says the row (the summary of Performance).
+   */
+  words?: boolean;
 };
 
 export type CardOfRow = {
   title: string;
   mark: Mark | null;
-  values: Array<{ key: string; label: string; value: string }>;
+  /** A value of words shows no label on the card: it is said to a screen reader alone. */
+  values: Array<{ key: string; label: string; value: string; words?: boolean }>;
 };
 
 /** The columns that the table shows. */
@@ -55,6 +61,10 @@ export function cardOf<Row>(row: Row, columns: ReadonlyArray<Column<Row>>): Card
     mark: marks[0] ?? null,
     values: onCard
       .filter((column) => column !== name)
-      .map((column) => ({ key: column.key, label: column.head, value: column.value(row) })),
+      .map((column) =>
+        column.words
+          ? { key: column.key, label: column.head, value: column.value(row), words: true }
+          : { key: column.key, label: column.head, value: column.value(row) },
+      ),
   };
 }

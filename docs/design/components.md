@@ -547,6 +547,9 @@ In code: `Table`; a row as a card in `table-cells.ts`.
   (the board "Inverter and sizing").
 - A table at the inspector's width pads its cells 6 rather than 8 (`dense`); a card whose values are long lays
   them in two columns rather than three (`cardColumns`).
+- A column of words rather than figures (`words`: the summary of Performance) is in Geist at the left; on a card its
+  value stands under the title across the width, without its head, since the title says the row (the board
+  "Performance" on phone).
 
 ## Progress ring
 | Form | Size | Use |

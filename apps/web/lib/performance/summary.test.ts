@@ -26,7 +26,7 @@ describe("the summary (plan/phase-08-plan.md, decision 16)", () => {
     expect(summaryRowsOf(twice).map((row) => row.key)).toEqual(["weather", "weather-2"]);
   });
 
-  test("the table has two columns, the item as the name of its row and the value as text; both on the cards", () => {
+  test("the table has two columns, the item as the name of its row and the value as words; on the card the value stands under the title", () => {
     const [item, value] = columnsOfTable(SUMMARY_COLUMNS);
     const [first] = summaryRowsOf(A);
 
@@ -34,6 +34,6 @@ describe("the summary (plan/phase-08-plan.md, decision 16)", () => {
     expect([item?.head, item?.kind, value?.head, value?.kind]).toEqual(["Item", "name", "Value", "text"]);
     expect(item?.value(first!)).toBe("Site");
     expect(value?.value(first!)).toBe("18.52000° N, 73.86000° E");
-    expect(cardOf(first!, SUMMARY_COLUMNS)).toEqual({ title: "Site", mark: null, values: [{ key: "value", label: "Value", value: "18.52000° N, 73.86000° E" }] });
+    expect(cardOf(first!, SUMMARY_COLUMNS)).toEqual({ title: "Site", mark: null, values: [{ key: "value", label: "Value", value: "18.52000° N, 73.86000° E", words: true }] });
   });
 });
