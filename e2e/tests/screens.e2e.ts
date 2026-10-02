@@ -238,8 +238,13 @@ test.describe("the shell", () => {
       await page.keyboard.press("ArrowDown");
       await expect(sheet).not.toHaveAttribute("aria-valuetext", "Open");
       await sheet.blur();
-      // The sheet's content back at its top, as it scrolled to the switch.
-      await page.locator("[data-sheet] *").evaluateAll((nodes) => nodes.forEach((node) => node.scrollTo({ top: 0 })));
+      // Scrolling to the switch moved what holds it, sideways too, also where the overflow is hidden: all back.
+      await page.evaluate(() =>
+        document.querySelectorAll("*").forEach((node) => {
+          if (node.scrollLeft !== 0) node.scrollLeft = 0;
+          if (node.scrollTop !== 0 && node.closest("[data-sheet]")) node.scrollTop = 0;
+        }),
+      );
     } else await page.getByRole("switch", { name: "Calculated shadow outlines" }).blur();
 
     await cameraSettled(page);
