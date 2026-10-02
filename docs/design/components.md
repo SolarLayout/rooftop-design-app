@@ -129,6 +129,7 @@ In code: `NumberField` and `Stepper`; their numbers in `number-entry.ts`.
 | The label before the field | 36, radius control | 48, radius row | A row of the inspector |
 | Stepper | 38: buttons of 30 in a well with padding 3 | 52: buttons of 44 | A few whole steps |
 | Inside the loss chain | 22, radius xs, mono 12 | Tablet 40, radius xs; phone 44, radius control | A step of the chain that is the user's; the row's label is its name |
+| Inside a chip | 22, radius xs, mono 12 | Tablet 32, radius xs; phone 44, radius control | An assumption of Performance; the chip's label is its name |
 
 - What is typed is a draft. Enter or leaving the field commits it; Escape gives it up. The arrows up and down
   step the draft and do not commit. Plus and minus of a stepper commit at once, and cannot be pressed at the
@@ -145,6 +146,8 @@ In code: `NumberField` and `Stepper`; their numbers in `number-entry.ts`.
   `text-caption`, text-3: "11.9 °C from the weather", "entered" (the board "Inverter and sizing"). In code: `detail`.
 - Inside the loss chain there is no line under the label: a field that is empty for its default says the
   default inside itself, in text-3 ("PAN 0.2 %"). In code: `placeholder`.
+- Inside a chip the field is a cell of the chip, as in the chain (`form="chip"`); what it says of an entry it
+  changed takes a line of its own under the chip's row, at the right.
 
 ## Cards
 `surface-1`, border `line`, radius `radius-card`, `shadow-card`, padding `space-card`.
@@ -251,6 +254,21 @@ In code: `LossChain`, of rows `LossRow`; the bars in `lib/performance/cascade.ts
   is never the only place: the row says every figure itself.
 - While a run is on its way the figures and the bars are dimmed (`opacity-updating`); the labels and the
   fields stay as they are.
+
+## Assumptions (Performance)
+The card "Assumptions" (the boards "Performance" and "Weather and assumptions"): every assumption a field in a
+chip, the chips wrapped with 8 between them. Chip: height 34 (44 on tablet), padding 0 6 0 12, `control`,
+border `line-strong`, radius `radius-chip`, text 13 (15 on tablet), `shadow-raised`; the label in text-2, then
+the field (Number field, "inside a chip"), its unit after the value. The thermal Uc is empty while the roof
+type's holds and a caption in text-3 says it ("29 W/m²K by roof type"); entered, a quiet press of 26 gives it
+back ("Use the roof type's"). The exceedance levels are three fields of 40 in one chip, each with "P" before it
+in mono and a dot between them; on commit they are sorted and each kept once. The grid CO₂ factor says its unit,
+t/MWh.
+On phone the assumptions are rows of 52: the label at the left with its caption under it, the field at the
+right, 44 high, 132 wide (148 for the CO₂ factor, 52 for each level).
+
+In code: `Assumptions`, of fields `assumption-fields.ts`. The card stands before the summary, and before a
+system voltage under the decision card: the assumptions are inputs and can be set before (decision 15).
 
 ## Timeline (Sun lens)
 Floating bar 64 high, `surface-1`, border `line`, radius `radius-bar`, `shadow-float`: round play button 44, time
@@ -478,6 +496,14 @@ are in `list-keys.ts`.
 - A choice is taken with Enter, the space bar or a press; taking the one that is taken already changes nothing.
 - A choice may carry a status mark after its words (`mark`: a tick or a note of 16): the stringing options of
   Performance on phone. The trigger shows the mark of the choice that is taken, after its words.
+- The trigger may say other words than the label of the choice that is taken (`valueShown`): the weather select
+  of Performance names the CSV file that is loaded ("pune-ghi.csv"), while its choice is "CSV file".
+- While what was chosen is being loaded (`busy`) the trigger says the new choice at once and a turning ring of 16
+  stands where the chevron was; the list cannot be opened until it is over.
+- The weather select (the board "Weather and assumptions"): a choice that could not be loaded says so in a note
+  under the select, 560 wide at most, on `note-surface` with border `note-line`, radius `radius-control`, padding
+  10 12: a note mark of 18, "The weather was not loaded" in Geist 500 and the API's words under it in text-2, 13.
+  The choice of before stays in the trigger and in the document. The note goes with the next choice.
 
 ## File drop
 Height 88, radius `radius-row`, padding 0 18, gap 14. An icon of 20, a title in Geist 500 and one line in
@@ -490,12 +516,14 @@ Height 88, radius `radius-row`, padding 0 18, gap 14. An icon of 20, a title in 
 | Held, to be read later | `surface-2`, border `line` | File icon in accent; the name of the file in mono; what it is and when it is read ("DXF · 48 KB · read when the roof is opened"); "Choose another" |
 | Reading | `color-well`, border `line`, `shadow-well` | Ring of 20; "Reading the file"; the name of the file in mono |
 | Refused | `note-surface`, border `note-line` | Note of 20; "This file was not loaded"; the reason in the words of the engine; "Choose another" |
+| Read, kept in the dialog | `surface-2`, border `line` | File icon in accent; the name of the file in mono; the lines of what was read, one under the other ("8,760 hours · GHI 1,822.9 kWh/m²", "beam 1,435.4 · diffuse 822.7 kWh/m²", "25.0 to 25.0 °C"); "Choose another" |
 
 A file that is refused leaves the equipment of before in place. A file that is read becomes the equipment
 card. The button opens the file chooser, so the control works without dragging and by keyboard.
 
 In code: `FileDrop`. It gives the file to who uses it, and is told what becomes of it: held for later (the
-drawing of an import, read when the roof is opened), reading, and refused with the reason. It takes one file, the first of several. What is no file of the device (a piece of text, a
+drawing of an import, read when the roof is opened), reading, read and kept until the dialog's primary action takes it (the
+weather of a CSV, with its summary), and refused with the reason. It takes one file, the first of several. What is no file of the device (a piece of text, a
 link) is not taken, and while a file is read no other is. The words of the field are a `status`, so that a
 screen reader hears that a file is read or was refused.
 On phone the button stands under the words and is as wide as the field, 44 high; the field is then higher
