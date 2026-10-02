@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 
@@ -302,19 +303,26 @@ class Design:
         def build() -> list[StringOption]:
             more = 1 if simulated else 0       # the custom option is simulated after the others
             heard = (lambda done, total: on_part(done, total + more)) if on_part else None
-            options = build_options(self.pre, self.layout, self.module, self.mm, self.inverter, rng,
-                                    self.p.losses, self.p.roof, on_option=heard)
-            if simulated:
-                n, s, k = simulated
-                options.append(custom_option(self.pre, self.layout, self.module, self.mm, self.inverter,
-                                             self.p.losses, self.p.roof, n, s, k,
-                                             "ABCDEFGH"[len(options)]))
-            return options
+            return build_options(self.pre, self.layout, self.module, self.mm, self.inverter, rng,
+                                 self.p.losses, self.p.roof, on_option=heard)
 
-        self.options = build() if self.memo is None else self.memo.options(memo_mod.options_key(self), build)
+        offered = self._kept(memo_mod.options_key, build)
+        if simulated:
+            n, s, k = simulated
+
+            def build_custom() -> list[StringOption]:
+                return [custom_option(self.pre, self.layout, self.module, self.mm, self.inverter,
+                                      self.p.losses, self.p.roof, n, s, k, "ABCDEFGH"[len(offered)])]
+
+            offered = offered + self._kept(memo_mod.custom_key, build_custom)
+        self.options = offered
         keys = [o.key for o in self.options]
         if self.p.chosen_option not in keys and self.options:
             self.p.chosen_option = self.options[0].key
+
+    def _kept(self, key_of: Callable[[Design], str], build: Callable[[], list[StringOption]]) -> list[StringOption]:
+        """What *build* makes, from the memo under the key *key_of* gives the design, when there is one."""
+        return build() if self.memo is None else self.memo.options(key_of(self), build)
 
     @property
     def chosen(self) -> StringOption | None:
