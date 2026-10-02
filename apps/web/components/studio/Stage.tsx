@@ -16,11 +16,12 @@ import { createStageStore, cursorOf, groundOf, moduleWritesOf, type Cursor, type
 import type { Lens } from "@/lib/routes";
 import { projectOf } from "@/lib/stores/project-store";
 import { chosenOptionOf, designOf, isDesignUpdating, layoutOf, readoutsOf, shadowOutlinesOf, sunDayOf } from "@/lib/stores/results-store";
-import { draftOf, isShadeMapShownOf, lensOf, onTheRoofOf, selectionOf, showsSunPathOf, sunTimeOf, toReviewOf } from "@/lib/stores/view-store";
+import { draftOf, isShadeMapShownOf, lensOf, onTheRoofOf, selectionOf, showsSunPathOf, stringsShownByOf, sunTimeOf, toReviewOf } from "@/lib/stores/view-store";
 import { shadeMapWordsOf } from "@/lib/scene/shade-map";
 import { useShadeMapOfTheRun } from "@/components/scene/use-shade-map";
 import { readOutOf, sunLineOf, sunPathLineOf } from "@/lib/studio/sun-time";
 import { useSun } from "@/components/scene/use-sun";
+import { useStringsShown } from "@/components/scene/use-strings";
 import { Callout } from "./Callout";
 import { Handles } from "./Handles";
 import { InverterChips } from "./InverterChips";
@@ -30,7 +31,7 @@ import { StringLegend } from "./StringLegend";
 import { SunMarks } from "./SunMarks";
 import { LayoutFailed, SunFailed } from "./LayoutFailed";
 import { PlanFallback } from "./PlanFallback";
-import { lineOf, stringsLineOf } from "./stage-view";
+import { lineOf, stringsLineOf, stringsWordsOf } from "./stage-view";
 import { useEscapeClears } from "./use-escape-clears";
 import { TimePill, SunTimeline } from "./Time";
 import { useSize } from "./use-size";
@@ -175,6 +176,9 @@ function OnTheRoof({ stage, isScene }: { stage: StageStore; isScene: boolean }) 
   const showsSunPath = useView(showsSunPathOf);
   const isShadeMapShown = useView(isShadeMapShownOf);
   const shadeMap = useShadeMapOfTheRun();
+  const strings = useStringsShown();
+  const stringsShownBy = useView(stringsShownByOf);
+  const option = useResults(chosenOptionOf);
   const isWindowThick = onTheRoof.window;
   if (!project) return null;
   const { roof, array } = project;
@@ -183,6 +187,11 @@ function OnTheRoof({ stage, isScene }: { stage: StageStore; isScene: boolean }) 
   const sunPath = isScene && showsSunPath && sunDay ? sunPathLineOf(sunDay, isWindowThick ? window : null) : null;
   const selected = selection?.kind === "obstacle" ? selection.index : null;
   const selectedModule = selection?.kind === "module" ? layout?.layout.modules[selection.index] : undefined;
+  // The strings on the roof, in the Strings lens while the run has an option (plan/phase-07-plan.md, step 16).
+  const stringsWords =
+    strings && layout
+      ? stringsWordsOf({ option: strings.option, strings: strings.strings, colouring: strings.colouring, positions: layout.layout.modules.length, selected: selection?.kind === "string" ? selection.label : null })
+      : null;
   return (
     <ul aria-label="On the roof" className="sr-only">
       <li data-testid="on-the-roof-roof" aria-current={selection?.kind === "roof" || undefined}>
@@ -212,6 +221,22 @@ function OnTheRoof({ stage, isScene }: { stage: StageStore; isScene: boolean }) 
       {sunDay ? <li data-testid="on-the-roof-sun">{readOutOf(sunDay.dayOfYear, hour, sun)}</li> : null}
       {sunPath ? <li data-testid="on-the-roof-sun-path">{sunPath}</li> : null}
       {isShadeMapShown ? <li data-testid="on-the-roof-shade-map">{shadeMapWordsOf(shadeMap)}</li> : null}
+      {stringsWords ? (
+        <>
+          <li data-testid="on-the-roof-strings">
+            {stringsWords.strings}
+          </li>
+          <li data-testid="on-the-roof-unused">{stringsWords.unused}</li>
+          <li data-testid="on-the-roof-inverters">{stringsWords.inverters}</li>
+          {stringsWords.selected ? (
+            <li data-testid="on-the-roof-string-selected" aria-current>
+              {stringsWords.selected}
+            </li>
+          ) : null}
+        </>
+      ) : stringsShownBy && option ? (
+        <li data-testid="on-the-roof-strings">The strings follow the design run</li>
+      ) : null}
       {outlines && onTheRoof.shadowOutlines && lens === "sun" ? (
         <li data-testid="on-the-roof-shadow-outlines">
           {`The engine's shadow outlines at ${hourOf(outlines.hour)}: ${outlines.polygons.length} ${outlines.polygons.length === 1 ? "polygon" : "polygons"}`}

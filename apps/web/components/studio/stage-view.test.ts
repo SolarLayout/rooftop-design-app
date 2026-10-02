@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { layoutFailedOf, lineOf, stringsLineOf, subLineOf, sunFailedOf } from "./stage-view";
+import { layoutFailedOf, lineOf, stringsLineOf, stringsWordsOf, subLineOf, sunFailedOf } from "./stage-view";
 import type { LayoutReadouts, LayoutResponse } from "@/lib/api";
 import { createResultsStore } from "@/lib/stores/results-store";
 
@@ -129,5 +129,50 @@ describe("the line under the Strings lens's title (plan/phase-07-plan.md, decisi
 
   test("before any run, nothing", () => {
     expect(stringsLineOf({ positions: null, mppts: null, option: null, noOptions: null })).toBeNull();
+  });
+});
+
+// The text equivalent of the strings on the roof (plan/phase-07-plan.md, step 16): the strings and what they are
+// coloured by, with each colour's strings; the positions not used; the inverters and where; the string selected.
+describe("the strings on the roof in words", () => {
+  const wired = (label: string, inverter: number, mppt: number, modules = 29) => ({ label, inverter, mppt, modules: Array.from({ length: modules }, (_, n) => n) });
+  /** Option A's way, cut to eight strings: MPPT 1 and 2 take three, MPPT 3 two; one inverter. */
+  const strings = [wired("S1", 1, 1), wired("S2", 1, 1), wired("S3", 1, 1), wired("S4", 1, 2), wired("S5", 1, 2), wired("S6", 1, 2), wired("S7", 1, 3), wired("S8", 1, 3)];
+  const option = {
+    letter: "A",
+    system: { inverters: [{ label: "INV-1", position: [31.042985, 39.0] as [number, number] }] },
+    cable_schedule: [{ string: "S8", inverter: "INV-1", mppt: 3, modules: 29, voc_cold_v: 1480, isc_a: 14.3, length_m: 93.2, size: "4 mm² Cu, 1500 V DC" }],
+  };
+  const of = (colouring: "string" | "mppt" | "inverter", selected: string | null = null) => stringsWordsOf({ option, strings, colouring, positions: 790, selected });
+
+  test("by MPPT: the strings of the option, and each MPPT with its strings", () => {
+    expect(of("mppt").strings).toBe("8 strings of option A, coloured by MPPT: MPPT 1, 3 strings; MPPT 2, 3 strings; MPPT 3, 2 strings");
+  });
+
+  test("by string: each of the colours in turn with the strings it marks", () => {
+    expect(of("string").strings).toBe("8 strings of option A, coloured by string, six colours in turn: colour 1, 2 strings, S1 and S7; colour 2, 2 strings, S2 and S8; colour 3, 1 string, S3; colour 4, 1 string, S4; colour 5, 1 string, S5; colour 6, 1 string, S6");
+  });
+
+  test("by inverter: each inverter with its strings", () => {
+    const two = [wired("S1", 1, 1), wired("S2", 2, 1), wired("S3", 2, 2)];
+    expect(stringsWordsOf({ option, strings: two, colouring: "inverter", positions: 87, selected: null }).strings).toBe("3 strings of option A, coloured by inverter: INV-1, 1 string; INV-2, 2 strings");
+  });
+
+  test("the positions not used, or every position used", () => {
+    expect(of("mppt").unused).toBe("558 positions not used");
+    expect(stringsWordsOf({ option, strings, colouring: "mppt", positions: 232, selected: null }).unused).toBe("Every position used");
+    expect(stringsWordsOf({ option, strings, colouring: "mppt", positions: 233, selected: null }).unused).toBe("1 position not used");
+  });
+
+  test("the inverters and where the engine places them, in the roof's metres", () => {
+    expect(of("mppt").inverters).toBe("Inverter INV-1 at 31.0 m east, 39.0 m north");
+    const two = { ...option, system: { inverters: [{ label: "INV-1", position: [27.37, 1] as [number, number] }, { label: "INV-2", position: [36.92, 39] as [number, number] }] } };
+    expect(stringsWordsOf({ option: two, strings, colouring: "mppt", positions: 790, selected: null }).inverters).toBe("Inverters INV-1 at 27.4 m east, 1.0 m north; INV-2 at 36.9 m east, 39.0 m north");
+  });
+
+  test("the string selected, in the words of its callout; none when none is, or the option has it not", () => {
+    expect(of("mppt", "S8").selected).toBe("String 8 · INV-1, MPPT 3, selected: 29 modules · Voc cold 1,480 V · 93 m of cable");
+    expect(of("mppt").selected).toBeNull();
+    expect(of("mppt", "S40").selected).toBeNull();
   });
 });
