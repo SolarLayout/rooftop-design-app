@@ -19,6 +19,8 @@ type Props = {
   onPressModule?: (instanceId: number | undefined, event: ThreeEvent<MouseEvent>) => void;
   /** The pointer came over the modules, or left them. Not per module: there are too many. */
   onOverModules?: (isOver: boolean) => void;
+  /** Told each time the matrices are written: the counter of development (plan/phase-06-plan.md, decision 6). */
+  onWrite?: () => void;
 };
 
 /** The frame is the module's body; the glass a thinner sheet stacked over it, inset so that the frame shows around it (r3f-notes, fix 10). */
@@ -30,12 +32,12 @@ const UNIT_BOX = new BoxGeometry(1, 1, 1);
 /** The edges of a unit box: placed by the matrix of the selected module, they are its outline. */
 const UNIT_EDGES = new EdgesGeometry(UNIT_BOX);
 
-type Press = Pick<Props, "onPressModule" | "onOverModules">;
+type Press = Pick<Props, "onPressModule" | "onOverModules" | "onWrite">;
 
 type SetProps = Press & { placements: Placement[]; thickness: Thickness; material: MeshStandardMaterial; castShadow: boolean; receiveShadow: boolean };
 
 /** One instanced mesh for all the positions: the matrices written when the placements change, never per frame (fixes 11 and 12). */
-function InstancedSet({ placements, thickness, material, castShadow, receiveShadow, onPressModule, onOverModules }: SetProps) {
+function InstancedSet({ placements, thickness, material, castShadow, receiveShadow, onPressModule, onOverModules, onWrite }: SetProps) {
   const mesh = useRef<InstancedMesh>(null);
   const capacity = Math.max(1, placements.length);
 
@@ -46,6 +48,9 @@ function InstancedSet({ placements, thickness, material, castShadow, receiveShad
     instanced.count = placements.length;
     instanced.instanceMatrix.needsUpdate = true;
     instanced.computeBoundingSphere();
+    onWrite?.();
+    // The counter is told, never followed: a new one must not write the matrices again.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placements, thickness, material]);
 
   return (
@@ -78,7 +83,7 @@ function SelectedOutline({ placement }: { placement: Placement }) {
  * answered, the frame casting the shadow and the glass taking it. A press on one selects its position;
  * the selected one is outlined (plan step 17).
  */
-export function Modules({ layout, heightAt, flushClearance, selected, onPressModule, onOverModules }: Props) {
+export function Modules({ layout, heightAt, flushClearance, selected, onPressModule, onOverModules, onWrite }: Props) {
   const placements = useMemo(
     () => layout.modules.map((module) => placementOf(module, layout.kind, heightAt, flushClearance)),
     [layout, heightAt, flushClearance],
@@ -89,8 +94,8 @@ export function Modules({ layout, heightAt, flushClearance, selected, onPressMod
 
   return (
     <group>
-      <InstancedSet placements={placements} thickness={FRAME} material={frame} castShadow receiveShadow={false} onPressModule={onPressModule} onOverModules={onOverModules} />
-      <InstancedSet placements={placements} thickness={GLASS} material={glass} castShadow={false} receiveShadow onPressModule={onPressModule} onOverModules={onOverModules} />
+      <InstancedSet placements={placements} thickness={FRAME} material={frame} castShadow receiveShadow={false} onPressModule={onPressModule} onOverModules={onOverModules} onWrite={onWrite} />
+      <InstancedSet placements={placements} thickness={GLASS} material={glass} castShadow={false} receiveShadow onPressModule={onPressModule} onOverModules={onOverModules} onWrite={onWrite} />
       {chosen ? <SelectedOutline placement={chosen} /> : null}
     </group>
   );

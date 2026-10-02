@@ -26,7 +26,6 @@ import { Footprint, Obstacles } from "./Obstacles";
 import { Projector, type Anchor } from "./Projector";
 import { SceneCanvas } from "./SceneCanvas";
 import { SunLight } from "./SunLight";
-import { useSun } from "./use-sun";
 
 type Props = {
   onContextLost: () => void;
@@ -37,6 +36,9 @@ type Props = {
 /** The imagery the ground drapes: the same tiles as the map's (decision 8); none without a key. */
 const IMAGERY = esriProvider(KEY_OF_THE_APP)?.imagery ?? null;
 
+/** Development counts the writes of the modules' matrices (plan/phase-06-plan.md, decision 6); production does not. */
+const COUNTS_MODULE_WRITES = process.env.NODE_ENV !== "production";
+
 /** What a press on the roof places the draft on: the roof itself and what lies on it. */
 const ON_THE_ROOF = new Set<Picked["what"]>(["roof", "module", "keepout"]);
 
@@ -44,12 +46,13 @@ const ON_THE_ROOF = new Set<Picked["what"]>(["roof", "module", "keepout"]);
  * The 3D scene of the Studio: the design that is open, drawn from the stores, about the roof's centroid
  * (plan/phase-05-plan.md, decisions 1 and 2). It is loaded in the browser alone. A press selects what it
  * hit (decision 10); with a draft standing, a press on the roof places the draft there (decision 15); the
- * selected obstacle is dragged on the roof plane and drawn where the pointer has it (decision 12).
+ * selected obstacle is dragged on the roof plane and drawn where the pointer has it (decision 12). The
+ * scene reads nothing of the time: the light and the camera do, so that the time redraws them alone
+ * (plan/reference/r3f-notes.md, fix 12).
  */
 export function Scene({ onContextLost, stage }: Props) {
   const project = useProject(projectOf);
   const layout = useResults(layoutOf);
-  const sunAt = useSun();
   const selection = useView(selectionOf);
   const draft = useView(draftOf);
   const toReview = useView(toReviewOf);
@@ -105,9 +108,9 @@ export function Scene({ onContextLost, stage }: Props) {
 
   return (
     <SceneCanvas onContextLost={onContextLost} onPressNothing={() => pressed({ what: "ground" })}>
-      <CameraRig radius={frame.radius} sun={sunAt} />
+      <CameraRig radius={frame.radius} />
       <Projector anchors={anchors} stage={stage} />
-      <SunLight sun={sunAt} radius={frame.radius} />
+      <SunLight radius={frame.radius} />
       <group position={[ox, oy, oz]}>
         <Building roof={roof} onPressRoof={(event) => pressed({ what: "roof" }, event)} onOverRoof={over("roof", "pointer")} />
         <Obstacles
@@ -134,6 +137,7 @@ export function Scene({ onContextLost, stage }: Props) {
             selected={selection?.kind === "module" ? selection.index : null}
             onPressModule={(instanceId, event) => pressed({ what: "module", instanceId }, event)}
             onOverModules={over("modules", "pointer")}
+            onWrite={COUNTS_MODULE_WRITES ? stage.getState().countModuleWrite : undefined}
           />
         ) : null}
         {layout ? (

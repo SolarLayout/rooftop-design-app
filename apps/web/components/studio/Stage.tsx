@@ -12,7 +12,7 @@ import { ProgressRing } from "@/components/ui/ProgressRing";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
 import { calloutOf } from "@/lib/scene/keepout";
 import { calloutOfObstacle, wordsOf } from "@/lib/scene/obstacles";
-import { createStageStore, cursorOf, groundOf, type Cursor, type StageStore } from "@/lib/scene/stage-store";
+import { createStageStore, cursorOf, groundOf, moduleWritesOf, type Cursor, type StageStore } from "@/lib/scene/stage-store";
 import type { Lens } from "@/lib/routes";
 import { projectOf } from "@/lib/stores/project-store";
 import { layoutOf, readoutsOf, sunDayOf } from "@/lib/stores/results-store";
@@ -45,6 +45,9 @@ const VIEW_CONTROLS = "top-1 right-3 tablet:top-4 tablet:right-5 desktop:top-5";
 /** The chip of a layout that failed stands under the title, in the middle of the stage: as wide as the board draws it, or as the phone allows. */
 const LAYOUT_FAILED = "absolute inset-x-4 top-16 z-stage-overlay tablet:inset-x-0 tablet:top-20 tablet:mx-auto tablet:w-95 desktop:top-24";
 
+/** In development the stage says how often the modules' matrices were written (plan/phase-06-plan.md, decision 6). */
+const SAYS_MODULE_WRITES = process.env.NODE_ENV !== "production";
+
 /** The cursor over the scene: a pointer over what can be selected, a hand over what can be dragged (plan step 17). */
 const CURSOR: Record<Cursor, string | false> = { default: false, pointer: "cursor-pointer", grab: "cursor-grab", grabbing: "cursor-grabbing" };
 
@@ -65,11 +68,12 @@ export function Stage({ lens, name, className }: Props) {
   // What the scene tells the DOM over it, for this stage alone.
   const [stage] = useState(createStageStore);
   const cursor = useStore(stage, cursorOf);
+  const moduleWrites = useStore(stage, moduleWritesOf);
   const cannotDraw = webGL === false ? NO_WEBGL : isLost ? CONTEXT_LOST : null;
   useEscapeClears();
 
   return (
-    <div data-testid="stage" data-state={cannotDraw ? "plan" : "scene"} className={classNames("relative", className)}>
+    <div data-testid="stage" data-state={cannotDraw ? "plan" : "scene"} data-module-writes={SAYS_MODULE_WRITES ? moduleWrites : undefined} className={classNames("relative", className)}>
       <div className={classNames("absolute inset-0 z-stage", CURSOR[cursor])}>
         {cannotDraw ? (
           project ? <PlanFallback roof={project.roof} layout={layout?.layout ?? null} reason={cannotDraw} /> : null
