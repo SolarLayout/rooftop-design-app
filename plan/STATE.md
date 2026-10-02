@@ -83,7 +83,7 @@ changed; an export 0.2 to 0.9 s after a run.
 ## Next, in order
 
 1. Phase 8, Performance (`plan/phase-08-performance.md`): the plan first, the way `phase-07-plan.md` was written, then the boards it
-   lacks, then the pull requests. The resume prompt is written when the owner asks.
+   lacks, then the pull requests. Work order: `plan/resume/011-phase-8-performance.md`.
 2. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
 3. In parallel with any phase: the screens still to draw (Phase 0).
 
