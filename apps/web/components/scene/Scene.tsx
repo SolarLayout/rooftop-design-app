@@ -10,12 +10,12 @@ import { handlePointsOf, type About } from "@/lib/scene/handles";
 import { inverterMarkersOf } from "@/lib/scene/inverter-markers";
 import { anchorOf } from "@/lib/scene/keepout";
 import { anchorOfObstacle, canBeDragged } from "@/lib/scene/obstacles";
-import { anchorOfModule, anchorOfRoof, selectionOfPick, type Picked } from "@/lib/scene/pick";
+import { anchorOfModule, anchorOfRoof, anchorOfString, selectionOfPick, selectionOfPickedString, stringOfPosition, type Picked } from "@/lib/scene/pick";
 import { labelPlacesOf } from "@/lib/scene/projection";
 import { whatIsDrawnOf } from "@/lib/scene/what-is-drawn";
 import type { Cursor, StageStore } from "@/lib/scene/stage-store";
 import { projectOf } from "@/lib/stores/project-store";
-import { layoutOf } from "@/lib/stores/results-store";
+import { layoutOf, stringsOnTheRoofOf } from "@/lib/stores/results-store";
 import { cameraOf, draftOf, draggingOf, lensOf, selectionOf, showsSunPathOf, toReviewOf } from "@/lib/stores/view-store";
 import { withDraftAt, withObstacleReplaced } from "@/lib/studio/obstacle-fields";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
@@ -31,6 +31,7 @@ import { SceneCanvas } from "./SceneCanvas";
 import { ShadowOutlines } from "./ShadowOutlines";
 import { SunLight } from "./SunLight";
 import { SunPath } from "./SunPath";
+import { canHover, oncePerFrame } from "./pointer";
 import { useGlassOfTheStage, useStringsShown } from "./use-strings";
 
 type Props = {
@@ -67,7 +68,7 @@ export function Scene({ onContextLost, stage }: Props) {
   const glass = useGlassOfTheStage();
   const strings = useStringsShown();
   const drawn = whatIsDrawnOf(useView(lensOf), useView(cameraOf));
-  const { view, project: store } = useStores();
+  const { view, project: store, results } = useStores();
   const roof = project?.roof ?? null;
   const flushClearance = project?.array.flush_clearance_m ?? 0.1;
   const frame = useMemo(() => (roof ? frameOf(roof) : null), [roof]);
@@ -75,6 +76,25 @@ export function Scene({ onContextLost, stage }: Props) {
   // The inverters of the chosen option, while its strings are on the roof (plan/phase-07-plan.md, decision 13).
   const inverters = strings?.option.system.inverters ?? null;
   const markers = useMemo(() => (inverters && frame ? inverterMarkersOf(inverters, frame.heightAt) : []), [inverters, frame]);
+  const idxs = useMemo(() => layout?.layout.modules.map((module) => module.idx) ?? [], [layout]);
+  // The strings traced and selected, by their positions in wired order: a line through each (decision 13).
+  const traces = useMemo(
+    () => (strings ? strings.lit.flatMap((label) => strings.strings.filter((string) => string.label === label).map((string) => string.modules)) : []),
+    [strings],
+  );
+  // On a device that can hover, the string under the pointer is traced, read once a frame; on touch a tap selects it.
+  const hovers = useMemo(() => canHover(), []);
+  const trace = useMemo(
+    () =>
+      oncePerFrame<number | null>((instanceId) => {
+        // Read on the frame from the stores: the strings and the layout of that moment.
+        const wired = stringsOnTheRoofOf(results.getState());
+        const idx = instanceId === null ? undefined : layoutOf(results.getState())?.layout.modules[instanceId]?.idx;
+        const string = wired && idx !== undefined ? stringOfPosition(wired, idx) : null;
+        view.getState().traceString(string?.label ?? null);
+      }),
+    [view, results],
+  );
   // The labels of the roof's edges, the chips of the inverters, and the callout of what is selected (a kept-clear area, an obstacle, a
   // draft obstacle, a module, the roof), anchored about the origin of the scene as the building is; the
   // points the handles of the selected obstacle are placed by, of the obstacle as the pointer has it.
@@ -92,12 +112,15 @@ export function Scene({ onContextLost, stage }: Props) {
       const handles = dragging?.by === "move" ? [] : handlePointsOf(obstacle, frame.heightAt).map(({ id, at }): Anchor => ({ words: "", at: about(at), kind: "handle", id }));
       return [...labels, callout(anchorOfObstacle(obstacle, frame.heightAt)), ...handles];
     }
+    const string = selection?.kind === "string" ? strings?.strings.find((one) => one.label === selection.label) : undefined;
+    const middle = string && layout ? anchorOfString(string, layout.layout.modules, frame.heightAt) : null;
+    if (middle) return [...labels, callout(middle)];
     const position = selection?.kind === "module" ? layout?.layout.modules[selection.index] : undefined;
     if (position) return [...labels, callout(anchorOfModule(position, frame.heightAt))];
     const part = selection?.kind === "keepout" ? layout?.layout.keepout[selection.index] : undefined;
     const hung = part ? anchorOf(part) : null;
     return hung ? [...labels, callout([hung[0], hung[1], frame.heightAt(hung)])] : labels;
-  }, [roof, frame, layout, selection, draft, dragging, drawn.edgeLabels, markers]);
+  }, [roof, frame, layout, selection, draft, dragging, drawn.edgeLabels, markers, strings]);
 
   if (!roof || !frame || !about) return null;
   const [cx, cy] = frame.centroid;
@@ -114,7 +137,8 @@ export function Scene({ onContextLost, stage }: Props) {
   function pressed(picked: Picked, event?: ThreeEvent<MouseEvent>) {
     const at = draft && event && ON_THE_ROOF.has(picked.what) ? onTheRoof(event) : null;
     if (draft && at) return view.getState().setDraft(withDraftAt(draft, at));
-    view.getState().select(selectionOfPick(picked));
+    // In the Strings lens a press on a position a string wires selects the string (decision 13).
+    view.getState().select(strings ? selectionOfPickedString(picked, idxs, strings.strings) : selectionOfPick(picked));
   }
 
   /** What is under the pointer says so, with the cursor it wants (plan step 17). */
@@ -154,6 +178,8 @@ export function Scene({ onContextLost, stage }: Props) {
             onOverModules={over("modules", "pointer")}
             onWrite={COUNTS_MODULE_WRITES ? stage.getState().countModuleWrite : undefined}
             glassColours={glass}
+            onTraceModule={strings && hovers ? trace : undefined}
+            traces={traces}
           />
         ) : null}
         {markers.length ? <InverterMarkers markers={markers} /> : null}

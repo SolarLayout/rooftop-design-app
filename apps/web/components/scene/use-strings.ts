@@ -5,23 +5,16 @@ import { useShallow } from "zustand/react/shallow";
 import { useResults, useView } from "@/components/shell/stores";
 import type { DesignOption, PVString } from "@/lib/api";
 import { shadeColoursOf } from "@/lib/scene/shade-colours";
-import { stringColoursOf, stringsOfTheRunOf, type Colouring } from "@/lib/scene/string-colours";
-import { chosenOptionOf, designEditOf, designOf, layoutEditOf, layoutOf } from "@/lib/stores/results-store";
+import { stringColoursOf, type Colouring } from "@/lib/scene/string-colours";
+import { chosenOptionOf, layoutOf, stringsOnTheRoofOf } from "@/lib/stores/results-store";
 import { litStringsOf, stringsShownByOf } from "@/lib/stores/view-store";
 import { useShadeMapShown } from "./use-shade-map";
 
 /** The chosen option and its strings, when the run is of the layout shown (plan/phase-07-plan.md, decision 12); null otherwise. */
 export function useStringsOfTheRun(): { option: DesignOption; strings: PVString[] } | null {
-  const design = useResults(designOf);
-  const runEdit = useResults(designEditOf);
-  const layout = useResults(layoutOf);
-  const layoutEdit = useResults(layoutEditOf);
   const option = useResults(chosenOptionOf);
-  return useMemo(() => {
-    if (!design || !layout || !option) return null;
-    const strings = stringsOfTheRunOf({ option, runEdit, layoutEdit, runPositions: design.layout.modules.length, positions: layout.layout.modules.length });
-    return strings ? { option, strings } : null;
-  }, [design, runEdit, layout, layoutEdit, option]);
+  const strings = useResults(stringsOnTheRoofOf);
+  return useMemo(() => (option && strings ? { option, strings } : null), [option, strings]);
 }
 
 export type StringsShown = { option: DesignOption; strings: PVString[]; colouring: Colouring; lit: readonly string[] };

@@ -5,6 +5,7 @@
 // whoever brings it: a late answer never replaces a newer one.
 import { createStore } from "zustand/vanilla";
 import type { DesignProgress, DesignResult, LayoutResponse, SunResponse } from "../api";
+import { stringsOfTheRunOf } from "../scene/string-colours";
 import type { SunTime } from "./view-store";
 
 /** Waiting: a design run that is asked for and has not begun, because more edits may follow. */
@@ -214,6 +215,22 @@ export function chosenOptionOf(state: ResultsState) {
   const design = state.design.value;
   if (!design || design.chosen_option === null) return null;
   return design.options.find((option) => option.key === design.chosen_option) ?? null;
+}
+
+/**
+ * The chosen option's strings, while the run is of the layout shown (plan/phase-07-plan.md, decision 12): its edit
+ * not older than the layout's and its count of positions the same. Null otherwise, and before a run.
+ */
+export function stringsOnTheRoofOf(state: ResultsState) {
+  const { layout, design } = state;
+  if (!layout.value || !design.value) return null;
+  return stringsOfTheRunOf({
+    option: chosenOptionOf(state),
+    runEdit: design.edit,
+    layoutEdit: layout.edit,
+    runPositions: design.value.layout.modules.length,
+    positions: layout.value.layout.modules.length,
+  });
 }
 
 /** The read-outs of the layout: of the newer of the two answers that carry them. */

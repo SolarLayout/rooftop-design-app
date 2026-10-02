@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import type { PlacedModule, Roof } from "../api";
-import { anchorOfModule, anchorOfRoof, calloutOfModule, calloutOfRoof, isAPress, selectionOfPick } from "./pick";
+import type { CableRow, PlacedModule, Roof } from "../api";
+import { anchorOfModule, anchorOfRoof, anchorOfString, calloutOfModule, calloutOfRoof, calloutOfString, isAPress, selectionOfPick, selectionOfPickedString, stringOfPosition } from "./pick";
 
 // Selection by raycast (plan/phase-05-plan.md, step 17, decision 10): what a press on each thing of the
 // scene selects, and the callouts of a module and of the roof.
@@ -97,5 +97,54 @@ describe("the callout of the roof", () => {
   test("is hung at the roof's centroid, on its surface", () => {
     expect(anchorOfRoof(DEMO.outline, FLAT)).toEqual([45, 20, 0]);
     expect(anchorOfRoof(DEMO.outline, ([, y]) => y / 10)).toEqual([45, 20, 2]);
+  });
+});
+
+// A string of the chosen option, pressed in the Strings lens (plan/phase-07-plan.md, step 15, decision 13; the board
+// "Strings on the roof"): S12 of the demo's option A, its cable from the engine's schedule, cut to three modules.
+const S12 = { label: "S12", modules: [10, 12, 11], inverter: 1, mppt: 3 };
+const S12_CABLE: CableRow = { string: "S12", inverter: "INV-1", mppt: 3, modules: 29, voc_cold_v: 1480, isc_a: 14.3, length_m: 93.2, size: "4 mm² Cu, 1500 V DC" };
+const at = (idx: number, x: number): PlacedModule => ({
+  ...MODULE,
+  idx,
+  outline: [
+    [x + 1, 7],
+    [x + 1, 9],
+    [x, 9],
+    [x, 7],
+  ],
+});
+
+describe("the string of a position", () => {
+  const strings = [{ ...S12, label: "S1", modules: [0, 1] }, S12];
+
+  test("is the string that wires it; a position not used has none", () => {
+    expect(stringOfPosition(strings, 12)).toBe(S12);
+    expect(stringOfPosition(strings, 0)?.label).toBe("S1");
+    expect(stringOfPosition(strings, 5)).toBeNull();
+  });
+
+  test("a press on a used position selects its string; on one not used, the module, as in every lens", () => {
+    const idxs = [0, 1, 5, 10, 11, 12];
+    expect(selectionOfPickedString({ what: "module", instanceId: 5 }, idxs, strings)).toEqual({ kind: "string", label: "S12" });
+    expect(selectionOfPickedString({ what: "module", instanceId: 2 }, idxs, strings)).toEqual({ kind: "module", index: 2 });
+    expect(selectionOfPickedString({ what: "roof" }, idxs, strings)).toEqual({ kind: "roof" });
+    expect(selectionOfPickedString({ what: "module", instanceId: undefined }, idxs, strings)).toBeNull();
+  });
+});
+
+describe("the callout of a string", () => {
+  test("its number, its inverter and its MPPT; its modules, its Voc cold and its metres of cable, from the cable schedule", () => {
+    expect(calloutOfString(S12, S12_CABLE)).toEqual({ title: "String 12 · INV-1, MPPT 3", detail: "29 modules · Voc cold 1,480 V · 93 m of cable" });
+  });
+
+  test("without its row of the schedule, the modules it wires alone", () => {
+    expect(calloutOfString(S12, undefined)).toEqual({ title: "String 12 · INV-1, MPPT 3", detail: "3 modules" });
+  });
+
+  test("is hung over the module of the string nearest its middle", () => {
+    const modules = [at(10, 0), at(11, 4), at(12, 2)];
+    expect(anchorOfString(S12, modules, FLAT)).toEqual(anchorOfModule(modules[2], FLAT));
+    expect(anchorOfString({ ...S12, modules: [] }, modules, FLAT)).toBeNull();
   });
 });

@@ -64,3 +64,21 @@ export function moduleMatrixOf({ centre, width, length, tiltDeg, azimuthDeg }: P
   const at = new Vector3(px, py, pz).addScaledVector(normal, lift);
   return new Matrix4().compose(at, turn, new Vector3(Math.max(0.01, width - inset), thickness, Math.max(0.01, length - inset)));
 }
+
+/** Metres the line through a string stands over the middles of its modules: clear of the glass, which lies a few centimetres over the centre. */
+export const TRACE_LIFT = 0.06;
+
+/**
+ * The line through a string traced or selected (plan/phase-07-plan.md, decision 13): the middles of its positions in
+ * the order they are wired, lifted over the glass, in the engine's metres. *idxs* is the idx of each placement; a
+ * position the layout shown has not is passed over.
+ */
+export function traceLineOf(placements: readonly Placement[], idxs: readonly number[], wired: readonly number[]): XYZ[] {
+  const indexOf = new Map(idxs.map((idx, index) => [idx, index]));
+  return wired.flatMap((idx) => {
+    const placement = placements[indexOf.get(idx) ?? -1];
+    if (!placement) return [];
+    const [x, y, z] = placement.centre;
+    return [[x, y, z + TRACE_LIFT] satisfies XYZ];
+  });
+}

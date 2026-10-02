@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { Matrix4, Vector3 } from "three";
 import type { PlacedModule } from "../api";
-import { moduleMatrixOf, placementOf, type Placement } from "./modules";
+import { moduleMatrixOf, placementOf, TRACE_LIFT, traceLineOf, type Placement } from "./modules";
 
 // Every position of /layout as a tilted quad (plan/phase-05-plan.md, step 7, decision 2): from its plan
 // footprint, its tilt, its azimuth and its heights. The numbers are the engine's for the demo roof.
@@ -109,5 +109,25 @@ describe("the matrix of a position", () => {
     expect(glass.sub(frame).length()).toBeCloseTo(0.03, 6);
     expect(scale.x).toBeCloseTo(1.133 - 0.04, 3);
     expect(scale.y).toBeCloseTo(0.01, 6);
+  });
+});
+
+// The line through a string traced or selected (plan/phase-07-plan.md, decision 13): through the middles of its
+// modules, in the order they are wired, just over the glass.
+describe("the line through a string", () => {
+  const placement = (x: number): Placement => ({ centre: [x, 2, 1], width: 1, length: 2, tiltDeg: 15, azimuthDeg: 180 });
+
+  test("goes through the middles of its positions in wired order, lifted over the glass, found by idx", () => {
+    const placements = [placement(0), placement(1), placement(2)];
+    const idxs = [7, 8, 9];
+    expect(traceLineOf(placements, idxs, [9, 7, 8])).toEqual([
+      [2, 2, 1 + TRACE_LIFT],
+      [0, 2, 1 + TRACE_LIFT],
+      [1, 2, 1 + TRACE_LIFT],
+    ]);
+  });
+
+  test("passes over a position the layout shown has not", () => {
+    expect(traceLineOf([placement(0)], [7], [7, 40])).toEqual([[0, 2, 1 + TRACE_LIFT]]);
   });
 });
