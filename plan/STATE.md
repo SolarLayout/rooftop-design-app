@@ -3,8 +3,9 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-02, session 11, in Phase 7: the plan and its six boards approved; #53 (the voltage, the series range, the
-sizing) merged. `main` is green.
+**Last updated:** 2026-10-02, session 11, at the close of Phase 7: #53 (the voltage, the series range, the sizing), #54 (the
+options and your own), #55 (the strings on the roof), #56 (the inverter, its limits, the MPPT loading) and #57 (the states,
+the phone) are merged. `main` is green.
 
 ## Where we are
 
@@ -18,13 +19,12 @@ sizing) merged. `main` is green.
 | 4.5 Caching of the checks | Done (session 8: #39, #40, #41) | What exists, the numbers before and after, what was found: `phase-04b-test-caching.md`, "As built". How it was built: `phase-04b-plan.md` |
 | 5 Studio, 3D roof, Roof and Array lenses | Done (session 9: #42 to #47) | What exists, what was decided, what was found: `phase-05-studio-roof-array.md`, "As built". How it was built: `phase-05-plan.md` |
 | 6 Studio, Sun lens | Done (session 10: #48 to #52) | What exists, what was decided, what was found: `phase-06-studio-sun.md`, "As built". How it was built: `phase-06-plan.md` |
-| 7 Studio, Strings lens | In progress (session 11): plan and boards approved; #53 merged (part 1 of 5) | How it is built: `phase-07-plan.md` |
+| 7 Studio, Strings lens | Done (session 11: #53 to #57) | What exists, what was decided, what was found: `phase-07-studio-strings.md`, "As built". How it was built: `phase-07-plan.md` |
 | 8 to 11 | Not started | |
 
 ## In flight
 
-Phase 7, part 2 (`feat/phase-7-options`): the custom option's faults fixed in the engine, the strings that fit per length, the custom
-simulated apart, the captions; an option chosen without a run; the option cards; your own added, changed, removed.
+Nothing. No branch stands on `main`; `main` is green.
 
 ## What the web app has today
 
@@ -42,7 +42,7 @@ simulated apart, the captions; an option chosen without a run; the option cards;
 | The places that have an address: workspaces, lenses, items of Handover | `apps/web/lib/routes.ts` |
 | The shell: top bar, navigation, project switcher, state of saving, vitals, notes; the frame of the Studio | `apps/web/components/shell`; around `apps/web/app/(workspaces)` |
 | The stores for React, and the hooks that read them | `apps/web/components/shell/stores.tsx` |
-| Routes | `/` (a placeholder with "Find my roof"), `/find` (the map, the search, the outline), `/studio/[lens]` (Roof, Array and Sun built; Strings says not built yet), `/performance`, `/handover/[item]` (the shell, with placeholders inside) |
+| Routes | `/` (a placeholder with "Find my roof"), `/find` (the map, the search, the outline), `/studio/[lens]` (Roof, Array, Sun and Strings built), `/performance`, `/handover/[item]` (the shell, with placeholders inside) |
 | The map: the provider, Esri, the search's reading of what is typed, the scale bar, the states without a map | `apps/web/lib/map` |
 | The outline: the frame of metres, the measures, snapping, typed lengths, the rectangle, the history, the nudge, the obstacles, the roof by hand, the reducer | `apps/web/lib/outline` |
 | Find and outline: the screen, the map (MapLibre), the search, the outline drawn on the map, the panel, the tools (the ways to outline while the roof is open; the obstacles once it is closed), the height dialog, the obstacle list, the roof type, Build; the roof by hand and the plan drawn without a map | `apps/web/components/find` |
@@ -50,6 +50,9 @@ simulated apart, the captions; an option chosen without a run; the option cards;
 | The Studio: the stage (title, read-outs, text equivalent, the plan without WebGL, labels, callout, handles, the chip of a failed layout), the view controls, the Roof lens inspector (the roof, the obstacles, the heights to review), the Array lens inspector (the module card, mounting, spacing, the window), undo and redo by key | `apps/web/components/studio`; the words and the fields in `apps/web/lib/studio`; `apps/web/lib/roof-card.ts` |
 | The Sun lens: the time on the stage of every lens (the pill) and the timeline, play, the keys, the day; the Sun at the time; shading over the year; the shade map and its legend; On the roof; the states | `components/studio/Time.tsx`, `SunInspector.tsx`, `SunShading.tsx`, `ShadeLegend.tsx`, `SunMarks.tsx`; `lib/studio/sun-time.ts`, `play.ts`, `sun-figures.ts` |
 | The scene's sun: the day of `/sun` looked up at the view's hour; the light held to the engine's shadows (the bias) and to the palette (no tone mapping, the sun and the sky to π); the sun path; the engine's shadow outlines; the modules coloured per instance by the shade map | `components/scene/SunLight.tsx`, `SunPath.tsx`, `ShadowOutlines.tsx`, `use-sun.ts`, `use-shade-map.ts`; `lib/scene/sun-day.ts`, `sun-light.ts`, `sun-path.ts`, `sun-marks.ts`, `shadow-outlines.ts`, `shade-map.ts` |
+| The Strings lens: the inverter (Replace from an OND, its limits and cabling), the system voltage (a decision card before one), modules in series, the options and your own, the MPPT loading, the sizing temperatures and the Voc coefficient; its states | `components/studio/StringsInspector.tsx`, `InverterCard.tsx`, `SystemVoltage.tsx`, `SeriesRange.tsx`, `StringOptions.tsx`, `MpptTable.tsx`, `SizingTemperatures.tsx`, `InverterLimits.tsx`; `lib/studio/strings-view.ts`, `series-bar.ts`, `option-cards.ts`, `custom-fields.ts`, `sizing-fields.ts`, `inverter-fields.ts`, `mppt-table.ts` |
+| The strings on the roof: the glass by string, MPPT or inverter, the legend, the inverters, a string traced and selected | `lib/scene/string-colours.ts`, `string-legend.ts`, `inverter-markers.ts`; `components/scene/InverterMarkers.tsx`; `components/studio/StringLegend.tsx`, `InverterChips.tsx` |
+| What an edit asks for: the layout only for the roof, the array or the module; nothing for an option chosen | `lib/flow/edit-parts.ts` |
 | Import a drawing (KMZ, KML, DXF with its units and its place) from the project switcher | `apps/web/components/shell/ImportDrawing.tsx`; `apps/web/lib/studio/import-drawing.ts` |
 | Overture's footprints: the pinned release, the ring of a footprint | `apps/web/lib/map/overture.ts`; the extract tool `tools/footprints.ts`; the fixture `e2e/fixtures/footprints-pune.pmtiles` |
 | MapLibre's worker, served by the app | `apps/web/public/maplibre-gl`, copied by `tools/vendor-maplibre.ts` |
@@ -79,9 +82,8 @@ changed; an export 0.2 to 0.9 s after a run.
 
 ## Next, in order
 
-1. Phase 7: the Studio's Strings lens (`plan/phase-07-studio-strings.md`): the plan first, the way `phase-06-plan.md` was
-   written, then the boards it lacks, then the pull requests. The shade map's selected module already says its string's
-   shade (`Option.system.strings[].shade_pct`); strings are not drawn yet. Work order: `plan/resume/010-phase-7-studio-strings.md`.
+1. Phase 8, Performance (`plan/phase-08-performance.md`): the plan first, the way `phase-07-plan.md` was written, then the boards it
+   lacks, then the pull requests. The resume prompt is written when the owner asks.
 2. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
 3. In parallel with any phase: the screens still to draw (Phase 0).
 
@@ -97,7 +99,7 @@ changed; an export 0.2 to 0.9 s after a run.
 | bun, uv, Python | bun 1.3.14; uv; Python 3.12.13, the build that uv manages (`apps/api/.python-version`, `apps/api/pyproject.toml`) |
 | Playwright | `@playwright/test` 1.52.0; its browser (chromium-1169) is already installed. `@axe-core/playwright` 4.13.0 |
 | Baselines of the screens | `e2e/baselines/darwin`, made on this machine. Renew with `bun tools/with-node.ts playwright test <name> --update-snapshots` in `e2e/`, after looking at the new picture |
-| `bun check` | Every step a turbo task, skipped when its inputs have not changed since it was last green (`.turbo/`); the summary says which and why. Unchanged tree: under 2 s. Everything changed, or `--fresh`: about 15 minutes here (pytest 118 s untraced, 139 s when testmon's data is rebuilt; the browser tests 814 s, 1,345 of them, since the Studio draws in software WebGL on three sizes at once). Inside pytest, testmon runs only the tests a change can have changed, plus the sentinel `test_demo_numbers.py`; a change to the check's own code (`tools/check.ts`, `tools/check/**`) runs everything. While the browser tests run, nothing of `apps/web` or `apps/api` may be edited: the test stack reloads them live, and the browser tests would see the half-made change; while the proofs run (the last step), nothing at all, because they copy the working tree into their worktree. Drafts go to the scratchpad until it ends. Details: `phase-04b-test-caching.md`, "As built" |
+| `bun check` | Every step a turbo task, skipped when its inputs have not changed since it was last green (`.turbo/`); the summary says which and why. Unchanged tree: under 2 s. Everything changed, or `--fresh`: about 22 minutes here (20 to 22 since Phase 7, 1,544 browser tests) (pytest 118 s untraced, 139 s when testmon's data is rebuilt; the browser tests 814 s, 1,345 of them, since the Studio draws in software WebGL on three sizes at once). Inside pytest, testmon runs only the tests a change can have changed, plus the sentinel `test_demo_numbers.py`; a change to the check's own code (`tools/check.ts`, `tools/check/**`) runs everything. While the browser tests run, nothing of `apps/web` or `apps/api` may be edited: the test stack reloads them live, and the browser tests would see the half-made change; while the proofs run (the last step), nothing at all, because they copy the working tree into their worktree. Drafts go to the scratchpad until it ends. Details: `phase-04b-test-caching.md`, "As built" |
 | The check on GitHub | `.turbo/cache` restored from the most recent run of the branch or of `main`, saved by every run; a push to `main` runs `--fresh`; pytest runs whole and untraced there (`ROOFTOP_CHECK_SELECT=0`). A push that changes a document alone: about 25 s in all |
 | Esri key | In `apps/web/.env.local` as `NEXT_PUBLIC_ESRI_API_KEY`. Never read, print or commit the file. Referrers: `http://localhost:4700`, `http://127.0.0.1:4700`. Expires about 28 Sep 2027 |
 | Design canvas | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy. 21 boards, the same as `docs/design/mockups`. To add or change a board: read the canvas itself (not only a file of it), then publish from a folder shaped `project/<name>` in the scratchpad: `root` that folder, `file_path` its `project/canvas.json`, the boards in `files` by their `project/` paths. A `file_path` outside such a folder lands at the root of the artifact, not under `project/`. The publish is refused by the permission system while the canvas is shared with the link; the owner made it private for the publishes of 2026-09-30 and shares it again after |
@@ -115,7 +117,11 @@ changed; an export 0.2 to 0.9 s after a run.
 | The Layers button of the rail is not there | Phase 11 |
 | A mouse wheel over a DOM handle of the selected obstacle does not reach the canvas: zooming with the pointer exactly on a handle does nothing; the roof beside it zooms | Phase 11, or when the owner asks |
 | The frame rate with 1,068 modules on this machine's GPU: 56 fps while orbiting (the mark was 60), 60.1 while the timeline is dragged, 58.3 while the day plays; a mid laptop has not been measured | When the owner has one at hand |
-| On Bedrock the session has no Artifact tool: the design canvas at claude.ai cannot be read or published from here. The boards are approved from the previews in `docs/design/previews`, and the canvas is behind the repo by ImportHeights with the DXF's place and the six boards of Phase 6 (the redrawn Sun lens and five new) | When a session has the tool again: publish the repo's boards |
+| On Bedrock the session has no Artifact tool: the design canvas at claude.ai cannot be read or published from here. The boards are approved from the previews in `docs/design/previews`, and the canvas is behind the repo by ImportHeights with the DXF's place, the six boards of Phase 6 and the six of Phase 7 (the redrawn Sun and Strings lenses and ten new) | When a session has the tool again: publish the repo's boards |
+| On phone the chip "INV-1" can stand over an edge label of the roof (the demo's 90.0 m) | Phase 11, or when the owner asks |
+| The plan drawn without WebGL shows no strings: the Strings lens there has its inspector alone | Phase 11 |
+| The option captions follow the engine's rule of decision 11 (`phase-07-plan.md`); "Fills the inverter" and "Lower clipping" were the old board's words, kept | The owner may give others |
+| A desktop `.rtd` whose chosen option was its custom one by "n×s×k" opens with the offered option of that key, its custom kept (the custom's key is "custom") | Known |
 | `.github/workflows/e2e.yml` has never been run. It runs on Linux, and the screens have baselines for `darwin` only: its first run will write its own and fail | Phase 11, or when browser tests are wanted in CI |
 | A fresh clone has not been tried | Phase 11 |
 | The sun path's arc reaches the top of the stage at noon, and at 10:30 its marker is off the canvas on desktop: the stage's camera frames the roof lower than the boards' projection. The marker's callout shows only while the marker is on the canvas | Phase 11, or when the owner asks (a framing of the Sun lens) |
@@ -125,14 +131,11 @@ changed; an export 0.2 to 0.9 s after a run.
 | MapLibre counts its zoom on tiles of 512: its zoom 18 is the native zoom 19 of Esri's tiles of 256. A press on the map stops its flight: the map says `aria-busy` while it moves, and a test waits for it | Known; written in the plan |
 | A colour token named like a width utility (`--color-handle` beside `border-handle`) makes Tailwind read the width as a colour: the colour is `--color-handle-fill` | Known; a trap for the next token |
 | The key needs the production address added to its referrers when the app gets one | Deployment |
-| Option captions "Fills the inverter" and "Lower clipping" in the Strings mockup are derived in the web app; the engine does not produce them | Phase 7 |
-| String placement on the roof in the Strings mockup is illustrative | Phase 7 uses the engine's strings |
 | Heights cannot come from a DXF: a layer name may hold neither `=` nor `:`. Every DXF obstacle gets 1.0 m and is listed to review in the Roof lens | Done in #44 as a list to review; a DXF convention for heights is the owner's call |
 | `/layout` has no size limit: a roof of 2 km by 1 km takes 29 s | Phase 11 |
 | The engine places the sun at the middle of the hour for every source. The bundled PVGIS hours agree with the sun at the time stamp itself (GHI, DNI and DHI close to 0.8 W/m2 there, 43.6 W/m2 half an hour later). Not changed; a question for Prasanta | Owner and domain expert |
 | A CSV with GHI alone is split by Erbs: on the Pune year beam 1,435 and diffuse 823 kWh/m2, where PVGIS has 2,000 and 550. The API says so in a note when such a file is loaded | Owner and domain expert; Phase 8 shows the note |
-| Strings are sized with the Voc of the one-diode model, also when the PAN states a coefficient (ABi: stated -0.286, model -0.334 %/degC). Closed in session 11: the desktop app's way and PVsyst's default; a value entered in the Strings lens sizes them instead (`phase-07-plan.md`, decision 6, with the sources) | Closed; Phase 7 builds the field |
-| The names of the demo's equipment are shown as the files state them: "INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560", "WattPower Systems Pvt.Ltd WP-330KTL-H1". The mockups show "Insolation INA-144MHC-TF-560". The module card of the Array lens shows the PAN's names as they are (Phase 5, decision 14) | Phase 7, or the owner gives the names to show |
+| The names of the demo's equipment are shown as the files state them: "INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560", "WattPower Systems Pvt.Ltd WP-330KTL-H1". The mockups show "Insolation INA-144MHC-TF-560". The module card of the Array lens shows the PAN's names as they are (Phase 5, decision 14) | The owner gives the names to show; the Strings lens follows the files too (Phase 7, decision 15) |
 | NASA POWER is asked for the year 2023 and the times of a CSV are read as UTC, as on the desktop; neither can be set in a request | Phase 8, with the weather source |
 | The report (PDF) prints the date of the server's day | Phase 9 |
 | The memo for the shading in the tests (#37, session 7). Measured before: pytest 151 s here; 66 hourly shadings for 15 distinct inputs and 208 simulations for 66; the repeats cost 76 s and 10 s, of which 48 s are the proofs of the memo, of progress reporting and of a fresh server, which must stay without a memo. Now one memo (`apps/api/tests/kept.py`) serves the whole pytest session, the engine tests and the API alike: pytest 122 s here, the demo's shading computed once. On GitHub the same code took 155 s in one run and 279 s in the next, and 274 s after the memo: the runners vary two-fold, so the mark of 6 min 30 s is a poor rule there; the checks of #37 and #38 took 5 min 38 s and 5 min 33 s. Four workers with pytest-xdist would give 66 s here (measured, not adopted: a dependency and a change of its own) | If a check passes the mark again: pytest-xdist, pinned, as a pull request of its own, after the owner's yes. Since Phase 4.5 the mark matters only when `apps/api` changed: a push that leaves it alone skips pytest |
@@ -157,6 +160,7 @@ changed; an export 0.2 to 0.9 s after a run.
 | 8 | 2026-09-30 | `plan/sessions/008/record.md`, `plan/sessions/008/owner-messages.md` |
 | 9 | 2026-09-30 to 2026-10-02 | `plan/sessions/009/record.md`, `plan/sessions/009/owner-messages.md` |
 | 10 | 2026-10-02 | `plan/sessions/010/record.md`, `plan/sessions/010/owner-messages.md` |
+| 11 | 2026-10-02 | `plan/sessions/011/record.md`, `plan/sessions/011/owner-messages.md` |
 
 ## Closed, do not reopen
 

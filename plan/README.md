@@ -26,7 +26,7 @@ Always:
 | 4.5 | Caching of the checks: what has not changed does not run again, here and on GitHub (not a product phase) | `phase-04b-test-caching.md` | done (#39, #40, #41); how: `phase-04b-plan.md` |
 | 5 | Studio: 3D roof, Roof and Array lenses | `phase-05-studio-roof-array.md` | done (#42 to #47); how: `phase-05-plan.md` |
 | 6 | Studio: Sun lens | `phase-06-studio-sun.md` | done (#48 to #52); how: `phase-06-plan.md` |
-| 7 | Studio: Strings lens | `phase-07-studio-strings.md` | planned (`phase-07-plan.md`), waiting for the owner's yes |
+| 7 | Studio: Strings lens | `phase-07-studio-strings.md` | done (#53 to #57); how: `phase-07-plan.md` |
 | 8 | Performance | `phase-08-performance.md` | not started |
 | 9 | Handover and exports | `phase-09-handover.md` | not started |
 | 10 | Home, projects on the device, Present mode | `phase-10-home-projects-present.md` | not started |
