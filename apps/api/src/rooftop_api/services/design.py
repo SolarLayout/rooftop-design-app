@@ -4,6 +4,7 @@ import logging
 import queue
 import threading
 from collections.abc import Callable, Iterator
+from dataclasses import asdict
 
 from fastapi.sse import ServerSentEvent
 
@@ -105,8 +106,13 @@ def result(run: Run, on_progress: Callable[[ProgressEvent], None] | None = None)
         equipment=_equipment(design),
         sizing=_sizing(design),
         series_range=_series_range(design),
+        strings_by_series=[
+            schemas.StringsOfLength.model_construct(**asdict(held))
+            for held in readouts.strings_by_series(design)
+        ],
         options=[_option(design, option) for option in design.options],
         options_note=readouts.options_note(design) if design.options else None,
+        custom_refused=_custom_refused(design),
         chosen_option=design.chosen.key if design.chosen else None,
         no_options=no_options(design),
     )
@@ -184,12 +190,18 @@ def _series_range(design: Design) -> schemas.SeriesRange | None:
     return convert.series_range_from_engine(design.range, readouts.limit_note(design))
 
 
+def _custom_refused(design: Design) -> schemas.Verdict | None:
+    refused = readouts.custom_refused(design)
+    return None if refused is None else schemas.Verdict.model_construct(**asdict(refused))
+
+
 def _option(design: Design, option) -> schemas.Option:
     return convert.option_from_engine(
         option,
         module_area_m2=design.module.area_m2,
         roof_area_m2=design.p.roof.area_m2,
         verdict=readouts.verdict(design, option),
+        caption=readouts.caption(design, option),
         loads=readouts.mppt_loads(design, option),
         bill=readouts.bill_of_materials(design, option),
         cables=readouts.cables(design, option),

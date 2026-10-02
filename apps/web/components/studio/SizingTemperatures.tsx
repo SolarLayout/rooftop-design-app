@@ -49,7 +49,7 @@ export function SizingTemperatures() {
   const row = sizingRowOf(design);
 
   return (
-    <section aria-label="Sizing temperatures" className={classNames("rounded-row border border-line bg-surface-1", isOpen ? "shadow-card" : "shadow-raised")}>
+    <section aria-label="Sizing temperatures" className={classNames("rounded-row border border-line bg-surface-1", isOpen ? "shadow-card" : "shadow-row")}>
       <button type="button" aria-expanded={isOpen} aria-controls={body} className={ROW} onClick={() => setOpen(!isOpen)}>
         <span className={classNames("grow", isOpen ? "font-medium text-text" : "text-text-2")}>Sizing temperatures</span>
         {row ? <span className="type-value-xs whitespace-nowrap">{row}</span> : null}

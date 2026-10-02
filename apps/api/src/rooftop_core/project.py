@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 
@@ -15,7 +16,7 @@ from .errors import MissingEquipmentFile, UnsupportedProjectFormat, WeatherNotLo
 from .geometry import Obstacle, Roof
 from .io.pvsyst import Inverter, Module, parse_ond, parse_pan, read_ond, read_pan
 from .onediode import Coefficients, ModuleModel
-from .options import StringOption, build_options, custom_option
+from .options import CustomMisfit, StringOption, build_options, custom_misfit, custom_option
 from .paths import file_name
 from .placement import ArraySpec, Layout, place
 from .resources import SAMPLE_OND, SAMPLE_PAN, sample_path
@@ -153,6 +154,7 @@ class Design:
         self.pre: Precomputed | None = None
         self.range: SeriesRange | None = None
         self.options: list[StringOption] = []
+        self.custom_misfit: CustomMisfit | None = None  # why the custom option was not simulated
 
     @property
     def default_imax(self) -> float:
@@ -285,27 +287,42 @@ class Design:
             report.begin(progress.OPTIONS, progress.OPTIONS_AT, until=1.0)
             self._build_options(rng, report.part)
         else:
-            self.options = []
+            self.options, self.custom_misfit = [], None
         report.finish(progress.OPTIONS if rng is not None else progress.LOSSES)
         return self.options
 
     def _build_options(self, rng: SeriesRange, on_part: progress.PartCallback | None = None) -> None:
-        def build() -> list[StringOption]:
-            more = 1 if self.p.custom else 0       # the custom option is simulated after the others
-            heard = (lambda done, total: on_part(done, total + more)) if on_part else None
-            options = build_options(self.pre, self.layout, self.module, self.mm, self.inverter, rng,
-                                    self.p.losses, self.p.roof, on_option=heard)
-            if self.p.custom:
-                n, s, k = self.p.custom
-                options.append(custom_option(self.pre, self.layout, self.module, self.mm, self.inverter,
-                                             self.p.losses, self.p.roof, n, s, k,
-                                             "ABCDEFGH"[len(options)]))
-            return options
+        """The options offered, and the custom one after them when it can be built (decision 8).
 
-        self.options = build() if self.memo is None else self.memo.options(memo_mod.options_key(self), build)
+        When no length fits nothing is said of the custom option: no option is built at all.
+        """
+        custom = self.p.custom if rng.ok else None
+        self.custom_misfit = custom_misfit(rng, self.layout, *custom) if custom else None
+        simulated = custom if self.custom_misfit is None else None
+
+        def build() -> list[StringOption]:
+            more = 1 if simulated else 0       # the custom option is simulated after the others
+            heard = (lambda done, total: on_part(done, total + more)) if on_part else None
+            return build_options(self.pre, self.layout, self.module, self.mm, self.inverter, rng,
+                                 self.p.losses, self.p.roof, on_option=heard)
+
+        offered = self._kept(memo_mod.options_key, build)
+        if simulated:
+            n, s, k = simulated
+
+            def build_custom() -> list[StringOption]:
+                return [custom_option(self.pre, self.layout, self.module, self.mm, self.inverter,
+                                      self.p.losses, self.p.roof, n, s, k, "ABCDEFGH"[len(offered)])]
+
+            offered = offered + self._kept(memo_mod.custom_key, build_custom)
+        self.options = offered
         keys = [o.key for o in self.options]
         if self.p.chosen_option not in keys and self.options:
             self.p.chosen_option = self.options[0].key
+
+    def _kept(self, key_of: Callable[[Design], str], build: Callable[[], list[StringOption]]) -> list[StringOption]:
+        """What *build* makes, from the memo under the key *key_of* gives the design, when there is one."""
+        return build() if self.memo is None else self.memo.options(key_of(self), build)
 
     @property
     def chosen(self) -> StringOption | None:

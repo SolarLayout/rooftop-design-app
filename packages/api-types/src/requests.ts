@@ -445,6 +445,8 @@ export interface components {
         DesignResult: {
             /** Chosen Option */
             chosen_option: string | null;
+            /** @description Why the custom option was not simulated; null when it was or there is none */
+            custom_refused: components["schemas"]["Verdict"] | null;
             equipment: components["schemas"]["Equipment"];
             /** Far Shading Note */
             far_shading_note: string;
@@ -458,6 +460,11 @@ export interface components {
             series_range: components["schemas"]["SeriesRange"] | null;
             shading: components["schemas"]["Shading"];
             sizing: components["schemas"]["Sizing"];
+            /**
+             * Strings By Series
+             * @description Each length of the series range; empty without a range or when no length fits
+             */
+            strings_by_series: components["schemas"]["StringsOfLength"][];
             weather: components["schemas"]["WeatherSummary"];
             /** Weather Notes */
             weather_notes: string[];
@@ -1191,6 +1198,11 @@ export interface components {
             bom: components["schemas"]["BomLine"][];
             /** Cable Schedule */
             cable_schedule: components["schemas"]["CableRow"][];
+            /**
+             * Caption
+             * @description What sets the option apart, as in "Recommended" or "Your own"; may be empty
+             */
+            caption: string;
             /** Custom */
             custom: boolean;
             /** Dc Kwp */
@@ -1200,7 +1212,7 @@ export interface components {
             energy: components["schemas"]["Energy"];
             /**
              * Key
-             * @description series x strings x inverters, as in 29x22x1
+             * @description series x strings x inverters, as in 29x22x1; "custom" for the custom option
              */
             key: string;
             /** Letter */
@@ -1822,6 +1834,16 @@ export interface components {
              * @enum {string}
              */
             uc_from: "roof type" | "entered";
+        };
+        /** StringsOfLength */
+        StringsOfLength: {
+            /** N Series */
+            n_series: number;
+            /**
+             * Strings
+             * @description How many strings of n_series modules the roof holds
+             */
+            strings: number;
         };
         /** SummaryRow */
         SummaryRow: {

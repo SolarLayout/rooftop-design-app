@@ -223,7 +223,7 @@ NEITHER, OPTIONS_ONLY, BOTH = (False, False), (False, True), (True, True)
         ("the highest temperature", _set("t_max_override", 45.0), OPTIONS_ONLY),
         ("the rise of the cell", _set("cell_rise_c", 30.0), OPTIONS_ONLY),
         ("the current per MPPT", _set("imax_mppt_override", 30.0), OPTIONS_ONLY),
-        ("a custom option", _set("custom", (20, 2, 1)), OPTIONS_ONLY),
+        ("a custom option", _set("custom", (20, 2, 1)), NEITHER),
         ("the Voc coefficient", _set("voc_coefficient_pct", -0.29), OPTIONS_ONLY),
         ("the inverter", _other_inverter, OPTIONS_ONLY),
         ("the air temperature", _weather(_warmer), OPTIONS_ONLY),
@@ -250,6 +250,32 @@ NEITHER, OPTIONS_ONLY, BOTH = (False, False), (False, True), (True, True)
 )
 def test_a_key_changes_with_what_its_stage_depends_on_and_with_nothing_else(what, change, expected):
     assert _changed(change) == expected, what
+
+
+def _custom_key(project: Project) -> str:
+    design = Design(project)
+    design.generate_layout()
+    design.load_weather()
+    return memo.custom_key(design)
+
+
+def _with_custom(custom, change=lambda project: None) -> Project:
+    project = small_project()
+    project.custom = custom
+    change(project)
+    return project
+
+
+def test_the_custom_option_has_a_key_of_its_own_beside_the_options():
+    """Decision 10: the options are kept without the custom, the custom by the options' key and itself."""
+    key = _custom_key(_with_custom((20, 2, 1)))
+
+    assert key == _custom_key(_with_custom((20, 2, 1)))
+    assert key == _custom_key(_with_custom((20, 2, 1), _set("chosen_option", "custom")))
+    assert key != _custom_key(_with_custom((20, 3, 1)))
+    assert key != _custom_key(_with_custom((20, 2, 1), _set("losses.soiling_pct", 3.0)))
+    assert key != _custom_key(_with_custom((20, 2, 1), _set("roof.parapet_h", 1.2)))
+    assert key not in _keys(_with_custom((20, 2, 1)))
 
 
 def test_the_same_project_has_the_same_keys_in_another_run():
@@ -296,6 +322,21 @@ def test_a_change_of_a_loss_keeps_the_shading_and_simulates_again(shading_runs, 
     assert shading_runs.calls == 1
     assert simulations.calls == 2 * simulated
     assert_same_results(changed, run(project, None))
+
+
+def test_adding_changing_or_removing_the_custom_option_simulates_it_alone(simulations):
+    kept = memo.MemoryMemo()
+    run(small_project(), kept)
+
+    for custom, simulated in [((20, 2, 1), 1), ((20, 3, 1), 1), ((20, 2, 1), 0), (None, 0)]:
+        before = simulations.calls
+        project = _with_custom(custom)
+
+        changed = run(project, kept)
+
+        assert simulations.calls - before == simulated, custom
+        assert [option.custom for option in changed.options][-1] is (custom is not None)
+        assert_same_results(changed, run(copy_of(project), None))
 
 
 def test_a_change_of_the_roof_works_the_shading_out_again(shading_runs):
@@ -352,6 +393,8 @@ EDITS = [
     ("albedo", _set("roof.albedo", 0.6)),
     ("system voltage", _set("system_voltage", 1000.0)),
     ("custom option", _set("custom", (20, 2, 1))),
+    ("another custom option", _set("custom", (21, 2, 1))),
+    ("a custom option that cannot be built", _set("custom", (35, 2, 1))),
     ("taller obstacle", _taller_tank),
     ("east-west", _set("roof.roof_type", "flat_ew")),
     ("no horizon", _weather(_no_horizon)),

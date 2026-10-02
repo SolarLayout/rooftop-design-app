@@ -79,6 +79,11 @@ class SeriesRange(BaseModel):
     limit_note: str
 
 
+class StringsOfLength(BaseModel):
+    n_series: int
+    strings: int = Field(description="How many strings of n_series modules the roof holds")
+
+
 class Verdict(BaseModel):
     """Shown with a tick when ok, with an exclamation mark when not. Never with a cross."""
 
@@ -189,9 +194,14 @@ class SummaryRow(BaseModel):
 class Option(BaseModel):
     """A stringing the user may choose, with its full results."""
 
-    key: str = Field(description="series x strings x inverters, as in 29x22x1")
+    key: str = Field(
+        description='series x strings x inverters, as in 29x22x1; "custom" for the custom option'
+    )
     letter: str
     title: str
+    caption: str = Field(
+        description='What sets the option apart, as in "Recommended" or "Your own"; may be empty'
+    )
     n_series: int
     n_strings: int
     n_inverters: int
@@ -234,8 +244,14 @@ class DesignResult(BaseModel):
     equipment: Equipment
     sizing: Sizing
     series_range: SeriesRange | None
+    strings_by_series: list[StringsOfLength] = Field(
+        description="Each length of the series range; empty without a range or when no length fits"
+    )
     options: list[Option]
     options_note: str | None
+    custom_refused: Verdict | None = Field(
+        description="Why the custom option was not simulated; null when it was or there is none"
+    )
     chosen_option: str | None
     no_options: NoOptions | None
 

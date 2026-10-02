@@ -396,6 +396,44 @@ test.describe("the shell", () => {
     await expectScreen(page, "studio-strings");
   });
 
+  // Your own 26 × 24 × 1 added and chosen (the board "Options and your own").
+  test("studio, the Strings lens, your own", async ({ page }) => {
+    await page.goto("/studio/strings");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await page.getByRole("button", { name: "Add your own" }).filter({ visible: true }).click();
+    const fields = page.getByTestId("custom-fields").filter({ visible: true });
+    for (const [name, value] of [["Series", "26"], ["Strings", "24"]] as const) {
+      await fields.getByRole("textbox", { name }).fill(value);
+      await fields.getByRole("textbox", { name }).press("Tab");
+    }
+    await fields.getByRole("button", { name: "Add" }).click();
+    await expect(page.getByTestId("option-card").filter({ visible: true })).toHaveCount(6, { timeout: RUN });
+    await expect(vitals(page).getByText("607.7")).toBeVisible({ timeout: RUN });
+    await page.getByRole("button", { name: "Change" }).filter({ visible: true }).blur();
+    await page.mouse.move(0, 0);
+    // The focus on the way scrolled what holds the inspector, also where the overflow is hidden: all back but the sheet.
+    await page.evaluate(() =>
+      document.querySelectorAll("*").forEach((node) => {
+        if (node.closest("[data-sheet]")) return;
+        if (node.scrollTop !== 0) node.scrollTop = 0;
+        if (node.scrollLeft !== 0) node.scrollLeft = 0;
+      }),
+    );
+    await sceneSettled(page);
+    await expectScreen(page, "studio-strings-your-own");
+  });
+
+  // At 600 V no string length fits (the board "Options and your own").
+  test("studio, the Strings lens, no string length fits", async ({ page }) => {
+    await page.goto("/studio/strings");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await page.getByRole("radiogroup", { name: "System voltage" }).filter({ visible: true }).getByRole("radio", { name: "600 V" }).click();
+    await expect(page.getByTestId("nothing-fits").filter({ visible: true })).toBeVisible({ timeout: RUN });
+    await page.getByRole("radiogroup", { name: "System voltage" }).filter({ visible: true }).getByRole("radio", { name: "600 V" }).blur();
+    await sceneSettled(page);
+    await expectScreen(page, "studio-strings-nothing-fits");
+  });
+
   test("studio, before a system voltage", async ({ page }) => {
     await page.route("**/api/demo", async (route) => {
       const answer = await route.fetch();
@@ -443,6 +481,8 @@ test.describe("the shell", () => {
   test("import a drawing, a DXF held", async ({ page }) => {
     test.setTimeout(RUN + 30_000);
     await page.goto("/studio/roof");
+    // The picture holds the vitals behind the dialog: the run is waited for, as the baseline has it.
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
     await sceneSettled(page);
     await page.getByRole("banner").getByRole("button", { name: /Pune demo roof/ }).click();
     await page.getByRole("menu", { name: "Project" }).getByRole("menuitem", { name: "Import a drawing" }).click();

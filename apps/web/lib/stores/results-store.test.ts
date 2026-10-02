@@ -410,3 +410,36 @@ describe("another design is opened", () => {
     expect(designOf(store.getState())).toBeNull();
   });
 });
+
+describe("an option chosen (plan/phase-07-plan.md, step 9, decision 3)", () => {
+  test("is the run's chosen option at once: the run's answer holds every option", () => {
+    const results = createResultsStore();
+    results.getState().designBegan(1);
+    results.getState().designArrived(1, design(790));
+
+    results.getState().optionChosen("26x24x1");
+
+    expect(chosenOptionOf(results.getState())?.letter).toBe("B");
+    expect(designEditOf(results.getState())).toBe(1);
+    expect(designStatusOf(results.getState())).toBe("idle");
+  });
+
+  test("a key the run does not hold, or none, leaves the run's own choice", () => {
+    const results = createResultsStore();
+    results.getState().designBegan(1);
+    results.getState().designArrived(1, design(790));
+    const before = designOf(results.getState());
+
+    results.getState().optionChosen("custom");
+    results.getState().optionChosen("");
+
+    expect(designOf(results.getState())).toBe(before);
+    expect(chosenOptionOf(results.getState())?.letter).toBe("A");
+  });
+
+  test("before any run there is nothing to choose in", () => {
+    const results = createResultsStore();
+    results.getState().optionChosen("26x24x1");
+    expect(designOf(results.getState())).toBeNull();
+  });
+});

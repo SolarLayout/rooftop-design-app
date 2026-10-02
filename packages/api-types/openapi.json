@@ -350,6 +350,17 @@
             ],
             "title": "Chosen Option"
           },
+          "custom_refused": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Verdict"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the custom option was not simulated; null when it was or there is none"
+          },
           "equipment": {
             "$ref": "#/components/schemas/Equipment"
           },
@@ -407,6 +418,14 @@
           "sizing": {
             "$ref": "#/components/schemas/Sizing"
           },
+          "strings_by_series": {
+            "description": "Each length of the series range; empty without a range or when no length fits",
+            "items": {
+              "$ref": "#/components/schemas/StringsOfLength"
+            },
+            "title": "Strings By Series",
+            "type": "array"
+          },
           "weather": {
             "$ref": "#/components/schemas/WeatherSummary"
           },
@@ -428,8 +447,10 @@
           "equipment",
           "sizing",
           "series_range",
+          "strings_by_series",
           "options",
           "options_note",
+          "custom_refused",
           "chosen_option",
           "no_options"
         ],
@@ -1965,6 +1986,11 @@
             "title": "Cable Schedule",
             "type": "array"
           },
+          "caption": {
+            "description": "What sets the option apart, as in \"Recommended\" or \"Your own\"; may be empty",
+            "title": "Caption",
+            "type": "string"
+          },
           "custom": {
             "title": "Custom",
             "type": "boolean"
@@ -1981,7 +2007,7 @@
             "$ref": "#/components/schemas/Energy"
           },
           "key": {
-            "description": "series x strings x inverters, as in 29x22x1",
+            "description": "series x strings x inverters, as in 29x22x1; \"custom\" for the custom option",
             "title": "Key",
             "type": "string"
           },
@@ -2055,6 +2081,7 @@
           "key",
           "letter",
           "title",
+          "caption",
           "n_series",
           "n_strings",
           "n_inverters",
@@ -3167,6 +3194,25 @@
           "uc_from"
         ],
         "title": "Sizing",
+        "type": "object"
+      },
+      "StringsOfLength": {
+        "properties": {
+          "n_series": {
+            "title": "N Series",
+            "type": "integer"
+          },
+          "strings": {
+            "description": "How many strings of n_series modules the roof holds",
+            "title": "Strings",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "n_series",
+          "strings"
+        ],
+        "title": "StringsOfLength",
         "type": "object"
       },
       "SummaryRow": {

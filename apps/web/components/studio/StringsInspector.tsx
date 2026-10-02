@@ -3,11 +3,13 @@
 import { useProject, useResults, useStores } from "@/components/shell/stores";
 import { projectOf } from "@/lib/stores/project-store";
 import { chosenOptionOf, designOf, readoutsOf } from "@/lib/stores/results-store";
+import { withCustom, withoutCustom } from "@/lib/studio/custom-fields";
+import { optionCardsOf } from "@/lib/studio/option-cards";
 import { stringsViewOf, type Volts } from "@/lib/studio/strings-view";
 import { InverterCard } from "./InverterCard";
 import { SeriesRange } from "./SeriesRange";
 import { SizingTemperatures } from "./SizingTemperatures";
-import { NothingFits } from "./StringOptions";
+import { NothingFits, OptionCards, OptionsNote, YourOwn } from "./StringOptions";
 import { SystemVoltage, VoltageDecision, WaitingAndDone } from "./SystemVoltage";
 
 /**
@@ -25,6 +27,11 @@ export function StringsInspector() {
   if (!project) return null;
   const view = stringsViewOf({ voltage: project.system_voltage ?? null, design, readouts, option });
   const inverter = design ? { inverter: design.equipment.inverter, current: design.equipment.max_current_per_mppt } : null;
+
+  /** An option chosen is an edit of the document; nothing is run (plan/phase-07-plan.md, decision 3). */
+  function chooseOption(key: string) {
+    store.getState().commit((document) => (document.chosen_option === key ? document : { ...document, chosen_option: key }));
+  }
 
   function choose(volts: Volts) {
     store.getState().commit((document) => (document.system_voltage === volts ? document : { ...document, system_voltage: volts }));
@@ -49,6 +56,13 @@ export function StringsInspector() {
         ) : (
           <>
             <NothingFits view={view} />
+            {view.range && !view.noOptions && design ? (
+              <div className="flex flex-col gap-1.5">
+                <OptionCards cards={optionCardsOf(design)} onChoose={chooseOption} />
+                <YourOwn document={project} design={design} onSave={(custom) => store.getState().commit((document) => withCustom(document, custom))} onRemove={() => store.getState().commit(withoutCustom)} />
+                <OptionsNote note={design.options_note ?? null} />
+              </div>
+            ) : null}
             <SizingTemperatures />
           </>
         )}

@@ -2,7 +2,9 @@
 
 Two stages are worth keeping. The hourly shading of every module takes two thirds of a run and
 depends on the roof, the array, the module and where the sun stands; not on the irradiance, the
-losses or the inverter. The options with their simulations take the rest and depend on everything.
+losses or the inverter. The options with their simulations take the rest and depend on everything
+else. The custom option is kept apart from the options offered (decision 10): adding, changing or
+removing it simulates it alone.
 A key is the fingerprint of what its stage depends on: the same inputs give the same key, in every
 process. What is kept is handed out read-only, so that a result is the same with and without a memo.
 """
@@ -114,7 +116,8 @@ def shading_key(design: Design) -> str:
 
 
 def options_key(design: Design) -> str:
-    """The fingerprint of what the options and their simulations depend on: every input of the engine."""
+    """The fingerprint of what the options offered and their simulations depend on: every input of the
+    engine but the custom option."""
     p, weather = design.p, design.weather
     return _fingerprint(
         "options",
@@ -122,9 +125,14 @@ def options_key(design: Design) -> str:
         {name: getattr(p.roof, name) for name in NOT_FOR_SHADING},
         p.losses,
         _without(design.inverter, NAMES),
-        [p.system_voltage, design.t_min, design.t_max, design.cell_rise, p.custom, p.voc_coefficient_pct],
+        [p.system_voltage, design.t_min, design.t_max, design.cell_rise, p.voc_coefficient_pct],
         hashlib.sha256(pd.util.hash_pandas_object(weather.data, index=True).to_numpy().tobytes()).hexdigest(),
     )
+
+
+def custom_key(design: Design) -> str:
+    """The fingerprint of what the custom option depends on: what the options do, and the custom itself."""
+    return _fingerprint("custom", options_key(design), design.p.custom)
 
 
 def _shading_inputs(design: Design) -> list[Any]:
