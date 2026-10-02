@@ -101,7 +101,7 @@ function Readout({ ref, place, words }: { ref: RefObject<HTMLDivElement | null>;
 function TotalCells({ row, dim }: { row: ChainRow; dim: string | false }) {
   return (
     <>
-      <span className={classNames(LABEL, TOTAL_LINE, "font-semibold text-text")}>{row.label}</span>
+      <span data-testid="step-label" className={classNames(LABEL, TOTAL_LINE, "font-semibold text-text")}>{row.label}</span>
       <span className={classNames(TRACK, "h-5", TOTAL_LINE, dim)}>
         <span className="relative block h-full">
           <TrackMark mark={row.mark} />
@@ -118,7 +118,7 @@ function TotalCells({ row, dim }: { row: ChainRow; dim: string | false }) {
 function StepCells({ row, dim, control, onField, onSwitch }: { row: ChainRow; dim: string | false } & Pick<Props, "control" | "onField" | "onSwitch">) {
   return (
     <>
-      <span className={classNames(LABEL, LINE, "text-text-2")}>{row.label}</span>
+      <span data-testid="step-label" className={classNames(LABEL, LINE, "text-text-2")}>{row.label}</span>
       <Control control={control} onField={onField} onSwitch={onSwitch} />
       <span data-testid="change" className={classNames("area-change", FIGURE, LINE, "flex items-center justify-end text-text", dim)}>
         {row.change}

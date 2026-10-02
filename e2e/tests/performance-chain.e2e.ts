@@ -224,7 +224,7 @@ test.describe("the readout", () => {
     const readout = target.getByTestId("readout");
 
     await expect(readout).toBeHidden();
-    if (isPhone(testInfo.project.name)) await target.getByText("Temperature", { exact: true }).tap();
+    if (isPhone(testInfo.project.name)) await target.getByTestId("step-label").tap();
     else await target.hover();
 
     await expect(readout).toBeVisible();
@@ -233,7 +233,7 @@ test.describe("the readout", () => {
     expect(tip.y + tip.height).toBeLessThanOrEqual(box.y);
     expect(Math.abs(tip.x + tip.width / 2 - (box.x + box.width / 2))).toBeLessThanOrEqual(1);
 
-    if (isPhone(testInfo.project.name)) await target.getByText("Temperature", { exact: true }).tap();
+    if (isPhone(testInfo.project.name)) await target.getByTestId("step-label").tap();
     else await page.mouse.move(0, 0);
     await expect(readout).toBeHidden();
   });
