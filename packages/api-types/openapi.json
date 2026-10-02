@@ -418,6 +418,14 @@
           "sizing": {
             "$ref": "#/components/schemas/Sizing"
           },
+          "strings_by_series": {
+            "description": "Each length of the series range; empty without a range or when no length fits",
+            "items": {
+              "$ref": "#/components/schemas/StringsOfLength"
+            },
+            "title": "Strings By Series",
+            "type": "array"
+          },
           "weather": {
             "$ref": "#/components/schemas/WeatherSummary"
           },
@@ -439,6 +447,7 @@
           "equipment",
           "sizing",
           "series_range",
+          "strings_by_series",
           "options",
           "options_note",
           "custom_refused",
@@ -3179,6 +3188,25 @@
           "uc_from"
         ],
         "title": "Sizing",
+        "type": "object"
+      },
+      "StringsOfLength": {
+        "properties": {
+          "n_series": {
+            "title": "N Series",
+            "type": "integer"
+          },
+          "strings": {
+            "description": "How many strings of n_series modules the roof holds",
+            "title": "Strings",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "n_series",
+          "strings"
+        ],
+        "title": "StringsOfLength",
         "type": "object"
       },
       "SummaryRow": {

@@ -99,6 +99,7 @@ def test_the_result_has_its_parts(demo_result):
         "equipment",
         "sizing",
         "series_range",
+        "strings_by_series",
         "options",
         "options_note",
         "custom_refused",
@@ -138,6 +139,14 @@ def test_the_five_options_of_the_demo(demo_result):
     assert demo_result["chosen_option"] == "29x22x1"
     assert demo_result["no_options"] is None
     assert demo_result["custom_refused"] is None
+
+
+def test_the_strings_the_roof_holds_of_each_length_in_the_range(demo_result):
+    held = demo_result["strings_by_series"]
+
+    assert [length["n_series"] for length in held] == list(range(14, 30))
+    assert held[-1] == {"n_series": 29, "strings": 23}
+    assert held[26 - 14] == {"n_series": 26, "strings": 27}
 
 
 def test_the_energy_of_option_a(option_a):
@@ -368,6 +377,7 @@ def test_without_a_system_voltage_the_layout_and_the_shading_are_there(waiting_r
 def test_without_a_system_voltage_nothing_is_sized_and_nothing_is_chosen(waiting_result):
     assert waiting_result["options"] == []
     assert waiting_result["series_range"] is None
+    assert waiting_result["strings_by_series"] == []
     assert waiting_result["options_note"] is None
     assert waiting_result["chosen_option"] is None
 
@@ -544,6 +554,7 @@ def test_when_no_string_length_fits_the_answer_says_why(client, demo):
 
     assert result["options"] == [] and result["chosen_option"] is None
     assert result["series_range"]["ok"] is False
+    assert result["strings_by_series"] == []
     assert result["no_options"]["code"] == "no_string_length_fits"
     assert result["no_options"]["title"] == "No string length fits this inverter"
     assert result["no_options"]["message"] == result["series_range"]["message"]

@@ -106,6 +106,10 @@ def result(run: Run, on_progress: Callable[[ProgressEvent], None] | None = None)
         equipment=_equipment(design),
         sizing=_sizing(design),
         series_range=_series_range(design),
+        strings_by_series=[
+            schemas.StringsOfLength.model_construct(**asdict(held))
+            for held in readouts.strings_by_series(design)
+        ],
         options=[_option(design, option) for option in design.options],
         options_note=readouts.options_note(design) if design.options else None,
         custom_refused=_custom_refused(design),

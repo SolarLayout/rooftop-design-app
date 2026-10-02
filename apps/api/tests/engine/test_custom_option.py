@@ -145,3 +145,17 @@ def test_without_a_voltage_nothing_is_said_of_the_custom():
     design = demo_with((29, 22, 1), system_voltage=None)
 
     assert design.options == [] and readouts.custom_refused(design) is None
+
+
+# ── the strings the roof holds of each length ────────────────────────────────
+def test_the_roof_of_the_demo_holds_so_many_strings_of_each_length_in_the_range(demo_design):
+    held = readouts.strings_by_series(demo_design)
+
+    assert [length.n_series for length in held] == list(range(14, 30))
+    by_length = {length.n_series: length.strings for length in held}
+    assert (by_length[29], by_length[26], by_length[14]) == (23, 27, 53)
+
+
+def test_no_lengths_without_a_voltage_or_when_no_length_fits():
+    assert readouts.strings_by_series(demo_with(None, system_voltage=None)) == []
+    assert readouts.strings_by_series(demo_with(None, system_voltage=600.0)) == []

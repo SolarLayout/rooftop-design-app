@@ -79,6 +79,11 @@ class SeriesRange(BaseModel):
     limit_note: str
 
 
+class StringsOfLength(BaseModel):
+    n_series: int
+    strings: int = Field(description="How many strings of n_series modules the roof holds")
+
+
 class Verdict(BaseModel):
     """Shown with a tick when ok, with an exclamation mark when not. Never with a cross."""
 
@@ -236,6 +241,9 @@ class DesignResult(BaseModel):
     equipment: Equipment
     sizing: Sizing
     series_range: SeriesRange | None
+    strings_by_series: list[StringsOfLength] = Field(
+        description="Each length of the series range; empty without a range or when no length fits"
+    )
     options: list[Option]
     options_note: str | None
     custom_refused: Verdict | None = Field(

@@ -12,7 +12,7 @@ from .bom import BomLine, CableRow, bom, cable_schedule
 from .export.files import structure_label, summary_rows
 from .options import StringOption
 from .project import Design
-from .stringing import DCAC_TARGET, DCAC_WARN, max_strings_per_inverter, strings_per_mppt
+from .stringing import DCAC_TARGET, DCAC_WARN, form_strings, max_strings_per_inverter, strings_per_mppt
 from .weather import Weather
 
 CHOOSE_VOLTAGE = "Choose a system voltage to size the strings"
@@ -28,6 +28,12 @@ class Verdict:
     ok: bool  # a tick when true, an exclamation mark when not
     title: str
     detail: str
+
+
+@dataclass(frozen=True)
+class StringsOfLength:
+    n_series: int
+    strings: int  # how many strings of n_series modules the roof holds
 
 
 @dataclass(frozen=True)
@@ -104,6 +110,14 @@ def custom_refused(design: Design) -> Verdict | None:
 
 def _count(number: int, thing: str) -> str:
     return f"{number} {thing}" + ("" if number == 1 else "s")
+
+
+def strings_by_series(design: Design) -> list[StringsOfLength]:
+    """How many strings of each length in the series range the roof holds. Empty without a range that fits."""
+    rng = design.range
+    if rng is None or not rng.ok:
+        return []
+    return [StringsOfLength(n, len(form_strings(design.layout, n))) for n in range(rng.n_min, rng.n_max + 1)]
 
 
 def limit_note(design: Design) -> str:

@@ -460,6 +460,11 @@ export interface components {
             series_range: components["schemas"]["SeriesRange"] | null;
             shading: components["schemas"]["Shading"];
             sizing: components["schemas"]["Sizing"];
+            /**
+             * Strings By Series
+             * @description Each length of the series range; empty without a range or when no length fits
+             */
+            strings_by_series: components["schemas"]["StringsOfLength"][];
             weather: components["schemas"]["WeatherSummary"];
             /** Weather Notes */
             weather_notes: string[];
@@ -1824,6 +1829,16 @@ export interface components {
              * @enum {string}
              */
             uc_from: "roof type" | "entered";
+        };
+        /** StringsOfLength */
+        StringsOfLength: {
+            /** N Series */
+            n_series: number;
+            /**
+             * Strings
+             * @description How many strings of n_series modules the roof holds
+             */
+            strings: number;
         };
         /** SummaryRow */
         SummaryRow: {
