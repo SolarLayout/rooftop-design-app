@@ -244,7 +244,7 @@ test.describe("the verdict counts the MPPT loads", () => {
     await expect(cards).toHaveCount(answer.options.length, { timeout: RUN });
     for (const [index, option] of answer.options.entries()) {
       await expect(cards.nth(index).getByRole("img")).not.toHaveAccessibleName(/^(In target|Fits)/);
-      if (option.ok) await expect(cards.nth(index).getByRole("img", { name: option.verdict.title })).toBeVisible();
+      if (option.ok) await expect(cards.nth(index).getByRole("img", { name: "Over the current of an MPPT, or its limit not known: see the MPPT loading" })).toBeVisible();
     }
     const verdict = page.getByTestId("series-verdict").filter({ visible: true });
     await expect(verdict).toContainText(chosenOf(answer).verdict.detail.split(". ").at(-1)!);
