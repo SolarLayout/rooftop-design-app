@@ -41,8 +41,11 @@ export function readOutOf(dayOfYear: number, hour: number, sun: Sun | null): str
   return `${when}, sun ${shown(sun.elevationDeg, 1)}° high, ${bearingOf(sun.azimuthDeg)}`;
 }
 
-/** A mark under the timeline: where it stands on the track, in hours, and what it says. */
-export type Tick = { hour: number; words: string };
+/**
+ * A mark under the timeline: where it stands on the track, in hours, and what it says. Sunrise and sunset
+ * say their time and their word apart too, for where they stand beside the track (tablet).
+ */
+export type Tick = { hour: number; words: string; end?: { clock: string; word: "sunrise" | "sunset" } };
 
 /**
  * The ticks of the timeline (docs/design/components.md, "Timeline (Sun lens)"): sunrise and sunset at the
@@ -53,7 +56,13 @@ export function ticksOf(hours: DayHours, { sunriseH, sunsetH }: Pick<SunDay, "su
   const inside = [window.from, 12, window.to].filter((hour) => hour > hours.from && hour < hours.to).sort((a, b) => a - b);
   const between = [...new Set(inside)].map((hour) => ({ hour, words: hourOf(hour) }));
   if (sunriseH === null || sunsetH === null) return [{ hour: 0, words: "00:00" }, ...between, { hour: 24, words: "24:00" }];
-  return [{ hour: hours.from, words: `${hourOf(sunriseH)} sunrise` }, ...between, { hour: hours.to, words: `sunset ${hourOf(sunsetH)}` }];
+  const rise = hourOf(sunriseH);
+  const set = hourOf(sunsetH);
+  return [
+    { hour: hours.from, words: `${rise} sunrise`, end: { clock: rise, word: "sunrise" } },
+    ...between,
+    { hour: hours.to, words: `sunset ${set}`, end: { clock: set, word: "sunset" } },
+  ];
 }
 
 /** An hour taken to the nearest quarter hour and held inside the hours of the day. */
@@ -120,4 +129,29 @@ export function timeOfKey(key: string, time: SunTime, dayOfYear: number, hours: 
     return { day: next < 1 ? DAYS_IN_YEAR : next > DAYS_IN_YEAR ? 1 : next, hour: time.hour };
   }
   return null;
+}
+
+type Shown = { value: string; unit: string };
+
+/** The tiles of "Sun at": its height and its bearing, each a number and what follows it; null while it is down. */
+export function sunAtOf(sun: Sun | null): { height: Shown; bearing: Shown } | null {
+  if (sun === null || sun.elevationDeg <= 0) return null;
+  const words = bearingOf(sun.azimuthDeg);
+  const [number, ...rest] = words.split("°");
+  const bearing = rest.length ? { value: number, unit: `°${rest.join("°")}` } : { value: words, unit: "" };
+  return { height: { value: shown(sun.elevationDeg, 1), unit: "°" }, bearing };
+}
+
+/** What a day is to the sun at a latitude: the solstices by hemisphere, the equinoxes; null for any other. */
+function whatTheDayIs(dayOfYear: number, lat: number): string | null {
+  if (dayOfYear === 355) return lat >= 0 ? "winter solstice" : "summer solstice";
+  if (dayOfYear === 172) return lat >= 0 ? "summer solstice" : "winter solstice";
+  if (dayOfYear === 80 || dayOfYear === 266) return "equinox";
+  return null;
+}
+
+/** The line under the Sun lens's title: "21 December · winter solstice · shade-free from 09:00 to 16:00". */
+export function sunLineOf(dayOfYear: number, lat: number, window: { from: number; to: number }): string {
+  const what = whatTheDayIs(dayOfYear, lat);
+  return [dateOf(dayOfYear).long, what, `shade-free from ${hourOf(window.from)} to ${hourOf(window.to)}`].filter(Boolean).join(" · ");
 }

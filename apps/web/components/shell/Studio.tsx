@@ -7,8 +7,10 @@ import { LENSES, type Lens } from "@/lib/routes";
 import { LensNav } from "./LensNav";
 import { ArrayInspector } from "@/components/studio/ArrayInspector";
 import { RoofInspector } from "@/components/studio/RoofInspector";
+import { SunInspector } from "@/components/studio/SunInspector";
 import { Stage } from "@/components/studio/Stage";
 import { useHistoryKeys } from "@/components/studio/use-history-keys";
+import { useSunKeys } from "@/components/studio/use-sun-keys";
 import { useSize } from "@/components/studio/use-size";
 import { NotBuiltYet } from "./NotBuiltYet";
 import { useNotesOfTheShell } from "./Shell";
@@ -30,12 +32,15 @@ export function Studio({ lens }: Props) {
   const size = useSize();
   const [stop, setStop] = useState<Stop>("half");
   const name = LENSES.find((one) => one.id === lens)?.name ?? "";
-  const inspector = size === null ? null : lens === "array" ? <ArrayInspector /> : lens === "roof" ? <RoofInspector size={size} /> : <NotBuiltYet />;
+  const inspector =
+    size === null ? null : lens === "array" ? <ArrayInspector /> : lens === "roof" ? <RoofInspector size={size} /> : lens === "sun" ? <SunInspector size={size} /> : <NotBuiltYet />;
 
   // The Studio comes back to the lens that was opened last.
   useEffect(() => view.getState().showLens(lens), [view, lens]);
   // Cmd or Ctrl with Z undoes the last committed edit, in every lens.
   useHistoryKeys();
+  // , and . move the time an hour, [ and ] a day, in every lens (plan/phase-06-plan.md, decision 17).
+  useSunKeys();
 
   return (
     <div className="relative flex min-h-0 grow flex-col desktop:flex-row">

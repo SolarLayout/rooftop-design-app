@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { bearingOf, dateOf, dayOfChoice, dayOfYearOf, daysOf, designDayLineOf, heldHourOf, partsOf, readOutOf, ticksOf, timeOfKey } from "./sun-time";
+import { bearingOf, dateOf, dayOfChoice, sunAtOf, sunLineOf, dayOfYearOf, daysOf, designDayLineOf, heldHourOf, partsOf, readOutOf, ticksOf, timeOfKey } from "./sun-time";
 
 describe("the date of a day of the year", () => {
   test.each([
@@ -50,11 +50,11 @@ const WINDOW = { from: 9, to: 16 };
 describe("the ticks of the timeline", () => {
   test("stand at sunrise, the window's ends, noon and sunset, at the ends of the track", () => {
     expect(ticksOf(PUNE_DEC, SUN_DEC, WINDOW)).toEqual([
-      { hour: 6.75, words: "06:33 sunrise" },
+      { hour: 6.75, words: "06:33 sunrise", end: { clock: "06:33", word: "sunrise" } },
       { hour: 9, words: "09:00" },
       { hour: 12, words: "12:00" },
       { hour: 16, words: "16:00" },
-      { hour: 17.25, words: "sunset 17:27" },
+      { hour: 17.25, words: "sunset 17:27", end: { clock: "17:27", word: "sunset" } },
     ]);
   });
 
@@ -142,5 +142,38 @@ describe("the keys of the time", () => {
 
   test("other keys are none of the time's", () => {
     expect(timeOfKey("a", at(10.5), 355, PUNE_DEC)).toBeNull();
+  });
+});
+
+describe("the tiles of the sun at the time", () => {
+  test("say its height and its bearing, the number apart from its words", () => {
+    expect(sunAtOf({ elevationDeg: 17.972, azimuthDeg: 236.642 })).toEqual({ height: { value: "18.0", unit: "°" }, bearing: { value: "56.6", unit: "° W of south" } });
+  });
+
+  test("on the line, the bearing is its words", () => {
+    expect(sunAtOf({ elevationDeg: 48, azimuthDeg: 180 })?.bearing).toEqual({ value: "due south", unit: "" });
+  });
+
+  test("none while the sun is down", () => {
+    expect(sunAtOf({ elevationDeg: -2, azimuthDeg: 114 })).toBeNull();
+    expect(sunAtOf(null)).toBeNull();
+  });
+});
+
+describe("the line under the Sun lens's title", () => {
+  const WINDOW_9_16 = { from: 9, to: 16 };
+
+  test("says the day, what it is, and the shade-free window", () => {
+    expect(sunLineOf(355, 18.52, WINDOW_9_16)).toBe("21 December · winter solstice · shade-free from 09:00 to 16:00");
+    expect(sunLineOf(172, 18.52, WINDOW_9_16)).toBe("21 June · summer solstice · shade-free from 09:00 to 16:00");
+    expect(sunLineOf(80, 18.52, WINDOW_9_16)).toBe("21 March · equinox · shade-free from 09:00 to 16:00");
+  });
+
+  test("south of the equator the solstices change places", () => {
+    expect(sunLineOf(172, -33.9, WINDOW_9_16)).toBe("21 June · winter solstice · shade-free from 09:00 to 16:00");
+  });
+
+  test("any other day is its date alone", () => {
+    expect(sunLineOf(35, 18.52, { from: 9.25, to: 15.5 })).toBe("4 February · shade-free from 09:15 to 15:30");
   });
 });

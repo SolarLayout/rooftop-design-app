@@ -19,7 +19,7 @@ import {
   sunDayOf,
   sunFailureOf,
 } from "../stores/results-store";
-import { createViewStore } from "../stores/view-store";
+import { createViewStore, sunTimeOf } from "../stores/view-store";
 import { createDesignFlow } from "./design-flow";
 
 type Asked<Answer> = {
@@ -659,6 +659,25 @@ describe("the sun", () => {
 
     expect(suns).toHaveLength(2);
     expect(suns[1].request).toEqual({ lat: 18.52, lon: 73.86, day: 172, step_h: 0.25 });
+  });
+
+  test("a day that comes holds the view's hour inside its hours, to the quarter hour", async () => {
+    const { view, suns } = await opened();
+    view.getState().setSunTime({ day: 172, hour: 5.5 });
+
+    suns[1].answer({ ...SUN, day_of_year: 172, sunrise_h: 6.8, sunset_h: 17.8 });
+    await settled();
+
+    expect(sunTimeOf(view.getState())).toEqual({ day: 172, hour: 7 });
+  });
+
+  test("an hour inside the day that comes is left as it is", async () => {
+    const { view, suns } = await opened();
+
+    suns[0].answer(SUN);
+    await settled();
+
+    expect(sunTimeOf(view.getState())).toEqual({ day: "design_day", hour: 10.5 });
   });
 
   test("a late answer for another place or day is not kept", async () => {

@@ -7,9 +7,10 @@
 import { DESIGN_PAUSE } from "../../components/ui/design-numbers";
 import { api as apiOfTheApp, ApiError, type Api, type Project } from "../api";
 import { CLOCK_OF_THE_BROWSER, type Clock } from "../clock";
-import { QUARTER_HOUR } from "../scene/sun-day";
+import { hoursOf, QUARTER_HOUR } from "../scene/sun-day";
+import { heldHourOf } from "../studio/sun-time";
 import type { ProjectState, ProjectStore } from "../stores/project-store";
-import { sunKeyOf, type Failure, type ResultsStore, type SunKey } from "../stores/results-store";
+import { sunKeyOf, type Failure, type ResultsStore, type SunDay, type SunKey } from "../stores/results-store";
 import type { ViewStore } from "../stores/view-store";
 
 export type FlowApi = Pick<Api, "getDemo" | "computeLayout" | "runDesign" | "computeSun">;
@@ -98,14 +99,20 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
     api
       .computeSun({ lat: key.lat, lon: key.lon, day: key.day, step_h: QUARTER_HOUR }, { signal: call.signal })
       .then(
-        (answer) =>
-          results.getState().sunArrived({
+        (answer) => {
+          const day: SunDay = {
             ...key,
             dayOfYear: answer.day_of_year,
             sunriseH: answer.sunrise_h,
             sunsetH: answer.sunset_h,
             positions: answer.positions.map((position) => ({ hour: position.hour, elevationDeg: position.elevation_deg, azimuthDeg: position.azimuth_deg })),
-          }),
+          };
+          results.getState().sunArrived(day);
+          // The time stays inside the hours of the day it is of (plan/phase-06-plan.md, decision 4).
+          const time = view.getState().sunTime;
+          const held = heldHourOf(time.hour, hoursOf(day));
+          if (results.getState().sun.value === day && held !== time.hour) view.getState().setSunTime({ ...time, hour: held });
+        },
         (error: unknown) => {
           if (!call.signal.aborted) results.getState().sunFailed(key, failureOf(error));
         },

@@ -22,6 +22,7 @@ const STROKED = {
   ),
   building: <path d="M4 20V9l8-5 8 5v11M4 20h16M9 20v-5h6v5" />,
   "chevron-down": <path d="m6 9 6 6 6-6" />,
+  pause: <path d="M8.5 5v14M15.5 5v14" />,
   corners: (
     <>
       <path d="M5 19 8 6l11 3-4 10z" />
@@ -160,10 +161,10 @@ const SIZE: Record<IconSize, string> = {
   22: "size-5.5",
 };
 
-/** The tick is the heaviest; the icons of the navigation, which are larger, the lightest. */
-export type IconStroke = "icon" | "light" | "tick";
+/** Pause and the tick are the heaviest; the icons of the navigation, which are larger, the lightest. */
+export type IconStroke = "icon" | "light" | "tick" | "pause";
 
-const STROKE: Record<IconStroke, string> = { icon: "stroke-icon", light: "stroke-icon-light", tick: "stroke-tick" };
+const STROKE: Record<IconStroke, string> = { icon: "stroke-icon", light: "stroke-icon-light", tick: "stroke-tick", pause: "stroke-pause" };
 
 const isFilled = (name: IconName): name is keyof typeof FILLED => name in FILLED;
 

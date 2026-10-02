@@ -90,7 +90,10 @@ a slider has its label at the left of the value. One line of hint may follow und
 window) has two handles and fills between them; its two values stand at the left, a note ("solar time") at
 the right.
 
-In code: `Slider` and `RangeSlider`; their numbers in `slider-steps.ts`.
+In code: `Slider` and `RangeSlider`; their numbers in `slider-steps.ts`. `useSlide` may hear what is shown while a
+handle moves (`onShow`), and the values again when a drag is given up, for what follows a slider live: the time of the
+sun. `SliderTrack` may fill a span of the scale instead of up to the handle (`fill`: the shade-free window on the
+timeline), and a tick at an end of the track may stand from that end inward (`align`), in text-2 when `strong`.
 
 - The slider is 20 high on desktop and 44 on touch, and all of it takes the pointer: a press brings the
   nearest handle there, and a drag goes on from it.
@@ -209,8 +212,31 @@ high; totals 32 high, Geist 600, with a 2 px marker on the track. Bars 12 high, 
 A legend names gain and loss and says that boxed values can be changed.
 
 ## Timeline (Sun lens)
-Floating bar 64 high: round play button 44, time in display 22 with "solar time", track with the shade-free
-window filled in accent, handle at the time, ticks at sunrise, 09:00, 12:00, 16:00, sunset.
+Floating bar 64 high, `surface-1`, border `line`, radius `radius-bar`, `shadow-float`: round play button 44, time
+in display 22 (`type-lens-touch`) over "solar time", the slider of the time over the day's hours with the
+shade-free window filled in accent, handle at the time, ticks at sunrise, the window's ends (text-2), noon and
+sunset; sunrise and sunset stand from the ends of the track inward ("06:33 sunrise", "sunset 17:27"). On tablet
+they stand beside the track instead, their time over their word, after a line of 36. On phone the timeline is
+the top of the sheet, without the bar: play and the time with "Shade-free 09:00 – 16:00" at the right, the track
+under them with ticks at sunrise, noon and sunset. The boards "Studio, Sun lens" and "Time on the stage".
+
+- The time is held to the day's hours, sunrise to sunset taken to the quarter hour inside them; a step is a
+  quarter hour, Page Up and Page Down an hour. The light follows the handle live; the time is the view's, not the
+  design's.
+- Play moves a quarter hour every 250 ms to sunset and stops; Play at sunset begins at sunrise; under reduced motion
+  an hour a second. A drag, a key or Pause stops it; while it plays the button is Pause, two bars of
+  `--stroke-pause`.
+- Keys in every lens, not while a field, a slider or a menu has the focus: `,` and `.` an hour, `[` and `]` a day.
+  The tooltip of the track names them (`Tooltip` with `shortcuts`).
+- A day the sun stays up or down runs from 00:00 to 24:00, and the line under the time says which.
+
+## Time pill (every lens)
+The time on the stage of the Roof, Array and Strings lenses, as the approved Array boards draw it: a pill of 44
+(48 on tablet), `surface-1`, border `line`, `shadow-raised`: round play 32 (36 on tablet), the day and the time in
+mono ("21 Dec · 10:30"), a short slider of the time (180, 200 on tablet) filled to the time, and "solar time" on
+desktop. Desktop at the bottom left over the vitals, tablet at the bottom left of the stage. On phone it is the
+play button alone, at the top left of the stage, `control`: a press plays and pauses; the time is moved on the
+timeline of the Sun lens. In the Sun lens the timeline stands instead, on tablet and desktop.
 
 ## Map outline tools (Find and outline)
 Corner handle 18 (22 on touch), white with accent border; the corner being edited pulses. Midpoint handle 10,

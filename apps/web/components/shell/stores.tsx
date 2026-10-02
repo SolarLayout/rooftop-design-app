@@ -13,10 +13,14 @@ import {
   newerLayoutNotesOf,
   progressOf,
   readoutsOf,
+  sunDayOf,
   type ResultsState,
   type ResultsStore,
 } from "@/lib/stores/results-store";
 import { createViewStore, type ViewState, type ViewStore } from "@/lib/stores/view-store";
+import { CLOCK_OF_THE_BROWSER } from "@/lib/clock";
+import { hoursOf } from "@/lib/scene/sun-day";
+import { createPlay, type Play } from "@/lib/studio/play";
 import { notesOf, type Note } from "./notes-view";
 import { vitalsOf, type VitalsView } from "./vitals-view";
 
@@ -25,6 +29,8 @@ type Stores = {
   results: ResultsStore;
   view: ViewStore;
   flow: DesignFlow;
+  /** Play of the time: one for the app, so that the pill of every lens and the timeline are one. */
+  play: Play;
 };
 
 const Context = createContext<Stores | null>(null);
@@ -33,8 +39,20 @@ function createStores(): Stores {
   const project = createProjectStore();
   const results = createResultsStore();
   const view = createViewStore();
-  return { project, results, view, flow: createDesignFlow({ project, results, view }) };
+  const play = createPlay({
+    view,
+    clock: CLOCK_OF_THE_BROWSER,
+    hoursOf: () => {
+      const day = sunDayOf(results.getState());
+      return day ? hoursOf(day) : null;
+    },
+    isReduced: () => window.matchMedia(REDUCED_MOTION).matches,
+  });
+  return { project, results, view, flow: createDesignFlow({ project, results, view }), play };
 }
+
+/** What the user's system says of motion (decision 4: under it, play moves an hour a second). */
+const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 
 /**
  * The stores of the design that is open, for the whole app: a roof outlined on the map is the design the
@@ -46,7 +64,10 @@ export function StoresProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     stores.flow.start();
-    return () => stores.flow.stop();
+    return () => {
+      stores.flow.stop();
+      stores.play.stop();
+    };
   }, [stores]);
 
   return <Context.Provider value={stores}>{children}</Context.Provider>;

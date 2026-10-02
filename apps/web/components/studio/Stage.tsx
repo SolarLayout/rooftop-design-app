@@ -17,7 +17,7 @@ import type { Lens } from "@/lib/routes";
 import { projectOf } from "@/lib/stores/project-store";
 import { layoutOf, readoutsOf, sunDayOf } from "@/lib/stores/results-store";
 import { draftOf, selectionOf, sunTimeOf, toReviewOf } from "@/lib/stores/view-store";
-import { readOutOf } from "@/lib/studio/sun-time";
+import { readOutOf, sunLineOf } from "@/lib/studio/sun-time";
 import { useSun } from "@/components/scene/use-sun";
 import { Callout } from "./Callout";
 import { Handles } from "./Handles";
@@ -26,6 +26,8 @@ import { LayoutFailed } from "./LayoutFailed";
 import { PlanFallback } from "./PlanFallback";
 import { lineOf } from "./stage-view";
 import { useEscapeClears } from "./use-escape-clears";
+import { TimePill, SunTimeline } from "./Time";
+import { useSize } from "./use-size";
 import { ViewControls } from "./ViewControls";
 
 // The scene draws with WebGL in the browser alone: it is loaded there, never on the server.
@@ -41,6 +43,14 @@ const CONTEXT_LOST = "The browser stopped drawing the roof in 3D.";
 
 /** The view controls stand at the top right of the stage, as the boards of each size place them. */
 const VIEW_CONTROLS = "top-1 right-3 tablet:top-4 tablet:right-5 desktop:top-5";
+
+/**
+ * The time on the stage (the boards "Time on the stage" and "Studio, Sun lens"): the pill of every lens at the
+ * top left on phone, at the bottom left of the stage on tablet, over the vitals on desktop (the panel's 20,
+ * the vitals' 78 and 18 between: 116); the timeline of the Sun lens across the stage there instead.
+ */
+const TIME_PILL = "absolute top-1 left-3 z-stage-overlay tablet:top-auto tablet:bottom-5 tablet:left-5 desktop:bottom-29 desktop:left-6";
+const TIMELINE = "absolute inset-x-5 bottom-4 z-stage-overlay desktop:bottom-29";
 
 /** The chip of a layout that failed stands under the title, in the middle of the stage: as wide as the board draws it, or as the phone allows. */
 const LAYOUT_FAILED = "absolute inset-x-4 top-16 z-stage-overlay tablet:inset-x-0 tablet:top-20 tablet:mx-auto tablet:w-95 desktop:top-24";
@@ -61,7 +71,15 @@ const CURSOR: Record<Cursor, string | false> = { default: false, pointer: "curso
 export function Stage({ lens, name, className }: Props) {
   const project = useProject(projectOf);
   const obstacles = project?.roof.obstacles.length ?? 0;
-  const line = useResults(useShallow((results) => lineOf(lens, results, obstacles)));
+  const layoutLine = useResults(useShallow((results) => lineOf(lens, results, obstacles)));
+  const sunDay = useResults(sunDayOf);
+  // The Sun lens's line says the day and the window (the board "Studio, Sun lens"), once the day has come.
+  const line =
+    lens === "sun"
+      ? sunDay && project
+        ? { words: sunLineOf(sunDay.dayOfYear, project.roof.lat, { from: project.array.window_start_h, to: project.array.window_end_h }), isUpdating: false }
+        : null
+      : layoutLine;
   const layout = useResults(layoutOf);
   const webGL = useWebGL();
   const [isLost, setLost] = useState(false);
@@ -70,6 +88,7 @@ export function Stage({ lens, name, className }: Props) {
   const cursor = useStore(stage, cursorOf);
   const moduleWrites = useStore(stage, moduleWritesOf);
   const cannotDraw = webGL === false ? NO_WEBGL : isLost ? CONTEXT_LOST : null;
+  const size = useSize();
   useEscapeClears();
 
   return (
@@ -95,6 +114,7 @@ export function Stage({ lens, name, className }: Props) {
       </div>
       <LayoutFailed className={LAYOUT_FAILED} />
       {cannotDraw ? null : <ViewControls stage={stage} className={VIEW_CONTROLS} />}
+      {cannotDraw || size === null ? null : lens === "sun" && size !== "phone" ? <SunTimeline size={size} className={TIMELINE} /> : <TimePill size={size} className={TIME_PILL} />}
       {cannotDraw ? null : ATTRIBUTION ? (
         <p data-testid="stage-attribution" className="pointer-events-none absolute bottom-1 left-4 z-stage-overlay max-w-full truncate type-label-s text-text-on-imagery on-imagery tablet:left-5 desktop:bottom-1.5 desktop:left-6">
           {ATTRIBUTION}
