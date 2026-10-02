@@ -22,8 +22,11 @@ type Props = {
   onOverModules?: (isOver: boolean) => void;
   /** Told each time the matrices are written: the counter of development (plan/phase-06-plan.md, decision 6). */
   onWrite?: () => void;
-  /** The step of every position in the shade map while it is shown; null for the modules' blue (decision 12). */
-  shadeSteps?: readonly number[] | null;
+  /**
+   * The colour of every position's glass while the stage colours it: the shade map's steps, or the strings
+   * (plan/phase-07-plan.md, step 13); null for the modules' blue.
+   */
+  glassColours?: readonly string[] | null;
 };
 
 /** The frame is the module's body; the glass a thinner sheet stacked over it, inset so that the frame shows around it (r3f-notes, fix 10). */
@@ -43,7 +46,7 @@ type SetProps = Press & {
   material: MeshStandardMaterial;
   castShadow: boolean;
   receiveShadow: boolean;
-  /** A colour per instance, over the material's white: the glass's blue or its step of the shade map. */
+  /** A colour per instance, over the material's white: the glass's blue, its step of the shade map or its string's colour. */
   colours?: readonly string[];
 };
 
@@ -66,7 +69,7 @@ function InstancedSet({ placements, thickness, material, castShadow, receiveShad
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placements, thickness, material]);
 
-  // The colours apart from the matrices: the shade map switched on or off writes them alone.
+  // The colours apart from the matrices: the shade map or the strings' colours switched writes them alone.
   useLayoutEffect(() => {
     const instanced = mesh.current;
     if (!instanced || !colours) return;
@@ -105,15 +108,15 @@ function SelectedOutline({ placement }: { placement: Placement }) {
  * answered, the frame casting the shadow and the glass taking it. A press on one selects its position;
  * the selected one is outlined (plan step 17).
  */
-export function Modules({ layout, heightAt, flushClearance, selected, onPressModule, onOverModules, onWrite, shadeSteps = null }: Props) {
+export function Modules({ layout, heightAt, flushClearance, selected, onPressModule, onOverModules, onWrite, glassColours = null }: Props) {
   const placements = useMemo(
     () => layout.modules.map((module) => placementOf(module, layout.kind, heightAt, flushClearance)),
     [layout, heightAt, flushClearance],
   );
   const frame = useMemo(() => new MeshStandardMaterial({ color: PALETTE.moduleFrame, roughness: 0.5, metalness: 0.6, shadowSide: BackSide }), []);
-  // White: each instance takes its colour, the modules' blue or its step of the shade map.
+  // White: each instance takes its colour, the modules' blue, its step of the shade map or its string's.
   const glass = useMemo(() => new MeshStandardMaterial({ roughness: 0.25, metalness: 0.1 }), []);
-  const colours = useMemo(() => glassColoursOf(placements.length, shadeSteps), [placements.length, shadeSteps]);
+  const colours = useMemo(() => glassColoursOf(placements.length, glassColours), [placements.length, glassColours]);
   const chosen = selected === null ? undefined : placements[selected];
 
   return (

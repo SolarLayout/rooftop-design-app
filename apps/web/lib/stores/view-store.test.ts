@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { Obstacle } from "../api";
 import type { DraftObstacle } from "../studio/obstacle-fields";
-import { cameraOf, cameraRequestOf, createViewStore, draftOf, draggingOf, isPlayingOf, isShadeMapShownOf, lensOf, onTheRoofOf, sunTabOf, northRequestOf, selectionOf, showsSunPathOf, sunTimeOf, toReviewOf } from "./view-store";
+import { cameraOf, cameraRequestOf, createViewStore, draftOf, draggingOf, isPlayingOf, isShadeMapShownOf, lensOf, litStringsOf, onTheRoofOf, sunTabOf, northRequestOf, selectionOf, showsSunPathOf, stringColouringOf, stringsShownByOf, sunTimeOf, toReviewOf, tracedStringOf } from "./view-store";
 
 describe("the view", () => {
   test("it begins on the first lens, in 3D, on the design day", () => {
@@ -259,5 +259,82 @@ describe("the drag", () => {
     store.getState().setDragging({ index: 0, by: "move", obstacle: { ...stairRoom, x: 27.5 } });
 
     expect(store.getState()).toBe(before);
+  });
+});
+
+// The strings on the roof (plan/phase-07-plan.md, decisions 12 and 13): coloured in the Strings lens alone, by
+// MPPT at first as the board; a string traced under the pointer and a string selected, of the view.
+describe("the strings on the roof", () => {
+  test("are coloured by MPPT at first, in the Strings lens alone", () => {
+    const store = createViewStore();
+
+    expect(stringColouringOf(store.getState())).toBe("mppt");
+    expect(stringsShownByOf(store.getState())).toBeNull();
+    store.getState().showLens("strings");
+    expect(stringsShownByOf(store.getState())).toBe("mppt");
+  });
+
+  test("the colour switch colours them by string, MPPT or inverter; told again, nothing changes", () => {
+    const store = createViewStore();
+    store.getState().showLens("strings");
+
+    store.getState().colourStringsBy("string");
+    expect(stringsShownByOf(store.getState())).toBe("string");
+    const before = store.getState();
+    store.getState().colourStringsBy("string");
+    expect(store.getState()).toBe(before);
+    store.getState().colourStringsBy("inverter");
+    expect(stringsShownByOf(store.getState())).toBe("inverter");
+  });
+
+  test("leaving the Strings lens takes the colours off, the string traced and the string selected; the colouring is kept for the way back", () => {
+    const store = createViewStore();
+    store.getState().showLens("strings");
+    store.getState().colourStringsBy("string");
+    store.getState().traceString("S12");
+    store.getState().select({ kind: "string", label: "S3" });
+
+    store.getState().showLens("array");
+
+    expect(stringsShownByOf(store.getState())).toBeNull();
+    expect(tracedStringOf(store.getState())).toBeNull();
+    expect(selectionOf(store.getState())).toBeNull();
+    store.getState().showLens("strings");
+    expect(stringsShownByOf(store.getState())).toBe("string");
+  });
+
+  test("leaving another lens keeps what it selected", () => {
+    const store = createViewStore();
+    store.getState().select({ kind: "obstacle", index: 2 });
+    store.getState().showLens("array");
+    expect(selectionOf(store.getState())).toEqual({ kind: "obstacle", index: 2 });
+  });
+
+  test("a string is traced by its label and the trace is let go; the same told again changes nothing", () => {
+    const store = createViewStore();
+    store.getState().showLens("strings");
+
+    store.getState().traceString("S12");
+    expect(tracedStringOf(store.getState())).toBe("S12");
+    const before = store.getState();
+    store.getState().traceString("S12");
+    expect(store.getState()).toBe(before);
+    store.getState().traceString(null);
+    expect(tracedStringOf(store.getState())).toBeNull();
+  });
+
+  test("the strings lit are the one selected and the one traced, once each", () => {
+    const store = createViewStore();
+    store.getState().showLens("strings");
+    expect(litStringsOf(store.getState())).toEqual([]);
+
+    store.getState().select({ kind: "string", label: "S12" });
+    expect(litStringsOf(store.getState())).toEqual(["S12"]);
+    store.getState().traceString("S3");
+    expect(litStringsOf(store.getState())).toEqual(["S12", "S3"]);
+    store.getState().traceString("S12");
+    expect(litStringsOf(store.getState())).toEqual(["S12"]);
+    store.getState().clearSelection();
+    expect(litStringsOf(store.getState())).toEqual(["S12"]);
   });
 });

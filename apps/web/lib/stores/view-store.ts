@@ -2,6 +2,7 @@
 // Nothing of it is a part of the design: it is not in the .rtd document.
 import { createStore } from "zustand/vanilla";
 import type { Lens } from "../routes";
+import type { Colouring } from "../scene/string-colours";
 import { sameObstacle, type Dragging } from "../scene/drag";
 import type { DraftObstacle } from "../studio/obstacle-fields";
 
@@ -25,8 +26,11 @@ export type OnTheRoof = { sunPath: boolean; window: boolean; shadowOutlines: boo
 /** The tab of the Sun lens: its shadows, or the shade map of the modules (decision 16). */
 export type SunTab = "shadows" | "shade-map";
 
-/** What is selected on the roof: the roof, an obstacle, a kept-clear area or a module, by its index in its list. */
-export type Selection = { kind: "roof" } | { kind: "obstacle" | "keepout" | "module"; index: number };
+/**
+ * What is selected on the roof: the roof, an obstacle, a kept-clear area or a module, by its index in its list;
+ * in the Strings lens a string of the chosen option, by its label (plan/phase-07-plan.md, decision 13).
+ */
+export type Selection = { kind: "roof" } | { kind: "obstacle" | "keepout" | "module"; index: number } | { kind: "string"; label: string };
 
 export type ViewState = {
   /** The lens that was opened last. The Studio comes back to it. */
@@ -43,6 +47,10 @@ export type ViewState = {
   /** The tab of the Sun lens; leaving the lens takes it back to the shadows. */
   sunTab: SunTab;
   selection: Selection | null;
+  /** What the Strings lens colours the strings by (plan/phase-07-plan.md, decision 12): by MPPT at first, as the board. */
+  stringColouring: Colouring;
+  /** The string under the pointer, by its label, on a device that can hover (decision 13); null for none. */
+  tracedString: string | null;
   /**
    * A new obstacle before its height is typed (decision 15): of the view until then, and the one thing
    * that is open while it stands. A selection drops it.
@@ -67,12 +75,15 @@ export type ViewState = {
   setPlaying: (isPlaying: boolean) => void;
   showOnTheRoof: (what: keyof OnTheRoof, on: boolean) => void;
   showSunTab: (tab: SunTab) => void;
+  colourStringsBy: (colouring: Colouring) => void;
+  /** The string under the pointer, or null when the pointer left the strings; the same told again changes nothing. */
+  traceString: (label: string | null) => void;
 };
 
 export type ViewStore = ReturnType<typeof createViewStore>;
 
 // As the approved mockups open: the first lens, in 3D, the design day at 10:30.
-const AT_THE_START = { lens: "roof", camera: "3d", cameraRequest: 0, northRequest: 0, sunTime: { day: "design_day", hour: 10.5 }, isPlaying: false, onTheRoof: { sunPath: true, window: true, shadowOutlines: false }, sunTab: "shadows", selection: null, draft: null, toReview: [] as string[], dragging: null } as const;
+const AT_THE_START = { lens: "roof", camera: "3d", cameraRequest: 0, northRequest: 0, sunTime: { day: "design_day", hour: 10.5 }, isPlaying: false, onTheRoof: { sunPath: true, window: true, shadowOutlines: false }, sunTab: "shadows", selection: null, stringColouring: "mppt", tracedString: null, draft: null, toReview: [] as string[], dragging: null } as const;
 
 function refuseWhatIsNoTime({ day, hour }: SunTime): void {
   if (!(hour >= 0 && hour <= 24)) throw new RangeError(`${hour} is no hour of a day: from 0 to 24.`);
@@ -84,7 +95,10 @@ function refuseWhatIsNoTime({ day, hour }: SunTime): void {
 export function createViewStore() {
   return createStore<ViewState>()((set) => ({
     ...AT_THE_START,
-    showLens: (lens) => set((state) => (lens === state.lens ? state : { lens, sunTab: "shadows" })),
+    // Leaving a lens takes back its tab of the Sun lens, and the string traced and selected of the Strings lens:
+    // the strings are drawn there alone.
+    showLens: (lens) =>
+      set((state) => (lens === state.lens ? state : { lens, sunTab: "shadows", tracedString: null, selection: state.selection?.kind === "string" ? null : state.selection })),
     select: (selection) => set({ selection, draft: null }),
     clearSelection: () => set({ selection: null, draft: null }),
     setDraft: (draft) => set(draft === null ? { draft } : { draft, selection: null }),
@@ -103,6 +117,8 @@ export function createViewStore() {
       set({ sunTime });
     },
     setPlaying: (isPlaying) => set((state) => (state.isPlaying === isPlaying ? state : { isPlaying })),
+    colourStringsBy: (stringColouring) => set((state) => (state.stringColouring === stringColouring ? state : { stringColouring })),
+    traceString: (tracedString) => set((state) => (state.tracedString === tracedString ? state : { tracedString })),
     showSunTab: (sunTab) => set((state) => (state.sunTab === sunTab ? state : { sunTab })),
     showOnTheRoof: (what, on) => set((state) => (state.onTheRoof[what] === on ? state : { onTheRoof: { ...state.onTheRoof, [what]: on } })),
   }));
@@ -121,6 +137,21 @@ export const isShadeMapShownOf = (state: ViewState) => state.lens === "sun" && s
 /** Whether the stage draws the sun path: in the Sun lens alone, while its switch is on (decision 16). */
 export const showsSunPathOf = (state: ViewState) => state.lens === "sun" && state.onTheRoof.sunPath;
 export const selectionOf = (state: ViewState) => state.selection;
+export const stringColouringOf = (state: ViewState) => state.stringColouring;
+export const tracedStringOf = (state: ViewState) => state.tracedString;
+/** What the strings on the roof are coloured by: in the Strings lens alone; null in every other lens. */
+export const stringsShownByOf = (state: ViewState): Colouring | null => (state.lens === "strings" ? state.stringColouring : null);
+
+const NONE_LIT: readonly string[] = [];
+
+/** The labels of the strings drawn white: the one selected and the one traced, once each; none outside the Strings lens. */
+export function litStringsOf(state: ViewState): readonly string[] {
+  if (state.lens !== "strings") return NONE_LIT;
+  const selected = state.selection?.kind === "string" ? state.selection.label : null;
+  const traced = state.tracedString;
+  if (selected === null) return traced === null ? NONE_LIT : [traced];
+  return traced === null || traced === selected ? [selected] : [selected, traced];
+}
 export const draftOf = (state: ViewState) => state.draft;
 export const toReviewOf = (state: ViewState) => state.toReview;
 export const draggingOf = (state: ViewState) => state.dragging;
