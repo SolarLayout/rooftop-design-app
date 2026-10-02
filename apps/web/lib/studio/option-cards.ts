@@ -19,6 +19,9 @@ export type OptionCard = {
   isCustom: boolean;
 };
 
+/** An option in target whose verdict does not fit: its MPPT loading does not (plan/phase-07-plan.md, decision 18). */
+const OVER_AN_MPPT = "Over the current of an MPPT, or its limit not known: see the MPPT loading";
+
 export function optionCardsOf(design: DesignResult | null): OptionCard[] {
   if (!design) return [];
   return design.options.map((option) => ({
@@ -31,7 +34,7 @@ export function optionCardsOf(design: DesignResult | null): OptionCard[] {
       ? { kind: "note", label: wordsOfTheTarget(option) }
       : option.verdict.ok
         ? { kind: "fits", label: wordsOfTheTarget(option) }
-        : { kind: "note", label: option.verdict.title },
+        : { kind: "note", label: OVER_AN_MPPT },
     isChosen: option.key === design.chosen_option,
     isCustom: option.custom,
   }));

@@ -4,6 +4,9 @@ import type { StatusKind } from "./StatusMark";
 
 export type Mark = { kind: StatusKind; label: string };
 
+/** A line of a cell: its label in small words before the value, words after it, or a quieter line under the value. */
+export type CellLine = { label?: string; value: string; words?: string; isBelow?: boolean };
+
 export type Column<Row> = {
   key: string;
   /** The head of the column; on a card, the label of the value. */
@@ -13,6 +16,10 @@ export type Column<Row> = {
   value: (row: Row) => string;
   /** The name of the row as the title of its card, where the table has less room: "Option D" for "D". */
   onCard?: (row: Row) => string;
+  /** A second line under the value, quieter: the inverter under its MPPT. In the table only. */
+  below?: (row: Row) => string;
+  /** The cell as lines under each other, each with its label: Imp and Isc. In the table; the card shows `value`. */
+  lines?: (row: Row) => readonly CellLine[];
   /** A status mark after the value. On a card it stands beside the title. */
   mark?: (row: Row) => Mark | null;
   /** Where the column is shown; without it, in both. */
@@ -28,6 +35,13 @@ export type CardOfRow = {
 /** The columns that the table shows. */
 export function columnsOfTable<Row>(columns: ReadonlyArray<Column<Row>>): Array<Column<Row>> {
   return columns.filter((column) => column.shown !== "card");
+}
+
+/** What a cell of the table shows: its lines, or its value with the line under it, or its value. */
+export function cellLinesOf<Row>(row: Row, column: Column<Row>): CellLine[] {
+  if (column.lines) return [...column.lines(row)];
+  const value: CellLine = { value: column.value(row) };
+  return column.below ? [value, { value: column.below(row), isBelow: true }] : [value];
 }
 
 /** A row as a card: its name as the title, its mark, and every other value with its label. */

@@ -1,7 +1,7 @@
 import type { Page, Route } from "@playwright/test";
 import path from "node:path";
 import { expect, test } from "../fixtures";
-import { expectScreen } from "../screens";
+import { expectScreen, expectWholeScreen } from "../screens";
 import { A_MAP, findOpened, roofMap, scaleLabel, searchField } from "../find";
 import { boxFrameOf, handlesSettled, inThePlan, metresFrom, obstacleSelectedOnStage, sceneSettled, zoomedInAt, cameraSettled } from "../stage";
 
@@ -393,7 +393,7 @@ test.describe("the shell", () => {
     await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
     await expect(page.getByTestId("series-verdict").filter({ visible: true })).toBeVisible();
     await sceneSettled(page);
-    await expectScreen(page, "studio-strings");
+    await expectWholeScreen(page, "studio-strings");
   });
 
   // The colour switch, on phone in the sheet, which is let down again after so that the stage is in the picture.
@@ -416,7 +416,7 @@ test.describe("the shell", () => {
     await expect(page.getByTestId("on-the-roof-strings")).toContainText("coloured by string");
     await page.mouse.move(0, 0);
     await sceneSettled(page);
-    await expectScreen(page, "studio-strings-by-string");
+    await expectWholeScreen(page, "studio-strings-by-string");
   });
 
   // Option D coloured by inverter, its two inverters on the roof with their chips (the board "Strings on the roof").
@@ -432,7 +432,7 @@ test.describe("the shell", () => {
     await expect(page.getByTestId("inverter-chip")).toHaveCount(2, { timeout: RUN });
     await page.mouse.move(0, 0);
     await sceneSettled(page);
-    await expectScreen(page, "studio-strings-by-inverter");
+    await expectWholeScreen(page, "studio-strings-by-inverter");
   });
 
   // String 12 of option A selected, white with its line and its callout (the board "Strings on the roof"), pressed in
@@ -458,7 +458,7 @@ test.describe("the shell", () => {
     await page.mouse.move(0, 0);
     await cameraSettled(page);
     await sceneSettled(page);
-    await expectScreen(page, "studio-strings-selected");
+    await expectWholeScreen(page, "studio-strings-selected");
   });
 
   // Your own 26 × 24 × 1 added and chosen (the board "Options and your own").
@@ -485,7 +485,7 @@ test.describe("the shell", () => {
       }),
     );
     await sceneSettled(page);
-    await expectScreen(page, "studio-strings-your-own");
+    await expectWholeScreen(page, "studio-strings-your-own");
   });
 
   // At 600 V no string length fits (the board "Options and your own").
@@ -496,7 +496,60 @@ test.describe("the shell", () => {
     await expect(page.getByTestId("nothing-fits").filter({ visible: true })).toBeVisible({ timeout: RUN });
     await page.getByRole("radiogroup", { name: "System voltage" }).filter({ visible: true }).getByRole("radio", { name: "600 V" }).blur();
     await sceneSettled(page);
-    await expectScreen(page, "studio-strings-nothing-fits");
+    await expectWholeScreen(page, "studio-strings-nothing-fits");
+  });
+
+  // The MPPT loading of option A under the options (the board "Inverter and sizing").
+  test("studio, the Strings lens, the MPPT loading", async ({ page }) => {
+    await page.goto("/studio/strings");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    const table = page.getByTestId("mppt-table").filter({ visible: true });
+    await expect(table).toContainText("of option A");
+    await table.scrollIntoViewIfNeeded();
+    await sceneSettled(page);
+    await expectWholeScreen(page, "studio-strings-mppt");
+  });
+
+  // The demo's OND without IMaxDC: every limit not known, the API's note under the table (the board "Inverter and sizing").
+  test("studio, the Strings lens, the current limit not known", async ({ page }) => {
+    await page.goto("/studio/strings");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await page.getByTestId("inverter-card").filter({ visible: true }).getByRole("button", { name: "Replace" }).click();
+    const dialog = page.getByRole("dialog", { name: "Replace the inverter" });
+    await dialog.locator("input[type=file]").setInputFiles(path.resolve(__dirname, "../fixtures/wattpower-without-imaxdc.OND"));
+    await expect(dialog).toBeHidden();
+    const note = page.getByTestId("mppt-note").filter({ visible: true });
+    await expect(note).toBeVisible({ timeout: RUN });
+    await note.scrollIntoViewIfNeeded();
+    await page.mouse.move(0, 0);
+    await sceneSettled(page);
+    await expectWholeScreen(page, "studio-strings-limit-not-known");
+  });
+
+  // A PAN given as the inverter, refused in the engine's words (the board "Inverter and sizing").
+  test("studio, the Strings lens, an inverter file refused", async ({ page }) => {
+    await page.goto("/studio/strings");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await page.getByTestId("inverter-card").filter({ visible: true }).getByRole("button", { name: "Replace" }).click();
+    const dialog = page.getByRole("dialog", { name: "Replace the inverter" });
+    await dialog.locator("input[type=file]").setInputFiles(path.resolve(__dirname, "../fixtures/test-module.PAN"));
+    await expect(dialog.getByRole("status")).toContainText("This file was not loaded", { timeout: RUN });
+    await sceneSettled(page);
+    await expectWholeScreen(page, "studio-strings-inverter-refused");
+  });
+
+  // Inverter limits and cabling opened, every value the file's and the document's (the board "Inverter and sizing").
+  test("studio, the Strings lens, the inverter limits opened", async ({ page }) => {
+    await page.goto("/studio/strings");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    const limits = page.getByRole("region", { name: "Inverter limits and cabling" }).filter({ visible: true });
+    await limits.getByRole("button", { name: /Inverter limits and cabling/ }).click();
+    await expect(limits.getByTestId("current-note")).toBeVisible();
+    await limits.scrollIntoViewIfNeeded();
+    await limits.getByRole("button", { name: /Inverter limits and cabling/ }).blur();
+    await page.mouse.move(0, 0);
+    await sceneSettled(page);
+    await expectWholeScreen(page, "studio-strings-inverter-limits");
   });
 
   test("studio, before a system voltage", async ({ page }) => {
@@ -510,7 +563,7 @@ test.describe("the shell", () => {
     await expect(page.getByText("Shading for every module").filter({ visible: true })).toBeVisible();
 
     await sceneSettled(page);
-    await expectScreen(page, "studio-before-a-voltage");
+    await expectWholeScreen(page, "studio-before-a-voltage");
   });
 
   test("studio, the notes to review", async ({ page }, testInfo) => {

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { cardOf, columnsOfTable, type Column } from "./table-cells";
+import { cardOf, cellLinesOf, columnsOfTable, type Column } from "./table-cells";
 
 type Option = { letter: string; series: number; strings: number; modules: number; kwp: string; dcac: string; fits: boolean };
 
@@ -61,5 +61,36 @@ describe("cardOf: a row as a card on phone", () => {
     const columns: Array<Column<Option>> = [...COLUMNS, { key: "note", head: "Note", kind: "text", value: () => "wide", shown: "table" }];
 
     expect(cardOf(A, columns).values.map((one) => one.key)).toEqual(["strings", "modules", "kwp", "dcac"]);
+  });
+});
+
+describe("cellLinesOf: what a cell of the table shows (the board \"Inverter and sizing\")", () => {
+  type Load = { mppt: string; inverter: string; imp: string; isc: string };
+  const LOAD: Load = { mppt: "MPPT 1", inverter: "INV-1", imp: "54.3 of 65.0 A", isc: "57.2 A" };
+
+  test("the value alone, by default", () => {
+    expect(cellLinesOf(LOAD, { key: "mppt", head: "MPPT", kind: "name", value: (row) => row.mppt })).toEqual([{ value: "MPPT 1" }]);
+  });
+
+  test("a second line under the value: the inverter under its MPPT", () => {
+    expect(cellLinesOf(LOAD, { key: "mppt", head: "MPPT", kind: "name", value: (row) => row.mppt, below: (row) => row.inverter })).toEqual([{ value: "MPPT 1" }, { value: "INV-1", isBelow: true }]);
+  });
+
+  test("lines of their own, each with its label, and words after a value", () => {
+    const current: Column<Load> = {
+      key: "current",
+      head: "Current",
+      kind: "text",
+      value: (row) => row.imp,
+      lines: (row) => [
+        { label: "Imp", value: row.imp },
+        { label: "Isc", value: row.isc, words: "of not known" },
+      ],
+      shown: "table",
+    };
+    expect(cellLinesOf(LOAD, current)).toEqual([
+      { label: "Imp", value: "54.3 of 65.0 A" },
+      { label: "Isc", value: "57.2 A", words: "of not known" },
+    ]);
   });
 });

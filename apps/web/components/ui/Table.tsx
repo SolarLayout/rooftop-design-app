@@ -1,6 +1,6 @@
 import { classNames } from "./class-names";
 import { StatusMark } from "./StatusMark";
-import { cardOf, columnsOfTable, type Column } from "./table-cells";
+import { cardOf, cellLinesOf, columnsOfTable, type CellLine, type Column } from "./table-cells";
 
 type Props<Row> = {
   /** What the table holds, in words. It stands under the table and is its name. */
@@ -11,16 +11,37 @@ type Props<Row> = {
   keyOf: (row: Row) => string;
   /** The key of the row that is chosen. */
   chosen?: string;
+  /** Cells padded 6 rather than 8: a table at the inspector's width (the board "Inverter and sizing"). */
+  dense?: boolean;
+  /** The values of a card on phone in two columns rather than three, where they are long ("54.3 of 65.0 A"). */
+  cardColumns?: 2 | 3;
   className?: string;
 };
 
-const HEAD = "h-9 border-b border-line px-2 type-section whitespace-nowrap text-text-3 uppercase";
-const CELL = "h-11 border-b border-line-subtle px-2 whitespace-nowrap";
+const HEAD = "h-9 border-b border-line type-section whitespace-nowrap text-text-3 uppercase";
+const CELL = "h-11 border-b border-line-subtle whitespace-nowrap";
 const CAPTION = "type-caption text-text-2";
 
+/** A cell of several lines: a quieter line under the value, or lines each with its label (cellLinesOf). */
+function Lines({ lines }: { lines: readonly CellLine[] }) {
+  if (lines.length === 1 && !lines[0]!.label && !lines[0]!.words) return lines[0]!.value;
+  return (
+    <span className="inline-flex flex-col">
+      {lines.map((line, index) => (
+        <span key={index} className={line.isBelow ? "type-caption font-normal text-text-3" : line.label ? "type-value-xs" : undefined}>
+          {line.label ? <span className="type-label-s text-text-3">{line.label} </span> : null}
+          {line.value}
+          {line.words ? <span className="font-sans text-text-2"> {line.words}</span> : null}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 /** Rows of values under their heads. On phone each row is a card. */
-export function Table<Row>({ caption, columns, rows, keyOf, chosen, className }: Props<Row>) {
+export function Table<Row>({ caption, columns, rows, keyOf, chosen, dense = false, cardColumns = 3, className }: Props<Row>) {
   const shown = columnsOfTable(columns);
+  const padding = dense ? "px-1.5" : "px-2";
 
   return (
     <div className={className}>
@@ -29,7 +50,7 @@ export function Table<Row>({ caption, columns, rows, keyOf, chosen, className }:
         <thead>
           <tr>
             {shown.map((column) => (
-              <th key={column.key} scope="col" className={classNames(HEAD, column.kind === "number" ? "text-right" : "text-left")}>
+              <th key={column.key} scope="col" className={classNames(HEAD, padding, column.kind === "number" ? "text-right" : "text-left")}>
                 {column.head}
               </th>
             ))}
@@ -42,23 +63,24 @@ export function Table<Row>({ caption, columns, rows, keyOf, chosen, className }:
               <tr key={keyOf(row)} aria-current={isChosen || undefined} className={isChosen ? "bg-surface-2" : undefined}>
                 {shown.map((column) => {
                   const mark = column.mark?.(row);
+                  const lines = <Lines lines={cellLinesOf(row, column)} />;
                   const value = mark ? (
                     <span className="inline-flex items-center gap-1.5">
-                      <span>{column.value(row)}</span>
+                      <span>{lines}</span>
                       <StatusMark kind={mark.kind} label={mark.label} wordsShown={false} size={16} />
                     </span>
                   ) : (
-                    column.value(row)
+                    lines
                   );
                   if (column.kind === "name") {
                     return (
-                      <th key={column.key} scope="row" className={classNames(CELL, "text-left font-medium")}>
+                      <th key={column.key} scope="row" className={classNames(CELL, padding, "text-left font-medium")}>
                         {value}
                       </th>
                     );
                   }
                   return (
-                    <td key={column.key} className={classNames(CELL, "type-value-small", column.kind === "number" && "text-right")}>
+                    <td key={column.key} className={classNames(CELL, padding, "type-value-small", column.kind === "number" && "text-right")}>
                       {value}
                     </td>
                   );
@@ -87,7 +109,7 @@ export function Table<Row>({ caption, columns, rows, keyOf, chosen, className }:
                   <h3 className="grow type-title">{card.title}</h3>
                   {card.mark ? <StatusMark kind={card.mark.kind} label={card.mark.label} wordsShown={false} size={18} /> : null}
                 </div>
-                <dl className="grid grid-cols-3 gap-x-2 gap-y-2.5">
+                <dl className={classNames("grid gap-x-2 gap-y-2.5", cardColumns === 2 ? "grid-cols-2" : "grid-cols-3")}>
                   {card.values.map((one) => (
                     <div key={one.key} className="flex min-w-0 flex-col gap-0.5">
                       <dt className={CAPTION}>{one.label}</dt>

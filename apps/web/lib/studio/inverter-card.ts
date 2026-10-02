@@ -1,10 +1,20 @@
-// The inverter card of the Strings lens (the board "Studio, Strings lens"; docs/design/components.md, "Cards"):
-// the model, the maker as the OND states it with the power and the MPPTs (plan/phase-07-plan.md, decision 15),
-// and the current per MPPT with the inputs. Pure; the card draws what it gives.
+// The inverter card of the Strings lens (the boards "Studio, Strings lens" and "Inverter and sizing";
+// docs/design/components.md, "Cards"): the model, the maker as the OND states it with the power and the MPPTs
+// (plan/phase-07-plan.md, decision 15), the current per MPPT with the inputs, and the file. Which inverter it
+// shows while a replaced file's run is on its way, and the edit of a file read (step 17). Pure; the card draws
+// what it gives.
 import { shown } from "../../components/ui/number-entry";
-import type { CurrentPerMppt, Inverter } from "../api";
+import type { CurrentPerMppt, DesignResult, Inverter, InverterResponse, Project } from "../api";
 
-export type InverterCard = { name: string; line: string; facts: string };
+export type InverterCard = {
+  name: string;
+  line: string;
+  facts: string;
+  /** False when no current per MPPT is known: the facts carry a note mark. */
+  isCurrentKnown: boolean;
+  /** The name of the OND, under the card. */
+  file: string;
+};
 
 /** The power as the file gives it: whole kilowatts whole, others with their decimals. */
 const kilowatts = (kw: number) => `${Number.isInteger(kw) ? shown(kw, 0) : String(kw)} kW`;
@@ -21,5 +31,36 @@ export function inverterCardOf(inverter: Inverter, ofTheFile: CurrentPerMppt, en
     name: inverter.model,
     line: `${inverter.manufacturer} · ${kilowatts(inverter.pnom_kw)} · ${shown(inverter.n_mppt, 0)} MPPT`,
     facts: `${perMppt} · ${inputs}`,
+    isCurrentKnown: current !== null,
+    file: inverter.source,
   };
+}
+
+/** An inverter as the card shows it: the inverter and the current per MPPT of its file. */
+export type InverterShown = { inverter: Inverter; current: CurrentPerMppt };
+
+/** The inverter read from a replaced file, and the edit that committed the file. */
+export type ReplacedInverter = InverterShown & { edit: number };
+
+type Sources = {
+  design: DesignResult | null;
+  /** The edit the design belongs to. */
+  designEdit: number | null;
+  replaced: ReplacedInverter | null;
+};
+
+/**
+ * Which inverter the card shows: the one read from a replaced file until the design of that edit (or a later
+ * one) lands, then the design's equipment; nothing before either.
+ */
+export function inverterShownOf({ design, designEdit, replaced }: Sources): InverterShown | null {
+  const isReplacedNewer = replaced !== null && (designEdit === null || designEdit < replaced.edit);
+  if (replaced && isReplacedNewer) return { inverter: replaced.inverter, current: replaced.current };
+  if (!design) return null;
+  return { inverter: design.equipment.inverter, current: design.equipment.max_current_per_mppt };
+}
+
+/** The document with the OND read: its text and its name, and no current per MPPT entered (inventory 1.4). */
+export function withInverterRead(document: Project, read: InverterResponse): Project {
+  return { ...document, ond_text: read.text, ond_path: read.file, imax_mppt_override: null };
 }
