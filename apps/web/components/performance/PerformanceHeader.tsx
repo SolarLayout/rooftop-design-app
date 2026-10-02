@@ -25,11 +25,12 @@ type Props = {
  * The title, the line of the run and the controls (the board "Performance" on three sizes): on desktop the controls
  * stand at the right of the title, the weather before the options; on tablet under it in a row, the options first;
  * on phone under it, each across the width. The engine's notes on the weather stand under the line; a weather that was
- * not loaded under the controls, at their right.
+ * not loaded under the controls, at their right; the row then aligns to the top, so that the title stays where it is
+ * (the board "Weather and assumptions").
  */
 export function PerformanceHeader({ header, isLoading, isDimmed, under, weather, note, onChoose }: Props) {
   return (
-    <header className="flex flex-col gap-3 tablet:gap-4 desktop:flex-row desktop:items-end desktop:gap-4">
+    <header className={classNames("flex flex-col gap-3 tablet:gap-4 desktop:flex-row desktop:gap-4", note ? "desktop:items-start" : "desktop:items-end")}>
       <div className="flex min-w-0 flex-col gap-1">
         <h1 className="type-lens-touch tablet:type-page">Performance</h1>
         {header ? (

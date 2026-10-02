@@ -218,7 +218,8 @@ test.describe("before a system voltage", () => {
     await expect(optionSwitch(page)).toHaveCount(0);
     await expect(energyTile(page)).toHaveCount(0);
     await expect(page.getByTestId("summary-table")).toHaveCount(0);
-    await expect(page.locator("body")).not.toContainText("MWh");
+    // No figure of energy: a unit alone, the CO₂ factor's "t/MWh", is not one.
+    await expect(page.locator("body")).not.toContainText(/\d MWh/);
     await expect(page.locator("body")).not.toContainText("kWh/kWp");
   });
 

@@ -107,7 +107,7 @@ export function WeatherCsvDialog({ open, site, onUse, onClose }: Props) {
       <p>{CSV_WORDS.sentence}</p>
       <FileDrop title={CSV_WORDS.drop} detail={CSV_WORDS.detail} whenOver={CSV_WORDS.whenOver} accept={CSV_WORDS.accept} state={state} onFile={readFile} className="mt-3" />
       {read && read.answer.notes.length > 0 ? (
-        <ul role="status" data-testid="csv-notes" className="mt-3 flex flex-col gap-2">
+        <ul aria-live="polite" data-testid="csv-notes" className="mt-3 flex flex-col gap-2">
           {read.answer.notes.map((note) => (
             <NoteLine key={note} words={note} testId="csv-note" />
           ))}

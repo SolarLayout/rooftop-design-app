@@ -138,9 +138,11 @@ test.describe("the weather source (decision 12)", () => {
     const before = await thePerformancePage(page);
     const paths = asked(page);
     let held: Route | null = null;
-    await page.route("**/api/weather", (route) => {
+    // Unrouted by its handler: the pattern is the fixture's too, and the fixture must go on answering.
+    const hold = (route: Route) => {
       held = route;
-    });
+    };
+    await page.route("**/api/weather", hold);
     const weather = weatherAsked(page);
     const next = ran(page);
 
@@ -154,7 +156,7 @@ test.describe("the weather source (decision 12)", () => {
     await expect(runLine(page)).toContainText(weatherLineOf(before.weather));
     await expect.poll(() => held !== null).toBe(true);
     await (held as unknown as Route).fulfill({ path: NASA_FIXTURE, contentType: "application/json" });
-    await page.unroute("**/api/weather");
+    await page.unroute("**/api/weather", hold);
 
     const asked_ = await weather;
     expect(asked_.postDataJSON()).toMatchObject({ source: "nasa" });
@@ -196,7 +198,8 @@ test.describe("the weather source (decision 12)", () => {
   test("a download refused: the API's words under the select, the source of before kept, no run; the note goes with the next choice", async ({ page }) => {
     const before = await thePerformancePage(page);
     const paths = asked(page);
-    await page.route("**/api/weather", (route) => route.fulfill({ status: 422, json: OVER_THE_SEA }));
+    const refuse = (route: Route) => route.fulfill({ status: 422, json: OVER_THE_SEA });
+    await page.route("**/api/weather", refuse);
 
     await chooseWeather(page, "NASA POWER 2023");
 
@@ -211,7 +214,7 @@ test.describe("the weather source (decision 12)", () => {
     expect(paths.filter((asked) => asked.endsWith("/design"))).toEqual([]);
     expect(paths.filter((asked) => asked.endsWith("/weather"))).toHaveLength(1);
 
-    await page.unroute("**/api/weather");
+    await page.unroute("**/api/weather", refuse);
     await chooseWeather(page, "NASA POWER 2023");
 
     await expect(weatherNote(page)).toHaveCount(0);
@@ -279,7 +282,8 @@ test.describe("a CSV with its notes (step 19)", () => {
     await expect(csvDialog(page).getByTestId("csv-note")).toHaveCount(0);
     await expect(csvDialog(page).getByRole("button", { name: "Use this weather" })).toHaveAttribute("aria-disabled", "true");
 
-    await csvDialog(page).getByRole("button", { name: "Use this weather" }).click();
+    // The press is forced: to the browser's tooling an aria-disabled button is not enabled, to the user it is pressable.
+    await csvDialog(page).getByRole("button", { name: "Use this weather" }).click({ force: true });
     await expect(csvDialog(page)).toBeVisible();
     await csvDialog(page).getByRole("button", { name: "Cancel" }).click();
 
@@ -374,7 +378,8 @@ test.describe("the assumptions (decisions 6 and 8)", () => {
     await expect(assumptions(page)).toBeVisible();
     await expect(assumption(page, "Thermal Uc")).toHaveValue("");
     await expect(assumption(page, "Grid CO₂")).toHaveValue("0.716");
-    await expect(page.locator("body")).not.toContainText("MWh");
+    // No figure of energy: a unit alone, the CO₂ factor's "t/MWh", is not one.
+    await expect(page.locator("body")).not.toContainText(/\d MWh/);
   });
 });
 
