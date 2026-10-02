@@ -15,22 +15,28 @@ import { SECTION } from "./inspector-look";
  * Modules in series (docs/design/components.md, "Series range bar"; the boards "Studio, Strings lens" and
  * "Options and your own"): the lengths that fit as a band on the track, their ends with what sets each, the
  * chosen option's length as the marker, and under it the verdict with a tick or a note, in the engine's words.
- * While the run of the voltage chosen is on its way, it waits with a ring.
+ * While the run of the voltage chosen is on its way, it waits with a ring; while a newer run is on its way, the range of
+ * before stands dimmed with a ring beside its heading (plan/phase-07-plan.md, step 21).
  */
-export function SeriesRange({ view }: { view: Sized }) {
+export function SeriesRange({ view, isUpdating = false }: { view: Sized; isUpdating?: boolean }) {
   const heading = useId();
   const { range, chosen, verdict } = view;
   const bar = range ? seriesBarOf(range, chosen) : null;
   return (
-    <section aria-labelledby={heading} data-testid="series-range" className="flex flex-col gap-2">
+    <section aria-labelledby={heading} data-testid="series-range" data-state={isUpdating && bar ? "updating" : "settled"} className="flex flex-col gap-2">
       <div className="flex items-center gap-3">
         <h2 id={heading} className={SECTION}>
           Modules in series
         </h2>
-        {bar ? <span className="ml-auto type-value-xs text-text-2">{bar.fits}</span> : null}
+        {isUpdating && bar ? (
+          <span data-testid="series-ring" className="flex">
+            <ProgressRing size={16} />
+          </span>
+        ) : null}
+        {bar ? <span className={classNames("ml-auto type-value-xs text-text-2", isUpdating && "opacity-updating")}>{bar.fits}</span> : null}
       </div>
       {bar ? (
-        <div data-testid="series-bar" className="relative h-11">
+        <div data-testid="series-bar" className={classNames("relative h-11", isUpdating && "opacity-updating")}>
           <div className="absolute inset-x-0 top-2 h-2 rounded-full bg-well shadow-well" />
           {bar.band ? <div data-testid="series-band" className="absolute top-2 left-at h-2 w-span rounded-full bg-ok opacity-band" style={measures({ at: bar.band.from, span: bar.band.to - bar.band.from })} /> : null}
           {bar.marker !== null ? <div data-testid="series-marker" className="absolute top-0.5 left-at h-5 w-1 -translate-x-1/2 rounded-full bg-accent shadow-halo-focus" style={measures({ at: bar.marker })} /> : null}
@@ -50,7 +56,7 @@ export function SeriesRange({ view }: { view: Sized }) {
         </p>
       )}
       {verdict ? (
-        <p data-testid="series-verdict" className="flex items-start gap-2 type-caption text-text-2">
+        <p data-testid="series-verdict" className={classNames("flex items-start gap-2 type-caption text-text-2", isUpdating && "opacity-updating")}>
           <StatusMark kind={verdict.ok ? "fits" : "note"} label={verdict.ok ? "Fits" : verdict.title} wordsShown={false} size={16} />
           <span className="flex flex-col gap-0.5">
             {verdict.ok ? null : <span className="font-medium text-text">{verdict.title}</span>}

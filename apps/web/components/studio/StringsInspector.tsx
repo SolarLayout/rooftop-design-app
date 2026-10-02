@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useProject, useResults, useStores } from "@/components/shell/stores";
+import { classNames } from "@/components/ui/class-names";
 import type { InverterResponse } from "@/lib/api";
 import { editOf, openedAtOf, projectOf } from "@/lib/stores/project-store";
-import { chosenOptionOf, designEditOf, designOf, readoutsOf } from "@/lib/stores/results-store";
+import { chosenOptionOf, designEditOf, designOf, isDesignUpdating, readoutsOf } from "@/lib/stores/results-store";
 import { withCustom, withoutCustom } from "@/lib/studio/custom-fields";
 import { inverterShownOf, withInverterRead, type ReplacedInverter } from "@/lib/studio/inverter-card";
 import { withAcCable, withCurrentPerMppt } from "@/lib/studio/inverter-fields";
@@ -38,6 +39,8 @@ export function StringsInspector() {
   const design = useResults(designOf);
   const readouts = useResults(readoutsOf);
   const option = useResults(chosenOptionOf);
+  // A newer run on its way: what it will replace stands dimmed (plan/phase-07-plan.md, step 21).
+  const isUpdating = useResults(isDesignUpdating);
   const size = useSize();
   const openedAt = useProject(openedAtOf);
   const designEdit = useResults(designEditOf);
@@ -83,7 +86,7 @@ export function StringsInspector() {
         ) : (
           <>
             <SystemVoltage voltage={view.voltage} onChoose={choose} />
-            <SeriesRange view={view} />
+            <SeriesRange view={view} isUpdating={isUpdating} />
           </>
         )}
       </div>
@@ -94,13 +97,17 @@ export function StringsInspector() {
           <>
             <NothingFits view={view} />
             {view.range && !view.noOptions && design ? (
-              <div className="flex flex-col gap-1.5">
+              <div data-testid="strings-sized" data-state={isUpdating ? "updating" : "settled"} className={classNames("flex flex-col gap-1.5", isUpdating && "opacity-updating")}>
                 <OptionCards cards={optionCardsOf(design)} onChoose={chooseOption} />
                 <YourOwn document={project} design={design} onSave={(custom) => store.getState().commit((document) => withCustom(document, custom))} onRemove={() => store.getState().commit(withoutCustom)} />
                 <OptionsNote note={design.options_note ?? null} />
               </div>
             ) : null}
-            {view.range && !view.noOptions && design && option ? <MpptTable table={mpptTableOf(option, view.voltage, design.equipment.max_current_per_mppt)} onEnterCurrent={enterCurrent} /> : null}
+            {view.range && !view.noOptions && design && option ? (
+              <div className={classNames(isUpdating && "opacity-updating")}>
+                <MpptTable table={mpptTableOf(option, view.voltage, design.equipment.max_current_per_mppt)} onEnterCurrent={enterCurrent} />
+              </div>
+            ) : null}
             <SizingTemperatures />
             <InverterLimits
               document={project}

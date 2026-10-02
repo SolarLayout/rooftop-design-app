@@ -552,6 +552,20 @@ test.describe("the shell", () => {
     await expectWholeScreen(page, "studio-strings-inverter-limits");
   });
 
+  // A run on its way after a change of voltage: what it will replace stands dimmed with a ring (plan/phase-07-plan.md, step 21).
+  test("studio, the Strings lens, a run on its way", async ({ page }) => {
+    await page.goto("/studio/strings");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await page.route("**/api/design", () => {
+      // Held: the run stays on its way for the picture.
+    });
+    await page.getByRole("radiogroup", { name: "System voltage" }).filter({ visible: true }).getByRole("radio", { name: "1000 V" }).click();
+    await expect(page.getByTestId("series-range").filter({ visible: true })).toHaveAttribute("data-state", "updating", { timeout: RUN });
+    await page.getByRole("radiogroup", { name: "System voltage" }).filter({ visible: true }).getByRole("radio", { name: "1000 V" }).blur();
+    await sceneSettled(page);
+    await expectWholeScreen(page, "studio-strings-updating");
+  });
+
   test("studio, before a system voltage", async ({ page }) => {
     await page.route("**/api/demo", async (route) => {
       const answer = await route.fetch();
