@@ -132,6 +132,14 @@ a colour as three.js takes it: a hex, or a hex with an alpha for what is see-thr
 | `moduleCellLine` | `#2A4675` | Module detail |
 | `moduleFrame` | `#33558C` | Module frame |
 | `moduleUnused` | `#8C93A0` | Position not used |
+| `series1` | `#3987E5` | The glass of a position of the first category of the strings: string S1, S7, S13…, MPPT 1, INV-1; the same as `--color-series-1` |
+| `series2` | `#D95926` | The second: S2, S8…, MPPT 2, INV-2 |
+| `series3` | `#199E70` | The third |
+| `series4` | `#C98500` | The fourth |
+| `series5` | `#D55181` | The fifth |
+| `series6` | `#008300` | The sixth: S6, S12, S18…, MPPT 6 |
+| `stringSelected` | `#FFFFFF` | The glass of a string traced under the pointer or selected, and the line through its modules |
+| `inverterMarker` | `#FFB020` | The small box of an inverter on the roof, where the engine places it: the accent |
 | `shade1` | `#3C324E` | The glass of a position in the shade map's first step; the same as `--color-shade-1` |
 | `shade2` | `#634E86` | Its second step |
 | `shade3` | `#8D6CC2` | Its third step |
@@ -149,7 +157,11 @@ a colour as three.js takes it: a hex, or a hex with an alpha for what is see-thr
 | `lightGround` | `#20242C` | The ground's share of the ambient light |
 
 Real cast shadows come from the sun light; the amber of the selection is the accent token. A selected
-string is white (Phase 7).
+string is white (`stringSelected`). The strings are coloured in the Strings lens alone (plan/phase-07-plan.md,
+decision 12): string S*k* takes `series` ((*k* − 1) mod 6) + 1, so that its colour follows its label and never its
+rank; by MPPT the colour of its MPPT within its inverter, by inverter the inverter's; the positions the option does
+not use `moduleUnused`. While a string is traced or selected, every other position takes its colour mixed
+`DIM_TOWARD_STAGE` % toward `stage` (decision 13).
 
 ## Typography
 
@@ -376,6 +388,7 @@ and the file equal.
 | `STEM_HEIGHT` | `40` | Pixels the height handle stands over the middle of the top, on its vertical stem, on desktop |
 | `STEM_HEIGHT_TOUCH` | `52` | The same on phone and tablet |
 | `TIME_REST` | `150` | Milliseconds the time of the sun must stand still before the engine's shadow outlines are asked for it: a drag of the timeline passes forty quarter hours |
+| `DIM_TOWARD_STAGE` | `55` | Percent that the glass of every other position is mixed toward the stage's colour while a string is traced or selected (decision 13 of plan/phase-07-plan.md) |
 
 ## Layers
 
