@@ -57,7 +57,7 @@ function Frame({ children }: { children: ReactNode }) {
           onOpenNotes={ofTheShell.open}
           onImport={() => setImportOpen(true)}
         />
-        <div className="relative flex min-h-0 grow flex-col overflow-y-auto">{children}</div>
+        <div data-workspace-frame className="relative flex min-h-0 grow flex-col overflow-y-auto">{children}</div>
         <TabBar current={workspace} lens={lens} />
       </div>
       <NotesDrawer open={areNotesOpen} notes={notes} onClose={() => setNotesOpen(false)} onTryAgain={flow.tryAgain} />
