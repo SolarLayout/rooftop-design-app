@@ -93,10 +93,15 @@ async function colourBy(page: Page, projectName: string, name: "String" | "MPPT"
   if (isPhone(projectName)) await sheetTo(page, "Home");
 }
 
-/** The middle of a position in the plan, as a share of the canvas. */
-async function shareOf(page: Page, point: PlanFrame, answer: Answer, idx: number): Promise<Share> {
+/**
+ * A point of a position in the plan, as a share of the canvas: its middle, or a quarter of the way from its middle
+ * toward its first corner, clear of the line a traced string draws through the middles.
+ */
+async function shareOf(page: Page, point: PlanFrame, answer: Answer, idx: number, clearOfTheLine = false): Promise<Share> {
   const position = answer.layout.modules.find((one) => one.idx === idx)!;
-  const [x, y] = position.outline.reduce(([sx, sy], [px, py]) => [sx + px / position.outline.length, sy + py / position.outline.length], [0, 0]);
+  const [cx, cy] = position.outline.reduce(([sx, sy], [px, py]) => [sx + px / position.outline.length, sy + py / position.outline.length], [0, 0]);
+  const [kx, ky] = position.outline[0]!;
+  const [x, y] = clearOfTheLine ? [cx + (kx - cx) / 4, cy + (ky - cy) / 4] : [cx, cy];
   const at = point(x, y);
   const box = (await sceneCanvas(page).boundingBox())!;
   return [(at.x - box.x) / box.width, (at.y - box.y) / box.height];
@@ -116,6 +121,18 @@ async function seenOf(page: Page, point: PlanFrame, answer: Answer, string: Wire
     if (await page.evaluate(([px, py]) => document.elementFromPoint(px, py)?.tagName === "CANVAS", [at.x, at.y] as const)) return idx;
   }
   throw new Error(`No module of ${string.label} is seen in the plan.`);
+}
+
+/** The first string of *option*, in their order, one of whose modules is seen in the plan; and that module. */
+async function seenStringOf(page: Page, point: PlanFrame, answer: Answer, option: Answer["options"][number]): Promise<{ string: Wired; idx: number }> {
+  for (const string of option.system.strings) {
+    try {
+      return { string, idx: await seenOf(page, point, answer, string) };
+    } catch {
+      // None of this string's modules is seen: the next.
+    }
+  }
+  throw new Error(`No string of option ${option.letter} is seen in the plan.`);
 }
 
 test.beforeEach(() => test.setTimeout(RUN * 2));
@@ -141,12 +158,13 @@ test.describe("the colours of the strings", () => {
 
   test("switching the option keeps a string's colour with its label, and writes the colours alone", async ({ page }, testInfo) => {
     const answer = await stringsLensWithTheRun(page);
-    const other = answer.options.find((option) => option.key !== answer.chosen_option && option.system.strings.some((string) => string.label === "S2"))!;
-    const s2 = other.system.strings.find((string) => string.label === "S2")!;
+    const other = answer.options.find((option) => option.key !== answer.chosen_option)!;
     await colourBy(page, testInfo.project.name, "String");
     if (isPhone(testInfo.project.name)) await sheetTo(page, "Home");
     const point = await inThePlan(page);
-    const share = await shareOf(page, point, answer, await seenOf(page, point, answer, s2));
+    // A string of the other option whose module is seen in the plan, where no control of the stage covers it.
+    const { string, idx } = await seenStringOf(page, point, answer, other);
+    const share = await shareOf(page, point, answer, idx);
     const writes = await moduleWrites(page);
 
     if (isPhone(testInfo.project.name)) await sheetTo(page, "End");
@@ -154,7 +172,7 @@ test.describe("the colours of the strings", () => {
     if (isPhone(testInfo.project.name)) await sheetTo(page, "Home");
 
     await expect(page.getByTestId("on-the-roof-strings")).toContainText(`of option ${other.letter}, coloured by string`, { timeout: RUN });
-    await expect.poll(async () => seriesOfPixel((await pixelsAt(page, [share]))[0]), { timeout: RUN }).toBe(seriesOf(2));
+    await expect.poll(async () => seriesOfPixel((await pixelsAt(page, [share]))[0]), { timeout: RUN }).toBe(seriesOf(numberOf(string.label)));
     expect(await moduleWrites(page)).toBe(writes);
   });
 
@@ -230,7 +248,7 @@ test.describe("a string traced and selected", () => {
     const seen = await seenOf(page, point, answer, s12);
     const over = await shareOf(page, point, answer, seen);
     // Another module of the string, not the one under the pointer: the whole string is traced.
-    const another = await shareOf(page, point, answer, await seenOf(page, point, answer, { ...s12, modules: s12.modules.filter((idx) => idx !== seen) }));
+    const another = await shareOf(page, point, answer, await seenOf(page, point, answer, { ...s12, modules: s12.modules.filter((idx) => idx !== seen) }), true);
     const box = (await sceneCanvas(page).boundingBox())!;
 
     await page.mouse.move(box.x + over[0] * box.width, box.y + over[1] * box.height);
