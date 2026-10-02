@@ -81,6 +81,11 @@ export type ResultsState = {
   designProgressed: (edit: number, progress: DesignProgress) => void;
   designArrived: (edit: number, design: DesignResult) => void;
   designFailed: (edit: number, failure: Failure) => void;
+  /**
+   * The option the document chose, when the run holds it: chosen at once, without a run, since every option is in
+   * the run's answer (plan/phase-07-plan.md, decision 3). A key the run does not hold leaves the run's own choice.
+   */
+  optionChosen: (key: string) => void;
 
   sunAsked: (key: SunKey) => void;
   sunArrived: (day: SunDay) => void;
@@ -116,6 +121,12 @@ const arrived = <Value>(kept: Kept<Value>, edit: number, value: Value): Kept<Val
 });
 const failed = <Value>(kept: Kept<Value>, failure: Failure): Kept<Value> => ({ ...kept, status: "failed", failure });
 
+/** The run with the option of *key* chosen, when it holds it; the same run otherwise. */
+export function withTheChoice(design: DesignResult, key: string | null | undefined): DesignResult {
+  if (!key || key === design.chosen_option || !design.options.some((option) => option.key === key)) return design;
+  return { ...design, chosen_option: key };
+}
+
 export function createResultsStore() {
   return createStore<ResultsState>()((set, get) => ({
     layout: NOTHING,
@@ -142,6 +153,12 @@ export function createResultsStore() {
     },
     designFailed(edit, failure) {
       if (get().design.asked === edit) set({ design: failed(get().design, failure), progress: null });
+    },
+
+    optionChosen(key) {
+      const kept = get().design;
+      const value = kept.value ? withTheChoice(kept.value, key) : null;
+      if (value && value !== kept.value) set({ design: { ...kept, value } });
     },
 
     sunAsked: (key) => set({ sun: { ...get().sun, asked: sunKeyOf(key), failure: null } }),

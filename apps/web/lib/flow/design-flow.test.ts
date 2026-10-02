@@ -474,6 +474,32 @@ describe("an edit asks for what it changes (plan/phase-07-plan.md, decision 2)",
     expect(runs).toHaveLength(1);
   });
 
+  test("an option chosen is the run's choice at once, without a request", async () => {
+    const { project, results, runs, pass } = await opened();
+    const both = { ...design(790), options: [{ key: "29x22x1" }, { key: "26x24x1" }] } as unknown as DesignResult;
+    project.getState().commit(voltage(1000));
+    pass(DESIGN_PAUSE);
+    runs[1]?.answer(both);
+    await settled();
+
+    project.getState().commit(choice("26x24x1"));
+
+    expect(designOf(results.getState())?.chosen_option).toBe("26x24x1");
+    expect(runs).toHaveLength(2);
+  });
+
+  test("an option chosen while a run is on its way holds when the run lands", async () => {
+    const { project, results, runs, pass } = await opened();
+    project.getState().commit(voltage(1000));
+    pass(DESIGN_PAUSE);
+
+    project.getState().commit(choice("19x37x2"));
+    runs[1]?.answer({ ...design(790), chosen_option: "18x42x2", options: [{ key: "18x42x2" }, { key: "19x37x2" }] } as unknown as DesignResult);
+    await settled();
+
+    expect(designOf(results.getState())?.chosen_option).toBe("19x37x2");
+  });
+
   test("an option chosen while a run waits leaves the run to go on", async () => {
     const { project, runs, results, pass } = await opened();
 

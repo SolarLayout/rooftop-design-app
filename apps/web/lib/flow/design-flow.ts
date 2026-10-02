@@ -11,7 +11,7 @@ import { CLOCK_OF_THE_BROWSER, type Clock } from "../clock";
 import { hoursOf, QUARTER_HOUR } from "../scene/sun-day";
 import { heldHourOf } from "../studio/sun-time";
 import type { ProjectState, ProjectStore } from "../stores/project-store";
-import { sunKeyOf, type Failure, type ResultsStore, type SunDay, type SunKey } from "../stores/results-store";
+import { sunKeyOf, withTheChoice, type Failure, type ResultsStore, type SunDay, type SunKey } from "../stores/results-store";
 import type { ViewStore } from "../stores/view-store";
 
 export type FlowApi = Pick<Api, "getDemo" | "computeLayout" | "runDesign" | "computeSun">;
@@ -243,7 +243,8 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
         },
       })
       .then(
-        (design) => results.getState().designArrived(edit, design),
+        // An option chosen while the run was on its way is the one the run lands with (plan/phase-07-plan.md, decision 3).
+        (design) => results.getState().designArrived(edit, withTheChoice(design, project.getState().project?.chosen_option)),
         (error: unknown) => {
           if (!call.signal.aborted) results.getState().designFailed(edit, failureOf(error));
         },
@@ -283,6 +284,8 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
     if (parts.layout) askForTheLayout(document, edit);
     askForTheSun();
     followTheShadows();
+    // The option chosen is shown from the run's answer at once.
+    if (!isOpened && before !== null && document.chosen_option !== before.chosen_option) results.getState().optionChosen(document.chosen_option);
     if (!parts.run) return;
     // Nobody edits a design that is just opened: its run need not wait.
     if (isOpened) run(document, edit);
