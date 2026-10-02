@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { SunDay } from "../stores/results-store";
-import { DOME, pointOnDomeOf, sunPathOf } from "./sun-path";
+import { arcOf, DOME, markerOf, pointOnDomeOf, sunPathOf } from "./sun-path";
 
 // The sun path (plan/phase-06-plan.md, decision 10): the day's positions on a dome about the roof's
 // centroid, above the horizon; the shade-free window's part apart; the marker at the view's hour.
@@ -70,5 +70,18 @@ describe("the path of a day", () => {
   test("a day the sun stays down has no path", () => {
     const down: SunDay = { ...PUNE_355, sunriseH: null, sunsetH: null, positions: PUNE_355.positions.map((p) => ({ ...p, elevationDeg: -10 })) };
     expect(sunPathOf(down, 12, WINDOW, CENTRE, RADIUS)).toEqual({ day: [], window: [], marker: null });
+  });
+});
+
+// The arc and the marker apart: the scene memoises the arc on the day, and the hour moves the marker alone.
+describe("the arc and the marker apart", () => {
+  test("the arc is the path's day and window, whatever the hour", () => {
+    const path = sunPathOf(PUNE_355, 16, WINDOW, CENTRE, RADIUS);
+    expect(arcOf(PUNE_355, WINDOW, CENTRE, RADIUS)).toEqual({ day: path.day, window: path.window });
+  });
+
+  test("the marker is the path's marker at the hour; none while the sun is down", () => {
+    expect(markerOf(PUNE_355, 16, CENTRE, RADIUS)).toEqual(sunPathOf(PUNE_355, 16, WINDOW, CENTRE, RADIUS).marker);
+    expect(markerOf(PUNE_355, 6.5, CENTRE, RADIUS)).toBeNull();
   });
 });

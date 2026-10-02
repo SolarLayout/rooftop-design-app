@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { Obstacle } from "../api";
 import type { DraftObstacle } from "../studio/obstacle-fields";
-import { cameraOf, cameraRequestOf, createViewStore, draftOf, draggingOf, isPlayingOf, lensOf, onTheRoofOf, northRequestOf, selectionOf, sunTimeOf, toReviewOf } from "./view-store";
+import { cameraOf, cameraRequestOf, createViewStore, draftOf, draggingOf, isPlayingOf, lensOf, onTheRoofOf, northRequestOf, selectionOf, showsSunPathOf, sunTimeOf, toReviewOf } from "./view-store";
 
 describe("the view", () => {
   test("it begins on the first lens, in 3D, on the design day", () => {
@@ -25,6 +25,17 @@ describe("the view", () => {
 
     expect(onTheRoofOf(store.getState())).toEqual({ sunPath: false, window: true, shadowOutlines: true });
     expect(store.getState()).toBe(before);
+  });
+
+  test("the sun path is drawn in the Sun lens alone, while its switch is on", () => {
+    const store = createViewStore();
+    expect(showsSunPathOf(store.getState())).toBe(false);
+
+    store.getState().showLens("sun");
+    expect(showsSunPathOf(store.getState())).toBe(true);
+
+    store.getState().showOnTheRoof("sunPath", false);
+    expect(showsSunPathOf(store.getState())).toBe(false);
   });
 
   test("whether the time plays is kept; told again, nothing changes", () => {

@@ -2,8 +2,8 @@
 // the bearing of the sun, the read-out of the stage. Solar time throughout, as the engine's.
 import { shown } from "../../components/ui/number-entry";
 import type { Sun } from "../scene/camera";
-import { hourOf } from "../scene/keepout";
-import { QUARTER_HOUR, type DayHours } from "../scene/sun-day";
+import { hourOf, type Callout } from "../scene/keepout";
+import { hoursOf, QUARTER_HOUR, type DayHours } from "../scene/sun-day";
 import type { SunDay } from "../stores/results-store";
 import type { SunTime } from "../stores/view-store";
 
@@ -154,4 +154,27 @@ function whatTheDayIs(dayOfYear: number, lat: number): string | null {
 export function sunLineOf(dayOfYear: number, lat: number, window: { from: number; to: number }): string {
   const what = whatTheDayIs(dayOfYear, lat);
   return [dateOf(dayOfYear).long, what, `shade-free from ${hourOf(window.from)} to ${hourOf(window.to)}`].filter(Boolean).join(" · ");
+}
+
+/**
+ * The callout of the sun's marker (the board "Studio, Sun lens"): the time, with which end of the
+ * shade-free window it is at either; the sun's height and bearing. Null while the sun is down.
+ */
+export function sunCalloutOf(hour: number, sun: Sun | null, window: { from: number; to: number }): Callout | null {
+  if (sun === null || sun.elevationDeg <= 0) return null;
+  const clock = hourOf(hour);
+  const title = hour === window.to ? `${clock} · end of the shade-free window` : hour === window.from ? `${clock} · start of the shade-free window` : clock;
+  return { title, detail: `Sun ${shown(sun.elevationDeg, 1)}° high, ${bearingOf(sun.azimuthDeg)}` };
+}
+
+/**
+ * The words of the sun path the stage draws: the day from sunrise to sunset, and the window's part when it
+ * is drawn thicker. A day the sun stays up runs the whole day; one it stays down has no path: null.
+ */
+export function sunPathLineOf(day: SunDay, window: { from: number; to: number } | null): string | null {
+  const { sky } = hoursOf(day);
+  if (sky === "stays down") return null;
+  const of = `Sun path of ${dateOf(day.dayOfYear).short}`;
+  const path = day.sunriseH === null || day.sunsetH === null ? `${of}, the sun up the whole day` : `${of} from ${hourOf(day.sunriseH)} to ${hourOf(day.sunsetH)}`;
+  return window ? `${path}, the shade-free window from ${hourOf(window.from)} to ${hourOf(window.to)} thicker` : path;
 }

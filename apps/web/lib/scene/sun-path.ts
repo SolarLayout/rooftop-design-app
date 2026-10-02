@@ -36,8 +36,8 @@ function onTheHorizon(a: SunPosition, b: SunPosition): Sun {
   return { elevationDeg: 0, azimuthDeg: a.azimuthDeg + turn * share };
 }
 
-/** The path of the day over the roof, the window's part and the marker at the hour. */
-export function sunPathOf(day: SunDay, hour: number, window: { from: number; to: number }, centre: XY, roofRadius: number): SunPath {
+/** The arc of the day over the roof and the window's part: of the day alone, whatever the hour. */
+export function arcOf(day: SunDay, window: { from: number; to: number }, centre: XY, roofRadius: number): Pick<SunPath, "day" | "window"> {
   const on = (sun: Sun) => pointOnDomeOf(sun, centre, roofRadius);
   const { positions } = day;
   const path: XYZ[] = [];
@@ -48,6 +48,16 @@ export function sunPathOf(day: SunDay, hour: number, window: { from: number; to:
     if (isUp) path.push(on(position));
   });
   const inWindow = positions.filter((position) => position.elevationDeg > 0 && position.hour >= window.from && position.hour <= window.to).map(on);
+  return { day: path, window: inWindow };
+}
+
+/** Where the marker stands on the dome at an hour of the day; null while the sun is down. */
+export function markerOf(day: SunDay, hour: number, centre: XY, roofRadius: number): XYZ | null {
   const now = sunAt(day, hour);
-  return { day: path, window: inWindow, marker: now && now.elevationDeg > 0 ? on(now) : null };
+  return now && now.elevationDeg > 0 ? pointOnDomeOf(now, centre, roofRadius) : null;
+}
+
+/** The path of the day over the roof, the window's part and the marker at the hour. */
+export function sunPathOf(day: SunDay, hour: number, window: { from: number; to: number }, centre: XY, roofRadius: number): SunPath {
+  return { ...arcOf(day, window, centre, roofRadius), marker: markerOf(day, hour, centre, roofRadius) };
 }

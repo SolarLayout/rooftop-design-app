@@ -108,6 +108,8 @@ export const northRequestOf = (state: ViewState) => state.northRequest;
 export const sunTimeOf = (state: ViewState) => state.sunTime;
 export const isPlayingOf = (state: ViewState) => state.isPlaying;
 export const onTheRoofOf = (state: ViewState) => state.onTheRoof;
+/** Whether the stage draws the sun path: in the Sun lens alone, while its switch is on (decision 16). */
+export const showsSunPathOf = (state: ViewState) => state.lens === "sun" && state.onTheRoof.sunPath;
 export const selectionOf = (state: ViewState) => state.selection;
 export const draftOf = (state: ViewState) => state.draft;
 export const toReviewOf = (state: ViewState) => state.toReview;
