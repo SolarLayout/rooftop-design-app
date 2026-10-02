@@ -58,6 +58,7 @@ theme (`:root`).
 | `--color-note-surface` | `#1E1A10` | Background of a note or of a selected card |
 | `--color-note-line` | `#3A3220` | Border of a note |
 | `--color-ok` | `#3DD6A0` | Tick, saved dot, feasible band |
+| `--color-sun-core` | `#FFD36B` | The middle of the sun's marker over the stage: the 3D palette's `sunCore`, round the accent's disc |
 | `--color-outline-fill` | `rgba(255,176,32,.09)` | The fill of the outline on the map: accent at 9 % |
 | `--color-obstacle-line` | `#FFFFFF` | The line of an obstacle drawn on the map: light over dark, so that the roof stays the amber thing on the screen; the selected one is accent |
 | `--color-obstacle-fill` | `rgba(11,14,19,.55)` | The fill of an obstacle drawn on the map: the ground at 55 % |
@@ -297,6 +298,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--halo-saved-out` | `0 0 0 5px rgba(61,214,160,0)` | Around the saved dot, at the middle of its pulse |
 | `--halo-corner` | `0 0 0 0 rgba(255,176,32,.55)` | Around the corner being edited, where its pulse begins and ends |
 | `--halo-corner-out` | `0 0 0 9px rgba(255,176,32,0)` | Around the corner being edited, at the middle of its pulse |
+| `--halo-sun` | `0 0 16px 4px rgba(255,176,32,.45)` | The sun's glow around its marker over the stage |
 
 ## States
 
@@ -355,6 +357,7 @@ and the file equal.
 | `STEM_TURN` | `44` | Pixels the turn handle of a selected obstacle stands off the middle of the north edge of its top, due north, on its stem |
 | `STEM_HEIGHT` | `40` | Pixels the height handle stands over the middle of the top, on its vertical stem, on desktop |
 | `STEM_HEIGHT_TOUCH` | `52` | The same on phone and tablet |
+| `TIME_REST` | `150` | Milliseconds the time of the sun must stand still before the engine's shadow outlines are asked for it: a drag of the timeline passes forty quarter hours |
 
 ## Layers
 

@@ -2,7 +2,7 @@
 
 import type { ThreeEvent } from "@react-three/fiber";
 import { useLayoutEffect, useMemo, useRef } from "react";
-import { BoxGeometry, EdgesGeometry, InstancedMesh, MeshStandardMaterial } from "three";
+import { BackSide, BoxGeometry, EdgesGeometry, InstancedMesh, MeshStandardMaterial } from "three";
 import type { Layout } from "@/lib/api";
 import type { XY } from "@/lib/scene/adapter";
 import { moduleMatrixOf, placementOf, type Placement, type Thickness } from "@/lib/scene/modules";
@@ -88,7 +88,7 @@ export function Modules({ layout, heightAt, flushClearance, selected, onPressMod
     () => layout.modules.map((module) => placementOf(module, layout.kind, heightAt, flushClearance)),
     [layout, heightAt, flushClearance],
   );
-  const frame = useMemo(() => new MeshStandardMaterial({ color: PALETTE.moduleFrame, roughness: 0.5, metalness: 0.6 }), []);
+  const frame = useMemo(() => new MeshStandardMaterial({ color: PALETTE.moduleFrame, roughness: 0.5, metalness: 0.6, shadowSide: BackSide }), []);
   const glass = useMemo(() => new MeshStandardMaterial({ color: PALETTE.moduleGlass, roughness: 0.25, metalness: 0.1 }), []);
   const chosen = selected === null ? undefined : placements[selected];
 

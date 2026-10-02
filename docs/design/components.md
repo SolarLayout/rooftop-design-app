@@ -230,6 +230,25 @@ under them with ticks at sunrise, noon and sunset. The boards "Studio, Sun lens"
   The tooltip of the track names them (`Tooltip` with `shortcuts`).
 - A day the sun stays up or down runs from 00:00 to 24:00, and the line under the time says which.
 
+## Sun path on the stage (Sun lens)
+The board "Sun path and shadow outlines". The day's positions of `/sun` on a dome of 1.3 times the roof's radius about
+its centroid, from the horizon at sunrise to the horizon at sunset: a line of 2 px in the scene's `sun` (1.5 on phone),
+the shade-free window's part 5 px (4 on phone), unlit. The marker at the view's hour is DOM placed by projection: a
+disc of 20 (14 on phone) in the accent with a core of `sun-core` half its size and the glow `halo-sun`. Hour marks on
+tablet and desktop: a ring of 10 at sunrise and sunset on the horizon, at the window's ends and noon on the arc, each
+with a chip in the look of the stage's labels ("06:33 sunrise", "09:00", "12:00", "16:00", "sunset 17:27"). The
+marker's callout ("16:00 · end of the shade-free window", "Sun 18.0° high, 56.6° W of south") stands to its right,
+to its left past 60 % of the stage, under it while the marker is in the stage's top 140, and only while the marker
+is on the canvas; the mark at the marker's hour gives way to it; the callout of what is selected wins over it.
+Nothing is drawn below the horizon. In the Sun lens alone, while the switch Sun path is on; the window's part while
+Shade-free window is on.
+
+## Shadow outlines (Sun lens)
+The engine's shadows of the parapet and the obstacles on the roof surface at the view's time (`/sun` with `shadows`,
+the roof alone), dashed in `keepOutLine` without a fill, on the roof under the modules and over the rendered
+shadows: where the two agree, the view is true. Asked once the time has stood still for `TIME_REST`, shown only while
+the time is the one they are of; off at first.
+
 ## Time pill (every lens)
 The time on the stage of the Roof, Array and Strings lenses, as the approved Array boards draw it: a pill of 44
 (48 on tablet), `surface-1`, border `line`, `shadow-raised`: round play 32 (36 on tablet), the day and the time in

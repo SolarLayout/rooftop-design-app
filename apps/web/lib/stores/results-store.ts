@@ -4,7 +4,7 @@
 // A result of before stays until a newer one is there. An answer to what was overtaken is dropped here,
 // whoever brings it: a late answer never replaces a newer one.
 import { createStore } from "zustand/vanilla";
-import type { DesignProgress, DesignResult, LayoutResponse } from "../api";
+import type { DesignProgress, DesignResult, LayoutResponse, SunResponse } from "../api";
 import type { SunTime } from "./view-store";
 
 /** Waiting: a design run that is asked for and has not begun, because more edits may follow. */
@@ -48,10 +48,27 @@ type KeptSun = {
   failure: Failure | null;
 };
 
+/** A polygon of the API: an exterior and its holes, in the roof's metres. */
+type Polygon = NonNullable<SunResponse["shadows"]>["polygons"][number];
+
+/**
+ * The engine's shadows of the parapet and the obstacles on the roof surface at one time (plan/phase-06-plan.md,
+ * decisions 7 and 9), with the key of the roof, the day and the hour they are of.
+ */
+export type ShadowOutlines = { key: string; hour: number; polygons: Polygon[] };
+
+type KeptShadows = {
+  value: ShadowOutlines | null;
+  /** The key of the roof, the day and the hour shown now: the outlines are shown only while they are of it. */
+  wanted: string | null;
+  failure: Failure | null;
+};
+
 export type ResultsState = {
   layout: Kept<LayoutResponse>;
   design: Kept<DesignResult>;
   sun: KeptSun;
+  shadows: KeptShadows;
   /** How far the run is, from the engine. It is for showing: a run is over when its result is there. */
   progress: DesignProgress | null;
 
@@ -69,6 +86,11 @@ export type ResultsState = {
   sunArrived: (day: SunDay) => void;
   sunFailed: (key: SunKey, failure: Failure) => void;
 
+  /** The outlines of this key are wanted now; null when none are (the switch is off). */
+  shadowsWanted: (key: string | null) => void;
+  shadowsArrived: (outlines: ShadowOutlines) => void;
+  shadowsFailed: (key: string, failure: Failure) => void;
+
   /** Another design is opened: nothing of the one before stays. */
   clear: () => void;
 };
@@ -77,6 +99,7 @@ export type ResultsStore = ReturnType<typeof createResultsStore>;
 
 const NOTHING = { value: null, edit: null, asked: null, status: "idle", failure: null } as const;
 const NO_SUN: KeptSun = { value: null, asked: null, failure: null };
+const NO_SHADOWS: KeptShadows = { value: null, wanted: null, failure: null };
 
 const asked = <Value>(kept: Kept<Value>, edit: number, status: Status): Kept<Value> => ({
   ...kept,
@@ -98,6 +121,7 @@ export function createResultsStore() {
     layout: NOTHING,
     design: NOTHING,
     sun: NO_SUN,
+    shadows: NO_SHADOWS,
     progress: null,
 
     layoutAsked: (edit) => set({ layout: asked(get().layout, edit, "running") }),
@@ -128,7 +152,15 @@ export function createResultsStore() {
       if (get().sun.asked === sunKeyOf(key)) set({ sun: { ...get().sun, failure } });
     },
 
-    clear: () => set({ layout: NOTHING, design: NOTHING, sun: NO_SUN, progress: null }),
+    shadowsWanted: (wanted) => set((state) => (state.shadows.wanted === wanted ? state : { shadows: { ...state.shadows, wanted, failure: null } })),
+    shadowsArrived(outlines) {
+      if (get().shadows.wanted === outlines.key) set({ shadows: { ...get().shadows, value: outlines, failure: null } });
+    },
+    shadowsFailed(key, failure) {
+      if (get().shadows.wanted === key) set({ shadows: { ...get().shadows, failure } });
+    },
+
+    clear: () => set({ layout: NOTHING, design: NOTHING, sun: NO_SUN, shadows: NO_SHADOWS, progress: null }),
   }));
 }
 
@@ -147,6 +179,12 @@ export const progressOf = (state: ResultsState) => state.progress;
 
 /** The sun's day over the roof; null while none has come. */
 export const sunDayOf = (state: ResultsState) => state.sun.value;
+
+/** The engine's shadow outlines of the time shown; null while none are wanted, or none of that time have come. */
+export function shadowOutlinesOf(state: ResultsState): ShadowOutlines | null {
+  const { value, wanted } = state.shadows;
+  return value && value.key === wanted ? value : null;
+}
 
 /** Why the sun asked for last did not come, in the words of the API. */
 export const sunFailureOf = (state: ResultsState) => state.sun.failure;

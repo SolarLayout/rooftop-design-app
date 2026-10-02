@@ -11,10 +11,11 @@ import { anchorOf } from "@/lib/scene/keepout";
 import { anchorOfObstacle, canBeDragged } from "@/lib/scene/obstacles";
 import { anchorOfModule, anchorOfRoof, selectionOfPick, type Picked } from "@/lib/scene/pick";
 import { labelPlacesOf } from "@/lib/scene/projection";
+import { whatIsDrawnOf } from "@/lib/scene/what-is-drawn";
 import type { Cursor, StageStore } from "@/lib/scene/stage-store";
 import { projectOf } from "@/lib/stores/project-store";
 import { layoutOf } from "@/lib/stores/results-store";
-import { draftOf, draggingOf, selectionOf, toReviewOf } from "@/lib/stores/view-store";
+import { cameraOf, draftOf, draggingOf, lensOf, selectionOf, showsSunPathOf, toReviewOf } from "@/lib/stores/view-store";
 import { withDraftAt, withObstacleReplaced } from "@/lib/studio/obstacle-fields";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
 import { Building, BUILDING_DEPTH } from "./Building";
@@ -25,7 +26,9 @@ import { Modules } from "./Modules";
 import { Footprint, Obstacles } from "./Obstacles";
 import { Projector, type Anchor } from "./Projector";
 import { SceneCanvas } from "./SceneCanvas";
+import { ShadowOutlines } from "./ShadowOutlines";
 import { SunLight } from "./SunLight";
+import { SunPath } from "./SunPath";
 
 type Props = {
   onContextLost: () => void;
@@ -47,8 +50,8 @@ const ON_THE_ROOF = new Set<Picked["what"]>(["roof", "module", "keepout"]);
  * (plan/phase-05-plan.md, decisions 1 and 2). It is loaded in the browser alone. A press selects what it
  * hit (decision 10); with a draft standing, a press on the roof places the draft there (decision 15); the
  * selected obstacle is dragged on the roof plane and drawn where the pointer has it (decision 12). The
- * scene reads nothing of the time: the light and the camera do, so that the time redraws them alone
- * (plan/reference/r3f-notes.md, fix 12).
+ * scene reads nothing of the time: the light, the camera and the sun path's marker do, so that the time
+ * redraws them alone (plan/reference/r3f-notes.md, fix 12). The sun path is drawn in the Sun lens alone.
  */
 export function Scene({ onContextLost, stage }: Props) {
   const project = useProject(projectOf);
@@ -57,6 +60,8 @@ export function Scene({ onContextLost, stage }: Props) {
   const draft = useView(draftOf);
   const toReview = useView(toReviewOf);
   const dragging = useView(draggingOf);
+  const showsSunPath = useView(showsSunPathOf);
+  const drawn = whatIsDrawnOf(useView(lensOf), useView(cameraOf));
   const { view, project: store } = useStores();
   const roof = project?.roof ?? null;
   const flushClearance = project?.array.flush_clearance_m ?? 0.1;
@@ -69,7 +74,7 @@ export function Scene({ onContextLost, stage }: Props) {
     if (!roof || !frame) return [];
     const [cx, cy] = frame.centroid;
     const about = ([x, y, z]: XYZ) => toScene([x - cx, y - cy, z]);
-    const labels = labelPlacesOf(roof.outline, frame.heightAt).map(({ words, at }) => ({ words, at: about(at) }));
+    const labels = drawn.edgeLabels ? labelPlacesOf(roof.outline, frame.heightAt).map(({ words, at }) => ({ words, at: about(at) })) : [];
     const callout = (at: XYZ): Anchor => ({ words: "", at: about(at), kind: "callout" });
     if (draft) return [...labels, callout(anchorOfObstacle(draft, frame.heightAt))];
     if (selection?.kind === "roof") return [...labels, callout(anchorOfRoof(roof.outline, frame.heightAt))];
@@ -83,7 +88,7 @@ export function Scene({ onContextLost, stage }: Props) {
     const part = selection?.kind === "keepout" ? layout?.layout.keepout[selection.index] : undefined;
     const hung = part ? anchorOf(part) : null;
     return hung ? [...labels, callout([hung[0], hung[1], frame.heightAt(hung)])] : labels;
-  }, [roof, frame, layout, selection, draft, dragging]);
+  }, [roof, frame, layout, selection, draft, dragging, drawn.edgeLabels]);
 
   if (!roof || !frame || !about) return null;
   const [cx, cy] = frame.centroid;
@@ -111,6 +116,7 @@ export function Scene({ onContextLost, stage }: Props) {
       <CameraRig radius={frame.radius} />
       <Projector anchors={anchors} stage={stage} />
       <SunLight radius={frame.radius} />
+      {showsSunPath ? <SunPath centre={frame.centroid} radius={frame.radius} stage={stage} /> : null}
       <group position={[ox, oy, oz]}>
         <Building roof={roof} onPressRoof={(event) => pressed({ what: "roof" }, event)} onOverRoof={over("roof", "pointer")} />
         <Obstacles
@@ -140,7 +146,8 @@ export function Scene({ onContextLost, stage }: Props) {
             onWrite={COUNTS_MODULE_WRITES ? stage.getState().countModuleWrite : undefined}
           />
         ) : null}
-        {layout ? (
+        <ShadowOutlines heightAt={frame.heightAt} />
+        {layout && drawn.keptClear ? (
           <KeepOut
             parts={layout.layout.keepout}
             heightAt={frame.heightAt}

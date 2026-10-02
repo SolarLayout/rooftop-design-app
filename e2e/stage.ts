@@ -149,12 +149,22 @@ export async function inThePlan(page: Page): Promise<PlanFrame> {
       { timeout: A_SCENE },
     )
     .toBe(true);
-  const placed = await Promise.all(
-    [0, 1, 2, 3].map(async (n) => {
-      const box = (await labels.nth(n).boundingBox())!;
-      return { words: await labels.nth(n).innerText(), x: box.x + box.width / 2, y: box.y + box.height / 2 };
-    }),
-  );
+  return planFrameOf(page);
+}
+
+/**
+ * The frame of the plan as it stands now, from the four edge labels, also after a zoom has taken them off the
+ * canvas: they are still placed where their points fall, only clipped.
+ */
+export async function planFrameOf(page: Page): Promise<PlanFrame> {
+  const placed = await stage(page)
+    .getByTestId("stage-label")
+    .evaluateAll((nodes) =>
+      nodes.map((node) => {
+        const box = node.getBoundingClientRect();
+        return { words: node.textContent ?? "", x: box.x + box.width / 2, y: box.y + box.height / 2 };
+      }),
+    );
   const [north, south] = placed.filter((label) => label.words === "90.0 m").sort((a, b) => a.y - b.y);
   const [west, east] = placed.filter((label) => label.words === "40.0 m").sort((a, b) => a.x - b.x);
   return (metresEast, metresNorth) => ({

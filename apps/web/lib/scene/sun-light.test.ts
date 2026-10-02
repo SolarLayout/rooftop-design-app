@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { fadeOf, intensitiesOf, shadowBiasOf } from "./sun-light";
 
 // The sun light of the scene, from the reference project (plan/reference/r3f-notes.md, fixes 5 to 7):
-// the light fades out below 8°, the shadow's bias grows as the sun grazes, the ambient follows the sun.
+// the light fades out below 8°, the shadow's bias is held to what it shifts, the ambient follows the sun.
 
 describe("the fade of the light near the horizon", () => {
   test("is whole above 8°, none at the horizon, in between below", () => {
@@ -14,14 +14,28 @@ describe("the fade of the light near the horizon", () => {
   });
 });
 
+// The bias moves the point that looks the shadow map up along its normal: on a level roof the shadow then
+// falls as on a plane that much higher, shorter by the bias times the cotangent of the sun's height. The
+// rendered shadows must agree with the engine's within 0.2 m (plan/phase-06-plan.md, decision 9).
 describe("the shadow bias", () => {
-  test("is at least 0.1 and grows as the sun grazes, up to eight times", () => {
-    const high = shadowBiasOf(60, 49.24, 2048);
-    const low = shadowBiasOf(5, 49.24, 2048);
-    expect(high.normalBias).toBeGreaterThanOrEqual(0.1);
-    expect(low.normalBias).toBeGreaterThan(high.normalBias);
-    expect(shadowBiasOf(1, 49.24, 2048).normalBias).toBeCloseTo(shadowBiasOf(3, 49.24, 2048).normalBias, 6);
-    expect(high.bias).toBe(-0.00012);
+  const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
+  const shiftOf = (elevationDeg: number) => shadowBiasOf(elevationDeg, 49.24, 2048).normalBias / Math.tan(toRadians(elevationDeg));
+
+  test.each([1, 4, 8, 12, 17.97, 30, 48, 60, 89.9])("shifts a shadow on a level roof by no more than 0.05 m at %d°", (elevationDeg) => {
+    expect(shiftOf(elevationDeg)).toBeLessThanOrEqual(0.05 + 1e-12);
+  });
+
+  test("is never more than a texel of the shadow map, and never less than nothing", () => {
+    const texel = (49.24 * 2.2) / 2048;
+    for (const elevationDeg of [1, 18, 45, 90]) {
+      const { normalBias } = shadowBiasOf(elevationDeg, 49.24, 2048);
+      expect(normalBias).toBeGreaterThanOrEqual(0);
+      expect(normalBias).toBeLessThanOrEqual(texel + 1e-12);
+    }
+  });
+
+  test("the depth bias is a fraction of a texel's depth", () => {
+    expect(shadowBiasOf(18, 49.24, 2048).bias).toBe(-0.00012);
   });
 });
 

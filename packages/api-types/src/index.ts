@@ -1741,7 +1741,8 @@ export interface components {
         };
         /**
          * ShadowRequest
-         * @description Shadows of the parapet and the obstacles of a project at one solar hour.
+         * @description Shadows of the parapet and the obstacles of a roof at one solar hour. The roof alone: nothing else
+         *     of a project casts a shadow, and a whole document carries its weather.
          */
         ShadowRequest: {
             /**
@@ -1755,7 +1756,7 @@ export interface components {
              * @default 0
              */
             plane_height_m: number;
-            project: components["schemas"]["Project"];
+            roof: components["schemas"]["Roof"];
         };
         /**
          * Shadows

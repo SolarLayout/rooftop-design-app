@@ -1,4 +1,5 @@
-// The numbers of the sun light, from the reference project (plan/reference/r3f-notes.md, fixes 5 to 7).
+// The numbers of the sun light, from the reference project (plan/reference/r3f-notes.md, fixes 5 to 7), the
+// bias held to the engine's shadows (plan/phase-06-plan.md, decision 9).
 // Pure functions of the sun's height in degrees; the component sets what they give on the light.
 
 /** Below this height the light fades, and at the horizon it is out: shadow maps degrade badly there. */
@@ -13,14 +14,20 @@ export function fadeOf(elevationDeg: number): number {
   return elevationDeg / FADE_BELOW_DEG;
 }
 
+/** The most a shadow on a level roof may move by the bias, in metres: well inside the 0.2 m of the acceptance. */
+const SHIFT_AT_MOST = 0.05;
+
 /**
- * The bias of the shadow map, scaled with the sun: as it grazes the roof the depth changes fast across
- * one texel of the map, so the sample point is moved along the normal by more texels, up to eight.
+ * The bias of the shadow map, held to what it moves (plan/phase-06-plan.md, decision 9). The normal bias
+ * lifts the point that looks the map up along its normal: a shadow on a level roof falls as on a plane
+ * that much higher, shorter by the bias times the cotangent of the sun's height. So it is at most a
+ * texel, and less as the sun grazes, so that the shift stays under 5 cm. The acne it would have hidden is
+ * kept away by the casters, which draw their back faces into the map (`shadowSide`), and the depth bias.
  */
 export function shadowBiasOf(elevationDeg: number, radius: number, mapSize: number): { bias: number; normalBias: number } {
   const texel = (radius * 2.2) / mapSize;
-  const grazing = Math.min(8, 1 / Math.max(0.12, Math.sin(toRadians(elevationDeg))));
-  return { bias: -0.00012, normalBias: Math.max(0.1, texel * 3 * grazing) };
+  const height = toRadians(Math.max(0, Math.min(90, elevationDeg)));
+  return { bias: -0.00012, normalBias: Math.min(texel, SHIFT_AT_MOST * Math.tan(height)) };
 }
 
 /**

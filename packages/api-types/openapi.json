@@ -3021,7 +3021,7 @@
         "type": "object"
       },
       "ShadowRequest": {
-        "description": "Shadows of the parapet and the obstacles of a project at one solar hour.",
+        "description": "Shadows of the parapet and the obstacles of a roof at one solar hour. The roof alone: nothing else\nof a project casts a shadow, and a whole document carries its weather.",
         "properties": {
           "hour": {
             "description": "Hour of the day in solar time",
@@ -3037,12 +3037,12 @@
             "title": "Plane Height M",
             "type": "number"
           },
-          "project": {
-            "$ref": "#/components/schemas/Project"
+          "roof": {
+            "$ref": "#/components/schemas/Roof"
           }
         },
         "required": [
-          "project",
+          "roof",
           "hour"
         ],
         "title": "ShadowRequest",

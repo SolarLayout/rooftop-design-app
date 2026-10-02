@@ -2,7 +2,7 @@
 
 import { useThree, type ThreeEvent } from "@react-three/fiber";
 import { useMemo, useRef, useState } from "react";
-import { BoxGeometry, BufferGeometry, CylinderGeometry, EdgesGeometry, ExtrudeGeometry, Float32BufferAttribute, MeshStandardMaterial, Shape, Vector2 } from "three";
+import { BackSide, BoxGeometry, BufferGeometry, CylinderGeometry, EdgesGeometry, ExtrudeGeometry, Float32BufferAttribute, MeshStandardMaterial, Shape, Vector2 } from "three";
 import type { Obstacle } from "@/lib/api";
 import { FLAT, toScene, toScenePoint, type XY } from "@/lib/scene/adapter";
 import { halfSidesOf, movedTo, onTheRoofPlane, type Dragging } from "@/lib/scene/drag";
@@ -47,7 +47,8 @@ const DASH = { dashSize: 0.4, gapSize: 0.25 };
 type Materials = Record<"top" | "lit" | "trunk" | "crown", MeshStandardMaterial>;
 
 function materialOf(name: PaletteName): MeshStandardMaterial {
-  return new MeshStandardMaterial({ color: PALETTE[name], roughness: ROUGHNESS });
+  // The back faces cast (plan/phase-06-plan.md, decision 9): the bias is small, and the lit faces take no acne.
+  return new MeshStandardMaterial({ color: PALETTE[name], roughness: ROUGHNESS, shadowSide: BackSide });
 }
 
 /**

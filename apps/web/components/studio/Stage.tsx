@@ -10,18 +10,19 @@ import { classNames } from "@/components/ui/class-names";
 import { shown } from "@/components/ui/number-entry";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
-import { calloutOf } from "@/lib/scene/keepout";
+import { calloutOf, hourOf } from "@/lib/scene/keepout";
 import { calloutOfObstacle, wordsOf } from "@/lib/scene/obstacles";
 import { createStageStore, cursorOf, groundOf, moduleWritesOf, type Cursor, type StageStore } from "@/lib/scene/stage-store";
 import type { Lens } from "@/lib/routes";
 import { projectOf } from "@/lib/stores/project-store";
-import { layoutOf, readoutsOf, sunDayOf } from "@/lib/stores/results-store";
-import { draftOf, selectionOf, sunTimeOf, toReviewOf } from "@/lib/stores/view-store";
-import { readOutOf, sunLineOf } from "@/lib/studio/sun-time";
+import { layoutOf, readoutsOf, shadowOutlinesOf, sunDayOf } from "@/lib/stores/results-store";
+import { draftOf, lensOf, onTheRoofOf, selectionOf, showsSunPathOf, sunTimeOf, toReviewOf } from "@/lib/stores/view-store";
+import { readOutOf, sunLineOf, sunPathLineOf } from "@/lib/studio/sun-time";
 import { useSun } from "@/components/scene/use-sun";
 import { Callout } from "./Callout";
 import { Handles } from "./Handles";
 import { Labels } from "./Labels";
+import { SunMarks } from "./SunMarks";
 import { LayoutFailed } from "./LayoutFailed";
 import { PlanFallback } from "./PlanFallback";
 import { lineOf } from "./stage-view";
@@ -101,6 +102,7 @@ export function Stage({ lens, name, className }: Props) {
           <Scene onContextLost={() => setLost(true)} stage={stage} />
         )}
       </div>
+      {cannotDraw ? null : <SunMarks stage={stage} />}
       {cannotDraw ? null : <Labels stage={stage} />}
       {cannotDraw ? null : <Callout stage={stage} />}
       {cannotDraw ? null : <Handles stage={stage} />}
@@ -121,13 +123,13 @@ export function Stage({ lens, name, className }: Props) {
           {ATTRIBUTION}
         </p>
       ) : null}
-      <OnTheRoof stage={stage} />
+      <OnTheRoof stage={stage} isScene={!cannotDraw} />
     </div>
   );
 }
 
 /** The text equivalent of the scene: what stands on the roof, for a screen reader and for the tests. */
-function OnTheRoof({ stage }: { stage: StageStore }) {
+function OnTheRoof({ stage, isScene }: { stage: StageStore; isScene: boolean }) {
   const ground = useStore(stage, groundOf);
   const project = useProject(projectOf);
   const readouts = useResults(readoutsOf);
@@ -135,12 +137,19 @@ function OnTheRoof({ stage }: { stage: StageStore }) {
   const sunDay = useResults(sunDayOf);
   const sun = useSun();
   const { hour } = useView(sunTimeOf);
+  const outlines = useResults(shadowOutlinesOf);
+  const onTheRoof = useView(onTheRoofOf);
+  const lens = useView(lensOf);
   const selection = useView(selectionOf);
   const draft = useView(draftOf);
   const toReview = useView(toReviewOf);
+  const showsSunPath = useView(showsSunPathOf);
+  const isWindowThick = onTheRoof.window;
   if (!project) return null;
   const { roof, array } = project;
   const window = { from: array.window_start_h, to: array.window_end_h, allowShaded: array.allow_shaded };
+  // The sun path as the scene draws it: in the Sun lens, while its switch is on, the window thicker while that is on.
+  const sunPath = isScene && showsSunPath && sunDay ? sunPathLineOf(sunDay, isWindowThick ? window : null) : null;
   const selected = selection?.kind === "obstacle" ? selection.index : null;
   const selectedModule = selection?.kind === "module" ? layout?.layout.modules[selection.index] : undefined;
   return (
@@ -170,6 +179,12 @@ function OnTheRoof({ stage }: { stage: StageStore }) {
         <li data-testid="on-the-roof-ground">{ground === "imagery" ? "The ground is the satellite imagery" : "The ground is plain, with a grid"}</li>
       )}
       {sunDay ? <li data-testid="on-the-roof-sun">{readOutOf(sunDay.dayOfYear, hour, sun)}</li> : null}
+      {sunPath ? <li data-testid="on-the-roof-sun-path">{sunPath}</li> : null}
+      {outlines && onTheRoof.shadowOutlines && lens === "sun" ? (
+        <li data-testid="on-the-roof-shadow-outlines">
+          {`The engine's shadow outlines at ${hourOf(outlines.hour)}: ${outlines.polygons.length} ${outlines.polygons.length === 1 ? "polygon" : "polygons"}`}
+        </li>
+      ) : null}
       {layout?.layout.keepout.map((part, index) => (
         <li key={`keepout-${index}`} data-testid="on-the-roof-keepout">
           {calloutOf(part, window).title}: {calloutOf(part, window).detail}

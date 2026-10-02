@@ -19,6 +19,11 @@ export type CameraOfTheStage = { camera: Camera; width: number; height: number }
 
 export type StageState = {
   labels: StageLabel[];
+  /**
+   * The sun path's marker and hour marks (plan/phase-06-plan.md, decision 10), projected apart from the
+   * labels of the scene, so that the hour moves them alone; none while the path is not drawn.
+   */
+  sunLabels: StageLabel[];
   /** Where the camera looks, in degrees clockwise from north. */
   bearingDeg: number;
   ground: Ground;
@@ -32,6 +37,7 @@ export type StageState = {
    */
   moduleWrites: number;
   setLabels: (labels: StageLabel[]) => void;
+  setSunLabels: (labels: StageLabel[]) => void;
   setBearing: (bearingDeg: number) => void;
   setGround: (ground: Ground) => void;
   /** A thing of the scene says that the pointer came over it and what cursor it wants; null when the pointer left. */
@@ -48,6 +54,7 @@ const tenths = (degrees: number) => Math.round(degrees * 10);
 export function createStageStore() {
   return createStore<StageState>()((set, get) => ({
     labels: [],
+    sunLabels: [],
     bearingDeg: 0,
     ground: "none",
     over: {},
@@ -55,6 +62,9 @@ export function createStageStore() {
     moduleWrites: 0,
     setLabels(labels) {
       if (!sameLabels(get().labels, labels)) set({ labels });
+    },
+    setSunLabels(sunLabels) {
+      if (!sameLabels(get().sunLabels, sunLabels)) set({ sunLabels });
     },
     setBearing(bearingDeg) {
       if (tenths(get().bearingDeg) !== tenths(bearingDeg)) set({ bearingDeg });
@@ -78,6 +88,7 @@ export function createStageStore() {
 }
 
 export const labelsOf = (state: StageState) => state.labels;
+export const sunLabelsOf = (state: StageState) => state.sunLabels;
 export const bearingDegOf = (state: StageState) => state.bearingDeg;
 export const groundOf = (state: StageState) => state.ground;
 export const cameraOf = (state: StageState) => state.camera;

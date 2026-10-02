@@ -49,3 +49,6 @@ export const STEM_HEIGHT = 40;
 
 /** The same on phone and tablet. */
 export const STEM_HEIGHT_TOUCH = 52;
+
+/** The time of the sun must stand still this long, in milliseconds, before the engine's shadow outlines are asked for it. */
+export const TIME_REST = 150;

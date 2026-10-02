@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { PerspectiveCamera } from "three";
-import { bearingDegOf, cameraOf, createStageStore, cursorOf, groundOf, labelsOf, moduleWritesOf } from "./stage-store";
+import { bearingDegOf, cameraOf, createStageStore, cursorOf, groundOf, labelsOf, moduleWritesOf, sunLabelsOf } from "./stage-store";
 
 // What the scene tells the DOM over it, written on each drawn frame: it must not wake React for nothing.
 
@@ -138,5 +138,22 @@ describe("the camera", () => {
     store.getState().countModuleWrite();
 
     expect(moduleWritesOf(store.getState())).toBe(2);
+  });
+});
+
+// The sun path's marks are projected apart from the labels of the scene, so that the hour moves them alone.
+describe("the sun's labels", () => {
+  test("are none at the start, kept apart from the labels, and taken only when they moved", () => {
+    const store = createStageStore();
+    expect(sunLabelsOf(store.getState())).toEqual([]);
+    const marker = { kind: "sun" as const, words: "", x: 100, y: 50, visible: true };
+
+    store.getState().setSunLabels([marker]);
+    const before = store.getState();
+    store.getState().setSunLabels([{ ...marker, x: 100.3 }]);
+
+    expect(sunLabelsOf(store.getState())).toEqual([marker]);
+    expect(store.getState()).toBe(before);
+    expect(labelsOf(store.getState())).toEqual([]);
   });
 });

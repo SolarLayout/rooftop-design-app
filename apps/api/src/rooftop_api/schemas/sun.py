@@ -5,15 +5,16 @@ from typing import Annotated, Literal, Self
 from pydantic import BaseModel, Field, model_validator
 
 from rooftop_api.schemas.common import DayOfYear, Input, Latitude, Longitude, Polygon, SolarHour
-from rooftop_api.schemas.project import Project
+from rooftop_api.schemas.roof import Roof
 
 DESIGN_DAY = "design_day"
 
 
 class ShadowRequest(Input):
-    """Shadows of the parapet and the obstacles of a project at one solar hour."""
+    """Shadows of the parapet and the obstacles of a roof at one solar hour. The roof alone: nothing else
+    of a project casts a shadow, and a whole document carries its weather."""
 
-    project: Project
+    roof: Roof
     hour: SolarHour
     plane_height_m: Annotated[
         float, Field(ge=0, description="Height above the roof of the plane they fall on")

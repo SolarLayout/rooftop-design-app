@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { bearingOf, dateOf, dayOfChoice, sunAtOf, sunLineOf, dayOfYearOf, daysOf, designDayLineOf, heldHourOf, partsOf, readOutOf, ticksOf, timeOfKey } from "./sun-time";
+import { bearingOf, dateOf, dayOfChoice, sunAtOf, sunCalloutOf, sunLineOf, sunPathLineOf, dayOfYearOf, daysOf, designDayLineOf, heldHourOf, partsOf, readOutOf, ticksOf, timeOfKey } from "./sun-time";
 
 describe("the date of a day of the year", () => {
   test.each([
@@ -175,5 +175,47 @@ describe("the line under the Sun lens's title", () => {
 
   test("any other day is its date alone", () => {
     expect(sunLineOf(35, 18.52, { from: 9.25, to: 15.5 })).toBe("4 February · shade-free from 09:15 to 15:30");
+  });
+});
+
+// The callout of the sun's marker (the board "Studio, Sun lens"): the time, and at an end of the shade-free
+// window which end it is; the sun's height and bearing under it.
+describe("the callout of the sun's marker", () => {
+  const WINDOW_9_16 = { from: 9, to: 16 };
+  const AT_16 = { elevationDeg: 17.972, azimuthDeg: 236.642 };
+
+  test("at the window's end it says so", () => {
+    expect(sunCalloutOf(16, AT_16, WINDOW_9_16)).toEqual({ title: "16:00 · end of the shade-free window", detail: "Sun 18.0° high, 56.6° W of south" });
+  });
+
+  test("at the window's start it says so", () => {
+    expect(sunCalloutOf(9, { elevationDeg: 28, azimuthDeg: 133 }, WINDOW_9_16)).toEqual({ title: "09:00 · start of the shade-free window", detail: "Sun 28.0° high, 47.0° E of south" });
+  });
+
+  test("at any other hour the time alone", () => {
+    expect(sunCalloutOf(10.5, { elevationDeg: 42.6, azimuthDeg: 151.5 }, WINDOW_9_16)).toEqual({ title: "10:30", detail: "Sun 42.6° high, 28.5° E of south" });
+  });
+
+  test("none while the sun is down or not known", () => {
+    expect(sunCalloutOf(6.5, { elevationDeg: -0.7, azimuthDeg: 114.5 }, WINDOW_9_16)).toBeNull();
+    expect(sunCalloutOf(10.5, null, WINDOW_9_16)).toBeNull();
+  });
+});
+
+// The text equivalent of the sun path, for a screen reader and the tests.
+describe("the words of the sun path", () => {
+  const DEC = { lat: 18.52, lon: 73.86, day: "design_day" as const, dayOfYear: 355, sunriseH: 6.557, sunsetH: 17.443, positions: [{ hour: 12, elevationDeg: 48, azimuthDeg: 180 }] };
+
+  test("the day, from sunrise to sunset, and the window drawn thicker", () => {
+    expect(sunPathLineOf(DEC, { from: 9, to: 16 })).toBe("Sun path of 21 Dec from 06:33 to 17:27, the shade-free window from 09:00 to 16:00 thicker");
+  });
+
+  test("without the window, the day alone", () => {
+    expect(sunPathLineOf(DEC, null)).toBe("Sun path of 21 Dec from 06:33 to 17:27");
+  });
+
+  test("a day the sun stays up runs the whole day; one it stays down has no path", () => {
+    expect(sunPathLineOf({ ...DEC, sunriseH: null, sunsetH: null }, null)).toBe("Sun path of 21 Dec, the sun up the whole day");
+    expect(sunPathLineOf({ ...DEC, sunriseH: null, sunsetH: null, positions: [{ hour: 12, elevationDeg: -5, azimuthDeg: 180 }] }, null)).toBeNull();
   });
 });

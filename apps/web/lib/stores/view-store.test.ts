@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { Obstacle } from "../api";
 import type { DraftObstacle } from "../studio/obstacle-fields";
-import { cameraOf, cameraRequestOf, createViewStore, draftOf, draggingOf, isPlayingOf, lensOf, northRequestOf, selectionOf, sunTimeOf, toReviewOf } from "./view-store";
+import { cameraOf, cameraRequestOf, createViewStore, draftOf, draggingOf, isPlayingOf, lensOf, onTheRoofOf, northRequestOf, selectionOf, showsSunPathOf, sunTimeOf, toReviewOf } from "./view-store";
 
 describe("the view", () => {
   test("it begins on the first lens, in 3D, on the design day", () => {
@@ -11,6 +11,31 @@ describe("the view", () => {
     expect(cameraOf(state)).toBe("3d");
     expect(sunTimeOf(state)).toEqual({ day: "design_day", hour: 10.5 });
     expect(isPlayingOf(state)).toBe(false);
+    expect(onTheRoofOf(state)).toEqual({ sunPath: true, window: true, shadowOutlines: false });
+  });
+
+  // What the Sun lens draws on the roof (plan/phase-06-plan.md, decision 16): of the view, as the board has it at first.
+  test("each switch of On the roof is kept apart; told again, nothing changes", () => {
+    const store = createViewStore();
+
+    store.getState().showOnTheRoof("shadowOutlines", true);
+    store.getState().showOnTheRoof("sunPath", false);
+    const before = store.getState();
+    store.getState().showOnTheRoof("sunPath", false);
+
+    expect(onTheRoofOf(store.getState())).toEqual({ sunPath: false, window: true, shadowOutlines: true });
+    expect(store.getState()).toBe(before);
+  });
+
+  test("the sun path is drawn in the Sun lens alone, while its switch is on", () => {
+    const store = createViewStore();
+    expect(showsSunPathOf(store.getState())).toBe(false);
+
+    store.getState().showLens("sun");
+    expect(showsSunPathOf(store.getState())).toBe(true);
+
+    store.getState().showOnTheRoof("sunPath", false);
+    expect(showsSunPathOf(store.getState())).toBe(false);
   });
 
   test("whether the time plays is kept; told again, nothing changes", () => {
