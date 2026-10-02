@@ -145,7 +145,7 @@ a colour as three.js takes it: a hex, or a hex with an alpha for what is see-thr
 | `sun` | `#FFB020` | Sun marker and path |
 | `sunCore` | `#FFD36B` | The middle of the sun marker |
 | `lightSun` | `#FFF4E0` | The colour of the sun light |
-| `lightSky` | `#BCD0E8` | The sky's share of the ambient light |
+| `lightSky` | `#EEF1F5` | The sky's share of the ambient light: near neutral, since it gives two thirds of the light a lit roof takes, so that a surface renders at its colour |
 | `lightGround` | `#20242C` | The ground's share of the ambient light |
 
 Real cast shadows come from the sun light; the amber of the selection is the accent token. A selected

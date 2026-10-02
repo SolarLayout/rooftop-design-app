@@ -1,5 +1,7 @@
 // The numbers of the sun light, from the reference project (plan/reference/r3f-notes.md, fixes 5 to 7), the
-// bias held to the engine's shadows (plan/phase-06-plan.md, decision 9).
+// bias held to the engine's shadows (plan/phase-06-plan.md, decision 9), the strengths held to the palette.
+import { Color } from "three";
+import { PALETTE } from "../scene-palette";
 // Pure functions of the sun's height in degrees; the component sets what they give on the light.
 
 /** Below this height the light fades, and at the horizon it is out: shadow maps degrade badly there. */
@@ -30,11 +32,37 @@ export function shadowBiasOf(elevationDeg: number, radius: number, mapSize: numb
   return { bias: -0.00012, normalBias: Math.min(texel, SHIFT_AT_MOST * Math.tan(height)) };
 }
 
+/** The height of the sun the light is held to: 10:30 on the design day at Pune, the morning the boards draw. */
+const HELD_AT_DEG = 42.6;
+
+/** In shade a surface is a third darker than in the sun, as the boards draw shadows. */
+const SHADE_SHARE = 2 / 3;
+
+/** How bright the sky's colour is, as light: its luminance in linear light. */
+const SKY = (() => {
+  const { r, g, b } = new Color(PALETTE.lightSky).convertSRGBToLinear();
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+})();
+
 /**
- * The strength of the sun light and of the ambient light, with the sun's height. The ambient stays
- * strong, so that a shadow reads as the boards draw it (a third darker), never as black.
+ * The strength of the sun light and of the sky's, held to the palette (the boards draw every surface at its
+ * colour). Three's Lambert gives back the albedo over π of the light that falls on a surface: a level roof in
+ * the sun at HELD_AT_DEG and under the sky gives back its palette colour when the two come to π; in shade the
+ * sky alone gives two thirds of that. The sun's strength does not change with its height but fades at the
+ * horizon; a lower sun lights a level roof less by the angle alone.
  */
 export function intensitiesOf(elevationDeg: number): { sun: number; ambient: number } {
-  const height = Math.max(0, Math.sin(toRadians(elevationDeg)));
-  return { sun: fadeOf(elevationDeg) * (height * 1.6 + 0.2), ambient: 0.9 + height * 0.6 };
+  const sun = (Math.PI * (1 - SHADE_SHARE)) / Math.sin(toRadians(HELD_AT_DEG));
+  return { sun: fadeOf(elevationDeg) * sun, ambient: (Math.PI * SHADE_SHARE) / SKY };
+}
+
+/** Of its palette colour, how much a level roof gives back in the sun at a height, before tone mapping. */
+export function levelRoofShareOf(elevationDeg: number): number {
+  const { sun, ambient } = intensitiesOf(elevationDeg);
+  return (sun * Math.max(0, Math.sin(toRadians(elevationDeg))) + ambient * SKY) / Math.PI;
+}
+
+/** The same in shade: the sky alone. */
+export function shadeShareOf(): number {
+  return (intensitiesOf(0).ambient * SKY) / Math.PI;
 }

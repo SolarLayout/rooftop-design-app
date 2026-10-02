@@ -36,7 +36,7 @@ export const PALETTE = {
   sun: "#FFB020",
   sunCore: "#FFD36B",
   lightSun: "#FFF4E0",
-  lightSky: "#BCD0E8",
+  lightSky: "#EEF1F5",
   lightGround: "#20242C",
 } as const;
 

@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "../fixtures";
-import { A_SCENE, fit, isBright, isDrawn, isNear, north, pixelOnce, pixelsAt, planView, sceneCanvas, sceneShown, stage, STAGE, threeDView, withoutWebGL, type Share } from "../stage";
+import { A_SCENE, fit, inThePlan, isBright, isDrawn, isNear, north, pixelOnce, pixelsAt, planView, sceneCanvas, sceneSettled, sceneShown, stage, STAGE, threeDView, withoutWebGL, type Pixel, type Share } from "../stage";
 
 // The 3D stage of the Studio (plan/phase-05-plan.md, steps 1 to 4): the scene is drawn in the browser
 // with software WebGL, on three sizes; its text equivalent names what is on the roof; without WebGL the
@@ -8,6 +8,10 @@ import { A_SCENE, fit, isBright, isDrawn, isNear, north, pixelOnce, pixelsAt, pl
 // the machine (e2e/fixtures.ts).
 
 const RUN = 90_000;
+
+/** The palette's roof and module glass (`roof` #D3D6DB, `moduleGlass` #16294D). */
+const ROOF: Pixel = [211, 214, 219];
+const GLASS: Pixel = [22, 41, 77];
 const isDesktop = (projectName: string) => projectName === "desktop";
 const isPhone = (projectName: string) => projectName === "phone";
 
@@ -35,6 +39,35 @@ test.describe("the stage", () => {
 
     await page.getByRole("link", { name: "Array" }).click();
     await expect(page.getByTestId("stage-subline")).toHaveText("790 positions · 28 tables · 6 rows · 2,038 m² of modules", { timeout: RUN });
+  });
+
+  // The light is held to the palette (docs/design/design-tokens.md, "3D scene palette"): the boards draw every
+  // surface at its colour. In the plan, straight down, at 10:30 on the design day, the morning the light is held
+  // to: a lit roof, and the glass of a module, which faces the sun a little more than the roof does.
+  test("a lit roof and a module's glass are of their palette colours, as the boards draw them", async ({ page }) => {
+    const laidOut = page.waitForResponse((response) => response.url().endsWith("/api/layout"), { timeout: A_SCENE });
+    // In the Sun lens, which draws no kept-clear areas over the roof.
+    await page.goto("/studio/sun");
+    const { layout } = (await (await laidOut).json()) as { layout: { modules: { row: number; outline: [number, number][] }[] } };
+    await sceneSettled(page);
+    const point = await inThePlan(page);
+    const box = (await sceneCanvas(page).boundingBox())!;
+    const shareOf = ([east, north]: readonly [number, number]): Share => {
+      const at = point(east, north);
+      return [(at.x - box.x) / box.width, (at.y - box.y) / box.height];
+    };
+    // A module of the first row 30 m east, clear of the chips of the edges; and the roof the stair room keeps clear
+    // north-east of it, lit at 10:30, when its shadow falls north-north-west: metres of it, also on phone.
+    const middleOf = (outline: [number, number][]) => outline.reduce(([x, y], [px, py]) => [x + px / outline.length, y + py / outline.length], [0, 0]) as [number, number];
+    const glassAt = layout.modules
+      .filter((module) => module.row === 0)
+      .map((module) => middleOf(module.outline))
+      .sort((a, b) => Math.abs(a[0] - 30) - Math.abs(b[0] - 30))[0];
+
+    const [roof, glass] = await pixelsAt(page, [shareOf([28.5, 22.5]), shareOf(glassAt)]);
+
+    const said = `the lit roof is ${roof.join(", ")} (its palette 211, 214, 219), a module's glass ${glass.join(", ")} (22, 41, 77)`;
+    expect(isNear(roof, ROOF, 14) && isNear(glass, GLASS, 14), said).toBe(true);
   });
 
   test("the labels along the roof's edges say the length of each: two of 90.0 m, two of 40.0 m", async ({ page }) => {

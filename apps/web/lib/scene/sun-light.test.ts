@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { fadeOf, intensitiesOf, shadowBiasOf } from "./sun-light";
+import { fadeOf, intensitiesOf, levelRoofShareOf, shadeShareOf, shadowBiasOf } from "./sun-light";
 
 // The sun light of the scene, from the reference project (plan/reference/r3f-notes.md, fixes 5 to 7):
 // the light fades out below 8°, the shadow's bias is held to what it shifts, the ambient follows the sun.
@@ -39,11 +39,29 @@ describe("the shadow bias", () => {
   });
 });
 
+// The light is held to the palette (the boards draw every surface at its colour): three's Lambert gives back
+// the albedo over π of what falls on a surface, so a level roof under the sun of 10:30 on the design day at Pune
+// (42.6° high) and the sky renders at its palette colour when the two come to π; in shade, the sky alone, a third
+// darker, as the boards draw shadows.
 describe("the intensities", () => {
-  test("the sun's follows its height and the fade; the ambient never goes out", () => {
-    expect(intensitiesOf(90).sun).toBeCloseTo(1.8, 6);
+  test("a level roof in the sun of the design day's morning gives back its palette colour", () => {
+    expect(levelRoofShareOf(42.6)).toBeCloseTo(1, 2);
+  });
+
+  test("in shade it is a third darker", () => {
+    expect(shadeShareOf() / levelRoofShareOf(42.6)).toBeCloseTo(2 / 3, 2);
+  });
+
+  test("the sun's light does not change with its height, until it fades at the horizon; the sky's never goes out", () => {
+    expect(intensitiesOf(60).sun).toBeCloseTo(intensitiesOf(20).sun, 9);
+    expect(intensitiesOf(4).sun).toBeCloseTo(intensitiesOf(20).sun / 2, 9);
     expect(intensitiesOf(0).sun).toBe(0);
-    expect(intensitiesOf(0).ambient).toBeGreaterThan(0);
-    expect(intensitiesOf(60).ambient).toBeGreaterThan(intensitiesOf(10).ambient);
+    expect(intensitiesOf(0).ambient).toBe(intensitiesOf(60).ambient);
+  });
+
+  test("so the roof is a little lighter at noon and darker late in the day", () => {
+    expect(levelRoofShareOf(48)).toBeGreaterThan(1);
+    expect(levelRoofShareOf(18)).toBeLessThan(0.9);
+    expect(levelRoofShareOf(18)).toBeGreaterThan(shadeShareOf());
   });
 });
