@@ -3,9 +3,8 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-02, session 10, at the close of Phase 6: #48 (the time on the stage), #49 (the light held to the
-engine, the sun path, the shadow outlines), #50 (the shading figures, the shade map), #51 (the light held to the palette,
-the owner's finding) and #52 (the states) are merged. `main` is green.
+**Last updated:** 2026-10-02, session 11, in Phase 7: the plan and its six boards approved; #53 (the voltage, the series range, the
+sizing) merged. `main` is green.
 
 ## Where we are
 
@@ -19,12 +18,13 @@ the owner's finding) and #52 (the states) are merged. `main` is green.
 | 4.5 Caching of the checks | Done (session 8: #39, #40, #41) | What exists, the numbers before and after, what was found: `phase-04b-test-caching.md`, "As built". How it was built: `phase-04b-plan.md` |
 | 5 Studio, 3D roof, Roof and Array lenses | Done (session 9: #42 to #47) | What exists, what was decided, what was found: `phase-05-studio-roof-array.md`, "As built". How it was built: `phase-05-plan.md` |
 | 6 Studio, Sun lens | Done (session 10: #48 to #52) | What exists, what was decided, what was found: `phase-06-studio-sun.md`, "As built". How it was built: `phase-06-plan.md` |
-| 7 Studio, Strings lens | Planned (session 11): `phase-07-plan.md`, waiting for the owner's yes; then the boards | |
+| 7 Studio, Strings lens | In progress (session 11): plan and boards approved; #53 merged (part 1 of 5) | How it is built: `phase-07-plan.md` |
 | 8 to 11 | Not started | |
 
 ## In flight
 
-Nothing. No branch stands on `main`; `main` is green.
+Phase 7, part 2 (`feat/phase-7-options`): the custom option's faults fixed in the engine, the strings that fit per length, the custom
+simulated apart, the captions; an option chosen without a run; the option cards; your own added, changed, removed.
 
 ## What the web app has today
 
