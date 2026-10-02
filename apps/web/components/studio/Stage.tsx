@@ -47,10 +47,11 @@ const VIEW_CONTROLS = "top-1 right-3 tablet:top-4 tablet:right-5 desktop:top-5";
 /**
  * The time on the stage (the boards "Time on the stage" and "Studio, Sun lens"): the pill of every lens at the
  * top left on phone, at the bottom left of the stage on tablet, over the vitals on desktop (the panel's 20,
- * the vitals' 78 and 18 between: 116); the timeline of the Sun lens across the stage there instead.
+ * the vitals' 78 and 18 between: 116); the timeline of the Sun lens across the stage there instead. On tablet
+ * both stand 28 over the stage's bottom, so that the imagery's attribution under them stays clear.
  */
-const TIME_PILL = "absolute top-1 left-3 z-stage-overlay tablet:top-auto tablet:bottom-5 tablet:left-5 desktop:bottom-29 desktop:left-6";
-const TIMELINE = "absolute inset-x-5 bottom-4 z-stage-overlay desktop:bottom-29";
+const TIME_PILL = "absolute top-1 left-3 z-stage-overlay tablet:top-auto tablet:bottom-7 tablet:left-5 desktop:bottom-29 desktop:left-6";
+const TIMELINE = "absolute inset-x-5 bottom-7 z-stage-overlay desktop:bottom-29";
 
 /** The chip of a layout that failed stands under the title, in the middle of the stage: as wide as the board draws it, or as the phone allows. */
 const LAYOUT_FAILED = "absolute inset-x-4 top-16 z-stage-overlay tablet:inset-x-0 tablet:top-20 tablet:mx-auto tablet:w-95 desktop:top-24";
