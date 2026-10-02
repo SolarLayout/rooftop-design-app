@@ -5,12 +5,14 @@ import { projectOf } from "@/lib/stores/project-store";
 import { chosenOptionOf, designOf, readoutsOf } from "@/lib/stores/results-store";
 import { stringsViewOf, type Volts } from "@/lib/studio/strings-view";
 import { InverterCard } from "./InverterCard";
+import { SeriesRange } from "./SeriesRange";
+import { NothingFits } from "./StringOptions";
 import { SystemVoltage, VoltageDecision, WaitingAndDone } from "./SystemVoltage";
 
 /**
  * The inspector of the Strings lens (the boards "Studio, Strings lens" on three sizes and "Studio, Strings
  * lens, no system voltage yet"): the inverter; before a system voltage the decision and what waits for it;
- * after, the voltage chosen. The voltage is the document's, the user's alone (plan/phase-07-plan.md,
+ * after, the voltage chosen and the series range with its verdict; where no length fits, what can change it. The voltage is the document's, the user's alone (plan/phase-07-plan.md,
  * decision 1): a choice commits it, and the run follows.
  */
 export function StringsInspector() {
@@ -31,13 +33,16 @@ export function StringsInspector() {
     <div className="flex flex-col gap-section tablet:grid tablet:grid-cols-2 tablet:gap-x-8 desktop:flex desktop:flex-col">
       <div className="flex flex-col gap-section">
         <InverterCard inverter={inverter} entered={project.imax_mppt_override ?? null} />
-        {view.kind === "before-a-voltage" ? <VoltageDecision view={view} onChoose={choose} /> : <SystemVoltage voltage={view.voltage} onChoose={choose} />}
+        {view.kind === "before-a-voltage" ? (
+          <VoltageDecision view={view} onChoose={choose} />
+        ) : (
+          <>
+            <SystemVoltage voltage={view.voltage} onChoose={choose} />
+            <SeriesRange view={view} />
+          </>
+        )}
       </div>
-      {view.kind === "before-a-voltage" ? (
-        <div className="flex flex-col gap-section">
-          <WaitingAndDone view={view} />
-        </div>
-      ) : null}
+      <div className="flex flex-col gap-section">{view.kind === "before-a-voltage" ? <WaitingAndDone view={view} /> : <NothingFits view={view} />}</div>
     </div>
   );
 }

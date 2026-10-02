@@ -91,4 +91,37 @@ test.describe("the demo", () => {
     await expect(card.getByTestId("inverter-line")).toHaveText(`${inverter.manufacturer} · ${inverter.pnom_kw} kW · ${inverter.n_mppt} MPPT`);
     await expect(card.getByTestId("inverter-facts")).toHaveText(`${current.value_a!.toFixed(1)} A per MPPT · ${inverter.n_inputs} inputs`);
   });
+
+  test("at 1000 V the series range is the run's: its longest string is the run's n_max, its band and its verdict", async ({ page }) => {
+    await page.goto("/studio/strings");
+    await expect(page.getByTestId("series-verdict").filter({ visible: true })).toBeVisible({ timeout: RUN });
+    const ran = page.waitForRequest((request) => request.url().endsWith("/api/design") && request.postDataJSON().system_voltage === 1000, { timeout: RUN });
+
+    await page.getByRole("radiogroup", { name: "System voltage" }).filter({ visible: true }).getByRole("radio", { name: "1000 V" }).click();
+
+    const { series_range: range } = await resultOf(await ran);
+    const section = page.getByTestId("series-range").filter({ visible: true });
+    await expect(section).toContainText(`${range!.n_min} to ${range!.n_max} fit`, { timeout: RUN });
+    await expect(section.getByTestId("series-end")).toHaveText([`${range!.n_min} · MPPT minimum`, `${range!.n_max} · Voc limit`]);
+    await expect(section.getByTestId("series-band")).toBeVisible();
+    await expect(section.getByTestId("series-verdict")).toBeVisible();
+  });
+
+  test("at 600 V no string length fits: no band, the engine's words, what can change it, and the vitals say it", async ({ page }) => {
+    await page.goto("/studio/strings");
+    await expect(page.getByTestId("series-verdict").filter({ visible: true })).toBeVisible({ timeout: RUN });
+    const ran = page.waitForRequest((request) => request.url().endsWith("/api/design") && request.postDataJSON().system_voltage === 600, { timeout: RUN });
+
+    await page.getByRole("radiogroup", { name: "System voltage" }).filter({ visible: true }).getByRole("radio", { name: "600 V" }).click();
+
+    const answer = (await resultOf(await ran)) as Answer & { no_options: { title: string; message: string } };
+    const section = page.getByTestId("series-range").filter({ visible: true });
+    await expect(section).toContainText("None fit", { timeout: RUN });
+    await expect(section.getByTestId("series-band")).toHaveCount(0);
+    await expect(section.getByTestId("series-verdict")).toContainText(answer.no_options.title);
+    await expect(section.getByTestId("series-verdict")).toContainText(answer.no_options.message);
+    await expect(page.getByTestId("nothing-fits").filter({ visible: true })).toHaveText("Change the system voltage, the inverter or the sizing temperatures");
+    await expect(page.getByRole("region", { name: "Design vitals" })).toContainText(answer.no_options.title);
+  });
 });
+
