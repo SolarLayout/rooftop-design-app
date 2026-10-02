@@ -1,6 +1,6 @@
 # 009: Phase 6, the Studio's Sun lens
 
-Written: 2026-10-02, by session 9, at the owner's request. Status: open. After 008 (Phase 5).
+Written: 2026-10-02, by session 9, at the owner's request. Status: used by session 10 (2026-10-02). After 008 (Phase 5).
 
 ## Paste this
 

@@ -3,30 +3,27 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-02, session 9 (its third day), at the close of Phase 5: #42 (the 3D scene), #43 (the modules, the
-kept-clear areas, the sun), #44 (the Roof lens, the obstacles, the import), #45 (the Array lens, the states of the stage),
-#46 (a DXF's place) and #47 (selection, undo and redo, the drag and the handles) are merged. `main` is green.
+**Last updated:** 2026-10-02, session 10, at the close of Phase 6: #48 (the time on the stage), #49 (the light held to the
+engine, the sun path, the shadow outlines), #50 (the shading figures, the shade map), #51 (the light held to the palette,
+the owner's finding) and #52 (the states) are merged. `main` is green.
 
 ## Where we are
 
 | Phase | Status | Notes |
 |---|---|---|
-| 0 Design | Direction approved. 17 boards drawn and approved | More screens to draw, listed in `phase-00-design.md`. The canvas and the repo hold the same boards |
+| 0 Design | Direction approved. 32 boards in the repo, all approved | More screens to draw, listed in `phase-00-design.md`. The canvas at claude.ai holds 27 of them (`docs/design/README.md`) |
 | 1 Foundation | Done, merged (PR #1) | |
 | 2 Engine and API | Done (PR #7, PRs #11 to #23) | What exists, what was decided, what was found: `phase-02-engine-api.md`, "As built" |
 | 3 Design system and shell | Done (PRs #24 to #33) | What exists, what was decided, what was found: `phase-03-design-system-shell.md`, "As built". How its second half was built: `phase-03-rest-plan.md` |
 | 4 Find and outline | Done (sessions 6 and 7: #35, #36, #38; the memo #37) | What exists, what was decided, what was found: `phase-04-find-and-outline.md`, "As built". How it was built: `phase-04-plan.md` |
 | 4.5 Caching of the checks | Done (session 8: #39, #40, #41) | What exists, the numbers before and after, what was found: `phase-04b-test-caching.md`, "As built". How it was built: `phase-04b-plan.md` |
 | 5 Studio, 3D roof, Roof and Array lenses | Done (session 9: #42 to #47) | What exists, what was decided, what was found: `phase-05-studio-roof-array.md`, "As built". How it was built: `phase-05-plan.md` |
-| 6 Studio, Sun lens | In progress (session 10): #48 merged | How it is built: `phase-06-plan.md`; the six boards approved 2026-10-02 |
+| 6 Studio, Sun lens | Done (session 10: #48 to #52) | What exists, what was decided, what was found: `phase-06-studio-sun.md`, "As built". How it was built: `phase-06-plan.md` |
 | 7 to 11 | Not started | |
 
 ## In flight
 
-Session 10 (2026-10-02), Phase 6: the plan (`plan/phase-06-plan.md`) and its six boards approved; pull request 1, the
-time on the stage, merged (#48). Pull request 2 (the shadow request of a roof, the light's bias held to the engine, the
-sun path, the shadow outlines, the acceptance's 0.2 m) is being built on `feat/phase-6-path-shadows`; the logic of pull
-request 3 (the shade map's scale, the figures) waits on `feat/phase-6-shade`. `main` is green.
+Nothing. No branch stands on `main`; `main` is green.
 
 ## What the web app has today
 
@@ -50,6 +47,8 @@ request 3 (the shade map's scale, the figures) waits on `feat/phase-6-shade`. `m
 | Find and outline: the screen, the map (MapLibre), the search, the outline drawn on the map, the panel, the tools (the ways to outline while the roof is open; the obstacles once it is closed), the height dialog, the obstacle list, the roof type, Build; the roof by hand and the plan drawn without a map | `apps/web/components/find` |
 | The 3D scene: the canvas, the building, the obstacles, the ground of imagery, the camera and its presets, the modules instanced, the kept-clear areas, the sun light, the projector that places DOM over the canvas, the pointer (selection, hover, the drag) | `apps/web/components/scene`; the maths apart in `apps/web/lib/scene` (the adapter of the engine's metres, pick, drag, handles, projection, the stage store) |
 | The Studio: the stage (title, read-outs, text equivalent, the plan without WebGL, labels, callout, handles, the chip of a failed layout), the view controls, the Roof lens inspector (the roof, the obstacles, the heights to review), the Array lens inspector (the module card, mounting, spacing, the window), undo and redo by key | `apps/web/components/studio`; the words and the fields in `apps/web/lib/studio`; `apps/web/lib/roof-card.ts` |
+| The Sun lens: the time on the stage of every lens (the pill) and the timeline, play, the keys, the day; the Sun at the time; shading over the year; the shade map and its legend; On the roof; the states | `components/studio/Time.tsx`, `SunInspector.tsx`, `SunShading.tsx`, `ShadeLegend.tsx`, `SunMarks.tsx`; `lib/studio/sun-time.ts`, `play.ts`, `sun-figures.ts` |
+| The scene's sun: the day of `/sun` looked up at the view's hour; the light held to the engine's shadows (the bias) and to the palette (no tone mapping, the sun and the sky to π); the sun path; the engine's shadow outlines; the modules coloured per instance by the shade map | `components/scene/SunLight.tsx`, `SunPath.tsx`, `ShadowOutlines.tsx`, `use-sun.ts`, `use-shade-map.ts`; `lib/scene/sun-day.ts`, `sun-light.ts`, `sun-path.ts`, `sun-marks.ts`, `shadow-outlines.ts`, `shade-map.ts` |
 | Import a drawing (KMZ, KML, DXF with its units and its place) from the project switcher | `apps/web/components/shell/ImportDrawing.tsx`; `apps/web/lib/studio/import-drawing.ts` |
 | Overture's footprints: the pinned release, the ring of a footprint | `apps/web/lib/map/overture.ts`; the extract tool `tools/footprints.ts`; the fixture `e2e/fixtures/footprints-pune.pmtiles` |
 | MapLibre's worker, served by the app | `apps/web/public/maplibre-gl`, copied by `tools/vendor-maplibre.ts` |
@@ -79,10 +78,9 @@ changed; an export 0.2 to 0.9 s after a run.
 
 ## Next, in order
 
-1. Phase 6: the Studio's Sun lens (`plan/phase-06-studio-sun.md`): the plan first, the way `phase-05-plan.md` was written,
-   then the boards it lacks, then the pull requests. The scene already takes the sun from `/sun` at the view's time
-   (`sunTime` in the view store) and has the Sun's eye preset: the time control of the stage is Phase 6's. Work
-   order: `plan/resume/009-phase-6-studio-sun.md`.
+1. Phase 7: the Studio's Strings lens (`plan/phase-07-studio-strings.md`): the plan first, the way `phase-06-plan.md` was
+   written, then the boards it lacks, then the pull requests. The shade map's selected module already says its string's
+   shade (`Option.system.strings[].shade_pct`); strings are not drawn yet. A resume prompt is written when the owner asks.
 2. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
 3. In parallel with any phase: the screens still to draw (Phase 0).
 
@@ -115,11 +113,13 @@ changed; an export 0.2 to 0.9 s after a run.
 | The Esri key is baked into the page at build time: the "no key" state is seen only on a build without it, and the tests reach the no-map states through "no WebGL" | Phase 11 |
 | The Layers button of the rail is not there | Phase 11 |
 | A mouse wheel over a DOM handle of the selected obstacle does not reach the canvas: zooming with the pointer exactly on a handle does nothing; the roof beside it zooms | Phase 11, or when the owner asks |
-| On a phone pinched in on an obstacle, the callout and the turn handle can overlap | Phase 11, or with the Sun lens's time control, which changes the stage's top |
-| The frame rate with 1,068 modules: 56 fps on this machine's GPU (the mark was 60); a mid laptop has not been measured | When the owner has one at hand |
-| On Bedrock the session has no Artifact tool: the design canvas at claude.ai cannot be read or published from here. The boards are approved from the previews in `docs/design/previews`, and the canvas is behind the repo by the boards of Phase 5's second day (ImportHeights with the DXF's place) | When a session has the tool again: publish the repo's boards |
+| The frame rate with 1,068 modules on this machine's GPU: 56 fps while orbiting (the mark was 60), 60.1 while the timeline is dragged, 58.3 while the day plays; a mid laptop has not been measured | When the owner has one at hand |
+| On Bedrock the session has no Artifact tool: the design canvas at claude.ai cannot be read or published from here. The boards are approved from the previews in `docs/design/previews`, and the canvas is behind the repo by ImportHeights with the DXF's place and the six boards of Phase 6 (the redrawn Sun lens and five new) | When a session has the tool again: publish the repo's boards |
 | `.github/workflows/e2e.yml` has never been run. It runs on Linux, and the screens have baselines for `darwin` only: its first run will write its own and fail | Phase 11, or when browser tests are wanted in CI |
 | A fresh clone has not been tried | Phase 11 |
+| The sun path's arc reaches the top of the stage at noon, and at 10:30 its marker is off the canvas on desktop: the stage's camera frames the roof lower than the boards' projection. The marker's callout shows only while the marker is on the canvas | Phase 11, or when the owner asks (a framing of the Sun lens) |
+| The scene's shadows read softer than the boards' at a low sun: a shadow is the sky's light alone, a third darker, as set (#51) | When the owner asks |
+| The permission system refuses an agent `bun dev:bg --profile test` ("Interfere With Workloads"): agents write code and unit tests; the session runs the browser for them | Known |
 | Esri's imagery tile host answers with the key from the test stack's port 4710 too, which is not among the key's referrers: the key is scoped, not secret. Watch usage on the Esri dashboard | Deployment |
 | MapLibre counts its zoom on tiles of 512: its zoom 18 is the native zoom 19 of Esri's tiles of 256. A press on the map stops its flight: the map says `aria-busy` while it moves, and a test waits for it | Known; written in the plan |
 | A colour token named like a width utility (`--color-handle` beside `border-handle`) makes Tailwind read the width as a colour: the colour is `--color-handle-fill` | Known; a trap for the next token |
@@ -155,6 +155,7 @@ changed; an export 0.2 to 0.9 s after a run.
 | 7 | 2026-09-30 | `plan/sessions/007/record.md`, `plan/sessions/007/owner-messages.md` |
 | 8 | 2026-09-30 | `plan/sessions/008/record.md`, `plan/sessions/008/owner-messages.md` |
 | 9 | 2026-09-30 to 2026-10-02 | `plan/sessions/009/record.md`, `plan/sessions/009/owner-messages.md` |
+| 10 | 2026-10-02 | `plan/sessions/010/record.md`, `plan/sessions/010/owner-messages.md` |
 
 ## Closed, do not reopen
 
