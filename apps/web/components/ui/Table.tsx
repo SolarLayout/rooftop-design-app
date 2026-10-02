@@ -11,6 +11,8 @@ type Props<Row> = {
   keyOf: (row: Row) => string;
   /** The key of the row that is chosen. */
   chosen?: string;
+  /** The key of the row that sums the others up: over a line, its name in Geist 600, its figures medium (the year under the months). */
+  total?: string;
   /** Cells padded 6 rather than 8: a table at the inspector's width (the board "Inverter and sizing"). */
   dense?: boolean;
   /** The values of a card on phone in two columns rather than three, where they are long ("54.3 of 65.0 A"). */
@@ -20,6 +22,7 @@ type Props<Row> = {
 
 const HEAD = "h-9 border-b border-line type-section whitespace-nowrap text-text-3 uppercase";
 const CELL = "h-11 border-b border-line-subtle whitespace-nowrap";
+const TOTAL_CELL = "h-11 border-t border-line whitespace-nowrap";
 const CAPTION = "type-caption text-text-2";
 
 /** A cell of several lines: a quieter line under the value, or lines each with its label (cellLinesOf). */
@@ -39,7 +42,7 @@ function Lines({ lines }: { lines: readonly CellLine[] }) {
 }
 
 /** Rows of values under their heads. On phone each row is a card. */
-export function Table<Row>({ caption, columns, rows, keyOf, chosen, dense = false, cardColumns = 3, className }: Props<Row>) {
+export function Table<Row>({ caption, columns, rows, keyOf, chosen, total, dense = false, cardColumns = 3, className }: Props<Row>) {
   const shown = columnsOfTable(columns);
   const padding = dense ? "px-1.5" : "px-2";
 
@@ -59,8 +62,10 @@ export function Table<Row>({ caption, columns, rows, keyOf, chosen, dense = fals
         <tbody>
           {rows.map((row) => {
             const isChosen = keyOf(row) === chosen;
+            const isTotal = keyOf(row) === total;
+            const cell = isTotal ? TOTAL_CELL : CELL;
             return (
-              <tr key={keyOf(row)} aria-current={isChosen || undefined} className={isChosen ? "bg-surface-2" : undefined}>
+              <tr key={keyOf(row)} aria-current={isChosen || undefined} data-total={isTotal || undefined} className={isChosen ? "bg-surface-2" : undefined}>
                 {shown.map((column) => {
                   const mark = column.mark?.(row);
                   const lines = <Lines lines={cellLinesOf(row, column)} />;
@@ -74,13 +79,13 @@ export function Table<Row>({ caption, columns, rows, keyOf, chosen, dense = fals
                   );
                   if (column.kind === "name") {
                     return (
-                      <th key={column.key} scope="row" className={classNames(CELL, padding, "text-left font-medium")}>
+                      <th key={column.key} scope="row" className={classNames(cell, padding, "text-left", isTotal ? "font-semibold" : "font-medium")}>
                         {value}
                       </th>
                     );
                   }
                   return (
-                    <td key={column.key} className={classNames(CELL, padding, column.words ? "type-small text-text" : "type-value-small", column.kind === "number" && "text-right")}>
+                    <td key={column.key} className={classNames(cell, padding, column.words ? "type-small text-text" : "type-value-small", isTotal && "font-medium", column.kind === "number" && "text-right")}>
                       {value}
                     </td>
                   );

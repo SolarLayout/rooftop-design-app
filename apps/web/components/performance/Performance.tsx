@@ -7,6 +7,7 @@ import { nameOf } from "@/lib/stores/project-store";
 import { designFailureOf, designOf, designStatusOf, progressOf, readoutsOf } from "@/lib/stores/results-store";
 import { Kpis, KpiSkeletons } from "./Kpis";
 import { LossChain } from "./LossChain";
+import { MonthlyChart } from "./MonthlyChart";
 import { NoOptionsCard } from "./NoOptionsCard";
 import { PerformanceHeader } from "./PerformanceHeader";
 import { SummaryTable } from "./SummaryTable";
@@ -16,6 +17,8 @@ import { FailedRow, RunRow } from "./UnderTheTitle";
 const PAGE = "flex flex-col gap-3.5 px-page-x-phone pt-2 pb-6 tablet:gap-4 tablet:px-page-x-tablet tablet:pt-6 tablet:pb-8 desktop:gap-5 desktop:px-page-x-desktop desktop:pt-page-y";
 // Under the KPIs on desktop: the chain at the left, 7 of 12 columns, the charts at the right, 5; one column before.
 const UNDER_THE_KPIS = "grid gap-3.5 tablet:gap-4 desktop:grid-cols-12 desktop:items-start desktop:gap-grid";
+// The charts: stacked on phone, side by side on tablet, under each other in the right column on desktop.
+const CHARTS = "grid gap-3.5 tablet:grid-cols-2 tablet:gap-4 desktop:col-span-5 desktop:grid-cols-1 desktop:gap-grid";
 
 /**
  * The Performance workspace (the boards "Performance" on three sizes and "Performance, states"; plan/phase-08-plan.md,
@@ -53,8 +56,9 @@ export function Performance() {
           <Kpis view={values.kpis} isDimmed={isDimmed} />
           <div className={UNDER_THE_KPIS}>
             <LossChain view={values.chain} isDimmed={isDimmed} className="desktop:col-span-7" />
-            {/* The right column: the two charts of pull request 3 (plan/phase-08-plan.md, steps 12 to 15) stand here. */}
-            <div className="flex flex-col gap-3.5 tablet:gap-4 desktop:col-span-5 desktop:gap-grid" />
+            <div className={CHARTS}>
+              <MonthlyChart energy={values.energy} isDimmed={isDimmed} />
+            </div>
           </div>
           <SummaryTable rows={values.summary} isDimmed={isDimmed} />
         </>

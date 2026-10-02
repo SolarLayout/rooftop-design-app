@@ -14,9 +14,17 @@ export type TabOption<T extends string> = {
   disabled?: boolean;
 };
 
+/** The row in the line of a title: the title, and what stands after the row (a unit, a field). */
+export type TabsHead = { title: ReactNode; aside?: ReactNode };
+
 type Props<T extends string> = {
   /** What the tabs divide, in words: the name of the row. */
   label: string;
+  /**
+   * The row stands in the line of a title: on desktop at the right of it, with `aside` after the row; on phone and
+   * tablet the title's line holds `aside`, and the row stands under it across the width (the chart cards of Performance).
+   */
+  head?: TabsHead;
   tabs: ReadonlyArray<TabOption<T>>;
   /** The tab that is taken. There is always one. */
   value: T;
@@ -46,7 +54,7 @@ const LINE = "-mb-px flex items-center gap-1.5 self-stretch border-b-tab";
 const COUNT = "flex h-4.5 items-center rounded-full bg-surface-2 px-1.5 type-value-xs text-text-2";
 
 /** Parts of one card or one panel, of which one is shown. */
-export function Tabs<T extends string>({ label, tabs, value, onChange, children, shownAs, className }: Props<T>) {
+export function Tabs<T extends string>({ label, head, tabs, value, onChange, children, shownAs, className }: Props<T>) {
   const id = useId();
   const tabOf = (tab: T) => `${id}-tab-${tab}`;
   const panel = `${id}-panel`;
@@ -73,9 +81,8 @@ export function Tabs<T extends string>({ label, tabs, value, onChange, children,
     take(next, event.currentTarget);
   }
 
-  return (
-    <div className={className}>
-      <div data-testid="tabs-line" className="border-b border-line">
+  const row = (
+    <div data-testid="tabs-line" className={classNames("border-b border-line", head && "order-3 basis-full desktop:order-2 desktop:basis-auto")}>
         {/* Room around the row, so that the ring of a tab is not cut off where the row scrolls. */}
         <div data-testid="tabs-scroller" className="-mx-1 -mt-1 -mb-1 overflow-x-auto px-1 pt-1 pb-1 no-scrollbar">
           <div role="tablist" aria-label={label} onKeyDown={onKeyDown} className="flex gap-1">
@@ -111,6 +118,19 @@ export function Tabs<T extends string>({ label, tabs, value, onChange, children,
           </div>
         </div>
       </div>
+  );
+
+  return (
+    <div className={className}>
+      {head ? (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2.5">
+          <div className="grow">{head.title}</div>
+          {head.aside ? <div className="order-2 desktop:order-3">{head.aside}</div> : null}
+          {row}
+        </div>
+      ) : (
+        row
+      )}
       <div role="tabpanel" id={panel} aria-labelledby={tabOf(value)} tabIndex={0} className="mt-4 rounded-xs focus-ring">
         {children}
       </div>

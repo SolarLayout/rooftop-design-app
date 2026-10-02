@@ -202,6 +202,7 @@
 
   --radius-swatch: 3px;
   --radius-key: 4px;
+  --radius-bar-end: 4px;
   --radius-xs: 6px;
   --radius-seg: 7px;
   --radius-item: 8px;
@@ -242,11 +243,15 @@
   --opacity-updating: 0.55;
   --opacity-hint: 0.35;
   --opacity-band: 0.55;
+  --opacity-wash: 0.14;
+  --brightness-lift: 1.14;
 
   --stroke-icon: 2;
   --stroke-icon-light: 1.7;
   --stroke-tick: 2.4;
   --stroke-pause: 3.4;
+  --stroke-chart: 2;
+  --stroke-hair: 1;
 
   --z-stage: 0;
   --z-stage-overlay: 1;
@@ -401,6 +406,7 @@
 
   --radius-swatch: var(--radius-swatch);
   --radius-key: var(--radius-key);
+  --radius-bar-end: var(--radius-bar-end);
   --radius-xs: var(--radius-xs);
   --radius-seg: var(--radius-seg);
   --radius-item: var(--radius-item);
@@ -743,6 +749,14 @@
 @utility opacity-updating {
   opacity: var(--opacity-updating);
 }
+/* The wash under the line of a chart: the series colour, faint. */
+@utility opacity-wash {
+  opacity: var(--opacity-wash);
+}
+/* A bar of a chart under the pointer or with the keyboard focus. */
+@utility lifted {
+  filter: brightness(var(--brightness-lift));
+}
 
 /* What waits: a ring turns, a skeleton breathes. Both stand still for those who ask for less motion. */
 @keyframes turn {
@@ -939,6 +953,13 @@
 }
 @utility stroke-pause {
   stroke-width: var(--stroke-pause);
+}
+/* The line of a chart, and its hairlines: gridlines, the baseline, the crosshair. */
+@utility stroke-chart {
+  stroke-width: var(--stroke-chart);
+}
+@utility stroke-hair {
+  stroke-width: var(--stroke-hair);
 }
 
 @utility duration-press {

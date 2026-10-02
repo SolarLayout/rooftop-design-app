@@ -55,3 +55,15 @@ export const TIME_REST = 150;
 
 /** Percent that the glass of every other position is mixed toward the stage's colour while a string is traced or selected. */
 export const DIM_TOWARD_STAGE = 55;
+
+/** Pixels between the top of the plot of the 25 years and the highest year, so that the marker and its ring have room. */
+export const CHART_LINE_TOP = 14;
+
+/** Pixels the line of the 25 years falls from the highest year to the lowest: it is fitted to the run's own extremes, not to zero. */
+export const CHART_LINE_BAND = 45;
+
+/** Pixels: the marker of a point under the pointer is 8 across. */
+export const MARKER_RADIUS = 4;
+
+/** Pixels of the ring in the surface colour around a marker, so that it stays legible on the line. */
+export const MARKER_RING = 2;
