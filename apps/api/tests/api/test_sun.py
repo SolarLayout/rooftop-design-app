@@ -88,8 +88,14 @@ def test_values_out_of_range_are_refused_by_their_field(client, change, field):
 
 
 # ── shadows ──────────────────────────────────────────────────────────────────
-def test_shadows_of_the_demo_at_the_end_of_the_window(client, light_demo):
-    request = {**PUNE, "day": "design_day", "hours": [16.0], "shadows": {"project": light_demo, "hour": 16.0}}
+@pytest.fixture
+def roof(light_demo):
+    """The roof of the demo: all that the shadows read."""
+    return light_demo["roof"]
+
+
+def test_shadows_of_the_demo_at_the_end_of_the_window(client, roof):
+    request = {**PUNE, "day": "design_day", "hours": [16.0], "shadows": {"roof": roof, "hour": 16.0}}
 
     response = client.post("/sun", json=request)
 
@@ -102,21 +108,21 @@ def test_shadows_of_the_demo_at_the_end_of_the_window(client, light_demo):
     assert _area(shadows["polygons"]) == pytest.approx(expected.area, abs=1e-3)
 
 
-def test_shadows_are_shorter_on_a_plane_above_the_roof(client, light_demo):
+def test_shadows_are_shorter_on_a_plane_above_the_roof(client, roof):
     def shadows_at(height: float) -> float:
         request = {
             **PUNE,
             "day": "design_day",
             "hours": [16.0],
-            "shadows": {"project": light_demo, "hour": 16.0, "plane_height_m": height},
+            "shadows": {"roof": roof, "hour": 16.0, "plane_height_m": height},
         }
         return _area(client.post("/sun", json=request).json()["shadows"]["polygons"])
 
     assert shadows_at(0.5) < shadows_at(0.0)
 
 
-def test_there_are_no_shadows_while_the_sun_is_down(client, light_demo):
-    request = {**PUNE, "day": "design_day", "hours": [3.0], "shadows": {"project": light_demo, "hour": 3.0}}
+def test_there_are_no_shadows_while_the_sun_is_down(client, roof):
+    request = {**PUNE, "day": "design_day", "hours": [3.0], "shadows": {"roof": roof, "hour": 3.0}}
 
     shadows = client.post("/sun", json=request).json()["shadows"]
 
@@ -124,15 +130,18 @@ def test_there_are_no_shadows_while_the_sun_is_down(client, light_demo):
     assert shadows["polygons"] == []
 
 
-def test_a_roof_without_parapet_and_obstacles_casts_no_shadow(client, light_demo):
-    light_demo["roof"].update(parapet_h=0.0, obstacles=[])
-    request = {**PUNE, "day": "design_day", "hours": [16.0], "shadows": {"project": light_demo, "hour": 16.0}}
+def test_a_roof_without_parapet_and_obstacles_casts_no_shadow(client, roof):
+    roof.update(parapet_h=0.0, obstacles=[])
+    request = {**PUNE, "day": "design_day", "hours": [16.0], "shadows": {"roof": roof, "hour": 16.0}}
 
     assert client.post("/sun", json=request).json()["shadows"]["polygons"] == []
 
 
-def test_shadows_need_no_equipment(client, light_demo):
-    light_demo.update(pan_path="/nowhere/Big.PAN", pan_text="", ond_path="/nowhere/Inv.ond", ond_text="")
+def test_the_shadows_take_the_roof_alone_not_the_whole_document(client, light_demo):
+    """A whole document carries its weather (the demo: 484 KB); its roof is 1.4 KB."""
     request = {**PUNE, "day": "design_day", "hours": [16.0], "shadows": {"project": light_demo, "hour": 16.0}}
 
-    assert client.post("/sun", json=request).status_code == 200
+    response = client.post("/sun", json=request)
+
+    assert response.status_code == 422
+    assert error_of(response)["field"].startswith("shadows.roof")
