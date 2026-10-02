@@ -355,6 +355,7 @@ and the file equal.
 | `STEM_TURN` | `44` | Pixels the turn handle of a selected obstacle stands off the middle of the north edge of its top, due north, on its stem |
 | `STEM_HEIGHT` | `40` | Pixels the height handle stands over the middle of the top, on its vertical stem, on desktop |
 | `STEM_HEIGHT_TOUCH` | `52` | The same on phone and tablet |
+| `TIME_REST` | `150` | Milliseconds the time of the sun must stand still before the engine's shadow outlines are asked for it: a drag of the timeline passes forty quarter hours |
 
 ## Layers
 

@@ -1,17 +1,19 @@
 "use client";
 
 import { useId, useState } from "react";
-import { useProject, useStores } from "@/components/shell/stores";
+import { useProject, useStores, useView } from "@/components/shell/stores";
 import { useSun } from "@/components/scene/use-sun";
 import { classNames } from "@/components/ui/class-names";
 import { NumberField } from "@/components/ui/NumberField";
 import { Segmented } from "@/components/ui/Segmented";
 import { Select } from "@/components/ui/Select";
 import { Stat } from "@/components/ui/Stat";
+import { Switch } from "@/components/ui/Switch";
 import { hourOf } from "@/lib/scene/keepout";
 import { projectOf } from "@/lib/stores/project-store";
+import { onTheRoofOf, type OnTheRoof } from "@/lib/stores/view-store";
 import { dateOf, dayOfChoice, dayOfYearOf, daysOf, designDayLineOf, designDayOfYear, partsOf, sunAtOf } from "@/lib/studio/sun-time";
-import { SECTION } from "./inspector-look";
+import { ReadOut, SECTION } from "./inspector-look";
 import { SunTimeline } from "./Time";
 import type { Size } from "./use-size";
 import { useTime } from "./use-time";
@@ -97,9 +99,47 @@ function SunAtSection() {
   );
 }
 
+type Switched = { what: keyof OnTheRoof; label: string; line: (window: string) => string };
+
+const ON_THE_ROOF: readonly Switched[] = [
+  { what: "sunPath", label: "Sun path", line: () => "The arc the sun follows on this day" },
+  { what: "window", label: "Shade-free window", line: (window) => `Thick part of the arc, ${window}` },
+  { what: "shadowOutlines", label: "Calculated shadow outlines", line: () => "The engine's shadows, drawn over what you see" },
+];
+
+/**
+ * What the Sun lens draws on the roof (the boards "Studio, Sun lens" and "Sun path and shadow outlines";
+ * plan/phase-06-plan.md, decision 16): the sun path, its window thicker, and the engine's shadow outlines.
+ * The window is of the path: it is dim while the path is off. Of the view, not of the design.
+ */
+function OnTheRoofSection({ size }: { size: Size }) {
+  const { view } = useStores();
+  const shown = useView(onTheRoofOf);
+  const project = useProject(projectOf);
+  const heading = useId();
+  const window = project ? `${hourOf(project.array.window_start_h)} to ${hourOf(project.array.window_end_h)}` : "";
+  return (
+    <section aria-labelledby={heading} className="flex flex-col gap-3">
+      <h2 id={heading} className={SECTION}>
+        On the roof
+      </h2>
+      <div className={classNames("flex flex-col", size === "phone" ? "divide-y divide-line-subtle" : "gap-3")}>
+        {ON_THE_ROOF.map(({ what, label, line }) => {
+          const isDim = what === "window" && !shown.sunPath;
+          return (
+            <ReadOut key={what} label={label} value={null} line={line(window)} className={classNames(size === "phone" && "py-2.5", isDim && "opacity-disabled")}>
+              <Switch label={label} on={shown[what]} disabled={isDim} onChange={(on) => view.getState().showOnTheRoof(what, on)} />
+            </ReadOut>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 /**
  * The inspector of the Sun lens (the board "Studio, Sun lens" on three sizes): the day and where the sun
- * stands; the shading figures and what is drawn on the roof come with their pull requests. On phone the
+ * stands, what is drawn on the roof; the shading figures come with their pull request. On phone the
  * timeline stands at the top, since the stage of 252 has no room for it.
  */
 export function SunInspector({ size }: { size: Size }) {
@@ -110,6 +150,7 @@ export function SunInspector({ size }: { size: Size }) {
         <DaySection size={size} />
         <SunAtSection />
       </div>
+      <OnTheRoofSection size={size} />
     </div>
   );
 }

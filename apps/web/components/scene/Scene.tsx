@@ -25,6 +25,7 @@ import { Modules } from "./Modules";
 import { Footprint, Obstacles } from "./Obstacles";
 import { Projector, type Anchor } from "./Projector";
 import { SceneCanvas } from "./SceneCanvas";
+import { ShadowOutlines } from "./ShadowOutlines";
 import { SunLight } from "./SunLight";
 
 type Props = {
@@ -140,6 +141,7 @@ export function Scene({ onContextLost, stage }: Props) {
             onWrite={COUNTS_MODULE_WRITES ? stage.getState().countModuleWrite : undefined}
           />
         ) : null}
+        <ShadowOutlines heightAt={frame.heightAt} />
         {layout ? (
           <KeepOut
             parts={layout.layout.keepout}

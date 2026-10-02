@@ -10,13 +10,13 @@ import { classNames } from "@/components/ui/class-names";
 import { shown } from "@/components/ui/number-entry";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
-import { calloutOf } from "@/lib/scene/keepout";
+import { calloutOf, hourOf } from "@/lib/scene/keepout";
 import { calloutOfObstacle, wordsOf } from "@/lib/scene/obstacles";
 import { createStageStore, cursorOf, groundOf, moduleWritesOf, type Cursor, type StageStore } from "@/lib/scene/stage-store";
 import type { Lens } from "@/lib/routes";
 import { projectOf } from "@/lib/stores/project-store";
-import { layoutOf, readoutsOf, sunDayOf } from "@/lib/stores/results-store";
-import { draftOf, selectionOf, sunTimeOf, toReviewOf } from "@/lib/stores/view-store";
+import { layoutOf, readoutsOf, shadowOutlinesOf, sunDayOf } from "@/lib/stores/results-store";
+import { draftOf, lensOf, onTheRoofOf, selectionOf, sunTimeOf, toReviewOf } from "@/lib/stores/view-store";
 import { readOutOf, sunLineOf } from "@/lib/studio/sun-time";
 import { useSun } from "@/components/scene/use-sun";
 import { Callout } from "./Callout";
@@ -135,6 +135,9 @@ function OnTheRoof({ stage }: { stage: StageStore }) {
   const sunDay = useResults(sunDayOf);
   const sun = useSun();
   const { hour } = useView(sunTimeOf);
+  const outlines = useResults(shadowOutlinesOf);
+  const onTheRoof = useView(onTheRoofOf);
+  const lens = useView(lensOf);
   const selection = useView(selectionOf);
   const draft = useView(draftOf);
   const toReview = useView(toReviewOf);
@@ -170,6 +173,11 @@ function OnTheRoof({ stage }: { stage: StageStore }) {
         <li data-testid="on-the-roof-ground">{ground === "imagery" ? "The ground is the satellite imagery" : "The ground is plain, with a grid"}</li>
       )}
       {sunDay ? <li data-testid="on-the-roof-sun">{readOutOf(sunDay.dayOfYear, hour, sun)}</li> : null}
+      {outlines && onTheRoof.shadowOutlines && lens === "sun" ? (
+        <li data-testid="on-the-roof-shadow-outlines">
+          {`The engine's shadow outlines at ${hourOf(outlines.hour)}: ${outlines.polygons.length} ${outlines.polygons.length === 1 ? "polygon" : "polygons"}`}
+        </li>
+      ) : null}
       {layout?.layout.keepout.map((part, index) => (
         <li key={`keepout-${index}`} data-testid="on-the-roof-keepout">
           {calloutOf(part, window).title}: {calloutOf(part, window).detail}

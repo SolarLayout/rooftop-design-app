@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { DESIGN_PAUSE } from "../../components/ui/design-numbers";
+import { DESIGN_PAUSE, TIME_REST } from "../../components/ui/design-numbers";
 import { ApiError } from "../api";
 import type { CallOptions, DesignProgress, DesignResult, LayoutResponse, Project, ProjectRequest, RunOptions, SunRequest, SunResponse } from "../api";
 import { clockOfTheTest } from "../clock-of-the-test";
@@ -16,6 +16,7 @@ import {
   layoutOf,
   layoutStatusOf,
   progressOf,
+  shadowOutlinesOf,
   sunDayOf,
   sunFailureOf,
 } from "../stores/results-store";
@@ -718,5 +719,89 @@ describe("the sun", () => {
 
     expect(sunDayOf(results.getState())).toBeNull();
     expect(suns).toHaveLength(2);
+  });
+});
+
+// The engine's shadow outlines (plan/phase-06-plan.md, decisions 7 and 8): asked only while their switch is
+// on, once the time has stood still, for the roof alone; shown only while the time is the one they are of.
+describe("the shadow outlines", () => {
+  const OUTLINE = { exterior: [[30, 21], [33, 21], [33, 25], [30, 25]] as [number, number][], holes: [] as [number, number][][] };
+  const answerOf = (hour: number) =>
+    ({ day_of_year: 355, positions: [{ hour, elevation_deg: 18, azimuth_deg: 236.6 }], sunrise_h: 6.56, sunset_h: 17.44, shadows: { hour, elevation_deg: 18, azimuth_deg: 236.6, plane_height_m: 0, polygons: [OUTLINE] } }) as unknown as SunResponse;
+  const asked = (suns: ReturnType<typeof flow>["suns"]) => suns.filter((sun) => sun.request.shadows);
+  const roofAndTilt = (project: Project) => ({ ...project, roof: { ...project.roof, lat: 18.52, parapet_h: 0.9 } });
+
+  test("are not asked while their switch is off", async () => {
+    const { suns, view, pass } = await opened();
+
+    view.getState().setSunTime({ day: "design_day", hour: 16 });
+    pass(1000);
+
+    expect(asked(suns)).toHaveLength(0);
+  });
+
+  test("on, they are asked once the time has stood still, for the roof alone at the hour", async () => {
+    const { suns, view, pass } = await opened();
+    view.getState().showOnTheRoof("shadowOutlines", true);
+    pass(TIME_REST - 1);
+    expect(asked(suns)).toHaveLength(0);
+
+    pass(1);
+
+    expect(asked(suns)).toHaveLength(1);
+    const [request] = asked(suns).map((sun) => sun.request);
+    expect(request).toEqual({ lat: 18.52, lon: 73.86, day: "design_day", hours: [10.5], shadows: { roof: DEMO.roof, hour: 10.5 } });
+  });
+
+  test("a drag passing many quarter hours asks once, for where it stopped", async () => {
+    const { suns, view, pass } = await opened();
+    view.getState().showOnTheRoof("shadowOutlines", true);
+    pass(TIME_REST);
+
+    for (const hour of [11, 11.25, 11.5, 11.75, 12]) {
+      view.getState().setSunTime({ day: "design_day", hour });
+      pass(40);
+    }
+    pass(TIME_REST);
+
+    expect(asked(suns).map((sun) => sun.request.hours)).toEqual([[10.5], [12]]);
+  });
+
+  test("are shown while the time is the one they are of, and not once it moved on", async () => {
+    const { suns, results, view, pass } = await opened();
+    view.getState().showOnTheRoof("shadowOutlines", true);
+    pass(TIME_REST);
+    asked(suns)[0].answer(answerOf(10.5));
+    await settled();
+    expect(shadowOutlinesOf(results.getState())?.polygons).toEqual([OUTLINE]);
+
+    view.getState().setSunTime({ day: "design_day", hour: 11 });
+
+    expect(shadowOutlinesOf(results.getState())).toBeNull();
+  });
+
+  test("switched off they are gone, and what was on its way is given up", async () => {
+    const { suns, results, view, pass } = await opened();
+    view.getState().showOnTheRoof("shadowOutlines", true);
+    pass(TIME_REST);
+
+    view.getState().showOnTheRoof("shadowOutlines", false);
+
+    expect(asked(suns)[0].signal.aborted).toBe(true);
+    expect(shadowOutlinesOf(results.getState())).toBeNull();
+  });
+
+  test("an edit of the roof asks again; an edit of the array does not", async () => {
+    const { suns, project, view, pass } = await opened();
+    view.getState().showOnTheRoof("shadowOutlines", true);
+    pass(TIME_REST);
+
+    project.getState().commit(tilt(20));
+    pass(TIME_REST);
+    expect(asked(suns)).toHaveLength(1);
+
+    project.getState().commit(roofAndTilt);
+    pass(TIME_REST);
+    expect(asked(suns)).toHaveLength(2);
   });
 });

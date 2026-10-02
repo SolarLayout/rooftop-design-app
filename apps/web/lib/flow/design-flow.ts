@@ -4,7 +4,7 @@
 // are there.
 //
 // The calls go through the client of the API (lib/api) and nothing else.
-import { DESIGN_PAUSE } from "../../components/ui/design-numbers";
+import { DESIGN_PAUSE, TIME_REST } from "../../components/ui/design-numbers";
 import { api as apiOfTheApp, ApiError, type Api, type Project } from "../api";
 import { CLOCK_OF_THE_BROWSER, type Clock } from "../clock";
 import { hoursOf, QUARTER_HOUR } from "../scene/sun-day";
@@ -48,6 +48,12 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
   let sunCall: AbortController | null = null;
   let sunAsked: string | null = null;
   let stopFollowingTheView: (() => void) | null = null;
+  let shadowsCall: AbortController | null = null;
+  let shadowsAsked: string | null = null;
+  let giveUpTheShadowsPause: (() => void) | null = null;
+  /** The roof the outlines were last keyed by, and how many roofs there were: a new roof is a new key. */
+  let roofOfTheShadows: Project["roof"] | null = null;
+  let roofsSeen = 0;
   let layoutCall: AbortController | null = null;
   let designCall: AbortController | null = null;
   let giveUpThePause: (() => void) | null = null;
@@ -70,6 +76,57 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
   function giveUpTheDemo() {
     demoCall?.abort();
     demoCall = null;
+  }
+
+  function giveUpTheShadows() {
+    giveUpTheShadowsPause?.();
+    giveUpTheShadowsPause = null;
+    shadowsCall?.abort();
+    shadowsCall = null;
+    shadowsAsked = null;
+  }
+
+  /**
+   * The engine's shadow outlines (plan/phase-06-plan.md, decisions 7 and 8): while their switch is on, for
+   * the roof alone at the view's day and hour, asked once the time has stood still for TIME_REST; what was
+   * on its way before is given up. The results show them only while the time is the one they are of.
+   */
+  function followTheShadows() {
+    const document = project.getState().project;
+    const { sunTime, onTheRoof } = view.getState();
+    if (document === null || !onTheRoof.shadowOutlines) {
+      giveUpTheShadows();
+      results.getState().shadowsWanted(null);
+      return;
+    }
+    if (document.roof !== roofOfTheShadows) {
+      roofOfTheShadows = document.roof;
+      roofsSeen += 1;
+    }
+    const day = sunTime.day === "design_day" ? (document.array.design_doy ?? "design_day") : sunTime.day;
+    const key = `${sunKeyOf({ lat: document.roof.lat, lon: document.roof.lon, day })},${sunTime.hour},roof ${roofsSeen}`;
+    if (key === shadowsAsked) return;
+    giveUpTheShadows();
+    shadowsAsked = key;
+    results.getState().shadowsWanted(key);
+    const roof = document.roof;
+    const { hour } = sunTime;
+    giveUpTheShadowsPause = clock.after(TIME_REST, () => {
+      giveUpTheShadowsPause = null;
+      const call = new AbortController();
+      shadowsCall = call;
+      api
+        .computeSun({ lat: roof.lat, lon: roof.lon, day, hours: [hour], shadows: { roof, hour } }, { signal: call.signal })
+        .then(
+          (answer) => results.getState().shadowsArrived({ key, hour, polygons: answer.shadows?.polygons ?? [] }),
+          (error: unknown) => {
+            if (!call.signal.aborted) results.getState().shadowsFailed(key, failureOf(error));
+          },
+        )
+        .finally(() => {
+          if (shadowsCall === call) shadowsCall = null;
+        });
+    });
   }
 
   function giveUpTheSun() {
@@ -217,6 +274,7 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
     }
     askForTheLayout(document, edit);
     askForTheSun();
+    followTheShadows();
     // Nobody edits a design that is just opened: its run need not wait.
     if (isOpened) run(document, edit);
     else runAfterThePause(document, edit);
@@ -226,7 +284,10 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
     start() {
       if (stopListening) return;
       stopListening = project.subscribe(follow);
-      stopFollowingTheView = view.subscribe(askForTheSun);
+      stopFollowingTheView = view.subscribe(() => {
+        askForTheSun();
+        followTheShadows();
+      });
       follow(project.getState());
     },
     openDemo,
@@ -246,6 +307,7 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
       giveUpTheLayout();
       giveUpTheRun();
       giveUpTheSun();
+      giveUpTheShadows();
     },
   };
 }
