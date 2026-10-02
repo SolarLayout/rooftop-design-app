@@ -1986,6 +1986,11 @@
             "title": "Cable Schedule",
             "type": "array"
           },
+          "caption": {
+            "description": "What sets the option apart, as in \"Recommended\" or \"Your own\"; may be empty",
+            "title": "Caption",
+            "type": "string"
+          },
           "custom": {
             "title": "Custom",
             "type": "boolean"
@@ -2076,6 +2081,7 @@
           "key",
           "letter",
           "title",
+          "caption",
           "n_series",
           "n_strings",
           "n_inverters",

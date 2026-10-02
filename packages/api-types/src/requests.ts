@@ -1198,6 +1198,11 @@ export interface components {
             bom: components["schemas"]["BomLine"][];
             /** Cable Schedule */
             cable_schedule: components["schemas"]["CableRow"][];
+            /**
+             * Caption
+             * @description What sets the option apart, as in "Recommended" or "Your own"; may be empty
+             */
+            caption: string;
             /** Custom */
             custom: boolean;
             /** Dc Kwp */

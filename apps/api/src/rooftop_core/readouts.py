@@ -73,6 +73,27 @@ def verdict(design: Design, option: StringOption | None) -> Verdict:
     )
 
 
+def caption(design: Design, option: StringOption) -> str:
+    """The few words under the letter of an option, after its place among the options (decision 11).
+
+    The engine's title stays as it was; the caption says what sets the option apart, or nothing.
+    """
+    if option.recommended:
+        return "Recommended"
+    if option.custom:
+        return "Your own"
+    if not option.ok:
+        return option.note.capitalize() + (
+            f", {option.n_inverters} inverters" if option.n_inverters > 1 else ""
+        )
+    if option.n_strings == option.n_inverters * max_strings_per_inverter(design.module, design.inverter):
+        return "Fills the inverters" if option.n_inverters > 1 else "Fills the inverter"
+    recommended = next((other for other in design.options if other.recommended), None)
+    if recommended is not None and option.result.clipping_pct < recommended.result.clipping_pct:
+        return "Lower clipping"
+    return ""
+
+
 def custom_refused(design: Design) -> Verdict | None:
     """Why the custom option of the design was not simulated, or None when it was or there is none."""
     misfit = design.custom_misfit

@@ -199,6 +199,9 @@ class Option(BaseModel):
     )
     letter: str
     title: str
+    caption: str = Field(
+        description='What sets the option apart, as in "Recommended" or "Your own"; may be empty'
+    )
     n_series: int
     n_strings: int
     n_inverters: int

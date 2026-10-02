@@ -42,6 +42,11 @@ def test_custom_chooses_the_custom_and_not_the_offered_option_it_equals(same_as_
     assert same_as_b.p.chosen_option == "custom"
 
 
+def test_the_custom_is_captioned_your_own(same_as_b):
+    assert readouts.caption(same_as_b, same_as_b.options[-1]) == "Your own"
+    assert readouts.caption(same_as_b, same_as_b.options[1]) == "Fills the inverter"
+
+
 def test_a_custom_that_can_be_built_is_not_refused(same_as_b):
     assert same_as_b.custom_misfit is None
     assert readouts.custom_refused(same_as_b) is None

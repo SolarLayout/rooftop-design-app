@@ -1,5 +1,8 @@
 """The words and tables the desktop app built in its window, now made by the engine."""
 
+from dataclasses import replace
+from types import SimpleNamespace
+
 import pytest
 
 from rooftop_core import readouts
@@ -68,6 +71,63 @@ def test_the_verdict_when_no_length_fits():
     assert verdict.detail == design.range.message
     assert verdict.detail.startswith("No string length fits: at least ")
     assert verdict.detail.endswith(" fit under 600 V.")
+
+
+# ── the captions of the options (decision 11) ────────────────────────────────
+def captions(design) -> list[str]:
+    return [readouts.caption(design, option) for option in design.options]
+
+
+def test_the_captions_of_the_demo_at_1500_v(demo_design):
+    assert captions(demo_design) == [
+        "Recommended",
+        "Fills the inverter",
+        "Lower clipping",
+        "Below target, 2 inverters",
+        "Below target, 2 inverters",
+    ]
+
+
+def test_the_captions_of_the_demo_at_1000_v():
+    project = demo_project()
+    project.system_voltage = 1000.0
+    design = Design(project, memo=KEPT)
+    design.run_options()
+
+    assert [option.key for option in design.options] == ["18x42x2", "19x37x2", "19x24x1", "18x24x1"]
+    assert captions(design) == [
+        "Below target, 2 inverters",
+        "Below target, 2 inverters",
+        "Below target",
+        "Below target",
+    ]
+
+
+def test_an_option_outside_the_target_is_captioned_with_its_note(demo_design, option_a):
+    heavy = replace(option_a, recommended=False, ok=False, note="heavy clipping")
+    above = replace(option_a, recommended=False, ok=False, note="above target", n_inverters=3)
+
+    assert readouts.caption(demo_design, heavy) == "Heavy clipping"
+    assert readouts.caption(demo_design, above) == "Above target, 3 inverters"
+
+
+def test_an_option_that_takes_every_string_its_inverters_take_fills_them(demo_design):
+    two = replace(demo_design.options[1], n_strings=48, n_inverters=2)
+
+    assert readouts.caption(demo_design, two) == "Fills the inverters"
+
+
+def test_lower_clipping_needs_a_recommended_option_to_be_lower_than(demo_design):
+    c = demo_design.options[2]
+    alone = SimpleNamespace(options=[c], module=demo_design.module, inverter=demo_design.inverter)
+
+    assert readouts.caption(alone, c) == ""
+
+
+def test_an_option_in_target_with_no_lower_clipping_has_no_caption(demo_design, option_a):
+    second = replace(option_a, recommended=False)
+
+    assert readouts.caption(demo_design, second) == ""
 
 
 # ── notes ────────────────────────────────────────────────────────────────────

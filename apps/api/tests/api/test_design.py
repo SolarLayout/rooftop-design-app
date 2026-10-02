@@ -129,6 +129,13 @@ def test_the_five_options_of_the_demo(demo_result):
     assert [o["custom"] for o in options] == [False] * 5
     energy = [o["energy"]["energy_mwh"] for o in options]
     assert energy == pytest.approx([617.8, 607.7, 602.9, 700.9, 700.5], abs=ONE_DECIMAL)
+    assert [o["caption"] for o in options] == [
+        "Recommended",
+        "Fills the inverter",
+        "Lower clipping",
+        "Below target, 2 inverters",
+        "Below target, 2 inverters",
+    ]
     assert [o["title"] for o in options] == [
         "A · Recommended",
         "B",
@@ -519,6 +526,7 @@ def test_a_custom_equal_to_option_b_is_a_sixth_option_that_custom_chooses(client
     assert [o["custom"] for o in options] == [False] * 5 + [True]
     assert (options[5]["n_series"], options[5]["n_strings"], options[5]["n_inverters"]) == (26, 24, 1)
     assert result["chosen_option"] == "custom"
+    assert options[5]["caption"] == "Your own"
 
 
 def test_a_custom_that_cannot_be_built_is_not_simulated_and_the_answer_says_why(client, demo):

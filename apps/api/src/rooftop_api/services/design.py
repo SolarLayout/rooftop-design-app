@@ -201,6 +201,7 @@ def _option(design: Design, option) -> schemas.Option:
         module_area_m2=design.module.area_m2,
         roof_area_m2=design.p.roof.area_m2,
         verdict=readouts.verdict(design, option),
+        caption=readouts.caption(design, option),
         loads=readouts.mppt_loads(design, option),
         bill=readouts.bill_of_materials(design, option),
         cables=readouts.cables(design, option),
