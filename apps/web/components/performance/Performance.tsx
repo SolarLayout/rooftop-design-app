@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useProject, useResults, useStores } from "@/components/shell/stores";
+import { useHistoryKeys } from "@/components/studio/use-history-keys";
 import { assumptionsOf, withAssumption, withLevel, type AssumptionId } from "@/lib/performance/assumption-fields";
 import { withDegradation } from "@/lib/performance/degradation";
 import { pageViewOf } from "@/lib/performance/page-view";
@@ -50,6 +51,8 @@ export function Performance() {
   const lon = useProject(longitudeOf);
   const load = useWeatherLoad();
   const [isCsvOpen, setCsvOpen] = useState(false);
+  // The page's edits are committed edits like the Studio's: the keys of the history undo and redo them.
+  useHistoryKeys();
   const design = useResults(designOf);
   const readouts = useResults(readoutsOf);
   const designStatus = useResults(designStatusOf);

@@ -1,4 +1,5 @@
 import type { Page, Route } from "@playwright/test";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { expect, test } from "../fixtures";
 import { expectScreen, expectWholeScreen } from "../screens";
@@ -733,6 +734,87 @@ test.describe("the shell", () => {
     await expect(page.getByTestId("run-failed")).toContainText("Energy was not updated", { timeout: RUN });
 
     await expectWholeScreen(page, "performance-failed");
+  });
+
+  // NASA POWER 2023 landed (the board "Weather and assumptions"): the line says no horizon, the KPIs are of the run on it.
+  test("performance, NASA POWER landed", async ({ page }, testInfo) => {
+    await page.goto("/performance");
+    await expect(page.getByTestId("kpi-energy").getByText("617.8 MWh")).toBeVisible({ timeout: RUN });
+    await settled(page, testInfo.project.name);
+    const ran = page.waitForRequest((request) => request.url().endsWith("/api/design") && request.postDataJSON().weather_source === "nasa", { timeout: RUN });
+    await page.getByTestId("weather-select").getByRole("button", { name: /^Weather/ }).click();
+    await page.getByRole("listbox", { name: "Weather" }).getByRole("option", { name: /^NASA POWER 2023/ }).click();
+    const events = (await (await (await ran).response())!.text()).split("\n").filter((line) => line.startsWith("data:"));
+    const { result } = JSON.parse(events[events.length - 1]!.slice(5)) as { result: { options: { energy: { energy_mwh: number } }[] } };
+    await expect(page.getByTestId("kpi-energy").getByText(`${result.options[0]!.energy.energy_mwh.toFixed(1)} MWh`)).toBeVisible({ timeout: RUN * 2 });
+    await expect(page.getByTestId("run-step")).toHaveCount(0);
+    // No focus ring in the picture.
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+
+    await expectWholeScreen(page, "performance-weather-nasa");
+  });
+
+  // The CSV dialog with a file of GHI alone read (the same board): the file's card with the API's summary and its three notes.
+  test("performance, the CSV dialog with a file read", async ({ page }, testInfo) => {
+    await page.goto("/performance");
+    await expect(page.getByTestId("kpi-energy").getByText("617.8 MWh")).toBeVisible({ timeout: RUN });
+    await settled(page, testInfo.project.name);
+    const fixture = JSON.parse(readFileSync(path.resolve(__dirname, "../fixtures/weather-pvgis-pune.json"), "utf8")) as { weather: { time: string[]; ghi: number[] } };
+    const csv = ["time,ghi", ...fixture.weather.time.map((time, hour) => `${time},${fixture.weather.ghi[hour]}`)].join("\n");
+    await page.getByTestId("weather-select").getByRole("button", { name: /^Weather/ }).click();
+    await page.getByRole("listbox", { name: "Weather" }).getByRole("option", { name: /^CSV file/ }).click();
+    const dialog = page.getByRole("dialog", { name: "Load weather from a CSV" });
+    await dialog.locator("input[type=file]").setInputFiles({ name: "pune-ghi.csv", mimeType: "text/csv", buffer: Buffer.from(csv) });
+    await expect(dialog.getByTestId("csv-note")).toHaveCount(3, { timeout: RUN });
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+
+    await expectScreen(page, "performance-csv-dialog");
+  });
+
+  // A download that failed (the same board): the API's words under the select, PVGIS TMY still the source.
+  test("performance, a weather that was not loaded", async ({ page }, testInfo) => {
+    const OVER_THE_SEA = {
+      error: {
+        code: "no_weather_for_site",
+        message: "PVGIS TMY has no weather for 10.0000, 65.0000: Location over the sea. Please, select another location. Check the site, or choose another weather source.",
+        field: null,
+      },
+    };
+    await page.goto("/performance");
+    await expect(page.getByTestId("kpi-energy").getByText("617.8 MWh")).toBeVisible({ timeout: RUN });
+    await settled(page, testInfo.project.name);
+    await page.route("**/api/weather", (route) => route.fulfill({ status: 422, json: OVER_THE_SEA }));
+    await page.getByTestId("weather-select").getByRole("button", { name: /^Weather/ }).click();
+    await page.getByRole("listbox", { name: "Weather" }).getByRole("option", { name: /^NASA POWER 2023/ }).click();
+    await expect(page.getByTestId("weather-failed")).toContainText("The weather was not loaded");
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+
+    await expectWholeScreen(page, "performance-weather-failed");
+  });
+
+  // Uc 25 and the levels 50, 90, 99 landed (the same board): the lead tile with P50 · P90 · P99, the field holding 25 with "Use the roof type's".
+  test("performance, the assumptions entered", async ({ page }, testInfo) => {
+    await page.goto("/performance");
+    await expect(page.getByTestId("kpi-energy").getByText("617.8 MWh")).toBeVisible({ timeout: RUN });
+    await settled(page, testInfo.project.name);
+    const assumptions = page.getByTestId("assumptions");
+    const withUc = page.waitForRequest((request) => request.url().endsWith("/api/design") && request.postDataJSON().losses.uc === 25, { timeout: RUN });
+    const uc = assumptions.getByRole("textbox", { name: "Thermal Uc" });
+    await uc.fill("25");
+    await uc.press("Enter");
+    await withUc;
+    const withLevels = page.waitForRequest((request) => request.url().endsWith("/api/design") && request.postDataJSON().losses.p_levels.join() === "50,90,99", { timeout: RUN });
+    const level = assumptions.getByRole("textbox", { name: "Exceedance level 2" });
+    await level.fill("99");
+    await level.press("Enter");
+    const events = (await (await (await withLevels).response())!.text()).split("\n").filter((line) => line.startsWith("data:"));
+    const { result } = JSON.parse(events[events.length - 1]!.slice(5)) as { result: { options: { energy: { energy_mwh: number } }[] } };
+    await expect(page.getByTestId("kpi-energy").getByText(`${result.options[0]!.energy.energy_mwh.toFixed(1)} MWh`)).toBeVisible({ timeout: RUN });
+    await expect(page.getByTestId("p-value").last()).toContainText("P99");
+    await expect(page.getByTestId("run-step")).toHaveCount(0);
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+
+    await expectWholeScreen(page, "performance-assumptions-entered");
   });
 
   test("handover", async ({ page }, testInfo) => {
