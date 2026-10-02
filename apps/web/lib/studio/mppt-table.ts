@@ -5,7 +5,7 @@
 import { shown } from "../../components/ui/number-entry";
 import type { CurrentPerMppt, DesignOption } from "../api";
 
-/** A current of its limit: the value in mono, and words after it where the limit is not known. */
+/** A current of its limit, in mono; where the limit is not known the current alone, the mark saying so. */
 export type CurrentOfLimit = { value: string; words: string | null };
 
 export type MpptRow = {
@@ -38,7 +38,7 @@ type Load = DesignOption["mppt_loads"][number];
 const amps = (value: number) => shown(value, 1);
 
 function ofItsLimit(current: number, limit: number | null): CurrentOfLimit {
-  return limit === null ? { value: `${amps(current)} A`, words: "of not known" } : { value: `${amps(current)} of ${amps(limit)} A`, words: null };
+  return limit === null ? { value: `${amps(current)} A`, words: null } : { value: `${amps(current)} of ${amps(limit)} A`, words: null };
 }
 
 function markOf(load: Load): MpptRow["mark"] {

@@ -49,7 +49,7 @@ export function InverterCard({ inverter, entered, onReplace }: Props) {
   }
   const card = inverterCardOf(inverter.inverter, inverter.current, entered);
   const facts = (
-    <p data-testid="inverter-facts" className={card.isCurrentKnown ? "truncate type-value-xs text-text-3" : "flex items-center gap-2 type-caption text-text-2"}>
+    <p data-testid="inverter-facts" className={card.isCurrentKnown ? "type-value-xs text-text-3" : "flex items-center gap-2 type-caption text-text-2"}>
       {card.isCurrentKnown ? null : <StatusMark kind="note" label="Note" wordsShown={false} size={14} />}
       <span>{card.facts}</span>
     </p>
@@ -63,7 +63,7 @@ export function InverterCard({ inverter, entered, onReplace }: Props) {
             <p data-testid="inverter-name" className="truncate font-semibold">
               {card.name}
             </p>
-            <p data-testid="inverter-line" className="truncate type-caption text-text-2">
+            <p data-testid="inverter-line" className="type-caption text-text-2">
               {card.line}
             </p>
             {card.isCurrentKnown ? facts : null}

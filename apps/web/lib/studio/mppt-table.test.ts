@@ -58,7 +58,8 @@ describe("a limit not known", () => {
 
   test("each row says not known, with a note mark", () => {
     expect(table.rows.every((row) => row.mark.kind === "note" && row.mark.label === "Limit not known")).toBe(true);
-    expect(table.rows[0]).toMatchObject({ imp: { value: "54.3 A", words: "of not known" }, isc: { value: "57.2 A", words: "of not known" } });
+    // The current alone: the mark says the limit is not known, and the note under the table how to enter it (it must fit 344 px).
+    expect(table.rows[0]).toMatchObject({ imp: { value: "54.3 A", words: null }, isc: { value: "57.2 A", words: null } });
   });
 
   test("under the table the API's note on the current per MPPT, in its words", () => {

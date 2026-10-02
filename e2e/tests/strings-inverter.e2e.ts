@@ -57,7 +57,7 @@ async function limitsOpened(page: Page) {
 const isPhone = (projectName: string) => projectName === "phone";
 const mpptTable = (page: Page) => page.getByTestId("mppt-table").filter({ visible: true });
 const chosenOf = (answer: Answer) => answer.options.find((option) => option.key === answer.chosen_option)!;
-const ofItsLimit = (current: number, limit: number | null) => (limit === null ? `${one(current)} A of not known` : `${one(current)} of ${one(limit)} A`);
+const ofItsLimit = (current: number, limit: number | null) => (limit === null ? `${one(current)} A` : `${one(current)} of ${one(limit)} A`);
 
 /** The MPPT rows as shown: the rows of the table on tablet and desktop, the cards on phone. */
 const mpptRows = (page: Page, projectName: string) =>
@@ -113,7 +113,7 @@ test.describe("replace the inverter", () => {
     await expect(page.getByTestId("inverter-facts").filter({ visible: true })).toContainText("Current per MPPT not in the OND", { timeout: RUN });
     const chosen = chosenOf(answer);
     expect(chosen.mppt_loads.every((load) => load.imp_limit_a === null && !load.ok)).toBe(true);
-    await expect(mpptRows(page, testInfo.project.name).first()).toContainText("of not known", { timeout: RUN });
+    await expect(mpptRows(page, testInfo.project.name).first().getByRole("img", { name: "Limit not known" })).toBeVisible({ timeout: RUN });
   });
 
   test("a PAN given as an OND is refused in the engine's words, and the card keeps its inverter", async ({ page }) => {
