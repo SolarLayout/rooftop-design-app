@@ -94,8 +94,9 @@ test.describe("the stage", () => {
       .toBe(true);
     const middle = await pixelOnce(page, 0.5, 0.5, isDrawn);
     expect(isDrawn(middle), `the middle of the plan is ${middle.join(", ")}`).toBe(true);
+    // Above it the ground, which renders at its own colours (the imagery's greys among them), not the roof's.
     const [above] = await pixelsAt(page, [[0.5, 0.08]]);
-    expect(isBright(above), `above the roof in the plan is ${above.join(", ")}`).toBe(false);
+    expect(isNear(above, ROOF, 40), `above the roof in the plan is ${above.join(", ")}`).toBe(false);
 
     await threeDView(page).click();
     await expect(threeDView(page)).toHaveAttribute("aria-checked", "true");
