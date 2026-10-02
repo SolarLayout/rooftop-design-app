@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { classNames } from "@/components/ui/class-names";
 import { Skeleton } from "@/components/ui/Skeleton";
 import type { HeaderView } from "@/lib/performance/header";
+import { NoteLine } from "./NoteLine";
 import { OptionSwitch } from "./OptionSwitch";
 
 type Props = {
@@ -23,7 +24,8 @@ type Props = {
 /**
  * The title, the line of the run and the controls (the board "Performance" on three sizes): on desktop the controls
  * stand at the right of the title, the weather before the options; on tablet under it in a row, the options first;
- * on phone under it, each across the width. A note of the weather stands under the controls, at their right.
+ * on phone under it, each across the width. The engine's notes on the weather stand under the line; a weather that was
+ * not loaded under the controls, at their right.
  */
 export function PerformanceHeader({ header, isLoading, isDimmed, under, weather, note, onChoose }: Props) {
   return (
@@ -31,9 +33,18 @@ export function PerformanceHeader({ header, isLoading, isDimmed, under, weather,
       <div className="flex min-w-0 flex-col gap-1">
         <h1 className="type-lens-touch tablet:type-page">Performance</h1>
         {header ? (
-          <p data-testid="run-line" className={classNames("type-small text-text-2 tablet:type-body-touch desktop:type-body", isDimmed && "opacity-updating")}>
-            {header.runLine}
-          </p>
+          <>
+            <p data-testid="run-line" className={classNames("type-small text-text-2 tablet:type-body-touch desktop:type-body", isDimmed && "opacity-updating")}>
+              {header.runLine}
+            </p>
+            {header.notes.length > 0 ? (
+              <ul data-testid="weather-notes" className={classNames("flex flex-col gap-1.5 py-1", isDimmed && "opacity-updating")}>
+                {header.notes.map((note) => (
+                  <NoteLine key={note} words={note} testId="weather-note" />
+                ))}
+              </ul>
+            ) : null}
+          </>
         ) : isLoading ? (
           <Skeleton kind="text" className="my-1 w-140" />
         ) : null}

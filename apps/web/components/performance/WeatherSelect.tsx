@@ -11,20 +11,23 @@ type Props = {
   /** The document's source and, for a CSV, its file: what the trigger says. */
   document: Pick<Project, "weather_source" | "weather_csv">;
   load: WeatherLoad;
+  /** Hears "CSV file" chosen: the dialog that reads one. */
+  onCsv: () => void;
   className?: string;
 };
 
 export const WEATHER_NOT_LOADED = "The weather was not loaded";
 
 /**
- * The weather source in the header (plan/phase-08-plan.md, decision 12; components.md, "Select"): PVGIS TMY and NASA
- * POWER 2023, each with its fact. The one chosen is downloaded first, the trigger saying the new name at once with a
- * turning ring; the document is edited once when the hours come.
+ * The weather source in the header (plan/phase-08-plan.md, decision 12; components.md, "Select"): PVGIS TMY, NASA POWER
+ * 2023 and CSV file, each with its fact. PVGIS or NASA chosen is downloaded first, the trigger saying the new name at once
+ * with a turning ring; the document is edited once when the hours come. A CSV is read by its dialog before anything is
+ * committed.
  */
-export function WeatherSelect({ document, load, className }: Props) {
+export function WeatherSelect({ document, load, onCsv, className }: Props) {
   function choose(source: WeatherSource) {
-    // A CSV file is read by its dialog, which comes with step 19; the list offers the two downloaded sources until then.
-    if (source !== "csv") load.download(source);
+    if (source === "csv") return onCsv();
+    load.download(source);
   }
 
   return (

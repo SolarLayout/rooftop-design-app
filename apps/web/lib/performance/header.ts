@@ -22,6 +22,8 @@ export type OptionItem = {
 
 export type HeaderView = {
   runLine: string;
+  /** The engine's notes on the weather, in its words, under the line: a CSV without beam and diffuse, without temperature, without wind. */
+  notes: string[];
   /** The run's options; empty before there are any. A refused custom is not among them: it has no energy. */
   items: OptionItem[];
   /** The key of the chosen option; null before options. */
@@ -54,6 +56,7 @@ export function headerOf(design: DesignResult, readouts: LayoutReadouts | null):
   });
   return {
     runLine: `${first} · ${weatherOf(design.weather)}`,
+    notes: design.weather_notes,
     items,
     chosen: option?.key ?? null,
   };

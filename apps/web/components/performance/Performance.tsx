@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useProject, useResults, useStores } from "@/components/shell/stores";
 import { withDegradation } from "@/lib/performance/degradation";
 import { pageViewOf } from "@/lib/performance/page-view";
 import { loadingWordsOf } from "@/lib/performance/weather-source";
-import { degradationOf, nameOf, weatherCsvOf, weatherSourceOf } from "@/lib/stores/project-store";
+import { degradationOf, latitudeOf, longitudeOf, nameOf, weatherCsvOf, weatherSourceOf } from "@/lib/stores/project-store";
 import { designFailureOf, designOf, designStatusOf, progressOf, readoutsOf } from "@/lib/stores/results-store";
 import { Kpis, KpiSkeletons } from "./Kpis";
 import { LossChain } from "./LossChain";
@@ -15,6 +15,7 @@ import { PerformanceHeader } from "./PerformanceHeader";
 import { SummaryTable } from "./SummaryTable";
 import { FailedRow, RunRow } from "./UnderTheTitle";
 import { useWeatherLoad } from "./use-weather-load";
+import { WeatherCsvDialog } from "./WeatherCsvDialog";
 import { WeatherNote, WeatherSelect } from "./WeatherSelect";
 import { YearsChart } from "./YearsChart";
 
@@ -31,7 +32,8 @@ const CHARTS = "grid gap-3.5 tablet:grid-cols-2 tablet:gap-4 desktop:col-span-5 
  * the chosen option; before options the API's words; skeletons at the first load; a run on its way dimming the values
  * of before; a run that failed leaving them with a note. An option chosen is an edit of the document and asks for
  * nothing: the run's answer holds every option (decision 4). The weather source is a select: a source chosen is loaded
- * first, the line dimmed and the load said under it, then committed once (decision 12).
+ * first, the line dimmed and the load said under it, then committed once; a CSV is read in its dialog before Use
+ * (decision 12). The engine's notes on the weather stand under the line of the run, in its words.
  */
 export function Performance() {
   const { project, flow } = useStores();
@@ -39,7 +41,10 @@ export function Performance() {
   const degradation = useProject(degradationOf);
   const weatherSource = useProject(weatherSourceOf);
   const weatherCsv = useProject(weatherCsvOf);
+  const lat = useProject(latitudeOf);
+  const lon = useProject(longitudeOf);
   const load = useWeatherLoad();
+  const [isCsvOpen, setCsvOpen] = useState(false);
   const design = useResults(designOf);
   const readouts = useResults(readoutsOf);
   const designStatus = useResults(designStatusOf);
@@ -74,7 +79,7 @@ export function Performance() {
         isLoading={view.kind === "loading"}
         isDimmed={isDimmed || load.loading !== null}
         under={under}
-        weather={weatherSource !== null && weatherCsv !== null ? <WeatherSelect document={{ weather_source: weatherSource, weather_csv: weatherCsv }} load={load} /> : null}
+        weather={weatherSource !== null && weatherCsv !== null ? <WeatherSelect document={{ weather_source: weatherSource, weather_csv: weatherCsv }} load={load} onCsv={() => setCsvOpen(true)} /> : null}
         note={load.failure ? <WeatherNote message={load.failure} /> : null}
         onChoose={choose}
       />
@@ -92,6 +97,17 @@ export function Performance() {
           </div>
           <SummaryTable rows={values.summary} isDimmed={isDimmed} />
         </>
+      ) : null}
+      {lat !== null && lon !== null ? (
+        <WeatherCsvDialog
+          open={isCsvOpen}
+          site={{ lat, lon }}
+          onUse={(chosen) => {
+            load.take(chosen);
+            setCsvOpen(false);
+          }}
+          onClose={() => setCsvOpen(false)}
+        />
       ) : null}
     </main>
   );
