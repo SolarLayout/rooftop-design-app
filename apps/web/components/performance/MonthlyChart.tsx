@@ -137,7 +137,7 @@ export function MonthlyChart({ energy, isDimmed }: Props) {
                 </div>
               </div>
             </div>
-            <div aria-hidden="true" className={classNames(COLUMNS, "text-center type-label-s text-text-2 tablet:type-caption")}>
+            <div aria-hidden="true" className={classNames(COLUMNS, "text-center type-label-s text-text-2 desktop:type-caption")}>
               {view.map((bar) => (
                 <span key={bar.month} className="min-w-0 truncate">
                   {bar.month}

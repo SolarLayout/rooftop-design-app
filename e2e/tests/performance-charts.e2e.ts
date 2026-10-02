@@ -158,6 +158,8 @@ test.describe("the 25 years", () => {
 
   test("under the pointer, or under a finger, the crosshair snaps to the nearest year and the tooltip says its energy", async ({ page }, testInfo) => {
     const energy = await thePerformancePage(page);
+    // On tablet and phone the plot lies below the window: the finger and the pointer must reach it.
+    await plot(page).scrollIntoViewIfNeeded();
     const box = (await plot(page).boundingBox())!;
     const at = { x: box.x + (box.width * 9) / 24, y: box.y + box.height / 2 };
 
@@ -175,6 +177,8 @@ test.describe("the 25 years", () => {
     const energy = await thePerformancePage(page);
     const slider = plot(page).getByRole("slider");
 
+    // The focus must not scroll the page: a page that moves takes the tooltip away.
+    await plot(page).scrollIntoViewIfNeeded();
     await years(page).getByRole("tab", { name: "Chart" }).focus();
     await page.keyboard.press("Tab");
     await page.keyboard.press("Tab");

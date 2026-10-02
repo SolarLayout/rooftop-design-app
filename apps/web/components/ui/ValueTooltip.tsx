@@ -62,7 +62,9 @@ export function ValueTooltip({ anchor, value, label, onLeave }: Props) {
   }, [isShown, onLeave]);
 
   return (
-    <div ref={bubble} role="tooltip" popover="manual" data-testid="value-tooltip" className={BUBBLE}>
+    // The popover's own display is overridden by its classes while it is closed: it is kept from the eye and from the
+    // accessibility tree by being invisible, as the chain's readout is.
+    <div ref={bubble} role="tooltip" popover="manual" data-testid="value-tooltip" className={classNames(BUBBLE, !isShown && "invisible")}>
       <span className="type-value-xs font-medium text-text">{value}</span>
       <span className="type-caption text-text-2">{label}</span>
     </div>
