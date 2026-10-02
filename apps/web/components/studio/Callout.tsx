@@ -13,7 +13,7 @@ import { calloutOfModule, calloutOfRoof, calloutOfString } from "@/lib/scene/pic
 import { categoryOf, seriesOf } from "@/lib/scene/string-colours";
 import type { Swatch } from "@/lib/scene/string-legend";
 import { calloutPlaceOf } from "@/lib/scene/callout-place";
-import { labelsOf, type StageStore } from "@/lib/scene/stage-store";
+import { cameraOf, labelsOf, type StageStore } from "@/lib/scene/stage-store";
 import { projectOf } from "@/lib/stores/project-store";
 import { shadeCalloutOf } from "@/lib/scene/shade-map";
 import { chosenOptionOf, designOf, layoutOf } from "@/lib/stores/results-store";
@@ -83,6 +83,7 @@ export function Callout({ stage }: Props) {
   const layout = useResults(layoutOf);
   const labels = useStore(stage, labelsOf);
   const hung = labels.find((label) => label.kind === "callout");
+  const stageHeight = useStore(stage, cameraOf)?.height;
   const size = useSize();
   const map = useShadeMapShown();
   const design = useResults(designOf);
@@ -94,7 +95,7 @@ export function Callout({ stage }: Props) {
   const shade = map && design ? { losses: design.shading.near_pct_by_module, option } : null;
   const words = wordsOf({ selection, draft, toReview, project, layout: layout?.layout ?? null, shade, strings });
   if (!words || size === null) return null;
-  const place = calloutPlaceOf({ y: hung.y, size, hasHandles: labels.some((label) => label.kind === "handle") });
+  const place = calloutPlaceOf({ y: hung.y, size, hasHandles: labels.some((label) => label.kind === "handle"), stageHeight });
   if (place === null) return null;
 
   return (
