@@ -3,7 +3,7 @@ import path from "node:path";
 import { expect, test } from "../fixtures";
 import { expectScreen } from "../screens";
 import { A_MAP, findOpened, roofMap, scaleLabel, searchField } from "../find";
-import { boxFrameOf, handlesSettled, inThePlan, metresFrom, sceneSettled, zoomedInAt, cameraSettled } from "../stage";
+import { boxFrameOf, handlesSettled, inThePlan, metresFrom, obstacleSelectedOnStage, sceneSettled, zoomedInAt, cameraSettled } from "../stage";
 
 // Each screen against its baseline in e2e/baselines. After a change that is meant, look at the new
 // picture beside the preview in docs/design/previews, then renew the baseline:
@@ -294,7 +294,7 @@ test.describe("the shell", () => {
     }
     await page.getByTestId("obstacle-row").filter({ hasText: "Stair room" }).click();
     await expect(page.getByTestId("obstacle-card")).toBeVisible();
-    await expect(page.getByTestId("stage-callout")).toContainText("Stair room · selected", { timeout: RUN });
+    await obstacleSelectedOnStage(page, "Stair room", isPhone(testInfo.project.name));
     // On phone the list heads the sheet, as the board draws it; where the sheet scrolls to is otherwise a matter of timing.
     if (isPhone(testInfo.project.name)) await page.getByRole("heading", { name: "Obstacles · 6" }).evaluate((heading) => heading.scrollIntoView({ block: "start" }));
 
@@ -312,7 +312,7 @@ test.describe("the shell", () => {
     await page.goto("/studio/roof");
     await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
     await page.getByTestId("obstacle-row").filter({ hasText: "Stair room" }).click();
-    await expect(page.getByTestId("stage-callout")).toContainText("Stair room · selected", { timeout: RUN });
+    await obstacleSelectedOnStage(page, "Stair room", isPhone(testInfo.project.name));
     await sceneSettled(page);
     const point = await inThePlan(page);
     // On touch the plan is pinched in about the stair room, which is too small to take hold of at the fit zoom; the

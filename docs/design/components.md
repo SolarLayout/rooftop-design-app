@@ -173,6 +173,9 @@ high), one line of context. Nothing is preselected. Below it, the list of what i
 ## Callout on the stage
 Floating chip: `surface-1`, border `note-line` (or `line-strong`), `radius-row`, `shadow-float`, padding 10 by
 14. Title line in Geist 500, 13; detail in 12, text-2. Joined to its object by a 1 px line and a 9 px dot.
+The chip stands over its dot on a line of 40; where it would rise into the stage's top 160 (the title, the view
+controls, on phone the time) it hangs under the dot. On phone there is none while the selected obstacle's handles
+stand, as the board "Obstacle edited on the roof" draws it: the handles and the time fill the top of a stage of 252.
 
 ## Lens rail and lens switch
 Rail item 56 by 56, radius 12, icon 20 over a label of 11. Active: `control-active`, accent icon and label,

@@ -703,6 +703,19 @@ describe("the sun", () => {
     expect(sunFailureOf(results.getState())?.message).toBe(UNREACHABLE);
   });
 
+  test("try again asks once more for a sun that did not come", async () => {
+    const { project, results, suns, designFlow } = flow();
+    project.getState().open(DEMO);
+    suns[0].refuse(new ApiError(null, "unreachable", UNREACHABLE, null));
+    await settled();
+
+    designFlow.tryAgain();
+
+    expect(suns).toHaveLength(2);
+    expect(suns[1].request).toEqual(suns[0].request);
+    expect(sunFailureOf(results.getState())).toBeNull();
+  });
+
   test("the flow stopped gives the sun up", async () => {
     const { suns, designFlow } = flow();
     designFlow.stop();

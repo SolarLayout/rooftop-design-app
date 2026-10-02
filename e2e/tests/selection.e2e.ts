@@ -1,6 +1,6 @@
 import type { Page, TestInfo } from "@playwright/test";
 import { expect, test } from "../fixtures";
-import { A_SCENE, inThePlan, sceneSettled, sceneShown, type PlanFrame } from "../stage";
+import { A_SCENE, inThePlan, obstacleSelectedOnStage, sceneSettled, sceneShown, type PlanFrame } from "../stage";
 
 // Selection by raycast (plan/phase-05-plan.md, step 17, decision 10): a press on a module, on the roof, on
 // an obstacle or on a kept-clear area selects it, and the callout and the text equivalent say so; a press
@@ -70,7 +70,7 @@ test.describe("a press on the roof", () => {
 
     await press(page, testInfo, point(22.5, 18));
 
-    await expect(callout(page)).toContainText("Stair room · selected", { timeout: A_SCENE });
+    await obstacleSelectedOnStage(page, "Stair room", testInfo.project.name === "phone");
     await expect(page.getByTestId("obstacle-card").getByRole("textbox", { name: "Name" })).toHaveValue("Stair room");
     await expect(page.getByTestId("on-the-roof-obstacle").filter({ hasText: "Stair room" })).toContainText(", selected");
   });

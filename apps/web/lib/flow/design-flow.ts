@@ -297,6 +297,11 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
       if (document === null) return;
       if (results.getState().layout.status === "failed") askForTheLayout(document, edit);
       if (results.getState().design.status === "failed") run(document, edit);
+      if (results.getState().sun.failure !== null) {
+        // What was asked last is asked once more: the key is let go, so that it is not taken for asked.
+        sunAsked = null;
+        askForTheSun();
+      }
     },
     stop() {
       stopListening?.();

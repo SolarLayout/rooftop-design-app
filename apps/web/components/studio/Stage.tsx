@@ -26,7 +26,7 @@ import { Handles } from "./Handles";
 import { Labels } from "./Labels";
 import { ShadeLegend } from "./ShadeLegend";
 import { SunMarks } from "./SunMarks";
-import { LayoutFailed } from "./LayoutFailed";
+import { LayoutFailed, SunFailed } from "./LayoutFailed";
 import { PlanFallback } from "./PlanFallback";
 import { lineOf } from "./stage-view";
 import { useEscapeClears } from "./use-escape-clears";
@@ -122,6 +122,7 @@ export function Stage({ lens, name, className }: Props) {
         ) : null}
       </div>
       <LayoutFailed className={LAYOUT_FAILED} />
+      <SunFailed className={LAYOUT_FAILED} />
       {cannotDraw ? null : <ViewControls stage={stage} className={VIEW_CONTROLS} />}
       {cannotDraw || size === null ? null : lens === "sun" && size !== "phone" ? <SunTimeline size={size} className={TIMELINE} /> : <TimePill size={size} className={TIME_PILL} />}
       {cannotDraw || size === null ? null : <ShadeLegend size={size} className={SHADE_LEGEND} />}
