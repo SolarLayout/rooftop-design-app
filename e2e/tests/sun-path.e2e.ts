@@ -65,9 +65,11 @@ test.describe("the sun path", () => {
       for (const chip of await hourChips(page).all()) await expect(chip).toBeHidden();
       return;
     }
-    await expect(sunCallout(page)).toBeVisible();
-    await expect(sunCallout(page).locator("span").first()).toHaveText("10:30");
-    await expect(sunCallout(page)).toContainText("Sun 42.6° high, 28.5° E of south");
+    // At 15:00, from 17:15 nine quarter hours back: the marker low in the south-west, on the canvas of every size.
+    await timeSetBack(page, 9);
+    await expect(sunCallout(page)).toBeVisible({ timeout: A_SCENE });
+    await expect(sunCallout(page).locator("span").first()).toHaveText("15:00");
+    await expect(sunCallout(page)).toContainText("Sun 29.3° high, 48.0° W of south");
     await expect.poll(() => hourChips(page).allTextContents(), { timeout: A_SCENE }).toEqual(["06:33 sunrise", "09:00", "12:00", "16:00", "sunset 17:27"]);
   });
 

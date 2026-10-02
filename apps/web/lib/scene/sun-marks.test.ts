@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { SunDay } from "../stores/results-store";
-import { calloutSideOf, chipPlaceOf, hourMarksOf, isMarkRole, marksShownOf } from "./sun-marks";
+import { calloutRowOf, calloutSideOf, isOnTheCanvas, chipPlaceOf, CLEAR_OF_THE_TOP, hourMarksOf, isMarkRole, marksShownOf } from "./sun-marks";
 import { arcOf, pointOnDomeOf } from "./sun-path";
 
 // The hour marks of the sun path (plan/phase-06-plan.md, decision 10; the board "Sun path and shadow
@@ -110,5 +110,22 @@ describe("the side of the marker's callout", () => {
     expect(calloutSideOf(270, 984)).toBe("right");
     expect(calloutSideOf(590, 984)).toBe("right");
     expect(calloutSideOf(600, 984)).toBe("left");
+  });
+});
+
+describe("the row of the marker's callout", () => {
+  test("beside the marker, unless the marker stands in the stage's top, where the title and the view controls are", () => {
+    expect(calloutRowOf(520)).toBe("beside");
+    expect(calloutRowOf(CLEAR_OF_THE_TOP)).toBe("beside");
+    expect(calloutRowOf(CLEAR_OF_THE_TOP - 1)).toBe("below");
+    expect(calloutRowOf(40)).toBe("below");
+  });
+});
+
+describe("whether the marker is on the canvas", () => {
+  test("its callout stands only while it is: off the canvas, a callout would point at nothing", () => {
+    expect(isOnTheCanvas({ x: 500, y: 300 }, 984, 844)).toBe(true);
+    expect(isOnTheCanvas({ x: 1045, y: 95 }, 984, 844)).toBe(false);
+    expect(isOnTheCanvas({ x: 400, y: -3 }, 984, 844)).toBe(false);
   });
 });

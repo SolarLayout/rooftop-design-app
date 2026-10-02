@@ -148,11 +148,14 @@ test.describe("the acceptance of Phase 6", () => {
 
     const before = await inThePlan(page);
     const corner = before(east, north);
-    await zoomedInAt(page, corner, 4, testInfo.project.use.hasTouch ?? false);
+    // As far in as makes a metre about 18 pixels: the phone's plan begins at about 2, the desktop's at 7.
+    const fitPerMetre = Math.hypot(before(1, 0).x - before(0, 0).x, before(1, 0).y - before(0, 0).y);
+    await zoomedInAt(page, corner, Math.min(12, Math.max(2, 18 / fitPerMetre)), testInfo.project.use.hasTouch ?? false);
     await cameraSettled(page);
     const frame = await planFrameOf(page);
-    const perMetre = Math.hypot(frame(1, 0).x - frame(0, 0).x, frame(1, 0).y - frame(0, 0).y);
-    expect(perMetre, "the plan zoomed in to see a tenth of a metre").toBeGreaterThan(14);
+    // The picture is read in the device's pixels: three to a CSS pixel on phone, where the plan zooms to 11 a metre at most.
+    const devicePerMetre = Math.hypot(frame(1, 0).x - frame(0, 0).x, frame(1, 0).y - frame(0, 0).y) * (await page.evaluate(() => window.devicePixelRatio));
+    expect(devicePerMetre, "the plan zoomed in to see a tenth of a metre").toBeGreaterThan(14);
 
     // Eastward along a row just south of the corner, over bare roof between the stair room's shadow and the lit
     // roof: the rows' modules end 0.3 m south of the corner. Northward along a column 1.2 m west of it, in the
@@ -162,6 +165,8 @@ test.describe("the acceptance of Phase 6", () => {
     const eastEdge = edgeOf(await lightAlong(page, frame, row.map((x): Corner => [x, north - 0.15])), row);
     const northEdge = edgeOf(await lightAlong(page, frame, column.map((y): Corner => [east - 1.2, y])), column);
 
+    // The measure, for the record of the phase ("As built").
+    console.log(`${testInfo.project.name}: the shadow ends ${(eastEdge - east).toFixed(3)} m eastward and ${(northEdge - north).toFixed(3)} m northward of the engine's corner`);
     expect(Math.abs(eastEdge - east), `the shadow ends eastward at ${eastEdge.toFixed(3)} m, the engine's corner at ${east.toFixed(3)} m`).toBeLessThanOrEqual(WITHIN);
     expect(Math.abs(northEdge - north), `the shadow ends northward at ${northEdge.toFixed(3)} m, the engine's corner at ${north.toFixed(3)} m`).toBeLessThanOrEqual(WITHIN);
   });

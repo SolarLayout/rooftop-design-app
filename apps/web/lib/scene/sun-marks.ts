@@ -79,3 +79,16 @@ const RIGHT_UP_TO = 0.6;
 export function calloutSideOf(x: number, width: number): "right" | "left" {
   return x <= width * RIGHT_UP_TO ? "right" : "left";
 }
+
+/** Pixels of the stage's top that the title, its line and the view controls take: 20 over them, 44 high, and room. */
+export const CLEAR_OF_THE_TOP = 140;
+
+/** Where the marker's callout stands: beside the marker, or under it while the marker is in the stage's top. */
+export function calloutRowOf(y: number): "beside" | "below" {
+  return y < CLEAR_OF_THE_TOP ? "below" : "beside";
+}
+
+/** Whether a point of the stage, in pixels from its top left, lies on the canvas of that size. */
+export function isOnTheCanvas({ x, y }: { x: number; y: number }, width: number, height: number): boolean {
+  return x >= 0 && y >= 0 && x <= width && y <= height;
+}

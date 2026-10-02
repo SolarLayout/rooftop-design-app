@@ -6,7 +6,7 @@ import { useSun } from "@/components/scene/use-sun";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
 import { measures } from "@/components/ui/measures";
-import { calloutSideOf, chipPlaceOf, isMarkRole } from "@/lib/scene/sun-marks";
+import { calloutRowOf, calloutSideOf, chipPlaceOf, isMarkRole, isOnTheCanvas } from "@/lib/scene/sun-marks";
 import { cameraOf, sunLabelsOf, type StageStore } from "@/lib/scene/stage-store";
 import { projectOf } from "@/lib/stores/project-store";
 import { draftOf, selectionOf, sunTimeOf } from "@/lib/stores/view-store";
@@ -24,7 +24,8 @@ const MARKER = "placed flex size-3.5 -translate-x-1/2 -translate-y-1/2 items-cen
 const CORE = "block size-1.75 rounded-full bg-sun-core tablet:size-2.5";
 
 // The callout of the marker (the board "Studio, Sun lens"): joined to the disc's edge by a line of 22 (26 on
-// desktop), in the look of the callout of what is selected; on tablet and desktop.
+// desktop), in the look of the callout of what is selected; on tablet and desktop; under the marker when the
+// marker stands in the stage's top.
 const LINE = { right: "left-2.5", left: "right-2.5" };
 const CHIP_SIDE = { right: "left-8 desktop:left-9", left: "right-8 desktop:right-9" };
 
@@ -36,7 +37,8 @@ const CHIP_SIDE = { right: "left-8 desktop:left-9", left: "right-8 desktop:right
  */
 export function SunMarks({ stage }: Props) {
   const labels = useStore(stage, sunLabelsOf);
-  const width = useStore(stage, cameraOf)?.width ?? 0;
+  const canvas = useStore(stage, cameraOf);
+  const width = canvas?.width ?? 0;
   const project = useProject(projectOf);
   const { hour } = useView(sunTimeOf);
   const selection = useView(selectionOf);
@@ -46,6 +48,8 @@ export function SunMarks({ stage }: Props) {
   const marker = labels.find((label) => label.kind === "sun" && label.visible);
   const words = selection === null && draft === null ? sunCalloutOf(hour, sun, { from: project.array.window_start_h, to: project.array.window_end_h }) : null;
   const side = marker ? calloutSideOf(marker.x, width) : "right";
+  // In the stage's top the callout would stand under the title and the view controls: it goes under the marker.
+  const row = marker ? calloutRowOf(marker.y) : "beside";
 
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-stage-overlay overflow-hidden contain-layout">
@@ -64,10 +68,16 @@ export function SunMarks({ stage }: Props) {
           <span className={CORE} />
         </span>
       ) : null}
-      {marker && words ? (
+      {marker && words && canvas && isOnTheCanvas(marker, canvas.width, canvas.height) ? (
         <div className="placed hidden size-0 tablet:block" style={measures({ x: marker.x, y: marker.y })}>
-          <span className={classNames("absolute top-0 block h-px w-5.5 bg-accent desktop:w-6.5", LINE[side])} />
-          <div data-testid="sun-callout" className={classNames("absolute top-0 flex -translate-y-1/2 flex-col gap-0.5 rounded-row border border-note-line bg-surface-1 px-3.5 py-2.5 shadow-float", CHIP_SIDE[side])}>
+          <span className={classNames("absolute block bg-accent", row === "below" ? "top-2.5 left-0 h-5.5 w-px" : classNames("top-0 h-px w-5.5 desktop:w-6.5", LINE[side]))} />
+          <div
+            data-testid="sun-callout"
+            className={classNames(
+              "absolute flex flex-col gap-0.5 rounded-row border border-note-line bg-surface-1 px-3.5 py-2.5 shadow-float",
+              row === "below" ? "top-8 left-0 -translate-x-1/2" : classNames("top-0 -translate-y-1/2", CHIP_SIDE[side]),
+            )}
+          >
             <span className="flex items-center gap-2 type-small font-medium whitespace-nowrap text-text">
               <Icon name="sun" size={16} className="text-accent" />
               {words.title}

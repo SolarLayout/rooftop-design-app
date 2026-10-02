@@ -215,6 +215,33 @@ test.describe("the shell", () => {
     await expectScreen(page, "studio-sun");
   });
 
+  // The engine's shadow outlines switched on at 16:00 on 21 December, as the board "Sun path and shadow
+  // outlines" draws them; on phone switched in the sheet, the sheet back at half.
+  test("studio, the Sun lens, the shadow outlines", async ({ page }, testInfo) => {
+    await page.goto("/studio/sun");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await sceneSettled(page);
+    const slider = page.getByTestId("sun-timeline").filter({ visible: true }).getByRole("slider", { name: "Time of day" });
+    await slider.focus();
+    for (let step = 0; step < 22; step += 1) await page.keyboard.press("ArrowRight");
+    await expect(page.getByTestId("on-the-roof-sun")).toHaveText("21 Dec, 16:00 solar time, sun 18.0° high, 56.6° W of south");
+    const sheet = page.getByRole("separator", { name: "Inspector" });
+    if (isPhone(testInfo.project.name)) {
+      await sheet.focus();
+      await page.keyboard.press("End");
+    }
+    await page.getByRole("switch", { name: "Calculated shadow outlines" }).click();
+    await expect(page.getByTestId("on-the-roof-shadow-outlines")).toHaveText(/^The engine's shadow outlines at 16:00/, { timeout: RUN });
+    if (isPhone(testInfo.project.name)) {
+      await sheet.focus();
+      await page.keyboard.press("Home");
+    }
+    await page.getByRole("switch", { name: "Calculated shadow outlines" }).blur();
+
+    await cameraSettled(page);
+    await expectScreen(page, "studio-sun-outlines");
+  });
+
   test("studio, the Roof lens", async ({ page }) => {
     await page.goto("/studio/roof");
     await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
