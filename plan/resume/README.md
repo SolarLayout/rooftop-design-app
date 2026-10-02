@@ -41,4 +41,4 @@ Written: date, by which session. Status: open | used | superseded by NNN.
 ## Notes for the owner
 (what to expect, how long, what may need a decision)
 ```
-| 011 | `011-phase-8-performance.md` | Phase 8: the plan, the boards it lacks, the pull requests of Performance | 2026-10-02 | open; next |
+| 011 | `011-phase-8-performance.md` | Phase 8: the plan, the boards it lacks, the pull requests of Performance | 2026-10-02 | used by session 12 |

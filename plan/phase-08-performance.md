@@ -1,6 +1,6 @@
 # Phase 8: Performance
 
-**Status:** in progress (session 12: #58, #59 merged; #60 open; pull request 4 built). **Depends on:** phases 2, 3 and 7.
+**Status:** done (session 12: #58 to #61). **Depends on:** phases 2, 3 and 7.
 
 ## Goal
 One screen that proves the energy number and lets the user test assumptions in place.
@@ -32,8 +32,8 @@ Phone: KPIs as a 2-column grid, loss chain full width with the input under the l
 ## As built
 
 Built in session 12 (2026-10-02 to 2026-10-03): the plan (`phase-08-plan.md`), six boards, four pull requests: #58 (the header, the
-KPIs, the summary, the states; the engine's figures after the year), #59 (the loss chain), #60 (the charts), and pull request 4 (the
-weather source and the assumptions). Every part was built by an agent in a worktree from a written brief; the session reviewed each,
+KPIs, the summary, the states; the engine's figures after the year), #59 (the loss chain), #60 (the charts), #61 (the weather
+source, a CSV with its notes, weather for a design without any, the assumptions). Every part was built by an agent in a worktree from a written brief; the session reviewed each,
 ran the browser for it and made the baselines.
 
 ### What exists
@@ -45,7 +45,19 @@ ran the browser for it and made the baselines.
 | `Segmented` and `Select` take a mark on a choice; `Stat` gains the looks `hero` and `figure` and a quieter figure after the unit; `Table` gains a column of words (`words`), the value under the title on a card | `components/ui/Segmented.tsx`, `Select.tsx`, `Stat.tsx`, `Table.tsx`, `table-cells.ts` | #58 |
 | The loss chain as a cascade with its legend, the 21 rows in the engine's order and words, the editable steps (soiling, module quality, LID with "Use the PAN's", mismatch, DC and AC ohmic, availability, the rear gain as a switch, dim with a monofacial module), the readout under the pointer, on a tap and with the focus; the roof's albedo asks the run and not the layout | `components/performance/LossChain.tsx`, `LossRow.tsx`, `use-readout.ts`; `lib/performance/loss-fields.ts`, `cascade.ts`, `loss-chain.ts`; `lib/flow/edit-parts.ts`; `NumberField` `form="chain"` and `placeholder` | #59 |
 | The candidates simulated in threads (`SIMULATION_THREADS` 8), bit-identical to one after the other: a loss edit answers in 1.7 s on this machine, before 4.1 s | `rooftop_core/options.py` (`build_options`, `workers_for`) | #59 |
+| Weather for a design that has none: a run refused with `weather_not_loaded` loads the weather of the document's source for its site, puts it into the document of that edit without a step of undo (`amend`) and runs again, once per edit; the step "Loading PVGIS TMY weather" | `lib/flow/design-flow.ts`, `lib/stores/project-store.ts` (`amend`), `lib/performance/weather-source.ts` | #61 |
+| The test stack's API with downloads off (`ROOFTOP_WEATHER_DOWNLOADS=off`, refused in words); `/api/weather` for PVGIS and NASA at Pune answered in the browser tests from the API's own recorded answers, written by `tests.weather_fixtures` and held equal by a pytest, keyed into turbo and testmon | `rooftop_api/settings.py`, `services/weather.py`; `tools/lib/profiles.ts` (`apiEnvOf`); `e2e/fixtures.ts`, `e2e/fixtures/weather-*.json`; `apps/api/tests/weather_fixtures.py` | #61 |
+| The weather select (PVGIS TMY · NASA POWER 2023 · CSV file) with a ring while the hours come, one edit when they do, a failure in the API's words under it; the CSV dialog with the file's summary and notes before Use, a refused file in the API's words; the engine's two notes for a CSV without air temperature or wind; the notes under the line of the run | `components/performance/WeatherSelect.tsx`, `use-weather-load.ts`, `WeatherCsvDialog.tsx`, `NoteLine.tsx`; `lib/performance/weather-csv.ts`; `rooftop_core/csv_weather.py`; `Select` `valueShown` and `busy`, `FileDrop` "read" | #61 |
+| The assumptions: Uc (empty for the roof type's, "Use the roof type's"), rear shading and mismatch, roof albedo, weather variability, model and data, the three exceedance levels (sorted, each once), the grid CO2 factor; chips, rows on phone; shown before a voltage too. Undo by key on Performance | `components/performance/Assumptions.tsx`; `lib/performance/assumption-fields.ts`; `NumberField` `form="chip"`, `Button` size `xs` | #61 |
 | Energy to grid by month: bars from one baseline, the extremes labelled, a tooltip under the pointer, a finger and the focus, the Table tab with the year; 25 years: the line with its wash, the six years, a crosshair snapping to the nearest year, the keyboard moving it, the degradation field in the head, the Table tab with the total; `Tabs` take a head, `Table` a total row, `ValueTooltip` the tooltip of a value in a chart | `components/performance/MonthlyChart.tsx`, `YearsChart.tsx`, `chart-card.ts`; `components/ui/ValueTooltip.tsx`, `use-size.ts`; `lib/performance/month-bars.ts`, `year-line.ts`, `degradation.ts` | #60 |
+
+### Acceptance
+
+| Asked | Met by |
+|---|---|
+| Every figure equals the API's to the precision shown | `e2e/tests/performance.e2e.ts` (the line, the KPIs, the summary), `performance-chain.e2e.ts` (the 21 rows at two decimals), `performance-charts.e2e.ts` (the months, the years, the totals), `performance-weather.e2e.ts` (after a change of weather or of an assumption), every number read from the run's answer, on three sizes |
+| Soiling 2 to 3 changes the energy and the chain; the layout is not computed again | `performance-chain.e2e.ts`: one `/api/design`, no `/api/layout`, the energy and the row of the new run; `tests/engine/test_demo_soiling.py`: 613.61 MWh with the shading from the memo |
+| Playwright on three viewports with baselines; axe clean | 33 screens of Performance beside the boards; axe in the design state, before a voltage, with the Chart and the Table tabs, with the select open, the dialog with its file, and on the assumptions |
 
 ### Deviations from the plan as written
 
@@ -73,7 +85,11 @@ ran the browser for it and made the baselines.
 - A touch pointer leaves the moment the finger lifts: a readout shown on a tap went with the pointer's leave.
 - On tablet and phone the Performance page scrolls inside its frame: a tap at a chart below the window lands nowhere, and the focus
   scrolling the chart into view hides a tooltip that takes a moving page as a reason to go. The tests scroll first.
-- Two tests fail under the load of a full check and pass alone: the wall's menu on phone, closed when the top bar says the notes
-  (fixed: the test waits for it), and `build.e2e.ts` "Edit shows the design's outline" on tablet (a 5 s wait on a navigation; a
-  watch item).
+- Tests that fail under the load of a full check and pass alone: the wall's menu on phone, closed when the top bar says the notes
+  (fixed: the test waits for it); `build.e2e.ts` "Edit shows the design's outline" on tablet (a 5 s wait on a navigation; a watch
+  item); the charts' keyboard tests on tablet, where the focus can scroll the frame and the moving page takes the tooltip away by
+  design (they run on desktop alone now, where the keyboard is the way in).
+- `page.unroute(pattern)` takes every handler of the pattern, the fixtures' too: a test unroutes its own handler.
+- To the browser's tooling an `aria-disabled` button is not enabled: a test presses it with `force`.
+- The full check is 29 minutes now (1,680 browser tests; the Performance page is long and its weather tests run the demo twice).
 - A loss edit was measured in parts: 3.7 of the 4.0 s were the seven simulations, 0.5 s each, one after the other.
