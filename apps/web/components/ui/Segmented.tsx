@@ -3,6 +3,8 @@
 import { useRef, type KeyboardEvent } from "react";
 import { choiceAfterKey } from "./choice-keys";
 import { classNames } from "./class-names";
+import { StatusMark } from "./StatusMark";
+import type { Mark } from "./table-cells";
 
 export type SegmentedOption<T extends string> = {
   value: T;
@@ -11,6 +13,8 @@ export type SegmentedOption<T extends string> = {
   name?: string;
   /** A choice that is shown and cannot be taken. */
   disabled?: boolean;
+  /** A tick or a note after the label: the verdict of a stringing option. Its words go into `name`. */
+  mark?: Mark;
 };
 
 type Props<T extends string> = {
@@ -34,7 +38,7 @@ type Props<T extends string> = {
 const TRACK = "gap-0.5 rounded-row border border-line bg-well p-0.75 shadow-well desktop:rounded-control";
 
 const ITEM = classNames(
-  "h-touch cursor-pointer rounded-seg-touch px-3.5 whitespace-nowrap select-none",
+  "inline-flex h-touch cursor-pointer items-center gap-1.5 rounded-seg-touch px-3.5 whitespace-nowrap select-none",
   "type-body press-motion focus-ring",
   "desktop:h-7.5 desktop:rounded-seg desktop:type-small",
   "disabled:cursor-default disabled:opacity-disabled",
@@ -87,6 +91,7 @@ export function Segmented<T extends string>({ label, options, value, onChange, f
           className={classNames(ITEM, option.value === value ? TAKEN : NOT_TAKEN)}
         >
           {option.label}
+          {option.mark ? <StatusMark kind={option.mark.kind} label={option.mark.label} wordsShown={false} size={14} /> : null}
         </button>
       ))}
     </div>

@@ -7,6 +7,8 @@ import { FloatingPanel } from "./FloatingPanel";
 import { Icon } from "./Icon";
 import { indexAfterKey, indexOfTyped } from "./list-keys";
 import { FACT, LIST, ROW, ROW_MARKED } from "./list-look";
+import { StatusMark } from "./StatusMark";
+import type { Mark } from "./table-cells";
 import { useFloating } from "./use-floating";
 
 export type SelectOption<T extends string> = {
@@ -14,6 +16,8 @@ export type SelectOption<T extends string> = {
   label: string;
   /** One fact about the choice, at its right: "Typical year". */
   fact?: string;
+  /** A tick or a note after the choice: the verdict of a stringing option. In the trigger too, when taken. */
+  mark?: Mark;
   /** A choice that is shown and cannot be taken. */
   disabled?: boolean;
 };
@@ -37,11 +41,13 @@ type TriggerProps = Omit<ComponentProps<"button">, "children" | "value"> & {
   label: string;
   /** The choice that is taken, in words. */
   value: string;
+  /** The mark of the choice that is taken, after its words. */
+  mark?: Mark;
   open: boolean;
 };
 
-/** What opens the list: the label, the choice that is taken, a chevron. */
-export function SelectTrigger({ label, value, open, className, ...rest }: TriggerProps) {
+/** What opens the list: the label, the choice that is taken, its mark where it has one, a chevron. */
+export function SelectTrigger({ label, value, mark, open, className, ...rest }: TriggerProps) {
   return (
     <button
       type="button"
@@ -51,8 +57,9 @@ export function SelectTrigger({ label, value, open, className, ...rest }: Trigge
       {...rest}
     >
       <span className="text-text-2">{label}</span>
-      <span className="font-medium">{value}</span>
-      <Icon name={open ? "chevron-up" : "chevron-down"} size={16} className="text-text-3" />
+      <span className="min-w-0 truncate font-medium">{value}</span>
+      {mark ? <StatusMark kind={mark.kind} label={mark.label} wordsShown={false} size={16} /> : null}
+      <Icon name={open ? "chevron-up" : "chevron-down"} size={16} className="ml-auto text-text-3" />
     </button>
   );
 }
@@ -99,6 +106,7 @@ export function OptionList<T extends string>({ label, options, value, marked, id
             <span className="size-4 shrink-0" />
           )}
           <span className={classNames("grow", option.value === value && "font-medium")}>{option.label}</span>
+          {option.mark ? <StatusMark kind={option.mark.kind} label={option.mark.label} wordsShown={false} size={16} /> : null}
           {option.fact ? <span className={FACT}>{option.fact}</span> : null}
         </li>
       ))}
@@ -169,6 +177,7 @@ export function Select<T extends string>({ label, options, value, onChange, disa
         ref={trigger}
         label={label}
         value={options[taken]?.label ?? ""}
+        mark={options[taken]?.mark}
         open={floating.isOpen}
         disabled={disabled}
         aria-controls={id}

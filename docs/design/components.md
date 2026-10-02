@@ -51,6 +51,9 @@ passed over. On phone and tablet the track has radius `radius-row`, the items `r
 of body text. With `fill` the choices share the width in equal parts (the lens switch on phone). With
 `disabled` the whole control is dim and takes neither pointer nor key; only then may nothing be taken
 (`value` null), where the choice does not apply yet: the units of a drawing before the file is a DXF.
+A choice may carry a status mark after its label (`mark`: a tick or a note of 14, never a cross), where the
+choices are results with a verdict: the stringing options of Performance, "A · Recommended" with a tick, "D"
+with a note. The mark's words go into the choice's `name` for a screen reader ("D, below the DC/AC target").
 
 ## Tabs
 The board "Tabs" (`mockups/Tabs.dc.html`), approved on 2026-09-29 (decision D35).
@@ -440,6 +443,8 @@ are in `list-keys.ts`.
   of the list; Home and End lead to them; a letter leads to the next choice that begins with it.
 - A press beside the list closes it. Scrolling the page or changing the size of the window closes it too.
 - A choice is taken with Enter, the space bar or a press; taking the one that is taken already changes nothing.
+- A choice may carry a status mark after its words (`mark`: a tick or a note of 16): the stringing options of
+  Performance on phone. The trigger shows the mark of the choice that is taken, after its words.
 
 ## File drop
 Height 88, radius `radius-row`, padding 0 18, gap 14. An icon of 20, a title in Geist 500 and one line in
