@@ -24,11 +24,13 @@ the phone) are merged. `main` is green.
 
 ## In flight
 
-Phase 8, session 12. The plan (`plan/phase-08-plan.md`) and the six boards of its step 0 are on `main`, approved. Pull request 1
-(`feat/phase-8-kpis`, draft #58) holds step 1, the engine's figures after the year (a change of degradation, the CO2 factor, the
-levels or a sigma answers in 0.28 s, before 4.0 s); its web steps 2 to 6 are being built. The engine and test-stack parts of pull
-request 4 (downloads off in the test stack, weather fixtures for the browser tests, the two notes for a CSV) are being built on
-`feat/phase-8-weather-assumptions`.
+Phase 8, session 12 (2026-10-02 to 2026-10-03). The plan (`plan/phase-08-plan.md`) and the six boards of its step 0 are on
+`main`, approved. Merged: #58 (pull request 1: the Performance page, its header, the KPIs, the summary, the states; the engine's
+figures after the year out of the memo's key) and #59 (pull request 2: the loss chain with its editable steps, the readout, the
+soiling acceptance; the candidates simulated in threads, a loss edit 1.7 s). Open: #60 (pull request 3: the two charts with their
+tables and tooltips, the degradation), its check running. Built and waiting on #60: `feat/phase-8-weather-assumptions` (pull
+request 4: downloads off in the test stack, the weather fixtures of the browser tests, the two CSV notes, weather loaded for a
+design without any, the weather select, the CSV dialog, the assumptions), its browser tests not yet run.
 
 ## What the web app has today
 
