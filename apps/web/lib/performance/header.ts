@@ -1,6 +1,6 @@
 // The header of Performance (the board "Performance" on three sizes; plan/phase-08-plan.md, decisions 2 and 4):
-// the line of the run under the title, the items of the option switch, the weather chip. Made of the run's
-// answer, in the board's words; the web counts, it does not judge. Pure.
+// the line of the run under the title and the items of the option switch. Made of the run's answer, in the
+// board's words; the web counts, it does not judge. The weather select reads the document (weather-source.ts). Pure.
 import { shown } from "../../components/ui/number-entry";
 import type { Mark } from "../../components/ui/table-cells";
 import type { DesignOption, DesignResult, LayoutReadouts, WeatherSummary } from "../api";
@@ -26,7 +26,6 @@ export type HeaderView = {
   items: OptionItem[];
   /** The key of the chosen option; null before options. */
   chosen: string | null;
-  weather: { label: string; value: string };
 };
 
 /** The source named in the line of the run, short, so that the line fits beside the controls at 1440. */
@@ -57,6 +56,5 @@ export function headerOf(design: DesignResult, readouts: LayoutReadouts | null):
     runLine: `${first} · ${weatherOf(design.weather)}`,
     items,
     chosen: option?.key ?? null,
-    weather: { label: "Weather", value: design.weather.label },
   };
 }

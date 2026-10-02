@@ -47,6 +47,8 @@ const energyTile = (page: Page) => page.getByTestId("kpi-energy");
 const optionSwitch = (page: Page) => page.getByTestId("option-switch");
 const radio = (page: Page, letter: string) => optionSwitch(page).getByRole("radio", { name: new RegExp(`^${letter}\\b`) });
 const workspaces = (page: Page) => page.getByRole("navigation", { name: "Workspaces" }).filter({ visible: true });
+/** The trigger of the weather select: its label and the source's name. */
+const weatherSelect = (page: Page) => page.getByTestId("weather-select").getByRole("button", { name: /^Weather/ });
 
 const SOURCE = { pvgis: "PVGIS", nasa: "NASA POWER", csv: "CSV" };
 
@@ -97,12 +99,12 @@ async function aVoltageChangedThenPerformance(page: Page, design: (route: Route)
 test.describe.configure({ timeout: RUN * 2 });
 
 test.describe("the header", () => {
-  test("the line of the run is the run's; the options are its, the chosen one with its caption, each with its mark; the weather its label", async ({ page }, testInfo) => {
+  test("the line of the run is the run's; the options are its, the chosen one with its caption, each with its mark; the weather select its label", async ({ page }, testInfo) => {
     const answer = await thePerformancePage(page);
     const chosen = chosenOf(answer);
 
     await expect(page.getByTestId("run-line")).toHaveText(lineOf(answer));
-    await expect(page.getByTestId("weather-chip")).toHaveText(`Weather${answer.weather.label}`);
+    await expect(weatherSelect(page)).toHaveText(`Weather${answer.weather.label}`);
     if (isPhone(testInfo.project.name)) {
       const trigger = optionSwitch(page).getByRole("button", { name: /^Option/ });
       await expect(trigger).toContainText(`${chosen.letter} · ${chosen.caption}`);
@@ -212,7 +214,7 @@ test.describe("before a system voltage", () => {
     await expect(waits).toContainText(answer.no_options!.message);
     await expect(waits.getByRole("link", { name: "Open the Strings lens" })).toHaveAttribute("href", "/studio/strings");
     await expect(page.getByTestId("run-line")).toHaveText(lineOf(answer));
-    await expect(page.getByTestId("weather-chip")).toContainText(answer.weather.label);
+    await expect(weatherSelect(page)).toContainText(answer.weather.label);
     await expect(optionSwitch(page)).toHaveCount(0);
     await expect(energyTile(page)).toHaveCount(0);
     await expect(page.getByTestId("summary-table")).toHaveCount(0);

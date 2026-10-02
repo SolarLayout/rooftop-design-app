@@ -96,3 +96,6 @@ export const latitudeOf = (state: ProjectState) => state.project?.roof.lat ?? nu
 export const longitudeOf = (state: ProjectState) => state.project?.roof.lon ?? null;
 export const systemVoltageOf = (state: ProjectState) => state.project?.system_voltage ?? null;
 export const degradationOf = (state: ProjectState) => state.project?.losses.degradation_pct ?? null;
+export const weatherSourceOf = (state: ProjectState) => state.project?.weather_source ?? null;
+/** The name of the document's CSV weather file; empty for PVGIS and NASA. */
+export const weatherCsvOf = (state: ProjectState) => state.project?.weather_csv ?? null;

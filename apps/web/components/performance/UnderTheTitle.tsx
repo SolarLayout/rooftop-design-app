@@ -5,13 +5,14 @@ import type { FailedRow as Failed, RunRow as Run } from "@/lib/performance/page-
 
 /**
  * A run on its way, under the title (the board "Performance, states"; components.md, "Vitals: states"): the ring of
- * 20 with its arc, what is done in a word, the step of the engine. On phone the step takes the next line.
+ * 20 with its arc, what is done in a word, the step of the engine. On phone the step takes the next line. The ring
+ * turns where how far is not known: a weather being loaded (the board "Weather and assumptions").
  */
 export function RunRow({ run }: { run: Run }) {
   return (
     <div data-testid="run-step" role="status" className="flex flex-col gap-0.5 py-0.5 tablet:h-7 tablet:flex-row tablet:items-center tablet:gap-2.5 tablet:py-0">
       <span className="flex h-6 items-center gap-2.5">
-        <ProgressRing size={20} share={run.share} label={run.step ?? run.title} />
+        <ProgressRing size={20} share={run.share ?? undefined} label={run.step ?? run.title} />
         <span className="type-small font-medium whitespace-nowrap">{run.title}</span>
       </span>
       {run.step ? <span className="pl-7.5 type-small text-text-2 tablet:pl-0 tablet:type-caption">{run.step}</span> : null}

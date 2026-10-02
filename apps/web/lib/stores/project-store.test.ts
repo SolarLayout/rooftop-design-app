@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Project } from "../api";
-import { canRedo, canUndo, createProjectStore, editOf, latitudeOf, longitudeOf, nameOf, openedAtOf, projectOf, systemVoltageOf } from "./project-store";
+import { canRedo, canUndo, createProjectStore, editOf, latitudeOf, longitudeOf, nameOf, openedAtOf, projectOf, systemVoltageOf, weatherCsvOf, weatherSourceOf } from "./project-store";
 
 // A document as the API hands it out; what the tests do not read is left out.
 const DEMO = {
@@ -102,6 +102,16 @@ describe("what is read of the project", () => {
     expect(latitudeOf(state)).toBeNull();
     expect(longitudeOf(state)).toBeNull();
     expect(systemVoltageOf(state)).toBeNull();
+    expect(weatherSourceOf(state)).toBeNull();
+    expect(weatherCsvOf(state)).toBeNull();
+  });
+
+  test("its weather source and the name of its CSV file, as the document has them", () => {
+    const store = createProjectStore();
+    store.getState().open({ ...DEMO, weather_source: "csv", weather_csv: "pune-ghi.csv" } as Project);
+
+    expect(weatherSourceOf(store.getState())).toBe("csv");
+    expect(weatherCsvOf(store.getState())).toBe("pune-ghi.csv");
   });
 
   test("the system voltage is the one of the document", () => {

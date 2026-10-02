@@ -4,7 +4,8 @@ import { useMemo } from "react";
 import { useProject, useResults, useStores } from "@/components/shell/stores";
 import { withDegradation } from "@/lib/performance/degradation";
 import { pageViewOf } from "@/lib/performance/page-view";
-import { degradationOf, nameOf } from "@/lib/stores/project-store";
+import { loadingWordsOf } from "@/lib/performance/weather-source";
+import { degradationOf, nameOf, weatherCsvOf, weatherSourceOf } from "@/lib/stores/project-store";
 import { designFailureOf, designOf, designStatusOf, progressOf, readoutsOf } from "@/lib/stores/results-store";
 import { Kpis, KpiSkeletons } from "./Kpis";
 import { LossChain } from "./LossChain";
@@ -13,6 +14,8 @@ import { NoOptionsCard } from "./NoOptionsCard";
 import { PerformanceHeader } from "./PerformanceHeader";
 import { SummaryTable } from "./SummaryTable";
 import { FailedRow, RunRow } from "./UnderTheTitle";
+import { useWeatherLoad } from "./use-weather-load";
+import { WeatherNote, WeatherSelect } from "./WeatherSelect";
 import { YearsChart } from "./YearsChart";
 
 // The page's padding and the gaps between its parts, as the boards draw them on each size.
@@ -27,12 +30,16 @@ const CHARTS = "grid gap-3.5 tablet:grid-cols-2 tablet:gap-4 desktop:col-span-5 
  * pull request 1): the header with the line of the run, the option switch and the weather; the KPIs and the summary of
  * the chosen option; before options the API's words; skeletons at the first load; a run on its way dimming the values
  * of before; a run that failed leaving them with a note. An option chosen is an edit of the document and asks for
- * nothing: the run's answer holds every option (decision 4).
+ * nothing: the run's answer holds every option (decision 4). The weather source is a select: a source chosen is loaded
+ * first, the line dimmed and the load said under it, then committed once (decision 12).
  */
 export function Performance() {
   const { project, flow } = useStores();
   const name = useProject(nameOf);
   const degradation = useProject(degradationOf);
+  const weatherSource = useProject(weatherSourceOf);
+  const weatherCsv = useProject(weatherCsvOf);
+  const load = useWeatherLoad();
   const design = useResults(designOf);
   const readouts = useResults(readoutsOf);
   const designStatus = useResults(designStatusOf);
@@ -51,11 +58,26 @@ export function Performance() {
   const values = view.kind === "design" || view.kind === "failed" ? view.values : null;
   const decision = view.kind === "decision" || view.kind === "failed" ? view.decision : null;
   const isDimmed = view.kind === "design" && view.isDimmed;
-  const under = view.kind === "failed" ? <FailedRow failed={view.failed} onTryAgain={flow.tryAgain} /> : view.run ? <RunRow run={view.run} /> : null;
+  const under =
+    view.kind === "failed" ? (
+      <FailedRow failed={view.failed} onTryAgain={flow.tryAgain} />
+    ) : load.loading ? (
+      <RunRow run={{ title: loadingWordsOf(load.loading), step: null, share: null }} />
+    ) : view.run ? (
+      <RunRow run={view.run} />
+    ) : null;
 
   return (
     <main className={PAGE}>
-      <PerformanceHeader header={view.header} isLoading={view.kind === "loading"} isDimmed={isDimmed} under={under} onChoose={choose} />
+      <PerformanceHeader
+        header={view.header}
+        isLoading={view.kind === "loading"}
+        isDimmed={isDimmed || load.loading !== null}
+        under={under}
+        weather={weatherSource !== null && weatherCsv !== null ? <WeatherSelect document={{ weather_source: weatherSource, weather_csv: weatherCsv }} load={load} /> : null}
+        note={load.failure ? <WeatherNote message={load.failure} /> : null}
+        onChoose={choose}
+      />
       {view.kind === "loading" ? <KpiSkeletons /> : null}
       {decision ? <NoOptionsCard decision={decision} /> : null}
       {values ? (

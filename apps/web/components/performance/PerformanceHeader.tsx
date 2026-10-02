@@ -9,25 +9,23 @@ type Props = {
   header: HeaderView | null;
   /** No run ever answered and one is on its way: a skeleton stands for the line. */
   isLoading: boolean;
-  /** The line of the run is of before, and a new run is on its way. */
+  /** The line of the run is of before, and a new run or another weather is on its way. */
   isDimmed: boolean;
   /** What stands under the line: a run on its way, or one that failed. */
   under?: ReactNode;
+  /** The weather select (plan/phase-08-plan.md, decision 12). */
+  weather: ReactNode;
+  /** What stands under the controls: a weather that was not loaded, in the API's words. */
+  note?: ReactNode;
   onChoose: (key: string) => void;
 };
-
-// The weather as a chip that says the source; its select comes with the weather source (plan/phase-08-plan.md, step 18).
-const CHIP = classNames(
-  "inline-flex h-touch w-full shrink-0 items-center gap-2 rounded-row border border-line bg-control px-3.5 whitespace-nowrap shadow-raised",
-  "tablet:w-auto desktop:order-first desktop:h-10 desktop:rounded-control",
-);
 
 /**
  * The title, the line of the run and the controls (the board "Performance" on three sizes): on desktop the controls
  * stand at the right of the title, the weather before the options; on tablet under it in a row, the options first;
- * on phone under it, each across the width.
+ * on phone under it, each across the width. A note of the weather stands under the controls, at their right.
  */
-export function PerformanceHeader({ header, isLoading, isDimmed, under, onChoose }: Props) {
+export function PerformanceHeader({ header, isLoading, isDimmed, under, weather, note, onChoose }: Props) {
   return (
     <header className="flex flex-col gap-3 tablet:gap-4 desktop:flex-row desktop:items-end desktop:gap-4">
       <div className="flex min-w-0 flex-col gap-1">
@@ -42,12 +40,14 @@ export function PerformanceHeader({ header, isLoading, isDimmed, under, onChoose
         {under}
       </div>
       {header ? (
-        <div className="flex flex-col gap-2 tablet:flex-row tablet:items-center tablet:gap-3 desktop:ml-auto desktop:shrink-0">
-          {header.chosen === null ? null : <OptionSwitch items={header.items} chosen={header.chosen} onChoose={onChoose} />}
-          <div data-testid="weather-chip" className={CHIP}>
-            <span className="text-text-2">{header.weather.label}</span>
-            <span className="font-medium">{header.weather.value}</span>
+        <div className="flex flex-col gap-2 desktop:ml-auto desktop:shrink-0 desktop:items-end">
+          <div className="flex flex-col gap-2 tablet:flex-row tablet:items-center tablet:gap-3">
+            {header.chosen === null ? null : <OptionSwitch items={header.items} chosen={header.chosen} onChoose={onChoose} />}
+            <div data-testid="weather-select" className="flex desktop:order-first">
+              {weather}
+            </div>
           </div>
+          {note}
         </div>
       ) : null}
     </header>

@@ -78,10 +78,3 @@ describe("the option switch (decision 4)", () => {
     expect(chosen).toBeNull();
   });
 });
-
-describe("the weather chip", () => {
-  test("says the source's label, as the API gives it", () => {
-    expect(headerOf(DEMO, READOUTS).weather).toEqual({ label: "Weather", value: "PVGIS TMY" });
-    expect(headerOf({ ...DEMO, weather: NASA } as DesignResult, READOUTS).weather).toEqual({ label: "Weather", value: "NASA POWER 2023" });
-  });
-});
