@@ -3,27 +3,39 @@
 import { useStore } from "zustand";
 import { useProject, useResults, useView } from "@/components/shell/stores";
 import { measures } from "@/components/ui/measures";
-import type { Layout, Project } from "@/lib/api";
+import { useShadeMapShown } from "@/components/scene/use-shade-map";
+import type { DesignOption, Layout, Project } from "@/lib/api";
 import { calloutOf, type Callout as Words } from "@/lib/scene/keepout";
 import { calloutOfObstacle } from "@/lib/scene/obstacles";
 import { calloutOfModule, calloutOfRoof } from "@/lib/scene/pick";
 import { labelsOf, type StageStore } from "@/lib/scene/stage-store";
 import { projectOf } from "@/lib/stores/project-store";
-import { layoutOf } from "@/lib/stores/results-store";
+import { shadeCalloutOf } from "@/lib/scene/shade-map";
+import { chosenOptionOf, designOf, layoutOf } from "@/lib/stores/results-store";
 import { draftOf, draggingOf, selectionOf, toReviewOf, type Selection } from "@/lib/stores/view-store";
 import type { DraftObstacle } from "@/lib/studio/obstacle-fields";
 
 type Props = { stage: StageStore };
 
-type Of = { selection: Selection | null; draft: DraftObstacle | null; toReview: readonly string[]; project: Project; layout: Layout | null };
+type Of = {
+  selection: Selection | null;
+  draft: DraftObstacle | null;
+  toReview: readonly string[];
+  project: Project;
+  layout: Layout | null;
+  /** The shade map while it is shown, with the loss of every position and the chosen option (decision 14). */
+  shade: { losses: readonly number[]; option: DesignOption | null } | null;
+};
 
 /** The words of the callout: of the draft, of the selected obstacle, kept-clear area, module or roof; null where nothing is selected. */
-function wordsOf({ selection, draft, toReview, project, layout }: Of): Words | null {
+function wordsOf({ selection, draft, toReview, project, layout, shade }: Of): Words | null {
   if (draft) return calloutOfObstacle(draft, "draft");
   if (selection?.kind === "roof") return calloutOfRoof(project.roof.outline);
   if (selection?.kind === "module") {
     const position = layout?.modules[selection.index];
-    return position && layout ? calloutOfModule(position, layout.kind) : null;
+    if (!position || !layout) return null;
+    const loss = shade?.losses[position.idx];
+    return shade && loss !== undefined ? shadeCalloutOf(position, layout.kind, loss, shade.option) : calloutOfModule(position, layout.kind);
   }
   if (selection?.kind === "obstacle") {
     const obstacle = project.roof.obstacles[selection.index];
@@ -52,10 +64,14 @@ export function Callout({ stage }: Props) {
   const project = useProject(projectOf);
   const layout = useResults(layoutOf);
   const hung = useStore(stage, labelsOf).find((label) => label.kind === "callout");
+  const map = useShadeMapShown();
+  const design = useResults(designOf);
+  const option = useResults(chosenOptionOf);
 
   // While a drag lasts the live label beside the pointer says what changes; the callout waits for the drop.
   if (!project || !hung?.visible || dragging) return null;
-  const words = wordsOf({ selection, draft, toReview, project, layout: layout?.layout ?? null });
+  const shade = map && design ? { losses: design.shading.near_pct_by_module, option } : null;
+  const words = wordsOf({ selection, draft, toReview, project, layout: layout?.layout ?? null, shade });
   if (!words) return null;
 
   return (

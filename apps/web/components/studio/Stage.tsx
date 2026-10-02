@@ -16,12 +16,15 @@ import { createStageStore, cursorOf, groundOf, moduleWritesOf, type Cursor, type
 import type { Lens } from "@/lib/routes";
 import { projectOf } from "@/lib/stores/project-store";
 import { layoutOf, readoutsOf, shadowOutlinesOf, sunDayOf } from "@/lib/stores/results-store";
-import { draftOf, lensOf, onTheRoofOf, selectionOf, showsSunPathOf, sunTimeOf, toReviewOf } from "@/lib/stores/view-store";
+import { draftOf, isShadeMapShownOf, lensOf, onTheRoofOf, selectionOf, showsSunPathOf, sunTimeOf, toReviewOf } from "@/lib/stores/view-store";
+import { shadeMapWordsOf } from "@/lib/scene/shade-map";
+import { useShadeMapOfTheRun } from "@/components/scene/use-shade-map";
 import { readOutOf, sunLineOf, sunPathLineOf } from "@/lib/studio/sun-time";
 import { useSun } from "@/components/scene/use-sun";
 import { Callout } from "./Callout";
 import { Handles } from "./Handles";
 import { Labels } from "./Labels";
+import { ShadeLegend } from "./ShadeLegend";
 import { SunMarks } from "./SunMarks";
 import { LayoutFailed } from "./LayoutFailed";
 import { PlanFallback } from "./PlanFallback";
@@ -53,6 +56,9 @@ const VIEW_CONTROLS = "top-1 right-3 tablet:top-4 tablet:right-5 desktop:top-5";
  */
 const TIME_PILL = "absolute top-1 left-3 z-stage-overlay tablet:top-auto tablet:bottom-7 tablet:left-5 desktop:bottom-29 desktop:left-6";
 const TIMELINE = "absolute inset-x-5 bottom-7 z-stage-overlay desktop:bottom-29";
+
+/** The legend of the shade map: 12 over the timeline on tablet and desktop, at the stage's bottom left on phone. */
+const SHADE_LEGEND = "absolute bottom-2.5 left-3 z-stage-overlay tablet:bottom-26 tablet:left-5 desktop:bottom-48";
 
 /** The chip of a layout that failed stands under the title, in the middle of the stage: as wide as the board draws it, or as the phone allows. */
 const LAYOUT_FAILED = "absolute inset-x-4 top-16 z-stage-overlay tablet:inset-x-0 tablet:top-20 tablet:mx-auto tablet:w-95 desktop:top-24";
@@ -118,6 +124,7 @@ export function Stage({ lens, name, className }: Props) {
       <LayoutFailed className={LAYOUT_FAILED} />
       {cannotDraw ? null : <ViewControls stage={stage} className={VIEW_CONTROLS} />}
       {cannotDraw || size === null ? null : lens === "sun" && size !== "phone" ? <SunTimeline size={size} className={TIMELINE} /> : <TimePill size={size} className={TIME_PILL} />}
+      {cannotDraw || size === null ? null : <ShadeLegend size={size} className={SHADE_LEGEND} />}
       {cannotDraw ? null : ATTRIBUTION ? (
         <p data-testid="stage-attribution" className="pointer-events-none absolute bottom-1 left-4 z-stage-overlay max-w-full truncate type-label-s text-text-on-imagery on-imagery tablet:left-5 desktop:bottom-1.5 desktop:left-6">
           {ATTRIBUTION}
@@ -144,6 +151,8 @@ function OnTheRoof({ stage, isScene }: { stage: StageStore; isScene: boolean }) 
   const draft = useView(draftOf);
   const toReview = useView(toReviewOf);
   const showsSunPath = useView(showsSunPathOf);
+  const isShadeMapShown = useView(isShadeMapShownOf);
+  const shadeMap = useShadeMapOfTheRun();
   const isWindowThick = onTheRoof.window;
   if (!project) return null;
   const { roof, array } = project;
@@ -180,6 +189,7 @@ function OnTheRoof({ stage, isScene }: { stage: StageStore; isScene: boolean }) 
       )}
       {sunDay ? <li data-testid="on-the-roof-sun">{readOutOf(sunDay.dayOfYear, hour, sun)}</li> : null}
       {sunPath ? <li data-testid="on-the-roof-sun-path">{sunPath}</li> : null}
+      {isShadeMapShown ? <li data-testid="on-the-roof-shade-map">{shadeMapWordsOf(shadeMap)}</li> : null}
       {outlines && onTheRoof.shadowOutlines && lens === "sun" ? (
         <li data-testid="on-the-roof-shadow-outlines">
           {`The engine's shadow outlines at ${hourOf(outlines.hour)}: ${outlines.polygons.length} ${outlines.polygons.length === 1 ? "polygon" : "polygons"}`}

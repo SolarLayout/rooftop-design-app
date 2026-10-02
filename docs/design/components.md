@@ -509,7 +509,8 @@ value 18 high (22 for the lead value), lines of text 12 high and of different le
 was there is never replaced by a skeleton: it stays, dimmed.
 
 In code: `Skeleton`, of the kind `label`, `value`, `lead` or `text`. Who uses it gives it its width. It says
-nothing to a screen reader: what is waited for is said in words beside it.
+nothing to a screen reader: what is waited for is said in words beside it. On a stat tile, which is `surface-2`
+itself, the block is `control-active` (`onTile`; the board "Shade map").
 
 ## Vitals: states
 | State | What is shown |

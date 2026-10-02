@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { Obstacle } from "../api";
 import type { DraftObstacle } from "../studio/obstacle-fields";
-import { cameraOf, cameraRequestOf, createViewStore, draftOf, draggingOf, isPlayingOf, lensOf, onTheRoofOf, northRequestOf, selectionOf, showsSunPathOf, sunTimeOf, toReviewOf } from "./view-store";
+import { cameraOf, cameraRequestOf, createViewStore, draftOf, draggingOf, isPlayingOf, isShadeMapShownOf, lensOf, onTheRoofOf, sunTabOf, northRequestOf, selectionOf, showsSunPathOf, sunTimeOf, toReviewOf } from "./view-store";
 
 describe("the view", () => {
   test("it begins on the first lens, in 3D, on the design day", () => {
@@ -36,6 +36,22 @@ describe("the view", () => {
 
     store.getState().showOnTheRoof("sunPath", false);
     expect(showsSunPathOf(store.getState())).toBe(false);
+  });
+
+  // The tab of the Sun lens (plan/phase-06-plan.md, decisions 12 and 16): of the view; the shade map is shown
+  // in the Sun lens alone, and leaving the lens leaves it off.
+  test("the shade map is shown in the Sun lens while its tab is taken, and the lens left takes it off", () => {
+    const store = createViewStore();
+    store.getState().showLens("sun");
+    expect(sunTabOf(store.getState())).toBe("shadows");
+    expect(isShadeMapShownOf(store.getState())).toBe(false);
+
+    store.getState().showSunTab("shade-map");
+    expect(isShadeMapShownOf(store.getState())).toBe(true);
+
+    store.getState().showLens("array");
+    expect(isShadeMapShownOf(store.getState())).toBe(false);
+    expect(sunTabOf(store.getState())).toBe("shadows");
   });
 
   test("whether the time plays is kept; told again, nothing changes", () => {

@@ -1,7 +1,9 @@
 // The shade map (plan/phase-06-plan.md, decisions 11 and 12): every position of the layout by its near
 // shading over the year, as the design run answered it (`Shading.near_pct_by_module`), in five steps of
 // one hue from 0 to the next round value over the largest loss. Pure functions; the modules take the
-// colour of their step per instance.
+// colour of their step per instance; a selected one says its loss and its string's.
+import { shown } from "../../components/ui/number-entry";
+import type { DesignOption, Layout, PlacedModule } from "../api";
 
 /** The round values a scale may run to, in percent. */
 const TOPS = [1, 2, 5, 10, 20, 50, 100];
@@ -47,4 +49,34 @@ export function shadeMapOf({ losses, runEdit, layoutEdit, positions }: Of): Shad
   const steps = losses.map((loss) => stepOf(loss, scale));
   const counts = Array.from({ length: scale.steps }, (_, step) => steps.filter((one) => one === step).length);
   return { scale, steps, counts };
+}
+
+/** The callout of a selected position in the shade map: its position and row; its loss, and its string's. */
+export function shadeCalloutOf(module: Pick<PlacedModule, "idx" | "row">, kind: Layout["kind"], lossPct: number, option: DesignOption | null): { title: string; detail: string } {
+  const title = `Position ${shown(module.idx + 1, 0)} · ${kind === "flat_ew" ? "unit" : "row"} ${shown(module.row + 1, 0)}`;
+  const loss = `Near shading ${shown(lossPct, 2)} % over the year`;
+  if (option === null) return { title, detail: loss };
+  const string = option.system.strings.find((one) => one.modules.includes(module.idx));
+  return { title, detail: string ? `${loss} · string ${string.label}, ${shown(string.shade_pct, 2)} %` : `${loss} · not used by option ${option.letter}` };
+}
+
+export type Legend = { title: string; marks: string[]; of: string };
+
+/** The legend of the map: what is coloured, the marks of the scale (the unit after the last), what it counts. */
+export function legendOf(map: ShadeMap | null, positions: number): Legend {
+  const title = "Near shading over the year";
+  if (map === null) return { title, marks: [], of: "The shade map follows the design run" };
+  const { top, steps } = map.scale;
+  const marks = Array.from({ length: steps + 1 }, (_, step) => String(Number(((top * step) / steps).toFixed(2))));
+  marks[steps] = `${marks[steps]} %`;
+  return { title, marks, of: `Of all ${shown(positions, 0)} positions` };
+}
+
+/** The shade map in words, for the text equivalent of the stage. */
+export function shadeMapWordsOf(map: ShadeMap | null): string {
+  if (map === null) return "The shade map follows the design run";
+  const { top, steps } = map.scale;
+  const counts = map.counts.map((count) => shown(count, 0));
+  const listed = `${counts.slice(0, -1).join(", ")} and ${counts.at(-1)}`;
+  return `The shade map: near shading over the year from 0 to ${shown(top, 0)} %, by steps of ${Number((top / steps).toFixed(2))} %: ${listed} positions`;
 }
