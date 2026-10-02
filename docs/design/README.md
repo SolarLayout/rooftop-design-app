@@ -55,8 +55,11 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | Time on the stage | `SunTime.dc.html` | `studio-sun-time.png` | desktop, tablet, phone in parts |
 | Sun path and shadow outlines | `SunPathShadows.dc.html` | `studio-sun-path-shadows.png` | desktop in parts |
 | Shade map | `ShadeMap.dc.html` | `studio-shade-map.png` | desktop, phone in parts |
-| Studio, Strings lens | `StringsLens.dc.html` | `studio-strings-lens-desktop.png` | desktop |
+| Studio, Strings lens | `StringsLens.dc.html`, `StringsLensTablet.dc.html`, `StringsLensPhone.dc.html` | `studio-strings-lens-desktop.png`, `studio-strings-lens-tablet.png`, `studio-strings-lens-phone.png` | desktop, tablet, phone |
 | Studio, Strings lens, no system voltage yet | `StringsLensNoVoltage.dc.html` | `studio-strings-lens-no-voltage.png` | desktop |
+| Strings on the roof | `StringsOnRoof.dc.html` | `studio-strings-on-roof.png` | desktop, phone in parts |
+| Options and your own | `StringsOptions.dc.html` | `studio-strings-options.png` | desktop, phone in parts |
+| Inverter and sizing | `StringsInverterSizing.dc.html` | `studio-strings-inverter-sizing.png` | desktop, phone in parts |
 | Performance | `Performance.dc.html` | `performance-desktop.png` | desktop |
 | Handover | `Handover.dc.html` | `handover-desktop.png` | desktop |
 | Controls, depth and motion | `Kit.dc.html` | `controls-depth-motion.png` | |
@@ -71,8 +74,8 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
 - The 3D roof in the mockups is a drawn projection of the real demo layout, not live 3D. The satellite imagery is
   an illustration. The product uses React Three Fiber and Esri World Imagery.
 - All numbers are real results of the engine for the Pune demo (`plan/reference/demo-numbers.md`). The
-  equipment is shown by its real names (decision D24). The placement
-  of strings on the roof in the Strings lens is illustrative.
+  equipment is shown by its real names (decision D24). The strings on the
+  roof in the Strings boards are the engine's (Phase 7); the board "Studio, Strings lens, no system voltage yet" draws none.
 - `mockups/build_lenses.py` generated the Strings board, and once the sketch of the Sun board, from the Array board. It
   is kept so the boards can be regenerated; it is not part of the product.
 - `mockups/build_phase3_boards.py` writes the two boards of round 4, "Controls, part 2" and "Shell states",
@@ -92,6 +95,12 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   path and the shadow outlines, the shade map), drawn on 2026-10-02 by session 10 (`plan/phase-06-plan.md`, step 0). The
   sun, the shadows and the shade of every module are the engine's for the Pune demo, kept in `mockups/sun_lens_data.json`,
   so that the boards can be written again without the engine.
-- `mockups/canvas.json` is the layout of the boards on the canvas: 32 boards. The canvas at claude.ai holds 27 of them,
+- `mockups/build_phase7_lens_boards.py` writes the three boards of the Strings lens (desktop, tablet, phone; the desktop board
+  replaces the one `build_lenses.py` made, its inspector as approved) and `mockups/build_phase7_state_boards.py` the three of its
+  parts (the strings on the roof, the options and your own, the inverter and the sizing), drawn on 2026-10-02 by session 11
+  (`plan/phase-07-plan.md`, step 0). The strings, the inverters, the loads and the figures are the engine's for the Pune demo, kept
+  in `mockups/strings_lens_data.json`, so that the boards can be written again without the engine.
+- `mockups/canvas.json` is the layout of the boards on the canvas: 37 boards. The canvas at claude.ai holds 27 of them,
   published on 2026-09-30, and is behind the repo by the board ImportHeights changed on 2026-10-01 and the five new boards
-  of Phase 6 with the redrawn Sun lens: sessions on Bedrock have no Artifact tool to publish them.
+  of Phase 6 with the redrawn Sun lens, and the five new boards of Phase 7 with the redrawn Strings lens: sessions on Bedrock
+  have no Artifact tool to publish them.
