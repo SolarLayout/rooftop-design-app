@@ -38,7 +38,7 @@ type Props<T extends string> = {
 const TRACK = "gap-0.5 rounded-row border border-line bg-well p-0.75 shadow-well desktop:rounded-control";
 
 const ITEM = classNames(
-  "inline-flex h-touch cursor-pointer items-center gap-1.5 rounded-seg-touch px-3.5 whitespace-nowrap select-none",
+  "inline-flex h-touch cursor-pointer items-center justify-center gap-1.5 rounded-seg-touch px-3.5 whitespace-nowrap select-none",
   "type-body press-motion focus-ring",
   "desktop:h-7.5 desktop:rounded-seg desktop:type-small",
   "disabled:cursor-default disabled:opacity-disabled",
