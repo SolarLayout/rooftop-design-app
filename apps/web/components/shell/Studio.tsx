@@ -9,10 +9,10 @@ import { ArrayInspector } from "@/components/studio/ArrayInspector";
 import { RoofInspector } from "@/components/studio/RoofInspector";
 import { SunInspector } from "@/components/studio/SunInspector";
 import { Stage } from "@/components/studio/Stage";
+import { StringsInspector } from "@/components/studio/StringsInspector";
 import { useHistoryKeys } from "@/components/studio/use-history-keys";
 import { useSunKeys } from "@/components/studio/use-sun-keys";
 import { useSize } from "@/components/studio/use-size";
-import { NotBuiltYet } from "./NotBuiltYet";
 import { useNotesOfTheShell } from "./Shell";
 import { useStores, useVitals } from "./stores";
 import { Vitals } from "./Vitals";
@@ -33,7 +33,7 @@ export function Studio({ lens }: Props) {
   const [stop, setStop] = useState<Stop>("half");
   const name = LENSES.find((one) => one.id === lens)?.name ?? "";
   const inspector =
-    size === null ? null : lens === "array" ? <ArrayInspector /> : lens === "roof" ? <RoofInspector size={size} /> : lens === "sun" ? <SunInspector size={size} /> : <NotBuiltYet />;
+    size === null ? null : lens === "array" ? <ArrayInspector /> : lens === "roof" ? <RoofInspector size={size} /> : lens === "sun" ? <SunInspector size={size} /> : <StringsInspector />;
 
   // The Studio comes back to the lens that was opened last.
   useEffect(() => view.getState().showLens(lens), [view, lens]);
