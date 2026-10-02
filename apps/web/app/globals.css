@@ -196,7 +196,11 @@
   --columns-vitals: 1.25fr 1.15fr 0.85fr 0.85fr 1fr 0.8fr 1.25fr 1.55fr;
   --columns-vitals-waiting: 1fr 1fr 1fr 2.4fr;
   --columns-p-values-phone: 1fr 1fr 1.5fr;
+  --columns-loss-chain: 210px 84px 64px 232px minmax(0, 1fr);
+  --columns-loss-chain-tablet: 230px 96px 72px 196px minmax(0, 1fr);
+  --columns-loss-chain-phone: minmax(0, 1fr) auto auto;
 
+  --radius-swatch: 3px;
   --radius-key: 4px;
   --radius-xs: 6px;
   --radius-seg: 7px;
@@ -386,12 +390,16 @@
   --grid-template-columns-vitals: var(--columns-vitals);
   --grid-template-columns-vitals-waiting: var(--columns-vitals-waiting);
   --grid-template-columns-p-values-phone: var(--columns-p-values-phone);
+  --grid-template-columns-loss-chain: var(--columns-loss-chain);
+  --grid-template-columns-loss-chain-tablet: var(--columns-loss-chain-tablet);
+  --grid-template-columns-loss-chain-phone: var(--columns-loss-chain-phone);
 
   --breakpoint-tablet: 640px;
   --breakpoint-desktop: 1101px;
   --breakpoint-tablet-wide: 820px;
   --breakpoint-desktop-wide: 1360px;
 
+  --radius-swatch: var(--radius-swatch);
   --radius-key: var(--radius-key);
   --radius-xs: var(--radius-xs);
   --radius-seg: var(--radius-seg);
@@ -854,6 +862,54 @@
 @utility h-span {
   height: calc(var(--span) * 100%);
 }
+/*
+  A row of the loss chain (components.md, "Loss chain"): on phone the label on a line of its own, then the field
+  with the change and the running total at the right, then the track across the width; from tablet up one line
+  of label, field, change, track and running total. Under the row, what the field says and the line of a
+  default or a note. Each cell names its place with `area-*`.
+*/
+@utility loss-row {
+  display: grid;
+  grid-template-columns: var(--columns-loss-chain-phone);
+  grid-template-areas:
+    "label label label"
+    "field change total"
+    "track track track"
+    "said said said"
+    "under under under";
+  @variant tablet {
+    grid-template-columns: var(--columns-loss-chain-tablet);
+    grid-template-areas:
+      "label field change track total"
+      ". said said said said"
+      ". under under under under";
+  }
+  @variant desktop {
+    grid-template-columns: var(--columns-loss-chain);
+  }
+}
+@utility area-label {
+  grid-area: label;
+}
+@utility area-field {
+  grid-area: field;
+}
+@utility area-change {
+  grid-area: change;
+}
+@utility area-track {
+  grid-area: track;
+}
+@utility area-total {
+  grid-area: total;
+}
+@utility area-said {
+  grid-area: said;
+}
+@utility area-under {
+  grid-area: under;
+}
+
 /* A place on the screen, in pixels, for what floats in the top layer of the browser. */
 @utility placed {
   position: fixed;

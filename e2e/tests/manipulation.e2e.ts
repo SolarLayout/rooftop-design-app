@@ -151,8 +151,10 @@ test.describe("the handles of a box", () => {
     await page.goto("/studio/roof");
     await sceneShown(page);
     await expect.poll(() => layouts.length, { timeout: RUN }).toBe(1);
-    // What floats beside Add closes when the page moves, and the vitals move it when the energy lands.
+    // What floats beside Add closes when the page moves, and the vitals move it when the energy lands; on phone the
+    // top bar says the notes after that, and moves it again.
     await expect(page.getByRole("region", { name: "Design vitals" }).getByText("617.8")).toBeVisible({ timeout: RUN });
+    if (testInfo.project.name === "phone") await expect(page.getByRole("banner").getByRole("button", { name: "1 note to review" })).toBeVisible({ timeout: RUN });
     if (testInfo.project.name === "phone") await page.getByRole("separator", { name: "Inspector" }).press("End");
     await page.getByRole("button", { name: "Add", exact: true }).click();
     await page.getByRole("menu", { name: "Add an obstacle" }).getByRole("menuitem", { name: "Wall" }).click();

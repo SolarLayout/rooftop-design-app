@@ -8,12 +8,13 @@ export const WELL = classNames(
   "focused:border-accent focused:shadow-well-focus",
 );
 
+const INPUT_BASE = classNames("min-w-0 border-0 bg-transparent text-text outline-none", "disabled:cursor-default");
+
 /** The input inside a well: it has no surface and no ring of its own. */
-export const INPUT = classNames(
-  "min-w-0 border-0 bg-transparent text-text outline-none",
-  "type-value-s desktop:type-value-field",
-  "disabled:cursor-default",
-);
+export const INPUT = classNames(INPUT_BASE, "type-value-s desktop:type-value-field");
+
+/** The same inside the loss chain: mono 12 on desktop, 13 on tablet; empty for its default, it says the default inside itself. */
+export const INPUT_IN_THE_CHAIN = classNames(INPUT_BASE, "type-value-s tablet:type-value-small desktop:type-value-xs placeholder:text-text-3");
 
 export const UNIT = "type-caption text-text-2 whitespace-nowrap";
 

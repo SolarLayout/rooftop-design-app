@@ -125,6 +125,7 @@ In code: `NumberField` and `Stepper`; their numbers in `number-entry.ts`.
 | The label inside, at the left | 44 | 44 | A field of its own, as on the kit board |
 | The label before the field | 36, radius control | 48, radius row | A row of the inspector |
 | Stepper | 38: buttons of 30 in a well with padding 3 | 52: buttons of 44 | A few whole steps |
+| Inside the loss chain | 22, radius xs, mono 12 | Tablet 40, radius xs; phone 44, radius control | A step of the chain that is the user's; the row's label is its name |
 
 - What is typed is a draft. Enter or leaving the field commits it; Escape gives it up. The arrows up and down
   step the draft and do not commit. Plus and minus of a stepper commit at once, and cannot be pressed at the
@@ -139,6 +140,8 @@ In code: `NumberField` and `Stepper`; their numbers in `number-entry.ts`.
 - With the focus inside: accent border and `shadow-well-focus`. The input has no ring of its own.
 - Where the label stands before the field, a line under the label may say where the value comes from, in
   `text-caption`, text-3: "11.9 °C from the weather", "entered" (the board "Inverter and sizing"). In code: `detail`.
+- Inside the loss chain there is no line under the label: a field that is empty for its default says the
+  default inside itself, in text-3 ("PAN 0.2 %"). In code: `placeholder`.
 
 ## Cards
 `surface-1`, border `line`, radius `radius-card`, `shadow-card`, padding `space-card`.
@@ -218,9 +221,33 @@ halo; labels under the ends in `text-tick` ("14, MPPT minimum", "29, Voc limit")
 tick or a note and the engine's sentence.
 
 ## Loss chain
-Grid of label, editable input (where the step is a user input), change in %, track, running total. Rows 29
-high; totals 32 high, Geist 600, with a 2 px marker on the track. Bars 12 high, radius 3, gain and loss colours.
-A legend names gain and loss and says that boxed values can be changed.
+Grid of label, editable input (where the step is a user input), change in %, track, running total
+(`columns-loss-chain`). Rows 29 high; totals 32 high, Geist 600, with a 2 px marker on the track. Bars 12
+high, radius `radius-swatch`, gain and loss colours; a step of nothing a tick of 1 in `data-zero`. A legend
+names gain and loss and says that boxed values can be changed. The labels are the engine's, word for word.
+
+In code: `LossChain`, of rows `LossRow`; the bars in `lib/performance/cascade.ts`, the fields in
+`loss-fields.ts`, the rows' words in `loss-chain.ts`.
+
+- The track is a cascade on one relative scale: each bar runs from the running total before the step to the
+  one after, in percent of the GHI chained through the steps (the energy steps continue from where the
+  irradiance ended), fitted to the extremes of the run, with 10 px free at the left of the track and 7 at the
+  right. A bar is 2 px wide at the least.
+- A step that is the user's has its field in the second column, 22 high (Number field, "inside the loss
+  chain"); the rear gain a Switch. A field that is empty for its default says the default inside itself
+  ("PAN 0.2 %"); entered, the line under the row says the default and gives the field back ("PAN gives 0.2 %",
+  "Use the PAN's"). What a field says of an entry it changed stands in the same line under the row. With a
+  monofacial module the switch cannot be used and the line under the row says why.
+- On tablet rows are 44 and totals 48, bars 14, the field 40 (`columns-loss-chain-tablet`). On phone a row is
+  the label on a line of its own, then the field at the left (44 high) with the change and the running total
+  at the right, then the track across the width (`columns-loss-chain-phone`).
+- The whole row is the target of the pointer and takes surface-2 under it. A readout in the tooltip's look
+  stands 8 over the middle of the row: the running total with its unit and the change on one line, the label
+  under them in text-2. It comes after 400 ms under the pointer, at once with the keyboard focus in the row's
+  field, and on a tap; it goes with the pointer or the focus leaving, with Escape, and with another tap. It
+  is never the only place: the row says every figure itself.
+- While a run is on its way the figures and the bars are dimmed (`opacity-updating`); the labels and the
+  fields stay as they are.
 
 ## Timeline (Sun lens)
 Floating bar 64 high, `surface-1`, border `line`, radius `radius-bar`, `shadow-float`: round play button 44, time

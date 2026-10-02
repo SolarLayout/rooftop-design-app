@@ -61,6 +61,7 @@ export type NoOptions = Answers["NoOptions"];
 export type SeriesRange = Answers["SeriesRange"];
 export type Verdict = Answers["Verdict"];
 export type Energy = Answers["Energy"];
+export type LossStep = Answers["LossStep"];
 export type PValue = Answers["PValue"];
 export type SummaryRow = Answers["SummaryRow"];
 export type WeatherSummary = Answers["WeatherSummary"];

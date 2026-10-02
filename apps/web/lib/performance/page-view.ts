@@ -7,6 +7,7 @@ import { pathOfLens } from "../routes";
 import type { Failure, Status } from "../stores/results-store";
 import { headerOf, type HeaderView } from "./header";
 import { kpisOf, type KpisView } from "./kpis";
+import { chainViewOf, type ChainView } from "./loss-chain";
 import { summaryRowsOf, type SummaryRowView } from "./summary";
 
 /** A run on its way: what is done in a word, the engine's step, and how far from 0 to 1. */
@@ -19,7 +20,7 @@ export type FailedRow = { title: string; detail: string; action: string; message
 export type Decision = { title: string; message: string; path: string };
 
 /** The figures of the chosen option. */
-export type Values = { kpis: KpisView; summary: SummaryRowView[] };
+export type Values = { kpis: KpisView; chain: ChainView; summary: SummaryRowView[] };
 
 export type PageView =
   /** No value was ever there: skeletons in every place of a value, and what is opened under the title. */
@@ -44,7 +45,7 @@ type Asked = {
 
 function valuesOf(design: DesignResult): Values | null {
   const option = design.options.find((one) => one.key === design.chosen_option);
-  return option ? { kpis: kpisOf(option), summary: summaryRowsOf(option) } : null;
+  return option ? { kpis: kpisOf(option), chain: chainViewOf(option, design.equipment.module), summary: summaryRowsOf(option) } : null;
 }
 
 function decisionOf(design: DesignResult): Decision | null {

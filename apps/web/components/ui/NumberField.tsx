@@ -2,7 +2,7 @@
 
 import { useId } from "react";
 import { classNames } from "./class-names";
-import { INPUT, SAID, UNIT, WELL } from "./field-look";
+import { INPUT, INPUT_IN_THE_CHAIN, SAID, UNIT, WELL } from "./field-look";
 import type { Range } from "./number-entry";
 import { useNumberEntry } from "./use-number-entry";
 
@@ -27,13 +27,24 @@ type Props = {
   detail?: string | null;
   /** In a dialog, the focus goes into this field when it opens: it is the one to answer. */
   initialFocus?: boolean;
+  /**
+   * Inside the loss chain (components.md, "Number field"): 22 high on desktop, 40 on tablet, 44 on phone, the label
+   * for the screen reader alone, since the row's label is seen. The well is a cell of the row's grid (`area-field`),
+   * and what the field says stands in the line under the row (`area-said`).
+   */
+  form?: "chain";
+  /** Empty for its default, the field says the default inside itself ("PAN 0.2 %"). Inside the loss chain. */
+  placeholder?: string;
   className?: string;
 };
 
-export function NumberField({ label, value, onCommit, range, unit, labelInside = false, labelHidden = false, wide = false, disabled = false, detail = null, shownAs, initialFocus, className }: Props) {
+const CHAIN_WELL = "flex h-touch w-28 items-center gap-1 rounded-control px-3 tablet:h-10 tablet:w-full tablet:rounded-xs tablet:px-2 desktop:h-5.5";
+
+export function NumberField({ label, value, onCommit, range, unit, labelInside = false, labelHidden = false, wide = false, disabled = false, detail = null, shownAs, initialFocus, form, placeholder, className }: Props) {
   const id = useId();
   const entry = useNumberEntry(value, range, unit, onCommit);
   const names = { label: `${id}-label`, unit: `${id}-unit`, said: `${id}-said`, detail: `${id}-detail` };
+  const inChain = form === "chain";
 
   const input = (
     <input
@@ -43,10 +54,11 @@ export function NumberField({ label, value, onCommit, range, unit, labelInside =
       autoComplete="off"
       value={entry.text}
       disabled={disabled}
+      placeholder={placeholder}
       data-initial-focus={initialFocus || undefined}
       aria-labelledby={names.label}
       aria-describedby={classNames(unit && names.unit, detail && !labelInside && names.detail, names.said)}
-      className={classNames(INPUT, "text-right", labelHidden ? "w-full grow" : wide ? "w-24" : "w-16")}
+      className={classNames(inChain ? INPUT_IN_THE_CHAIN : INPUT, "text-right", labelHidden || inChain ? "w-full grow" : wide ? "w-24" : "w-16")}
       {...entry.input}
     />
   );
@@ -61,6 +73,23 @@ export function NumberField({ label, value, onCommit, range, unit, labelInside =
     </p>
   );
   const dim = disabled && "opacity-disabled";
+
+  if (inChain) {
+    return (
+      <div className="contents">
+        <label data-testid="well" data-shown-as={shownAs} className={classNames("area-field", CHAIN_WELL, WELL, dim, className)}>
+          <span id={names.label} className="sr-only">
+            {label}
+          </span>
+          {input}
+          {unitShown}
+        </label>
+        <p id={names.said} role="status" className={classNames(SAID, "area-said")}>
+          {entry.said}
+        </p>
+      </div>
+    );
+  }
 
   if (labelInside) {
     return (

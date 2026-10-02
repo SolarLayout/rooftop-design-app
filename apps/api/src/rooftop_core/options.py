@@ -8,6 +8,7 @@ DC/AC (spec, Strings view).
 from __future__ import annotations
 
 import math
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from typing import Literal
 
@@ -95,10 +96,25 @@ def make_option(pre, layout, module, mm, inv, losses, roof, n, s, k, ranked, cus
                         custom=custom)
 
 
+# The candidates are simulated in this many threads at most (Phase 8, decision 17): each simulation is numpy
+# work of about half a second that releases the interpreter, and the candidates are independent. Eight bring the
+# demo's seven from 3.8 s to 0.9 s; more bring nothing.
+SIMULATION_THREADS = 8
+
+
+def workers_for(candidates: int) -> int:
+    """How many threads simulate this many candidates: one each, and never more than SIMULATION_THREADS."""
+    return max(1, min(candidates, SIMULATION_THREADS))
+
+
 def build_options(pre: Precomputed, layout: Layout, module: Module, mm: ModuleModel, inv: Inverter,
                   rng: SeriesRange, losses: Losses, roof: Roof, max_options: int = 5,
                   on_option=None) -> list[StringOption]:
-    """*on_option* hears (done, total) after every option that is simulated."""
+    """*on_option* hears (done, total) after every option that is simulated, in the caller's thread.
+
+    The candidates are simulated in threads (SIMULATION_THREADS) and come out in the order they were made in,
+    the same to the bit as one after the other.
+    """
     if not rng.ok:
         return []
     candidates = sorted({rng.n_nominal, rng.n_max, max(rng.n_min, rng.n_max - 1)}, reverse=True)
@@ -124,17 +140,22 @@ def build_options(pre: Precomputed, layout: Layout, module: Module, mm: ModuleMo
             combos.append((n, s_fill, k0))
         k_all = math.ceil(avail / smax)
         combos.append((n, avail, k_all))
-    seen, opts = set(), []
+    seen: set[tuple[int, int, int]] = set()
+    todo: list[tuple[int, int, int, list[PVString]]] = []
     ranked_cache: dict[int, list[PVString]] = {}
-    total = len({c for c in combos if c[1] >= 1})
     for n, s, k in combos:
         if (n, s, k) in seen or s < 1:
             continue
         seen.add((n, s, k))
-        ranked = ranked_cache.setdefault(n, ranked_strings(pre, layout, n))
-        opts.append(make_option(pre, layout, module, mm, inv, losses, roof, n, s, k, ranked))
-        if on_option:
-            on_option(len(opts), total)
+        todo.append((n, s, k, ranked_cache.setdefault(n, ranked_strings(pre, layout, n))))
+    total = len(todo)
+    with ThreadPoolExecutor(max_workers=workers_for(total), thread_name_prefix="simulate") as pool:
+        futures = [pool.submit(make_option, pre, layout, module, mm, inv, losses, roof, n, s, k, ranked)
+                   for n, s, k, ranked in todo]
+        for done, _ in enumerate(as_completed(futures), start=1):
+            if on_option:
+                on_option(done, total)
+        opts = [future.result() for future in futures]
     opts.sort(key=lambda o: (not o.ok, -o.result.energy_mwh))
     opts = opts[:max_options]
     for i, o in enumerate(opts):

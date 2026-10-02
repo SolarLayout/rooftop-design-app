@@ -18,6 +18,8 @@ describe("the design (plan/phase-08-plan.md, decision 15)", () => {
     expect(view.header.runLine.startsWith("29 modules in series × 22 strings")).toBe(true);
     expect(view.values.kpis.lead.quantity).toEqual({ number: "617.8", unit: "MWh" });
     expect(view.values.summary).toHaveLength(14);
+    expect(view.values.chain.rows).toHaveLength(21);
+    expect(view.values.chain.run.module.is_bifacial).toBe(true);
     expect(view.isDimmed).toBe(false);
     expect(view.run).toBeNull();
   });

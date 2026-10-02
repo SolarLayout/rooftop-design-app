@@ -58,6 +58,8 @@ At 1000 V the maximum series length is 19.
 - Monthly MWh, Jan to Dec: 62.0, 58.8, 68.4, 64.1, 54.9, 46.9, 31.5, 38.5, 37.5, 53.4, 53.5, 48.5.
 - Years 1, 5, 10, 15, 20, 25: 617.8, 605.6, 590.6, 576.0, 561.7, 547.8 MWh; 25-year total 14,554 MWh.
 - CO2 442.4 t/yr. Module area 1,646 m2, 45.7 % of the roof.
+- Soiling 3 %: 613.6 MWh (the soiling step -3.00 %, the rear gain +3.69 %, the clipping -3.10 %); the shading kept from the
+  memo, the seven candidates simulated again (Phase 8, the acceptance; `tests/engine/test_demo_soiling.py`).
 - MPPT loading 4, 4, 4, 4, 3, 3 strings. String Voc cold 1,480 V.
 - BOM: 638 modules, 1 inverter, 27 tables, 1,681 m DC cable, 44 connector pairs, 30 m AC cable, 1 ACDB.
 

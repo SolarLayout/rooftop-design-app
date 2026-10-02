@@ -637,6 +637,25 @@ test.describe("the shell", () => {
     await expectWholeScreen(page, "performance");
   });
 
+  // Soiling 3 % landed (the board "Loss chain, edited"): the chain of the new run, the field holding 3.0.
+  test("performance, the chain with soiling 3 % landed", async ({ page }, testInfo) => {
+    await page.goto("/performance");
+    await expect(page.getByTestId("kpi-energy").getByText("617.8 MWh")).toBeVisible({ timeout: RUN });
+    await settled(page, testInfo.project.name);
+    const ran = page.waitForRequest((request) => request.url().endsWith("/api/design") && request.postDataJSON().losses.soiling_pct === 3, { timeout: RUN });
+    const soiling = page.getByTestId("loss-chain").getByRole("textbox", { name: "Soiling" });
+    await soiling.fill("3");
+    await soiling.press("Enter");
+    const events = (await (await (await ran).response())!.text()).split("\n").filter((line) => line.startsWith("data:"));
+    const { result } = JSON.parse(events[events.length - 1]!.slice(5)) as { result: { options: { energy: { energy_mwh: number } }[] } };
+    await expect(page.getByTestId("kpi-energy").getByText(`${result.options[0]!.energy.energy_mwh.toFixed(1)} MWh`)).toBeVisible({ timeout: RUN });
+    // No focus ring and no readout in the picture.
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+    await page.mouse.move(0, 0);
+
+    await expectWholeScreen(page, "performance-chain-edited");
+  });
+
   // Before a system voltage (the board "Performance, states"): the API's words in place of the KPIs, no energy.
   test("performance, before a system voltage", async ({ page }) => {
     await page.route("**/api/demo", async (route) => {
