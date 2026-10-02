@@ -57,6 +57,15 @@ describe("cardOf: a row as a card on phone", () => {
     expect(cardOf(A, columns).mark).toBeNull();
   });
 
+  test("a column of words is marked so on the card: its label is for the screen reader alone, the title says the row", () => {
+    const columns: Array<Column<Option>> = [
+      { key: "option", head: "Option", kind: "name", value: (row) => row.letter },
+      { key: "about", head: "Value", kind: "text", words: true, value: (row) => `${row.strings} strings` },
+    ];
+
+    expect(cardOf(D, columns).values).toEqual([{ key: "about", label: "Value", value: "27 strings", words: true }]);
+  });
+
   test("a column that is for the table only is not on the card", () => {
     const columns: Array<Column<Option>> = [...COLUMNS, { key: "note", head: "Note", kind: "text", value: () => "wide", shown: "table" }];
 

@@ -3,7 +3,10 @@
 Two stages are worth keeping. The hourly shading of every module takes two thirds of a run and
 depends on the roof, the array, the module and where the sun stands; not on the irradiance, the
 losses or the inverter. The options with their simulations take the rest and depend on everything
-else. The custom option is kept apart from the options offered (decision 10): adding, changing or
+else but the figures after the year: the uncertainty, the exceedance values, the 25 years and the CO2
+follow from the year's energy alone, so they are not kept but worked out again for every run
+(`simulation.after_the_year`, decision 5 of Phase 8), and the losses they come from are left out of
+the key. The custom option is kept apart from the options offered (decision 10): adding, changing or
 removing it simulates it alone.
 A key is the fingerprint of what its stage depends on: the same inputs give the same key, in every
 process. What is kept is handed out read-only, so that a result is the same with and without a memo.
@@ -34,6 +37,8 @@ SHADING_BYTES = 512 * MEGABYTE  # the demo takes 55 MB: two numbers for every ho
 OPTIONS_BYTES = 64 * MEGABYTE  # the demo takes 4 MB: the hours of the year of five options
 NAMES = ("source",)  # fields that name the file a module or an inverter came from
 NOT_FOR_SHADING = ("albedo",)  # fields of the roof that only the simulation looks at
+# Fields of the losses that only the figures after the year look at: no hour of a simulation depends on them.
+AFTER_THE_YEAR = ("degradation_pct", "co2_t_per_mwh", "p_levels", "weather_sigma_pct", "model_sigma_pct")
 
 
 class Memo(Protocol):
@@ -117,13 +122,13 @@ def shading_key(design: Design) -> str:
 
 def options_key(design: Design) -> str:
     """The fingerprint of what the options offered and their simulations depend on: every input of the
-    engine but the custom option."""
+    engine but the custom option and the figures after the year."""
     p, weather = design.p, design.weather
     return _fingerprint(
         "options",
         *_shading_inputs(design),
         {name: getattr(p.roof, name) for name in NOT_FOR_SHADING},
-        p.losses,
+        _without(p.losses, AFTER_THE_YEAR),
         _without(design.inverter, NAMES),
         [p.system_voltage, design.t_min, design.t_max, design.cell_rise, p.voc_coefficient_pct],
         hashlib.sha256(pd.util.hash_pandas_object(weather.data, index=True).to_numpy().tobytes()).hexdigest(),

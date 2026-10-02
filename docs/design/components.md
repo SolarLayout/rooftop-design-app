@@ -51,6 +51,9 @@ passed over. On phone and tablet the track has radius `radius-row`, the items `r
 of body text. With `fill` the choices share the width in equal parts (the lens switch on phone). With
 `disabled` the whole control is dim and takes neither pointer nor key; only then may nothing be taken
 (`value` null), where the choice does not apply yet: the units of a drawing before the file is a DXF.
+A choice may carry a status mark after its label (`mark`: a tick or a note of 14, never a cross), where the
+choices are results with a verdict: the stringing options of Performance, "A · Recommended" with a tick, "D"
+with a note. The mark's words go into the choice's `name` for a screen reader ("D, below the DC/AC target").
 
 ## Tabs
 The board "Tabs" (`mockups/Tabs.dc.html`), approved on 2026-09-29 (decision D35).
@@ -150,7 +153,10 @@ A status mark may follow the value. Tiles inside a card are flat: `surface-2`, r
 10 by 14.
 
 In code: `Stats` is the list, `Stat` one label with its value. Looks: `cell` (vitals: value 16, 17 on tablet),
-`lead` (the energy: display 26, 22 on phone), `tile`.
+`lead` (the energy: display 26, 22 on phone), `tile`, `hero` (the energy on Performance: display 76, its unit
+`text-unit-hero`, the label in body text) and `figure` (a KPI tile of Performance, a card of its own: display 34,
+26 on phone, the label in body text). A quieter figure may follow the unit (`more`: "· 19.7 % DC"); on phone it
+takes a line under the value.
 
 ## Vitals bar
 Desktop: floating, `surface-1`, `radius-bar`, `shadow-float`, height 78, cells separated by 1 px lines. Order:
@@ -440,6 +446,8 @@ are in `list-keys.ts`.
   of the list; Home and End lead to them; a letter leads to the next choice that begins with it.
 - A press beside the list closes it. Scrolling the page or changing the size of the window closes it too.
 - A choice is taken with Enter, the space bar or a press; taking the one that is taken already changes nothing.
+- A choice may carry a status mark after its words (`mark`: a tick or a note of 16): the stringing options of
+  Performance on phone. The trigger shows the mark of the choice that is taken, after its words.
 
 ## File drop
 Height 88, radius `radius-row`, padding 0 18, gap 14. An icon of 20, a title in Geist 500 and one line in
@@ -539,6 +547,9 @@ In code: `Table`; a row as a card in `table-cells.ts`.
   (the board "Inverter and sizing").
 - A table at the inspector's width pads its cells 6 rather than 8 (`dense`); a card whose values are long lays
   them in two columns rather than three (`cardColumns`).
+- A column of words rather than figures (`words`: the summary of Performance) is in Geist at the left; on a card its
+  value stands under the title across the width, without its head, since the title says the row (the board
+  "Performance" on phone).
 
 ## Progress ring
 | Form | Size | Use |

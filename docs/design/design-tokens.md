@@ -193,6 +193,7 @@ height and tracking together.
 |---|---|---|---|---|---|---|
 | `--text-hero` | `--font-display` | `600` | `72px` | `74px` | `-0.035em` | Home headline |
 | `--text-number-hero` | `--font-display` | `600` | `76px` | `80px` | `-0.03em` | Energy on Performance |
+| `--text-unit-hero` | `--font-sans` | `400` | `22px` | `28px` | `0` | The unit beside the energy on Performance |
 | `--text-page` | `--font-display` | `600` | `30px` | `36px` | `-0.02em` | Page title |
 | `--text-lens` | `--font-display` | `600` | `26px` | `32px` | `-0.02em` | Lens title, panel title |
 | `--text-lens-touch` | `--font-display` | `600` | `22px` | `28px` | `-0.02em` | Lens title, panel title on phone |
@@ -261,6 +262,7 @@ Base 2 px. Steps in use: 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48,
 | `--size-sheet-peek` | `84px` | What is seen of the bottom sheet at its lowest stop: the handle and the lens switch |
 | `--columns-vitals` | `1.25fr 1.15fr 0.85fr 0.85fr 1fr 0.8fr 1.25fr 1.55fr` | The columns of the vitals bar on desktop: seven values and the last cell |
 | `--columns-vitals-waiting` | `1fr 1fr 1fr 2.4fr` | The same before there are options: three values and what is waited for |
+| `--columns-p-values-phone` | `1fr 1fr 1.5fr` | The three exceedance values of the lead tile on phone: the last cell, which carries the sigma too, is wider |
 
 Reference widths: 390, 834, 1440.
 

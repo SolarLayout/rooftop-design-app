@@ -32,6 +32,12 @@
   --text-number-hero--font-weight: 600;
   --text-number-hero--font-family: var(--font-display);
 
+  --text-unit-hero: 22px;
+  --text-unit-hero--line-height: 28px;
+  --text-unit-hero--letter-spacing: 0;
+  --text-unit-hero--font-weight: 400;
+  --text-unit-hero--font-family: var(--font-sans);
+
   --text-page: 30px;
   --text-page--line-height: 36px;
   --text-page--letter-spacing: -0.02em;
@@ -189,6 +195,7 @@
   --size-sheet-peek: 84px;
   --columns-vitals: 1.25fr 1.15fr 0.85fr 0.85fr 1fr 0.8fr 1.25fr 1.55fr;
   --columns-vitals-waiting: 1fr 1fr 1fr 2.4fr;
+  --columns-p-values-phone: 1fr 1fr 1.5fr;
 
   --radius-key: 4px;
   --radius-xs: 6px;
@@ -378,6 +385,7 @@
 
   --grid-template-columns-vitals: var(--columns-vitals);
   --grid-template-columns-vitals-waiting: var(--columns-vitals-waiting);
+  --grid-template-columns-p-values-phone: var(--columns-p-values-phone);
 
   --breakpoint-tablet: 640px;
   --breakpoint-desktop: 1101px;
@@ -494,6 +502,13 @@
   font-size: var(--text-number-hero);
   line-height: var(--text-number-hero--line-height);
   letter-spacing: var(--text-number-hero--letter-spacing);
+}
+@utility type-unit-hero {
+  font-family: var(--text-unit-hero--font-family);
+  font-weight: var(--text-unit-hero--font-weight);
+  font-size: var(--text-unit-hero);
+  line-height: var(--text-unit-hero--line-height);
+  letter-spacing: var(--text-unit-hero--letter-spacing);
 }
 @utility type-page {
   font-family: var(--text-page--font-family);

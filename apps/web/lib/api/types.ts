@@ -60,5 +60,9 @@ export type CableRow = Answers["CableRow"];
 export type NoOptions = Answers["NoOptions"];
 export type SeriesRange = Answers["SeriesRange"];
 export type Verdict = Answers["Verdict"];
+export type Energy = Answers["Energy"];
+export type PValue = Answers["PValue"];
+export type SummaryRow = Answers["SummaryRow"];
+export type WeatherSummary = Answers["WeatherSummary"];
 
 export type ExportKind = "pdf" | "dxf" | "kmz" | "csv" | "sld";

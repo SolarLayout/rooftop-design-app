@@ -216,7 +216,11 @@ NEITHER, OPTIONS_ONLY, BOTH = (False, False), (False, True), (True, True)
         ("the albedo", _set("roof.albedo", 0.6), OPTIONS_ONLY),
         ("the soiling", _set("losses.soiling_pct", 3.0), OPTIONS_ONLY),
         ("the rear gain", _set("losses.bifacial", False), OPTIONS_ONLY),
-        ("the exceedance levels", _set("losses.p_levels", (50, 90, 99)), OPTIONS_ONLY),
+        ("the exceedance levels", _set("losses.p_levels", (50, 90, 99)), NEITHER),
+        ("the degradation", _set("losses.degradation_pct", 0.7), NEITHER),
+        ("the CO2 factor", _set("losses.co2_t_per_mwh", 0.8), NEITHER),
+        ("the weather uncertainty", _set("losses.weather_sigma_pct", 5.0), NEITHER),
+        ("the model uncertainty", _set("losses.model_sigma_pct", 1.0), NEITHER),
         ("the thermal factor", _set("losses.uc", 25.0), OPTIONS_ONLY),
         ("the system voltage", _set("system_voltage", 1000.0), OPTIONS_ONLY),
         ("the lowest temperature", _set("t_min_override", 0.0), OPTIONS_ONLY),
@@ -324,6 +328,47 @@ def test_a_change_of_a_loss_keeps_the_shading_and_simulates_again(shading_runs, 
     assert_same_results(changed, run(project, None))
 
 
+# The losses that only the figures after the year look at (decision 5 of Phase 8).
+AFTER_THE_YEAR = [
+    ("losses.degradation_pct", 0.7),
+    ("losses.co2_t_per_mwh", 0.8),
+    ("losses.p_levels", (50, 90, 99)),
+    ("losses.weather_sigma_pct", 5.0),
+    ("losses.model_sigma_pct", 1.0),
+]
+
+
+def test_a_change_of_a_figure_after_the_year_simulates_nothing(shading_runs, simulations):
+    kept = memo.MemoryMemo()
+    run(small_project(), kept)
+    simulated = simulations.calls
+
+    for path, value in AFTER_THE_YEAR:
+        project = small_project()
+        _set(path, value)(project)
+
+        run(project, kept)
+
+        assert (shading_runs.calls, simulations.calls) == (1, simulated), path
+
+
+def test_the_memo_keeps_the_options_as_simulated_whatever_levels_a_later_run_asks(simulations):
+    kept = memo.MemoryMemo()
+    first = run(small_project(), kept)
+    simulated = simulations.calls
+    project = small_project()
+    project.losses.p_levels = (50, 90, 99)
+    other = run(project, kept)
+
+    again = run(small_project(), kept)
+
+    assert [list(option.result.p_values) for option in other.options] == [[50, 90, 99]] * len(other.options)
+    assert simulations.calls == simulated
+    assert_same_results(first, again)
+    kept_options = kept.option_sets.get_or_make(memo.options_key(first), list)
+    assert [option.result.p_values for option in kept_options] == [o.result.p_values for o in first.options]
+
+
 def test_adding_changing_or_removing_the_custom_option_simulates_it_alone(simulations):
     kept = memo.MemoryMemo()
     run(small_project(), kept)
@@ -390,6 +435,8 @@ def test_a_chosen_option_is_not_kept_with_the_options():
 EDITS = [
     ("nothing", lambda project: None),
     ("soiling", _set("losses.soiling_pct", 3.0)),
+    ("degradation", _set("losses.degradation_pct", 0.7)),
+    ("exceedance levels", _set("losses.p_levels", (50, 90, 99))),
     ("albedo", _set("roof.albedo", 0.6)),
     ("system voltage", _set("system_voltage", 1000.0)),
     ("custom option", _set("custom", (20, 2, 1))),

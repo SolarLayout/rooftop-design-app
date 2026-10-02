@@ -80,7 +80,7 @@ export function Table<Row>({ caption, columns, rows, keyOf, chosen, dense = fals
                     );
                   }
                   return (
-                    <td key={column.key} className={classNames(CELL, padding, "type-value-small", column.kind === "number" && "text-right")}>
+                    <td key={column.key} className={classNames(CELL, padding, column.words ? "type-small text-text" : "type-value-small", column.kind === "number" && "text-right")}>
                       {value}
                     </td>
                   );
@@ -110,12 +110,19 @@ export function Table<Row>({ caption, columns, rows, keyOf, chosen, dense = fals
                   {card.mark ? <StatusMark kind={card.mark.kind} label={card.mark.label} wordsShown={false} size={18} /> : null}
                 </div>
                 <dl className={classNames("grid gap-x-2 gap-y-2.5", cardColumns === 2 ? "grid-cols-2" : "grid-cols-3")}>
-                  {card.values.map((one) => (
-                    <div key={one.key} className="flex min-w-0 flex-col gap-0.5">
-                      <dt className={CAPTION}>{one.label}</dt>
-                      <dd className="type-value-s">{one.value}</dd>
-                    </div>
-                  ))}
+                  {card.values.map((one) =>
+                    one.words ? (
+                      <div key={one.key} className="col-span-full flex min-w-0 flex-col">
+                        <dt className="sr-only">{one.label}</dt>
+                        <dd className="type-body-touch text-text-2">{one.value}</dd>
+                      </div>
+                    ) : (
+                      <div key={one.key} className="flex min-w-0 flex-col gap-0.5">
+                        <dt className={CAPTION}>{one.label}</dt>
+                        <dd className="type-value-s">{one.value}</dd>
+                      </div>
+                    ),
+                  )}
                 </dl>
               </li>
             );

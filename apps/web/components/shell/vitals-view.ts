@@ -60,6 +60,13 @@ type Asked = {
   notes: readonly Note[];
 };
 
+/** The words of a run on its way, of a run that failed and of the first load: the vitals' and Performance's alike. */
+export const UPDATING_ENERGY = "Updating energy";
+export const openingOf = (name: string | null) => `Opening ${name ?? "the design"}`;
+export const TRY_AGAIN = "Try again";
+export const ENERGY_NOT_UPDATED = { title: "Energy was not updated", detail: "Values are of the design before" } as const;
+export const ENERGY_NOT_COMPUTED = { title: "Energy was not computed", detail: "There are no values yet" } as const;
+
 function chosenOf(design: DesignResult | null): DesignOption | null {
   if (!design || design.chosen_option === null) return null;
   return design.options.find((option) => option.key === design.chosen_option) ?? null;
@@ -114,13 +121,12 @@ export function vitalsOf({ name, design, readouts, designStatus, progress, notes
 
   const last = ((): LastCell => {
     if (isOnItsWay || isLoading) {
-      const title = design ? "Updating energy" : `Opening ${name ?? "the design"}`;
+      const title = design ? UPDATING_ENERGY : openingOf(name);
       return { kind: "run", title, step: progress?.step ?? null, share: progress?.fraction ?? 0 };
     }
     if (designStatus === "failed") {
-      return design
-        ? { kind: "failed", title: "Energy was not updated", detail: "Values are of the design before · Try again" }
-        : { kind: "failed", title: "Energy was not computed", detail: "There are no values yet · Try again" };
+      const { title, detail } = design ? ENERGY_NOT_UPDATED : ENERGY_NOT_COMPUTED;
+      return { kind: "failed", title, detail: `${detail} · ${TRY_AGAIN}` };
     }
     if (design?.no_options) {
       const { title, message } = design.no_options;

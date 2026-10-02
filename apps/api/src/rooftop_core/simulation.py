@@ -10,7 +10,7 @@ ohmic and availability.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 import numpy as np
 import pandas as pd
@@ -318,10 +318,6 @@ def simulate(pre: Precomputed, layout: Layout, module: Module, mm: ModuleModel, 
     poa = irr["nom"]
     pr = e_grid * 1000.0 / (dc_kwp * poa) if dc_kwp and poa else 0.0
     monthly = pd.Series(p_grid, index=w.index).groupby(w.index.month).sum().reindex(range(1, 13), fill_value=0)
-    sigma = float(np.hypot(losses.weather_sigma_pct, losses.model_sigma_pct)) / 100.0
-    pvals = {p: e_grid * (1 - norm.ppf(p / 100.0) * sigma) for p in losses.p_levels}
-    deg = losses.degradation_pct / 100.0
-    years = [e_grid * (1 - deg) ** (n - 1) for n in range(1, 26)]
     hourly = pd.DataFrame({
         "ghi_w_m2": w["ghi"].to_numpy(),
         "poa_eff_w_m2": G.mean(axis=1) if n_s else 0.0,
@@ -331,11 +327,28 @@ def simulate(pre: Precomputed, layout: Layout, module: Module, mm: ModuleModel, 
     }, index=w.index)
     per_string = (E * B).sum(axis=0) / np.maximum(B.sum(axis=0), 1e-9) if n_s else np.zeros(0)
     clip_pct = (1 - mwh(p_clip_all) / mwh(p_eff_all)) * 100 if mwh(p_eff_all) else 0.0
-    return SimResult(
+    of_the_year = SimResult(
         energy_mwh=e_grid, dc_kwp=dc_kwp, ac_kw=ac_kw, pr=pr,
         specific_yield=e_grid * 1000.0 / dc_kwp if dc_kwp else 0.0,
         cuf_ac_pct=e_grid * 1000.0 / (ac_kw * 8760) * 100 if ac_kw else 0.0,
         cuf_dc_pct=e_grid * 1000.0 / (dc_kwp * 8760) * 100 if dc_kwp else 0.0,
         poa_kwh_m2=poa, ghi_kwh_m2=ghi, steps=steps, monthly_mwh=[float(v) / 1e6 for v in monthly],
-        p_values=pvals, years=years, co2_t=e_grid * losses.co2_t_per_mwh, hourly=hourly,
-        per_string_shade=per_string, clipping_pct=clip_pct, sigma_pct=sigma * 100, lid_pct=lid)
+        p_values={}, years=[], co2_t=0.0, hourly=hourly,   # filled by after_the_year
+        per_string_shade=per_string, clipping_pct=clip_pct, lid_pct=lid)
+    return after_the_year(of_the_year, losses)
+
+
+def after_the_year(result: SimResult, losses: Losses) -> SimResult:
+    """The result with the figures that follow from the year's energy worked out for *losses*: the
+    uncertainty, the exceedance values, the 25 years and the CO2.
+
+    None of them touches an hour, so a result kept from a simulation with other values of these losses
+    answers for the new ones (the memo leaves them out of its key, decision 5 of Phase 8). *result* is
+    left as it is.
+    """
+    e_grid = result.energy_mwh
+    sigma = float(np.hypot(losses.weather_sigma_pct, losses.model_sigma_pct)) / 100.0
+    pvals = {p: e_grid * (1 - norm.ppf(p / 100.0) * sigma) for p in losses.p_levels}
+    deg = losses.degradation_pct / 100.0
+    years = [e_grid * (1 - deg) ** (n - 1) for n in range(1, 26)]
+    return replace(result, p_values=pvals, years=years, co2_t=e_grid * losses.co2_t_per_mwh, sigma_pct=sigma * 100)
