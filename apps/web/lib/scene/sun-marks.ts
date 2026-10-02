@@ -83,9 +83,17 @@ export function calloutSideOf(x: number, width: number): "right" | "left" {
 /** Pixels of the stage's top that the title, its line and the view controls take: 20 over them, 44 high, and room. */
 export const CLEAR_OF_THE_TOP = 140;
 
-/** Where the marker's callout stands: beside the marker, or under it while the marker is in the stage's top. */
-export function calloutRowOf(y: number): "beside" | "below" {
-  return y < CLEAR_OF_THE_TOP ? "below" : "beside";
+/**
+ * Pixels of the stage's bottom that the time and, on desktop, the vitals over the stage take: the panel's 20, the
+ * vitals' 78, 18 between, the timeline's 64, and room.
+ */
+export const CLEAR_OF_THE_BOTTOM = 200;
+
+/** Where the marker's callout stands: beside the marker; under it in the stage's top, over it in the stage's bottom. */
+export function calloutRowOf(y: number, height: number): "beside" | "below" | "above" {
+  if (y < CLEAR_OF_THE_TOP) return "below";
+  if (y > height - CLEAR_OF_THE_BOTTOM) return "above";
+  return "beside";
 }
 
 /** Whether a point of the stage, in pixels from its top left, lies on the canvas of that size. */

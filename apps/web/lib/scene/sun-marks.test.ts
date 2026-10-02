@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { SunDay } from "../stores/results-store";
-import { calloutRowOf, calloutSideOf, isOnTheCanvas, chipPlaceOf, CLEAR_OF_THE_TOP, hourMarksOf, isMarkRole, marksShownOf } from "./sun-marks";
+import { calloutRowOf, calloutSideOf, isOnTheCanvas, chipPlaceOf, CLEAR_OF_THE_BOTTOM, CLEAR_OF_THE_TOP, hourMarksOf, isMarkRole, marksShownOf } from "./sun-marks";
 import { arcOf, pointOnDomeOf } from "./sun-path";
 
 // The hour marks of the sun path (plan/phase-06-plan.md, decision 10; the board "Sun path and shadow
@@ -114,11 +114,13 @@ describe("the side of the marker's callout", () => {
 });
 
 describe("the row of the marker's callout", () => {
-  test("beside the marker, unless the marker stands in the stage's top, where the title and the view controls are", () => {
-    expect(calloutRowOf(520)).toBe("beside");
-    expect(calloutRowOf(CLEAR_OF_THE_TOP)).toBe("beside");
-    expect(calloutRowOf(CLEAR_OF_THE_TOP - 1)).toBe("below");
-    expect(calloutRowOf(40)).toBe("below");
+  test("beside the marker, under it in the stage's top, over it in the stage's bottom where the time and the vitals are", () => {
+    expect(calloutRowOf(420, 844)).toBe("beside");
+    expect(calloutRowOf(CLEAR_OF_THE_TOP, 844)).toBe("beside");
+    expect(calloutRowOf(CLEAR_OF_THE_TOP - 1, 844)).toBe("below");
+    expect(calloutRowOf(844 - CLEAR_OF_THE_BOTTOM, 844)).toBe("beside");
+    expect(calloutRowOf(844 - CLEAR_OF_THE_BOTTOM + 1, 844)).toBe("above");
+    expect(calloutRowOf(40, 844)).toBe("below");
   });
 });
 

@@ -233,10 +233,12 @@ test.describe("the shell", () => {
     await page.getByRole("switch", { name: "Calculated shadow outlines" }).click();
     await expect(page.getByTestId("on-the-roof-shadow-outlines")).toHaveText(/^The engine's shadow outlines at 16:00/, { timeout: RUN });
     if (isPhone(testInfo.project.name)) {
+      // One stop down, from full to half, where the board has it; then the focus leaves the handle.
       await sheet.focus();
-      await page.keyboard.press("Home");
-    }
-    await page.getByRole("switch", { name: "Calculated shadow outlines" }).blur();
+      await page.keyboard.press("ArrowDown");
+      await expect(sheet).not.toHaveAttribute("aria-valuetext", "Open");
+      await sheet.blur();
+    } else await page.getByRole("switch", { name: "Calculated shadow outlines" }).blur();
 
     await cameraSettled(page);
     await expectScreen(page, "studio-sun-outlines");

@@ -25,9 +25,12 @@ const CORE = "block size-1.75 rounded-full bg-sun-core tablet:size-2.5";
 
 // The callout of the marker (the board "Studio, Sun lens"): joined to the disc's edge by a line of 22 (26 on
 // desktop), in the look of the callout of what is selected; on tablet and desktop; under the marker when the
-// marker stands in the stage's top.
+// marker stands in the stage's top, over it in the stage's bottom.
 const LINE = { right: "left-2.5", left: "right-2.5" };
 const CHIP_SIDE = { right: "left-8 desktop:left-9", left: "right-8 desktop:right-9" };
+// Under the marker in the stage's top, over it in its bottom: joined by an upright line of 22.
+const ROW_LINE: Partial<Record<"beside" | "below" | "above", string>> = { below: "top-2.5 left-0 h-5.5 w-px", above: "bottom-2.5 left-0 h-5.5 w-px" };
+const ROW_CHIP: Partial<Record<"beside" | "below" | "above", string>> = { below: "top-8 left-0 -translate-x-1/2", above: "bottom-8 left-0 -translate-x-1/2" };
 
 /**
  * The sun path's marks over the stage (plan/phase-06-plan.md, decision 10): the marker at the view's
@@ -49,7 +52,7 @@ export function SunMarks({ stage }: Props) {
   const words = selection === null && draft === null ? sunCalloutOf(hour, sun, { from: project.array.window_start_h, to: project.array.window_end_h }) : null;
   const side = marker ? calloutSideOf(marker.x, width) : "right";
   // In the stage's top the callout would stand under the title and the view controls: it goes under the marker.
-  const row = marker ? calloutRowOf(marker.y) : "beside";
+  const row = marker && canvas ? calloutRowOf(marker.y, canvas.height) : "beside";
 
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-stage-overlay overflow-hidden contain-layout">
@@ -70,12 +73,12 @@ export function SunMarks({ stage }: Props) {
       ) : null}
       {marker && words && canvas && isOnTheCanvas(marker, canvas.width, canvas.height) ? (
         <div className="placed hidden size-0 tablet:block" style={measures({ x: marker.x, y: marker.y })}>
-          <span className={classNames("absolute block bg-accent", row === "below" ? "top-2.5 left-0 h-5.5 w-px" : classNames("top-0 h-px w-5.5 desktop:w-6.5", LINE[side]))} />
+          <span className={classNames("absolute block bg-accent", ROW_LINE[row] ?? classNames("top-0 h-px w-5.5 desktop:w-6.5", LINE[side]))} />
           <div
             data-testid="sun-callout"
             className={classNames(
               "absolute flex flex-col gap-0.5 rounded-row border border-note-line bg-surface-1 px-3.5 py-2.5 shadow-float",
-              row === "below" ? "top-8 left-0 -translate-x-1/2" : classNames("top-0 -translate-y-1/2", CHIP_SIDE[side]),
+              ROW_CHIP[row] ?? classNames("top-0 -translate-y-1/2", CHIP_SIDE[side]),
             )}
           >
             <span className="flex items-center gap-2 type-small font-medium whitespace-nowrap text-text">
