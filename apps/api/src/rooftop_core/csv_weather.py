@@ -96,6 +96,15 @@ def _notes(weather: wx.Weather, raw: pd.DataFrame, label: str) -> list[str]:
             f"{label} has no beam and diffuse irradiance. They were worked out from the global "
             "irradiance (Erbs model), which is less exact than measured values."
         )
+    # The reader takes 25 °C and 1 m/s for a column that is missing (weather.parse_csv). Strings sized at
+    # 25 °C can be longer than the site's cold allows, so the note says what to do about it.
+    if wx.csv_column(raw, wx.CSV_COLUMNS["temp_air"]) is None:
+        notes.append(
+            f"{label} has no air temperature. 25 °C was taken for every hour, so the strings are sized for "
+            "25 °C. Enter the site's lowest and highest ambient in the Strings lens."
+        )
+    if wx.csv_column(raw, wx.CSV_COLUMNS["wind_speed"]) is None:
+        notes.append(f"{label} has no wind speed. 1 m/s was taken for every hour.")
     if len(weather.data) not in HOURS_OF_A_YEAR:
         notes.append(
             f"{label} has {len(weather.data):,} {'hour' if len(weather.data) == 1 else 'hours'}, not the "

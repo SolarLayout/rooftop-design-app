@@ -13,6 +13,10 @@ CSV = """time,GHI,DNI,DHI,Temp,Wind
 """
 
 
+EVERY_COLUMN = "ghi,dni,dhi,temp,wind"
+A_ROW = "100,80,40,25,2"
+
+
 def _year(columns: str, row: str, hours: int = 8760) -> str:
     start = wx.pd.Timestamp("2023-01-01")
     lines = [f"{start + wx.pd.Timedelta(hours=h):%Y-%m-%d %H:%M},{row}" for h in range(hours)]
@@ -26,12 +30,12 @@ def test_a_good_file_is_the_weather_the_reader_gives():
     assert (read.weather.source, read.weather.label) == ("csv", "site.csv")
 
 
-def test_a_whole_year_with_beam_and_diffuse_has_nothing_to_note():
-    assert csv_weather.read(_year("ghi,dni,dhi", "100,80,40"), 18.52, 73.86, "site.csv").notes == []
+def test_a_whole_year_with_every_column_has_nothing_to_note():
+    assert csv_weather.read(_year(EVERY_COLUMN, A_ROW), 18.52, 73.86, "site.csv").notes == []
 
 
 def test_a_leap_year_is_a_year():
-    assert csv_weather.read(_year("ghi,dni,dhi", "100,80,40", 8784), 18.52, 73.86, "site.csv").notes == []
+    assert csv_weather.read(_year(EVERY_COLUMN, A_ROW, 8784), 18.52, 73.86, "site.csv").notes == []
 
 
 def test_fewer_hours_than_a_year_are_noted():
@@ -40,13 +44,48 @@ def test_fewer_hours_than_a_year_are_noted():
     ]
 
 
-def test_the_split_of_the_irradiance_is_noted():
+# The words of the notes, approved by the owner (plan/phase-08-plan.md, decision 14).
+ERBS_NOTE = (
+    "site.csv has no beam and diffuse irradiance. They were worked out from the global irradiance "
+    "(Erbs model), which is less exact than measured values."
+)
+TEMPERATURE_NOTE = (
+    "site.csv has no air temperature. 25 °C was taken for every hour, so the strings are sized for "
+    "25 °C. Enter the site's lowest and highest ambient in the Strings lens."
+)
+WIND_NOTE = "site.csv has no wind speed. 1 m/s was taken for every hour."
+
+
+def test_a_file_of_time_and_irradiance_alone_has_the_three_notes_in_this_order():
     notes = csv_weather.read(_year("ghi", "100"), 18.52, 73.86, "site.csv").notes
 
-    assert notes == [
-        "site.csv has no beam and diffuse irradiance. They were worked out from the global irradiance "
-        "(Erbs model), which is less exact than measured values."
-    ]
+    assert notes == [ERBS_NOTE, TEMPERATURE_NOTE, WIND_NOTE]
+
+
+def test_a_file_without_wind_alone_has_the_wind_note_alone():
+    notes = csv_weather.read(_year("ghi,dni,dhi,temp", "100,80,40,25"), 18.52, 73.86, "site.csv").notes
+
+    assert notes == [WIND_NOTE]
+
+
+def test_a_file_without_temperature_alone_has_the_temperature_note_alone():
+    notes = csv_weather.read(_year("ghi,dni,dhi,wind", "100,80,40,2"), 18.52, 73.86, "site.csv").notes
+
+    assert notes == [TEMPERATURE_NOTE]
+
+
+def test_the_notes_name_the_file():
+    notes = csv_weather.read(_year("ghi", "100"), 18.52, 73.86, "pune-ghi.csv").notes
+
+    assert [note.split(" has no ")[0] for note in notes] == ["pune-ghi.csv"] * 3
+
+
+def test_the_notes_change_no_number():
+    text = _year("ghi", "100")
+
+    wx.pd.testing.assert_frame_equal(
+        csv_weather.read(text, 18.52, 73.86, "site.csv").weather.data, wx.parse_csv(text, 18.52, 73.86).data
+    )
 
 
 def test_gaps_in_the_temperature_are_filled_as_the_reader_does():
