@@ -18,11 +18,13 @@ kept-clear areas, the sun), #44 (the Roof lens, the obstacles, the import), #45 
 | 4 Find and outline | Done (sessions 6 and 7: #35, #36, #38; the memo #37) | What exists, what was decided, what was found: `phase-04-find-and-outline.md`, "As built". How it was built: `phase-04-plan.md` |
 | 4.5 Caching of the checks | Done (session 8: #39, #40, #41) | What exists, the numbers before and after, what was found: `phase-04b-test-caching.md`, "As built". How it was built: `phase-04b-plan.md` |
 | 5 Studio, 3D roof, Roof and Array lenses | Done (session 9: #42 to #47) | What exists, what was decided, what was found: `phase-05-studio-roof-array.md`, "As built". How it was built: `phase-05-plan.md` |
-| 6 to 11 | Not started | |
+| 6 Studio, Sun lens | Planned (session 10) | How it is built: `phase-06-plan.md`. The boards of step 0 come next |
+| 7 to 11 | Not started | |
 
 ## In flight
 
-Nothing. No branch stands on `main`; `main` is green.
+Session 10 (2026-10-02): the plan of Phase 6 is written (`plan/phase-06-plan.md`) and waits for the owner's yes; then
+the boards of its step 0. No branch stands on `main`; `main` is green.
 
 ## What the web app has today
 

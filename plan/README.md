@@ -25,7 +25,7 @@ Always:
 | 4 | Find the roof on the map and outline it (flagship) | `phase-04-find-and-outline.md` | done (#35, #36, #38) |
 | 4.5 | Caching of the checks: what has not changed does not run again, here and on GitHub (not a product phase) | `phase-04b-test-caching.md` | done (#39, #40, #41); how: `phase-04b-plan.md` |
 | 5 | Studio: 3D roof, Roof and Array lenses | `phase-05-studio-roof-array.md` | done (#42 to #47); how: `phase-05-plan.md` |
-| 6 | Studio: Sun lens | `phase-06-studio-sun.md` | not started |
+| 6 | Studio: Sun lens | `phase-06-studio-sun.md` | planned; how: `phase-06-plan.md` |
 | 7 | Studio: Strings lens | `phase-07-studio-strings.md` | not started |
 | 8 | Performance | `phase-08-performance.md` | not started |
 | 9 | Handover and exports | `phase-09-handover.md` | not started |
@@ -111,6 +111,7 @@ plan/
   phase-04b-test-caching.md     Phase 4.5: caching of the checks
   phase-04b-plan.md             how Phase 4.5 is built: what was measured, the steps, the decisions, the risks
   phase-05-plan.md              how Phase 5 is built: what was found, five pull requests, the decisions, the risks
+  phase-06-plan.md              how Phase 6 is built: what was found, the boards, four pull requests, the decisions, the risks
   reference/
     functional-inventory.md     every input, output, export and message of the desktop app
     r3f-notes.md                3D fixes already paid for in solar-mms-modeller
