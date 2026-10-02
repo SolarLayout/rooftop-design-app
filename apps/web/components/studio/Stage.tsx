@@ -57,8 +57,8 @@ const VIEW_CONTROLS = "top-1 right-3 tablet:top-4 tablet:right-5 desktop:top-5";
 const TIME_PILL = "absolute top-1 left-3 z-stage-overlay tablet:top-auto tablet:bottom-7 tablet:left-5 desktop:bottom-29 desktop:left-6";
 const TIMELINE = "absolute inset-x-5 bottom-7 z-stage-overlay desktop:bottom-29";
 
-/** The legend of the shade map: 12 over the timeline on tablet and desktop, at the stage's bottom left on phone. */
-const SHADE_LEGEND = "absolute bottom-2.5 left-3 z-stage-overlay tablet:bottom-26 tablet:left-5 desktop:bottom-48";
+/** The legend of the shade map: 12 over the timeline on tablet and desktop; on phone at the stage's bottom left, over the attribution. */
+const SHADE_LEGEND = "absolute bottom-7 left-3 z-stage-overlay tablet:bottom-26 tablet:left-5 desktop:bottom-48";
 
 /** The chip of a layout that failed stands under the title, in the middle of the stage: as wide as the board draws it, or as the phone allows. */
 const LAYOUT_FAILED = "absolute inset-x-4 top-16 z-stage-overlay tablet:inset-x-0 tablet:top-20 tablet:mx-auto tablet:w-95 desktop:top-24";
