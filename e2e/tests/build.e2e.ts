@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { A_MAP, atTheRoof, drawTheRectangle, findOpened, roofMap } from "../find";
+import { A_MAP, atTheRoof, drawTheRectangle, findOpened, roofMap, scaleLabel } from "../find";
 import { expect, test } from "../fixtures";
 
 // "Build this roof" (plan/phase-04-plan.md, step 11): the roof type, the document from the API, the

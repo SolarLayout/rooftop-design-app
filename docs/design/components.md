@@ -134,6 +134,8 @@ In code: `NumberField` and `Stepper`; their numbers in `number-entry.ts`.
 - The field shows its number with the decimals of the quantity, a comma between thousands and a true minus
   sign; it reads either minus sign and the comma.
 - With the focus inside: accent border and `shadow-well-focus`. The input has no ring of its own.
+- Where the label stands before the field, a line under the label may say where the value comes from, in
+  `text-caption`, text-3: "11.9 °C from the weather", "entered" (the board "Inverter and sizing"). In code: `detail`.
 
 ## Cards
 `surface-1`, border `line`, radius `radius-card`, `shadow-card`, padding `space-card`.

@@ -125,3 +125,29 @@ test.describe("the demo", () => {
   });
 });
 
+test.describe("the sizing", () => {
+  test("a Voc coefficient entered sizes the strings: the longest is the run's new n_max, the note goes; given back, it returns", async ({ page }) => {
+    await page.goto("/studio/strings");
+    await expect(page.getByTestId("series-verdict").filter({ visible: true })).toBeVisible({ timeout: RUN });
+    const sizing = page.getByRole("region", { name: "Sizing temperatures" }).filter({ visible: true });
+    await sizing.getByRole("button", { name: /Sizing temperatures/ }).click();
+    await expect(sizing.getByTestId("voc-note")).toContainText("Check the datasheet and enter it if it differs.");
+    const entered = page.waitForRequest((request) => request.url().endsWith("/api/design") && request.postDataJSON().voc_coefficient_pct === -0.29, { timeout: RUN });
+
+    const field = sizing.getByRole("textbox", { name: "Voc coefficient" });
+    await field.fill("-0.29");
+    await field.press("Enter");
+
+    const { series_range: range } = await resultOf(await entered);
+    await expect(page.getByTestId("series-range").filter({ visible: true }).getByTestId("series-end").last()).toHaveText(`${range!.n_max} · Voc limit`, { timeout: RUN });
+    await expect(sizing).toContainText("entered");
+    await expect(sizing.getByTestId("voc-note")).toHaveCount(0);
+    await expect(page.getByRole("region", { name: "Design vitals" })).not.toContainText("Voc coefficient");
+
+    const givenBack = page.waitForRequest((request) => request.url().endsWith("/api/design") && request.postDataJSON().voc_coefficient_pct === null, { timeout: RUN });
+    await sizing.getByRole("button", { name: "Use the module's" }).click();
+    await givenBack;
+    await expect(sizing.getByTestId("voc-note")).toBeVisible({ timeout: RUN });
+  });
+});
+

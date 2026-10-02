@@ -6,13 +6,14 @@ import { chosenOptionOf, designOf, readoutsOf } from "@/lib/stores/results-store
 import { stringsViewOf, type Volts } from "@/lib/studio/strings-view";
 import { InverterCard } from "./InverterCard";
 import { SeriesRange } from "./SeriesRange";
+import { SizingTemperatures } from "./SizingTemperatures";
 import { NothingFits } from "./StringOptions";
 import { SystemVoltage, VoltageDecision, WaitingAndDone } from "./SystemVoltage";
 
 /**
  * The inspector of the Strings lens (the boards "Studio, Strings lens" on three sizes and "Studio, Strings
  * lens, no system voltage yet"): the inverter; before a system voltage the decision and what waits for it;
- * after, the voltage chosen and the series range with its verdict; where no length fits, what can change it. The voltage is the document's, the user's alone (plan/phase-07-plan.md,
+ * after, the voltage chosen and the series range with its verdict; where no length fits, what can change it; the sizing temperatures and the Voc coefficient. The voltage is the document's, the user's alone (plan/phase-07-plan.md,
  * decision 1): a choice commits it, and the run follows.
  */
 export function StringsInspector() {
@@ -42,7 +43,16 @@ export function StringsInspector() {
           </>
         )}
       </div>
-      <div className="flex flex-col gap-section">{view.kind === "before-a-voltage" ? <WaitingAndDone view={view} /> : <NothingFits view={view} />}</div>
+      <div className="flex flex-col gap-section">
+        {view.kind === "before-a-voltage" ? (
+          <WaitingAndDone view={view} />
+        ) : (
+          <>
+            <NothingFits view={view} />
+            <SizingTemperatures />
+          </>
+        )}
+      </div>
     </div>
   );
 }
