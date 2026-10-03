@@ -70,14 +70,14 @@ describe("what turbo re-runs", () => {
     expect(changed(turboHashes(worktree.path, TOOLCHAIN))).toEqual([]);
   });
 
-  test("a module of Find: the web app's tasks, and the groups that see Find (find, and the Studio, Performance, Home and the shell, which cross into it)", () => {
-    const reached = [...E2E.slice(0, 1), ...WEB, ...browser("find", "studio", "performance", "home", "shell")].sort();
+  test("a module of Find: the web app's tasks, and the groups that see Find (find, and the Studio, Performance, Home, Present and the shell, which cross into it)", () => {
+    const reached = [...E2E.slice(0, 1), ...WEB, ...browser("find", "studio", "performance", "home", "present", "shell")].sort();
     expect(after("apps/web/lib/outline/snap.ts", aComment)).toEqual(reached);
     expect(after("apps/web/components/find/RoofMap.tsx", aComment)).toEqual(reached);
   });
 
-  test("a module of the Studio's scene: the web app's tasks, and studio, performance and shell", () => {
-    expect(after("apps/web/lib/scene/pick.ts", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...browser("studio", "performance", "shell")].sort());
+  test("a module of the Studio's scene: the web app's tasks, and studio, performance, present (which reuses the stage) and shell", () => {
+    expect(after("apps/web/lib/scene/pick.ts", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...browser("studio", "performance", "present", "shell")].sort());
   });
 
   test("a component of Handover: the web app's tasks, and handover and shell alone", () => {
@@ -87,6 +87,10 @@ describe("what turbo re-runs", () => {
   test("a component of Home, whose dialog the switcher opens on every page but whose suites alone test it: the web app's tasks, and home and shell alone", () => {
     expect(after("apps/web/components/home/OpenProject.tsx", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...browser("home", "shell")].sort());
     expect(after("apps/web/lib/home/open-project.ts", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...browser("home", "shell")].sort());
+  });
+
+  test("a component of Present: the web app's tasks, and present and shell alone", () => {
+    expect(after("apps/web/components/present/Present.tsx", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...browser("present", "shell")].sort());
   });
 
   test("a component of ui, which every page uses: the web app's tasks, and every group", () => {

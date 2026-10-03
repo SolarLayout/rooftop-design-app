@@ -521,6 +521,7 @@
         "apps/web/components/handover/Handover.tsx",
         "apps/web/components/home/OpenProject.tsx",
         "apps/web/lib/home/open-project.ts",
+        "apps/web/components/present/Present.tsx",
         "apps/web/components/ui/Button.tsx",
         "apps/web/lib/device/saving.ts",
         "e2e/tests/kit-buttons.e2e.ts",
