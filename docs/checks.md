@@ -7,6 +7,24 @@ how the keying works, how the browser tests are split so that a change runs only
 mistakes the split makes easy. Read it before you add a test, a folder of the web app or an input of a task. How it was
 built, and the numbers before and after: `plan/phase-04b-test-caching.md`.
 
+## The rule (D55)
+
+The gate of a pull request is the fast check: typecheck, lint, the unit tests, the selected Python tests, and the
+browser groups the change can reach. The whole browser suite is never a gate and never runs by itself:
+
+- On GitHub the `check` workflow runs everything but the browser (`--skip=e2e`); the `e2e` workflow runs the browser
+  suite when a person starts it (Actions, e2e, Run workflow), never on a push: the minutes cost money.
+- On a developer's machine the whole suite runs only when the owner says, with nobody working. Never start it on
+  your own; never start a second run because the first lost one test to a wait.
+- A change that reaches every group (the shell, `components/ui`, the stores, the flow, the API, the generated types,
+  the tools, the lockfile) is checked with `bun check --skip=e2e` and the groups most at risk run by hand
+  (`bun run e2e:<group>`), named in the pull request with what was run and what was not.
+- A browser test that fails under load and passes alone is a watch item in `plan/STATE.md`, not a wall in front of a
+  merge: the retry keeps the run, the flaky list keeps the test in sight.
+
+Why: on 2026-10-03 four full runs of 31 minutes each were lost to one load timeout apiece, a different test each time,
+while the suite saturated the machine's twenty cores. A CI-scale job is not an inner loop.
+
 ## The steps
 
 | Step | Task | Keyed on | Runs again when |

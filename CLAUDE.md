@@ -15,7 +15,8 @@ first, then the first phase that is not done. Ask the owner domain questions one
 6. Tests never touch the network. Python tests are guarded by `apps/api/tests/conftest.py`; Playwright
    tests stop and report any request that leaves this machine.
 7. bun only. Never npm, npx, yarn or pnpm, in scripts or in docs. Use `bun x <tool>` where a runner is needed.
-8. Run `bun check` before every commit.
+8. Run `bun check` before every commit: the fast check, with the browser groups the change can reach. The whole
+   browser suite never runs by itself, on GitHub or here; it runs when the owner says (D55, `docs/checks.md`).
 9. Style only through design tokens (`apps/web/app/globals.css`). No raw colour, size or shadow value in
    a component.
 
