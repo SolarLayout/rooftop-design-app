@@ -331,6 +331,41 @@
    "w": 1440,
    "x": 3334,
    "y": 33910
+  },
+  "HomeTablet.dc.html": {
+   "h": 1194,
+   "title": "Home · tablet 834",
+   "w": 834,
+   "x": 0,
+   "y": 42578
+  },
+  "HomePhone.dc.html": {
+   "h": 980,
+   "title": "Home · phone 390",
+   "w": 390,
+   "x": 914,
+   "y": 42578
+  },
+  "HomeDesigns.dc.html": {
+   "h": 4811,
+   "title": "Home, designs on this device",
+   "w": 1440,
+   "x": 1814,
+   "y": 42578
+  },
+  "OpenProject.dc.html": {
+   "h": 3446,
+   "title": "Open a project",
+   "w": 1440,
+   "x": 3334,
+   "y": 42578
+  },
+  "Present.dc.html": {
+   "h": 1703,
+   "title": "Present",
+   "w": 1440,
+   "x": 4854,
+   "y": 42578
   }
  },
  "createdOnFiles": {

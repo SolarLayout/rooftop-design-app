@@ -39,7 +39,10 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | Screen | Mockup | Preview | Sizes drawn |
 |---|---|---|---|
 | Information architecture | `Map.dc.html` | `ia-map.png` | |
-| Home | `Home.dc.html` | `home-desktop.png` | desktop |
+| Home | `Home.dc.html`, `HomeTablet.dc.html`, `HomePhone.dc.html` | `home-desktop.png`, `home-tablet.png`, `home-phone.png` | desktop, tablet, phone |
+| Home, designs on this device | `HomeDesigns.dc.html` | `home-designs.png` | desktop, phone in parts |
+| Open a project | `OpenProject.dc.html` | `open-project.png` | desktop, phone in parts |
+| Present | `Present.dc.html` | `present.png` | desktop in parts |
 | Find and outline | `Locate.dc.html`, `LocatePhone.dc.html`, `LocateTablet.dc.html` | `find-outline-desktop.png`, `find-outline-phone.png`, `find-outline-tablet.png` | desktop, phone, tablet |
 | Find and outline, states and tools | `LocateStates.dc.html` | `find-outline-states.png` | |
 | Obstacles on the map and their heights | `ObstaclesOnMap.dc.html` | `find-obstacles.png` | desktop, phone in parts |
@@ -121,10 +124,18 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   the CSV's first rows, the KML's names, the DXF's layers, the API's words before a voltage); the report's pages are the engine's own images
   for the demo, drawn once at 150 dpi with the day 2026-10-03 into `mockups/handover_pages/`, so that the boards can be written again
   without the engine.
+- `mockups/build_phase10_home_boards.py` writes the tablet and phone boards of Home (the approved desktop board's pieces in one
+  column) and the board of the designs kept on this device (the cards with their menu, Delete asked, a card renamed, the project switcher
+  with the designs, the state of saving in the top bar, the phone), and `mockups/build_phase10_part_boards.py` the boards Open a project
+  (the dialog over Home at rest, a file read of format 2 and of format 1 with the engine's notes, a file refused, the phone's sheet) and
+  Present (the stage alone, the six stages of the tour), drawn on 2026-10-03 by session 13 (`plan/phase-10-plan.md`, step 0). Every number
+  and word is the engine's and the API's for the Pune demo, kept in `mockups/home_data.json` (the demo card's facts, three kept designs
+  with their words and times, the engine's sentences for a file of another format and for the files a format 1 project names without their
+  text), so that the boards can be written again without the engine.
 - A preview is the board rendered at its `$preview` size (the tail of each `.dc.html`) by a scratch Playwright script outside the
   repo: Chromium from `e2e/node_modules/@playwright/test`, the fonts served from `apps/web/app/fonts` and `apps/web/node_modules/geist`
   in place of the Google link in the board's `helmet`, `support.js` stubbed, everything else off the machine refused.
-- `mockups/canvas.json` is the layout of the boards on the canvas: 47 boards. The canvas at claude.ai holds 27 of them,
+- `mockups/canvas.json` is the layout of the boards on the canvas: 52 boards. The canvas at claude.ai holds 27 of them,
   published on 2026-09-30, and is behind the repo by the board ImportHeights changed on 2026-10-01 and the five new boards
   of Phase 6 with the redrawn Sun lens, the five new boards of Phase 7 with the redrawn Strings lens, and the six new boards of Phase 8 with the redrawn
-  Performance, and the four new boards of Phase 9 with the redrawn Handover: sessions on Bedrock have no Artifact tool to publish them.
+  Performance, the four new boards of Phase 9 with the redrawn Handover, and the five new boards of Phase 10: sessions on Bedrock have no Artifact tool to publish them.
