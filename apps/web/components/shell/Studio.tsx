@@ -10,7 +10,7 @@ import { RoofInspector } from "@/components/studio/RoofInspector";
 import { SunInspector } from "@/components/studio/SunInspector";
 import { Stage } from "@/components/studio/Stage";
 import { StringsInspector } from "@/components/studio/StringsInspector";
-import { useHistoryKeys } from "@/components/studio/use-history-keys";
+import { useHistoryKeys } from "@/components/shell/use-history-keys";
 import { useSunKeys } from "@/components/studio/use-sun-keys";
 import { useSize } from "@/components/studio/use-size";
 import { useNotesOfTheShell } from "./Shell";

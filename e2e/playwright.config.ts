@@ -22,7 +22,10 @@ export default defineConfig({
   expect: { timeout: 15_000, toHaveScreenshot: { maxDiffPixels: 50 } },
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
-  retries: 0,
+  // A test that fails is run once more. Under the load of a full check a wait has run out now and then on a test that
+  // passes alone; without a retry one such test discarded a run of half an hour. A test that needed the retry is listed
+  // as flaky at the end of the run, and is looked at (docs/checks.md): the retry keeps the run, not the flake.
+  retries: 1,
   reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : [["list"]],
   // Starts the test stack (web 4710, api 4711, or the next free pair) when it is not running, and stops
   // it afterwards only in that case. The developer's stack on 4700 is never used.

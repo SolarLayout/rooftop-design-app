@@ -15,7 +15,8 @@ first, then the first phase that is not done. Ask the owner domain questions one
 6. Tests never touch the network. Python tests are guarded by `apps/api/tests/conftest.py`; Playwright
    tests stop and report any request that leaves this machine.
 7. bun only. Never npm, npx, yarn or pnpm, in scripts or in docs. Use `bun x <tool>` where a runner is needed.
-8. Run `bun check` before every commit.
+8. Run `bun check` before every commit: the fast check, with the browser groups the change can reach. The whole
+   browser suite never runs by itself, on GitHub or here; it runs when the owner says (D55, `docs/checks.md`).
 9. Style only through design tokens (`apps/web/app/globals.css`). No raw colour, size or shadow value in
    a component.
 
@@ -86,9 +87,11 @@ This is production software, not a prototype. The owner's words: "this is not th
   suite whole. The numbers of the engine (`tests/engine/test_demo_numbers.py`) run in every pytest run as a
   sentinel (`tests/always_run.py`). A comment alone changes nothing: testmon reads the syntax tree. In `apps/api`,
   `bun run test -- tests/api` runs a part with the selection, `bun run test:all` the whole suite without it.
-- The browser step is the root task `//#e2e`, keyed on everything the browser tests can see: `apps/web`,
-  `packages/api-types`, the API's sources and configuration, `e2e`, the tools that start the stack, the
-  lockfile, `.nvmrc`, and `apps/web/.env.local` by turbo's hash of it (no code of ours reads the file).
+- The browser step is six turbo tasks `//#e2e:<group>` (kit, find, studio, performance, handover, shell), run one
+  after the other, each keyed on the base every suite can see and on its own suites, folders and baselines
+  (`tools/check/e2e-groups.ts`). A new suite or a new folder of the web app is placed by name, an import that crosses
+  into another group is refused, a part two workspaces share lives in the shell. Read `docs/checks.md` before adding a
+  test, a folder or an input: it says what runs again, the rules, and how to run one group (`bun run e2e:<group>`).
 - On GitHub the `check` workflow restores `.turbo/cache` from the last run of the branch or of `main` and saves
   it after every run; a push to `main` runs `--fresh`. pytest runs whole and untraced there
   (`ROOFTOP_CHECK_SELECT=0`).

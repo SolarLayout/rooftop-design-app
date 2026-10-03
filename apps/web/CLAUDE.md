@@ -34,5 +34,8 @@ screens, and hold the exact values.
 5. System voltage is never preselected.
 6. Test first. Logic is tested with `bun test`; screens with Playwright on the three sizes, including a
    screenshot compared with the preview.
+   The browser tests are in groups keyed on what they can see (`docs/checks.md`): a new suite is placed by
+   its name, a part two workspaces share lives in `components/shell`, and `bun run e2e:<group>` runs one group
+   before the check.
 7. Attach a screenshot of each changed screen, at each size, to the pull request.
 8. The 3D canvas is loaded with `next/dynamic` and `ssr: false`. Read `plan/reference/r3f-notes.md` before 3D work.

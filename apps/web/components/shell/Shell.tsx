@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { placeInShort } from "@/lib/format/place";
-import { withName } from "@/lib/handover/name-field";
+import { withName } from "@/lib/flow/name-field";
 import { workspaceOf } from "@/lib/routes";
 import { latitudeOf, longitudeOf, nameOf, projectOf } from "@/lib/stores/project-store";
 import { lensOf } from "@/lib/stores/view-store";

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { committedText } from "../../components/ui/text-entry";
 import { NAME_RULES, withName } from "./name-field";
-import { DOCUMENT } from "./test-fixtures";
+import { DOCUMENT } from "../handover/test-fixtures";
 
 // The name of the design as an edit (plan/phase-09-plan.md, decision 13): trimmed, 200 characters at most, never empty.
 describe("the rules of the name", () => {

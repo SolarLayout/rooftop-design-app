@@ -1,19 +1,7 @@
 import { spawnSync } from "node:child_process";
-import { readTestStack, ROOT, WEB_URL_VARIABLE, type TestStack } from "./stack";
+import { isUp, readTestStack, ROOT, WEB_URL_VARIABLE, type TestStack } from "./stack";
 
 const A_RUN = 120_000;
-
-async function answers(url: string): Promise<boolean> {
-  try {
-    const response = await fetch(url, { signal: AbortSignal.timeout(2_000) });
-    return response.status === 200;
-  } catch {
-    return false;
-  }
-}
-
-const isUp = async (stack: TestStack | null) =>
-  stack !== null && (await answers(stack.web)) && (await answers(stack.apiHealth));
 
 /**
  * Runs the design of the demo once, so that the API has kept its results before the tests begin. The

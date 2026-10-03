@@ -49,17 +49,24 @@ function cachedAt(hits: TaskResult[]): string {
   return `cached at ${commits.join(", ")}`;
 }
 
-/** The state of a step from the tasks it ran through turbo, and the words of the summary line. */
-export function describeTasks(tasks: TaskResult[]): { state: StepState; detail: string } {
+/**
+ * The state of a step from the tasks it ran through turbo, and the words of the summary line. With
+ * `names` (a task id to the name it reads as, the browser step's groups), what ran and what was unchanged
+ * are named; without, what ran is named by task id and what was unchanged is counted.
+ */
+export function describeTasks(tasks: TaskResult[], names?: (taskId: string) => string): { state: StepState; detail: string } {
   const hits = tasks.filter((task) => task.cached);
   const ran = tasks.filter((task) => !task.cached);
   if (ran.length === 0) {
     const hashes = hits.map((hit) => hit.hash.slice(0, 8)).join(", ");
     return { state: "skipped", detail: `inputs unchanged, ${cachedAt(hits)} (turbo hash ${hashes})` };
   }
-  if (hits.length === 0) return { state: "ok", detail: `${ran.length} task${ran.length === 1 ? "" : "s"} ran` };
+  const named = (list: TaskResult[]) => list.map((task) => (names ?? ((id: string) => id))(task.taskId)).join(", ");
+  if (hits.length === 0) {
+    return { state: "ok", detail: names ? `ran ${named(ran)}` : `${ran.length} task${ran.length === 1 ? "" : "s"} ran` };
+  }
   return {
     state: "partly",
-    detail: `ran ${ran.map((task) => task.taskId).join(", ")}; ${hits.length} unchanged, ${cachedAt(hits)}`,
+    detail: `ran ${named(ran)}; ${names ? `unchanged ${named(hits)}` : `${hits.length} unchanged`}, ${cachedAt(hits)}`,
   };
 }

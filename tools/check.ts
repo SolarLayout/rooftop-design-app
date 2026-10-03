@@ -9,16 +9,21 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
+import { ensureTestStack } from "./check/e2e-stack.ts";
+import { groupNameOf, GROUPS, scriptOf } from "./check/e2e-groups.ts";
 import { parseFlags } from "./check/flags.ts";
 import { FRESH_VARIABLE, REPORT_PREFIX } from "./check/pytest-selected-report.ts";
 import { describeTasks, readRunSummary, type StepState } from "./check/run-summary.ts";
 import { readToolchain, TOOLCHAIN_VARIABLE, toolchainString } from "./check/toolchain.ts";
+import { turboDryRun } from "./check/turbo-dry-run.ts";
 import { envWithNode, nodeMissingMessage, resolveNode } from "./lib/node.ts";
 import { API_DIR, packageFile, REPO_ROOT } from "./lib/paths.ts";
 
 type State = StepState | "left out" | "FAILED" | "not run";
 type Result = { state: State; detail: string };
-type Step = { id: string; name: string; run: () => Result };
+type Step = { id: string; name: string; run: () => Result | Promise<Result> };
+/** `concurrency`: how many tasks at once (turbo's default otherwise); `names`: what a task id reads as in the summary. */
+type TurboOptions = { concurrency?: number; names?: (taskId: string) => string };
 
 const TURBO_RUNS = join(REPO_ROOT, ".turbo", "runs");
 
@@ -39,7 +44,7 @@ if (!flags.ok) {
 if (flags.fresh) env[FRESH_VARIABLE] = "1";
 
 /** Runs turbo tasks and reads what it did from the run summary it writes. */
-function turbo(tasks: string[], filters: string[]): Result {
+function turbo(tasks: string[], filters: string[], options: TurboOptions = {}): Result {
   const bin = packageFile("turbo", "bin/turbo", REPO_ROOT);
   if (!bin) return { state: "FAILED", detail: "turbo is not installed. Run `bun install` first." };
   const before = new Set(existsSync(TURBO_RUNS) ? readdirSync(TURBO_RUNS) : []);
@@ -50,6 +55,7 @@ function turbo(tasks: string[], filters: string[]): Result {
     "--output-logs=new-only",
     "--summarize",
     "--no-daemon",
+    ...(options.concurrency ? [`--concurrency=${options.concurrency}`] : []),
     ...(flags.ok && flags.fresh ? ["--force"] : []),
   ];
   const result = spawnSync(bin, args, { cwd: REPO_ROOT, env, stdio: "inherit" });
@@ -69,7 +75,38 @@ function turbo(tasks: string[], filters: string[]): Result {
     const failed = results.filter((task) => task.exitCode !== null && task.exitCode !== 0).map((task) => task.taskId);
     return { state: "FAILED", detail: failed.length > 0 ? `failed: ${failed.join(", ")}` : `exit code ${result.status ?? `signal ${result.signal}`}` };
   }
-  return describeTasks(results);
+  return describeTasks(results, options.names);
+}
+
+/**
+ * The browser tests, one turbo task per group (tools/check/e2e-groups.ts), one after the other: six
+ * Playwright runs at once would overload the machine. The test stack is started once, before the groups
+ * that run, when it is not running; nothing is started when every group is cached.
+ */
+async function browserTests(): Promise<Result> {
+  const scripts = GROUPS.map(scriptOf);
+  let toRun: string[];
+  if (flags.ok && flags.fresh) {
+    toRun = GROUPS.map((group) => group.id);
+  } else {
+    try {
+      toRun = turboDryRun(REPO_ROOT, scripts, toolchain, ["//"])
+        .filter((task) => !task.cached)
+        .map((task) => groupNameOf(task.taskId));
+    } catch (error) {
+      return { state: "FAILED", detail: (error as Error).message };
+    }
+  }
+  if (toRun.length === 0) return turbo(scripts, ["//"], { names: groupNameOf });
+  console.log(`groups to run: ${toRun.join(", ")}`);
+  const stack = await ensureTestStack();
+  if (!stack.ok) return { state: "FAILED", detail: stack.message };
+  console.log(stack.note);
+  try {
+    return turbo(scripts, ["//"], { concurrency: 1, names: groupNameOf });
+  } finally {
+    stack.stop();
+  }
 }
 
 /** When pytest ran, its own account of what ran (tools/check/pytest-selected.ts) is the detail. */
@@ -91,7 +128,7 @@ const STEPS: Step[] = [
   { id: "imports", name: "import-linter (api)", run: () => turbo(["imports"], ["@rooftop/api"]) },
   { id: "pytest", name: "pytest (api)", run: () => withPytestReport(turbo(["test"], ["@rooftop/api"])) },
   { id: "unit", name: "bun test (web, tools)", run: () => turbo(["test", "test:tools"], ["@rooftop/web", "//"]) },
-  { id: "e2e", name: "Playwright (phone, tablet, desktop)", run: () => turbo(["e2e"], ["//"]) },
+  { id: "e2e", name: "Playwright (phone, tablet, desktop)", run: browserTests },
   { id: "proofs", name: "proofs of the caching (in a worktree)", run: () => turbo(["proofs"], ["//"]) },
 ];
 
@@ -112,7 +149,7 @@ for (const step of STEPS) {
   }
   console.log(`\n=== ${step.name} ===`);
   const began = performance.now();
-  const result = step.run();
+  const result = await step.run();
   const outcome = { step, result, seconds: (performance.now() - began) / 1000 };
   outcomes.push(outcome);
   if (result.state === "FAILED") failed = outcome;

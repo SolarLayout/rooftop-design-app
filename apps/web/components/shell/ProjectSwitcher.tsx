@@ -12,7 +12,7 @@ import { FACT, LIST } from "@/components/ui/list-look";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
 import { useFloating } from "@/components/ui/use-floating";
-import { NAME_RULES } from "@/lib/handover/name-field";
+import { NAME_RULES } from "@/lib/flow/name-field";
 import { SaveState, type Saving } from "./SaveState";
 
 type Design = {

@@ -20,3 +20,12 @@ export function packageFile(packageName: string, file: string, from: string): st
     if (dirname(directory) === directory) return null;
   }
 }
+
+/** A tool in node_modules/.bin of the directory or of a parent, as Node finds packages. Null when not installed. */
+export function binFile(tool: string, from: string): string | null {
+  for (let directory = resolve(from); ; directory = dirname(directory)) {
+    const candidate = join(directory, "node_modules", ".bin", tool);
+    if (existsSync(candidate)) return candidate;
+    if (dirname(directory) === directory) return null;
+  }
+}

@@ -152,3 +152,60 @@ decisions 1, 4 and 11 of that plan; the rest were the session's.
   other tools running at the same time.
 - **The phase file's "what the check runs today"** said the check benefited from turbo for typecheck and lint;
   it did not: the check never called turbo. typecheck was 3 s here because tsc's own incremental file was warm.
+
+### The browser step in groups (session 13, 2026-10-03)
+
+The rules a developer follows, how to run one group and how to read the summary: `docs/checks.md`.
+
+The one task `//#e2e` was keyed on all of `apps/web`, `e2e` and the API: a feature pull request that changed one
+folder paid the whole browser step, 1,680 tests and about 22 minutes. The owner asked for the step to be split
+into tasks keyed on what each one's suites can see. Built as D54: six root tasks `//#e2e:<group>`
+(`tools/check/e2e-groups.ts` is the data; `tools/check/e2e-groups.test.ts` holds `turbo.json` and the root
+scripts equal to it), the runner `tools/e2e-group.ts <group>` behind the scripts `e2e:<group>`, the check running
+the six in one turbo invocation with `--concurrency=1` after a dry run that says which groups miss the cache, the
+test stack started once when one does and stopped after (`tools/check/e2e-stack.ts`, on `e2e/stack.ts`), the
+summary by group ("ran handover, shell; unchanged kit, find, studio, performance, cached at ..."). The proofs say
+which groups a change reaches.
+
+Every group sees the base: `apps/web/app`, `components/shell` and `ui`, the files at the roots of `components` and
+`lib` (named, since turbo takes an exclusion out of every input of a task), `lib/api`, `stores`, `flow`, `format`,
+`public`, the web's configuration, `packages/api-types`, the API's sources and configuration, the helpers and
+fixtures of `e2e`, the tools that start the stack, the lockfile. A suite belongs to a group by its file name; a
+name no group claims fails `bun test tools`. Folders are the key but imports cross folders: a test
+(`tools/check/e2e-group-imports.test.ts`) walks the value imports of each group's own folders up to the base and
+refuses a file reached that is not an input of the group. It found Handover drawing Performance's `NoOptionsCard`
+and `FailedRow` and the Studio's `useHistoryKeys`; the shared parts moved to `components/shell`. The shell's
+switcher used the name's rules from `lib/handover`; they moved to `lib/flow/name-field.ts`, where the document's
+edits live. Tests counted by `playwright --list` over the three sizes.
+
+**Open item (Phase 11): the shared state reaches into the workspaces' `lib` folders.** The base is not walked, and
+these eight imports of base files stand:
+
+| File of the base | Imports |
+|---|---|
+| `components/shell/stores.tsx` | `lib/handover/downloads-store.ts`, `lib/scene/sun-day.ts`, `lib/studio/play.ts` |
+| `lib/flow/design-flow.ts` | `lib/performance/weather-source.ts`, `lib/studio/sun-time.ts` |
+| `lib/stores/results-store.ts` | `lib/scene/string-colours.ts` (and through it `lib/scene-palette.ts`) |
+| `lib/stores/view-store.ts` | `lib/scene/drag.ts` (and through it `lib/scene/adapter.ts`, `obstacles.ts`, `lib/studio/obstacle-fields.ts`) |
+
+What it means today: a change to one of the files imported runs the groups that own its folder and the shell
+group, whose screens suite pictures every page; it does not run the interaction suites of the other workspaces,
+although every page runs the shared stores. A change to the base file itself runs every group. The fix, for Phase
+11: the shared state's helpers moved beside the stores (`lib/stores`, `lib/flow`), so that the base imports nothing
+of the groups' folders, or a rule-test in `tools/check` that says so and refuses the next such import. Not written
+yet: it would fail on these eight today.
+
+| Group | Suites | Tests | Own inputs, beside the base |
+|---|---|---|---|
+| kit | 16: `kit.e2e.ts`, `kit-*.e2e.ts` | 885 | `components/kit`, the baselines `kit*.png` |
+| find | 4: find, outline, by-hand, obstacles | 126 | `components/find`, `lib/map`, `lib/outline` |
+| studio | 20: array-lens, build, history, lens-switches, manipulation, modules, roof-lens, selection, shade-map, shadow-outlines, shell-vitals, stage, `strings-*`, `sun-*`, time | 372 | `components/studio`, `components/scene`, `lib/scene`, `lib/studio`, `lib/roof-card.ts`, `lib/scene-palette.ts`, and find's (Build and the Roof lens's Edit cross into Find) |
+| performance | 4: `performance*.e2e.ts` | 111 | `components/performance`, `lib/performance`, and studio's and find's (a voltage is chosen in the Strings lens; a roof is built on the map) |
+| handover | 1: `handover*.e2e.ts` | 39 | `components/handover`, `lib/handover` |
+| shell | 7: api-client, fonts, routes, screens, shell, smoke, tokens | 341 | every other group's, and every baseline but the kit's: the screens suite pictures every page, and this group runs whenever anything of the web changed |
+
+What a change reaches, proved: a module of Find runs find, studio, performance and shell; one of the Studio's
+scene studio, performance and shell; a component of Handover handover and shell alone; one of `components/ui`
+every group; the tools, the API and `packages/api-types` every group; a suite its own group alone; a baseline the
+group of the suite that takes it; a document nothing. `apps/web/CLAUDE.md` reaches the web package's own tasks,
+which key on every file of the package, and no browser group.
