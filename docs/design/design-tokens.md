@@ -369,6 +369,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--opacity-hint` | `0.35` | A hint on the map: the footprints that are known, while Detect building is the tool |
 | `--opacity-band` | `0.55` | The band of the series lengths that fit, in `color-ok` (components.md, "Series range bar") |
 | `--opacity-wash` | `0.14` | The wash under the line of a chart: the series colour at this opacity |
+| `--opacity-gone` | `0` | What has faded away and stays in the page: the hint of Present after the first loop |
 | `--brightness-lift` | `1.14` | A bar of a chart under the pointer or with the keyboard focus: lifted |
 
 ## Focus
@@ -458,6 +459,8 @@ layer of their own.
 | `--ring-focus`, `--ring-focus-offset` | `focus-ring` | on every control |
 | `--opacity-disabled`, `--opacity-updating` | `opacity-disabled`, `opacity-updating` | `disabled:opacity-disabled` |
 | `--opacity-wash`, `--brightness-lift` | `opacity-wash`, `lifted` | on the wash under the line of a chart; on the bar that is under the pointer |
+| `--opacity-gone` | `opacity-gone` | on the hint of Present once the first loop is over, with `duration-panel` |
+| `--color-ground` | `stage-fade` | the fade of the stage into the ground, 180 high, under the words of Present |
 | `--duration-spin`, `--duration-breathe` | `turning`, `breathing` | on a ring that turns, on a skeleton |
 | `--duration-pulse-saved`, `--halo-saved`, `--halo-saved-out` | `pulsing` | on the saved dot |
 | `--duration-pulse-corner`, `--halo-corner`, `--halo-corner-out` | `pulsing-corner` | on the corner being edited |
