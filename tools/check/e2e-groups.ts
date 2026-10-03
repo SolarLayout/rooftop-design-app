@@ -129,6 +129,15 @@ export function inputsOf(group: Group): string[] {
   return [...BASE_INPUTS, ...group.suites.map((pattern) => `e2e/tests/${pattern}`), ...group.own];
 }
 
+/**
+ * The group's suites among the files of e2e/tests, as arguments for `playwright test` run in e2e. Every
+ * suite is placed first (groupOf), so that a stray file is refused rather than left out.
+ */
+export function suitesOf(group: Group, files: string[]): string[] {
+  const suites = files.filter((file) => file.endsWith(".e2e.ts")).sort();
+  return suites.filter((file) => groupOf(file) === group.id).map((file) => `tests/${file}`);
+}
+
 export const taskOf = (group: Group): string => `//#e2e:${group.id}`;
 export const scriptOf = (group: Group): string => `e2e:${group.id}`;
 

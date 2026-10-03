@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { E2E_DIR, REPO_ROOT } from "../lib/paths.ts";
-import { BASE_INPUTS, GROUPS, groupOf, inputsOf, scriptOf, taskOf, type Group } from "./e2e-groups.ts";
+import { BASE_INPUTS, GROUPS, groupById, groupOf, inputsOf, scriptOf, suitesOf, taskOf, type Group } from "./e2e-groups.ts";
 
 const SUITES = readdirSync(join(E2E_DIR, "tests")).filter((name) => name.endsWith(".e2e.ts"));
 
@@ -58,6 +58,22 @@ describe("the groups of the browser tests", () => {
   test("the task and the script of a group carry its name", () => {
     expect(taskOf(GROUPS[0]!)).toBe("//#e2e:kit");
     expect(scriptOf(GROUPS[0]!)).toBe("e2e:kit");
+  });
+
+  test("groupById gives the group, or null for a name that is none", () => {
+    expect(groupById("kit")?.id).toBe("kit");
+    expect(groupById("weather")).toBeNull();
+  });
+
+  test("suitesOf lists the group's files of e2e/tests as Playwright takes them, sorted by name", () => {
+    const files = ["kit.e2e.ts", "array-lens.e2e.ts", "kit-dialog.e2e.ts", "shell.e2e.ts", "README.md"];
+    expect(suitesOf(groupById("kit")!, files)).toEqual(["tests/kit-dialog.e2e.ts", "tests/kit.e2e.ts"]);
+    expect(suitesOf(groupById("shell")!, files)).toEqual(["tests/shell.e2e.ts"]);
+    expect(suitesOf(groupById("handover")!, files)).toEqual([]);
+  });
+
+  test("suitesOf refuses a suite no group claims, so that a stray file never runs unnoticed", () => {
+    expect(() => suitesOf(groupById("kit")!, ["stray.e2e.ts"])).toThrow(/stray\.e2e\.ts belongs to no group/);
   });
 
   test("a group's inputs are the base, its own suites, then its own inputs", () => {

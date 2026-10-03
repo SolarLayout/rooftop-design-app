@@ -3,17 +3,8 @@
 // Needed because `node` may not be on PATH, and bun would then run the tool on its own runtime.
 
 import { spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
-import { dirname, join } from "node:path";
 import { envWithNode, nodeMissingMessage, resolveNode } from "./lib/node.ts";
-
-function findBin(tool: string, from: string): string | null {
-  for (let directory = from; ; directory = dirname(directory)) {
-    const candidate = join(directory, "node_modules", ".bin", tool);
-    if (existsSync(candidate)) return candidate;
-    if (dirname(directory) === directory) return null;
-  }
-}
+import { binFile } from "./lib/paths.ts";
 
 const [tool, ...args] = process.argv.slice(2);
 if (!tool) {
@@ -27,7 +18,7 @@ if (!node) {
   process.exit(1);
 }
 
-const bin = findBin(tool, process.cwd());
+const bin = binFile(tool, process.cwd());
 if (!bin) {
   console.error(`${tool} was not found in node_modules/.bin. Run \`bun install\` first.`);
   process.exit(1);
