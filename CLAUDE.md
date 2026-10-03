@@ -87,7 +87,7 @@ This is production software, not a prototype. The owner's words: "this is not th
   suite whole. The numbers of the engine (`tests/engine/test_demo_numbers.py`) run in every pytest run as a
   sentinel (`tests/always_run.py`). A comment alone changes nothing: testmon reads the syntax tree. In `apps/api`,
   `bun run test -- tests/api` runs a part with the selection, `bun run test:all` the whole suite without it.
-- The browser step is six turbo tasks `//#e2e:<group>` (kit, find, studio, performance, handover, shell), run one
+- The browser step is seven turbo tasks `//#e2e:<group>` (kit, find, studio, performance, handover, home, shell), run one
   after the other, each keyed on the base every suite can see and on its own suites, folders and baselines
   (`tools/check/e2e-groups.ts`). A new suite or a new folder of the web app is placed by name, an import that crosses
   into another group is refused, a part two workspaces share lives in the shell. Read `docs/checks.md` before adding a

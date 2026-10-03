@@ -480,6 +480,29 @@ Review; the open card of an obstacle to review has the hint "Enter the real heig
 until you do" and a quiet Next in its foot; the rows still to review carry a note mark after their height. A typed
 height takes the obstacle off the list; the note goes when it is empty. On the roof what is not yet real is dashed.
 
+## Open a project (the project switcher and Home)
+The board "Open a project" (plan phase 10, step 9, decision 4). A dialog of 440 ("Open a project"), one sentence ("A
+project saved by this app or the desktop app. It opens in the Studio and runs again here."), the file drop at rest ("Drop
+the project file here", "An .rtd file saved by this app or the desktop app", "Choose a file"), Cancel quiet and Open
+primary, Open shown as it cannot be pressed until a file is there. A file of another ending is refused in the field in the
+dialog's own words, "Choose a project file (.rtd).", without a request. A file chosen is held (`surface-2`, the file icon
+in accent, the name in mono, "Project file · 48 KB · read when it is opened", "Choose another"); Open reads it in the
+browser as text and sends it to the API, where the engine's one reader reads it: the web parses no `.rtd` itself (D7). On
+200 the project is kept on this device as a new design under a new id and opened in the Studio at its last lens; it runs
+again there, as the results are never in the file (D5). The engine's notes on the files a format 1 file names without
+their text come as toasts, one per note, each in the engine's words and closed by hand ("The module file Test.PAN (PAN) is
+not included in this project. Choose it again."): the board draws them under the field; the dialog has closed by then,
+and a toast with a note stays until it is closed (D32). A file the API refuses stays chosen, and the refusal stands under
+the field as a note (`note-surface`, border `note-line`, the note of 20, "This file was not loaded", the API's words:
+"The file is not a project file (.rtd): it is not JSON.", "This project file is format 3. This version reads formats 1
+and 2. Open it with a newer version of the app."); Open waits until another file is chosen, and the design that is open
+stays as it is. An API that was not reached is said the same way with Try again, which sends the same file again. On
+phone the dialog is the bottom sheet of "Dialog".
+
+In code: `OpenProject` (`components/home`), opened from the project switcher's row "Open a project" on every workspace
+and from Home; `lib/home/open-project.ts` holds the pure parts (the file by its ending, the words of the size, the
+request from a `File`, the refusal from an error); the design is kept by `keepAndOpen` of the saving store.
+
 ## Deliverable row (Handover)
 Row 64 high: format badge 44 by 28 (accent for the selected row), title, one line of facts, then a download
 icon (file) or a chevron (opens a view).
@@ -792,8 +815,8 @@ made by `rowsOnTheDeviceOf` (`components/shell/switcher-view.ts`) of the designs
   pressed closes the switcher and opens that design from the device, which runs again as the demo does (Phase
   10, step 5); the open one says so to a screen reader (`aria-current`). A name or a fact too long for the row
   is cut with an ellipsis.
-- An action that comes with a later phase is shown and cannot be used (`aria-disabled`, opacity
-  `opacity-disabled`). It takes the focus, so that it is found. Today that is Open a project (Phase 10).
+- A row whose doing is not given (the kit's) is shown and cannot be used (`aria-disabled`, opacity
+  `opacity-disabled`). It takes the focus, so that it is found. Open a project opens its dialog (Phase 10, step 9).
   Import a drawing opens its dialog (Phase 5, step 13). Save a copy downloads the project file, the `.rtd` the API
   writes, named after the design (Phase 9, step 8); it needs no chosen option and no run.
 - "This design" carries a quiet Rename (a pencil of 18) that turns the name into the text field; a commit edits the
