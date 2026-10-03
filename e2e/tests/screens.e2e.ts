@@ -31,6 +31,8 @@ async function theDemoKeptBesideBlockB(page: Page): Promise<void> {
   await page.goto("/studio/roof");
   const roofType = page.getByRole("radiogroup", { name: "Roof type" }).filter({ visible: true });
   await expect(roofType.getByRole("radio", { name: "Tilted rows" })).toHaveAttribute("aria-checked", "true", { timeout: RUN_OF_HOME });
+  // The untouched demo's run lands first, so that the demo's card says its numbers on every size alike (decision 5).
+  await expect(page.getByRole("region", { name: "Design vitals" }).getByText("MWh")).toBeVisible({ timeout: RUN_OF_HOME });
   const ran = page.waitForResponse((response) => response.url().endsWith("/api/design") && response.ok() && (response.request().postDataJSON() as { roof: { roof_type: string } }).roof.roof_type === "flat_ew", { timeout: RUN_OF_HOME });
   await roofType.getByRole("radio", { name: "East-west" }).click();
   await ran;
