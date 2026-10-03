@@ -58,12 +58,13 @@ groups are data, `tools/check/e2e-groups.ts`; `turbo.json` and the root scripts 
 | studio | `array-lens`, `build`, `history`, `lens-switches`, `manipulation`, `modules`, `roof-lens`, `selection`, `shade-map`, `shadow-outlines`, `shell-vitals`, `stage`, `strings-*`, `sun-*`, `time` | `components/studio`, `components/scene`, `lib/scene`, `lib/studio`, `lib/roof-card.ts`, `lib/scene-palette.ts`, and find's (Build and the Roof lens's Edit cross into Find) |
 | performance | `performance*` | `components/performance`, `lib/performance`, and studio's and find's (a voltage is chosen in the Strings lens; a roof is built on the map) |
 | handover | `handover*` | `components/handover`, `lib/handover` |
-| shell | `api-client`, `fonts`, `routes`, `screens`, `shell`, `smoke`, `tokens` | every other group's, and every baseline but the kit's |
+| shell | `api-client`, `device*`, `fonts`, `routes`, `screens`, `shell`, `smoke`, `tokens` | every other group's, and every baseline but the kit's |
 
 **The base**, an input of every group: `apps/web/app`, `components/shell`, `components/ui`, the files at the roots of
 `components` and `lib` (named one by one, since turbo takes an exclusion out of every input of a task), `lib/api`,
-`lib/stores`, `lib/flow`, `lib/format`, `public`, the web's configuration files, `packages/api-types`, the API's sources
-and configuration, the helpers and fixtures of `e2e`, the tools that start the stack, the lockfile, `.nvmrc`.
+`lib/stores`, `lib/flow`, `lib/format`, `lib/device` (the designs kept on the device: the shell saves and opens them on
+every page), `public`, the web's configuration files, `packages/api-types`, the API's sources and configuration, the
+helpers and fixtures of `e2e`, the tools that start the stack, the lockfile, `.nvmrc`.
 
 **What a change runs** (proved by `tools/check/proofs/turbo.proof.ts`):
 
@@ -76,7 +77,7 @@ and configuration, the helpers and fixtures of `e2e`, the tools that start the s
 | `components/kit` or a `kit*.png` baseline | kit |
 | a suite of `e2e/tests` | its group alone |
 | any other baseline | shell |
-| the base: the shell, `components/ui`, the stores, the flow, the API client, the API, the generated types, the tools, the lockfile | every group |
+| the base: the shell, `components/ui`, the stores, the flow, `lib/device`, the API client, the API, the generated types, the tools, the lockfile | every group |
 | a document | nothing |
 
 The shell group pictures every page (`screens.e2e.ts`) and runs whenever anything of the web changed: it is the floor

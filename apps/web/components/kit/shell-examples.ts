@@ -2,6 +2,7 @@
 // API, by `notesOf` and `vitalsOf`. The answers are those of the demo; what the shell does not read
 // is left out.
 import { notesOf, type Note } from "@/components/shell/notes-view";
+import type { DeviceRow } from "@/components/shell/switcher-view";
 import { vitalsOf, type VitalsView } from "@/components/shell/vitals-view";
 import type { DesignOption, DesignResult } from "@/lib/api";
 
@@ -57,7 +58,7 @@ const BELOW_TARGET = design({ chosen: OPTION_D, moduleNotes: [] });
 const WITHOUT_A_VOLTAGE = design({ chosen: null, moduleNotes: [] });
 
 const UNREACHABLE = { code: "api_unreachable", message: "The server cannot be reached. Check the connection and try again." };
-const NO_FAILURE = { layoutNotes: null, designFailure: null, layoutFailure: null };
+const NO_FAILURE = { layoutNotes: null, designFailure: null, layoutFailure: null, savingFailure: null };
 
 const FITTING = { type: "progress", step: "Fitting modules on the roof", fraction: 0.08 } as const;
 const SHADING = { type: "progress", step: "Computing hourly shading for every module", fraction: 0.62 } as const;
@@ -83,3 +84,13 @@ export const VITALS: Record<"design" | "updating" | "loading" | "failed" | "wait
 
 export const NOTES: Note[] = notesOf({ design: DEMO, ...NO_FAILURE, designFailure: UNREACHABLE });
 export const NO_NOTES: Note[] = [];
+
+/**
+ * Three designs on this device, as the board "Home, designs on this device" has them (docs/design/mockups/home_data.json): the
+ * demo with the capacity of its run, two built here before a run with a chosen option, said by their roofs.
+ */
+export const ON_THIS_DEVICE: DeviceRow[] = [
+  { id: "demo", name: "Pune demo roof", fact: "357.28 kWp", isOpen: true },
+  { id: "hinjewadi", name: "Hinjewadi Phase 2, Pune, Maharashtra", fact: "62.0 × 28.0 m flat roof, tilted rows", isOpen: false },
+  { id: "warehouse", name: "Warehouse 7, Block B", fact: "120.0 × 45.0 m flat roof, east-west", isOpen: false },
+];

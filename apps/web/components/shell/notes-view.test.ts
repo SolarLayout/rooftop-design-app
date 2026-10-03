@@ -36,7 +36,8 @@ function design(parts: { module?: string[]; layout?: string[]; weather?: string[
   } as unknown as DesignResult;
 }
 
-const NOTHING = { design: null, layoutNotes: null, designFailure: null, layoutFailure: null };
+const NOTHING = { design: null, layoutNotes: null, designFailure: null, layoutFailure: null, savingFailure: null };
+const NOT_KEPT = "The design could not be kept on this device: QuotaExceededError.";
 
 describe("the notes to review", () => {
   test("none before there is a result", () => {
@@ -134,16 +135,30 @@ describe("the notes to review", () => {
     ]);
   });
 
+  test("a design the device refused to keep, after the notes of the design: the words of the device, and it can be tried again", () => {
+    const notes = notesOf({ ...NOTHING, design: design({ module: [VOC] }), savingFailure: NOT_KEPT });
+
+    expect(notes.map((note) => note.id)).toEqual(["module-0", "not-saved"]);
+    expect(notes[1]).toEqual({
+      id: "not-saved",
+      title: "Not saved on this device",
+      reason: NOT_KEPT,
+      where: "This design · on this device",
+      action: { kind: "try-again", label: "Try again" },
+    });
+  });
+
   test("every note has a name of its own", () => {
     const notes = notesOf({
       design: design({ module: [VOC, NO_SIZE], layout: [UNIT_GAP], weather: [NO_BEAM, HOURS], chosen: OPTION_D }),
       layoutNotes: null,
       designFailure: UNREACHABLE,
       layoutFailure: UNREACHABLE,
+      savingFailure: NOT_KEPT,
     });
 
-    expect(notes).toHaveLength(8);
-    expect(new Set(notes.map((note) => note.id)).size).toBe(8);
+    expect(notes).toHaveLength(9);
+    expect(new Set(notes.map((note) => note.id)).size).toBe(9);
   });
 });
 

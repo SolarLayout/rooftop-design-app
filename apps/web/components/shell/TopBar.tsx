@@ -8,6 +8,7 @@ import { HANDOVER, type Lens, type Workspace } from "@/lib/routes";
 import { Logo } from "./Logo";
 import { ProjectSwitcher } from "./ProjectSwitcher";
 import { SaveState, type Saving } from "./SaveState";
+import type { DeviceRow } from "./switcher-view";
 import { WorkspaceNav } from "./WorkspaceNav";
 
 type Props = {
@@ -27,6 +28,10 @@ type Props = {
   onRename?: (name: string) => void;
   /** Save a copy was taken in the project switcher (plan/phase-09-plan.md, step 8). */
   onSaveACopy?: () => void;
+  /** The designs kept on this device, for the project switcher (plan/phase-10-plan.md, step 5). */
+  designs?: readonly DeviceRow[];
+  /** A design of the device was taken in the project switcher. */
+  onOpenDesign?: (id: string) => void;
 };
 
 const BAR = classNames(
@@ -70,12 +75,22 @@ export function Export() {
 const countOf = (notes: number) => (notes === 0 ? "Nothing to review" : notes === 1 ? "1 note to review" : `${notes} notes to review`);
 
 /** The bar at the top of the three workspaces. */
-export function TopBar({ name, place, workspace, lens, saving, notes, onOpenNotes, onImport, onRename, onSaveACopy }: Props) {
+export function TopBar({ name, place, workspace, lens, saving, notes, onOpenNotes, onImport, onRename, onSaveACopy, designs, onOpenDesign }: Props) {
   return (
     <header className={BAR}>
       <Logo />
       <span className="hidden h-6 w-px shrink-0 bg-line desktop:block" />
-      <ProjectSwitcher name={name} place={place} saving={saving} onOpenNotes={onOpenNotes} onImport={onImport} onSaveACopy={onSaveACopy} onRename={onRename} />
+      <ProjectSwitcher
+        name={name}
+        place={place}
+        saving={saving}
+        onOpenNotes={onOpenNotes}
+        onImport={onImport}
+        onSaveACopy={onSaveACopy}
+        onRename={onRename}
+        designs={designs}
+        onOpenDesign={onOpenDesign}
+      />
       <span className="grow" />
       <WorkspaceNav current={workspace} lens={lens} />
       <span className="hidden grow tablet:block" />

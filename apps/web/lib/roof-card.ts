@@ -26,15 +26,23 @@ const HOW: Record<Roof["source"], string> = {
 
 const FROM_A_FILE = new Set<Roof["source"]>(["kmz", "dxf"]);
 
-/** The card of a roof; `file` is the name of the drawing it was read from (`roof_input.file`). */
-export function roofCardOf(roof: Roof, file = ""): RoofCard {
-  const corners: XY[] = roof.outline.map(([x, y]) => ({ x, y }));
-  const facing = facingOf(corners, roof.lat >= 0 ? "north" : "south");
-  const faces = facing ? ` · faces ${Math.round(facing.degrees)}° ${facing.compass}` : "";
+const cornersOf = (roof: Roof): XY[] => roof.outline.map(([x, y]) => ({ x, y }));
+
+/** The size of a roof as the card says it: a rectangle by its sides, "90.0 × 40.0 m"; any other outline by its area, "4,050 m²". */
+export function roofSizeOf(roof: Roof): string {
+  const corners = cornersOf(roof);
   const edges = edgesOf(corners);
-  const size = isRectangle(corners)
+  return isRectangle(corners)
     ? `${shown(Math.max(edges[0], edges[1]), 1)} × ${shown(Math.min(edges[0], edges[1]), 1)} m`
     : `${shown(Math.round(areaOf(corners)), 0)} m²`;
+}
+
+/** The card of a roof; `file` is the name of the drawing it was read from (`roof_input.file`). */
+export function roofCardOf(roof: Roof, file = ""): RoofCard {
+  const corners = cornersOf(roof);
+  const facing = facingOf(corners, roof.lat >= 0 ? "north" : "south");
+  const faces = facing ? ` · faces ${Math.round(facing.degrees)}° ${facing.compass}` : "";
+  const size = roofSizeOf(roof);
   const obstacles = roof.obstacles.filter((obstacle) => !obstacle.auto).length;
   const counted = obstacles === 0 ? "" : ` · ${obstacles} ${obstacles === 1 ? "obstacle" : "obstacles"}`;
   return {

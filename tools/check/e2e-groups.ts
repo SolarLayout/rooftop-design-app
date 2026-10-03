@@ -29,6 +29,8 @@ export const BASE_INPUTS: string[] = [
   "apps/web/lib/stores/**",
   "apps/web/lib/flow/**",
   "apps/web/lib/format/**",
+  // The designs kept on the device: the shell saves and opens them, so every page can see them (plan/phase-10-plan.md, decision 12).
+  "apps/web/lib/device/**",
   "apps/web/public/**",
   "apps/web/*",
   "!apps/web/CLAUDE.md",
@@ -108,7 +110,8 @@ export const GROUPS: readonly Group[] = [
   { id: "handover", suites: ["handover*.e2e.ts"], own: HANDOVER_OWN },
   {
     id: "shell",
-    suites: ["api-client.e2e.ts", "fonts.e2e.ts", "routes.e2e.ts", "screens.e2e.ts", "shell.e2e.ts", "smoke.e2e.ts", "tokens.e2e.ts"],
+    // device*.e2e.ts opens every workspace and the map: the group that sees them all.
+    suites: ["api-client.e2e.ts", "device*.e2e.ts", "fonts.e2e.ts", "routes.e2e.ts", "screens.e2e.ts", "shell.e2e.ts", "smoke.e2e.ts", "tokens.e2e.ts"],
     own: SHELL_OWN,
   },
 ];

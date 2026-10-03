@@ -2,8 +2,8 @@
 // a note is there because the API gave it, and its reason is in the words of the API.
 //
 // Notes are the notes of the module, of the layout and of the weather, the chosen option when its DC/AC
-// is not in target, and a call that failed. What explains (the note on the options, on the far shading)
-// is no note to review: it belongs to its lens.
+// is not in target, a call that failed, and a design the device refused to keep (in the device's words). What
+// explains (the note on the options, on the far shading) is no note to review: it belongs to its lens.
 import type { DesignOption, DesignResult } from "../../lib/api";
 import { pathOfLens, pathOfWorkspace, type Lens } from "../../lib/routes";
 import type { Failure } from "../../lib/stores/results-store";
@@ -32,6 +32,8 @@ type Asked = {
   layoutNotes: readonly string[] | null;
   designFailure: Failure | null;
   layoutFailure: Failure | null;
+  /** Why the design could not be kept on this device, in the device's words (lib/device/saving.ts); null when it could. */
+  savingFailure: string | null;
 };
 
 const TRY_AGAIN: NoteAction = { kind: "try-again", label: "Try again" };
@@ -92,7 +94,7 @@ function noteOfTheOption(design: DesignResult): Note[] {
   ];
 }
 
-export function notesOf({ design, layoutNotes, designFailure, layoutFailure }: Asked): Note[] {
+export function notesOf({ design, layoutNotes, designFailure, layoutFailure, savingFailure }: Asked): Note[] {
   const notes: Note[] = [];
   if (design) notes.push(...notesOfA("Module", design.equipment.module_notes, "Module · Array lens", TO_ARRAY));
   notes.push(...notesOfA("Layout", layoutNotes ?? design?.layout.notes ?? [], "Layout · Array lens", TO_ARRAY));
@@ -115,6 +117,15 @@ export function notesOf({ design, layoutNotes, designFailure, layoutFailure }: A
       title: design ? "Energy was not updated" : "Energy was not computed",
       reason: designFailure.message,
       where: design ? "The values shown are of the design before" : "There are no values yet",
+      action: TRY_AGAIN,
+    });
+  }
+  if (savingFailure !== null) {
+    notes.push({
+      id: "not-saved",
+      title: "Not saved on this device",
+      reason: savingFailure,
+      where: "This design · on this device",
       action: TRY_AGAIN,
     });
   }

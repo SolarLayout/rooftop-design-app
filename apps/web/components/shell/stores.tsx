@@ -5,6 +5,9 @@ import { useStore } from "zustand";
 import { createToasts, type Toasts } from "@/components/ui/toast-queue";
 import { api } from "@/lib/api";
 import { createDesignFlow, type DesignFlow } from "@/lib/flow/design-flow";
+import { designsDb } from "@/lib/device/designs-db";
+import { rememberIn } from "@/lib/device/remembered";
+import { createSaving, failureOf as savingFailureOf, type SavingState, type SavingStore } from "@/lib/device/saving";
 import { createDownloadsStore, type DownloadsState, type DownloadsStore } from "@/lib/handover/downloads-store";
 import { createProjectStore, editOf, nameOf, projectOf, type ProjectState, type ProjectStore } from "@/lib/stores/project-store";
 import { createResultsStore, designFailureOf, designOf, designStatusOf, layoutFailureOf, newerLayoutNotesOf, progressOf, readoutsOf, sunDayOf, type ResultsState, type ResultsStore } from "@/lib/stores/results-store";
@@ -26,6 +29,8 @@ type Stores = {
   toasts: Toasts;
   /** The downloads of Handover: the files of the API saved by the browser. */
   downloads: DownloadsStore;
+  /** The design kept on this device: its state of saving, the designs of the device (plan/phase-10-plan.md, step 2). */
+  saving: SavingStore;
 };
 
 const Context = createContext<Stores | null>(null);
@@ -57,7 +62,15 @@ function createStores(): Stores {
   project.subscribe((state, before) => {
     if (state.openedAt !== before.openedAt) downloads.getState().clear();
   });
-  return { project, results, view, flow: createDesignFlow({ project, results, view }), play, toasts, downloads };
+  const saving = createSaving({
+    project,
+    results,
+    db: designsDb,
+    // The storage is the browser's: looked up when something is remembered, since the stores are made on the server too.
+    remember: (id) => rememberIn(window.localStorage)(id),
+    say: (words) => void toasts.show({ kind: "note", words }),
+  });
+  return { project, results, view, flow: createDesignFlow({ project, results, view }), play, toasts, downloads, saving };
 }
 
 /** What the user's system says of motion (decision 4: under it, play moves an hour a second). */
@@ -73,9 +86,11 @@ export function StoresProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     stores.flow.start();
+    stores.saving.getState().start();
     return () => {
       stores.flow.stop();
       stores.play.stop();
+      stores.saving.getState().stop();
     };
   }, [stores]);
 
@@ -103,6 +118,11 @@ export function useDownloads<Value>(selector: (state: DownloadsState) => Value):
   return useStore(useStores().downloads, selector);
 }
 
+/** One value of the saving to this device. The selector is one of lib/device/saving.ts. */
+export function useSaving<Value>(selector: (state: SavingState) => Value): Value {
+  return useStore(useStores().saving, selector);
+}
+
 /** The queue of what the app says. */
 export function useToasts(): Toasts {
   return useStores().toasts;
@@ -119,8 +139,12 @@ export function useNotes(): Note[] {
   const layoutNotes = useResults(newerLayoutNotesOf);
   const designFailure = useResults(designFailureOf);
   const layoutFailure = useResults(layoutFailureOf);
+  const savingFailure = useSaving(savingFailureOf);
 
-  return useMemo(() => notesOf({ design, layoutNotes, designFailure, layoutFailure }), [design, layoutNotes, designFailure, layoutFailure]);
+  return useMemo(
+    () => notesOf({ design, layoutNotes, designFailure, layoutFailure, savingFailure }),
+    [design, layoutNotes, designFailure, layoutFailure, savingFailure],
+  );
 }
 
 /** What the vitals show of the design that is open. */
