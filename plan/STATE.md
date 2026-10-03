@@ -3,10 +3,11 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-03, session 13, at the close of Phase 9: #62 (the Handover frame, the `.rtd` download, the report's day, the
-name), #64 (the report previewed as the engine's pages), #65 (the SLD, the bill of materials, the cable schedule), #66 (the zip, the CAD
-layout, the Google Earth model, the hourly data, Download all) are merged; #63 split the browser step of `bun check` into groups and made
-the fast check the gate (D54, D55). `main` is green. Phase 10 is begun unattended at the owner's pre-approval (session 13, message 18).
+**Last updated:** 2026-10-03, session 13, Phase 10 unattended at the owner's pre-approval: the five boards of step 0 on `main`
+(e494a11); #67 (pull request 1: the designs kept on this device, saving, the state in the top bar, a reload keeps the design, On this
+device in the switcher, the warning before leaving) merged; #68 (the check on GitHub: pytest-xdist, the job allowed fifteen minutes)
+merged. `main` is green. Pull request 2 (Open a project: the API's `POST /project/open` built, the dialog being built) and pull request 4
+(Present) are being built by agents in worktrees; pull request 3 (Home) follows pull request 2.
 
 ## Where we are
 
@@ -23,15 +24,19 @@ the fast check the gate (D54, D55). `main` is green. Phase 10 is begun unattende
 | 7 Studio, Strings lens | Done (session 11: #53 to #57) | What exists, what was decided, what was found: `phase-07-studio-strings.md`, "As built". How it was built: `phase-07-plan.md` |
 | 8 Performance | Done (session 12: #58 to #61) | What exists, what was decided, what was found: `phase-08-performance.md`, "As built". How it was built: `phase-08-plan.md` |
 | 9 Handover and exports | Done (session 13: #62, #64 to #66; #63 on the way) | What exists, what was decided, what was found: `phase-09-handover.md`, "As built". How it was built: `phase-09-plan.md` |
-| 10 Home, projects on the device, Present | In progress (session 13, unattended) | Pre-approved whole by the owner; the plan `phase-10-plan.md` comes first |
+| 10 Home, projects on the device, Present | In progress (session 13, unattended: #67 merged; #68 for the check) | Pre-approved whole by the owner. How it is built: `phase-10-plan.md`; the boards of step 0 drawn |
 | 11 | Not started | |
 
 ## In flight
 
-Phase 10, unattended (the owner's pre-approval): the plan is on `main` (`phase-10-plan.md`); the boards of step 0 are being drawn by two
-agents (`home_data.json` written from the engine); `feat/phase-10-device` (pull request 1: the designs kept on the device, saving, the reload,
-the switcher's "On this device", the warning before leaving) and `feat/phase-10-open-project` (the API's `POST /project/open`, the start of pull
-request 2) are being built by agents in worktrees.
+Phase 10, unattended (the owner's pre-approval), after #67: `feat/phase-10-open-project` (pull request 2: the API's `POST /project/open`
+with its tests and the generated types are committed; the Open a project dialog, the group `home`, `home-open-project.e2e.ts` being built)
+and `feat/phase-10-present` (pull request 4: the tour's script, the reveal in the scene, `/present`, the energy and the chain, offline, the
+frame budget, the group `present`) are being built by agents in worktrees under the temporary directory. Pull request 3 (Home on three sizes,
+the cards, the thumbnail, the group `home`) is briefed (`brief-pr10-3-home.md` in the scratch folder) and starts when pull request 2 merges.
+Found in this stretch: the `check` workflow on GitHub had been cancelled at its limit of ten minutes on every run since #66 (pytest whole in
+one process 7 min 49 s on the runner; a cancelled job saves no cache, so every run after started cold): #68 allows fifteen minutes and runs
+pytest over the runner's cores; two workers there gave nothing (7 min 44 s), a watch item below.
 
 ## What the web app has today
 
@@ -72,8 +77,8 @@ A workspace opens the demo when no design is open, runs it, and shows its number
 Studio. A roof found on the map and outlined, with its obstacles and their heights, or typed by its measurements
 with or without a map, becomes the design that is open (Build), and the Studio opens on the Roof lens; its roof
 type is the first committed edit of the app, and Edit leads back to the map with the outline and the obstacles
-shown. Until Phase 10 keeps designs on the device, a reload of the Studio loses a roof built on
-the map and opens the demo (D44).
+shown. Since #67 a design is kept on this device at its first committed edit (the demo too, D32), written 600 ms after the last edit, and
+a reload opens the design remembered as open; the switcher lists the designs kept under On this device.
 
 ## What the API gives today
 
@@ -129,7 +134,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 | Item | Where it belongs |
 |---|---|
-| Shown and cannot be used, each until its phase: Present (Phase 10); in the project switcher Open a project (Phase 10) | Phase 10 makes each a link or a button |
+| Shown and cannot be used, each until its phase: Present (Phase 10, pull request 4); in the project switcher Open a project (Phase 10, pull request 2) | Phase 10 makes each a link or a button |
 | The drawer of the notes comes and goes without motion; the tokens have 240 ms for panels | Phase 11, or when the owner asks |
 | The obstacle list of Find shows each height and does not edit it (the Roof lens does); trees are not drawn on the map; the by-hand roof's corners are not dragged on the map | Phase 11, or when the owner asks |
 | The Esri key is baked into the page at build time: the "no key" state is seen only on a build without it, and the tests reach the no-map states through "no WebGL" | Phase 11 |
@@ -159,7 +164,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 | The names of the demo's equipment are shown as the files state them: "INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560", "WattPower Systems Pvt.Ltd WP-330KTL-H1". The mockups show "Insolation INA-144MHC-TF-560". The module card of the Array lens shows the PAN's names as they are (Phase 5, decision 14) | The owner gives the names to show; the Strings lens follows the files too (Phase 7, decision 15) |
 | NASA POWER is asked for the year 2023 and the times of a CSV are read as UTC, as on the desktop; neither can be set in a request. The select says "NASA POWER 2023" and the CSV dialog says the times are read as UTC (Phase 8, decision 19) | Phase 11, or when the owner asks |
 | The memo for the shading in the tests (#37, session 7). Measured before: pytest 151 s here; 66 hourly shadings for 15 distinct inputs and 208 simulations for 66; the repeats cost 76 s and 10 s, of which 48 s are the proofs of the memo, of progress reporting and of a fresh server, which must stay without a memo. Now one memo (`apps/api/tests/kept.py`) serves the whole pytest session, the engine tests and the API alike: pytest 122 s here, the demo's shading computed once. On GitHub the same code took 155 s in one run and 279 s in the next, and 274 s after the memo: the runners vary two-fold, so the mark of 6 min 30 s is a poor rule there; the checks of #37 and #38 took 5 min 38 s and 5 min 33 s. Four workers with pytest-xdist would give 66 s here (measured, not adopted: a dependency and a change of its own) | If a check passes the mark again: pytest-xdist, pinned, as a pull request of its own, after the owner's yes. Since Phase 4.5 the mark matters only when `apps/api` changed: a push that leaves it alone skips pytest |
-| The web app's rewrite in `next dev` drops a request to the API now and then (socket hang up, ECONNRESET on its side; a bare "Internal Server Error" to the browser) while the API answered 200: 47 of 48 drops were the report's pages (940 KB); none from the shell, sequential, four at a time or with compression accepted; under the handover group's load the phone's report tests can time out on it and pass alone. Done: uvicorn keeps a connection alive 75 s, an export is asked up to three times, the tests count the good answers. Untried: a production build and a proxy in front of the API | Phase 11; the flaky list of the handover group |
+| The web app's rewrite in `next dev` drops a request to the API now and then (socket hang up, ECONNRESET on its side; a bare "Internal Server Error" to the browser) while the API answered 200: 47 of 48 drops were the report's pages (940 KB); none from the shell, sequential, four at a time or with compression accepted; under the handover group's load the phone's report tests can time out on it and pass alone. In the shell group's runs of #67 (four workers, the device tests reloading and running beside) the handover pictures waited 90 s for the pages on all three sizes (5 of 371 in one run, 10 in the next) and all 36 passed together afterwards in 1.3 min. Done: uvicorn keeps a connection alive 75 s, an export is asked up to three times, the tests count the good answers. Untried: a production build and a proxy in front of the API | Phase 11; the flaky list of the handover group |
 | Hardware WebGL for the browser tests was tried (2026-10-03): a Studio picture is drawn five to six times faster on the GPU than in software, but the satellite ground was missing in later runs and the cause was not found; software rendering stays. The GPU trial's configuration is a scratch file, not in the repo | Phase 11, or when the owner asks |
 | Under the load of a full check (ten workers, the Studio in software WebGL on three sizes, the machine's twenty cores saturated) a 5 s wait ran out on a different test in each of four full runs of #62 (Edit's navigation in `build.e2e.ts`, the number field on phone, the years' keyboard, New design from the switcher), each green alone. Done in #62: Edit's test waits with the run's time, the charts' tooltips leave only when their anchor moved, every expectation waits 15 s. The split of the browser step and one retry per test come with `feat/check-e2e-groups`; hardware WebGL for the tests is to be measured (the owner's yes first) | Watch. The whole suite runs only when the owner says (D55, coming with the split) |
 | The charts' keyboard tests run on desktop alone: on tablet the focus can scroll the frame and the moving page takes the tooltip away by design. Since #62 a tooltip leaves on a scroll only when its anchor moved (`isStill`) | Known; written in the phase file |
@@ -170,6 +175,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 | In session 6, with a load average above 50 from Chrome, Cursor and the desktop app, full runs of the browser tests took 310 to 340 s and one kit test failed at a time, a different one each run (the toast's place on tablet, the tabs' arrows on phone, the number field on phone); each passed alone, and the runs of the map's own suites passed | Watch. The tests are sound alone; the machine's load is the owner's. If a run on a quiet machine fails one, make that test wait for its result, as a pull request of its own |
 | The browser tests of the shell run the design of the demo on the server of the tests, on three sizes at once. On 2026-09-30 eight phone tests waited more than 90 s on a cold server; since #34 the global setup runs the demo once before the tests begin | Done in #34. Watch that it stays steady |
 | A push was refused once with "Permission denied (publickey)" and went through when tried again | Watch; nothing to do |
+| On GitHub's runner (two cores) pytest whole took 7 min 44 s with pytest-xdist's two workers against 7 min 49 s in one process (#68): the cores are saturated by one process, or the workers thrash (numpy's BLAS threads per worker, untried: `OMP_NUM_THREADS=1`). The job is allowed fifteen minutes and takes 10 min 26 s cold, 5 min 29 s with the cache | Phase 11; the check |
 | The `/api` rewrite passes the events of a design run on as they come in `next dev`. A production build (`next start`) and a proxy in front of it have not been tried | Phase 11, deployment |
 | One design run keeps a worker thread busy for 12 s and the process holds up to 576 MB of kept results. How many runs at once a server must carry is not decided | Phase 11 |
 
