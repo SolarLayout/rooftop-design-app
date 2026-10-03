@@ -169,7 +169,13 @@ Every group sees the base: `apps/web/app`, `components/shell` and `ui`, the file
 `lib` (named, since turbo takes an exclusion out of every input of a task), `lib/api`, `stores`, `flow`, `format`,
 `public`, the web's configuration, `packages/api-types`, the API's sources and configuration, the helpers and
 fixtures of `e2e`, the tools that start the stack, the lockfile. A suite belongs to a group by its file name; a
-name no group claims fails `bun test tools`. Tests counted by `playwright --list` over the three sizes.
+name no group claims fails `bun test tools`. Folders are the key but imports cross folders: a test
+(`tools/check/e2e-group-imports.test.ts`) walks the value imports of each group's own folders up to the base and
+refuses a file reached that is not an input of the group. It found Handover drawing Performance's `NoOptionsCard`
+and `FailedRow` and the Studio's `useHistoryKeys`; the shared parts moved to `components/shell`. The base itself
+imports from the groups' folders (`shell/stores.tsx`, `lib/flow/design-flow.ts`, `lib/stores` reach `lib/handover`,
+`lib/scene`, `lib/studio`, `lib/performance`): the base is not walked, and a change there runs its own group and
+the shell, which pictures every page. Tests counted by `playwright --list` over the three sizes.
 
 | Group | Suites | Tests | Own inputs, beside the base |
 |---|---|---|---|

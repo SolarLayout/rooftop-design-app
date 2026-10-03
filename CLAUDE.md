@@ -96,7 +96,9 @@ This is production software, not a prototype. The owner's words: "this is not th
   `components` and `lib`, and the folders of the groups it crosses into (the Studio sees Find's, Performance the
   Studio's and Find's, the shell every group's and every baseline but the kit's, which the kit suite takes). A
   suite belongs to a group by its file name; a name no group claims fails `bun test tools`, so that a new suite
-  is placed on purpose. `bun run e2e:<group>` runs one group by hand, `bun run e2e` everything.
+  is placed on purpose. A test walks the imports of each group's own folders up to the base and refuses one that
+  reaches outside the group's inputs: a part two workspaces share lives in `components/shell`, not in one of them.
+  `bun run e2e:<group>` runs one group by hand, `bun run e2e` everything.
 - On GitHub the `check` workflow restores `.turbo/cache` from the last run of the branch or of `main` and saves
   it after every run; a push to `main` runs `--fresh`. pytest runs whole and untraced there
   (`ROOFTOP_CHECK_SELECT=0`).
