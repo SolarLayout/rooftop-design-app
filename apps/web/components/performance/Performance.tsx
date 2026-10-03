@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useProject, useResults, useStores } from "@/components/shell/stores";
-import { useHistoryKeys } from "@/components/studio/use-history-keys";
+import { useHistoryKeys } from "@/components/shell/use-history-keys";
 import { assumptionsOf, withAssumption, withLevel, type AssumptionId } from "@/lib/performance/assumption-fields";
 import { withDegradation } from "@/lib/performance/degradation";
 import { pageViewOf } from "@/lib/performance/page-view";
@@ -13,10 +13,10 @@ import { Assumptions } from "./Assumptions";
 import { Kpis, KpiSkeletons } from "./Kpis";
 import { LossChain } from "./LossChain";
 import { MonthlyChart } from "./MonthlyChart";
-import { NoOptionsCard } from "./NoOptionsCard";
+import { NoOptionsCard } from "@/components/shell/NoOptionsCard";
 import { PerformanceHeader } from "./PerformanceHeader";
 import { SummaryTable } from "./SummaryTable";
-import { FailedRow, RunRow } from "./UnderTheTitle";
+import { FailedRow, RunRow } from "@/components/shell/UnderTheTitle";
 import { useWeatherLoad } from "./use-weather-load";
 import { WeatherCsvDialog } from "./WeatherCsvDialog";
 import { WeatherNote, WeatherSelect } from "./WeatherSelect";

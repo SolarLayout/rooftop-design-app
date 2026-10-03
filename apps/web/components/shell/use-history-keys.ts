@@ -5,7 +5,7 @@ import { useStores } from "@/components/shell/stores";
 
 // The keys of the history (plan/phase-05-plan.md, step 18, decision 11): Cmd or Ctrl with Z undoes the last
 // committed edit, with Shift redoes it; Ctrl with Y redoes too. Keys typed into a field are the field's: a field's
-// own undo works on what is being typed. The Studio and Performance listen; their edits are the same document's.
+// own undo works on what is being typed. The Studio, Performance and Handover listen; their edits are the same document's.
 
 export type HistoryStep = "undo" | "redo";
 

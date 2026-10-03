@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { NotBuiltYet } from "@/components/shell/NotBuiltYet";
 import { useDownloads, useProject, useResults, useStores } from "@/components/shell/stores";
-import { useHistoryKeys } from "@/components/studio/use-history-keys";
+import { useHistoryKeys } from "@/components/shell/use-history-keys";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
 import { byItemOf, keptOf } from "@/lib/handover/downloads-store";

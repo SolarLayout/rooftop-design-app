@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { NoOptionsCard } from "@/components/performance/NoOptionsCard";
-import { FailedRow } from "@/components/performance/UnderTheTitle";
+import { NoOptionsCard } from "@/components/shell/NoOptionsCard";
+import { FailedRow } from "@/components/shell/UnderTheTitle";
 import { Button } from "@/components/ui/Button";
 import { classNames } from "@/components/ui/class-names";
 import { IconButton } from "@/components/ui/IconButton";

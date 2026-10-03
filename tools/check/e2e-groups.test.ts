@@ -3,26 +3,13 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { E2E_DIR, REPO_ROOT } from "../lib/paths.ts";
 import { BASE_INPUTS, GROUPS, groupById, groupOf, inputsOf, scriptOf, suitesOf, taskOf, type Group } from "./e2e-groups.ts";
+import { filesMatching as filesOf } from "./input-files.ts";
+
+const filesMatching = (patterns: string[]) => filesOf(patterns, REPO_ROOT);
 
 const SUITES = readdirSync(join(E2E_DIR, "tests")).filter((name) => name.endsWith(".e2e.ts"));
 
 const ownOf = (group: Group) => group.own;
-
-/**
- * The files of the tree a list of turbo input globs names: the positive patterns scanned, the files any
- * negative pattern matches taken out. Dotfiles count, as they do for turbo.
- */
-function filesMatching(patterns: string[]): Set<string> {
-  const positive = patterns.filter((pattern) => !pattern.startsWith("!"));
-  const negative = patterns.filter((pattern) => pattern.startsWith("!")).map((pattern) => new Bun.Glob(pattern.slice(1)));
-  const files = new Set<string>();
-  for (const pattern of positive) {
-    for (const file of new Bun.Glob(pattern).scanSync({ cwd: REPO_ROOT, dot: true, onlyFiles: true })) {
-      if (!negative.some((glob) => glob.match(file))) files.add(file);
-    }
-  }
-  return files;
-}
 
 const intersection = <T>(a: Set<T>, b: Set<T>) => [...a].filter((item) => b.has(item));
 
