@@ -176,6 +176,10 @@ test.describe("the 25 years", () => {
     await expect(tooltip(page)).toContainText(`${fixed(energy.years_mwh[9]!, 1)} MWh`);
     await expect(tooltip(page)).toContainText("Year 10");
     await expect(plot(page).getByRole("slider")).toHaveAttribute("aria-valuenow", "10");
+    // The tooltip stands over the marker, 8 above it, its middle on the marker's (components.md, "Tooltip").
+    const [tip, marker] = [(await tooltip(page).boundingBox())!, (await plot(page).getByTestId("marker").boundingBox())!];
+    expect(Math.round(marker.y - (tip.y + tip.height))).toBe(8);
+    expect(Math.abs(tip.x + tip.width / 2 - (marker.x + marker.width / 2))).toBeLessThanOrEqual(1);
   });
 
   test("the plot takes the keyboard focus and the arrows move the year", async ({ page }, testInfo) => {

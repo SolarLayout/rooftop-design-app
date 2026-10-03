@@ -1,5 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import { Table } from "@/components/ui/Table";
 import type { Column } from "@/components/ui/table-cells";
+import { sortedRows, type Sort } from "@/components/ui/table-sort";
 import { Example, Row, Section } from "./Example";
 
 type Option = { letter: string; strings: string; modules: string; kwp: string; dcac: string; mwh: string; fits: boolean };
@@ -28,6 +32,30 @@ const COLUMNS: Array<Column<Option>> = [
   { key: "mwh", head: "MWh", kind: "number", value: (row) => row.mwh },
 ];
 
+type Length = { string: string; mppt: number; length: number };
+
+// Four strings of the Pune demo's option A with their DC cable (plan/reference/demo-numbers.md), S10 among them: a column
+// sorts by a number where its words would put S10 before S2.
+const LENGTHS: Length[] = [
+  { string: "S1", mppt: 1, length: 131.9 },
+  { string: "S2", mppt: 1, length: 97.3 },
+  { string: "S9", mppt: 3, length: 47.9 },
+  { string: "S10", mppt: 3, length: 82.5 },
+];
+
+const SORTABLE: Array<Column<Length>> = [
+  { key: "string", head: "String", kind: "name", value: (row) => row.string, sortBy: (row) => Number(row.string.slice(1)) },
+  { key: "mppt", head: "MPPT", kind: "number", value: (row) => String(row.mppt), sortBy: (row) => row.mppt },
+  { key: "length", head: "DC cable (m)", kind: "number", value: (row) => row.length.toFixed(1), sortBy: (row) => row.length },
+  { key: "cable", head: "Cable", kind: "text", value: () => "4 mm² Cu", words: true },
+];
+
+/** A table whose heads sort: the rows are given in the sort's order, the order given is the default. */
+function SortableTable() {
+  const [sort, setSort] = useState<Sort | null>(null);
+  return <Table caption="Four strings and their DC cable" columns={SORTABLE} rows={sortedRows(LENGTHS, SORTABLE, sort)} keyOf={(row) => row.string} sort={sort} onSort={setSort} className="w-full" />;
+}
+
 export function Tables() {
   return (
     <Section title="Table">
@@ -35,6 +63,13 @@ export function Tables() {
         <div className="w-full max-w-115">
           <Example name="table" caption="Rows of 44, numbers at the right in mono">
             <Table caption="Stringing options at 1500 V" columns={COLUMNS} rows={OPTIONS} keyOf={(row) => row.letter} chosen="A" className="w-full" />
+          </Example>
+        </div>
+      </Row>
+      <Row label="Heads that sort: a press sorts upwards, another downwards, a third gives the order back; the last column does not sort">
+        <div className="w-full max-w-115">
+          <Example name="table-sortable" caption="The active head in text with its arrow, the others in text 3">
+            <SortableTable />
           </Example>
         </div>
       </Row>

@@ -7,17 +7,25 @@ import { useDownloads, useProject, useResults, useStores } from "@/components/sh
 import { useHistoryKeys } from "@/components/shell/use-history-keys";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
+import { bomViewOf } from "@/lib/handover/bom-view";
 import { byItemOf, keptOf, pagesOf, pagesStatusOf } from "@/lib/handover/downloads-store";
+import { IN_THE_REPORT } from "@/lib/handover/in-the-report";
+import { scheduleViewOf } from "@/lib/handover/schedule-view";
+import type { Sort } from "@/components/ui/table-sort";
 import { withName } from "@/lib/flow/name-field";
 import { pageViewOf } from "@/lib/handover/page-view";
 import { reportViewOf, type ShownPage } from "@/lib/handover/report-view";
 import { FIRST_ITEM, HANDOVER, type HandoverItem } from "@/lib/routes";
 import { editOf, nameOf, projectOf } from "@/lib/stores/project-store";
-import { designFailureOf, designOf, designStatusOf } from "@/lib/stores/results-store";
+import { chosenOptionOf, designFailureOf, designOf, designStatusOf } from "@/lib/stores/results-store";
 import { DeliverableList } from "./DeliverableList";
 import { Preview } from "./Preview";
+import { BillOfMaterials } from "./BillOfMaterials";
+import { CableSchedule } from "./CableSchedule";
+import { CopyAsTable } from "./CopyAsTable";
 import { ProjectFilePreview } from "./ProjectFilePreview";
 import { PageButton, ReportPreview, ReportSkeleton } from "./ReportPreview";
+import { SingleLineDiagram } from "./SingleLineDiagram";
 
 type Props = {
   /** The item that is open; null at the list's own address, where desktop and tablet show the first item beside the list. */
@@ -61,6 +69,7 @@ export function Handover({ item }: Props) {
   // The page's edits (the name) are committed edits like the Studio's: the keys of the history undo and redo them.
   useHistoryKeys();
   const design = useResults(designOf);
+  const option = useResults(chosenOptionOf);
   const designStatus = useResults(designStatusOf);
   const failure = useResults(designFailureOf);
   const pages = keptPages?.answer.pages.length ?? null;
@@ -68,6 +77,19 @@ export function Handover({ item }: Props) {
   const shown = item ?? FIRST_ITEM;
   const row = view.rows.find((one) => one.id === shown) ?? view.rows[0]!;
   const download = row.kind === null ? undefined : () => void downloads.getState().download(row.id);
+  const isLive = !row.waits && view.kind !== "loading";
+  const bom = useMemo(() => (option ? bomViewOf(option) : null), [option]);
+  // The schedule's sort is held here, so that the head's copy is of the rows as the body shows them.
+  const [scheduleSort, setScheduleSort] = useState<Sort | null>(null);
+  const schedule = useMemo(() => (option ? scheduleViewOf(option, scheduleSort) : null), [option, scheduleSort]);
+  /** The head of a table: where it stands in the report, and Copy as table; before options the press is shown and cannot be used. */
+  const tableActions = (table: { text: string; copied: string } | null) => (
+    <>
+      <span className="hidden type-caption text-text-2 tablet:inline">{IN_THE_REPORT}</span>
+      <CopyAsTable text={table?.text ?? ""} copied={table?.copied ?? ""} disabled={table === null || !isLive} />
+    </>
+  );
+  const tools = shown === "bill-of-materials" ? tableActions(bom) : shown === "cable-schedule" ? tableActions(schedule) : undefined;
   const isProjectFileOpen = shown === "project-file" && document !== null;
   const isReport = shown === "report";
   // The pages are asked once per edit while the report is open with an option; the store keeps them (decision 5). A refusal
@@ -124,11 +146,18 @@ export function Handover({ item }: Props) {
           }
           words={isReport ? report.head : undefined}
           skeleton={isReport ? <ReportSkeleton /> : undefined}
+          tools={tools}
         >
           {isReport ? (
             <ReportPreview view={report} onPage={showPage} onTryAgain={askPagesAgain} />
           ) : isProjectFileOpen ? (
             <ProjectFilePreview document={document} design={design} bytes={projectFile?.blob.size ?? null} isWaitingForBytes={askFailedFor !== edit} onRename={rename} />
+          ) : shown === "single-line-diagram" && option && design ? (
+            <SingleLineDiagram option={option} equipment={design.equipment} isDimmed={view.isDimmed} />
+          ) : shown === "bill-of-materials" && bom ? (
+            <BillOfMaterials view={bom} isDimmed={view.isDimmed} />
+          ) : shown === "cable-schedule" && schedule ? (
+            <CableSchedule view={schedule} sort={scheduleSort} onSort={setScheduleSort} isDimmed={view.isDimmed} />
           ) : (
             <NotBuiltYet />
           )}

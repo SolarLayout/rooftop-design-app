@@ -611,7 +611,8 @@ The value of a chart under the pointer, the finger or the keyboard focus (the bo
 phase 8, decision 18) is a tooltip of two lines, padding 4 10: the value first, in mono 12 Geist Mono 500 in text
 ("68.4 MWh · 191 kWh/kWp"), then what it is of in `text-caption` text-2 ("Mar"). It stands over the bar or the marker,
 8 from it, at once; on touch a tap brings it, and a scroll takes it away. In code: `ValueTooltip`. It is never the
-only place: the Table tab of the chart holds every value.
+only place: the Table tab of the chart holds every value. Beside a block of the single-line diagram it stands at the
+block's right, 8 from it (`side="right"`), so that no other block is hidden; the list under the diagram holds every block.
 
 ## Toast
 `surface-1`, border `line-strong`, radius `radius-row`, `shadow-float`, 48 high or more, padding 8 8 8 14,
@@ -656,7 +657,20 @@ In code: `Table`; a row as a card in `table-cells.ts`.
   "Performance" on phone).
 - The row that sums the others up (`total`: the year under the months, the 25 years under six of them) stands over a
   line `line`, without a line under it, its name in Geist 600 and its figures in Geist Mono 500; as a card it is one
-  more card, last.
+  more card, last. A value that is empty is left off a card: the total of the cable schedule shows its sum alone.
+- A column of words wraps in its cell; every other cell stays on one line.
+
+Sorting (the board "Handover, previews", the DC cable schedule; plan phase 9, decision 7). A column that sorts
+(`sortBy`: a number, or a string compared as words) has a button for its head, across the cell, 36 high, padding 0 8,
+radius `radius-xs`, the focus ring of every control: the active head in `text` with an arrow of the icon set after its
+words (`arrow-up` upwards, `arrow-down` downwards, 14), the others in text-3 as a head is. States: the order given
+(`aria-sort="none"` on every head that sorts); upwards after a first press (`aria-sort="ascending"`); downwards after a
+second (`descending`); a third press gives the order given back. A press on another head sorts upwards by it. On phone
+the cards keep the order of the table; nothing there changes it.
+
+In code: `table-sort.ts` is pure (`sortedRows`, stable; `nextSort`; `ariaSortOf`). The table does not sort by itself:
+it shows the rows as they are given and says the sort in its heads (`sort`, `onSort`); whoever gives the rows sorts them
+with `sortedRows`, so that a copy of the table is of what is shown. The total row is not sorted: it is given last.
 
 ## Progress ring
 | Form | Size | Use |

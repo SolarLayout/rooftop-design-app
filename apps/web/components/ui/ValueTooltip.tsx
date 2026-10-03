@@ -4,7 +4,7 @@ import { useEffect, useLayoutEffect, useRef } from "react";
 import { classNames } from "./class-names";
 import { TOOLTIP_GAP } from "./design-numbers";
 import { measures } from "./measures";
-import { placeOf, type Box } from "./place-floating";
+import { placeOf, type Box, type Side } from "./place-floating";
 
 type Props = {
   /** The bar or the marker the value belongs to, as it is on the screen; null while nothing is under the pointer. */
@@ -15,6 +15,8 @@ type Props = {
   label: string;
   /** Hears that the page scrolled or resized while the tooltip was shown; the chart leaves when its anchor moved (`isStill`). */
   onLeave: () => void;
+  /** Over the bar or the marker, or at the right of a block of the single-line diagram, so that no other block is hidden. */
+  side?: Extract<Side, "above" | "right">;
 };
 
 const BUBBLE = classNames(
@@ -24,10 +26,11 @@ const BUBBLE = classNames(
 
 /**
  * The value of a chart under the pointer, the finger or the keyboard focus (components.md, "Tooltip"; plan/phase-08-plan.md,
- * decision 18): the value first, then what it is of, over the bar or the marker, in the top layer of the browser. It comes
- * at once. It is never the only place: the Table tab of the chart holds every value.
+ * decision 18): the value first, then what it is of, over the bar or the marker (or beside a block of the single-line
+ * diagram), in the top layer of the browser. It comes at once. It is never the only place: the Table tab of the chart holds
+ * every value, the list of the diagram every block.
  */
-export function ValueTooltip({ anchor, value, label, onLeave }: Props) {
+export function ValueTooltip({ anchor, value, label, onLeave, side = "above" }: Props) {
   const bubble = useRef<HTMLDivElement>(null);
 
   // A popover is not seen until it is shown; shown, it is measured and put at its place before it is painted.
@@ -43,12 +46,14 @@ export function ValueTooltip({ anchor, value, label, onLeave }: Props) {
       anchor,
       size: floating.getBoundingClientRect(),
       screen: { width: window.innerWidth, height: window.innerHeight },
-      side: "above",
+      side,
       align: "middle",
       gap: TOOLTIP_GAP,
     });
-    Object.assign(floating.style, measures({ x, y }));
-  }, [anchor, value, label]);
+    // A custom property is set by name: assigned as a field of the style it is not written, and the tooltip would stay at
+    // the top left corner of the screen (found in Phase 9: the tooltips of the charts had stood there since Phase 8).
+    for (const [name, measure] of Object.entries(measures({ x, y }))) floating.style.setProperty(name, String(measure));
+  }, [anchor, value, label, side]);
 
   const isShown = anchor !== null;
   useEffect(() => {

@@ -24,6 +24,8 @@ type Props = {
   words?: string | null;
   /** What stands in the body's place at the first load: the breathing block, unless the body has a skeleton of its own shape. */
   skeleton?: ReactNode;
+  /** The actions of an item that is a view, in the primary action\'s place on every size: "In the report, page 5" and Copy as table. */
+  tools?: ReactNode;
   /** The body of the item. It stands unless the item waits for a decision, or nothing was ever there. */
   children: ReactNode;
 };
@@ -33,10 +35,10 @@ const FACTS = "type-caption text-text-2";
 
 /**
  * The frame of an item's preview (the boards "Handover" on three sizes and "Handover, states"): the head with the item's
- * name, its facts and its primary action, 44 square with the icon alone on phone; under it a run that failed with Try
- * again; then the body, or before options the API's words leading to the Strings lens, or at the first load a skeleton.
+ * name, its facts and its primary action, 44 square with the icon alone on phone (or the tools of a view: the tables);
+ * under it a run that failed with Try again; then the body, or before options the API's words leading to the Strings lens, or at the first load a skeleton.
  */
-export function Preview({ row, view, onTryAgain, onAction, isOnItsWay = false, actions, words, skeleton, children }: Props) {
+export function Preview({ row, view, onTryAgain, onAction, isOnItsWay = false, actions, words, skeleton, tools, children }: Props) {
   const canAct = onAction !== undefined && !row.waits && view.kind !== "loading" && !isOnItsWay;
   const disabled = canAct ? undefined : "true";
 
@@ -80,6 +82,10 @@ export function Preview({ row, view, onTryAgain, onAction, isOnItsWay = false, a
                 {row.action}
               </Button>
             </span>
+          </div>
+        ) : tools ? (
+          <div data-testid="preview-action" className="flex shrink-0 items-center gap-2">
+            {tools}
           </div>
         ) : null}
       </div>
