@@ -172,10 +172,26 @@ fixtures of `e2e`, the tools that start the stack, the lockfile. A suite belongs
 name no group claims fails `bun test tools`. Folders are the key but imports cross folders: a test
 (`tools/check/e2e-group-imports.test.ts`) walks the value imports of each group's own folders up to the base and
 refuses a file reached that is not an input of the group. It found Handover drawing Performance's `NoOptionsCard`
-and `FailedRow` and the Studio's `useHistoryKeys`; the shared parts moved to `components/shell`. The base itself
-imports from the groups' folders (`shell/stores.tsx`, `lib/flow/design-flow.ts`, `lib/stores` reach `lib/handover`,
-`lib/scene`, `lib/studio`, `lib/performance`): the base is not walked, and a change there runs its own group and
-the shell, which pictures every page. Tests counted by `playwright --list` over the three sizes.
+and `FailedRow` and the Studio's `useHistoryKeys`; the shared parts moved to `components/shell`. The shell's
+switcher used the name's rules from `lib/handover`; they moved to `lib/flow/name-field.ts`, where the document's
+edits live. Tests counted by `playwright --list` over the three sizes.
+
+**Open item (Phase 11): the shared state reaches into the workspaces' `lib` folders.** The base is not walked, and
+these eight imports of base files stand:
+
+| File of the base | Imports |
+|---|---|
+| `components/shell/stores.tsx` | `lib/handover/downloads-store.ts`, `lib/scene/sun-day.ts`, `lib/studio/play.ts` |
+| `lib/flow/design-flow.ts` | `lib/performance/weather-source.ts`, `lib/studio/sun-time.ts` |
+| `lib/stores/results-store.ts` | `lib/scene/string-colours.ts` (and through it `lib/scene-palette.ts`) |
+| `lib/stores/view-store.ts` | `lib/scene/drag.ts` (and through it `lib/scene/adapter.ts`, `obstacles.ts`, `lib/studio/obstacle-fields.ts`) |
+
+What it means today: a change to one of the files imported runs the groups that own its folder and the shell
+group, whose screens suite pictures every page; it does not run the interaction suites of the other workspaces,
+although every page runs the shared stores. A change to the base file itself runs every group. The fix, for Phase
+11: the shared state's helpers moved beside the stores (`lib/stores`, `lib/flow`), so that the base imports nothing
+of the groups' folders, or a rule-test in `tools/check` that says so and refuses the next such import. Not written
+yet: it would fail on these eight today.
 
 | Group | Suites | Tests | Own inputs, beside the base |
 |---|---|---|---|
