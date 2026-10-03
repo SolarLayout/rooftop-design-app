@@ -24,7 +24,7 @@ export function asFile(name: string, text: string) {
   return { name, mimeType: "application/octet-stream", buffer: Buffer.from(text, "utf8") };
 }
 
-/** The demo's project file written as the desktop app wrote format 1: the module file named by its path on that machine, its text not included. */
+/** The demo's project file written as the desktop app wrote format 1: the module and the inverter files named by their paths on that machine (one of them written on Windows), their texts not included. */
 export function asFormat1(file: ProjectFileJson): ProjectFileJson {
-  return { ...file, format: 1, pan_text: "", pan_path: "C:\\PVsyst\\Test.PAN" };
+  return { ...file, format: 1, pan_text: "", pan_path: "C:\\PVsyst\\Test.PAN", ond_text: "", ond_path: "/home/arun/Test-S.ond" };
 }

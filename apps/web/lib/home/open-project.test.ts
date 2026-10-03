@@ -1,20 +1,14 @@
 import { describe, expect, test } from "bun:test";
-import type { OpenedProject, Project, ProjectFile } from "../api";
+import type { OpenedProject, Project } from "../api";
 import { ApiError } from "../api";
-import { COULD_NOT_BE_READ, heldWordsOf, isProjectFile, NOT_A_PROJECT_FILE, openProjectFile, refusalOf, requestOf, sizeWordsOf } from "./open-project";
+import { COULD_NOT_BE_READ, isProjectFile, linesOf, NOT_A_PROJECT_FILE, refusalOf, requestOf, RUNS_IN_THE_STUDIO } from "./open-project";
 
-// Open a project (plan/phase-10-plan.md, step 9, decision 4): a file is taken by its ending, read in the browser as text,
-// sent to /project/open as {name, text}; the project it answers is kept on this device as a new design; the notes come
-// back in the API's words; a refusal is the API's words, and may be tried again when the API was not reached.
+// Open a project (plan/phase-10-plan.md, step 9, decision 4): a file is taken by its ending, read in the browser as text
+// and sent to /project/open as {name, text} as soon as it is chosen; what the API answers stands in the dialog as the
+// project's name and its notes, word for word; a refusal is the API's words, and may be tried again when the API was not
+// reached.
 
 const PROJECT = { name: "Block B", roof: { lat: 18.52, lon: 73.86, obstacles: [] } } as unknown as Project;
-const PAN_NOTE = "The module file Test.PAN (PAN) is not included in this project. Choose it again.";
-
-function standIn(answer: () => Promise<OpenedProject>) {
-  const asked: ProjectFile[] = [];
-  const kept: Project[] = [];
-  return { asked, kept, api: { openProject: (file: ProjectFile) => (asked.push(file), answer()) }, keep: (document: Project) => void kept.push(document) };
-}
 
 describe("a project file by its ending", () => {
   test("is an .rtd, whatever the case; anything else is not", () => {
@@ -31,21 +25,6 @@ describe("a project file by its ending", () => {
   });
 });
 
-describe("the words of the size", () => {
-  test("whole kilobytes under a megabyte, never under 1 KB; megabytes with one decimal from there", () => {
-    expect(sizeWordsOf(300)).toBe("1 KB");
-    expect(sizeWordsOf(48 * 1024)).toBe("48 KB");
-    expect(sizeWordsOf(1536)).toBe("2 KB");
-    expect(sizeWordsOf(1024 * 1024 - 1)).toBe("1024 KB");
-    expect(sizeWordsOf(1024 * 1024)).toBe("1.0 MB");
-    expect(sizeWordsOf(2.44 * 1024 * 1024)).toBe("2.4 MB");
-  });
-
-  test("what the dialog says of the file it holds before it is opened", () => {
-    expect(heldWordsOf(48 * 1024)).toBe("Project file · 48 KB · read when it is opened");
-  });
-});
-
 describe("the request from a file", () => {
   test("is the file's name and the text it holds", async () => {
     const file = new File(['{"format": 2}'], "Pune-demo-roof.rtd", { type: "application/octet-stream" });
@@ -54,23 +33,12 @@ describe("the request from a file", () => {
   });
 });
 
-describe("opening a project file", () => {
-  test("sends the file, keeps the project it answers as a new design, and gives back the notes in the API's words", async () => {
-    const { asked, kept, api, keep } = standIn(() => Promise.resolve({ project: PROJECT, notes: [PAN_NOTE] }));
+describe("the lines of a file read", () => {
+  test("are the project's name and that the capacity and the energy come with the run, for every file: the answer carries neither, and its format is the current one, not the file's", () => {
+    const opened: OpenedProject = { project: PROJECT, notes: [] };
 
-    const notes = await openProjectFile({ name: "Test-project.rtd", text: "{}" }, { api, keep });
-
-    expect(asked).toEqual([{ name: "Test-project.rtd", text: "{}" }]);
-    expect(kept).toEqual([PROJECT]);
-    expect(notes).toEqual([PAN_NOTE]);
-  });
-
-  test("a file the API refuses keeps nothing, and the refusal is the caller's to show", async () => {
-    const refused = new ApiError(422, "project_file_unreadable", "The file is not a project file (.rtd): it is not JSON.", "text");
-    const { kept, api, keep } = standIn(() => Promise.reject(refused));
-
-    await expect(openProjectFile({ name: "notes.rtd", text: "PVObject_=pvModule" }, { api, keep })).rejects.toBe(refused);
-    expect(kept).toEqual([]);
+    expect(linesOf(opened)).toEqual(["Block B", "Capacity and energy come with the run in the Studio"]);
+    expect(RUNS_IN_THE_STUDIO).toBe("Capacity and energy come with the run in the Studio");
   });
 });
 

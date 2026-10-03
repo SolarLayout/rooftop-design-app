@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { TWO_DESIGNS, withDesignsOnTheDevice } from "../device";
 import { expect, test } from "../fixtures";
-import { asFile, demoProjectFile } from "../project-file";
+import { asFile, asFormat1, demoProjectFile } from "../project-file";
 import { expectScreen, expectWholeScreen } from "../screens";
 import { A_MAP, findOpened, roofMap, scaleLabel, searchField } from "../find";
 import { boxFrameOf, handlesSettled, inThePlan, metresFrom, obstacleSelectedOnStage, sceneSettled, zoomedInAt, cameraSettled } from "../stage";
@@ -671,12 +671,13 @@ test.describe("the shell", () => {
     return dialog;
   };
 
-  // Open a project with the demo's project file chosen (the board "Open a project", a file read): its name in mono, its size, Open live.
-  test("open a project, a file chosen", async ({ page }) => {
+  // Open a project with the demo's project file read (the board "Open a project", a file read): its name in mono, the project's name and the line under it, Open live.
+  test("open a project, a file read", async ({ page }) => {
     test.setTimeout(RUN + 30_000);
     const file = JSON.stringify(await demoProjectFile(page));
     const dialog = await openProjectOpened(page);
     await dialog.locator("input[type=file]").setInputFiles(asFile("Pune-demo-roof.rtd", file));
+    await expect(dialog.getByTestId("file-drop-line")).toHaveText(["Pune demo roof", "Capacity and energy come with the run in the Studio"]);
     await expect(dialog.getByRole("button", { name: "Open", exact: true })).not.toHaveAttribute("aria-disabled", "true");
     // The focus leaves the dialog's field, so that no ring is in the picture.
     await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
@@ -684,14 +685,27 @@ test.describe("the shell", () => {
     await expectScreen(page, "open-project");
   });
 
-  // A file that is no JSON refused under the field in the API's words (the board "Open a project", a file refused), the file kept chosen.
+  // A format 1 file of the desktop app read (the same board): the engine's two notes on the files to choose again stand under the field, Open live.
+  test("open a project, a format 1 file read with its notes", async ({ page }, testInfo) => {
+    test.skip(!isDesktop(testInfo.project.name), "The notes stand the same way on every size; one picture.");
+    test.setTimeout(RUN + 30_000);
+    const file = JSON.stringify(asFormat1(await demoProjectFile(page)));
+    const dialog = await openProjectOpened(page);
+    await dialog.locator("input[type=file]").setInputFiles(asFile("Test-project.rtd", file));
+    await expect(dialog.getByTestId("open-note")).toHaveCount(2);
+    await expect(dialog.getByRole("button", { name: "Open", exact: true })).not.toHaveAttribute("aria-disabled", "true");
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+
+    await expectScreen(page, "open-project-notes");
+  });
+
+  // A file that is no JSON refused in the field in the API's words (the board "Open a project", a file refused), as soon as it is chosen.
   test("open a project, a file refused", async ({ page }, testInfo) => {
     test.skip(!isDesktop(testInfo.project.name), "The refusal is the same on every size; one picture.");
     test.setTimeout(RUN + 30_000);
     const dialog = await openProjectOpened(page);
     await dialog.locator("input[type=file]").setInputFiles(asFile("roof-notes.rtd", "The tank is 2.4 m high.\n"));
-    await dialog.getByRole("button", { name: "Open", exact: true }).click();
-    await expect(dialog.getByTestId("open-refused")).toContainText("The file is not a project file (.rtd): it is not JSON.");
+    await expect(dialog.getByTestId("file-drop")).toContainText("The file is not a project file (.rtd): it is not JSON.");
     await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
 
     await expectScreen(page, "open-project-refused");
