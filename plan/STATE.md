@@ -3,9 +3,8 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-03, session 12, at the close of Phase 8: #58 (the page, the KPIs, the summary, the states; the figures
-after the year), #59 (the loss chain; the candidates in threads), #60 (the charts) and #61 (the weather source, a CSV with its
-notes, weather for a design without any, the assumptions) are merged. `main` is green.
+**Last updated:** 2026-10-03, session 13, Phase 9 begun: the plan (`phase-09-plan.md`) and the four boards of step 0 are approved and
+on `main`; pull request 1 is being built. `main` is green.
 
 ## Where we are
 
@@ -21,11 +20,16 @@ notes, weather for a design without any, the assumptions) are merged. `main` is 
 | 6 Studio, Sun lens | Done (session 10: #48 to #52) | What exists, what was decided, what was found: `phase-06-studio-sun.md`, "As built". How it was built: `phase-06-plan.md` |
 | 7 Studio, Strings lens | Done (session 11: #53 to #57) | What exists, what was decided, what was found: `phase-07-studio-strings.md`, "As built". How it was built: `phase-07-plan.md` |
 | 8 Performance | Done (session 12: #58 to #61) | What exists, what was decided, what was found: `phase-08-performance.md`, "As built". How it was built: `phase-08-plan.md` |
-| 9 to 11 | Not started | |
+| 9 Handover and exports | In progress (session 13) | The plan: `phase-09-plan.md`; the boards approved 2026-10-03 |
+| 10 to 11 | Not started | |
 
 ## In flight
 
-Nothing. No branch stands on `main`; `main` is green.
+- `feat/phase-9-handover-frame` (pull request 1 of Phase 9, not yet opened): step 1, the `.rtd` download and the report's day, is built and
+  tested in its worktree; the web part (steps 2 to 8: the routes, the list, the preview frame, the states, the downloads, `TextField`, the
+  name, Save a copy) is being built by an agent.
+- `feat/phase-9-report` (pull request 2), branched from the first: the report's pages drawn one by one and `/export/report-pages` are being
+  built by an agent; the preview comes after pull request 1.
 
 ## What the web app has today
 
@@ -88,9 +92,8 @@ run. The test stack's API starts with downloads of weather off (`ROOFTOP_WEATHER
 
 ## Next, in order
 
-1. Phase 9, Handover and exports (`plan/phase-09-handover.md`): the plan first, the way `phase-08-plan.md` was written, then the
-   boards it lacks (Handover on tablet and phone, the previews, the states), then the pull requests. Work order:
-   `plan/resume/012-phase-9-handover.md`.
+1. Phase 9, Handover and exports: the four pull requests of `plan/phase-09-plan.md`, in order; the plan and the boards are done. Work
+   order: `plan/resume/012-phase-9-handover.md`.
 2. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
 3. In parallel with any phase: the screens still to draw (Phase 0).
 
