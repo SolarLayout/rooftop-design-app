@@ -272,3 +272,38 @@ describe("reportPages (plan/phase-09-plan.md, decision 5)", () => {
     expect(thrown).toMatchObject({ status: 422, code: "system_voltage_missing", field: "system_voltage" });
   });
 });
+
+describe("an answer that is not the API's, once (a proxy in front of it failed)", () => {
+  const PROXY_FAILED = () => new Response("Internal Server Error", { status: 500, headers: { "content-type": "text/plain" } });
+
+  test("an export is asked once more and comes", async () => {
+    let answered = 0;
+    const { api, calls } = server(() => {
+      answered += 1;
+      return answered === 1 ? PROXY_FAILED() : new Response("%PDF-1.4", { headers: { "content-type": "application/pdf" } });
+    });
+
+    const file = await api.exportDesign("pdf", PROJECT);
+
+    expect(await file.blob.text()).toBe("%PDF-1.4");
+    expect(calls).toHaveLength(2);
+  });
+
+  test("the pages of the report the same; twice is the failure", async () => {
+    const { api, calls } = server(PROXY_FAILED);
+
+    const thrown = await api.reportPages(PROJECT).catch((error: unknown) => error);
+
+    expect(thrown).toMatchObject({ code: "unexpected_answer" });
+    expect(calls).toHaveLength(2);
+  });
+
+  test("a refusal of the API is not asked again", async () => {
+    const { api, calls } = server(() => json({ error: { code: "no_option_chosen", message: "Choose a stringing option first.", field: "chosen_option" } }, 422));
+
+    const thrown = await api.exportDesign("pdf", PROJECT).catch((error: unknown) => error);
+
+    expect(thrown).toMatchObject({ code: "no_option_chosen" });
+    expect(calls).toHaveLength(1);
+  });
+});

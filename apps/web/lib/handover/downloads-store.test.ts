@@ -44,7 +44,7 @@ function fakeApi() {
   };
 }
 
-function made(open: { document: Project; edit: number } | null = { document: DOCUMENT, edit: 3 }) {
+function made(open: { document: Project; edit: number; chosen?: string | null } | null = { document: DOCUMENT, edit: 3 }) {
   const fake = fakeApi();
   const saved: { blob: Blob; name: string }[] = [];
   const toasts: ToastAsked[] = [];
@@ -54,7 +54,7 @@ function made(open: { document: Project; edit: number } | null = { document: DOC
     day: () => DAY,
     toasts: { show: (asked) => toasts.push(asked) && toasts.length },
     // As the shell's: what is open, read at the moment of the ask, not a thing that changes under a request on its way.
-    open: () => (open === null ? null : { ...open }),
+    open: () => (open === null ? null : { chosen: null, ...open }),
   });
   return { ...fake, store, saved, toasts };
 }
@@ -375,5 +375,41 @@ describe("the pages of the report, kept per edit as the files are (plan/phase-09
 
     expect(pagesOf(store.getState())).toBeNull();
     expect(pagesStatusOf(store.getState())).toEqual({ status: "idle" });
+  });
+});
+
+describe("the option a file is asked for (the API refuses a file of the design without a chosen option)", () => {
+  const unchosen = { ...DOCUMENT, chosen_option: "" };
+
+  test("a file of the design names the option shown when the document names none", async () => {
+    const { store, calls } = made({ document: unchosen, edit: 3, chosen: "26x24x1" });
+
+    void store.getState().download("report");
+    await settled();
+
+    expect(calls[0]!.document.chosen_option).toBe("26x24x1");
+  });
+
+  test("the pages of the report the same", async () => {
+    const { store, calls } = made({ document: unchosen, edit: 3, chosen: "26x24x1" });
+
+    void store.getState().askPages();
+    await settled();
+
+    expect(calls[0]!.document.chosen_option).toBe("26x24x1");
+  });
+
+  test("the document's own choice stands; the project file is the document as it is; without a run nothing is added", async () => {
+    const chosen = made({ document: { ...DOCUMENT, chosen_option: "29x22x1" }, edit: 3, chosen: "26x24x1" });
+    void chosen.store.getState().download("report");
+    const file = made({ document: unchosen, edit: 3, chosen: "26x24x1" });
+    void file.store.getState().download("project-file");
+    const noRun = made({ document: unchosen, edit: 3, chosen: null });
+    void noRun.store.getState().download("report");
+    await settled();
+
+    expect(chosen.calls[0]!.document.chosen_option).toBe("29x22x1");
+    expect(file.calls[0]!.document.chosen_option).toBe("");
+    expect(noRun.calls[0]!.document.chosen_option).toBe("");
   });
 });

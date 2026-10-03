@@ -23,7 +23,25 @@ export type KeptFile = { edit: number; file: ExportedFile };
 export type KeptPages = { edit: number; answer: ReportPages };
 
 /** The design that is open, as the downloads need it: the document and its edit. */
-export type Open = { document: Project; edit: number };
+export type Open = {
+  document: Project;
+  edit: number;
+  /** The option the run shows, the API's recommended one until the user chooses; null before a run or without options. */
+  chosen: string | null;
+};
+
+/** The project file is the document as the user has it; a file of the design is of the option shown. */
+const THE_DOCUMENT_ITSELF: ExportKind = "rtd";
+
+/**
+ * The document a file is asked with: as it is for the project file; for a file of the design, naming the option shown
+ * when the document names none (the API refuses a file without a chosen option, and the run's recommended one is what
+ * every screen shows until the user chooses).
+ */
+export function documentFor(kind: ExportKind, { document, chosen }: Open): Project {
+  if (kind === THE_DOCUMENT_ITSELF || document.chosen_option || chosen === null) return document;
+  return { ...document, chosen_option: chosen };
+}
 
 export type DownloadsState = {
   byItem: Partial<Record<HandoverItem, DownloadStatus>>;
@@ -100,7 +118,7 @@ export function createDownloadsStore({ api, save = saveBlob, day = todayOfTheBro
       // Another edit: what was kept is of the document before.
       if (kept && !asking.has(kind)) set({ kept: { ...get().kept, [kind]: undefined } });
       return once(kind, now.edit, async () => {
-        const answer = await api.exportDesign(kind, now.document, { day: day() });
+        const answer = await api.exportDesign(kind, documentFor(kind, now), { day: day() });
         if (open()?.edit === now.edit) set({ kept: { ...get().kept, [kind]: { edit: now.edit, file: answer } } });
         return answer;
       });
@@ -113,7 +131,7 @@ export function createDownloadsStore({ api, save = saveBlob, day = todayOfTheBro
       if (kept && kept.edit === now.edit) return;
       if (!asking.has(PAGES)) set({ pagesStatus: ON_ITS_WAY });
       try {
-        const answer = await once(PAGES, now.edit, () => api.reportPages(now.document, { day: day() }));
+        const answer = await once(PAGES, now.edit, () => api.reportPages(documentFor("pdf", now), { day: day() }));
         if (open()?.edit === now.edit) set({ pages: { edit: now.edit, answer }, pagesStatus: IDLE });
       } catch (error) {
         if (open()?.edit === now.edit) set({ pagesStatus: { status: "failed", message: failureOf(error).message } });

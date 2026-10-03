@@ -20,7 +20,7 @@ type Props = {
   isOnItsWay?: boolean;
   /** The body's own actions, before the primary one, on tablet and desktop: the report's previous and next. On phone the body holds them. */
   actions?: ReactNode;
-  /** The body's words after the facts, on tablet and desktop: the report's "Page 1 of 6 · Summary". On phone the body holds them. */
+  /** The body's words in the facts' place, on tablet and desktop: the report's "Page 1 of 6 · Summary". On phone the body holds them. */
   words?: string | null;
   /** What stands in the body's place at the first load: the breathing block, unless the body has a skeleton of its own shape. */
   skeleton?: ReactNode;
@@ -48,19 +48,16 @@ export function Preview({ row, view, onTryAgain, onAction, isOnItsWay = false, a
           {row.about === null ? (
             <Skeleton kind="text" className="my-1 w-44" />
           ) : (
-            <span className={classNames(FACTS, "flex flex-wrap gap-x-1.5")}>
-              <span data-testid="preview-facts" className={classNames(view.isDimmed && "opacity-updating")}>
+            // The body's words stand in the facts' place on tablet and desktop, as the board draws the head ("Page 1 of 6 ·
+            // Summary"); the facts stay in the row of the list, and on phone in the head, where the body's row holds the words.
+            <span className={FACTS}>
+              <span data-testid="preview-facts" className={classNames(view.isDimmed && "opacity-updating", words && "tablet:hidden")}>
                 {row.about}
               </span>
               {words ? (
-                <>
-                  <span aria-hidden="true" className="hidden tablet:inline">
-                    ·
-                  </span>
-                  <span data-testid="page-words" className="hidden tablet:inline">
-                    {words}
-                  </span>
-                </>
+                <span data-testid="page-words" className="hidden tablet:inline">
+                  {words}
+                </span>
               ) : null}
             </span>
           )}

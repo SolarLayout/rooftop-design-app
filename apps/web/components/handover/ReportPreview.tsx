@@ -34,7 +34,8 @@ const CURRENT = "border-accent bg-surface-2 text-text";
 const OTHER = "border-line bg-transparent text-text-2";
 const SLOT = "flex h-8.75 w-full items-center justify-center tablet:h-11.25 desktop:h-17.5";
 const THUMB_IMAGE = "block h-auto max-h-full w-auto max-w-full rounded-swatch";
-const CAPTION = "hidden max-w-full truncate type-caption tablet:block";
+// The caption: 11 on tablet, where the thumbnail is 72 wide and "5 · Schedule" at 12 would not fit; 12 on desktop, as the board.
+const CAPTION = "hidden max-w-full truncate type-caption-s tablet:block desktop:type-caption";
 const NUMBER = "type-tick tablet:hidden";
 /** The row of the phone (the board "Handover, tablet and phone"): previous and next of 44 with the page's words between. */
 const PHONE_ROW = "flex items-center gap-3 tablet:hidden";

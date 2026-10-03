@@ -55,10 +55,9 @@ function pagesAsked(page: Page): Request[] {
 /** The report open with its pages there: the answer of the API, and the requests that were made for it. */
 async function theReport(page: Page, projectName: string): Promise<{ pages: PagesAnswer; requests: Request[] }> {
   const requests = pagesAsked(page);
-  const asked = page.waitForRequest(isPagesRequest, { timeout: RUN });
+  const answered = page.waitForResponse((response) => isPagesRequest(response.request()) && response.ok(), { timeout: RUN });
   await page.goto(reportPath(projectName));
-  const response = await (await asked).response();
-  const pages = (await response!.json()) as PagesAnswer;
+  const pages = (await (await answered).json()) as PagesAnswer;
   await expect(thumbnail(page)).toHaveCount(pages.pages.length, { timeout: RUN });
   return { pages, requests };
 }
@@ -125,7 +124,8 @@ test.describe("the pages (decisions 4 and 5)", () => {
     await expect(previous(page)).toHaveAttribute("aria-disabled", "true");
     await expect(previous(page)).toHaveCSS("opacity", "0.45");
     await expect(next(page)).not.toHaveAttribute("aria-disabled", "true");
-    await previous(page).click();
+    // The press is forced: to the browser's tooling an aria-disabled button is not enabled, to the user it is pressable.
+    await previous(page).click({ force: true });
     await expectPage(page, pages, 1);
 
     await next(page).click();
@@ -136,7 +136,7 @@ test.describe("the pages (decisions 4 and 5)", () => {
     await expectPage(page, pages, last);
     await expect(next(page)).toHaveAttribute("aria-disabled", "true");
     await expect(next(page)).toHaveCSS("opacity", "0.45");
-    await next(page).click();
+    await next(page).click({ force: true });
     await expectPage(page, pages, last);
 
     await previous(page).click();
