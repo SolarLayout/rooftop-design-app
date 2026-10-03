@@ -1,10 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
 import { NotBuiltYet } from "@/components/shell/NotBuiltYet";
+import { useProject, useResults } from "@/components/shell/stores";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
+import { deliverablesOf } from "@/lib/handover/items";
 import { FIRST_ITEM, HANDOVER, HANDOVER_ITEMS, type HandoverItem } from "@/lib/routes";
+import { nameOf } from "@/lib/stores/project-store";
+import { designOf } from "@/lib/stores/results-store";
+import { DeliverableList } from "./DeliverableList";
 
 type Props = {
   /** The item that is open; null at the list's own address, where desktop and tablet show the first item beside the list. */
@@ -26,20 +32,22 @@ const BACK = classNames(
   "press-motion focus-ring hovered:text-text tablet:hidden",
 );
 
-const nameOf = (item: HandoverItem) => HANDOVER_ITEMS.find((one) => one.id === item)?.name ?? "";
+const itemNameOf = (item: HandoverItem) => HANDOVER_ITEMS.find((one) => one.id === item)?.name ?? "";
 
-/** The Handover workspace: the list of what is delivered, and the preview of the item that is open. */
+/**
+ * The Handover workspace (the boards "Handover" on three sizes): the list of what is delivered, its facts from the run's
+ * chosen option, the weather and the document (decision 14), and the preview of the item that is open.
+ */
 export function Handover({ item }: Props) {
+  const name = useProject(nameOf);
+  const design = useResults(designOf);
+  const rows = useMemo(() => deliverablesOf({ name, design, pages: null }), [name, design]);
   const shown = item ?? FIRST_ITEM;
 
   return (
     <div className={PAGE}>
       <aside aria-label="Deliverables" className={classNames(LIST, item === null ? "flex" : "hidden tablet:flex")}>
-        <div className="flex flex-col gap-1">
-          <h1 className="type-lens-touch tablet:type-page">Handover</h1>
-          <p className="type-small text-text-2 tablet:type-body-touch desktop:type-body">Everything the installer, the client and the utility need</p>
-        </div>
-        <NotBuiltYet />
+        <DeliverableList rows={rows} item={item} shown={shown} />
       </aside>
       <main className={classNames(PREVIEW, item === null ? "hidden tablet:flex" : "flex")}>
         {/* On phone the item is pushed over the list: the row at the top leads back to it. */}
@@ -48,7 +56,7 @@ export function Handover({ item }: Props) {
           <Icon name="chevron-left" size={16} />
           Handover
         </Link>
-        <h2 className="type-lens-touch tablet:type-title">{nameOf(shown)}</h2>
+        <h2 className="type-lens-touch tablet:type-title">{itemNameOf(shown)}</h2>
         <NotBuiltYet />
       </main>
     </div>

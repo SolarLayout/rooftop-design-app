@@ -215,6 +215,7 @@ describe("exportDesign", () => {
     ["kmz", "rooftop-design.kmz"],
     ["csv", "rooftop-design-hourly.csv"],
     ["sld", "rooftop-design-single-line-diagram.png"],
+    ["rtd", "rooftop-design.rtd"],
   ] as const)("a %s without a name in the answer is called %s", async (kind, name) => {
     const { api } = server(() => new Response("x"));
 

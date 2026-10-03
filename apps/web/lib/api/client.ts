@@ -43,6 +43,7 @@ const FILE_NAMES: Record<ExportKind, string> = {
   kmz: "rooftop-design.kmz",
   csv: "rooftop-design-hourly.csv",
   sld: "rooftop-design-single-line-diagram.png",
+  rtd: "rooftop-design.rtd",
 };
 
 export function createApi({ base = "/api", fetch: fetcher = globalThis.fetch }: ApiOptions = {}) {
