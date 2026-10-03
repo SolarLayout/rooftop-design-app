@@ -78,7 +78,7 @@ export function Handover({ item }: Props) {
   return (
     <div className={PAGE}>
       <aside aria-label="Deliverables" className={classNames(LIST, item === null ? "flex" : "hidden tablet:flex")}>
-        <DeliverableList rows={view.rows} item={item} shown={shown} downloads={byItem} />
+        <DeliverableList rows={view.rows} item={item} shown={shown} downloads={byItem} onSaveACopy={() => void downloads.getState().download("project-file")} />
       </aside>
       <main className={classNames(PREVIEW, item === null ? "hidden tablet:flex" : "flex")}>
         {/* On phone the item is pushed over the list: the row at the top leads back to it. */}

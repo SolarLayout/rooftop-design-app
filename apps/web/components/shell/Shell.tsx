@@ -28,7 +28,7 @@ export function useNotesOfTheShell(): Notes {
 
 function Frame({ children }: { children: ReactNode }) {
   const workspace = workspaceOf(usePathname());
-  const { flow, project } = useStores();
+  const { flow, project, downloads } = useStores();
   const name = useProject(nameOf);
   const latitude = useProject(latitudeOf);
   const longitude = useProject(longitudeOf);
@@ -61,6 +61,7 @@ function Frame({ children }: { children: ReactNode }) {
           onImport={() => setImportOpen(true)}
           // The name is a committed edit like any other, undone by key (plan/phase-09-plan.md, decision 13).
           onRename={(name) => project.getState().commit((document) => withName(document, name))}
+          onSaveACopy={() => void downloads.getState().download("project-file")}
         />
         <div data-workspace-frame className="relative flex min-h-0 grow flex-col overflow-y-auto">{children}</div>
         <TabBar current={workspace} lens={lens} />

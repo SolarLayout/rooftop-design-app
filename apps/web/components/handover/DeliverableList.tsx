@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/Button";
 import { classNames } from "@/components/ui/class-names";
+import { ProgressRing } from "@/components/ui/ProgressRing";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Tooltip } from "@/components/ui/Tooltip";
 import type { DownloadStatus } from "@/lib/handover/downloads-store";
@@ -15,8 +16,8 @@ type Props = {
   shown: HandoverItem;
   /** The state of each item's download; an item not named is at rest. */
   downloads: Partial<Record<HandoverItem, DownloadStatus>>;
-  /** Save a copy of the project file was pressed. Without it the press is shown and cannot be used. */
-  onSaveACopy?: () => void;
+  /** Save a copy of the project file was pressed: the .rtd is downloaded (plan/phase-09-plan.md, step 8). */
+  onSaveACopy: () => void;
 };
 
 /** Download all comes with the zip (plan/phase-09-plan.md, pull request 4): until then it is shown and cannot be used. */
@@ -44,6 +45,8 @@ function openOf(row: Deliverable, item: HandoverItem | null, shown: HandoverItem
 /** The list of what is delivered: the head, the rows, the project file. */
 export function DeliverableList({ rows, item, shown, downloads, onSaveACopy }: Props) {
   const projectFile = rows.find((row) => row.id === PROJECT_FILE) ?? null;
+  const isProjectFileOnItsWay = downloads[PROJECT_FILE]?.status === "on-its-way";
+  const canSave = projectFile !== null && !projectFile.waits && !isProjectFileOnItsWay;
 
   return (
     <>
@@ -82,7 +85,8 @@ export function DeliverableList({ rows, item, shown, downloads, onSaveACopy }: P
               </span>
             )}
           </div>
-          <Button onClick={onSaveACopy} aria-disabled={onSaveACopy === undefined || projectFile.waits ? "true" : undefined} className="w-full tablet:w-auto">
+          <Button onClick={canSave ? onSaveACopy : undefined} aria-disabled={canSave ? undefined : "true"} className="w-full tablet:w-auto">
+            {isProjectFileOnItsWay ? <ProgressRing size={16} /> : null}
             Save a copy
           </Button>
         </div>
