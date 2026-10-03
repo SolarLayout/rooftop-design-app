@@ -17,6 +17,7 @@ OPERATIONS = {
     ("post", "/weather"): "loadWeather",
     ("post", "/design"): "runDesign",
     ("post", "/export/{kind}"): "exportDesign",
+    ("post", "/export/report-pages"): "reportPages",
 }
 
 
@@ -103,3 +104,17 @@ def test_an_export_is_a_file_of_one_of_six_types(document):
             "application/json",
         )
     }
+
+
+def test_the_pages_of_the_report_are_json_with_a_png_in_each(document):
+    operation = document["paths"]["/export/report-pages"]["post"]
+    schemas = document["components"]["schemas"]
+
+    assert operation["parameters"][0]["name"] == "day"
+    assert operation["responses"]["200"]["content"] == {
+        "application/json": {"schema": {"$ref": "#/components/schemas/ReportPages"}}
+    }
+    assert list(schemas["ReportPages"]["properties"]) == ["day", "dpi", "pages"]
+    assert schemas["ReportPages"]["properties"]["day"]["format"] == "date"
+    assert list(schemas["ReportPage"]["properties"]) == ["number", "title", "width", "height", "png"]
+    assert schemas["ReportPage"]["properties"]["png"]["type"] == "string"

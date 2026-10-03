@@ -1,4 +1,4 @@
-"""The files of a design, and the project file."""
+"""The files of a design, the project file, and the pages of the report as images."""
 
 from datetime import date
 from typing import Literal
@@ -18,10 +18,22 @@ FILES = {
     }
 }
 
-router = APIRouter(tags=["export"], responses={**JSON_ERROR_RESPONSES, **FILES})
+router = APIRouter(tags=["export"], responses=JSON_ERROR_RESPONSES)
 
 
-@router.post("/export/{kind}", response_class=Response, operation_id="exportDesign")
+# Before /export/{kind}: a route with a name of its own must be matched first.
+@router.post("/export/report-pages", operation_id="reportPages")
+def report_pages(project: schemas.Project, day: date | None = None) -> schemas.ReportPages:
+    """The pages of the report as PNGs at 150 dpi, base64, each with its number, its title and its size.
+
+    The same drawing as the PDF, page for page, for the preview on the screen. day: the reader's day
+    (YYYY-MM-DD), printed on page 1; without it the server's today. The project must name its chosen
+    option, and the design must have it, as for the PDF.
+    """
+    return service.report_pages(project, day)
+
+
+@router.post("/export/{kind}", response_class=Response, operation_id="exportDesign", responses=FILES)
 def export(kind: ExportKind, project: schemas.Project, day: date | None = None) -> Response:
     """A file of the design, for the option the project has chosen; or the project file.
 

@@ -152,6 +152,12 @@
   --text-value-xs--font-weight: 400;
   --text-value-xs--font-family: var(--font-mono);
 
+  --text-caption-s: 11px;
+  --text-caption-s--line-height: 16px;
+  --text-caption-s--letter-spacing: 0;
+  --text-caption-s--font-weight: 400;
+  --text-caption-s--font-family: var(--font-sans);
+
   --text-tick: 11px;
   --text-tick--line-height: 20px;
   --text-tick--letter-spacing: 0;
@@ -198,6 +204,7 @@
   --columns-p-values-phone: 1fr 1fr 1.5fr;
   --columns-loss-chain: 210px 84px 64px 232px minmax(0, 1fr);
   --columns-loss-chain-tablet: 230px 96px 72px 196px minmax(0, 1fr);
+  --aspect-paper: 297 / 210;
   --columns-loss-chain-phone: minmax(0, 1fr) auto auto;
 
   --radius-swatch: 3px;
@@ -399,6 +406,7 @@
   --grid-template-columns-loss-chain: var(--columns-loss-chain);
   --grid-template-columns-loss-chain-tablet: var(--columns-loss-chain-tablet);
   --grid-template-columns-loss-chain-phone: var(--columns-loss-chain-phone);
+  --aspect-paper: var(--aspect-paper);
 
   --breakpoint-tablet: 640px;
   --breakpoint-desktop: 1101px;
@@ -665,6 +673,13 @@
   line-height: var(--text-value-xs--line-height);
   letter-spacing: var(--text-value-xs--letter-spacing);
   font-variant-numeric: tabular-nums;
+}
+@utility type-caption-s {
+  font-family: var(--text-caption-s--font-family);
+  font-weight: var(--text-caption-s--font-weight);
+  font-size: var(--text-caption-s);
+  line-height: var(--text-caption-s--line-height);
+  letter-spacing: var(--text-caption-s--letter-spacing);
 }
 @utility type-tick {
   font-family: var(--text-tick--font-family);

@@ -91,6 +91,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/export/report-pages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report Pages
+         * @description The pages of the report as PNGs at 150 dpi, base64, each with its number, its title and its size.
+         *
+         *     The same drawing as the PDF, page for page, for the preview on the screen. day: the reader's day
+         *     (YYYY-MM-DD), printed on page 1; without it the server's today. The project must name its chosen
+         *     option, and the design must have it, as for the PDF.
+         */
+        post: operations["reportPages"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/export/{kind}": {
         parameters: {
             query?: never;
@@ -1526,6 +1550,56 @@ export interface components {
             weather_source?: "pvgis" | "nasa" | "csv";
         };
         /**
+         * ReportPage
+         * @description One page of the report, drawn as the PDF prints it.
+         */
+        ReportPage: {
+            /**
+             * Height
+             * @description Of the PNG, in pixels
+             */
+            height: number;
+            /**
+             * Number
+             * @description The page's place in the PDF, from 1
+             */
+            number: number;
+            /**
+             * Png
+             * @description The page as a PNG, base64
+             */
+            png: string;
+            /**
+             * Title
+             * @description A short title for the page: Summary, Layout, Shadows, Energy, Schedule, Schedule (continued), SLD
+             */
+            title: string;
+            /**
+             * Width
+             * @description Of the PNG, in pixels
+             */
+            width: number;
+        };
+        /**
+         * ReportPages
+         * @description Every page of the report, in order, as the PDF of the same day would print them.
+         */
+        ReportPages: {
+            /**
+             * Day
+             * Format: date
+             * @description The day printed on page 1: the one asked for, or the server's today
+             */
+            day: string;
+            /**
+             * Dpi
+             * @description The resolution of the pages; A4 landscape at 150 dpi is 1753 × 1240
+             */
+            dpi: number;
+            /** Pages */
+            pages: components["schemas"]["ReportPage"][];
+        };
+        /**
          * Roof
          * @description The roof outline in local metres around its reference point (lat, lon), and its obstacles.
          */
@@ -2192,6 +2266,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ModuleResponse"];
+                };
+            };
+            /** @description The request cannot be used; the message says why. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    reportPages: {
+        parameters: {
+            query?: {
+                day?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Project"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportPages"];
                 };
             };
             /** @description The request cannot be used; the message says why. */

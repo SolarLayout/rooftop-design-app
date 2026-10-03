@@ -43,6 +43,7 @@ from rooftop_api.schemas.health import Health
 from rooftop_api.schemas.layout import Keepout, Layout, LayoutReadouts, LayoutResponse, PlacedModule
 from rooftop_api.schemas.losses import Losses
 from rooftop_api.schemas.project import Project, RoofInput
+from rooftop_api.schemas.report import ReportPage, ReportPages
 from rooftop_api.schemas.roof import Obstacle, Roof
 from rooftop_api.schemas.roof_import import ImportedRoof, RoofFile
 from rooftop_api.schemas.roof_map import MapShape, OutlineOnMap, RoofOnMap
@@ -92,6 +93,8 @@ __all__ = [
     "Point",
     "Polygon",
     "Project",
+    "ReportPage",
+    "ReportPages",
     "Roof",
     "RoofFile",
     "RoofOnMap",

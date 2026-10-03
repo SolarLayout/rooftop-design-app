@@ -18,6 +18,12 @@ type Props = {
   onAction?: () => void;
   /** The item's file is on its way: the press is dim without its shadow, with a turning ring before its words. */
   isOnItsWay?: boolean;
+  /** The body's own actions, before the primary one, on tablet and desktop: the report's previous and next. On phone the body holds them. */
+  actions?: ReactNode;
+  /** The body's words in the facts' place, on tablet and desktop: the report's "Page 1 of 6 · Summary". On phone the body holds them. */
+  words?: string | null;
+  /** What stands in the body's place at the first load: the breathing block, unless the body has a skeleton of its own shape. */
+  skeleton?: ReactNode;
   /** The body of the item. It stands unless the item waits for a decision, or nothing was ever there. */
   children: ReactNode;
 };
@@ -30,7 +36,7 @@ const FACTS = "type-caption text-text-2";
  * name, its facts and its primary action, 44 square with the icon alone on phone; under it a run that failed with Try
  * again; then the body, or before options the API's words leading to the Strings lens, or at the first load a skeleton.
  */
-export function Preview({ row, view, onTryAgain, onAction, isOnItsWay = false, children }: Props) {
+export function Preview({ row, view, onTryAgain, onAction, isOnItsWay = false, actions, words, skeleton, children }: Props) {
   const canAct = onAction !== undefined && !row.waits && view.kind !== "loading" && !isOnItsWay;
   const disabled = canAct ? undefined : "true";
 
@@ -42,11 +48,21 @@ export function Preview({ row, view, onTryAgain, onAction, isOnItsWay = false, c
           {row.about === null ? (
             <Skeleton kind="text" className="my-1 w-44" />
           ) : (
-            <span data-testid="preview-facts" className={classNames(FACTS, view.isDimmed && "opacity-updating")}>
-              {row.about}
+            // The body's words stand in the facts' place on tablet and desktop, as the board draws the head ("Page 1 of 6 ·
+            // Summary"); the facts stay in the row of the list, and on phone in the head, where the body's row holds the words.
+            <span className={FACTS}>
+              <span data-testid="preview-facts" className={classNames(view.isDimmed && "opacity-updating", words && "tablet:hidden")}>
+                {row.about}
+              </span>
+              {words ? (
+                <span data-testid="page-words" className="hidden tablet:inline">
+                  {words}
+                </span>
+              ) : null}
             </span>
           )}
         </div>
+        {actions ? <div className="hidden shrink-0 items-center gap-2 tablet:flex">{actions}</div> : null}
         {row.action ? (
           <div data-testid="preview-action" className="flex shrink-0 items-center gap-2">
             <span className="flex tablet:hidden">
@@ -71,7 +87,7 @@ export function Preview({ row, view, onTryAgain, onAction, isOnItsWay = false, c
       {view.decision && row.waits ? (
         <NoOptionsCard decision={view.decision} testId="files-wait" />
       ) : view.kind === "loading" && row.waits ? (
-        <div data-testid="preview-skeleton" aria-hidden="true" className="h-80 w-full rounded-xs bg-surface-2 breathing tablet:h-96" />
+        (skeleton ?? <div data-testid="preview-skeleton" aria-hidden="true" className="h-80 w-full rounded-xs bg-surface-2 breathing tablet:h-96" />)
       ) : (
         children
       )}

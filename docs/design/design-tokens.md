@@ -105,6 +105,12 @@ alone: the legend says the range and a selected module its value (plan/phase-06-
 | `--color-paper-muted` | `#4A4F57` | Secondary text on the sheet |
 | `--color-paper-line` | `#DDD9CF` | Lines on the sheet |
 
+The shape of a page is a token too, so that the paper has its height before the page is there:
+
+| Token | Value | Use |
+|---|---|---|
+| `--aspect-paper` | `297 / 210` | A4 landscape: the paper's skeleton while the pages come (`aspect-paper`) |
+
 ## 3D scene palette (TypeScript, `apps/web/lib/scene-palette.ts`)
 
 Not CSS: the 3D scene takes its colours from a TypeScript palette, because three.js cannot read a stylesheet.
@@ -206,6 +212,7 @@ height and tracking together.
 | `--text-body-touch` | `--font-sans` | `400` | `15px` | `20px` | `0` | Body on phone and tablet |
 | `--text-small` | `--font-sans` | `400` | `13px` | `20px` | `0` | Secondary lines |
 | `--text-caption` | `--font-sans` | `400` | `12px` | `20px` | `0` | Hints, labels of values, units |
+| `--text-caption-s` | `--font-sans` | `400` | `11px` | `16px` | `0` | The caption of a thumbnail where 12 does not fit (the report's pages on tablet, 72 wide) |
 | `--text-section` | `--font-sans` | `500` | `12px` | `20px` | `0.06em` | Section labels in panels, uppercase, colour text-3 |
 | `--text-value-l` | `--font-mono` | `500` | `17px` | `20px` | `0` | Values in the vitals on tablet |
 | `--text-value` | `--font-mono` | `500` | `16px` | `20px` | `0` | Values in the vitals on desktop and phone |

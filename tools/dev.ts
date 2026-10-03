@@ -420,7 +420,10 @@ function launch(service: Service, profile: Profile, pair: Pair, node: ResolvedNo
       ? ([node.path, [nextBin() ?? "next", "dev", "-p", String(pair.web)], WEB_DIR] as const)
       : ([
           "uv",
-          ["run", "uvicorn", "rooftop_api.main:app", "--host", "127.0.0.1", "--port", String(pair.api), "--reload", "--reload-dir", "src"],
+          // A keep-alive well past the proxy's: uvicorn's 5 s closed idle connections just as the web app's rewrite
+          // reused them, and the browser got the proxy's "Internal Server Error" (socket hang up, ECONNRESET) now and
+          // then for an answer the API had given with 200. The proxy drops its idle sockets first now.
+          ["run", "uvicorn", "rooftop_api.main:app", "--host", "127.0.0.1", "--port", String(pair.api), "--reload", "--reload-dir", "src", "--timeout-keep-alive", "75"],
           API_DIR,
         ] as const);
 

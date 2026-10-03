@@ -65,5 +65,7 @@ export type LossStep = Answers["LossStep"];
 export type PValue = Answers["PValue"];
 export type SummaryRow = Answers["SummaryRow"];
 export type WeatherSummary = Answers["WeatherSummary"];
+export type ReportPages = Answers["ReportPages"];
+export type ReportPage = Answers["ReportPage"];
 
 export type ExportKind = "pdf" | "dxf" | "kmz" | "csv" | "sld" | "rtd";

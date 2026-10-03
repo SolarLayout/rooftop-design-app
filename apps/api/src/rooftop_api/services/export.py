@@ -1,6 +1,7 @@
-"""The files of a design: report, drawing, Google Earth model, hourly data, single-line diagram; and
-the project file, which is of the request alone."""
+"""The files of a design: report, drawing, Google Earth model, hourly data, single-line diagram; the
+project file, which is of the request alone; and the pages of the report as images."""
 
+import base64
 import re
 import threading
 from collections.abc import Callable
@@ -11,10 +12,12 @@ from urllib.parse import quote
 from rooftop_api import convert, schemas
 from rooftop_api.errors import UNPROCESSABLE, ApiError
 from rooftop_api.services import design as design_service
-from rooftop_core.export import files
+from rooftop_core.export import files, report
 from rooftop_core.project import Design, Project
 
 NAMELESS = "rooftop-design"
+PAGE_DPI = 150  # sharp at the preview's width on a 2x screen (plan/phase-09-plan.md, decision 5)
+PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 LONGEST_NAME = 80
 NOT_IN_A_FILE_NAME = re.compile(r'[\\/:*?"<>|\s\x00-\x1f\x7f]+')
 # matplotlib keeps the figure it draws on in one place for the whole process: one drawing at a time.
@@ -73,6 +76,35 @@ def export(kind: str, project: schemas.Project, day: date | None = None) -> File
     else:
         content = made.write(convert.project_to_engine(project))
     return File(content, made.media_type, file_stem(project.name), made.ending)
+
+
+def report_pages(project: schemas.Project, day: date | None = None) -> schemas.ReportPages:
+    """The pages of the report as PNGs, of the option the project has chosen, for *day* (the server's
+    today when None): the same drawing as the PDF of that day, page for page."""
+    design = _design_of(project)
+    printed = day or date.today()
+    with DRAWING:
+        pages = [_page_image(page) for page in report.report_pages(design, printed)]
+    return schemas.ReportPages(day=printed, dpi=PAGE_DPI, pages=pages)
+
+
+def _page_image(page: report.Page) -> schemas.ReportPage:
+    png = report.page_png(page, PAGE_DPI)
+    width, height = png_size(png)
+    return schemas.ReportPage(
+        number=page.number,
+        title=page.title,
+        width=width,
+        height=height,
+        png=base64.b64encode(png).decode("ascii"),
+    )
+
+
+def png_size(png: bytes) -> tuple[int, int]:
+    """Width and height of a PNG, read from its header."""
+    if not png.startswith(PNG_SIGNATURE):
+        raise ValueError("Not a PNG: the file does not start with the PNG signature.")
+    return int.from_bytes(png[16:20], "big"), int.from_bytes(png[20:24], "big")
 
 
 def _design_of(project: schemas.Project) -> Design:

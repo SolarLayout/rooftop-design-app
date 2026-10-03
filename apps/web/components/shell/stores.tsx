@@ -7,19 +7,7 @@ import { api } from "@/lib/api";
 import { createDesignFlow, type DesignFlow } from "@/lib/flow/design-flow";
 import { createDownloadsStore, type DownloadsState, type DownloadsStore } from "@/lib/handover/downloads-store";
 import { createProjectStore, editOf, nameOf, projectOf, type ProjectState, type ProjectStore } from "@/lib/stores/project-store";
-import {
-  createResultsStore,
-  designFailureOf,
-  designOf,
-  designStatusOf,
-  layoutFailureOf,
-  newerLayoutNotesOf,
-  progressOf,
-  readoutsOf,
-  sunDayOf,
-  type ResultsState,
-  type ResultsStore,
-} from "@/lib/stores/results-store";
+import { createResultsStore, designFailureOf, designOf, designStatusOf, layoutFailureOf, newerLayoutNotesOf, progressOf, readoutsOf, sunDayOf, type ResultsState, type ResultsStore } from "@/lib/stores/results-store";
 import { createViewStore, type ViewState, type ViewStore } from "@/lib/stores/view-store";
 import { CLOCK_OF_THE_BROWSER } from "@/lib/clock";
 import { hoursOf } from "@/lib/scene/sun-day";
@@ -62,7 +50,7 @@ function createStores(): Stores {
     open: () => {
       const state = project.getState();
       const document = projectOf(state);
-      return document === null ? null : { document, edit: editOf(state) };
+      return document === null ? null : { document, edit: editOf(state), chosen: designOf(results.getState())?.chosen_option ?? null };
     },
   });
   // Another design opened: the files of the one before are not its.

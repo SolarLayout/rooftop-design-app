@@ -18,6 +18,7 @@ import type {
   OutlineOnMap,
   Project,
   ProjectRequest,
+  ReportPages,
   RoofFile,
   RoofOnMap,
   RoofRequest,
@@ -75,6 +76,23 @@ export function createApi({ base = "/api", fetch: fetcher = globalThis.fetch }: 
     }
   }
 
+  /** The query of a file or of the pages: the reader's day, when given. */
+  const dayQuery = (day: string | undefined) => (day === undefined ? "" : `?${new URLSearchParams({ day })}`);
+
+  /**
+   * A call made once more when the answer was not the API's: a proxy in front of it (the web app's rewrite) has failed a
+   * request now and then with a bare "Internal Server Error" while the API had answered 200. Only for a call that can be
+   * made twice without harm: the exports.
+   */
+  async function onceMore<Answer>(call: () => Promise<Answer>): Promise<Answer> {
+    try {
+      return await call();
+    } catch (error) {
+      if (error instanceof ApiError && error.code === "unexpected_answer") return call();
+      throw error;
+    }
+  }
+
   return {
     getHealth: (options?: CallOptions) => json<Health>("/health", undefined, options),
     getDemo: (options?: CallOptions) => json<Project>("/demo", undefined, options),
@@ -106,11 +124,17 @@ export function createApi({ base = "/api", fetch: fetcher = globalThis.fetch }: 
 
     /** A file of the design, for the option the project has chosen; the project file needs none. */
     async exportDesign(kind: ExportKind, project: ProjectRequest, { day, signal }: ExportOptions = {}): Promise<ExportedFile> {
-      const query = day === undefined ? "" : `?${new URLSearchParams({ day })}`;
-      const response = await ask(`/export/${kind}${query}`, "*/*", project, signal);
+      const response = await onceMore(() => ask(`/export/${kind}${dayQuery(day)}`, "*/*", project, signal));
       const name = fileNameOf(response.headers.get("content-disposition"), FILE_NAMES[kind]);
       return { name, blob: await response.blob() };
     },
+
+    /**
+     * The pages of the report as images, each with its title and size, as the PDF of the same day prints them
+     * (plan/phase-09-plan.md, decision 5). Needs the chosen option, as the PDF does.
+     */
+    reportPages: (project: ProjectRequest, { day, signal }: ExportOptions = {}) =>
+      onceMore(() => json<ReportPages>(`/export/report-pages${dayQuery(day)}`, project, { signal })),
   };
 }
 
