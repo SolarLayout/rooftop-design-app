@@ -505,6 +505,18 @@ nothing was pressed. An edit of the document asks the pages again; the ones of b
 In code: `ReportPreview`, `PageButton` and `ReportSkeleton` (`components/handover/ReportPreview.tsx`); the page, the
 words and the bounds in `lib/handover/report-view.ts`; the pages kept per edit in `lib/handover/downloads-store.ts`.
 
+## Fact rows (Handover)
+What a file holds, as rows of a name and what it is, under a section's title (the board "Handover, previews": the
+layers of the DXF, what is in the KMZ and what is not, the columns of the CSV). The title in `text-section` text-3,
+then a row of 28 for each fact with a line `line-subtle` under it: the name at the left in a column of its own (168,
+200 or 220 wide, as the board draws each list), what it is in words in text-2. A name that is the file's own (a layer,
+a placemark, a column) stands in mono 13; a name in words (the "Not in the file" rows) in Geist. A caption may follow
+the rows in `text-caption` text-2 ("R2010 · metres · x east, y north"). On phone the words take the next line under
+the name. A description list: the names are the terms.
+
+In code: `FactRows` (`components/handover/FactRows.tsx`); the rows of each file in `lib/handover/cad-view.ts`,
+`earth-view.ts` and `csv-columns.ts`.
+
 # Round 4
 
 What the boards "Controls, part 2" (`mockups/Controls2.dc.html`) and "Shell states"
