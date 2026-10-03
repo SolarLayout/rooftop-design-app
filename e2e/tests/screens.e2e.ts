@@ -34,27 +34,33 @@ async function theDemoKeptBesideBlockB(page: Page): Promise<void> {
   // The untouched demo's run lands first, so that the demo's card says its numbers on every size alike (decision 5).
   await expect(page.getByRole("region", { name: "Design vitals" }).getByText("MWh")).toBeVisible({ timeout: RUN_OF_HOME });
   const ran = page.waitForResponse((response) => response.url().endsWith("/api/design") && response.ok() && (response.request().postDataJSON() as { roof: { roof_type: string } }).roof.roof_type === "flat_ew", { timeout: RUN_OF_HOME });
+  const vitalsEnergy = page.getByRole("region", { name: "Design vitals" }).getByTestId("stat-value").filter({ hasText: "MWh" }).first();
+  const energyBefore = await vitalsEnergy.textContent();
   await roofType.getByRole("radio", { name: "East-west" }).click();
   await ran;
-  // The run's facts and the plan are written to the device a moment after the run lands: the page is left once they are there.
+  await expect(vitalsEnergy).not.toHaveText(energyBefore ?? "", { timeout: RUN_OF_HOME });
+  const energy = Number.parseFloat((await vitalsEnergy.textContent())!.replace(/[^\d.]/g, ""));
+  // The run's facts and the plan are written to the device a moment after the run lands: the page is left once the record
+  // carries the energy of this run (not the untouched demo's) and the plan of this layout.
   await expect
     .poll(
       () =>
-        page.evaluate(async () => {
+        page.evaluate(async (energy) => {
           const db = await new Promise<IDBDatabase>((resolve, reject) => {
             const opening = indexedDB.open("rooftop", 1);
             opening.onsuccess = () => resolve(opening.result);
             opening.onerror = () => reject(opening.error);
           });
-          const kept = await new Promise<{ name: string; facts: { dcKwp: number | null }; thumbnail: string | null }[]>((resolve, reject) => {
+          type Record = { name: string; facts: { dcKwp: number | null; energyMwh: number | null }; thumbnail: string | null };
+          const kept = await new Promise<Record[]>((resolve, reject) => {
             const request = db.transaction("designs", "readonly").objectStore("designs").getAll();
-            request.onsuccess = () => resolve(request.result as { name: string; facts: { dcKwp: number | null }; thumbnail: string | null }[]);
+            request.onsuccess = () => resolve(request.result as Record[]);
             request.onerror = () => reject(request.error);
           });
           db.close();
           const demo = kept.find((one) => one.name === "Pune demo roof");
-          return demo !== undefined && demo.facts.dcKwp !== null && demo.thumbnail !== null && demo.thumbnail.includes('data-module="true"');
-        }),
+          return demo !== undefined && demo.facts.energyMwh !== null && Math.abs(demo.facts.energyMwh - energy) < 0.05 && demo.thumbnail !== null && demo.thumbnail.includes('data-module="true"');
+        }, energy),
       { timeout: RUN_OF_HOME },
     )
     .toBe(true);
