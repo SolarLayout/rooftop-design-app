@@ -168,7 +168,10 @@ test.describe("two designs", () => {
     const ran = page.waitForResponse((response) => response.url().endsWith("/api/design") && response.request().postDataJSON().roof.roof_type === "flat_ew", { timeout: RUN });
     await editedToEastWest(page);
     await ran;
-    await expect.poll(() => savingSeen(page), { timeout: RUN }).toEqual(["Not kept on this device", "Saving", "Saved on this device", "Saving", "Saved on this device"]);
+    // The edit, the layout and the run each write the record; writes that follow within the debounce are one span of Saving.
+    await expect.poll(() => savingSeen(page), { timeout: RUN }).toContain("Saving");
+    await expect.poll(async () => (await savingSeen(page)).at(-1), { timeout: RUN }).toBe("Saved on this device");
+    expect((await savingSeen(page))[0]).toBe("Not kept on this device");
 
     // A second design: a roof drawn on the map, built, not kept until its roof type is edited.
     await page.goto("/find");
