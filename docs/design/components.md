@@ -149,6 +149,29 @@ In code: `NumberField` and `Stepper`; their numbers in `number-entry.ts`.
 - Inside a chip the field is a cell of the chip, as in the chain (`form="chip"`); what it says of an entry it
   changed takes a line of its own under the chip's row, at the right.
 
+## Text field
+The number field's well for words (the boards "Handover, previews", the name of the project file, and "Handover, states",
+the name edited; plan phase 9, step 6). Recessed as the number field: `color-well`, border `line`, `shadow-well`, radius
+`radius-control`, height 40 on desktop, 44 on touch. The label stands before the field in text-2, 72 wide; the words in
+Geist at the left, in the size of body text. Focus: accent border and `shadow-well-focus`; the input has no ring of its
+own. The value commits on Enter or blur, not on every key.
+
+In code: `TextField`; its words in `text-entry.ts`.
+
+| Form | Height on desktop | On phone and tablet | Use |
+|---|---|---|---|
+| The label before the field | 40 | 44 | The name of the project file |
+| The label for the screen reader alone | 40 | 44 | The name in the project switcher, where "This design" names the row |
+
+- What is typed is a draft. Enter or leaving the field commits it, trimmed and cut to `maxLength`; Escape gives the
+  value back.
+- An empty or blank entry is not committed: the field gives the value of before back and says why under itself, in
+  `text-caption`, in the caller's words ("A name is needed"). The next good entry takes the words away.
+- A hint may stand under the field in the same style (`detail`): what the words are for. What the field says stands in
+  its place while there is something to say.
+- `maxLength` is the input's too, so nothing longer can be typed.
+- With the focus inside: accent border and `shadow-well-focus`. The kit shows it by `shownAs`.
+
 ## Cards
 `surface-1`, border `line`, radius `radius-card`, `shadow-card`, padding `space-card`.
 Equipment card (module, inverter): glyph 44 by 56 to 60, name in Geist 600, one or two lines of facts in
