@@ -2,6 +2,8 @@
 
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { openWhatBelongs } from "@/lib/device/opening";
+import { rememberedOf } from "@/lib/device/remembered";
 import { savingOf } from "@/lib/device/saving";
 import { placeInShort } from "@/lib/format/place";
 import { withName } from "@/lib/flow/name-field";
@@ -40,10 +42,17 @@ function Frame({ children }: { children: ReactNode }) {
   const [areNotesOpen, setNotesOpen] = useState(false);
   const [isImportOpen, setImportOpen] = useState(false);
 
-  // A workspace without a design opens the demo. From Phase 10 on the designs of the device come first.
+  // A workspace without a design opens the design remembered as open, from the device, else the demo (decision 2 of
+  // plan/phase-10-plan.md); the flow runs what is opened. A kept design that cannot be read opens the demo and says so.
   useEffect(() => {
-    if (projectOf(project.getState()) === null) flow.openDemo();
-  }, [flow, project]);
+    if (projectOf(project.getState()) !== null) return;
+    void openWhatBelongs({
+      remembered: rememberedOf(window.localStorage),
+      openFromDevice: (id) => saving.getState().openFromDevice(id),
+      openDemo: flow.openDemo,
+      say: (words) => void toasts.show({ kind: "note", words }),
+    });
+  }, [flow, project, saving, toasts]);
 
   const place = latitude === null || longitude === null ? null : placeInShort(latitude, longitude);
   const ofTheShell = useMemo(() => ({ notes, open: () => setNotesOpen(true) }), [notes]);
