@@ -65,7 +65,9 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | Charts, tooltip and table | `PerformanceCharts.dc.html` | `performance-charts.png` | desktop, phone in parts |
 | Weather and assumptions | `PerformanceWeather.dc.html` | `performance-weather.png` | desktop, phone in parts |
 | Performance, states | `PerformanceStates.dc.html` | `performance-states.png` | desktop, phone in parts |
-| Handover | `Handover.dc.html` | `handover-desktop.png` | desktop |
+| Handover | `Handover.dc.html`, `HandoverTablet.dc.html`, `HandoverPhone.dc.html` | `handover-desktop.png`, `handover-tablet.png`, `handover-phone.png` | desktop, tablet, phone |
+| Handover, previews | `HandoverPreviews.dc.html` | `handover-previews.png` | desktop, phone in parts |
+| Handover, states | `HandoverStates.dc.html` | `handover-states.png` | desktop, phone in parts |
 | Controls, depth and motion | `Kit.dc.html` | `controls-depth-motion.png` | |
 | Controls, part 2 | `Controls2.dc.html` | `controls-part-2.png` | |
 | Shell states | `ShellStates.dc.html` | `shell-states.png` | desktop, tablet, phone in parts |
@@ -111,10 +113,18 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   Every figure is the engine's for the Pune demo, kept in `mockups/performance_data.json` (the demo, soiling 3 %, degradation 0.7,
   the rear gain off, the levels P50 · P90 · P99 with Uc 25, NASA POWER, a CSV of GHI alone, the run before a voltage, and the API's
   words for a refused download, a refused file and missing weather), so that the boards can be written again without the engine.
+- `mockups/build_phase9_handover_boards.py` writes the three boards of Handover (desktop, tablet, phone; the desktop board replaces
+  the one drawn by hand, its list and head as approved, with Download all, the engine's page as the preview and the file name as the API
+  writes it) and `mockups/build_phase9_part_boards.py` the two of its parts and states (the seven previews; the states), drawn on 2026-10-03
+  by session 13 (`plan/phase-09-plan.md`, step 0). Every number and word is the engine's and the API's for the Pune demo, kept in
+  `mockups/handover_data.json` (option A's system, BOM, cable schedule and MPPT loads, the equipment, the weather, the file names and sizes,
+  the CSV's first rows, the KML's names, the DXF's layers, the API's words before a voltage); the report's pages are the engine's own images
+  for the demo, drawn once at 150 dpi with the day 2026-10-03 into `mockups/handover_pages/`, so that the boards can be written again
+  without the engine.
 - A preview is the board rendered at its `$preview` size (the tail of each `.dc.html`) by a scratch Playwright script outside the
   repo: Chromium from `e2e/node_modules/@playwright/test`, the fonts served from `apps/web/app/fonts` and `apps/web/node_modules/geist`
   in place of the Google link in the board's `helmet`, `support.js` stubbed, everything else off the machine refused.
-- `mockups/canvas.json` is the layout of the boards on the canvas: 43 boards. The canvas at claude.ai holds 27 of them,
+- `mockups/canvas.json` is the layout of the boards on the canvas: 47 boards. The canvas at claude.ai holds 27 of them,
   published on 2026-09-30, and is behind the repo by the board ImportHeights changed on 2026-10-01 and the five new boards
   of Phase 6 with the redrawn Sun lens, the five new boards of Phase 7 with the redrawn Strings lens, and the six new boards of Phase 8 with the redrawn
-  Performance: sessions on Bedrock have no Artifact tool to publish them.
+  Performance, and the four new boards of Phase 9 with the redrawn Handover: sessions on Bedrock have no Artifact tool to publish them.

@@ -303,6 +303,34 @@
    "w": 1440,
    "x": 5944,
    "y": 27900
+  },
+  "HandoverTablet.dc.html": {
+   "h": 1194,
+   "title": "Handover · tablet 834",
+   "w": 834,
+   "x": 0,
+   "y": 33910
+  },
+  "HandoverPhone.dc.html": {
+   "h": 976,
+   "title": "Handover · phone 390, the list and the report pushed",
+   "w": 820,
+   "x": 914,
+   "y": 33910
+  },
+  "HandoverPreviews.dc.html": {
+   "h": 8468,
+   "title": "Handover, previews",
+   "w": 1440,
+   "x": 1814,
+   "y": 33910
+  },
+  "HandoverStates.dc.html": {
+   "h": 6595,
+   "title": "Handover, states",
+   "w": 1440,
+   "x": 3334,
+   "y": 33910
   }
  },
  "createdOnFiles": {
@@ -385,6 +413,14 @@
    "w": 240,
    "x": 0,
    "y": 27600
+  },
+  "t10": {
+   "kind": "title1",
+   "maxW": 4774,
+   "text": "7 · Handover — tablet and phone, the previews, the states",
+   "w": 240,
+   "x": 0,
+   "y": 33610
   }
  },
  "order": [
@@ -430,7 +466,11 @@
   "PerformanceLossChain.dc.html",
   "PerformanceCharts.dc.html",
   "PerformanceWeather.dc.html",
-  "PerformanceStates.dc.html"
+  "PerformanceStates.dc.html",
+  "HandoverTablet.dc.html",
+  "HandoverPhone.dc.html",
+  "HandoverPreviews.dc.html",
+  "HandoverStates.dc.html"
  ],
  "pages": [],
  "title": "SolarLayout Rooftop — Web Design"
