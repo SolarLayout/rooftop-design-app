@@ -2,8 +2,11 @@
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useStore } from "zustand";
+import { createToasts, type Toasts } from "@/components/ui/toast-queue";
+import { api } from "@/lib/api";
 import { createDesignFlow, type DesignFlow } from "@/lib/flow/design-flow";
-import { createProjectStore, nameOf, type ProjectState, type ProjectStore } from "@/lib/stores/project-store";
+import { createDownloadsStore, type DownloadsState, type DownloadsStore } from "@/lib/handover/downloads-store";
+import { createProjectStore, editOf, nameOf, projectOf, type ProjectState, type ProjectStore } from "@/lib/stores/project-store";
 import {
   createResultsStore,
   designFailureOf,
@@ -31,6 +34,10 @@ type Stores = {
   flow: DesignFlow;
   /** Play of the time: one for the app, so that the pill of every lens and the timeline are one. */
   play: Play;
+  /** What the app says in a few words at the bottom of the screen: one queue, shown by the shell's Toaster. */
+  toasts: Toasts;
+  /** The downloads of Handover: the files of the API saved by the browser. */
+  downloads: DownloadsStore;
 };
 
 const Context = createContext<Stores | null>(null);
@@ -48,7 +55,21 @@ function createStores(): Stores {
     },
     isReduced: () => window.matchMedia(REDUCED_MOTION).matches,
   });
-  return { project, results, view, flow: createDesignFlow({ project, results, view }), play };
+  const toasts = createToasts();
+  const downloads = createDownloadsStore({
+    api,
+    toasts,
+    open: () => {
+      const state = project.getState();
+      const document = projectOf(state);
+      return document === null ? null : { document, edit: editOf(state) };
+    },
+  });
+  // Another design opened: the files of the one before are not its.
+  project.subscribe((state, before) => {
+    if (state.openedAt !== before.openedAt) downloads.getState().clear();
+  });
+  return { project, results, view, flow: createDesignFlow({ project, results, view }), play, toasts, downloads };
 }
 
 /** What the user's system says of motion (decision 4: under it, play moves an hour a second). */
@@ -87,6 +108,16 @@ export function useProject<Value>(selector: (state: ProjectState) => Value): Val
 /** One value of the results. The selector is one of lib/stores/results-store.ts. */
 export function useResults<Value>(selector: (state: ResultsState) => Value): Value {
   return useStore(useStores().results, selector);
+}
+
+/** One value of the downloads. The selector is one of lib/handover/downloads-store.ts. */
+export function useDownloads<Value>(selector: (state: DownloadsState) => Value): Value {
+  return useStore(useStores().downloads, selector);
+}
+
+/** The queue of what the app says. */
+export function useToasts(): Toasts {
+  return useStores().toasts;
 }
 
 /** One value of the view. The selector is one of lib/stores/view-store.ts. */

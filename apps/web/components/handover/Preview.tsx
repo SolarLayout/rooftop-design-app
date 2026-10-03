@@ -4,6 +4,7 @@ import { FailedRow } from "@/components/performance/UnderTheTitle";
 import { Button } from "@/components/ui/Button";
 import { classNames } from "@/components/ui/class-names";
 import { IconButton } from "@/components/ui/IconButton";
+import { ProgressRing } from "@/components/ui/ProgressRing";
 import { Skeleton } from "@/components/ui/Skeleton";
 import type { Deliverable } from "@/lib/handover/items";
 import type { PageView } from "@/lib/handover/page-view";
@@ -15,6 +16,8 @@ type Props = {
   onTryAgain: () => void;
   /** The primary action of the head was pressed. Without it the press is shown and cannot be used. */
   onAction?: () => void;
+  /** The item's file is on its way: the press is dim without its shadow, with a turning ring before its words. */
+  isOnItsWay?: boolean;
   /** The body of the item. It stands unless the item waits for a decision, or nothing was ever there. */
   children: ReactNode;
 };
@@ -27,8 +30,9 @@ const FACTS = "type-caption text-text-2";
  * name, its facts and its primary action, 44 square with the icon alone on phone; under it a run that failed with Try
  * again; then the body, or before options the API's words leading to the Strings lens, or at the first load a skeleton.
  */
-export function Preview({ row, view, onTryAgain, onAction, children }: Props) {
-  const canAct = onAction !== undefined && !row.waits && view.kind !== "loading";
+export function Preview({ row, view, onTryAgain, onAction, isOnItsWay = false, children }: Props) {
+  const canAct = onAction !== undefined && !row.waits && view.kind !== "loading" && !isOnItsWay;
+  const disabled = canAct ? undefined : "true";
 
   return (
     <>
@@ -44,12 +48,19 @@ export function Preview({ row, view, onTryAgain, onAction, children }: Props) {
           )}
         </div>
         {row.action ? (
-          <div className="flex shrink-0 items-center gap-2">
+          <div data-testid="preview-action" className="flex shrink-0 items-center gap-2">
             <span className="flex tablet:hidden">
-              <IconButton kind="primary" size="l" icon="download" label={row.action} aria-disabled={canAct ? undefined : "true"} onClick={canAct ? onAction : undefined} />
+              {isOnItsWay ? (
+                <Button kind="primary" size="l" aria-label={row.action} aria-disabled="true" className="w-touch px-0">
+                  <ProgressRing size={16} />
+                </Button>
+              ) : (
+                <IconButton kind="primary" size="l" icon="download" label={row.action} aria-disabled={disabled} onClick={canAct ? onAction : undefined} />
+              )}
             </span>
             <span className="hidden tablet:flex">
-              <Button kind="primary" icon="download" aria-disabled={canAct ? undefined : "true"} onClick={canAct ? onAction : undefined}>
+              <Button kind="primary" icon={isOnItsWay ? undefined : "download"} aria-disabled={disabled} onClick={canAct ? onAction : undefined}>
+                {isOnItsWay ? <ProgressRing size={16} /> : null}
                 {row.action}
               </Button>
             </span>

@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { NotBuiltYet } from "@/components/shell/NotBuiltYet";
-import { useProject, useResults, useStores } from "@/components/shell/stores";
+import { useDownloads, useProject, useResults, useStores } from "@/components/shell/stores";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
+import { byItemOf } from "@/lib/handover/downloads-store";
 import { pageViewOf } from "@/lib/handover/page-view";
 import { FIRST_ITEM, HANDOVER, type HandoverItem } from "@/lib/routes";
 import { nameOf } from "@/lib/stores/project-store";
@@ -40,19 +41,21 @@ const BACK = classNames(
  * API's words with Try again (decision 11).
  */
 export function Handover({ item }: Props) {
-  const { flow } = useStores();
+  const { flow, downloads } = useStores();
   const name = useProject(nameOf);
+  const byItem = useDownloads(byItemOf);
   const design = useResults(designOf);
   const designStatus = useResults(designStatusOf);
   const failure = useResults(designFailureOf);
   const view = useMemo(() => pageViewOf({ name, design, designStatus, failure, pages: null }), [name, design, designStatus, failure]);
   const shown = item ?? FIRST_ITEM;
   const row = view.rows.find((one) => one.id === shown) ?? view.rows[0]!;
+  const download = row.kind === null ? undefined : () => void downloads.getState().download(row.id);
 
   return (
     <div className={PAGE}>
       <aside aria-label="Deliverables" className={classNames(LIST, item === null ? "flex" : "hidden tablet:flex")}>
-        <DeliverableList rows={view.rows} item={item} shown={shown} />
+        <DeliverableList rows={view.rows} item={item} shown={shown} downloads={byItem} />
       </aside>
       <main className={classNames(PREVIEW, item === null ? "hidden tablet:flex" : "flex")}>
         {/* On phone the item is pushed over the list: the row at the top leads back to it. */}
@@ -61,7 +64,7 @@ export function Handover({ item }: Props) {
           <Icon name="chevron-left" size={16} />
           Handover
         </Link>
-        <Preview row={row} view={view} onTryAgain={flow.tryAgain}>
+        <Preview row={row} view={view} onTryAgain={flow.tryAgain} onAction={download} isOnItsWay={byItem[row.id]?.status === "on-its-way"}>
           <NotBuiltYet />
         </Preview>
       </main>

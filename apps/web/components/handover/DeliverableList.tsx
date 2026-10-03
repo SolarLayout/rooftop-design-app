@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/Button";
 import { classNames } from "@/components/ui/class-names";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Tooltip } from "@/components/ui/Tooltip";
+import type { DownloadStatus } from "@/lib/handover/downloads-store";
 import type { Deliverable } from "@/lib/handover/items";
 import type { HandoverItem } from "@/lib/routes";
 import { DeliverableRow, type Open } from "./DeliverableRow";
@@ -12,6 +13,8 @@ type Props = {
   item: HandoverItem | null;
   /** The item shown beside the list on desktop and tablet: the open one, or the first. */
   shown: HandoverItem;
+  /** The state of each item's download; an item not named is at rest. */
+  downloads: Partial<Record<HandoverItem, DownloadStatus>>;
   /** Save a copy of the project file was pressed. Without it the press is shown and cannot be used. */
   onSaveACopy?: () => void;
 };
@@ -39,7 +42,7 @@ function openOf(row: Deliverable, item: HandoverItem | null, shown: HandoverItem
 }
 
 /** The list of what is delivered: the head, the rows, the project file. */
-export function DeliverableList({ rows, item, shown, onSaveACopy }: Props) {
+export function DeliverableList({ rows, item, shown, downloads, onSaveACopy }: Props) {
   const projectFile = rows.find((row) => row.id === PROJECT_FILE) ?? null;
 
   return (
@@ -63,7 +66,7 @@ export function DeliverableList({ rows, item, shown, onSaveACopy }: Props) {
           .filter((row) => row.id !== PROJECT_FILE)
           .map((row) => (
             <li key={row.id}>
-              <DeliverableRow row={row} open={openOf(row, item, shown)} />
+              <DeliverableRow row={row} open={openOf(row, item, shown)} isOnItsWay={downloads[row.id]?.status === "on-its-way"} />
             </li>
           ))}
       </ul>

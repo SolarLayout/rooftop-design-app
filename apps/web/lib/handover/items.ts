@@ -93,6 +93,9 @@ function factsOf(item: HandoverItem, design: DesignResult, option: DesignOption,
   }
 }
 
+/** The file the API writes for an item; null for a view. */
+export const kindOf = (item: HandoverItem): ExportKind | null => SHAPES[item].kind;
+
 const chosenOf = (design: DesignResult | null): DesignOption | null => design?.options.find((option) => option.key === design.chosen_option) ?? null;
 
 /** The eight items, in the order of the list, with their facts from the run and the document. */

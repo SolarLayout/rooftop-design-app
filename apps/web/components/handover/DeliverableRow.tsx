@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
+import { ProgressRing } from "@/components/ui/ProgressRing";
 import { Skeleton } from "@/components/ui/Skeleton";
 import type { Deliverable } from "@/lib/handover/items";
 import { pathOfItem } from "@/lib/routes";
@@ -15,6 +16,8 @@ export type Open = "no" | "here" | "beside";
 type Props = {
   row: Deliverable;
   open: Open;
+  /** The item's file is on its way: a turning ring stands in the icon's place (plan/phase-09-plan.md, decision 12). */
+  isOnItsWay?: boolean;
 };
 
 // The board's row of 64 (components.md, "Deliverable row"): the badge of 44 by 28, the name, a line of facts, then a
@@ -36,7 +39,7 @@ const BADGE_OPEN: Record<Open, string> = {
 };
 const ICON: Record<Open, string> = { no: "text-text-3", here: "text-text", beside: "text-text-3 tablet:text-text" };
 
-export function DeliverableRow({ row, open }: Props) {
+export function DeliverableRow({ row, open, isOnItsWay = false }: Props) {
   return (
     <Link
       href={pathOfItem(row.id)}
@@ -56,8 +59,14 @@ export function DeliverableRow({ row, open }: Props) {
         )}
       </span>
       <span className={classNames("flex shrink-0", ICON[open])}>
-        <Icon name="chevron-right" size={18} className={row.opens === "file" ? "tablet:hidden" : undefined} />
-        {row.opens === "file" ? <Icon name="download" size={18} className="hidden tablet:block" /> : null}
+        {isOnItsWay ? (
+          <ProgressRing size={16} label="On its way" />
+        ) : (
+          <>
+            <Icon name="chevron-right" size={18} className={row.opens === "file" ? "tablet:hidden" : undefined} />
+            {row.opens === "file" ? <Icon name="download" size={18} className="hidden tablet:block" /> : null}
+          </>
+        )}
       </span>
     </Link>
   );

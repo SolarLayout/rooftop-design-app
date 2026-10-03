@@ -44,7 +44,8 @@ const NO_WEATHER = "weather_not_loaded";
 
 const isForWantOfWeather = (error: unknown): boolean => error instanceof ApiError && error.code === NO_WEATHER;
 
-function failureOf(error: unknown): Failure {
+/** What failed, in the API's words, or in words of the app for a fault that is not the API's. */
+export function failureOf(error: unknown): Failure {
   if (error instanceof ApiError) return { code: error.code, message: error.message };
   const what = error instanceof Error ? error.message : String(error);
   return {

@@ -222,6 +222,15 @@ describe("exportDesign", () => {
     expect((await api.exportDesign(kind, PROJECT)).name).toBe(name);
   });
 
+  test("the reader's day goes with the request, as the query parameter day (plan/phase-09-plan.md, decision 2)", async () => {
+    const { api, calls } = server(() => new Response("%PDF-1.4"));
+
+    await api.exportDesign("pdf", PROJECT, { day: "2026-10-03" });
+    await api.exportDesign("rtd", PROJECT);
+
+    expect(calls.map((call) => call.url)).toEqual(["/api/export/pdf?day=2026-10-03", "/api/export/rtd"]);
+  });
+
   test("an export that is refused is thrown as the error of the API", async () => {
     const refused = { error: { code: "no_option_chosen", message: "Choose a stringing option first.", field: "chosen_option" } };
     const { api } = server(() => json(refused, 422));

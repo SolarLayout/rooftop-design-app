@@ -6,10 +6,11 @@ import { placeInShort } from "@/lib/format/place";
 import { workspaceOf } from "@/lib/routes";
 import { latitudeOf, longitudeOf, nameOf, projectOf } from "@/lib/stores/project-store";
 import { lensOf } from "@/lib/stores/view-store";
+import { Toaster } from "@/components/ui/Toaster";
 import { ImportDrawing } from "./ImportDrawing";
 import { NotesDrawer } from "./NotesDrawer";
 import type { Note } from "./notes-view";
-import { useNotes, useProject, useStores, useView } from "./stores";
+import { useNotes, useProject, useStores, useToasts, useView } from "./stores";
 import { TopBar } from "./TopBar";
 import { TabBar } from "./WorkspaceNav";
 
@@ -32,6 +33,7 @@ function Frame({ children }: { children: ReactNode }) {
   const longitude = useProject(longitudeOf);
   const lens = useView(lensOf);
   const notes = useNotes();
+  const toasts = useToasts();
   const [areNotesOpen, setNotesOpen] = useState(false);
   const [isImportOpen, setImportOpen] = useState(false);
 
@@ -62,6 +64,8 @@ function Frame({ children }: { children: ReactNode }) {
       </div>
       <NotesDrawer open={areNotesOpen} notes={notes} onClose={() => setNotesOpen(false)} onTryAgain={flow.tryAgain} />
       <ImportDrawing open={isImportOpen} onClose={() => setImportOpen(false)} />
+      {/* What the app says, in the page from the start: a download that failed (plan/phase-09-plan.md, decision 12). */}
+      <Toaster toasts={toasts} aboveTheTabBar />
     </NotesContext.Provider>
   );
 }
