@@ -4,8 +4,9 @@ The single place that says where the project stands. Every session reads it firs
 Keep it short and true. History belongs in git and in the phase files, not here.
 
 **Last updated:** 2026-10-03, session 13, Phase 9 in progress: the plan and the four boards of step 0 approved; pull request 1 (#62,
-the Handover frame, the `.rtd` download, the report's day, the name) merged; the browser step of `bun check` split into six groups and
-the fast check made the gate (#63, D54, D55, `docs/checks.md`). `main` is green.
+the Handover frame, the `.rtd` download, the report's day, the name) and 2 (#64, the report previewed as the engine's pages, the PDF of the
+same day) merged; the browser step of `bun check` split into six groups and the fast check made the gate (#63, D54, D55, `docs/checks.md`).
+`main` is green.
 
 ## Where we are
 
@@ -26,8 +27,9 @@ the fast check made the gate (#63, D54, D55, `docs/checks.md`). `main` is green.
 
 ## In flight
 
-- `feat/phase-9-report` (pull request 2): the report's pages drawn one by one in the engine and `/export/report-pages` (steps 9 and 10)
-  are built and reviewed in a worktree; the web part (the paper preview, steps 11 and 12) is being built by an agent.
+- `feat/phase-9-sld-tables` (pull request 3: the SLD drawn in the browser, the bill of materials, the DC cable schedule with sorting
+  and Copy as table): built by an agent, being rebased over #64; the session runs its browser tests next.
+- `feat/phase-9-files` (pull request 4: the zip, the DXF, KMZ and CSV previews, Download all): being built by an agent.
 
 ## What the web app has today
 
@@ -82,6 +84,7 @@ the map and opens the demo (D44).
 | `POST /weather` | `loadWeather` |
 | `POST /design`, progress as events | `runDesign` |
 | `POST /export/{pdf,dxf,kmz,csv,sld,rtd}?day=` | `exportDesign` |
+| `POST /export/report-pages?day=` | `reportPages` |
 
 On the demo: a design run takes 12 s, also after a change of the weather source (the shading computed again); 1.7 s after a
 change of a loss, of Uc or of the voltage (the candidates simulated in threads); 0.28 s after a change of degradation, the CO2
@@ -149,6 +152,8 @@ run. The test stack's API starts with downloads of weather off (`ROOFTOP_WEATHER
 | The names of the demo's equipment are shown as the files state them: "INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560", "WattPower Systems Pvt.Ltd WP-330KTL-H1". The mockups show "Insolation INA-144MHC-TF-560". The module card of the Array lens shows the PAN's names as they are (Phase 5, decision 14) | The owner gives the names to show; the Strings lens follows the files too (Phase 7, decision 15) |
 | NASA POWER is asked for the year 2023 and the times of a CSV are read as UTC, as on the desktop; neither can be set in a request. The select says "NASA POWER 2023" and the CSV dialog says the times are read as UTC (Phase 8, decision 19) | Phase 11, or when the owner asks |
 | The memo for the shading in the tests (#37, session 7). Measured before: pytest 151 s here; 66 hourly shadings for 15 distinct inputs and 208 simulations for 66; the repeats cost 76 s and 10 s, of which 48 s are the proofs of the memo, of progress reporting and of a fresh server, which must stay without a memo. Now one memo (`apps/api/tests/kept.py`) serves the whole pytest session, the engine tests and the API alike: pytest 122 s here, the demo's shading computed once. On GitHub the same code took 155 s in one run and 279 s in the next, and 274 s after the memo: the runners vary two-fold, so the mark of 6 min 30 s is a poor rule there; the checks of #37 and #38 took 5 min 38 s and 5 min 33 s. Four workers with pytest-xdist would give 66 s here (measured, not adopted: a dependency and a change of its own) | If a check passes the mark again: pytest-xdist, pinned, as a pull request of its own, after the owner's yes. Since Phase 4.5 the mark matters only when `apps/api` changed: a push that leaves it alone skips pytest |
+| The web app's rewrite drops a request to the API now and then (socket hang up, ECONNRESET; a bare "Internal Server Error" to the browser) while the API answered 200; seen six times in 48 tests of the report's pages. Done in #64: uvicorn keeps a connection alive 75 s, the client asks an export once more, the test waits for the good answer; the retried tests pass. A production build and a proxy in front of it are untried | Phase 11; watch the flaky list of the handover group |
+| Hardware WebGL for the browser tests was tried (2026-10-03): a Studio picture is drawn five to six times faster on the GPU than in software, but the satellite ground was missing in later runs and the cause was not found; software rendering stays. The GPU trial's configuration is a scratch file, not in the repo | Phase 11, or when the owner asks |
 | Under the load of a full check (ten workers, the Studio in software WebGL on three sizes, the machine's twenty cores saturated) a 5 s wait ran out on a different test in each of four full runs of #62 (Edit's navigation in `build.e2e.ts`, the number field on phone, the years' keyboard, New design from the switcher), each green alone. Done in #62: Edit's test waits with the run's time, the charts' tooltips leave only when their anchor moved, every expectation waits 15 s. The split of the browser step and one retry per test come with `feat/check-e2e-groups`; hardware WebGL for the tests is to be measured (the owner's yes first) | Watch. The whole suite runs only when the owner says (D55, coming with the split) |
 | The charts' keyboard tests run on desktop alone: on tablet the focus can scroll the frame and the moving page takes the tooltip away by design. Since #62 a tooltip leaves on a scroll only when its anchor moved (`isStill`) | Known; written in the phase file |
 | The Performance line of the run says "PVGIS weather", not "PVGIS TMY weather" (decision 2 of the plan): the longer form wraps at 1440 | The owner may prefer the longer words and a two-line header |

@@ -121,6 +121,10 @@ every cache; `--only=e2e` and `--skip=e2e` take steps by id.
 
 ## Known limits
 
+- The web app's rewrite in front of the API (`next dev`) drops a request now and then with a bare "Internal Server Error"
+  (socket hang up, ECONNRESET) while the API answered 200; seen on the report's pages. The stack's uvicorn keeps a
+  connection alive 75 s now, and an export is asked once more by the client; a test that reads an answer waits for the good
+  one. A production build and a proxy in front of it are untried (Phase 11).
 - The shared state reaches into the workspaces' `lib` folders (`components/shell/stores.tsx` imports
   `lib/handover/downloads-store.ts`, `lib/scene/sun-day.ts`, `lib/studio/play.ts`; `lib/flow/design-flow.ts` imports
   `lib/performance/weather-source.ts`, `lib/studio/sun-time.ts`; `lib/stores/results-store.ts` imports
