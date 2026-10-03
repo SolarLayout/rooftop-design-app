@@ -15,8 +15,10 @@ import type {
   InverterResponse,
   LayoutResponse,
   ModuleResponse,
+  OpenedProject,
   OutlineOnMap,
   Project,
+  ProjectFile,
   ProjectRequest,
   ReportPages,
   RoofFile,
@@ -111,6 +113,8 @@ export function createApi({ base = "/api", fetch: fetcher = globalThis.fetch }: 
     computeLayout: (project: ProjectRequest, options?: CallOptions) => json<LayoutResponse>("/layout", project, options),
     computeSun: (request: SunRequest, options?: CallOptions) => json<SunResponse>("/sun", request, options),
     loadWeather: (request: WeatherRequest, options?: CallOptions) => json<WeatherResponse>("/weather", request, options),
+    /** A project file (.rtd) of the user, read by the engine's own reader: the project it holds, and the notes on what it lacks. */
+    openProject: (file: ProjectFile, options?: CallOptions) => json<OpenedProject>("/project/open", file, options),
 
     /** Runs the whole design. *onProgress* hears every step on the way; the result is what comes back. */
     async runDesign(project: ProjectRequest, { signal, onProgress }: RunOptions = {}): Promise<DesignResult> {

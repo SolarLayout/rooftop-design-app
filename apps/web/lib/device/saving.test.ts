@@ -390,6 +390,71 @@ describe("another design opened", () => {
   });
 });
 
+describe("a project opened from a file", () => {
+  test("is kept under a new id as a design of its own: opened, Saved, the id remembered, written with the roof's words and no run's facts", async () => {
+    const { project, saving, device, remembered, setNow } = setUp();
+    setNow(70_000);
+
+    saving.getState().keepAndOpen({ ...DEMO, name: "Block B" });
+    await settled();
+
+    expect(project.getState().project).toEqual({ ...DEMO, name: "Block B" });
+    expect(project.getState().openedAt).toBe(1);
+    expect(savingOf(saving.getState())).toBe("saved");
+    expect(idOf(saving.getState())).toBe("id-1");
+    expect(remembered).toEqual(["id-1"]);
+    expect(device.records.get("id-1")).toMatchObject({
+      name: "Block B",
+      editedAt: 70_000,
+      openedAt: 70_000,
+      facts: { roofWords: "90.0 × 40.0 m flat roof, tilted rows", dcKwp: null, energyMwh: null },
+    });
+    expect(keptDesignsOf(saving.getState()).map((one) => one.id)).toEqual(["id-1"]);
+  });
+
+  test("while a kept design is open: that one keeps its id and its record, the new one has its own", async () => {
+    const { saving, device, setNow } = setUp([BLOCK_B]);
+    await saving.getState().openFromDevice("kept-b");
+    await settled();
+    setNow(80_000);
+
+    saving.getState().keepAndOpen(DEMO);
+    await settled();
+
+    expect(idOf(saving.getState())).toBe("id-1");
+    expect([...device.records.keys()].sort()).toEqual(["id-1", "kept-b"]);
+    expect(device.records.get("kept-b")).toMatchObject({ name: "Block B", editedAt: 1_000 });
+    expect(device.records.get("id-1")).toMatchObject({ name: "Pune demo roof", editedAt: 80_000 });
+  });
+
+  test("then edited: written under the same id, the time of the edit new", async () => {
+    const { project, saving, device, pass, setNow } = setUp();
+    setNow(70_000);
+    saving.getState().keepAndOpen(DEMO);
+    await settled();
+    setNow(75_000);
+
+    project.getState().commit(tilt(20));
+    pass(SAVE_DEBOUNCE);
+    await settled();
+
+    expect(device.puts.at(-1)).toMatchObject({ id: "id-1", editedAt: 75_000, openedAt: 70_000 });
+    expect(device.puts.at(-1)!.document.array.tilt_deg).toBe(20);
+    expect(idOf(saving.getState())).toBe("id-1");
+  });
+
+  test("a write the device refuses says Not saved with its words", async () => {
+    const { saving, device } = setUp();
+    device.refuseNext("QuotaExceededError");
+
+    saving.getState().keepAndOpen(DEMO);
+    await settled();
+
+    expect(savingOf(saving.getState())).toBe("not-saved");
+    expect(failureOf(saving.getState())).toBe("The design could not be kept on this device: QuotaExceededError.");
+  });
+});
+
 describe("the designs on this device", () => {
   test("are listed when the store is started, the newest edited first, and a design written joins them", async () => {
     const older = { ...BLOCK_B, id: "kept-a", name: "Block A", editedAt: 500 };

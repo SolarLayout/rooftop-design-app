@@ -4,7 +4,7 @@
 // no group is refused, so that a new suite is placed on purpose (tools/check/e2e-groups.test.ts holds
 // turbo.json and package.json equal to this file).
 
-export type GroupId = "kit" | "find" | "studio" | "performance" | "handover" | "shell";
+export type GroupId = "kit" | "find" | "studio" | "performance" | "handover" | "home" | "shell";
 
 export type Group = {
   id: GroupId;
@@ -74,10 +74,13 @@ const STUDIO_OWN = [
 // performance.e2e.ts chooses a voltage in the Strings lens; performance-weather builds a roof on the map.
 const PERFORMANCE_OWN = ["apps/web/components/performance/**", "apps/web/lib/performance/**", ...STUDIO_OWN];
 const HANDOVER_OWN = ["apps/web/components/handover/**", "apps/web/lib/handover/**"];
+// Home and the dialogs it shares with the project switcher (Open a project), which the shell opens on every page: the
+// shell imports the dialog, so a change to it runs home and shell (plan/phase-10-plan.md, decision 12).
+const HOME_OWN = ["apps/web/components/home/**", "apps/web/lib/home/**"];
 // The screens suite pictures every page but the kit's, whose pictures the kit suite takes: this group runs
 // whenever anything of the web changed.
 const SHELL_OWN = [
-  ...new Set([...KIT_OWN, ...FIND_OWN, ...STUDIO_OWN, ...PERFORMANCE_OWN, ...HANDOVER_OWN].filter((pattern) => pattern !== KIT_BASELINES)),
+  ...new Set([...KIT_OWN, ...FIND_OWN, ...STUDIO_OWN, ...PERFORMANCE_OWN, ...HANDOVER_OWN, ...HOME_OWN].filter((pattern) => pattern !== KIT_BASELINES)),
   "e2e/baselines/*/*/*.png",
   `!${KIT_BASELINES}`,
 ];
@@ -108,6 +111,7 @@ export const GROUPS: readonly Group[] = [
   },
   { id: "performance", suites: ["performance*.e2e.ts"], own: PERFORMANCE_OWN },
   { id: "handover", suites: ["handover*.e2e.ts"], own: HANDOVER_OWN },
+  { id: "home", suites: ["home*.e2e.ts"], own: HOME_OWN },
   {
     id: "shell",
     // device*.e2e.ts opens every workspace and the map: the group that sees them all.

@@ -14,8 +14,8 @@ const ownOf = (group: Group) => group.own;
 const intersection = <T>(a: Set<T>, b: Set<T>) => [...a].filter((item) => b.has(item));
 
 describe("the groups of the browser tests", () => {
-  test("there are six, in the order the check runs them", () => {
-    expect(GROUPS.map((group) => group.id)).toEqual(["kit", "find", "studio", "performance", "handover", "shell"]);
+  test("there are seven, in the order the check runs them", () => {
+    expect(GROUPS.map((group) => group.id)).toEqual(["kit", "find", "studio", "performance", "handover", "home", "shell"]);
   });
 
   test("every suite in e2e/tests belongs to exactly one group, by its name", () => {
@@ -27,7 +27,7 @@ describe("the groups of the browser tests", () => {
   });
 
   test("a suite whose name matches no group is refused, naming the groups", () => {
-    expect(() => groupOf("weather-station.e2e.ts")).toThrow(/weather-station\.e2e\.ts.*kit, find, studio, performance, handover, shell/s);
+    expect(() => groupOf("weather-station.e2e.ts")).toThrow(/weather-station\.e2e\.ts.*kit, find, studio, performance, handover, home, shell/s);
   });
 
   test("every pattern of suites matches a file: no pattern is dead", () => {
@@ -57,6 +57,7 @@ describe("the groups of the browser tests", () => {
     expect(suitesOf(groupById("kit")!, files)).toEqual(["tests/kit-dialog.e2e.ts", "tests/kit.e2e.ts"]);
     expect(suitesOf(groupById("shell")!, files)).toEqual(["tests/shell.e2e.ts"]);
     expect(suitesOf(groupById("handover")!, files)).toEqual([]);
+    expect(suitesOf(groupById("home")!, ["home-open-project.e2e.ts", "home.e2e.ts", "shell.e2e.ts"])).toEqual(["tests/home-open-project.e2e.ts", "tests/home.e2e.ts"]);
   });
 
   test("suitesOf refuses a suite no group claims, so that a stray file never runs unnoticed", () => {
