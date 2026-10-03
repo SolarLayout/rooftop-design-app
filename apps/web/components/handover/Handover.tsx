@@ -8,7 +8,7 @@ import { useHistoryKeys } from "@/components/shell/use-history-keys";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
 import { bomViewOf } from "@/lib/handover/bom-view";
-import { byItemOf, keptOf, pagesOf, pagesStatusOf } from "@/lib/handover/downloads-store";
+import { allStatusOf, byItemOf, keptOf, pagesOf, pagesStatusOf } from "@/lib/handover/downloads-store";
 import { IN_THE_REPORT } from "@/lib/handover/in-the-report";
 import { scheduleViewOf } from "@/lib/handover/schedule-view";
 import type { Sort } from "@/components/ui/table-sort";
@@ -66,6 +66,7 @@ export function Handover({ item }: Props) {
   const document = useProject(projectOf);
   const edit = useProject(editOf);
   const byItem = useDownloads(byItemOf);
+  const all = useDownloads(allStatusOf);
   const projectFile = useDownloads((state) => keptOf(state, "rtd", edit));
   const keptPages = useDownloads(pagesOf);
   const pagesStatus = useDownloads(pagesStatusOf);
@@ -130,7 +131,15 @@ export function Handover({ item }: Props) {
   return (
     <main className={PAGE}>
       <nav aria-label="Deliverables" className={classNames(LIST, item === null ? "flex" : "hidden tablet:flex")}>
-        <DeliverableList rows={view.rows} item={item} shown={shown} downloads={byItem} onSaveACopy={() => void downloads.getState().download("project-file")} />
+        <DeliverableList
+          rows={view.rows}
+          item={item}
+          shown={shown}
+          downloads={byItem}
+          onSaveACopy={() => void downloads.getState().download("project-file")}
+          all={all}
+          onDownloadAll={() => void downloads.getState().downloadAll()}
+        />
       </nav>
       <section aria-label={row.name} data-testid="preview" className={classNames(PREVIEW, item === null ? "hidden tablet:flex" : "flex")}>
         {/* On phone the item is pushed over the list: the row at the top leads back to it. */}

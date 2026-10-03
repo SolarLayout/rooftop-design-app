@@ -127,7 +127,9 @@ test.describe("the list (decisions 3 and 14)", () => {
     await expect(rowFacts(page)).toHaveText(factsOf(answer));
     await expect(card(page)).toContainText(`${stemOf(DEMO_NAME)}.rtd · opens offline`);
     await expect(card(page).getByRole("button", { name: "Save a copy" })).not.toHaveAttribute("aria-disabled", "true");
-    await expect(page.getByRole("button", { name: "Download all" })).toHaveAttribute("aria-disabled", "true");
+    // Download all is live with the rows of the design (handover-files.e2e.ts captures its zip).
+    await expect(page.getByRole("button", { name: "Download all" })).not.toHaveAttribute("aria-disabled", "true");
+    await expect(page.getByTestId("download-all")).toContainText("6 files · one zip");
     if (isPhone(testInfo.project.name)) {
       await expect(preview(page)).toBeHidden();
       return;
@@ -178,6 +180,8 @@ test.describe("before a voltage (decision 11)", () => {
       await expect(card(page)).toContainText(`${stemOf(DEMO_NAME)}.rtd · opens offline`);
       await expect(card(page)).toHaveCSS("opacity", "1");
       await expect(card(page).getByRole("button", { name: "Save a copy" })).not.toHaveAttribute("aria-disabled", "true");
+      // The zip needs an option as the five files do: Download all is dim with their rows.
+      await expect(page.getByRole("button", { name: "Download all" })).toHaveAttribute("aria-disabled", "true");
     }
     const waits = page.getByTestId("files-wait");
     await expect(waits).toContainText(title, { timeout: RUN });

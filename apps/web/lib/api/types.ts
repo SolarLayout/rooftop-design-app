@@ -68,4 +68,4 @@ export type WeatherSummary = Answers["WeatherSummary"];
 export type ReportPages = Answers["ReportPages"];
 export type ReportPage = Answers["ReportPage"];
 
-export type ExportKind = "pdf" | "dxf" | "kmz" | "csv" | "sld" | "rtd";
+export type ExportKind = "pdf" | "dxf" | "kmz" | "csv" | "sld" | "rtd" | "zip";
