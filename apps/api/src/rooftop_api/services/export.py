@@ -1,16 +1,18 @@
-"""The files of a design: report, drawing, Google Earth model, hourly data, single-line diagram."""
+"""The files of a design: report, drawing, Google Earth model, hourly data, single-line diagram; and
+the project file, which is of the request alone."""
 
 import re
 import threading
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import date
 from urllib.parse import quote
 
-from rooftop_api import schemas
+from rooftop_api import convert, schemas
 from rooftop_api.errors import UNPROCESSABLE, ApiError
 from rooftop_api.services import design as design_service
 from rooftop_core.export import files
-from rooftop_core.project import Design
+from rooftop_core.project import Design, Project
 
 NAMELESS = "rooftop-design"
 LONGEST_NAME = 80
@@ -23,8 +25,10 @@ DRAWING = threading.Lock()
 class Kind:
     media_type: str
     ending: str
-    write: Callable[[Design], bytes]
+    write: Callable[..., bytes]  # of the Design, or of the engine's Project when needs_design is False
+    needs_design: bool = True  # False: of the request alone; nothing is prepared or run for it
     drawn: bool = False  # made with matplotlib
+    dated: bool = False  # prints the day of the report, which the writer takes after the design
 
 
 @dataclass(frozen=True)
@@ -43,28 +47,48 @@ class File:
         return f"attachment; filename=\"{NAMELESS}{self.ending}\"; filename*=UTF-8''{quote(name, safe='-._')}"
 
 
+def rtd_bytes(project: Project) -> bytes:
+    """The project file as the engine writes it, format 2."""
+    return project.to_text().encode("utf-8")
+
+
 KINDS: dict[str, Kind] = {
-    "pdf": Kind("application/pdf", "-report.pdf", files.export_pdf_bytes, drawn=True),
+    "pdf": Kind("application/pdf", "-report.pdf", files.export_pdf_bytes, drawn=True, dated=True),
     "dxf": Kind("image/vnd.dxf", "-layout.dxf", files.export_dxf_bytes),
     "kmz": Kind("application/vnd.google-earth.kmz", ".kmz", files.export_kmz_bytes),
     "csv": Kind("text/csv; charset=utf-8", "-hourly.csv", files.export_csv_bytes),
     "sld": Kind("image/png", "-single-line-diagram.png", files.export_sld_bytes, drawn=True),
+    "rtd": Kind("application/json", ".rtd", rtd_bytes, needs_design=False),
 }
 
 
-def export(kind: str, project: schemas.Project) -> File:
-    """The file of *kind* for the option the project has chosen."""
-    chosen = project.chosen_option
+def export(kind: str, project: schemas.Project, day: date | None = None) -> File:
+    """The file of *kind*: of the option the project has chosen, or of the request alone.
+
+    *day* is the reader's day, printed by the kinds that are dated; None prints the server's today.
+    """
+    made = KINDS[kind]
+    if made.needs_design:
+        content = _written(made, _design_of(project), day)
+    else:
+        content = made.write(convert.project_to_engine(project))
+    return File(content, made.media_type, file_stem(project.name), made.ending)
+
+
+def _design_of(project: schemas.Project) -> Design:
+    """The design run, with the option the project has chosen."""
     design = design_service.prepare(project).design
     design.run_options()
-    require_option(design, chosen)
-    made = KINDS[kind]
+    require_option(design, project.chosen_option)
+    return design
+
+
+def _written(made: Kind, design: Design, day: date | None) -> bytes:
+    given = (design, day) if made.dated else (design,)
     if made.drawn:
         with DRAWING:
-            content = made.write(design)
-    else:
-        content = made.write(design)
-    return File(content, made.media_type, file_stem(project.name), made.ending)
+            return made.write(*given)
+    return made.write(*given)
 
 
 def require_option(design: Design, chosen: str) -> None:

@@ -1,15 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, type ComponentProps, type KeyboardEvent } from "react";
+import { useRef, useState, type ComponentProps, type KeyboardEvent } from "react";
 import { classNames } from "@/components/ui/class-names";
 import { LIST_GAP } from "@/components/ui/design-numbers";
 import { FloatingPanel } from "@/components/ui/FloatingPanel";
 import { Icon, type IconName } from "@/components/ui/Icon";
+import { IconButton } from "@/components/ui/IconButton";
 import { indexAfterKey } from "@/components/ui/list-keys";
 import { FACT, LIST } from "@/components/ui/list-look";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { TextField } from "@/components/ui/TextField";
 import { useFloating } from "@/components/ui/use-floating";
+import { NAME_RULES } from "@/lib/handover/name-field";
 import { SaveState, type Saving } from "./SaveState";
 
 type Design = {
@@ -50,15 +53,19 @@ export function ProjectTrigger({ name, place, open, className, ...rest }: Trigge
   );
 }
 
-/** An action of the menu: it leads to an address, or it opens the import of a drawing; one that does neither comes with a later phase. */
-type Action = { name: string; icon: IconName; fact?: string; href?: string; opens?: "import" };
+/**
+ * An action of the menu: it leads to an address, it opens the import of a drawing, or it saves a copy of the project file;
+ * one that does none of these comes with a later phase.
+ */
+type Action = { name: string; icon: IconName; fact?: string; href?: string; does?: "import" | "save" };
 
-// What has neither an address nor a thing to open comes with a later phase: it is shown and cannot be used.
+// What has neither an address nor a thing to do comes with a later phase (Open a project, Phase 10): it is shown and cannot
+// be used. Save a copy downloads the .rtd the API writes (plan/phase-09-plan.md, step 8).
 const ACTIONS: Action[] = [
   { name: "New design", icon: "plus", fact: "Find the roof", href: "/find" },
   { name: "Open a project", icon: "folder", fact: ".rtd" },
-  { name: "Import a drawing", icon: "upload", fact: "KMZ, KML, DXF", opens: "import" },
-  { name: "Save a copy", icon: "download", fact: ".rtd" },
+  { name: "Import a drawing", icon: "upload", fact: "KMZ, KML, DXF", does: "import" },
+  { name: "Save a copy", icon: "download", fact: ".rtd", does: "save" },
   { name: "Home", icon: "home", href: "/" },
 ];
 
@@ -74,12 +81,62 @@ type MenuProps = Pick<Design, "name"> & {
   onOpenNotes: () => void;
   /** Import a drawing was taken: the dialog of the import opens (plan/phase-05-plan.md, decision 13). */
   onImport: () => void;
-  /** A row that leads somewhere, or opens something, was taken. */
+  /** A row that leads somewhere, or does something, was taken. */
   onTake: () => void;
+  /** Save a copy was taken: the project file is downloaded (plan/phase-09-plan.md, step 8). Without it the row is shown and cannot be used. */
+  onSaveACopy?: () => void;
+  /** The name was edited in the row "This design" (plan/phase-09-plan.md, decision 13). Without it the name cannot be edited here. */
+  onRename?: (name: string) => void;
+  /** For the kit: the row with its field open, as it looks while the name is edited. */
+  shownAs?: "renaming";
 };
 
+/** The row "This design": the name with a tick, and under it the state of saving; pressed, Rename turns the name into a field. */
+function ThisDesign({ name, saving, onOpenNotes, onTake, onRename, shownAs }: Omit<MenuProps, "onImport">) {
+  const [isRenaming, setRenaming] = useState(shownAs === "renaming");
+  const canRename = onRename !== undefined && name !== null;
+
+  if (isRenaming && name !== null && onRename) {
+    return (
+      <div
+        data-testid="this-design"
+        className="flex flex-col gap-2 px-2.5 pt-1 pb-2.5"
+        onKeyDown={(event) => {
+          // Escape gives the name back and closes the field; it must not close the switcher too.
+          if (event.key !== "Escape") return;
+          event.preventDefault();
+          event.stopPropagation();
+          setRenaming(false);
+        }}
+      >
+        <TextField label="Name" labelHidden value={name} {...NAME_RULES} initialFocus onCommit={onRename} onDone={(said) => said === null && setRenaming(false)} />
+        <SaveState look="menu" state={saving} onOpenNotes={onOpenNotes} className="pl-2.5" />
+      </div>
+    );
+  }
+
+  return (
+    <div data-testid="this-design" className="flex items-center gap-2.5 px-2.5 pt-1.5 pb-2.5">
+      <Icon name="tick" stroke="tick" size={16} className="text-accent" />
+      <span className="flex min-w-0 grow flex-col gap-0.5">
+        {name === null ? <Skeleton kind="text" className="w-28" /> : <span className="truncate font-medium desktop:font-medium">{name}</span>}
+        <SaveState
+          look="menu"
+          state={saving}
+          onOpenNotes={() => {
+            onTake();
+            onOpenNotes();
+          }}
+        />
+      </span>
+      {canRename ? <IconButton kind="quiet" size="xs" icon="pencil" iconSize={18} label="Rename" onClick={() => setRenaming(true)} className="-my-1.5 -mr-1.5" /> : null}
+    </div>
+  );
+}
+
 /** What the project switcher holds: this design, the designs on this device, what can be done. */
-export function ProjectMenu({ name, saving, onOpenNotes, onImport, onTake }: MenuProps) {
+export function ProjectMenu({ name, saving, onOpenNotes, onImport, onTake, onSaveACopy, onRename, shownAs }: MenuProps) {
+  const doers: Record<NonNullable<Action["does"]>, (() => void) | undefined> = { import: onImport, save: onSaveACopy };
   const rows = useRef<HTMLUListElement>(null);
 
   function onKeyDown(event: KeyboardEvent<HTMLUListElement>) {
@@ -94,26 +151,14 @@ export function ProjectMenu({ name, saving, onOpenNotes, onImport, onTake }: Men
   return (
     <div data-testid="project-menu" className={classNames(LIST, "desktop:gap-0")}>
       <span className={LABEL}>This design</span>
-      <div data-testid="this-design" className="flex items-center gap-2.5 px-2.5 pt-1.5 pb-2.5">
-        <Icon name="tick" stroke="tick" size={16} className="text-accent" />
-        <span className="flex min-w-0 grow flex-col gap-0.5">
-          {name === null ? <Skeleton kind="text" className="w-28" /> : <span className="truncate font-medium desktop:font-medium">{name}</span>}
-          <SaveState
-            look="menu"
-            state={saving}
-            onOpenNotes={() => {
-              onTake();
-              onOpenNotes();
-            }}
-          />
-        </span>
-      </div>
+      <ThisDesign name={name} saving={saving} onOpenNotes={onOpenNotes} onTake={onTake} onRename={onRename} shownAs={shownAs} />
       <span className={DIVIDER} />
       <span className={LABEL}>On this device</span>
       <p className="px-2.5 pt-0.5 pb-2.5 type-small text-text-2">Designs you save appear here.</p>
       <span className={classNames(DIVIDER, "mb-1")} />
       <ul ref={rows} role="menu" aria-label="Project" onKeyDown={onKeyDown} className="flex flex-col gap-0.5">
-        {ACTIONS.map(({ name: action, icon, fact, href, opens }) => {
+        {ACTIONS.map(({ name: action, icon, fact, href, does }) => {
+          const run = does === undefined ? undefined : doers[does];
           const inside = (
             <>
               <Icon name={icon} size={18} stroke="light" className="text-text-2" />
@@ -127,14 +172,14 @@ export function ProjectMenu({ name, saving, onOpenNotes, onImport, onTake }: Men
                 <Link role="menuitem" tabIndex={-1} href={href} onClick={onTake} className={classNames(ROW, "cursor-pointer")}>
                   {inside}
                 </Link>
-              ) : opens !== undefined ? (
+              ) : run !== undefined ? (
                 <button
                   type="button"
                   role="menuitem"
                   tabIndex={-1}
                   onClick={() => {
                     onTake();
-                    onImport();
+                    run();
                   }}
                   className={classNames(ROW, "w-full cursor-pointer text-left")}
                 >
@@ -153,10 +198,10 @@ export function ProjectMenu({ name, saving, onOpenNotes, onImport, onTake }: Men
   );
 }
 
-type Props = Design & Pick<MenuProps, "saving" | "onOpenNotes" | "onImport">;
+type Props = Design & Pick<MenuProps, "saving" | "onOpenNotes" | "onImport" | "onSaveACopy" | "onRename">;
 
 /** The design that is open, and the way to another one. On phone and tablet it opens as a bottom sheet. */
-export function ProjectSwitcher({ name, place, saving, onOpenNotes, onImport }: Props) {
+export function ProjectSwitcher({ name, place, saving, onOpenNotes, onImport, onSaveACopy, onRename }: Props) {
   const [floating, trigger] = useFloating({ side: "below", align: "start", gap: LIST_GAP });
   const panel = useRef<HTMLDivElement>(null);
 
@@ -181,7 +226,7 @@ export function ProjectSwitcher({ name, place, saving, onOpenNotes, onImport }: 
       />
       <FloatingPanel floating={floating} width="menu">
         <div ref={panel}>
-          <ProjectMenu name={name} saving={saving} onOpenNotes={onOpenNotes} onImport={onImport} onTake={floating.close} />
+          <ProjectMenu name={name} saving={saving} onOpenNotes={onOpenNotes} onImport={onImport} onTake={floating.close} onSaveACopy={onSaveACopy} onRename={onRename} />
         </div>
       </FloatingPanel>
     </>

@@ -83,8 +83,12 @@ class Project:
             d["custom"] = tuple(d["custom"])
         return cls(roof=roof, array=arr, losses=losses, **_known(cls, d))
 
+    def to_text(self) -> str:
+        """The content of a .rtd file: the one writer of the format."""
+        return json.dumps(self.to_json(), indent=1)
+
     def save(self, path: str | Path) -> None:
-        Path(path).write_text(json.dumps(self.to_json(), indent=1))
+        Path(path).write_text(self.to_text())
 
     @classmethod
     def load(cls, path: str | Path) -> Project:

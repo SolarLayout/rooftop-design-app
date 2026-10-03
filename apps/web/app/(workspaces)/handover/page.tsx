@@ -1,7 +1,9 @@
-import { redirect } from "next/navigation";
-import { FIRST_ITEM, pathOfItem } from "@/lib/routes";
+import type { Metadata } from "next";
+import { Handover } from "@/components/handover/Handover";
 
-// Handover is always at one of its items.
+export const metadata: Metadata = { title: "Handover · SolarLayout Rooftop" };
+
+/** The list of Handover; on desktop and tablet with the first item's preview beside it (plan/phase-09-plan.md, decision 3). */
 export default function HandoverPage() {
-  redirect(pathOfItem(FIRST_ITEM));
+  return <Handover item={null} />;
 }

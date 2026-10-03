@@ -12,7 +12,7 @@ const RUN = 90_000;
 const WORKSPACES = [
   { name: "Studio", path: "/studio/array", heading: "Array" },
   { name: "Performance", path: "/performance", heading: "Performance" },
-  { name: "Handover", path: "/handover/report", heading: "Handover" },
+  { name: "Handover", path: "/handover", heading: "Handover" },
 ];
 
 const WIDTHS = [360, 390, 640, 834, 1100, 1101, 1440];
@@ -127,8 +127,8 @@ test.describe("from workspace to workspace", () => {
     await expect(switcher(page)).toBeVisible();
 
     await workspaces(page).getByRole("link", { name: "Handover" }).click();
-    await expect(page).toHaveURL(/\/handover\/report$/);
-    await expect(page.getByRole("heading", { level: 2, name: "Design report" })).toBeVisible();
+    await expect(page).toHaveURL(/\/handover$/);
+    await expect(page.getByRole("heading", { level: 1, name: "Handover" })).toBeVisible();
     await expect(switcher(page)).toBeVisible();
 
     await workspaces(page).getByRole("link", { name: "Studio" }).click();
@@ -154,7 +154,7 @@ test.describe("from workspace to workspace", () => {
 
     await bar(page).getByRole("link", { name: "Export" }).click();
 
-    await expect(page).toHaveURL(/\/handover\/report$/);
+    await expect(page).toHaveURL(/\/handover$/);
     await expect(page.getByRole("heading", { level: 1, name: "Handover" })).toBeVisible();
   });
 

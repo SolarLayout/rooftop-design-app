@@ -50,20 +50,28 @@ test("/performance answers", async ({ page }) => {
 });
 
 for (const [item, name] of ITEMS) {
-  test(`/handover/${item} answers, and says which item it is`, async ({ page }) => {
+  test(`/handover/${item} answers, and says which item it is`, async ({ page }, testInfo) => {
     expect((await page.goto(`/handover/${item}`))?.status()).toBe(200);
 
     await expect(page.getByRole("heading", { level: 1, name: "Handover" })).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name, exact: true })).toBeVisible();
     await expect(page).toHaveTitle(`${name} · Handover · SolarLayout Rooftop`);
+    // On phone the item is pushed over the list, and a row at the top leads back to it (plan/phase-09-plan.md, decision 3).
+    const back = page.getByRole("link", { name: "Back to Handover" });
+    if (testInfo.project.name === "phone") await expect(back).toHaveAttribute("href", "/handover");
+    else await expect(page.getByRole("navigation", { name: "Deliverables" })).toBeVisible();
   });
 }
 
-test("/handover leads to the first item", async ({ page }) => {
-  await page.goto("/handover");
+test("/handover is the list; on desktop and tablet the first item stands beside it, on phone the list alone", async ({ page }, testInfo) => {
+  expect((await page.goto("/handover"))?.status()).toBe(200);
 
-  await expect(page).toHaveURL(/\/handover\/report$/);
-  await expect(page.getByRole("heading", { level: 2, name: "Design report" })).toBeVisible();
+  await expect(page).toHaveURL(/\/handover$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Handover" })).toBeVisible();
+  await expect(page).toHaveTitle("Handover · SolarLayout Rooftop");
+  const first = page.getByRole("heading", { level: 2, name: "Design report" });
+  if (testInfo.project.name === "phone") await expect(first).toHaveCount(0);
+  else await expect(first).toBeVisible();
 });
 
 for (const path of ["/studio/energy", "/studio/Roof", "/handover/pdf", "/handover/report/2", "/studio/roof/more", "/nowhere"]) {

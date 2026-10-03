@@ -4,7 +4,7 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
 import { Tooltip } from "@/components/ui/Tooltip";
-import { FIRST_ITEM, pathOfItem, type Lens, type Workspace } from "@/lib/routes";
+import { HANDOVER, type Lens, type Workspace } from "@/lib/routes";
 import { Logo } from "./Logo";
 import { ProjectSwitcher } from "./ProjectSwitcher";
 import { SaveState, type Saving } from "./SaveState";
@@ -23,6 +23,10 @@ type Props = {
   onOpenNotes: () => void;
   /** Import a drawing was taken in the project switcher. */
   onImport: () => void;
+  /** The name was edited in the project switcher (plan/phase-09-plan.md, decision 13). */
+  onRename?: (name: string) => void;
+  /** Save a copy was taken in the project switcher (plan/phase-09-plan.md, step 8). */
+  onSaveACopy?: () => void;
 };
 
 const BAR = classNames(
@@ -55,7 +59,7 @@ export function Export() {
       kind="primary"
       size="s"
       icon="download"
-      href={pathOfItem(FIRST_ITEM)}
+      href={HANDOVER}
       className="w-touch px-0 tablet-wide:w-auto tablet-wide:px-4"
     >
       <span className={WORD_WHERE_THERE_IS_ROOM}>Export</span>
@@ -66,12 +70,12 @@ export function Export() {
 const countOf = (notes: number) => (notes === 0 ? "Nothing to review" : notes === 1 ? "1 note to review" : `${notes} notes to review`);
 
 /** The bar at the top of the three workspaces. */
-export function TopBar({ name, place, workspace, lens, saving, notes, onOpenNotes, onImport }: Props) {
+export function TopBar({ name, place, workspace, lens, saving, notes, onOpenNotes, onImport, onRename, onSaveACopy }: Props) {
   return (
     <header className={BAR}>
       <Logo />
       <span className="hidden h-6 w-px shrink-0 bg-line desktop:block" />
-      <ProjectSwitcher name={name} place={place} saving={saving} onOpenNotes={onOpenNotes} onImport={onImport} />
+      <ProjectSwitcher name={name} place={place} saving={saving} onOpenNotes={onOpenNotes} onImport={onImport} onSaveACopy={onSaveACopy} onRename={onRename} />
       <span className="grow" />
       <WorkspaceNav current={workspace} lens={lens} />
       <span className="hidden grow tablet:block" />

@@ -3,13 +3,15 @@
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { placeInShort } from "@/lib/format/place";
+import { withName } from "@/lib/handover/name-field";
 import { workspaceOf } from "@/lib/routes";
 import { latitudeOf, longitudeOf, nameOf, projectOf } from "@/lib/stores/project-store";
 import { lensOf } from "@/lib/stores/view-store";
+import { Toaster } from "@/components/ui/Toaster";
 import { ImportDrawing } from "./ImportDrawing";
 import { NotesDrawer } from "./NotesDrawer";
 import type { Note } from "./notes-view";
-import { useNotes, useProject, useStores, useView } from "./stores";
+import { useNotes, useProject, useStores, useToasts, useView } from "./stores";
 import { TopBar } from "./TopBar";
 import { TabBar } from "./WorkspaceNav";
 
@@ -26,12 +28,13 @@ export function useNotesOfTheShell(): Notes {
 
 function Frame({ children }: { children: ReactNode }) {
   const workspace = workspaceOf(usePathname());
-  const { flow, project } = useStores();
+  const { flow, project, downloads } = useStores();
   const name = useProject(nameOf);
   const latitude = useProject(latitudeOf);
   const longitude = useProject(longitudeOf);
   const lens = useView(lensOf);
   const notes = useNotes();
+  const toasts = useToasts();
   const [areNotesOpen, setNotesOpen] = useState(false);
   const [isImportOpen, setImportOpen] = useState(false);
 
@@ -56,12 +59,17 @@ function Frame({ children }: { children: ReactNode }) {
           notes={notes.length}
           onOpenNotes={ofTheShell.open}
           onImport={() => setImportOpen(true)}
+          // The name is a committed edit like any other, undone by key (plan/phase-09-plan.md, decision 13).
+          onRename={(name) => project.getState().commit((document) => withName(document, name))}
+          onSaveACopy={() => void downloads.getState().download("project-file")}
         />
         <div data-workspace-frame className="relative flex min-h-0 grow flex-col overflow-y-auto">{children}</div>
         <TabBar current={workspace} lens={lens} />
       </div>
       <NotesDrawer open={areNotesOpen} notes={notes} onClose={() => setNotesOpen(false)} onTryAgain={flow.tryAgain} />
       <ImportDrawing open={isImportOpen} onClose={() => setImportOpen(false)} />
+      {/* What the app says, in the page from the start: a download that failed (plan/phase-09-plan.md, decision 12). */}
+      <Toaster toasts={toasts} aboveTheTabBar />
     </NotesContext.Provider>
   );
 }

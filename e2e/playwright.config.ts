@@ -16,7 +16,10 @@ export default defineConfig({
   // Baselines of the screens, one set for each platform (text is drawn differently on each) and size.
   // They are in the repo: a pull request shows a changed screen as a changed picture.
   snapshotPathTemplate: "./baselines/{platform}/{projectName}/{arg}{ext}",
-  expect: { toHaveScreenshot: { maxDiffPixels: 50 } },
+  // An expectation waits 15 s, not Playwright's 5: under the load of a full check (ten workers, the Studio in software
+  // WebGL on three sizes) a navigation in `next dev` or a late layout took longer, and a different test failed in each
+  // of four full runs while every one of them passed alone. A negative expectation waits the whole time; there are few.
+  expect: { timeout: 15_000, toHaveScreenshot: { maxDiffPixels: 50 } },
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,

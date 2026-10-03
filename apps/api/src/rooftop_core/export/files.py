@@ -110,11 +110,12 @@ def _schedule_continued(pdf: PdfPages, rows: list[CableRow]) -> None:
     plt.close(fig)
 
 
-def export_pdf(d: Design, path: str | Path) -> None:
-    Path(path).write_bytes(export_pdf_bytes(d))
+def export_pdf(d: Design, path: str | Path, day: date | None = None) -> None:
+    Path(path).write_bytes(export_pdf_bytes(d, day))
 
 
-def export_pdf_bytes(d: Design) -> bytes:
+def export_pdf_bytes(d: Design, day: date | None = None) -> bytes:
+    """The report. *day* is the day printed on page 1, the reader's; None prints today's."""
     o = _need(d)
     r = o.result
     p = d.p
@@ -123,7 +124,7 @@ def export_pdf_bytes(d: Design) -> bytes:
         # 1 · summary
         fig = plt.figure(figsize=A4_L)
         fig.text(0.05, 0.93, f"{p.name} · rooftop PV design", fontsize=18, color=plots.TEXT, fontweight="bold")
-        fig.text(0.05, 0.895, f"SolarLayout Rooftop · {date.today():%d %b %Y}", fontsize=9, color=plots.MUTED)
+        fig.text(0.05, 0.895, f"SolarLayout Rooftop · {day or date.today():%d %b %Y}", fontsize=9, color=plots.MUTED)
         ax = fig.add_axes([0.05, 0.08, 0.9, 0.78])
         _table(ax, summary_rows(d), [0.22, 0.78], fs=9)
         if d.coeffs.warning:

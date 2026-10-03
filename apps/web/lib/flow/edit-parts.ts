@@ -11,6 +11,11 @@ const OF_THE_ROOF_NOT_FOR_THE_LAYOUT = ["albedo"] as const satisfies readonly (k
 /** What the run's answer holds already: every option is in it, so choosing one asks for nothing. */
 const ANSWERED = ["chosen_option"] as const satisfies readonly (keyof Project)[];
 
+/** What neither the layout nor the run reads: the name is the files' alone (plan/phase-09-plan.md, decision 13). */
+const READ_BY_NOTHING = ["name"] as const satisfies readonly (keyof Project)[];
+
+const ASKS_FOR_NO_RUN: readonly string[] = [...ANSWERED, ...READ_BY_NOTHING];
+
 export type EditParts = {
   /** The layout is asked for again. */
   layout: boolean;
@@ -32,6 +37,6 @@ export function partsOfAnEdit(before: Project, after: Project): EditParts {
   const changed = changedKeysOf(before, after);
   return {
     layout: changed.some((key) => (OF_THE_LAYOUT as readonly string[]).includes(key)) || roofOfTheLayoutChanged(before.roof, after.roof),
-    run: changed.some((key) => !(ANSWERED as readonly string[]).includes(key)),
+    run: changed.some((key) => !ASKS_FOR_NO_RUN.includes(key)),
   };
 }

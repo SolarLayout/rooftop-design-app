@@ -94,7 +94,9 @@ test.describe("the Roof lens", () => {
 
     await page.getByRole("link", { name: "Edit" }).click();
 
-    await expect(page).toHaveURL(/\/find\?edit=roof$/);
+    // Under the load of a full check the navigation to the map took more than the 5 s an expectation waits by default
+    // (plan/STATE.md, the watch item): it is given the run's time.
+    await expect(page).toHaveURL(/\/find\?edit=roof$/, { timeout: RUN });
     await expect(page.getByTestId("corner")).toHaveCount(4, { timeout: A_MAP });
     await expect(page.getByRole("heading", { level: 1, name: "Outline the roof" })).toBeVisible();
     await expect(page.getByRole("textbox", { name: "South" })).toHaveValue("90.0");

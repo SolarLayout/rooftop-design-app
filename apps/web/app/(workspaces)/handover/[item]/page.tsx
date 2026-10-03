@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { NotBuiltYet } from "@/components/shell/NotBuiltYet";
+import { Handover } from "@/components/handover/Handover";
 import { HANDOVER_ITEMS, isHandoverItem, type HandoverItem } from "@/lib/routes";
 
 type Props = { params: Promise<{ item: string }> };
@@ -12,15 +12,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return isHandoverItem(item) ? { title: `${nameOf(item)} · Handover · SolarLayout Rooftop` } : {};
 }
 
+/** One item of Handover: beside the list on desktop and tablet, pushed over it on phone (plan/phase-09-plan.md, decision 3). */
 export default async function HandoverItemPage({ params }: Props) {
   const { item } = await params;
   if (!isHandoverItem(item)) notFound();
 
-  return (
-    <main className="flex flex-col gap-2 px-page-x-phone py-page-y tablet:px-page-x-tablet desktop:px-page-x-desktop">
-      <h1 className="type-page">Handover</h1>
-      <h2 className="type-title">{nameOf(item)}</h2>
-      <NotBuiltYet />
-    </main>
-  );
+  return <Handover item={item} />;
 }

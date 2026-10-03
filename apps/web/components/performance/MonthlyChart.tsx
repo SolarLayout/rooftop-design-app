@@ -3,7 +3,7 @@
 import { useCallback, useId, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { classNames } from "@/components/ui/class-names";
 import { measures } from "@/components/ui/measures";
-import type { Box } from "@/components/ui/place-floating";
+import { isStill, type Box } from "@/components/ui/place-floating";
 import { Table } from "@/components/ui/Table";
 import { Tabs } from "@/components/ui/Tabs";
 import { ValueTooltip } from "@/components/ui/ValueTooltip";
@@ -47,6 +47,13 @@ export function MonthlyChart({ energy, isDimmed }: Props) {
     setActive(null);
     setAnchor(null);
   }, []);
+
+  /** The page moved somewhere: the tooltip goes only if its bar is no longer where it was measured. */
+  const leaveIfMoved = useCallback(() => {
+    const bar = active === null ? null : bars.current[active];
+    if (bar && anchor && isStill(anchor, bar.getBoundingClientRect())) return;
+    leave();
+  }, [active, anchor, leave]);
 
   function show(index: number) {
     const bar = bars.current[index];
@@ -144,7 +151,7 @@ export function MonthlyChart({ energy, isDimmed }: Props) {
                 </span>
               ))}
             </div>
-            <ValueTooltip anchor={anchor} value={shown?.tooltip.value ?? ""} label={shown?.tooltip.label ?? ""} onLeave={leave} />
+            <ValueTooltip anchor={anchor} value={shown?.tooltip.value ?? ""} label={shown?.tooltip.label ?? ""} onLeave={leaveIfMoved} />
           </div>
         ) : (
           <Table

@@ -88,10 +88,10 @@ def test_the_result_of_a_design_run_has_no_hours(document):
     assert "hourly" not in document["components"]["schemas"]["Energy"]["properties"]
 
 
-def test_an_export_is_a_file_of_one_of_five_types(document):
+def test_an_export_is_a_file_of_one_of_six_types(document):
     operation = document["paths"]["/export/{kind}"]["post"]
 
-    assert operation["parameters"][0]["schema"]["enum"] == ["pdf", "dxf", "kmz", "csv", "sld"]
+    assert operation["parameters"][0]["schema"]["enum"] == ["pdf", "dxf", "kmz", "csv", "sld", "rtd"]
     assert operation["responses"]["200"]["content"] == {
         media_type: {"schema": {"type": "string", "format": "binary"}}
         for media_type in (
@@ -100,5 +100,6 @@ def test_an_export_is_a_file_of_one_of_five_types(document):
             "application/vnd.google-earth.kmz",
             "text/csv",
             "image/png",
+            "application/json",
         )
     }

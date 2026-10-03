@@ -817,10 +817,68 @@ test.describe("the shell", () => {
     await expectWholeScreen(page, "performance-assumptions-entered");
   });
 
+  // Handover with the demo (the boards "Handover" on three sizes): the list with its facts, the first item beside it on desktop and tablet.
+  const factsLanded = async (page: Page) => {
+    await expect(page.getByTestId("deliverables").getByTestId("deliverable-facts").nth(1)).toContainText("strings of", { timeout: RUN });
+  };
+
   test("handover", async ({ page }, testInfo) => {
-    await page.goto("/handover/report");
+    await page.goto("/handover");
+    await factsLanded(page);
     await settled(page, testInfo.project.name);
 
-    await expectScreen(page, "handover");
+    await expectWholeScreen(page, "handover");
+  });
+
+  // The report pushed over the list on phone (the board "Handover, tablet and phone"): the back row, the head, the body.
+  test("handover, the report pushed", async ({ page }, testInfo) => {
+    test.skip(!isPhone(testInfo.project.name), "The pushed screen is of the phone.");
+    await page.goto("/handover/report");
+    await expect(page.getByTestId("preview-facts")).toContainText("A4 landscape", { timeout: RUN });
+    await settled(page, testInfo.project.name);
+
+    await expectWholeScreen(page, "handover-report-pushed");
+  });
+
+  // Before a system voltage (the board "Handover, states"): every row but the project file dim with the API's title, the decision card in the preview.
+  test("handover, before a voltage", async ({ page }, testInfo) => {
+    await page.route("**/api/demo", async (route) => {
+      const answer = await route.fetch();
+      const demo: Record<string, unknown> = await answer.json();
+      await route.fulfill({ response: answer, json: { ...demo, system_voltage: null } });
+    });
+    await page.goto(isPhone(testInfo.project.name) ? "/handover/report" : "/handover");
+    await expect(page.getByTestId("files-wait")).toContainText("Choose a system voltage to size the strings", { timeout: RUN });
+    await settled(page, testInfo.project.name);
+
+    await expectWholeScreen(page, "handover-no-voltage");
+  });
+
+  // The project file's item once the run has landed: its size is there, and what is in it says the weather and the option.
+  const projectFileLanded = async (page: Page) => {
+    await expect(page.getByTestId("project-file").getByTestId("file-size")).toBeVisible({ timeout: RUN });
+    await expect(page.getByTestId("in-the-file").filter({ hasText: "Weather" })).toContainText("hours", { timeout: RUN });
+  };
+
+  // The project file (the board "Handover, previews", last part): the name as a field, the file's name and size, what is in it.
+  test("handover, the project file", async ({ page }, testInfo) => {
+    await page.goto("/handover/project-file");
+    await projectFileLanded(page);
+    await settled(page, testInfo.project.name);
+
+    await expectWholeScreen(page, "handover-project-file");
+  });
+
+  // The name edited (the board "Handover, states"): the field with the focus and the draft, the file's name following it before the commit.
+  test("handover, the name edited", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === "tablet", "The board draws the edited name on desktop and phone.");
+    await page.goto("/handover/project-file");
+    await projectFileLanded(page);
+    await settled(page, testInfo.project.name);
+    const field = page.getByTestId("project-file").getByRole("textbox", { name: "Name" });
+    await field.fill("Pune demo roof, block B");
+    await expect(page.getByTestId("file-name")).toHaveText("Pune-demo-roof,-block-B.rtd");
+
+    await expectWholeScreen(page, "handover-name-edited");
   });
 });

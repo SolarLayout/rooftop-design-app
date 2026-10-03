@@ -47,10 +47,16 @@ export function isHandoverItem(value: string): value is HandoverItem {
 export const pathOfLens = (lens: Lens) => `/studio/${lens}` as const;
 export const pathOfItem = (item: HandoverItem) => `/handover/${item}` as const;
 
+/**
+ * The list of Handover (plan/phase-09-plan.md, decision 3): on desktop and tablet with the first item's preview beside
+ * it, on phone the list alone. An item's own address is `pathOfItem`.
+ */
+export const HANDOVER = "/handover";
+
 /** Where a workspace is entered. The Studio is entered at `lens`: the one that was opened last. */
 export function pathOfWorkspace(workspace: Workspace, lens: Lens) {
   if (workspace === "studio") return pathOfLens(lens);
-  if (workspace === "handover") return pathOfItem(FIRST_ITEM);
+  if (workspace === "handover") return HANDOVER;
   return "/performance" as const;
 }
 

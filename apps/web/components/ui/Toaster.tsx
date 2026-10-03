@@ -10,8 +10,12 @@ type Props = {
   toasts: Toasts;
   /** What the place is called, for a screen reader. */
   label?: string;
-  className?: string;
+  /** In the shell: on phone the toasts stand above the tab bar, 12 from the edges. */
+  aboveTheTabBar?: boolean;
 };
+
+const AT_THE_BOTTOM = "bottom-0 px-4 pb-6";
+const ABOVE_THE_TAB_BAR = "bottom-tabbar px-3 pb-3 tablet:bottom-0 tablet:px-4 tablet:pb-6";
 
 const nothing = () => null;
 
@@ -23,14 +27,14 @@ const crossesTheEdge = (event: FocusEvent<HTMLDivElement>) =>
  * Where toasts are shown: at the bottom of the screen, in its middle. It is in the page from the start
  * and empty, so that a screen reader hears what comes into it.
  */
-export function Toaster({ toasts, label = "What was done", className }: Props) {
+export function Toaster({ toasts, label = "What was done", aboveTheTabBar = false }: Props) {
   const toast = useSyncExternalStore(toasts.subscribe, toasts.shown, nothing);
 
   return (
     <div
       role="status"
       aria-label={label}
-      className={classNames("pointer-events-none fixed inset-x-0 bottom-0 z-toast flex justify-center px-4 pb-6", className)}
+      className={classNames("pointer-events-none fixed inset-x-0 z-toast flex justify-center", aboveTheTabBar ? ABOVE_THE_TAB_BAR : AT_THE_BOTTOM)}
     >
       {toast ? (
         <Toast

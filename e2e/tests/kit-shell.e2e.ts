@@ -525,13 +525,12 @@ test.describe("Project switcher", () => {
 
     await expect(menu.getByRole("menuitem", { name: "Home" })).toHaveAttribute("href", "/");
     await expect(menu.getByRole("menuitem", { name: "New design" })).toHaveAttribute("href", "/find");
-    for (const name of ["Open a project", "Save a copy"]) {
-      const row = menu.getByRole("menuitem", { name });
-      await expect(row).toHaveAttribute("aria-disabled", "true");
-      await expect(row).toHaveCSS("opacity", "0.45");
-    }
-    // Import a drawing opens its dialog (Phase 5, step 13): it is a row that can be pressed.
+    const open = menu.getByRole("menuitem", { name: "Open a project" });
+    await expect(open).toHaveAttribute("aria-disabled", "true");
+    await expect(open).toHaveCSS("opacity", "0.45");
+    // Import a drawing opens its dialog (Phase 5, step 13); Save a copy downloads the project file (Phase 9, step 8): rows that can be pressed.
     await expect(menu.getByRole("menuitem", { name: "Import a drawing" })).not.toHaveAttribute("aria-disabled", "true");
+    await expect(menu.getByRole("menuitem", { name: "Save a copy" })).not.toHaveAttribute("aria-disabled", "true");
   });
 
   test("it opens, the focus goes to its first row, and Escape gives the focus back", async ({ page }) => {
@@ -688,7 +687,7 @@ test.describe("Present and Export", () => {
     const go = example(page, "export").getByRole("link", { name: "Export" });
     const box = await boxOf(go);
 
-    await expect(go).toHaveAttribute("href", "/handover/report");
+    await expect(go).toHaveAttribute("href", "/handover");
     await expect(go).toHaveCSS("background-color", COLOUR.accent);
     await expect(go).toHaveCSS("color", COLOUR.accentInk);
     expect(box.height).toBe(isDesktop(testInfo.project.name) ? 36 : 44);
@@ -722,7 +721,7 @@ test.describe("Workspace navigation", () => {
 
     await expect(nav.getByRole("link", { name: "Studio" }).first()).toHaveAttribute("href", "/studio/array");
     await expect(nav.getByRole("link", { name: "Performance" }).first()).toHaveAttribute("href", "/performance");
-    await expect(nav.getByRole("link", { name: "Handover" }).first()).toHaveAttribute("href", "/handover/report");
+    await expect(nav.getByRole("link", { name: "Handover" }).first()).toHaveAttribute("href", "/handover");
   });
 
   test("tablet: a link takes the pointer 44 high", async ({ page }, testInfo) => {

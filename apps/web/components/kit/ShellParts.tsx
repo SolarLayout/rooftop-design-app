@@ -44,6 +44,8 @@ export function TopBars({ onPress }: Props) {
             notes={1}
             onOpenNotes={() => onPress(OPEN_THE_NOTES)}
             onImport={() => onPress("Import a drawing")}
+            onRename={(name) => onPress(`Rename, ${name}`)}
+            onSaveACopy={() => onPress("Save a copy")}
           />
         </div>
       </Wide>
@@ -152,14 +154,19 @@ export function ProjectAndSaving({ onPress }: Props) {
     <Section title="Project switcher and state of saving">
       <Row label="The project switcher. On phone and tablet it opens as a bottom sheet">
         <Example name="switcher" caption="Closed; press it">
-          <ProjectSwitcher {...DESIGN} saving="not-kept" onOpenNotes={openNotes} onImport={() => onPress("Import a drawing")} />
+          <ProjectSwitcher {...DESIGN} saving="not-kept" onOpenNotes={openNotes} onImport={() => onPress("Import a drawing")} onSaveACopy={() => onPress("Save a copy")} onRename={(name) => onPress(`Rename, ${name}`)} />
         </Example>
       </Row>
       <Row label="Open, as it looks">
         <Wide name="switcher-open" caption="This design, the designs on this device, what can be done">
           <ProjectTrigger {...DESIGN} open className="self-start" />
           <div className="desktop:w-85">
-            <ProjectMenu name={DESIGN.name} saving="not-kept" onOpenNotes={openNotes} onImport={() => onPress("Import a drawing")} onTake={() => undefined} />
+            <ProjectMenu name={DESIGN.name} saving="not-kept" onOpenNotes={openNotes} onImport={() => onPress("Import a drawing")} onTake={() => undefined} onSaveACopy={() => onPress("Save a copy")} onRename={(name) => onPress(`Rename, ${name}`)} />
+          </div>
+        </Wide>
+        <Wide name="switcher-rename" caption="The name edited: Rename turns the row into the text field (plan phase 9, decision 13)">
+          <div className="desktop:w-85">
+            <ProjectMenu name={DESIGN.name} saving="not-kept" onOpenNotes={openNotes} onImport={() => onPress("Import a drawing")} onTake={() => undefined} onSaveACopy={() => onPress("Save a copy")} onRename={(name) => onPress(`Rename, ${name}`)} shownAs="renaming" />
           </div>
         </Wide>
       </Row>

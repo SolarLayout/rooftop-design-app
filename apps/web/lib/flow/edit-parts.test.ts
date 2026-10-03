@@ -59,6 +59,14 @@ describe("what an edit changes (plan/phase-07-plan.md, decision 2)", () => {
     expect(partsOfAnEdit(DOCUMENT, changed({ chosen_option: "custom", custom: [26, 24, 1] }))).toEqual({ layout: false, run: true });
   });
 
+  test("the name alone asks for nothing: neither the layout nor the run reads it (plan/phase-09-plan.md, decision 13)", () => {
+    expect(partsOfAnEdit(DOCUMENT, changed({ name: "Pune demo roof, block B" }))).toEqual({ layout: false, run: false });
+  });
+
+  test("the name with another field is a change of that field", () => {
+    expect(partsOfAnEdit(DOCUMENT, changed({ name: "Block B", ac_cable_m: 40 }))).toEqual({ layout: false, run: true });
+  });
+
   test("the same document asks for nothing", () => {
     expect(partsOfAnEdit(DOCUMENT, DOCUMENT)).toEqual({ layout: false, run: false });
   });

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { placeOf, type Box } from "./place-floating";
+import { isStill, placeOf, type Box } from "./place-floating";
 
 const SCREEN = { width: 1440, height: 900 };
 const BUTTON: Box = { left: 600, top: 400, width: 80, height: 40 };
@@ -72,5 +72,20 @@ describe("placeOf: where a thing floats beside its control", () => {
     });
 
     expect(place).toEqual({ x: 59, y: 165, side: "above" });
+  });
+});
+
+describe("isStill: whether a control is where it was, after a scroll or a resize somewhere on the page", () => {
+  const box: Box = { left: 100, top: 200, width: 40, height: 20 };
+
+  test("the same place, to the pixel, is still", () => {
+    expect(isStill(box, { ...box })).toBe(true);
+    expect(isStill(box, { ...box, left: 100.6, top: 199.5 })).toBe(true);
+  });
+
+  test("moved by more than a pixel, or sized anew, it is not", () => {
+    expect(isStill(box, { ...box, top: 180 })).toBe(false);
+    expect(isStill(box, { ...box, left: 102 })).toBe(false);
+    expect(isStill(box, { ...box, width: 44 })).toBe(false);
   });
 });

@@ -13,7 +13,7 @@ type Props = {
   value: string;
   /** What it is of, after: "Mar". */
   label: string;
-  /** Hears that the page moved while the tooltip was shown: its place would no longer be true. */
+  /** Hears that the page scrolled or resized while the tooltip was shown; the chart leaves when its anchor moved (`isStill`). */
   onLeave: () => void;
 };
 

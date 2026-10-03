@@ -1,27 +1,35 @@
-"""POST /export/{kind}: the files of a design, as the desktop app wrote them."""
+"""POST /export/{kind}: the files of a design, as the desktop app wrote them, and the project file."""
 
 import base64
 import io
+import json
 import zipfile
+from datetime import date
 
 import ezdxf
 import pandas as pd
 import pytest
 from pypdf import PdfReader
 
+from rooftop_api import convert, schemas
+from rooftop_api.services import design as design_service
+from rooftop_core.project import Project
 from tests.api.conftest import error_of
 from tests.api.events import result_of
 
 pytestmark = pytest.mark.slow
 
 PNG = b"\x89PNG\r\n\x1a\n"
-KINDS = {
+# The files of the design: each needs the option the project has chosen.
+OF_THE_DESIGN = {
     "pdf": ("application/pdf", "Pune-demo-report.pdf"),
     "dxf": ("image/vnd.dxf", "Pune-demo-layout.dxf"),
     "kmz": ("application/vnd.google-earth.kmz", "Pune-demo.kmz"),
     "csv": ("text/csv; charset=utf-8", "Pune-demo-hourly.csv"),
     "sld": ("image/png", "Pune-demo-single-line-diagram.png"),
 }
+# The project file is of the request alone.
+KINDS = {**OF_THE_DESIGN, "rtd": ("application/json", "Pune-demo.rtd")}
 
 
 @pytest.fixture
@@ -39,7 +47,7 @@ def exported(client, _demo):
     return {kind: client.post(f"/export/{kind}", json=project) for kind in KINDS}
 
 
-# ── the five files ───────────────────────────────────────────────────────────
+# ── the six files ────────────────────────────────────────────────────────────
 @pytest.mark.parametrize("kind", KINDS)
 def test_an_export_is_a_file_to_download_with_its_type_and_name(exported, kind):
     response = exported[kind]
@@ -125,6 +133,82 @@ def test_the_export_is_that_of_the_option_chosen(client, chosen):
     assert table["p_ac_kw"].sum() / 1000 == pytest.approx(607.7, abs=0.05)
 
 
+# ── the day of the report ────────────────────────────────────────────────────
+def test_the_report_prints_the_day_it_is_asked_for(client, chosen):
+    page = _pages(client.post("/export/pdf?day=2025-01-31", json=chosen).content)[0]
+
+    assert "SolarLayout Rooftop · 31 Jan 2025" in page
+
+
+def test_the_report_prints_the_server_day_when_none_is_asked_for(exported):
+    page = _pages(exported["pdf"].content)[0]
+
+    assert f"SolarLayout Rooftop · {date.today():%d %b %Y}" in page
+
+
+def test_a_day_that_is_not_a_date_is_refused_by_its_field(client, chosen):
+    response = client.post("/export/pdf?day=yesterday", json=chosen)
+
+    assert response.status_code == 422
+    error = error_of(response)
+    assert error["code"] == "invalid_request"
+    assert error["field"] == "day"
+    assert error["message"].startswith("day: ")
+
+
+@pytest.mark.parametrize("kind", KINDS)
+def test_every_kind_takes_the_day(client, chosen, kind):
+    assert client.post(f"/export/{kind}?day=2026-10-03", json=chosen).status_code == 200
+
+
+# ── the project file ─────────────────────────────────────────────────────────
+def _rtd(content: bytes) -> dict:
+    return json.loads(content.decode("utf-8"))
+
+
+def _as_the_engine_has_it(request: dict) -> Project:
+    return convert.project_to_engine(schemas.Project.model_validate(request))
+
+
+def test_the_rtd_is_the_project_of_the_request_as_the_engine_writes_it(chosen, exported):
+    written = _rtd(exported["rtd"].content)
+
+    assert written["format"] == 2
+    assert Project.from_json(written) == _as_the_engine_has_it(chosen)
+    assert exported["rtd"].content == json.dumps(written, indent=1).encode("utf-8")
+
+
+def test_the_rtd_is_written_before_a_system_voltage_is_chosen(client, demo):
+    demo["system_voltage"] = None
+    demo["chosen_option"] = ""
+
+    response = client.post("/export/rtd", json=demo)
+
+    assert response.status_code == 200
+    written = _rtd(response.content)
+    assert written["system_voltage"] is None and written["chosen_option"] == ""
+    assert Project.from_json(written) == _as_the_engine_has_it(demo)
+
+
+def test_the_rtd_is_written_without_weather(client, light_demo):
+    response = client.post("/export/rtd", json=light_demo)
+
+    assert response.status_code == 200
+    assert _rtd(response.content)["weather_json"] is None
+
+
+def test_the_rtd_needs_no_design_run(client, chosen, monkeypatch):
+    def no_run(project):
+        raise AssertionError("the project file needs nothing of the design prepared or run")
+
+    monkeypatch.setattr(design_service, "prepare", no_run)
+
+    response = client.post("/export/rtd", json=chosen)
+
+    assert response.status_code == 200
+    assert response.headers["content-disposition"] == 'attachment; filename="Pune-demo.rtd"'
+
+
 def _drawn(dxf: bytes) -> list[tuple]:
     """What a DXF draws: every outline with its layer, every text with its place."""
     found = []
@@ -152,7 +236,7 @@ def exported_again(client, _demo, exported):
     return {kind: client.post(f"/export/{kind}", json=project).content for kind in KINDS}
 
 
-@pytest.mark.parametrize("kind", ["csv", "sld"])
+@pytest.mark.parametrize("kind", ["csv", "sld", "rtd"])
 def test_the_same_request_gives_the_same_file_byte_for_byte(exported, exported_again, kind):
     assert exported_again[kind] == exported[kind].content
 
@@ -167,24 +251,25 @@ def test_the_same_request_gives_the_same_content_in_the_files_that_bear_the_time
 
 
 # ── the name of the file ─────────────────────────────────────────────────────
+@pytest.mark.parametrize(("kind", "ending"), [("csv", "-hourly.csv"), ("rtd", ".rtd")])
 @pytest.mark.parametrize(
-    ("project", "file"),
+    ("project", "stem"),
     [
-        ("Pune demo", "Pune-demo-hourly.csv"),
-        ("  Warehouse 7 / Block B  ", "Warehouse-7-Block-B-hourly.csv"),
-        ("roof_v2.final", "roof_v2.final-hourly.csv"),
-        ("../../etc/passwd", "etc-passwd-hourly.csv"),
-        ('say "hello"', "say-hello-hourly.csv"),
-        ("...", "rooftop-design-hourly.csv"),
-        ("", "rooftop-design-hourly.csv"),
+        ("Pune demo", "Pune-demo"),
+        ("  Warehouse 7 / Block B  ", "Warehouse-7-Block-B"),
+        ("roof_v2.final", "roof_v2.final"),
+        ("../../etc/passwd", "etc-passwd"),
+        ('say "hello"', "say-hello"),
+        ("...", "rooftop-design"),
+        ("", "rooftop-design"),
     ],
 )
-def test_the_file_is_named_after_the_project(client, chosen, project, file):
+def test_the_file_is_named_after_the_project(client, chosen, project, stem, kind, ending):
     chosen["name"] = project
 
-    response = client.post("/export/csv", json=chosen)
+    response = client.post(f"/export/{kind}", json=chosen)
 
-    assert response.headers["content-disposition"] == f'attachment; filename="{file}"'
+    assert response.headers["content-disposition"] == f'attachment; filename="{stem}{ending}"'
 
 
 def test_a_name_in_another_script_is_kept_for_those_who_can_read_it(client, chosen):
@@ -199,7 +284,7 @@ def test_a_name_in_another_script_is_kept_for_those_who_can_read_it(client, chos
 
 
 # ── what cannot be exported ──────────────────────────────────────────────────
-@pytest.mark.parametrize("kind", KINDS)
+@pytest.mark.parametrize("kind", OF_THE_DESIGN)
 def test_without_a_chosen_option_nothing_is_exported(client, demo, kind):
     demo["chosen_option"] = ""
 
@@ -251,7 +336,7 @@ def test_a_project_without_weather_is_refused_as_by_the_design_run(client, chose
     assert error_of(response)["code"] == "weather_not_loaded"
 
 
-def test_a_kind_that_is_none_of_the_five_is_refused(client, chosen):
+def test_a_kind_that_is_none_of_the_six_is_refused(client, chosen):
     response = client.post("/export/xlsx", json=chosen)
 
     assert response.status_code == 422

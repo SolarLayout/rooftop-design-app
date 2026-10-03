@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import {
   FIRST_ITEM,
   FIRST_LENS,
+  HANDOVER,
   HANDOVER_ITEMS,
   isHandoverItem,
   isLens,
@@ -77,10 +78,11 @@ describe("the workspaces", () => {
     ]);
   });
 
-  test("the Studio is entered at a lens, Handover at its first item", () => {
+  test("the Studio is entered at a lens, Handover at its list (plan/phase-09-plan.md, decision 3)", () => {
     expect(pathOfWorkspace("studio", "sun")).toBe("/studio/sun");
     expect(pathOfWorkspace("performance", "sun")).toBe("/performance");
-    expect(pathOfWorkspace("handover", "sun")).toBe("/handover/report");
+    expect(pathOfWorkspace("handover", "sun")).toBe("/handover");
+    expect(pathOfWorkspace("handover", "sun")).toBe(HANDOVER);
   });
 
   test.each([
@@ -88,6 +90,7 @@ describe("the workspaces", () => {
     ["/studio", "studio"],
     ["/performance", "performance"],
     ["/handover/report", "handover"],
+    ["/handover", "handover"],
     ["/handover/", "handover"],
   ] as const)("%s is in %s", (path, workspace) => {
     expect(workspaceOf(path)).toBe(workspace);

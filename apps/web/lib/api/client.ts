@@ -31,6 +31,8 @@ export type Fetch = (input: RequestInfo | URL, init?: RequestInit) => Promise<Re
 export type ApiOptions = { base?: string; fetch?: Fetch };
 export type CallOptions = { signal?: AbortSignal };
 export type RunOptions = CallOptions & { onProgress?: (progress: DesignProgress) => void };
+/** The day of the reader, YYYY-MM-DD: the report prints it (plan/phase-09-plan.md, decision 2). Without it the API prints its own today. */
+export type ExportOptions = CallOptions & { day?: string };
 export type ExportedFile = { name: string; blob: Blob };
 export type Api = ReturnType<typeof createApi>;
 
@@ -43,6 +45,7 @@ const FILE_NAMES: Record<ExportKind, string> = {
   kmz: "rooftop-design.kmz",
   csv: "rooftop-design-hourly.csv",
   sld: "rooftop-design-single-line-diagram.png",
+  rtd: "rooftop-design.rtd",
 };
 
 export function createApi({ base = "/api", fetch: fetcher = globalThis.fetch }: ApiOptions = {}) {
@@ -101,9 +104,10 @@ export function createApi({ base = "/api", fetch: fetcher = globalThis.fetch }: 
       throw new ApiError(response.status, "run_cut_short", RUN_CUT_SHORT, null);
     },
 
-    /** A file of the design, for the option the project has chosen. */
-    async exportDesign(kind: ExportKind, project: ProjectRequest, options: CallOptions = {}): Promise<ExportedFile> {
-      const response = await ask(`/export/${kind}`, "*/*", project, options.signal);
+    /** A file of the design, for the option the project has chosen; the project file needs none. */
+    async exportDesign(kind: ExportKind, project: ProjectRequest, { day, signal }: ExportOptions = {}): Promise<ExportedFile> {
+      const query = day === undefined ? "" : `?${new URLSearchParams({ day })}`;
+      const response = await ask(`/export/${kind}${query}`, "*/*", project, signal);
       const name = fileNameOf(response.headers.get("content-disposition"), FILE_NAMES[kind]);
       return { name, blob: await response.blob() };
     },

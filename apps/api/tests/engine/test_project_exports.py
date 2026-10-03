@@ -1,4 +1,5 @@
 # Copied from rooftop-design (SolarLayout/rooftop-design) at commit bf2cb67.
+import json
 import zipfile
 
 from shapely.geometry import Polygon
@@ -15,6 +16,15 @@ def test_project_round_trip(demo_design, tmp_path):
     assert q.roof.outline == demo_design.p.roof.outline
     assert q.roof.obstacles[0].name == "Stair room" and q.system_voltage == 1500
     assert q.losses.p_levels == (50, 75, 90)
+
+
+def test_the_text_of_a_project_is_what_save_writes(demo_design, tmp_path):
+    f = tmp_path / "p.rtd"
+    demo_design.p.save(f)
+    text = demo_design.p.to_text()
+    assert text == f.read_text()
+    assert text.startswith("{\n \"name\": ")  # one writer of the format: json.dumps with indent=1
+    assert Project.from_json(json.loads(text)) == demo_design.p
 
 
 def test_exports_write_and_reimport(demo_design, tmp_path):
