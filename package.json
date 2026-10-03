@@ -24,6 +24,12 @@
     "typecheck:tools": "bun tools/with-node.ts tsc --noEmit -p tsconfig.json",
     "test:tools": "bun test tools",
     "e2e": "cd e2e && bun ../tools/with-node.ts playwright test",
+    "e2e:kit": "bun tools/e2e-group.ts kit",
+    "e2e:find": "bun tools/e2e-group.ts find",
+    "e2e:studio": "bun tools/e2e-group.ts studio",
+    "e2e:performance": "bun tools/e2e-group.ts performance",
+    "e2e:handover": "bun tools/e2e-group.ts handover",
+    "e2e:shell": "bun tools/e2e-group.ts shell",
     "proofs": "bun test ./tools/check/proofs/turbo.proof.ts ./tools/check/proofs/pytest.proof.ts"
   },
   "devDependencies": {
