@@ -501,11 +501,80 @@ is the drop's "Refused" state at drop time: `note-surface`, the note of 20, "Thi
 and 2. Open it with a newer version of the app."), "Choose another"; Open waits, and the design that is open stays as it
 is (D32). An API that was not reached is refused the same way with Try again under the field, which reads the same file
 again. A second file chosen replaces the first, whatever the first's answer. On phone the dialog is the bottom sheet of
-"Dialog". Until Home is built (pull request 3) the dialog is pictured over the Studio.
+"Dialog". It is pictured over the Studio (`open-project*.png`); Home opens the same dialog from its row.
 
 In code: `OpenProject` (`components/home`), opened from the project switcher's row "Open a project" on every workspace
 and from Home; `lib/home/open-project.ts` holds the pure parts (the file by its ending, the request from a `File`, the
 lines of a file read, the refusal from an error); the design is kept by `keepAndOpen` of the saving store.
+
+## Home
+The boards "Home" (desktop, approved in round 1), "Home · tablet 834" and "Home · phone 390" (plan phase 10, step 11,
+decision 5). Outside the shell: no top bar; the logo and the name at the top left on every size (`Logo` with
+`wordmark="always"`), 72 high (56 on phone), the page's padding 64 on desktop, 24 on tablet, 16 on phone. The headline in
+`text-hero` ("Find your roof." and "Design it in 3D." on two lines; `text-page` on phone), the subtitle in `text-lead`
+(`text-body-touch` on phone), text-2. The search is Find's own `Search` in its look `hero`: a well of 76 (`color-well`,
+border `line-strong`, `radius-bar`, `shadow-well`; the accent line and the halo with the focus inside) with the primary
+action "Find my roof" inside it at the right, 56 high (`xl`), an arrow after the label; on phone the well is 56 high and
+the action stands under it, as wide as the well, 48 high. "Find my roof" is a link to `/find` while nothing is typed, so
+that it leads there by itself; with words typed it searches them and the places found come under the well as in Find;
+coordinates or a maps link typed, or a place taken from the list, lead to `/find?at=<lat>,<lon>` (and `&place=<label>` for
+a place found by words, so that the design is named after it, D49), where Find begins as if the place had just been found
+there: the map at roof zoom, "Outline the roof". Under the search two rows of 76 (`surface-1`, border `line`, `radius-bar`,
+an icon of 22, the title in `text-title`, a line in `text-small` text-2): "Import a drawing" ("KMZ, KML or DXF with the
+roof and its obstacles") opens the dialog of the import, "Open a project" ("A saved .rtd file, from this device or a
+colleague") the dialog of the project file; both are buttons.
+
+The demo's card (`surface-1`, border `line`, `radius-card`, `shadow-card`, padding 18 by 22): "Demo project" in
+`text-caption`, the name in `text-title`, the roof's words in `text-small` (the name and the roof of `GET /demo`, the words
+by `roofWordsOf`, as every card says a roof), then Capacity and Energy, year 1 as stat cells, and "Open the demo", a
+secondary button of 44 with an arrow. The capacity and the energy are the engine's numbers of the untouched demo's run on
+this device, remembered under one key of localStorage when that run lands (`lib/device/demo-run.ts`); until the demo has run
+here they are absent and "Capacity and energy come with the run in the Studio" stands in their place (decision 5: nothing
+is typed). Open the demo hands the demo document to the flow, which opens it without a second request, and leads to the
+Studio's last lens: one press from a cold start. While the demo is on its way the card holds skeletons; a demo that does not
+come says the API's words in the card. On phone the card is stacked: the words, the two numbers side by side, the button as
+wide as the card.
+
+"On this device": the label in `text-section` text-3, then "Designs you save appear here. Nothing leaves this browser until
+you export." while nothing is kept, "Nothing leaves this browser until you export." once something is, then the cards
+(below). On desktop the section stands at the foot at the left and the demo's card at the right while nothing is kept;
+with cards, the demo's card stands at the right over the section, which takes the width. The 3D illustration of the board
+(`HomeIllustration`, the board's own markup, its colours the tokens `--color-scene-*` and `--color-module-*` that mirror the
+3D palette) stands at the right on desktop behind nothing, as a strip under the subtitle fading into the ground on tablet,
+and not at all on phone. Home shows the toasts of the app (a design that could not be opened, a copy that could not be
+saved) in its own `Toaster`.
+
+In code: `Home`, `DemoCard`, `OnThisDevice`, `HomeIllustration` (`components/home`); `lib/home/home-view.ts` holds the
+pure parts (the demo's card from the document and the remembered run, the words of the section); `lib/routes.ts` the address
+of Find with a place (`pathOfFind`, `placeOfFindAddress`).
+
+## Design card (Home, "On this device")
+The board "Home, designs on this device" (plan phase 10, steps 12 and 13, decisions 6 and 7). A card of the compact kind
+(`surface-1`, border `line`, `radius-card`, `shadow-card`, padding `space-card-compact`), three in a row on desktop, two on
+tablet, one on phone. Its tile is the thumbnail: the plan of the kept layout as an SVG of 320 by 180 in its own units
+(`lib/device/thumbnail.ts`, drawn with the maths of the plan without WebGL: the roof on `surface-2` with the accent line,
+the setback dashed, the kept-clear areas, the obstacles in text-2, the modules in `data-gain`, north up, 3 m of ground
+about the roof), kept with the design and written again when a layout lands; a record kept before there were thumbnails
+shows the plan of its roof alone. Under the tile the name in `text-title`, the roof's words in `text-caption` text-2, the
+capacity and the energy of year 1 as stat cells, or in their place what they wait for ("Waiting for a system voltage"
+before one is chosen, "Not run yet" after; never a figure), and "Edited …" in `text-caption` text-3 ("Edited just now",
+"Edited 2 hours ago", "Edited yesterday", "Edited 24 Sep 2026"; `whenOf`, against the time the saving store last made its
+list). The tile and the name are buttons that open the design: it opens from the device and runs again, in the Studio at
+its last lens. A menu button of 32 (an `IconButton` "Menu", the icon `more`) stands at the top right of the tile; its list
+is the switcher's: rows of 44 (52 on touch) with an icon of 18 and a fact at the right, 240 wide, its right edge in line
+with the button's (a bottom sheet on phone and tablet): Open, Rename, Duplicate, Save a copy (.rtd), Delete. Rename turns
+the name into the text field in place (the name's rules: trimmed, 200 at most, an empty name refused with "A name is
+needed" under the field), Enter or leaving the field commits, Escape gives the name back; the committed name is the
+design's on the device and, for the open design, an edit of the document. Duplicate keeps "Copy of <name>" under a new id
+and opens it at once. Save a copy asks the API for the project file of that design's document as it is and saves it under
+the API's name; a failure is a toast with Try again. Delete asks in a dialog with the board's question word for word
+("Delete <name>?", "It is kept on this device alone."), Cancel with the focus so that Enter by mistake does no harm, Delete
+the primary action; the open design deleted stays open, not kept any more, and its next edit keeps it anew.
+
+In code: `DesignCard` and `OnThisDevice` (`components/home`); `lib/home/cards.ts` holds the pure parts (the cards, the
+newest edited first; the copy's name; the question); the saving store does `rename` and `remove`, `keepAndOpen` the copy,
+the downloads store `saveACopyOf`; the menu's rows and keys are `components/ui/list-look.ts` (`MENU_ROW`) and
+`components/ui/menu-keys.ts`, shared with the project switcher.
 
 ## Deliverable row (Handover)
 Row 64 high: format badge 44 by 28 (accent for the selected row), title, one line of facts, then a download
