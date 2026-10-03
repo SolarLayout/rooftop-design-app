@@ -611,7 +611,8 @@ The value of a chart under the pointer, the finger or the keyboard focus (the bo
 phase 8, decision 18) is a tooltip of two lines, padding 4 10: the value first, in mono 12 Geist Mono 500 in text
 ("68.4 MWh · 191 kWh/kWp"), then what it is of in `text-caption` text-2 ("Mar"). It stands over the bar or the marker,
 8 from it, at once; on touch a tap brings it, and a scroll takes it away. In code: `ValueTooltip`. It is never the
-only place: the Table tab of the chart holds every value.
+only place: the Table tab of the chart holds every value. Beside a block of the single-line diagram it stands at the
+block's right, 8 from it (`side="right"`), so that no other block is hidden; the list under the diagram holds every block.
 
 ## Toast
 `surface-1`, border `line-strong`, radius `radius-row`, `shadow-float`, 48 high or more, padding 8 8 8 14,

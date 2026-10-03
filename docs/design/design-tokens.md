@@ -82,6 +82,8 @@ the reason.
 | `--color-series-5` | `#D55181` | Fifth category |
 | `--color-series-6` | `#008300` | Sixth category |
 | `--color-series-unused` | `#8C93A0` | Positions not used |
+| `--color-series-ink` | `#1A1204` | Words on a series block of the single-line diagram, where accent-ink contrasts more than white (series 1 to 5) |
+| `--color-series-ink-light` | `#FFFFFF` | Words on a series block where white contrasts more (series 6, the dark green) |
 | `--color-shade-1` | `#3C324E` | The shade map, its first step: the least near shading over the year (0 to a fifth of the scale) |
 | `--color-shade-2` | `#634E86` | The shade map, its second step |
 | `--color-shade-3` | `#8D6CC2` | The shade map, its third step |
@@ -448,7 +450,8 @@ layer of their own.
 | `--ease-out`, `--duration-*` | `ease-out`, `duration-` and the name | `duration-press` |
 | `--duration-press`, `--ease-out`, `--shift-press`, `--scale-press` | `press-motion`, `raised-by-hover`, `lowered-by-press` | on every control that is pressed |
 | `--duration-panel`, `--ease-out` | `sheet-motion` | on a sheet that goes to its stop |
-| `--stroke-*` | `stroke-icon`, `stroke-icon-light`, `stroke-tick`; `stroke-chart`, `stroke-hair` | on the `svg` of an icon; on the line, the gridlines and the crosshair of a chart |
+| `--stroke-*` | `stroke-icon`, `stroke-icon-light`, `stroke-tick`; `stroke-chart`, `stroke-hair`, `stroke-wire` | on the `svg` of an icon; on the line, the gridlines and the crosshair of a chart; on the DC lines of the single-line diagram |
+| `--radius-xs` | `rx-xs` | the corners of a box drawn in an `svg`: the single-line diagram |
 | `--z-*` | `z-` and the name | `z-float` |
 | `--border-*` | `border-` and the name; `border-b-tab` for the line under a tab | `border-handle-touch desktop:border-handle`, `border-dot`, `border-corner`, `border-outline` |
 | `--shadow-text-on-imagery` | `on-imagery` | on text that stands on the satellite imagery |
@@ -484,3 +487,4 @@ steps of `--spacing`. No emoji. No filled icons except the play triangle and the
 | `--stroke-pause` | `3.4` | The two bars of Pause on the round play button: as heavy as the play triangle beside them |
 | `--stroke-chart` | `2` | The line of a chart |
 | `--stroke-hair` | `1` | A gridline, the baseline and the crosshair of a chart: a hairline |
+| `--stroke-wire` | `1.5` | A DC line of the single-line diagram, from a block to its inverter; its AC lines take `--stroke-chart` |

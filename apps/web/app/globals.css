@@ -260,6 +260,7 @@
   --stroke-pause: 3.4;
   --stroke-chart: 2;
   --stroke-hair: 1;
+  --stroke-wire: 1.5;
 
   --z-stage: 0;
   --z-stage-overlay: 1;
@@ -316,6 +317,8 @@
   --color-series-5: #D55181;
   --color-series-6: #008300;
   --color-series-unused: #8C93A0;
+  --color-series-ink: #1A1204;
+  --color-series-ink-light: #FFFFFF;
   --color-shade-1: #3C324E;
   --color-shade-2: #634E86;
   --color-shade-3: #8D6CC2;
@@ -473,6 +476,8 @@
   --color-series-5: var(--color-series-5);
   --color-series-6: var(--color-series-6);
   --color-series-unused: var(--color-series-unused);
+  --color-series-ink: var(--color-series-ink);
+  --color-series-ink-light: var(--color-series-ink-light);
   --color-shade-1: var(--color-shade-1);
   --color-shade-2: var(--color-shade-2);
   --color-shade-3: var(--color-shade-3);
@@ -977,6 +982,14 @@
 }
 @utility stroke-hair {
   stroke-width: var(--stroke-hair);
+}
+/* The DC lines of the single-line diagram. */
+@utility stroke-wire {
+  stroke-width: var(--stroke-wire);
+}
+/* The corners of a box drawn in an svg. */
+@utility rx-xs {
+  rx: var(--radius-xs);
 }
 
 @utility duration-press {

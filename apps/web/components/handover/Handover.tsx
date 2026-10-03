@@ -13,11 +13,12 @@ import { pageViewOf } from "@/lib/handover/page-view";
 import { reportViewOf, type ShownPage } from "@/lib/handover/report-view";
 import { FIRST_ITEM, HANDOVER, type HandoverItem } from "@/lib/routes";
 import { editOf, nameOf, projectOf } from "@/lib/stores/project-store";
-import { designFailureOf, designOf, designStatusOf } from "@/lib/stores/results-store";
+import { chosenOptionOf, designFailureOf, designOf, designStatusOf } from "@/lib/stores/results-store";
 import { DeliverableList } from "./DeliverableList";
 import { Preview } from "./Preview";
 import { ProjectFilePreview } from "./ProjectFilePreview";
 import { PageButton, ReportPreview, ReportSkeleton } from "./ReportPreview";
+import { SingleLineDiagram } from "./SingleLineDiagram";
 
 type Props = {
   /** The item that is open; null at the list's own address, where desktop and tablet show the first item beside the list. */
@@ -61,6 +62,7 @@ export function Handover({ item }: Props) {
   // The page's edits (the name) are committed edits like the Studio's: the keys of the history undo and redo them.
   useHistoryKeys();
   const design = useResults(designOf);
+  const option = useResults(chosenOptionOf);
   const designStatus = useResults(designStatusOf);
   const failure = useResults(designFailureOf);
   const pages = keptPages?.answer.pages.length ?? null;
@@ -129,6 +131,8 @@ export function Handover({ item }: Props) {
             <ReportPreview view={report} onPage={showPage} onTryAgain={askPagesAgain} />
           ) : isProjectFileOpen ? (
             <ProjectFilePreview document={document} design={design} bytes={projectFile?.blob.size ?? null} isWaitingForBytes={askFailedFor !== edit} onRename={rename} />
+          ) : shown === "single-line-diagram" && option && design ? (
+            <SingleLineDiagram option={option} equipment={design.equipment} isDimmed={view.isDimmed} />
           ) : (
             <NotBuiltYet />
           )}

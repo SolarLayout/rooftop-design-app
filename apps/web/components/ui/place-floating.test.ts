@@ -89,3 +89,28 @@ describe("isStill: whether a control is where it was, after a scroll or a resize
     expect(isStill(box, { ...box, width: 44 })).toBe(false);
   });
 });
+
+describe("placeOf: beside the control, at its right", () => {
+  test("a gap to the right of the control, its middle on the middle of the control", () => {
+    const place = placeOf({ anchor: BUTTON, size: { width: 120, height: 48 }, screen: SCREEN, side: "right", align: "middle", gap: 8 });
+
+    expect(place).toEqual({ x: 688, y: 396, side: "right" });
+  });
+
+  test("its top on the top of the control where it is aligned at the start", () => {
+    const place = placeOf({ anchor: BUTTON, size: { width: 120, height: 48 }, screen: SCREEN, side: "right", align: "start", gap: 8 });
+
+    expect(place).toEqual({ x: 688, y: 400, side: "right" });
+  });
+
+  test("where there is no room at the right it goes to the left, and back where the left has none either", () => {
+    const atTheEdge: Box = { ...BUTTON, left: 1340 };
+
+    expect(placeOf({ anchor: atTheEdge, size: { width: 120, height: 48 }, screen: SCREEN, side: "right", align: "middle", gap: 8 })).toEqual({ x: 1212, y: 396, side: "left" });
+    expect(placeOf({ anchor: { left: 20, top: 100, width: 300, height: 40 }, size: { width: 120, height: 48 }, screen: { width: 390, height: 844 }, side: "right", align: "middle", gap: 8 })).toEqual({
+      x: 262,
+      y: 96,
+      side: "right",
+    });
+  });
+});

@@ -10,6 +10,7 @@ const STROKED = {
       <path d="M3 12h18M9 4v16M15 4v16" />
     </>
   ),
+  "arrow-down": <path d="M12 5v14m0 0-5-5m5 5 5-5" />,
   "arrow-left": <path d="M19 12H5m0 0 6-6m-6 6 6 6" />,
   "arrow-right": <path d="M5 12h14m0 0-6-6m6 6-6 6" />,
   "arrow-up": <path d="M12 19V5m0 0-6 6m6-6 6 6" />,
@@ -49,6 +50,12 @@ const STROKED = {
   "chevron-right": <path d="m9 6 6 6-6 6" />,
   "chevron-up": <path d="m6 15 6-6 6 6" />,
   close: <path d="M6 6l12 12M18 6 6 18" />,
+  copy: (
+    <>
+      <rect x="9" y="9" width="11" height="11" rx="2" />
+      <path d="M5 15V5a1 1 0 0 1 1-1h10" />
+    </>
+  ),
   download: <path d="M12 3v12m0 0-4-4m4 4 4-4M4 19h16" />,
   folder: <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />,
   handover: (
