@@ -86,9 +86,17 @@ This is production software, not a prototype. The owner's words: "this is not th
   suite whole. The numbers of the engine (`tests/engine/test_demo_numbers.py`) run in every pytest run as a
   sentinel (`tests/always_run.py`). A comment alone changes nothing: testmon reads the syntax tree. In `apps/api`,
   `bun run test -- tests/api` runs a part with the selection, `bun run test:all` the whole suite without it.
-- The browser step is the root task `//#e2e`, keyed on everything the browser tests can see: `apps/web`,
-  `packages/api-types`, the API's sources and configuration, `e2e`, the tools that start the stack, the
-  lockfile, `.nvmrc`, and `apps/web/.env.local` by turbo's hash of it (no code of ours reads the file).
+- The browser step is six root tasks, one per group of suites: `//#e2e:kit`, `find`, `studio`, `performance`,
+  `handover` and `shell` (`tools/check/e2e-groups.ts`), run one after the other, the test stack started once by
+  the check when a group runs and stopped after. Each is keyed on the base every suite can see (`apps/web/app`,
+  `components/shell` and `ui`, the files at the roots of `components` and `lib`, `lib/api`, `stores`, `flow` and
+  `format`, `public`, the web's configuration, `packages/api-types`, the API's sources and configuration, the
+  helpers and fixtures of `e2e`, the tools that start the stack, the lockfile, `.nvmrc`, and `apps/web/.env.local`
+  by turbo's hash of it, since no code of ours reads the file) and on its own: its suites, its folders of
+  `components` and `lib`, and the folders of the groups it crosses into (the Studio sees Find's, Performance the
+  Studio's and Find's, the shell every group's and every baseline but the kit's, which the kit suite takes). A
+  suite belongs to a group by its file name; a name no group claims fails `bun test tools`, so that a new suite
+  is placed on purpose. `bun run e2e:<group>` runs one group by hand, `bun run e2e` everything.
 - On GitHub the `check` workflow restores `.turbo/cache` from the last run of the branch or of `main` and saves
   it after every run; a push to `main` runs `--fresh`. pytest runs whole and untraced there
   (`ROOFTOP_CHECK_SELECT=0`).

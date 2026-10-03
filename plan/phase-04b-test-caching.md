@@ -152,3 +152,36 @@ decisions 1, 4 and 11 of that plan; the rest were the session's.
   other tools running at the same time.
 - **The phase file's "what the check runs today"** said the check benefited from turbo for typecheck and lint;
   it did not: the check never called turbo. typecheck was 3 s here because tsc's own incremental file was warm.
+
+### The browser step in groups (session 13, 2026-10-03)
+
+The one task `//#e2e` was keyed on all of `apps/web`, `e2e` and the API: a feature pull request that changed one
+folder paid the whole browser step, 1,680 tests and about 22 minutes. The owner asked for the step to be split
+into tasks keyed on what each one's suites can see. Built as D54: six root tasks `//#e2e:<group>`
+(`tools/check/e2e-groups.ts` is the data; `tools/check/e2e-groups.test.ts` holds `turbo.json` and the root
+scripts equal to it), the runner `tools/e2e-group.ts <group>` behind the scripts `e2e:<group>`, the check running
+the six in one turbo invocation with `--concurrency=1` after a dry run that says which groups miss the cache, the
+test stack started once when one does and stopped after (`tools/check/e2e-stack.ts`, on `e2e/stack.ts`), the
+summary by group ("ran handover, shell; unchanged kit, find, studio, performance, cached at ..."). The proofs say
+which groups a change reaches.
+
+Every group sees the base: `apps/web/app`, `components/shell` and `ui`, the files at the roots of `components` and
+`lib` (named, since turbo takes an exclusion out of every input of a task), `lib/api`, `stores`, `flow`, `format`,
+`public`, the web's configuration, `packages/api-types`, the API's sources and configuration, the helpers and
+fixtures of `e2e`, the tools that start the stack, the lockfile. A suite belongs to a group by its file name; a
+name no group claims fails `bun test tools`. Tests counted by `playwright --list` over the three sizes.
+
+| Group | Suites | Tests | Own inputs, beside the base |
+|---|---|---|---|
+| kit | 16: `kit.e2e.ts`, `kit-*.e2e.ts` | 885 | `components/kit`, the baselines `kit*.png` |
+| find | 4: find, outline, by-hand, obstacles | 126 | `components/find`, `lib/map`, `lib/outline` |
+| studio | 20: array-lens, build, history, lens-switches, manipulation, modules, roof-lens, selection, shade-map, shadow-outlines, shell-vitals, stage, `strings-*`, `sun-*`, time | 372 | `components/studio`, `components/scene`, `lib/scene`, `lib/studio`, `lib/roof-card.ts`, `lib/scene-palette.ts`, and find's (Build and the Roof lens's Edit cross into Find) |
+| performance | 4: `performance*.e2e.ts` | 111 | `components/performance`, `lib/performance`, and studio's and find's (a voltage is chosen in the Strings lens; a roof is built on the map) |
+| handover | 1: `handover*.e2e.ts` | 39 | `components/handover`, `lib/handover` |
+| shell | 7: api-client, fonts, routes, screens, shell, smoke, tokens | 341 | every other group's, and every baseline but the kit's: the screens suite pictures every page, and this group runs whenever anything of the web changed |
+
+What a change reaches, proved: a module of Find runs find, studio, performance and shell; one of the Studio's
+scene studio, performance and shell; a component of Handover handover and shell alone; one of `components/ui`
+every group; the tools, the API and `packages/api-types` every group; a suite its own group alone; a baseline the
+group of the suite that takes it; a document nothing. `apps/web/CLAUDE.md` reaches the web package's own tasks,
+which key on every file of the package, and no browser group.
