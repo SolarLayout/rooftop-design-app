@@ -152,7 +152,7 @@ test.describe("Table, heads that sort (components.md, \"Table\", sorting)", () =
 
   const table = (page: Page) => example(page, "table-sortable").getByRole("table", { name: "Four strings and their DC cable" });
   const names = (page: Page) => table(page).getByRole("rowheader");
-  const head = (page: Page, name: string) => table(page).getByRole("columnheader", { name });
+  const head = (page: Page, name: string) => table(page).getByRole("columnheader", { name, exact: true });
 
   test("a head that sorts is a button across the cell, 36 high; the one that does not is not", async ({ page }) => {
     const button = head(page, "DC cable (m)").getByRole("button");

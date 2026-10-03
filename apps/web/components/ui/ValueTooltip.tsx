@@ -50,7 +50,9 @@ export function ValueTooltip({ anchor, value, label, onLeave, side = "above" }: 
       align: "middle",
       gap: TOOLTIP_GAP,
     });
-    Object.assign(floating.style, measures({ x, y }));
+    // A custom property is set by name: assigned as a field of the style it is not written, and the tooltip would stay at
+    // the top left corner of the screen (found in Phase 9: the tooltips of the charts had stood there since Phase 8).
+    for (const [name, measure] of Object.entries(measures({ x, y }))) floating.style.setProperty(name, String(measure));
   }, [anchor, value, label, side]);
 
   const isShown = anchor !== null;

@@ -27,7 +27,7 @@ type Props<Row> = {
 
 const HEAD = "h-9 border-b border-line type-section whitespace-nowrap text-text-3 uppercase";
 // The head of a column that sorts is a button across the cell: the active one in text with the arrow of its direction.
-const SORT_HEAD = "flex h-9 w-full cursor-pointer items-center gap-1 rounded-xs type-section uppercase select-none focus-ring hovered:text-text-2";
+const SORT_HEAD = "flex h-9 w-full cursor-pointer items-center gap-1 rounded-xs type-section uppercase select-none focus-ring";
 const CELL = "h-11 border-b border-line-subtle whitespace-nowrap";
 const TOTAL_CELL = "h-11 border-t border-line whitespace-nowrap";
 const CAPTION = "type-caption text-text-2";
@@ -76,7 +76,7 @@ export function Table<Row>({ caption, columns, rows, keyOf, chosen, total, dense
               const isActive = direction !== "none";
               return (
                 <th key={column.key} scope="col" aria-sort={direction} className={classNames(HEAD, "p-0", atTheRight ? "text-right" : "text-left")}>
-                  <button type="button" onClick={() => onSort?.(nextSort(sort, column.key))} className={classNames(SORT_HEAD, padding, atTheRight ? "justify-end" : "justify-start", isActive ? "text-text" : "text-text-3")}>
+                  <button type="button" onClick={() => onSort?.(nextSort(sort, column.key))} className={classNames(SORT_HEAD, padding, atTheRight ? "justify-end" : "justify-start", isActive ? "text-text" : "text-text-3 hovered:text-text-2")}>
                     {column.head}
                     {isActive ? <Icon name={direction === "ascending" ? "arrow-up" : "arrow-down"} size={14} /> : null}
                   </button>

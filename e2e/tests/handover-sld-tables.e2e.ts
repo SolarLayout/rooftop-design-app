@@ -214,25 +214,20 @@ test.describe("the bill of materials (decision 7)", () => {
       expect(await wordsOf(shown.nth(index), testInfo.project.name)).toEqual([line.item, line.spec, fixed(line.qty, 0), line.unit]);
     }
     await expect(bom(page)).toContainText(`The bill of materials of option ${option.letter}, as the engine lists it`);
-    await expect(preview(page).getByText("In the report, page 5")).toBeVisible();
+    await expect(preview(page).getByText("In the report, page 5").filter({ visible: true })).toBeVisible();
     await expect(copyAsTable(page)).not.toHaveAttribute("aria-disabled", "true");
   });
 
   test("Copy as table: the clipboard holds the table as text (desktop), and a toast says so, then leaves after its time", async ({ page, context }, testInfo) => {
     const option = await theItem(page, "bill-of-materials", bom);
-    // The clipboard is granted to the context on desktop (decision 16); on touch sizes the toast alone is checked.
-    const onDesktop = isDesktop(testInfo.project.name);
-    if (onDesktop) await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    // The clipboard is granted to the context (decision 16).
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
 
     await copyAsTable(page).click();
 
-    if (onDesktop) {
-      expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(bomTextOf(option));
-      await expect(toast(page)).toContainText("Bill of materials copied as a table");
-      await expect(toast(page).getByRole("img", { name: "Done" })).toBeVisible();
-    } else {
-      await expect(toast(page)).toContainText(/Bill of materials copied as a table|The table could not be copied/);
-    }
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(bomTextOf(option));
+    await expect(toast(page)).toContainText("Bill of materials copied as a table");
+    await expect(toast(page).getByRole("img", { name: "Done" })).toBeVisible();
     await expect(toast(page)).toHaveCount(0, { timeout: TOAST_STAYS + 15_000 });
   });
 
@@ -245,7 +240,7 @@ test.describe("the bill of materials (decision 7)", () => {
 
 test.describe("the DC cable schedule (decision 7)", () => {
   const schedule = (page: Page) => page.getByTestId("cable-schedule");
-  const head = (page: Page, name: string) => schedule(page).getByRole("columnheader", { name });
+  const head = (page: Page, name: string) => schedule(page).getByRole("columnheader", { name, exact: true });
   const longestOf = (option: Option) => option.cable_schedule.reduce((longest, row) => (row.length_m > longest.length_m ? row : longest));
 
   test("every string in the engine's order with the eight columns, then the total row with the count and the lengths' sum", async ({ page }, testInfo) => {
@@ -265,7 +260,7 @@ test.describe("the DC cable schedule (decision 7)", () => {
       await expect(schedule(page).getByRole("columnheader")).toHaveText(["String", "Inverter", "MPPT", "Modules", "Voc cold (V)", "Isc (A)", "DC cable (m)", "Cable"]);
     }
     await expect(schedule(page)).toContainText(`The DC cable schedule of option ${option.letter}, in the engine's order, by string`);
-    await expect(preview(page).getByText("In the report, page 5")).toBeVisible();
+    await expect(preview(page).getByText("In the report, page 5").filter({ visible: true })).toBeVisible();
   });
 
   test("tablet and desktop: sorted by DC cable downwards the longest string is first and the total stays last; a third press gives the engine's order back", async ({ page }, testInfo) => {
