@@ -774,16 +774,23 @@ In code: `NotesDrawer`, and `NotesPanel` for what is seen of it; the notes are m
 The trigger is on `surface-2` with a border `line`, its chevron turned. Panel: 340 wide, `surface-1`, border
 `line-strong`, radius `radius-card-s`, `shadow-float`, padding 6.
 "This design": the name with a tick in accent, and under it the state of saving. "On this device": the designs
-saved here, or "Designs you save appear here." Then the actions, rows of 44 with an icon of 18 in text-2 and a
-fact at the right in `text-caption`, text-3: New design (Find the roof), Open a project (.rtd), Import a
-drawing (KMZ, KML, DXF), Save a copy (.rtd), Home. Sections are divided by a line `line`; their labels are
-`text-section`.
+kept here, the newest edited first, each a row of 44 like the actions' (a file icon of 18 in text-2, the name, and
+at the right in `text-caption`, text-3, the capacity of its last run, "357.28 kWp", or the roof's words before a
+run with a chosen option, "90.0 × 40.0 m flat roof, tilted rows"); the design that is open has the tick in accent
+in the place of the icon. Without any, "Designs you save appear here." Then the actions, rows of 44 with an icon
+of 18 in text-2 and a fact at the right in `text-caption`, text-3: New design (Find the roof), Open a project
+(.rtd), Import a drawing (KMZ, KML, DXF), Save a copy (.rtd), Home. Sections are divided by a line `line`; their
+labels are `text-section`.
 On phone and tablet it is a bottom sheet.
 
-In code: `ProjectSwitcher`; `ProjectTrigger` and `ProjectMenu` for what is seen of it.
+In code: `ProjectSwitcher`; `ProjectTrigger` and `ProjectMenu` for what is seen of it; the rows of the device are
+made by `rowsOnTheDeviceOf` (`components/shell/switcher-view.ts`) of the designs the saving store lists.
 
-- The actions are a `menu`: the arrows go through its rows, Home and End to its ends. Open, the focus is on
-  its first row.
+- The designs on this device and the actions are each a `menu`: the arrows go through the rows of the menu the
+  key is pressed in, Home and End to its ends. Open, the focus is on the first row of the panel. A design's row
+  pressed closes the switcher and opens that design from the device, which runs again as the demo does (Phase
+  10, step 5); the open one says so to a screen reader (`aria-current`). A long name is cut with an ellipsis
+  before the fact is.
 - An action that comes with a later phase is shown and cannot be used (`aria-disabled`, opacity
   `opacity-disabled`). It takes the focus, so that it is found. Today that is Open a project (Phase 10).
   Import a drawing opens its dialog (Phase 5, step 13). Save a copy downloads the project file, the `.rtd` the API
