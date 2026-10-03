@@ -10,6 +10,8 @@ import { Icon } from "@/components/ui/Icon";
 import { bomViewOf } from "@/lib/handover/bom-view";
 import { byItemOf, keptOf, pagesOf, pagesStatusOf } from "@/lib/handover/downloads-store";
 import { IN_THE_REPORT } from "@/lib/handover/in-the-report";
+import { scheduleViewOf } from "@/lib/handover/schedule-view";
+import type { Sort } from "@/components/ui/table-sort";
 import { withName } from "@/lib/flow/name-field";
 import { pageViewOf } from "@/lib/handover/page-view";
 import { reportViewOf, type ShownPage } from "@/lib/handover/report-view";
@@ -19,6 +21,7 @@ import { chosenOptionOf, designFailureOf, designOf, designStatusOf } from "@/lib
 import { DeliverableList } from "./DeliverableList";
 import { Preview } from "./Preview";
 import { BillOfMaterials } from "./BillOfMaterials";
+import { CableSchedule } from "./CableSchedule";
 import { CopyAsTable } from "./CopyAsTable";
 import { ProjectFilePreview } from "./ProjectFilePreview";
 import { PageButton, ReportPreview, ReportSkeleton } from "./ReportPreview";
@@ -76,6 +79,9 @@ export function Handover({ item }: Props) {
   const download = row.kind === null ? undefined : () => void downloads.getState().download(row.id);
   const isLive = !row.waits && view.kind !== "loading";
   const bom = useMemo(() => (option ? bomViewOf(option) : null), [option]);
+  // The schedule's sort is held here, so that the head's copy is of the rows as the body shows them.
+  const [scheduleSort, setScheduleSort] = useState<Sort | null>(null);
+  const schedule = useMemo(() => (option ? scheduleViewOf(option, scheduleSort) : null), [option, scheduleSort]);
   /** The head of a table: where it stands in the report, and Copy as table; before options the press is shown and cannot be used. */
   const tableActions = (table: { text: string; copied: string } | null) => (
     <>
@@ -83,7 +89,7 @@ export function Handover({ item }: Props) {
       <CopyAsTable text={table?.text ?? ""} copied={table?.copied ?? ""} disabled={table === null || !isLive} />
     </>
   );
-  const tools = shown === "bill-of-materials" ? tableActions(bom) : undefined;
+  const tools = shown === "bill-of-materials" ? tableActions(bom) : shown === "cable-schedule" ? tableActions(schedule) : undefined;
   const isProjectFileOpen = shown === "project-file" && document !== null;
   const isReport = shown === "report";
   // The pages are asked once per edit while the report is open with an option; the store keeps them (decision 5). A refusal
@@ -150,6 +156,8 @@ export function Handover({ item }: Props) {
             <SingleLineDiagram option={option} equipment={design.equipment} isDimmed={view.isDimmed} />
           ) : shown === "bill-of-materials" && bom ? (
             <BillOfMaterials view={bom} isDimmed={view.isDimmed} />
+          ) : shown === "cable-schedule" && schedule ? (
+            <CableSchedule view={schedule} sort={scheduleSort} onSort={setScheduleSort} isDimmed={view.isDimmed} />
           ) : (
             <NotBuiltYet />
           )}

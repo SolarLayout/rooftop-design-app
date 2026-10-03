@@ -24,6 +24,8 @@ export type Column<Row> = {
   mark?: (row: Row) => Mark | null;
   /** Where the column is shown; without it, in both. */
   shown?: "table" | "card";
+  /** What the column sorts by, a number or a string: with it the head is a button (table-sort.ts). */
+  sortBy?: (row: Row) => number | string;
   /**
    * The value is words, not a figure: in Geist, at the left; on a card under the title across the width, without
    * the head, since the title says the row (the summary of Performance).
@@ -50,7 +52,7 @@ export function cellLinesOf<Row>(row: Row, column: Column<Row>): CellLine[] {
   return column.below ? [value, { value: column.below(row), isBelow: true }] : [value];
 }
 
-/** A row as a card: its name as the title, its mark, and every other value with its label. */
+/** A row as a card: its name as the title, its mark, and every other value with its label; a value that is empty is left off. */
 export function cardOf<Row>(row: Row, columns: ReadonlyArray<Column<Row>>): CardOfRow {
   const onCard = columns.filter((column) => column.shown !== "table");
   const name = onCard.find((column) => column.kind === "name");
@@ -60,7 +62,7 @@ export function cardOf<Row>(row: Row, columns: ReadonlyArray<Column<Row>>): Card
     title: name ? (name.onCard?.(row) ?? name.value(row)) : "",
     mark: marks[0] ?? null,
     values: onCard
-      .filter((column) => column !== name)
+      .filter((column) => column !== name && column.value(row) !== "")
       .map((column) =>
         column.words
           ? { key: column.key, label: column.head, value: column.value(row), words: true }

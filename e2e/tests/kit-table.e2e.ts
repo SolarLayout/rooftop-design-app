@@ -1,3 +1,4 @@
+import type { Page } from "@playwright/test";
 import { COLOUR, example } from "../kit";
 import { expect, test } from "../fixtures";
 
@@ -141,5 +142,72 @@ test.describe("Table, on phone", () => {
     await expect(cards.first()).toHaveAttribute("aria-current", "true");
     await expect(cards.first()).toHaveCSS("border-top-color", COLOUR.accent);
     await expect(cards.nth(1)).not.toHaveAttribute("aria-current");
+  });
+});
+
+test.describe("Table, heads that sort (components.md, \"Table\", sorting)", () => {
+  test.beforeEach(async ({}, testInfo) => {
+    test.skip(isPhone(testInfo.project.name), "On phone each row is a card, and nothing there changes the order.");
+  });
+
+  const table = (page: Page) => example(page, "table-sortable").getByRole("table", { name: "Four strings and their DC cable" });
+  const names = (page: Page) => table(page).getByRole("rowheader");
+  const head = (page: Page, name: string) => table(page).getByRole("columnheader", { name });
+
+  test("a head that sorts is a button across the cell, 36 high; the one that does not is not", async ({ page }) => {
+    const button = head(page, "DC cable (m)").getByRole("button");
+
+    await expect(button).toHaveText("DC cable (m)");
+    expect((await button.boundingBox())?.height).toBe(36);
+    await expect(button).toHaveCSS("padding-left", "8px");
+    await expect(button).toHaveCSS("color", TEXT_3);
+    await expect(head(page, "Cable").getByRole("button")).toHaveCount(0);
+    await expect(head(page, "Cable")).not.toHaveAttribute("aria-sort");
+  });
+
+  test("the order given at first, every head that sorts saying none", async ({ page }) => {
+    await expect(names(page)).toHaveText(["S1", "S2", "S9", "S10"]);
+    await expect(head(page, "String")).toHaveAttribute("aria-sort", "none");
+    await expect(head(page, "DC cable (m)")).toHaveAttribute("aria-sort", "none");
+  });
+
+  test("a press sorts upwards, another downwards, a third gives the order back; the active head in text with its arrow", async ({ page }) => {
+    const length = head(page, "DC cable (m)");
+
+    await length.getByRole("button").click();
+    await expect(names(page)).toHaveText(["S9", "S10", "S2", "S1"]);
+    await expect(length).toHaveAttribute("aria-sort", "ascending");
+    await expect(length.getByRole("button")).toHaveCSS("color", COLOUR.text);
+    await expect(length.locator("svg")).toHaveCount(1);
+    await expect(head(page, "String").getByRole("button")).toHaveCSS("color", TEXT_3);
+    await expect(head(page, "String").locator("svg")).toHaveCount(0);
+
+    await length.getByRole("button").click();
+    await expect(names(page)).toHaveText(["S1", "S2", "S10", "S9"]);
+    await expect(length).toHaveAttribute("aria-sort", "descending");
+
+    await length.getByRole("button").click();
+    await expect(names(page)).toHaveText(["S1", "S2", "S9", "S10"]);
+    await expect(length).toHaveAttribute("aria-sort", "none");
+    await expect(length.locator("svg")).toHaveCount(0);
+  });
+
+  test("a column sorts by its number, not by its words: S10 after S9 upwards; a press on another head sorts upwards by it", async ({ page }) => {
+    await head(page, "MPPT").getByRole("button").click();
+    await head(page, "MPPT").getByRole("button").click();
+    await expect(names(page)).toHaveText(["S9", "S10", "S1", "S2"]);
+
+    await head(page, "String").getByRole("button").click();
+    await expect(names(page)).toHaveText(["S1", "S2", "S9", "S10"]);
+    await expect(head(page, "String")).toHaveAttribute("aria-sort", "ascending");
+    await expect(head(page, "MPPT")).toHaveAttribute("aria-sort", "none");
+  });
+
+  test("the keyboard reaches a head and sorts with Enter", async ({ page }) => {
+    await head(page, "String").getByRole("button").focus();
+    await page.keyboard.press("Enter");
+    await expect(head(page, "String")).toHaveAttribute("aria-sort", "ascending");
+    await page.keyboard.press("Enter");
+    await expect(names(page)).toHaveText(["S10", "S9", "S2", "S1"]);
   });
 });

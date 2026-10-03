@@ -1,6 +1,8 @@
 import { classNames } from "./class-names";
+import { Icon } from "./Icon";
 import { StatusMark } from "./StatusMark";
 import { cardOf, cellLinesOf, columnsOfTable, type CellLine, type Column } from "./table-cells";
+import { ariaSortOf, nextSort, type Sort } from "./table-sort";
 
 type Props<Row> = {
   /** What the table holds, in words. It stands under the table and is its name. */
@@ -17,10 +19,15 @@ type Props<Row> = {
   dense?: boolean;
   /** The values of a card on phone in two columns rather than three, where they are long ("54.3 of 65.0 A"). */
   cardColumns?: 2 | 3;
+  /** The sort the rows are given in; null for the order given. With `onSort`, a head whose column sorts is a button that asks for the next one. */
+  sort?: Sort | null;
+  onSort?: (sort: Sort | null) => void;
   className?: string;
 };
 
 const HEAD = "h-9 border-b border-line type-section whitespace-nowrap text-text-3 uppercase";
+// The head of a column that sorts is a button across the cell: the active one in text with the arrow of its direction.
+const SORT_HEAD = "flex h-9 w-full cursor-pointer items-center gap-1 rounded-xs type-section uppercase select-none focus-ring hovered:text-text-2";
 const CELL = "h-11 border-b border-line-subtle whitespace-nowrap";
 const TOTAL_CELL = "h-11 border-t border-line whitespace-nowrap";
 const CAPTION = "type-caption text-text-2";
@@ -41,10 +48,14 @@ function Lines({ lines }: { lines: readonly CellLine[] }) {
   );
 }
 
-/** Rows of values under their heads. On phone each row is a card. */
-export function Table<Row>({ caption, columns, rows, keyOf, chosen, total, dense = false, cardColumns = 3, className }: Props<Row>) {
+/**
+ * Rows of values under their heads. On phone each row is a card. The rows are shown as they are given: a table that sorts
+ * is given its rows in the sort's order (table-sort.ts, sortedRows) and says the sort in its heads.
+ */
+export function Table<Row>({ caption, columns, rows, keyOf, chosen, total, dense = false, cardColumns = 3, sort = null, onSort, className }: Props<Row>) {
   const shown = columnsOfTable(columns);
   const padding = dense ? "px-1.5" : "px-2";
+  const sorts = (column: Column<Row>) => onSort !== undefined && column.sortBy !== undefined;
 
   return (
     <div className={className}>
@@ -52,11 +63,26 @@ export function Table<Row>({ caption, columns, rows, keyOf, chosen, total, dense
         <caption className={classNames(CAPTION, "caption-bottom pt-2.5 text-left")}>{caption}</caption>
         <thead>
           <tr>
-            {shown.map((column) => (
-              <th key={column.key} scope="col" className={classNames(HEAD, padding, column.kind === "number" ? "text-right" : "text-left")}>
-                {column.head}
-              </th>
-            ))}
+            {shown.map((column) => {
+              const atTheRight = column.kind === "number";
+              if (!sorts(column)) {
+                return (
+                  <th key={column.key} scope="col" className={classNames(HEAD, padding, atTheRight ? "text-right" : "text-left")}>
+                    {column.head}
+                  </th>
+                );
+              }
+              const direction = ariaSortOf(sort, column.key);
+              const isActive = direction !== "none";
+              return (
+                <th key={column.key} scope="col" aria-sort={direction} className={classNames(HEAD, "p-0", atTheRight ? "text-right" : "text-left")}>
+                  <button type="button" onClick={() => onSort?.(nextSort(sort, column.key))} className={classNames(SORT_HEAD, padding, atTheRight ? "justify-end" : "justify-start", isActive ? "text-text" : "text-text-3")}>
+                    {column.head}
+                    {isActive ? <Icon name={direction === "ascending" ? "arrow-up" : "arrow-down"} size={14} /> : null}
+                  </button>
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <tbody>

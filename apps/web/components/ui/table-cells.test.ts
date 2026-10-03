@@ -103,3 +103,15 @@ describe("cellLinesOf: what a cell of the table shows (the board \"Inverter and 
     ]);
   });
 });
+
+describe("cardOf: a value that is empty", () => {
+  test("is left off the card: the total row of a schedule shows its sum alone", () => {
+    type Row = { name: string; a: string; b: string };
+    const columns: Array<Column<Row>> = [
+      { key: "name", head: "Name", kind: "name", value: (row) => row.name },
+      { key: "a", head: "A", kind: "number", value: (row) => row.a },
+      { key: "b", head: "B", kind: "number", value: (row) => row.b },
+    ];
+    expect(cardOf({ name: "22 strings", a: "", b: "1,681.0" }, columns).values).toEqual([{ key: "b", label: "B", value: "1,681.0" }]);
+  });
+});
