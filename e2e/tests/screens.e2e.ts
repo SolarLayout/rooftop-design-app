@@ -1206,4 +1206,23 @@ test.describe("the shell", () => {
 
     await expectWholeScreen(page, "handover-download-all");
   });
+
+  // Present at the first moment of its tour (the board "Present"): the stage alone on the whole screen, the words at the
+  // bottom left over the fade, the hint at the right. The page's clock is held, so that the tour stands at its start and
+  // the picture does not move with the time; one frame is run for the stage to be drawn. The phone has no Present.
+  const presentAtTheStart = async (page: Page) => {
+    await page.clock.install({ time: DAY_OF_THE_REPORT });
+    await page.goto("/present");
+    await page.clock.pauseAt(new Date(DAY_OF_THE_REPORT.getTime() + 1000));
+    await expect(page.getByTestId("present")).toHaveAttribute("data-state", "touring", { timeout: RUN });
+    await expect(page.getByTestId("present-modules")).toContainText("modules", { timeout: RUN });
+    await page.clock.runFor(20);
+  };
+
+  test("present", async ({ page }, testInfo) => {
+    test.skip(isPhone(testInfo.project.name), "The phone has no Present.");
+    await presentAtTheStart(page);
+
+    await expectScreen(page, "present");
+  });
 });

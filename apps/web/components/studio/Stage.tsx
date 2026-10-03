@@ -45,8 +45,8 @@ type Props = { lens: Lens; name: string; className?: string };
 /** The words the imagery under the roof must carry wherever it is shown (guidelines.md, "3D scene"). */
 const ATTRIBUTION = esriProvider(KEY_OF_THE_APP)?.imagery.attribution ?? null;
 
-const NO_WEBGL = "This browser cannot draw the roof in 3D.";
-const CONTEXT_LOST = "The browser stopped drawing the roof in 3D.";
+export const NO_WEBGL = "This browser cannot draw the roof in 3D.";
+export const CONTEXT_LOST = "The browser stopped drawing the roof in 3D.";
 
 /** The view controls stand at the top right of the stage, as the boards of each size place them. */
 const VIEW_CONTROLS = "top-1 right-3 tablet:top-4 tablet:right-5 desktop:top-5";

@@ -680,20 +680,18 @@ test.describe("State of saving", () => {
 });
 
 test.describe("Present and Export", () => {
-  test("Present is shown and cannot be used, and says why", async ({ page }) => {
-    const present = example(page, "present").getByRole("button", { name: "Present" });
+  // Present leads to the tour on the whole screen (plan/phase-10-plan.md, decision 8): a link, in the look of a secondary button.
+  test("Present is a link to /present, raised as a secondary button", async ({ page }) => {
+    const present = example(page, "present").getByRole("link", { name: "Present" });
 
-    await expect(present).toHaveAttribute("aria-disabled", "true");
-    await expect(present).toHaveCSS("opacity", "0.45");
-    await expect(present).toHaveCSS("box-shadow", "none");
-    await expect(present).toHaveAccessibleDescription("Comes with Home and projects");
-
-    await present.click({ force: true });
-    await expect(last(page)).toHaveText("Last pressed: nothing yet");
+    await expect(present).toHaveAttribute("href", "/present");
+    await expect(present).toHaveCSS("background-color", COLOUR.control);
+    await expect(present).toHaveCSS("border-top-color", COLOUR.lineStrong);
+    await expect(present).not.toHaveCSS("box-shadow", "none");
   });
 
   test("Present takes the focus, so that the keyboard finds it", async ({ page }) => {
-    const present = example(page, "present").getByRole("button", { name: "Present" });
+    const present = example(page, "present").getByRole("link", { name: "Present" });
 
     await present.focus();
 
@@ -702,7 +700,7 @@ test.describe("Present and Export", () => {
 
   test("desktop: Present with its word; tablet: the icon alone, 44", async ({ page }, testInfo) => {
     test.skip(isPhone(testInfo.project.name), "The phone has no Present in its top bar.");
-    const present = example(page, "present").getByRole("button", { name: "Present" });
+    const present = example(page, "present").getByRole("link", { name: "Present" });
     const box = await boxOf(present);
 
     if (isDesktop(testInfo.project.name)) {
@@ -897,8 +895,8 @@ test.describe("Top bar", () => {
     const bar = example(page, "topbar").locator("header");
 
     await expect(bar.getByRole("link", { name: "Export" })).toBeVisible();
-    if (isPhone(testInfo.project.name)) await expect(bar.getByRole("button", { name: "Present" })).toBeHidden();
-    else await expect(bar.getByRole("button", { name: "Present" })).toBeVisible();
+    if (isPhone(testInfo.project.name)) await expect(bar.getByRole("link", { name: "Present" })).toBeHidden();
+    else await expect(bar.getByRole("link", { name: "Present" })).toBeVisible();
   });
 
   test("it is as wide as the screen", async ({ page }) => {
@@ -917,7 +915,7 @@ test.describe("Top bar", () => {
       await expect(bar.getByText("Not kept on this device").and(bar.locator(":visible"))).toBeVisible();
     }
     if (isTablet(testInfo.project.name)) {
-      await expect(bar.getByRole("button", { name: "Present" })).toBeVisible();
+      await expect(bar.getByRole("link", { name: "Present" })).toBeVisible();
       expect((await boxOf(bar.getByRole("link", { name: "Export" }))).width).toBeGreaterThan(80);
     }
   });
@@ -931,7 +929,7 @@ test.describe("Top bar", () => {
     expect(await trigger.getByText("Pune demo roof").evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
     await expect(trigger.getByText("18.52° N · 73.86° E")).toBeHidden();
     await expect(bar.getByText("Not kept on this device").and(bar.locator(":visible"))).toHaveCount(0);
-    await expect(bar.getByRole("button", { name: "Present" })).toBeVisible();
+    await expect(bar.getByRole("link", { name: "Present" })).toBeVisible();
     await expect(bar.getByRole("link", { name: "Export" })).toContainText("Export");
   });
 
@@ -944,7 +942,7 @@ test.describe("Top bar", () => {
 
     expect((await boxOf(name)).width).toBeGreaterThanOrEqual(60);
     expect((await boxOf(go)).width).toBe(44);
-    await expect(bar.getByRole("button", { name: "Present" })).toBeHidden();
+    await expect(bar.getByRole("link", { name: "Present" })).toBeHidden();
     await expect(bar.getByRole("navigation", { name: "Workspaces" }).getByRole("link")).toHaveCount(3);
   });
 

@@ -3,13 +3,12 @@
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { shouldWarnBeforeLeaving } from "@/lib/device/leaving";
-import { openFromTheSwitcher, openWhatBelongs } from "@/lib/device/opening";
-import { rememberedOf } from "@/lib/device/remembered";
+import { openFromTheSwitcher } from "@/lib/device/opening";
 import { idOf, keptDesignsOf, savingOf } from "@/lib/device/saving";
 import { placeInShort } from "@/lib/format/place";
 import { withName } from "@/lib/flow/name-field";
 import { workspaceOf } from "@/lib/routes";
-import { latitudeOf, longitudeOf, nameOf, projectOf } from "@/lib/stores/project-store";
+import { latitudeOf, longitudeOf, nameOf } from "@/lib/stores/project-store";
 import { lensOf } from "@/lib/stores/view-store";
 import { OpenProject } from "@/components/home/OpenProject";
 import { Toaster } from "@/components/ui/Toaster";
@@ -19,6 +18,7 @@ import type { Note } from "./notes-view";
 import { useDownloads, useNotes, useProject, useSaving, useStores, useToasts, useView } from "./stores";
 import { rowsOnTheDeviceOf } from "./switcher-view";
 import { TopBar } from "./TopBar";
+import { useOpensWhatBelongs } from "./use-opens-what-belongs";
 import { TabBar } from "./WorkspaceNav";
 
 type Notes = { notes: readonly Note[]; open: () => void };
@@ -35,6 +35,7 @@ export function useNotesOfTheShell(): Notes {
 function Frame({ children }: { children: ReactNode }) {
   const workspace = workspaceOf(usePathname());
   const { flow, project, downloads, saving } = useStores();
+  useOpensWhatBelongs();
   const name = useProject(nameOf);
   const savingState = useSaving(savingOf);
   const kept = useSaving(keptDesignsOf);
@@ -48,18 +49,6 @@ function Frame({ children }: { children: ReactNode }) {
   const [areNotesOpen, setNotesOpen] = useState(false);
   const [isImportOpen, setImportOpen] = useState(false);
   const [isOpenProjectOpen, setOpenProjectOpen] = useState(false);
-
-  // A workspace without a design opens the design remembered as open, from the device, else the demo (decision 2 of
-  // plan/phase-10-plan.md); the flow runs what is opened. A kept design that cannot be read opens the demo and says so.
-  useEffect(() => {
-    if (projectOf(project.getState()) !== null) return;
-    void openWhatBelongs({
-      remembered: rememberedOf(window.localStorage),
-      openFromDevice: (id) => saving.getState().openFromDevice(id),
-      openDemo: flow.openDemo,
-      say: (words) => void toasts.show({ kind: "note", words }),
-    });
-  }, [flow, project, saving, toasts]);
 
   // While a file of Handover is on its way the browser asks before the page is left (plan/phase-10-plan.md, step 6).
   useEffect(() => {

@@ -67,8 +67,8 @@ export function TopBars({ onPress }: Props) {
           <LensNav current="array" look="switch" className="grid tablet:hidden" />
         </Wide>
       </Row>
-      <Row label="Present, which comes with a later phase, and Export">
-        <Example name="present" caption="Shown, and cannot be used yet">
+      <Row label="Present and Export">
+        <Example name="present" caption="Leads to Present, the tour on the whole screen">
           <Present />
         </Example>
         <Example name="export" caption="Leads to Handover">

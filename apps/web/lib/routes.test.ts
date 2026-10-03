@@ -12,9 +12,17 @@ import {
   pathOfLens,
   placeOfFindAddress,
   pathOfWorkspace,
+  PRESENT,
   workspaceOf,
   WORKSPACES,
 } from "./routes";
+
+describe("Present", () => {
+  test("has an address of its own, outside the workspaces", () => {
+    expect(PRESENT).toBe("/present");
+    expect(workspaceOf(PRESENT)).toBeNull();
+  });
+});
 
 describe("the lenses of the Studio", () => {
   test("four, in the order of the work", () => {

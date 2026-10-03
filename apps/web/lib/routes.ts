@@ -54,6 +54,9 @@ export const pathOfItem = (item: HandoverItem) => `/handover/${item}` as const;
  */
 export const HANDOVER = "/handover";
 
+/** Present: the tour of the design on the whole screen, without the shell (plan/phase-10-plan.md, decision 8). */
+export const PRESENT = "/present";
+
 /** Where a workspace is entered. The Studio is entered at `lens`: the one that was opened last. */
 export function pathOfWorkspace(workspace: Workspace, lens: Lens) {
   if (workspace === "studio") return pathOfLens(lens);
