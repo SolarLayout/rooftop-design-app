@@ -7,7 +7,9 @@ import { useDownloads, useProject, useResults, useStores } from "@/components/sh
 import { useHistoryKeys } from "@/components/shell/use-history-keys";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
+import { bomViewOf } from "@/lib/handover/bom-view";
 import { byItemOf, keptOf, pagesOf, pagesStatusOf } from "@/lib/handover/downloads-store";
+import { IN_THE_REPORT } from "@/lib/handover/in-the-report";
 import { withName } from "@/lib/flow/name-field";
 import { pageViewOf } from "@/lib/handover/page-view";
 import { reportViewOf, type ShownPage } from "@/lib/handover/report-view";
@@ -16,6 +18,8 @@ import { editOf, nameOf, projectOf } from "@/lib/stores/project-store";
 import { chosenOptionOf, designFailureOf, designOf, designStatusOf } from "@/lib/stores/results-store";
 import { DeliverableList } from "./DeliverableList";
 import { Preview } from "./Preview";
+import { BillOfMaterials } from "./BillOfMaterials";
+import { CopyAsTable } from "./CopyAsTable";
 import { ProjectFilePreview } from "./ProjectFilePreview";
 import { PageButton, ReportPreview, ReportSkeleton } from "./ReportPreview";
 import { SingleLineDiagram } from "./SingleLineDiagram";
@@ -70,6 +74,16 @@ export function Handover({ item }: Props) {
   const shown = item ?? FIRST_ITEM;
   const row = view.rows.find((one) => one.id === shown) ?? view.rows[0]!;
   const download = row.kind === null ? undefined : () => void downloads.getState().download(row.id);
+  const isLive = !row.waits && view.kind !== "loading";
+  const bom = useMemo(() => (option ? bomViewOf(option) : null), [option]);
+  /** The head of a table: where it stands in the report, and Copy as table; before options the press is shown and cannot be used. */
+  const tableActions = (table: { text: string; copied: string } | null) => (
+    <>
+      <span className="hidden type-caption text-text-2 tablet:inline">{IN_THE_REPORT}</span>
+      <CopyAsTable text={table?.text ?? ""} copied={table?.copied ?? ""} disabled={table === null || !isLive} />
+    </>
+  );
+  const tools = shown === "bill-of-materials" ? tableActions(bom) : undefined;
   const isProjectFileOpen = shown === "project-file" && document !== null;
   const isReport = shown === "report";
   // The pages are asked once per edit while the report is open with an option; the store keeps them (decision 5). A refusal
@@ -126,6 +140,7 @@ export function Handover({ item }: Props) {
           }
           words={isReport ? report.head : undefined}
           skeleton={isReport ? <ReportSkeleton /> : undefined}
+          tools={tools}
         >
           {isReport ? (
             <ReportPreview view={report} onPage={showPage} onTryAgain={askPagesAgain} />
@@ -133,6 +148,8 @@ export function Handover({ item }: Props) {
             <ProjectFilePreview document={document} design={design} bytes={projectFile?.blob.size ?? null} isWaitingForBytes={askFailedFor !== edit} onRename={rename} />
           ) : shown === "single-line-diagram" && option && design ? (
             <SingleLineDiagram option={option} equipment={design.equipment} isDimmed={view.isDimmed} />
+          ) : shown === "bill-of-materials" && bom ? (
+            <BillOfMaterials view={bom} isDimmed={view.isDimmed} />
           ) : (
             <NotBuiltYet />
           )}

@@ -85,7 +85,10 @@ export function Table<Row>({ caption, columns, rows, keyOf, chosen, total, dense
                     );
                   }
                   return (
-                    <td key={column.key} className={classNames(cell, padding, column.words ? "type-small text-text" : "type-value-small", isTotal && "font-medium", column.kind === "number" && "text-right")}>
+                    <td
+                      key={column.key}
+                      className={classNames(cell, padding, column.words ? "type-small whitespace-normal text-text" : "type-value-small", isTotal && "font-medium", column.kind === "number" && "text-right")}
+                    >
                       {value}
                     </td>
                   );
