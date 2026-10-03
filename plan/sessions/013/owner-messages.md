@@ -100,3 +100,11 @@ FYA&A.
 ok.
 
 what's the progress?
+
+## 21. While Phase 10 ran
+
+what's the progress?
+
+## 22. Back
+
+What's the progress so far. I am back.

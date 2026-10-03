@@ -21,6 +21,33 @@ Neither is repeated here.
 | 10 | Pull request 4 by an agent (the zip, the file previews, Download all) | #66 |
 | 11 | The close: "As built", the state, this record; Phase 10 begun unattended at the owner's pre-approval | `main` |
 
+## Phase 10, unattended (the same session, after Phase 9's close)
+
+| # | What | Where |
+|---|---|---|
+| 12 | The resume prompt 013, the plan (22 steps, 12 decisions), `home_data.json` from the engine | `plan/resume/013-…`, `plan/phase-10-plan.md`, `f8a73e3` |
+| 13 | Five boards by two agents (Home tablet and phone, the designs on this device, Open a project, Present), looked at by eye, registered | `docs/design`, `e494a11` |
+| 14 | Pull request 1 by an agent (the designs kept on the device): one miss against the board fixed (the switcher's fact under the name); 13 desktop pictures renewed, each differing in the top bar alone | #67 |
+| 15 | The check on GitHub found cancelled at its ten-minute limit on every run since #66; the limit made fifteen; pytest-xdist tried and taken out (two cores saturated, a timing test failed beside a worker) | #68, #70 |
+| 16 | Pull request 2 by two agents (`POST /project/open`; the dialog): the dialog rebuilt to the board (read at once, the notes in the dialog); the switcher's row live | #69 |
+| 17 | Pull request 3 by an agent (Home, the cards, the thumbnail): the illustration sized by a wrapper, the thumbnail's modules in the module glass, the card's menu kept open (the focus no longer scrolls), the pictures of real kept designs | #71 |
+| 18 | Pull request 4 by an agent (Present): the suite rebuilt around a clock held after the stage is drawn, axe on the real clock, the frame budget not in software WebGL, the suite's tests one after the other; 52 desktop pictures renewed for the top bar's Present; the soak run with the machine's graphics | #72 |
+| 19 | The close: "As built", the state, this record, the resume prompt 014 for Phase 11 | `main` |
+
+The owner's messages of this stretch: 21 ("what's the progress?") and 22 ("What's the progress so far. I am back.") in
+`owner-messages.md`; answered with the state of each pull request. Nothing else was asked of the owner, as pre-approved.
+
+### Why things are the way they are, Phase 10
+
+- **The board is the specification, even unattended**: three builds were sent back or reworked to it before their pull request opened
+  (the switcher's fact, the Open a project dialog's flow, Home's illustration and thumbnail). Every picture was looked at by eye; every
+  renewed baseline of an unchanged screen was checked pixel by pixel to differ in the top bar alone.
+- **The page clock in the browser tests is held after the stage is drawn**, never from the start: under a clock held from `goto` the
+  Studio's stage never comes up. Where the tour stands is read from the stage's text equivalent.
+- **The frame budget is measured with the machine's graphics** (the soak), not in software WebGL, where a frame of the stage takes longer
+  whatever the code does.
+- **Fifteen minutes on GitHub, one process**: the only way the check went green again; xdist gave nothing on two cores and broke a timing test.
+
 ## How the owner steered the session
 
 | He said | What was done |

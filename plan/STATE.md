@@ -3,17 +3,16 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-03, session 13, Phase 10 unattended at the owner's pre-approval: the five boards of step 0 on `main`
-(e494a11); #67 (pull request 1: the designs kept on this device, saving, the state in the top bar, a reload keeps the design, On this
-device in the switcher, the warning before leaving) merged; #68 (the check on GitHub: pytest-xdist, the job allowed fifteen minutes)
-merged. `main` is green. Pull request 2 (Open a project: the API's `POST /project/open` built, the dialog being built) and pull request 4
-(Present) are being built by agents in worktrees; pull request 3 (Home) follows pull request 2.
+**Last updated:** 2026-10-03, session 13, at the close of Phase 10, built unattended at the owner's pre-approval: #67 (the designs kept
+on this device), #69 (Open a project: `POST /project/open` and the dialog), #71 (Home on three sizes, the cards, the thumbnail), #72 (Present
+mode) are merged; #68 and #70 mended the check on GitHub (its ten-minute limit had cancelled every run since #66). `main` is green. The resume
+prompt for Phase 11 is written (`plan/resume/014-phase-11-hardening.md`); the session waits for the owner's go-ahead.
 
 ## Where we are
 
 | Phase | Status | Notes |
 |---|---|---|
-| 0 Design | Direction approved. 32 boards in the repo, all approved | More screens to draw, listed in `phase-00-design.md`. The canvas at claude.ai holds 27 of them (`docs/design/README.md`) |
+| 0 Design | Direction approved. 52 boards in the repo, all approved | More screens to draw, listed in `phase-00-design.md`. The canvas at claude.ai holds 27 of them (`docs/design/README.md`) |
 | 1 Foundation | Done, merged (PR #1) | |
 | 2 Engine and API | Done (PR #7, PRs #11 to #23) | What exists, what was decided, what was found: `phase-02-engine-api.md`, "As built" |
 | 3 Design system and shell | Done (PRs #24 to #33) | What exists, what was decided, what was found: `phase-03-design-system-shell.md`, "As built". How its second half was built: `phase-03-rest-plan.md` |
@@ -24,19 +23,13 @@ merged. `main` is green. Pull request 2 (Open a project: the API's `POST /projec
 | 7 Studio, Strings lens | Done (session 11: #53 to #57) | What exists, what was decided, what was found: `phase-07-studio-strings.md`, "As built". How it was built: `phase-07-plan.md` |
 | 8 Performance | Done (session 12: #58 to #61) | What exists, what was decided, what was found: `phase-08-performance.md`, "As built". How it was built: `phase-08-plan.md` |
 | 9 Handover and exports | Done (session 13: #62, #64 to #66; #63 on the way) | What exists, what was decided, what was found: `phase-09-handover.md`, "As built". How it was built: `phase-09-plan.md` |
-| 10 Home, projects on the device, Present | In progress (session 13, unattended: #67 merged; #68 for the check) | Pre-approved whole by the owner. How it is built: `phase-10-plan.md`; the boards of step 0 drawn |
-| 11 | Not started | |
+| 10 Home, projects on the device, Present | Done (session 13, unattended: #67, #69, #71, #72; #68 and #70 for the check) | What exists, what was decided, what was found: `phase-10-home-projects-present.md`, "As built". How it was built: `phase-10-plan.md` |
+| 11 Hardening for the tradeshow | Not started | The resume prompt 014 waits for the owner |
 
 ## In flight
 
-Phase 10, unattended (the owner's pre-approval), after #67: `feat/phase-10-open-project` (pull request 2: the API's `POST /project/open`
-with its tests and the generated types are committed; the Open a project dialog, the group `home`, `home-open-project.e2e.ts` being built)
-and `feat/phase-10-present` (pull request 4: the tour's script, the reveal in the scene, `/present`, the energy and the chain, offline, the
-frame budget, the group `present`) are being built by agents in worktrees under the temporary directory. Pull request 3 (Home on three sizes,
-the cards, the thumbnail, the group `home`) is briefed (`brief-pr10-3-home.md` in the scratch folder) and starts when pull request 2 merges.
-Found in this stretch: the `check` workflow on GitHub had been cancelled at its limit of ten minutes on every run since #66 (pytest whole in
-one process 7 min 49 s on the runner; a cancelled job saves no cache, so every run after started cold): #68 allows fifteen minutes and runs
-pytest over the runner's cores; two workers there gave nothing (7 min 44 s), a watch item below.
+Nothing. Phase 10 is closed; Phase 11 waits for the owner's go-ahead on `plan/resume/014-phase-11-hardening.md`. The test stack may still be
+running on 4710 and 4711 (`bun stop --profile test`).
 
 ## What the web app has today
 
@@ -54,8 +47,11 @@ pytest over the runner's cores; two workers there gave nothing (7 min 44 s), a w
 | The places that have an address: workspaces, lenses, items of Handover | `apps/web/lib/routes.ts` |
 | The shell: top bar, navigation, project switcher, state of saving, vitals, notes; the frame of the Studio | `apps/web/components/shell`; around `apps/web/app/(workspaces)` |
 | The stores for React, and the hooks that read them | `apps/web/components/shell/stores.tsx` |
-| Routes | `/` (a placeholder with "Find my roof"), `/find` (the map, the search, the outline), `/studio/[lens]` (Roof, Array, Sun and Strings built), `/performance` (built), `/handover` (the list; on desktop and tablet with the first item beside it) and `/handover/[item]` (the item, pushed over the list on phone; every item built) |
+| Routes | `/` (Home: the search leading to Find, Import a drawing, Open a project, the demo's card, the designs on this device), `/present` (Present mode, desktop and tablet), `/find` (the map, the search, the outline), `/studio/[lens]` (Roof, Array, Sun and Strings built), `/performance` (built), `/handover` (the list; on desktop and tablet with the first item beside it) and `/handover/[item]` (the item, pushed over the list on phone; every item built) |
 | Handover: the list with its facts from the run, the preview frame and its states, the downloads (a blob saved by an anchor, a store without React, a file kept per edit, up to three tries, a failure as a toast), the shell's `Toaster`, the project file with the name as a `TextField` and Save a copy (here and in the switcher); the report as the engine's pages in the paper frame with thumbnails, keys and Download PDF of the same day; the SLD as an SVG from the system in the series colours with a tooltip per MPPT and the engine's PNG; the bill of materials and the cable schedule as tables with sorting and Copy as table; the CAD layout (the engine's plan, the DXF's layers), the Google Earth model (the KML's names, what is not in it), the hourly data (the CSV's first rows and its columns); Download all as one zip | `apps/web/components/handover`, `apps/web/lib/handover`; `components/ui/TextField.tsx`, `Table.tsx` (sorting), `ValueTooltip.tsx` (a side); `components/shell/ProjectSwitcher.tsx`, `NoOptionsCard.tsx`, `UnderTheTitle.tsx`, `use-history-keys.ts`; `lib/flow/name-field.ts` |
+| Home: the headline and the search in the look `hero`, the rows, the demo's card and its run remembered on this device, the cards of the kept designs (the plan as the thumbnail, the facts, a menu with Open, Rename, Duplicate, Save a copy, Delete), the board's illustration as an SVG; Open a project (an `.rtd` read at once by the API, the engine's notes as rows, kept and opened) | `apps/web/components/home`, `apps/web/lib/home`; `lib/device/demo-run.ts`, `thumbnail.ts` |
+| The designs kept on this device: IndexedDB through the browser's API, the saving store (the debounce, the demo kept at its first edit, the id remembered, Not saved as a note), what a workspace without a design opens, On this device in the switcher, the warning before leaving | `apps/web/lib/device`; `components/shell/use-opens-what-belongs.ts`, `SaveState.tsx`, `switcher-view.ts` |
+| Present: the tour's script and its reduced-motion cuts, the tour on the app's clock, the reveal and the camera's move in the scene, the words and the hint, the energy and the chain, nothing asked of the API; the soak | `apps/web/components/present`, `apps/web/lib/present`; `lib/scene/reveal.ts`, `camera-move.ts`; `tools/present-soak.ts`, `e2e/soak` |
 | The map: the provider, Esri, the search's reading of what is typed, the scale bar, the states without a map | `apps/web/lib/map` |
 | The outline: the frame of metres, the measures, snapping, typed lengths, the rectangle, the history, the nudge, the obstacles, the roof by hand, the reducer | `apps/web/lib/outline` |
 | Find and outline: the screen, the map (MapLibre), the search, the outline drawn on the map, the panel, the tools (the ways to outline while the roof is open; the obstacles once it is closed), the height dialog, the obstacle list, the roof type, Build; the roof by hand and the plan drawn without a map | `apps/web/components/find` |
@@ -101,10 +97,8 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 ## Next, in order
 
-1. Phase 10, Home, projects on the device, Present mode (`plan/phase-10-home-projects-present.md`): the resume prompt 013, the plan the
-   way `phase-09-plan.md` was written, the boards it lacks (Home on tablet and phone, the designs on this device, Open a project, Present),
-   the pull requests, each checked with the groups it reaches (D55), every picture looked at beside its board; all without a stop for
-   approval (pre-approved by the owner, 2026-10-03). Then the resume prompt for Phase 11, and wait for the owner.
+1. Phase 11, hardening for the tradeshow (`plan/phase-11-hardening.md`), on the owner's go-ahead: the resume prompt 014, the plan the way
+   `phase-10-plan.md` was written, approval, then the pull requests. The plan takes up the watch items below that are Phase 11's.
 2. The browser tests made lighter and steadier, each as a pull request of its own when the owner says: each workspace's pictures moved
    from `screens.e2e.ts` into its group's suite (a Handover change would then pay about 3 minutes of browser tests, not 11); the kit on
    two sizes rather than three; fewer workers; a production build of the web app for the test stack, which would also tell whether the
@@ -134,7 +128,6 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 | Item | Where it belongs |
 |---|---|
-| Shown and cannot be used, each until its phase: Present (Phase 10, pull request 4); in the project switcher Open a project (Phase 10, pull request 2) | Phase 10 makes each a link or a button |
 | The drawer of the notes comes and goes without motion; the tokens have 240 ms for panels | Phase 11, or when the owner asks |
 | The obstacle list of Find shows each height and does not edit it (the Roof lens does); trees are not drawn on the map; the by-hand roof's corners are not dragged on the map | Phase 11, or when the owner asks |
 | The Esri key is baked into the page at build time: the "no key" state is seen only on a build without it, and the tests reach the no-map states through "no WebGL" | Phase 11 |
@@ -176,6 +169,12 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 | The browser tests of the shell run the design of the demo on the server of the tests, on three sizes at once. On 2026-09-30 eight phone tests waited more than 90 s on a cold server; since #34 the global setup runs the demo once before the tests begin | Done in #34. Watch that it stays steady |
 | A push was refused once with "Permission denied (publickey)" and went through when tried again | Watch; nothing to do |
 | On GitHub's runner (two cores) pytest whole took 7 min 44 s with pytest-xdist's two workers against 7 min 49 s in one process (#68): the cores are saturated by one process, or the workers thrash (numpy's BLAS threads per worker, untried: `OMP_NUM_THREADS=1`). The job is allowed fifteen minutes and takes 10 min 26 s cold, 5 min 29 s with the cache | Phase 11; the check |
+| Present's first scene lies the roof plane on the ground as a slab while the building rises; the board's first frame shows the satellite with the accent outline alone. The ground under Present is the Studio's imagery, where the board draws the plain ground | Phase 11, with the owner's eye |
+| The card's thumbnail draws the keep-out areas as the Studio's plan does (the accent dashes), which the board's small plan leaves out; the Studio's plan marks the modules as data where the thumbnail uses the module glass | Phase 11, or when the owner asks |
+| The Present suite renders seconds of the tour frame by frame in software WebGL: 10 minutes for 30 tests, its tests one after the other in their worker; the frame budget is not measured there (the soak with the machine's graphics is) | Phase 11: the stage under software WebGL in the tests (hardware WebGL lost the satellite ground, session 13) |
+| The shell group's run on this machine loses 5 to 10 of 380 to the wait for the report's pages under its own load, each passing alone (the proxy's drops); the shell group is 16 minutes now | Phase 11; the browser tests made lighter |
+| The shell imports `components/home/OpenProject.tsx` and the kit imports `components/find/Search.tsx` through Home: the base reaches into a group's folder, which the import walk does not refuse | Phase 11; `docs/checks.md`, known limits |
+| Present's soak of 30 minutes with the machine's graphics (2026-10-03): no frame over 50 ms (the longest 33.4 ms), but the heap stepped once from 35.6 MB to 61.0 MB at minute 21 and stayed there; the soak's gate of a quarter is not met. A step of V8's size class or a slow leak: a longer run, or a heap snapshot at minute 10 and 30 compared, would tell | Phase 11; the acceptance of Phase 10 holds the frames, the memory is to be shown |
 | The `/api` rewrite passes the events of a design run on as they come in `next dev`. A production build (`next start`) and a proxy in front of it have not been tried | Phase 11, deployment |
 | One design run keeps a worker thread busy for 12 s and the process holds up to 576 MB of kept results. How many runs at once a server must carry is not decided | Phase 11 |
 

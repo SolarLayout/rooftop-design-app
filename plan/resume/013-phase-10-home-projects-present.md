@@ -1,6 +1,6 @@
 # 013: Phase 10, Home, projects on the device, Present mode
 
-Written: 2026-10-03, by session 13, at the owner's instruction (pre-approved, unattended). Status: open. After 012 (Phase 9).
+Written: 2026-10-03, by session 13, at the owner's instruction (pre-approved, unattended). Status: used by session 13. After 012 (Phase 9).
 
 ## Paste this
 

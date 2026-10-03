@@ -87,7 +87,10 @@ helpers and fixtures of `e2e`, the tools that start the stack, the lockfile, `.n
 
 The shell group pictures every page (`screens.e2e.ts`) and runs whenever anything of the web changed: it is the floor
 every web change pays. Measured on 2026-10-03, from the test times of a full run over 10 workers: kit about 2.5 minutes
-alone, find 2, studio 12, performance 4, handover 1.5, shell 9.5; everything 31 minutes under the check's own load.
+alone, find 2, studio 12, performance 4, handover 1.5, shell 9.5; everything 31 minutes under the check's own load. Added
+by Phase 10 and measured the same day: home about 5 minutes (its suites edit the demo and run it), present 10 (its tests one
+after the other in their worker: each renders seconds of the tour frame by frame in software WebGL, and four at once starved
+each other past their time); the shell group is 13 to 16 minutes with the pictures of Home and Present.
 
 ## Rules the split makes necessary
 

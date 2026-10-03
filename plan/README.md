@@ -29,7 +29,7 @@ Always:
 | 7 | Studio: Strings lens | `phase-07-studio-strings.md` | done (#53 to #57); how: `phase-07-plan.md` |
 | 8 | Performance | `phase-08-performance.md` | done (#58 to #61); how: `phase-08-plan.md` |
 | 9 | Handover and exports | `phase-09-handover.md` | done (#62, #64 to #66); how: `phase-09-plan.md` |
-| 10 | Home, projects on the device, Present mode | `phase-10-home-projects-present.md` | in progress (session 13, unattended); how: `phase-10-plan.md` |
+| 10 | Home, projects on the device, Present mode | `phase-10-home-projects-present.md` | done (session 13, unattended: #67, #69, #71, #72); how: `phase-10-plan.md` |
 | 11 | Hardening for the tradeshow | `phase-11-hardening.md` | not started |
 
 ## Decisions taken (change here if overruled)
