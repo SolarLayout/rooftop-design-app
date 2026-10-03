@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { TWO_DESIGNS, withDesignsOnTheDevice } from "../device";
 import { expect, test } from "../fixtures";
+import { asFile, demoProjectFile } from "../project-file";
 import { expectScreen, expectWholeScreen } from "../screens";
 import { A_MAP, findOpened, roofMap, scaleLabel, searchField } from "../find";
 import { boxFrameOf, handlesSettled, inThePlan, metresFrom, obstacleSelectedOnStage, sceneSettled, zoomedInAt, cameraSettled } from "../stage";
@@ -656,6 +657,44 @@ test.describe("the shell", () => {
     await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
 
     await expectScreen(page, "import-dxf");
+  });
+
+  /** The Studio on the Roof lens with the demo run, the project switcher opened and Open a project taken: the dialog stands. */
+  const openProjectOpened = async (page: Page) => {
+    await page.goto("/studio/roof");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await sceneSettled(page);
+    await design(page).click();
+    await page.getByRole("menu", { name: "Project" }).getByRole("menuitem", { name: "Open a project" }).click();
+    const dialog = page.getByRole("dialog", { name: "Open a project" });
+    await expect(dialog).toBeVisible();
+    return dialog;
+  };
+
+  // Open a project with the demo's project file chosen (the board "Open a project", a file read): its name in mono, its size, Open live.
+  test("open a project, a file chosen", async ({ page }) => {
+    test.setTimeout(RUN + 30_000);
+    const file = JSON.stringify(await demoProjectFile(page));
+    const dialog = await openProjectOpened(page);
+    await dialog.locator("input[type=file]").setInputFiles(asFile("Pune-demo-roof.rtd", file));
+    await expect(dialog.getByRole("button", { name: "Open", exact: true })).not.toHaveAttribute("aria-disabled", "true");
+    // The focus leaves the dialog's field, so that no ring is in the picture.
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+
+    await expectScreen(page, "open-project");
+  });
+
+  // A file that is no JSON refused under the field in the API's words (the board "Open a project", a file refused), the file kept chosen.
+  test("open a project, a file refused", async ({ page }, testInfo) => {
+    test.skip(!isDesktop(testInfo.project.name), "The refusal is the same on every size; one picture.");
+    test.setTimeout(RUN + 30_000);
+    const dialog = await openProjectOpened(page);
+    await dialog.locator("input[type=file]").setInputFiles(asFile("roof-notes.rtd", "The tank is 2.4 m high.\n"));
+    await dialog.getByRole("button", { name: "Open", exact: true }).click();
+    await expect(dialog.getByTestId("open-refused")).toContainText("The file is not a project file (.rtd): it is not JSON.");
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+
+    await expectScreen(page, "open-project-refused");
   });
 
   // Performance with the demo (the board "Performance" on three sizes): the header, the KPIs and the summary of option A.
