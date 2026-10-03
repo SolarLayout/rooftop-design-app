@@ -79,7 +79,9 @@ alone, find 2, studio 12, performance 4, handover 1.5, shell 9.5; everything 31 
 5. **Before the check, run the group.** `bun tools/e2e-group.ts handover` (or `bun run e2e:handover`; any Playwright
    argument after it, as `--project=desktop` or `-g "a row pressed"`) runs one group against the test stack
    (`bun dev:bg --profile test`). The check then runs the same suites again under the load of everything else: a test
-   that passes alone and fails there is load-sensitive, and its wait is too short (`plan/STATE.md`, the watch items).
+   that passes alone and fails there is load-sensitive. An expectation waits 15 s (`e2e/playwright.config.ts`), not
+   Playwright's 5, for that reason; a step that takes longer by nature (a design run, the map, a scene) is given its own
+   time (`RUN`, `A_MAP`, `A_SCENE`).
 6. **Never edit `apps/web` or `apps/api` while the check runs.** The test stack reloads them live and the browser tests
    would see the half-made change; while the proofs run (the last step), edit nothing, since they copy the working tree.
 7. **A picture that must change is deleted first**, then written afresh (`--update-snapshots` leaves a picture whose
