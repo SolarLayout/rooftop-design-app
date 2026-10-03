@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { NotBuiltYet } from "@/components/shell/NotBuiltYet";
-import { useProject, useResults } from "@/components/shell/stores";
+import { useProject, useResults, useStores } from "@/components/shell/stores";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
-import { deliverablesOf } from "@/lib/handover/items";
-import { FIRST_ITEM, HANDOVER, HANDOVER_ITEMS, type HandoverItem } from "@/lib/routes";
+import { pageViewOf } from "@/lib/handover/page-view";
+import { FIRST_ITEM, HANDOVER, type HandoverItem } from "@/lib/routes";
 import { nameOf } from "@/lib/stores/project-store";
-import { designOf } from "@/lib/stores/results-store";
+import { designFailureOf, designOf, designStatusOf } from "@/lib/stores/results-store";
 import { DeliverableList } from "./DeliverableList";
+import { Preview } from "./Preview";
 
 type Props = {
   /** The item that is open; null at the list's own address, where desktop and tablet show the first item beside the list. */
@@ -32,22 +33,26 @@ const BACK = classNames(
   "press-motion focus-ring hovered:text-text tablet:hidden",
 );
 
-const itemNameOf = (item: HandoverItem) => HANDOVER_ITEMS.find((one) => one.id === item)?.name ?? "";
-
 /**
- * The Handover workspace (the boards "Handover" on three sizes): the list of what is delivered, its facts from the run's
- * chosen option, the weather and the document (decision 14), and the preview of the item that is open.
+ * The Handover workspace (the boards "Handover" on three sizes and "Handover, states"): the list of what is delivered, its
+ * facts from the run's chosen option, the weather and the document (decision 14), and the preview of the item that is
+ * open; before options the API's words leading to the Strings lens, at the first load skeletons, a run that failed the
+ * API's words with Try again (decision 11).
  */
 export function Handover({ item }: Props) {
+  const { flow } = useStores();
   const name = useProject(nameOf);
   const design = useResults(designOf);
-  const rows = useMemo(() => deliverablesOf({ name, design, pages: null }), [name, design]);
+  const designStatus = useResults(designStatusOf);
+  const failure = useResults(designFailureOf);
+  const view = useMemo(() => pageViewOf({ name, design, designStatus, failure, pages: null }), [name, design, designStatus, failure]);
   const shown = item ?? FIRST_ITEM;
+  const row = view.rows.find((one) => one.id === shown) ?? view.rows[0]!;
 
   return (
     <div className={PAGE}>
       <aside aria-label="Deliverables" className={classNames(LIST, item === null ? "flex" : "hidden tablet:flex")}>
-        <DeliverableList rows={rows} item={item} shown={shown} />
+        <DeliverableList rows={view.rows} item={item} shown={shown} />
       </aside>
       <main className={classNames(PREVIEW, item === null ? "hidden tablet:flex" : "flex")}>
         {/* On phone the item is pushed over the list: the row at the top leads back to it. */}
@@ -56,8 +61,9 @@ export function Handover({ item }: Props) {
           <Icon name="chevron-left" size={16} />
           Handover
         </Link>
-        <h2 className="type-lens-touch tablet:type-title">{itemNameOf(shown)}</h2>
-        <NotBuiltYet />
+        <Preview row={row} view={view} onTryAgain={flow.tryAgain}>
+          <NotBuiltYet />
+        </Preview>
       </main>
     </div>
   );
