@@ -56,7 +56,8 @@ export const BASE_INPUTS: string[] = [
   "!**/__pycache__/**",
 ];
 
-const KIT_OWN = ["apps/web/components/kit/**", "e2e/baselines/*/*/kit*.png"];
+const KIT_BASELINES = "e2e/baselines/*/*/kit*.png";
+const KIT_OWN = ["apps/web/components/kit/**", KIT_BASELINES];
 const FIND_OWN = ["apps/web/components/find/**", "apps/web/lib/map/**", "apps/web/lib/outline/**"];
 // Build and the Roof lens's Edit cross into Find; strings-lens and build import e2e/find.ts.
 const STUDIO_OWN = [
@@ -71,8 +72,13 @@ const STUDIO_OWN = [
 // performance.e2e.ts chooses a voltage in the Strings lens; performance-weather builds a roof on the map.
 const PERFORMANCE_OWN = ["apps/web/components/performance/**", "apps/web/lib/performance/**", ...STUDIO_OWN];
 const HANDOVER_OWN = ["apps/web/components/handover/**", "apps/web/lib/handover/**"];
-// The screens suite pictures every page: this group runs whenever anything of the web changed.
-const SHELL_OWN = [...new Set([...KIT_OWN, ...FIND_OWN, ...STUDIO_OWN, ...PERFORMANCE_OWN, ...HANDOVER_OWN, "e2e/baselines/*/*/*.png"])];
+// The screens suite pictures every page but the kit's, whose pictures the kit suite takes: this group runs
+// whenever anything of the web changed.
+const SHELL_OWN = [
+  ...new Set([...KIT_OWN, ...FIND_OWN, ...STUDIO_OWN, ...PERFORMANCE_OWN, ...HANDOVER_OWN].filter((pattern) => pattern !== KIT_BASELINES)),
+  "e2e/baselines/*/*/*.png",
+  `!${KIT_BASELINES}`,
+];
 
 export const GROUPS: readonly Group[] = [
   { id: "kit", suites: ["kit.e2e.ts", "kit-*.e2e.ts"], own: KIT_OWN },

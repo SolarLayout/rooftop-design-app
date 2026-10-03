@@ -99,15 +99,19 @@ describe("the groups of the browser tests", () => {
     }
   });
 
-  test("shell's own inputs are the union of the others' and every baseline", () => {
+  test("shell's own inputs are the union of the others' and every baseline, less the kit's pictures, which the kit suite alone takes", () => {
     const shell = GROUPS.find((group) => group.id === "shell")!;
     const others = GROUPS.filter((group) => group.id !== "shell").flatMap(ownOf);
-    expect(new Set(shell.own)).toEqual(new Set([...others, "e2e/baselines/*/*/*.png"]));
+    expect(new Set(shell.own)).toEqual(
+      new Set([...others.filter((pattern) => pattern !== "e2e/baselines/*/*/kit*.png"), "e2e/baselines/*/*/*.png", "!e2e/baselines/*/*/kit*.png"]),
+    );
+    const files = filesMatching(shell.own);
+    expect(files.has("e2e/baselines/darwin/desktop/find.png")).toBe(true);
+    expect(files.has("e2e/baselines/darwin/desktop/kit.png")).toBe(false);
   });
 
-  test("shell sees every file of the web app and of e2e that the browser tests can see", () => {
-    const shell = GROUPS.find((group) => group.id === "shell")!;
-    const seen = filesMatching(inputsOf(shell));
+  test("some group sees every file of the web app and of e2e that the browser tests can see", () => {
+    const seen = new Set(GROUPS.flatMap((group) => [...filesMatching(inputsOf(group))]));
     const theWeb = filesMatching(["apps/web/**", "!apps/web/node_modules/**", "!apps/web/.next*/**", "!apps/web/*.tsbuildinfo", "!apps/web/next-env.d.ts", "!apps/web/CLAUDE.md"]);
     const theTests = filesMatching(["e2e/**", "!e2e/node_modules/**", "!e2e/test-results/**", "!e2e/playwright-report/**", "!e2e/tests/**"]);
     for (const file of [...theWeb, ...theTests]) expect({ file, seen: seen.has(file) }).toEqual({ file, seen: true });

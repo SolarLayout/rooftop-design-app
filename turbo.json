@@ -363,7 +363,6 @@
         "e2e/tests/smoke.e2e.ts",
         "e2e/tests/tokens.e2e.ts",
         "apps/web/components/kit/**",
-        "e2e/baselines/*/*/kit*.png",
         "apps/web/components/find/**",
         "apps/web/lib/map/**",
         "apps/web/lib/outline/**",
@@ -377,7 +376,8 @@
         "apps/web/lib/performance/**",
         "apps/web/components/handover/**",
         "apps/web/lib/handover/**",
-        "e2e/baselines/*/*/*.png"
+        "e2e/baselines/*/*/*.png",
+        "!e2e/baselines/*/*/kit*.png"
       ],
       "outputs": []
     },
@@ -403,7 +403,16 @@
         "e2e/fixtures/geocode-nothing.json",
         "tools/footprints.ts",
         "apps/api/src/rooftop_api/routers/roof.py",
-        "e2e/baselines/darwin/desktop/find.png"
+        "e2e/baselines/darwin/desktop/find.png",
+        "apps/web/lib/scene/pick.ts",
+        "apps/web/components/handover/Handover.tsx",
+        "apps/web/components/ui/Button.tsx",
+        "e2e/tests/kit-buttons.e2e.ts",
+        "e2e/tests/screens.e2e.ts",
+        "e2e/baselines/darwin/desktop/kit.png",
+        "plan/README.md",
+        "CLAUDE.md",
+        "apps/web/CLAUDE.md"
       ],
       "outputs": []
     },
