@@ -44,6 +44,16 @@ const A_FRAME = 20;
 
 const A_LOOP = SCENES.reduce((sum, one) => sum + one.duration, 0);
 
+/** The scene's place at a moment of the tour, in milliseconds from its first moment. */
+function sceneAt(moment: number): number {
+  let start = 0;
+  for (const [index, scene] of SCENES.entries()) {
+    if (moment % A_LOOP < start + scene.duration) return index;
+    start += scene.duration;
+  }
+  return SCENES.length - 1;
+}
+
 /** Where the tour stands, in milliseconds from its first moment, from the stage's text equivalent: the loops over, the scene's place and the milliseconds into it. */
 async function standingAt(page: Page): Promise<number> {
   const said = await sceneWords(page).textContent();
@@ -71,7 +81,11 @@ async function presentOpened(page: Page): Promise<Tour> {
   return {
     async at(scene, into = A_FRAME) {
       const to = SCENES.slice(0, scene).reduce((sum, one) => sum + one.duration, 0) + into;
-      if (to < ran) throw new Error(`The tour stands at ${ran} ms and cannot go back to ${to}.`);
+      if (to < ran) {
+        // The clock was held later into this scene than the moment asked for: the scene is the one asked, and stands.
+        if (sceneAt(to) === sceneAt(ran)) return;
+        throw new Error(`The tour stands at ${ran} ms and cannot go back to ${to}.`);
+      }
       await page.clock.runFor(to - ran);
       ran = to;
       // The tour's ticks are not aligned with the moment the clock was held: a tick or two may still be owed, and are run.
@@ -107,6 +121,10 @@ function seriesOfPixel(pixel: Pixel): number {
 
 // Places in the middle band of the canvas, where the roof and its modules are.
 const BAND: Share[] = [0.4, 0.5, 0.6].flatMap((y) => [0.3, 0.4, 0.5, 0.6, 0.7].map((x): Share => [x, y]));
+
+// The tests of this file run one after the other in their worker: each renders seconds of the tour frame by frame in
+// software WebGL, and four at once starve each other past their time.
+test.describe.configure({ mode: "default" });
 
 test.beforeEach(({}, testInfo) => {
   test.skip(isPhone(testInfo.project.name), "The phone has no Present: its top bar has none (decision 8).");
