@@ -4,7 +4,7 @@ import { useCallback, useId, useRef, useState, type KeyboardEvent, type PointerE
 import { classNames } from "@/components/ui/class-names";
 import { CHART_LINE_BAND, CHART_LINE_TOP, MARKER_RADIUS, MARKER_RING } from "@/components/ui/design-numbers";
 import { NumberField } from "@/components/ui/NumberField";
-import type { Box } from "@/components/ui/place-floating";
+import { isStill, type Box } from "@/components/ui/place-floating";
 import { Table } from "@/components/ui/Table";
 import { Tabs } from "@/components/ui/Tabs";
 import { useSize } from "@/components/ui/use-size";
@@ -50,6 +50,12 @@ export function YearsChart({ energy, degradation, onDegradation, isDimmed }: Pro
   const [kept, setKept] = useState(FIRST_YEAR);
 
   const leave = useCallback(() => setActive(null), []);
+  /** The page moved somewhere: the tooltip goes only if the plot itself is no longer where it was measured. */
+  const leaveIfMoved = useCallback(() => {
+    const element = plot.current;
+    if (element && plotBox && isStill(plotBox, element.getBoundingClientRect())) return;
+    setActive(null);
+  }, [plotBox]);
   /** Whether the focus about to come was brought by a pointer: the browser's own :focus-visible is not settled at focus time. */
   const byPointer = useRef(false);
 
@@ -161,7 +167,7 @@ export function YearsChart({ energy, degradation, onDegradation, isDimmed }: Pro
                 </div>
               ))}
             </div>
-            <ValueTooltip anchor={anchor} value={tooltip.value} label={tooltip.label} onLeave={leave} />
+            <ValueTooltip anchor={anchor} value={tooltip.value} label={tooltip.label} onLeave={leaveIfMoved} />
           </div>
         ) : (
           <Table

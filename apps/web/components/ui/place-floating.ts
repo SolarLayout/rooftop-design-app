@@ -48,3 +48,11 @@ export function placeOf({ anchor, size, screen, side, align, gap }: Asked): Plac
     side: taken,
   };
 }
+
+/**
+ * Whether a control is still where it was, within a pixel: a scroll or a resize somewhere on the page need not have
+ * moved it, and what floats beside it has no reason to go then.
+ */
+export function isStill(before: Box, now: Box, within = 1): boolean {
+  return (["left", "top", "width", "height"] as const).every((side) => Math.abs(before[side] - now[side]) <= within);
+}
