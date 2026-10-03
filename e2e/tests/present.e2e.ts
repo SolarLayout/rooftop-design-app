@@ -288,6 +288,26 @@ test.describe("the tour", () => {
   });
 });
 
+// Nothing of Present asks the API (plan/phase-10-plan.md, step 20, decision 8): once the design is loaded the tour runs
+// from the results kept in the stores, so it works with the API offline.
+test("with every route of the API refused during the tour, nothing is asked and a whole loop completes", async ({ page }) => {
+  const tour = await presentOpened(page);
+  const asked: string[] = [];
+  await page.route("**/api/**", (route) => {
+    asked.push(new URL(route.request().url()).pathname);
+    return route.abort("connectionrefused");
+  });
+
+  await tour.at(5, 6000 + A_FRAME);
+  await expect(page.getByTestId("present-energy")).toHaveAttribute("data-state", "counted");
+  await tour.at(6, 100);
+
+  await expect(sceneWords(page)).toHaveText(SCENES[0].words);
+  await expect(hint(page)).toHaveAttribute("data-state", "faded");
+  await expect(words(page)).toHaveText(FACTS);
+  expect(asked, "routes of the API asked during the tour").toEqual([]);
+});
+
 test("the canvas fills the screen with the stage's own background behind it", async ({ page }) => {
   await presentOpened(page);
   const box = (await sceneCanvas(page).boundingBox())!;

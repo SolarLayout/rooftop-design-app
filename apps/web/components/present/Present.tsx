@@ -10,7 +10,7 @@ import { REDUCED_MOTION, useProject, useResults, useStores, useView } from "@/co
 import { useOpensWhatBelongs } from "@/components/shell/use-opens-what-belongs";
 import { useWebGL } from "@/components/find/use-web-gl";
 import { PlanFallback } from "@/components/studio/PlanFallback";
-import { CONTEXT_LOST, NO_WEBGL } from "@/components/studio/Stage";
+import { CONTEXT_LOST, NO_WEBGL } from "@/components/studio/stage-words";
 import { stringsWordsOf } from "@/components/studio/stage-view";
 import { classNames } from "@/components/ui/class-names";
 import { shown } from "@/components/ui/number-entry";
