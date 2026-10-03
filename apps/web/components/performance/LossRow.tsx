@@ -5,7 +5,7 @@ import { classNames } from "@/components/ui/class-names";
 import { measures } from "@/components/ui/measures";
 import { NumberField } from "@/components/ui/NumberField";
 import { Switch } from "@/components/ui/Switch";
-import type { BarLook, Mark } from "@/lib/performance/cascade";
+import type { BarLook, Mark } from "@/lib/format/cascade";
 import type { ChainRow, Readout as ReadoutWords } from "@/lib/performance/loss-chain";
 import type { LossControl, LossFieldId } from "@/lib/performance/loss-fields";
 import type { RefObject } from "react";

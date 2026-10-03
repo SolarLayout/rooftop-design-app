@@ -2,7 +2,8 @@
 // "Loss chain"): each step's bar runs from the running total before it to the one after, in percent of the GHI
 // chained through the steps; the energy steps continue from where the irradiance ended, each scaled by its
 // share of the array's nominal energy. The scale is fitted to the run's extremes, so a bar is a share of the
-// track from 0 to 1, and the board's bars come out as drawn. Pure.
+// track from 0 to 1, and the board's bars come out as drawn. Pure. Here among the formats, since Performance's
+// chain and Present's energy scene draw it alike (plan/phase-10-plan.md, step 19).
 import type { LossStep } from "../api";
 
 /** A change this small, either way, is nothing: it reads 0.00 % and is drawn as a tick (in percent). */

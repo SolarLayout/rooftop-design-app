@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { LossStep } from "../api";
 import { cascadeOf, endsOf, isNothing, type Mark } from "./cascade";
-import { STEPS, STEPS_REAR_OFF } from "./test-fixtures";
+import { STEPS, STEPS_REAR_OFF } from "../performance/test-fixtures";
 
 // The track of the board (Performance.dc.html): 232 wide, 10 free at the left and 7 at the right.
 const TRACK = 232;
