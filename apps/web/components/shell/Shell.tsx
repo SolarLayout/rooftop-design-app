@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { shouldWarnBeforeLeaving } from "@/lib/device/leaving";
 import { openFromTheSwitcher, openWhatBelongs } from "@/lib/device/opening";
 import { rememberedOf } from "@/lib/device/remembered";
 import { idOf, keptDesignsOf, savingOf } from "@/lib/device/saving";
@@ -14,7 +15,7 @@ import { Toaster } from "@/components/ui/Toaster";
 import { ImportDrawing } from "./ImportDrawing";
 import { NotesDrawer } from "./NotesDrawer";
 import type { Note } from "./notes-view";
-import { useNotes, useProject, useSaving, useStores, useToasts, useView } from "./stores";
+import { useDownloads, useNotes, useProject, useSaving, useStores, useToasts, useView } from "./stores";
 import { rowsOnTheDeviceOf } from "./switcher-view";
 import { TopBar } from "./TopBar";
 import { TabBar } from "./WorkspaceNav";
@@ -37,6 +38,7 @@ function Frame({ children }: { children: ReactNode }) {
   const savingState = useSaving(savingOf);
   const kept = useSaving(keptDesignsOf);
   const keptId = useSaving(idOf);
+  const shouldWarn = useDownloads(shouldWarnBeforeLeaving);
   const latitude = useProject(latitudeOf);
   const longitude = useProject(longitudeOf);
   const lens = useView(lensOf);
@@ -56,6 +58,18 @@ function Frame({ children }: { children: ReactNode }) {
       say: (words) => void toasts.show({ kind: "note", words }),
     });
   }, [flow, project, saving, toasts]);
+
+  // While a file of Handover is on its way the browser asks before the page is left (plan/phase-10-plan.md, step 6).
+  useEffect(() => {
+    if (!shouldWarn) return;
+    function ask(event: BeforeUnloadEvent) {
+      event.preventDefault();
+      // Older browsers ask only when a value is set; the words are the browser's own.
+      event.returnValue = "";
+    }
+    window.addEventListener("beforeunload", ask);
+    return () => window.removeEventListener("beforeunload", ask);
+  }, [shouldWarn]);
 
   const place = latitude === null || longitude === null ? null : placeInShort(latitude, longitude);
   const ofTheShell = useMemo(() => ({ notes, open: () => setNotesOpen(true) }), [notes]);
