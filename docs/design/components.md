@@ -484,24 +484,28 @@ height takes the obstacle off the list; the note goes when it is empty. On the r
 The board "Open a project" (plan phase 10, step 9, decision 4). A dialog of 440 ("Open a project"), one sentence ("A
 project saved by this app or the desktop app. It opens in the Studio and runs again here."), the file drop at rest ("Drop
 the project file here", "An .rtd file saved by this app or the desktop app", "Choose a file"), Cancel quiet and Open
-primary, Open shown as it cannot be pressed until a file is there. A file of another ending is refused in the field in the
-dialog's own words, "Choose a project file (.rtd).", without a request. A file chosen is held (`surface-2`, the file icon
-in accent, the name in mono, "Project file · 48 KB · read when it is opened", "Choose another"); Open reads it in the
-browser as text and sends it to the API, where the engine's one reader reads it: the web parses no `.rtd` itself (D7). On
-200 the project is kept on this device as a new design under a new id and opened in the Studio at its last lens; it runs
-again there, as the results are never in the file (D5). The engine's notes on the files a format 1 file names without
-their text come as toasts, one per note, each in the engine's words and closed by hand ("The module file Test.PAN (PAN) is
-not included in this project. Choose it again."): the board draws them under the field; the dialog has closed by then,
-and a toast with a note stays until it is closed (D32). A file the API refuses stays chosen, and the refusal stands under
-the field as a note (`note-surface`, border `note-line`, the note of 20, "This file was not loaded", the API's words:
-"The file is not a project file (.rtd): it is not JSON.", "This project file is format 3. This version reads formats 1
-and 2. Open it with a newer version of the app."); Open waits until another file is chosen, and the design that is open
-stays as it is. An API that was not reached is said the same way with Try again, which sends the same file again. On
-phone the dialog is the bottom sheet of "Dialog".
+primary, Open shown as it cannot be pressed until a file is read. A file of another ending is refused in the field in the
+dialog's own words, "Choose a project file (.rtd).", without a request. A file dropped or chosen is read at once: the
+browser reads it as text and sends it to the API, where the engine's one reader reads it (the web parses no `.rtd` itself,
+D7); meanwhile the field is in its reading state ("Reading the file", the ring, the name in mono). Read, the field is the
+drop's "Read, kept in the dialog": `surface-2`, the file icon in accent, the file's name in mono, and under it the project's
+name from the answer and "Capacity and energy come with the run in the Studio" (for every file: the answer carries no
+capacity and no energy, and its format is the current one, not the file's, so no format is shown; the board's "Format 2"
+line is not drawn). The engine's notes on the files a format 1 file names without their text stand under the field as rows,
+word for word, each on `note-surface` with the border `note-line` and the note mark of 16 ("The module file Test.PAN (PAN)
+is not included in this project. Choose it again.", the inverter's, the CSV weather's); nothing is added to them, and
+Open stays live. Open keeps the project on this device as a new design under a new id and opens it in the Studio at its
+last lens with no second request; it runs again there, as the results are never in the file (D5). A file the API refuses
+is the drop's "Refused" state at drop time: `note-surface`, the note of 20, "This file was not loaded", the API's words
+("The file is not a project file (.rtd): it is not JSON.", "This project file is format 3. This version reads formats 1
+and 2. Open it with a newer version of the app."), "Choose another"; Open waits, and the design that is open stays as it
+is (D32). An API that was not reached is refused the same way with Try again under the field, which reads the same file
+again. A second file chosen replaces the first, whatever the first's answer. On phone the dialog is the bottom sheet of
+"Dialog". Until Home is built (pull request 3) the dialog is pictured over the Studio.
 
 In code: `OpenProject` (`components/home`), opened from the project switcher's row "Open a project" on every workspace
-and from Home; `lib/home/open-project.ts` holds the pure parts (the file by its ending, the words of the size, the
-request from a `File`, the refusal from an error); the design is kept by `keepAndOpen` of the saving store.
+and from Home; `lib/home/open-project.ts` holds the pure parts (the file by its ending, the request from a `File`, the
+lines of a file read, the refusal from an error); the design is kept by `keepAndOpen` of the saving store.
 
 ## Deliverable row (Handover)
 Row 64 high: format badge 44 by 28 (accent for the selected row), title, one line of facts, then a download
