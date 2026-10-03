@@ -4,7 +4,8 @@ The single place that says where the project stands. Every session reads it firs
 Keep it short and true. History belongs in git and in the phase files, not here.
 
 **Last updated:** 2026-10-03, session 13, Phase 9 in progress: the plan and the four boards of step 0 approved; pull request 1 (#62,
-the Handover frame, the `.rtd` download, the report's day, the name) merged. `main` is green.
+the Handover frame, the `.rtd` download, the report's day, the name) merged; the browser step of `bun check` split into six groups and
+the fast check made the gate (#63, D54, D55, `docs/checks.md`). `main` is green.
 
 ## Where we are
 
@@ -25,12 +26,8 @@ the Handover frame, the `.rtd` download, the report's day, the name) merged. `ma
 
 ## In flight
 
-- `feat/check-e2e-groups` (a pull request of its own, before Phase 9's pull request 2): the browser step of `bun check` split into
-  six turbo tasks keyed on what each group's suites can see (D54), a test that refuses an import across groups, one retry per
-  browser test with the flaky ones listed, `docs/checks.md`, and the rule D55 (the fast check is the gate; the whole browser suite
-  never runs by itself). Built and unit-tested in a worktree; its own check is next.
-- `feat/phase-9-report` (pull request 2): the report's pages drawn one by one in the engine and `/export/report-pages` (steps 9 and
-  10) are built and reviewed in a worktree; the web part (the paper preview, steps 11 and 12) is next, after the split merges.
+- `feat/phase-9-report` (pull request 2): the report's pages drawn one by one in the engine and `/export/report-pages` (steps 9 and 10)
+  are built and reviewed in a worktree; the web part (the paper preview, steps 11 and 12) is being built by an agent.
 
 ## What the web app has today
 
@@ -93,9 +90,12 @@ run. The test stack's API starts with downloads of weather off (`ROOFTOP_WEATHER
 
 ## Next, in order
 
-1. The split of the browser step (`feat/check-e2e-groups`), checked the new way (`bun check --skip=e2e` and the groups most at risk by
-   hand) and merged; then Phase 9's pull requests 2 to 4 (`plan/phase-09-plan.md`), each checked with the groups it reaches. Work
-   order: `plan/resume/012-phase-9-handover.md`.
+1. Phase 9's pull requests 2 to 4 (`plan/phase-09-plan.md`), each checked with the groups it reaches (D55). Work order:
+   `plan/resume/012-phase-9-handover.md`.
+2. The browser tests made lighter and steadier, each as a pull request of its own when the owner says: each workspace's pictures moved
+   from `screens.e2e.ts` into its group's suite (a Handover change would then pay about 3 minutes of browser tests, not 11); hardware
+   WebGL for the tests, measured against the baselines on the Studio group first (the owner's yes before the ten-minute run); the kit on
+   two sizes rather than three; fewer workers; a production build of the web app for the test stack.
 2. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
 3. In parallel with any phase: the screens still to draw (Phase 0).
 
@@ -111,7 +111,7 @@ run. The test stack's API starts with downloads of weather off (`ROOFTOP_WEATHER
 | bun, uv, Python | bun 1.3.14; uv; Python 3.12.13, the build that uv manages (`apps/api/.python-version`, `apps/api/pyproject.toml`) |
 | Playwright | `@playwright/test` 1.52.0; its browser (chromium-1169) is already installed. `@axe-core/playwright` 4.13.0 |
 | Baselines of the screens | `e2e/baselines/darwin`, made on this machine. Renew with `bun tools/with-node.ts playwright test <name> --update-snapshots` in `e2e/`, after looking at the new picture |
-| `bun check` | Every step a turbo task, skipped when its inputs have not changed since it was last green (`.turbo/`); the summary says which and why. Unchanged tree: under 2 s. Everything changed, or `--fresh`: about 29 minutes here (1,680 browser tests since Phase 8; 20 to 22 with the 1,544 of Phase 7) (pytest 118 s untraced, 139 s when testmon's data is rebuilt; the browser tests 814 s, 1,345 of them, since the Studio draws in software WebGL on three sizes at once). Inside pytest, testmon runs only the tests a change can have changed, plus the sentinel `test_demo_numbers.py`; a change to the check's own code (`tools/check.ts`, `tools/check/**`) runs everything. While the browser tests run, nothing of `apps/web` or `apps/api` may be edited: the test stack reloads them live, and the browser tests would see the half-made change; while the proofs run (the last step), nothing at all, because they copy the working tree into their worktree. Drafts go to the scratchpad until it ends. Details: `phase-04b-test-caching.md`, "As built" |
+| `bun check` | Every step a turbo task, skipped when its inputs have not changed since it was last green (`.turbo/`); the summary says which and why. Unchanged tree: under 2 s. Everything changed, or `--fresh`: about 31 minutes here (1,755 browser tests; the machine's twenty cores saturated by the Studio in software WebGL on three sizes). Since #63 the browser step is six groups keyed on what each can see (`docs/checks.md`): a Handover change runs handover and shell, about 11 minutes; the whole suite runs only when the owner says (D55) (pytest 118 s untraced, 139 s when testmon's data is rebuilt; the browser tests 814 s, 1,345 of them, since the Studio draws in software WebGL on three sizes at once). Inside pytest, testmon runs only the tests a change can have changed, plus the sentinel `test_demo_numbers.py`; a change to the check's own code (`tools/check.ts`, `tools/check/**`) runs everything. While the browser tests run, nothing of `apps/web` or `apps/api` may be edited: the test stack reloads them live, and the browser tests would see the half-made change; while the proofs run (the last step), nothing at all, because they copy the working tree into their worktree. Drafts go to the scratchpad until it ends. Details: `phase-04b-test-caching.md`, "As built" |
 | The check on GitHub | `.turbo/cache` restored from the most recent run of the branch or of `main`, saved by every run; a push to `main` runs `--fresh`; pytest runs whole and untraced there (`ROOFTOP_CHECK_SELECT=0`). A push that changes a document alone: about 25 s in all |
 | Esri key | In `apps/web/.env.local` as `NEXT_PUBLIC_ESRI_API_KEY`. Never read, print or commit the file. Referrers: `http://localhost:4700`, `http://127.0.0.1:4700`. Expires about 28 Sep 2027 |
 | Design canvas | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy. 21 boards, the same as `docs/design/mockups`. To add or change a board: read the canvas itself (not only a file of it), then publish from a folder shaped `project/<name>` in the scratchpad: `root` that folder, `file_path` its `project/canvas.json`, the boards in `files` by their `project/` paths. A `file_path` outside such a folder lands at the root of the artifact, not under `project/`. The publish is refused by the permission system while the canvas is shared with the link; the owner made it private for the publishes of 2026-09-30 and shares it again after |
