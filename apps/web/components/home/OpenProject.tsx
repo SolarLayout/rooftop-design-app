@@ -107,14 +107,16 @@ export function OpenProject({ open, onClose }: Props) {
           </div>
         ) : null}
         {read && read.notes.length > 0 ? (
-          <ul role="status" aria-label="Notes on the file" className="flex flex-col gap-2">
-            {read.notes.map((note) => (
-              <li key={note} data-testid="open-note" className="flex items-start gap-2.5 rounded-item border border-note-line bg-note-surface px-3 py-2.5 type-small">
-                <Icon name="note" size={16} label="Note" className="mt-0.5 shrink-0 text-accent" />
-                <span className="min-w-0">{note}</span>
-              </li>
-            ))}
-          </ul>
+          <div role="status">
+            <ul aria-label="Notes on the file" className="flex flex-col gap-2">
+              {read.notes.map((note) => (
+                <li key={note} data-testid="open-note" className="flex items-start gap-2.5 rounded-item border border-note-line bg-note-surface px-3 py-2.5 type-small">
+                  <Icon name="note" size={16} label="Note" className="mt-0.5 shrink-0 text-accent" />
+                  <span className="min-w-0">{note}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         ) : null}
       </div>
     </Dialog>

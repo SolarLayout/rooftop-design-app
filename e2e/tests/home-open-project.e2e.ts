@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import type { Locator, Page, Route } from "@playwright/test";
+import type { Locator, Page, Request, Route } from "@playwright/test";
 import { expect, test } from "../fixtures";
 import { asFile, asFormat1, demoProjectFile } from "../project-file";
 
@@ -8,8 +8,8 @@ import { asFile, asFormat1, demoProjectFile } from "../project-file";
 // Open keeps it on this device as a new design, run once, listed under On this device, and found again by a reload; a
 // format 1 file of the desktop app shows the engine's notes as rows, word for word; a file that is no .rtd is refused in
 // the dialog's own words without a request; a text that is not JSON and a format this version does not read are refused in
-// the field in the API's words, and the design that is open stays; a second file chosen replaces the first, whatever the
-// first's answer. Every word of the API and of the engine is the one the API answers.
+// the field in the API's words, and the design that is open stays; the field takes no other file while one is read, and
+// a file chosen after another was read replaces it. Every word of the API and of the engine is the one the API answers.
 
 const RUN = 90_000;
 const DEMO_NAME = "Pune demo roof";
@@ -26,7 +26,8 @@ const UNREACHABLE = "The server cannot be reached. Check the connection and try 
 const isDesktop = (projectName: string) => projectName === "desktop";
 
 const bar = (page: Page) => page.getByRole("banner");
-const switcher = (page: Page) => bar(page).getByRole("button", { name: new RegExp(`^(${DEMO_NAME}|${OPENED_NAME})`) });
+/** The project switcher's trigger: the one button of the top bar that opens a menu, named after the design that is open. */
+const switcher = (page: Page) => bar(page).locator('button[aria-haspopup="menu"]');
 const onThisDevice = (page: Page) => page.getByRole("menu", { name: "On this device" });
 const dialog = (page: Page) => page.getByRole("dialog", { name: "Open a project" });
 const openButton = (page: Page) => dialog(page).getByRole("button", { name: "Open", exact: true });
@@ -34,6 +35,15 @@ const fileInput = (page: Page) => dialog(page).locator("input[type=file]");
 const drop = (page: Page) => dialog(page).getByTestId("file-drop");
 const lines = (page: Page) => dialog(page).getByTestId("file-drop-line");
 const notes = (page: Page) => dialog(page).getByTestId("open-note");
+
+/** Every request for a project to be opened from now on. */
+function openRequests(page: Page): Request[] {
+  const requests: Request[] = [];
+  page.on("request", (request) => {
+    if (/\/api\/project\/open(\?|$)/.test(request.url())) requests.push(request);
+  });
+  return requests;
+}
 const tryAgain = (page: Page) => dialog(page).getByRole("button", { name: "Try again" });
 const toast = (page: Page) => page.getByTestId("toast");
 
@@ -153,12 +163,13 @@ test.describe("a project file of this app", () => {
     await expect.poll(() => runs.length, { timeout: RUN }).toBe(2);
   });
 
-  test("a second file chosen replaces the first, whatever the first's answer: the dialog shows the second", async ({ page }) => {
+  test("while a file is read no other is taken; a file chosen after the first was read replaces it", async ({ page }) => {
     await theRoofLens(page);
     const demo = await demoProjectFile(page);
     const first = JSON.stringify({ ...demo, name: "First roof" });
     const second = JSON.stringify({ ...demo, name: "Second roof" });
-    // The first file's answer is held back until the second has been read.
+    const opens = openRequests(page);
+    // The first file's answer is held back until the test lets it go.
     let letTheFirstAnswer: (() => void) | null = null;
     const theFirstMayAnswer = new Promise<void>((resolve) => (letTheFirstAnswer = resolve));
     await page.route("**/api/project/open", async (route: Route) => {
@@ -170,15 +181,44 @@ test.describe("a project file of this app", () => {
     await fileInput(page).setInputFiles(asFile("First.rtd", first));
     await expect(drop(page)).toContainText("Reading the file");
     await expect(openButton(page)).toHaveAttribute("aria-disabled", "true");
+    // While the first is read the field takes no other file: nothing is asked for the second.
     await fileInput(page).setInputFiles(asFile("Second.rtd", second));
+    await expect(drop(page)).toContainText("Reading the file");
+    expect(opens).toHaveLength(1);
 
-    await read(page, "Second.rtd", "Second roof");
     letTheFirstAnswer!();
-    // The first's answer, late, changes nothing.
-    await expect(lines(page)).toHaveText(["Second roof", RUNS_IN_THE_STUDIO]);
+    await read(page, "First.rtd", "First roof");
+
+    await fileInput(page).setInputFiles(asFile("Second.rtd", second));
+    await read(page, "Second.rtd", "Second roof");
+    expect(opens).toHaveLength(2);
     await openButton(page).click();
     await expect(dialog(page)).toBeHidden({ timeout: RUN });
     await expect(switcher(page)).toContainText("Second roof", { timeout: RUN });
+  });
+
+  test("the dialog closed while a file is read forgets it: its answer, late, changes nothing, and the dialog opens again at rest", async ({ page }) => {
+    await theRoofLens(page);
+    const demo = await demoProjectFile(page);
+    let letTheAnswerGo: (() => void) | null = null;
+    const mayAnswer = new Promise<void>((resolve) => (letTheAnswerGo = resolve));
+    await page.route("**/api/project/open", async (route: Route) => {
+      await mayAnswer;
+      await route.continue();
+    });
+    await dialogOpened(page);
+    await fileInput(page).setInputFiles(asFile("Late.rtd", JSON.stringify({ ...demo, name: "Late roof" })));
+    await expect(drop(page)).toContainText("Reading the file");
+
+    await page.keyboard.press("Escape");
+    await expect(dialog(page)).toBeHidden();
+    letTheAnswerGo!();
+    await expect(switcher(page)).toContainText(DEMO_NAME);
+
+    await dialogOpened(page);
+    await expect(drop(page)).toContainText("Drop the project file here");
+    await expect(openButton(page)).toHaveAttribute("aria-disabled", "true");
+    expect(await page.getByTestId("file-drop-line").count()).toBe(0);
   });
 });
 
