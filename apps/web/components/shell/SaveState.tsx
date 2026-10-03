@@ -32,7 +32,7 @@ const NOT_SAVED = classNames(
 export function SaveState({ state, look = "bar", onOpenNotes, className }: Props) {
   if (state === "not-saved") {
     return (
-      <button type="button" onClick={onOpenNotes} className={classNames(NOT_SAVED, TYPE[look], className)}>
+      <button type="button" data-testid="save-state" data-look={look} onClick={onOpenNotes} className={classNames(NOT_SAVED, TYPE[look], className)}>
         <StatusMark kind="note" label="Note" wordsShown={false} size={16} />
         Not saved
       </button>
@@ -40,7 +40,7 @@ export function SaveState({ state, look = "bar", onOpenNotes, className }: Props
   }
 
   return (
-    <span className={classNames("flex items-center gap-2 whitespace-nowrap text-text-2", TYPE[look], className)}>
+    <span data-testid="save-state" data-look={look} className={classNames("flex items-center gap-2 whitespace-nowrap text-text-2", TYPE[look], className)}>
       {state === "saved" ? <span data-testid="saving-mark" className={classNames(DOT, "bg-ok pulsing")} /> : null}
       {state === "saving" ? <ProgressRing size={12} /> : null}
       {state === "not-kept" ? <span data-testid="saving-mark" className={classNames(DOT, "border-dot border-text-3")} /> : null}

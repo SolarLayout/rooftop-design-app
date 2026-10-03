@@ -110,7 +110,8 @@ export const GROUPS: readonly Group[] = [
   { id: "handover", suites: ["handover*.e2e.ts"], own: HANDOVER_OWN },
   {
     id: "shell",
-    suites: ["api-client.e2e.ts", "fonts.e2e.ts", "routes.e2e.ts", "screens.e2e.ts", "shell.e2e.ts", "smoke.e2e.ts", "tokens.e2e.ts"],
+    // device*.e2e.ts opens every workspace and the map: the group that sees them all.
+    suites: ["api-client.e2e.ts", "device*.e2e.ts", "fonts.e2e.ts", "routes.e2e.ts", "screens.e2e.ts", "shell.e2e.ts", "smoke.e2e.ts", "tokens.e2e.ts"],
     own: SHELL_OWN,
   },
 ];

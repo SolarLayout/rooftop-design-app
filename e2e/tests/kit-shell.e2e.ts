@@ -520,6 +520,31 @@ test.describe("Project switcher", () => {
     await expect(menu.getByRole("menuitem").first().locator("svg")).toHaveCSS("width", "18px");
   });
 
+  test("the designs on this device: rows of a menu of their own, the open one with the tick, the capacity or the roof at the right; a row pressed opens it", async ({ page }, testInfo) => {
+    const menu = example(page, "switcher-designs").getByTestId("project-menu");
+    const rows = menu.getByRole("menu", { name: "On this device" }).getByRole("menuitem");
+
+    await expect(rows).toHaveText([
+      "Pune demo roof357.28 kWp",
+      "Hinjewadi Phase 2, Pune, Maharashtra62.0 × 28.0 m flat roof, tilted rows",
+      "Warehouse 7, Block B120.0 × 45.0 m flat roof, east-west",
+    ]);
+    await expect(rows.nth(0)).toHaveAttribute("aria-current", "true");
+    await expect(rows.nth(0).locator("svg")).toHaveCSS("stroke", COLOUR.accent);
+    await expect(rows.nth(1)).not.toHaveAttribute("aria-current", "true");
+    await expect(rows.nth(1).locator("svg")).toHaveCSS("stroke", COLOUR.text2);
+    await expect(rows.nth(1).locator("svg")).toHaveCSS("width", "18px");
+    await expect(rows.nth(1).getByText("62.0 × 28.0 m flat roof, tilted rows")).toHaveCSS("color", TEXT_3);
+    expect((await boxOf(rows.nth(1))).height).toBe(isDesktop(testInfo.project.name) ? 44 : 52);
+    await expect(menu.getByText("Designs you save appear here.")).toHaveCount(0);
+    await expect(menu.getByTestId("this-design")).toContainText("Saved on this device");
+    // The actions stay a menu of their own.
+    await expect(menu.getByRole("menu", { name: "Project" }).getByRole("menuitem")).toHaveCount(5);
+
+    await rows.nth(1).click();
+    await expect(last(page)).toHaveText("Last pressed: Open, hinjewadi");
+  });
+
   test("Home leads home, New design to the map; what comes with a later phase is shown and cannot be used", async ({ page }) => {
     const menu = example(page, "switcher-open").getByTestId("project-menu");
 

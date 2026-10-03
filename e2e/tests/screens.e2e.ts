@@ -1,6 +1,7 @@
 import type { Page, Route } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { TWO_DESIGNS, withDesignsOnTheDevice } from "../device";
 import { expect, test } from "../fixtures";
 import { expectScreen, expectWholeScreen } from "../screens";
 import { A_MAP, findOpened, roofMap, scaleLabel, searchField } from "../find";
@@ -603,6 +604,33 @@ test.describe("the shell", () => {
 
     await sceneSettled(page);
     await expectScreen(page, "studio-project-switcher");
+  });
+
+  // A design kept on this device, open: the state of saving in the top bar, the dot (the board "Home, designs on this device",
+  // the states of saving). Tablet and phone say it in the switcher, pictured below.
+  test("shell, saved on this device", async ({ page }, testInfo) => {
+    test.skip(!isDesktop(testInfo.project.name), "On tablet and phone the state of saving is in the project switcher.");
+    await withDesignsOnTheDevice(page, TWO_DESIGNS, TWO_DESIGNS[0]!.id);
+    await page.goto("/studio/array");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+    await expect(page.getByRole("banner").getByTestId("save-state").and(page.locator('[data-look="bar"]'))).toHaveText("Saved on this device");
+
+    await sceneSettled(page);
+    await expectScreen(page, "shell-saved-on-this-device");
+  });
+
+  // The switcher over two designs kept on this device: the open one with the tick and its capacity, the other by its roof.
+  test("studio, the project switcher, designs on this device", async ({ page }) => {
+    await withDesignsOnTheDevice(page, TWO_DESIGNS, TWO_DESIGNS[0]!.id);
+    await page.goto("/studio/array");
+    await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });
+
+    await design(page).click();
+    await expect(page.getByRole("menu", { name: "On this device" }).getByRole("menuitem")).toHaveCount(2);
+    await expect(page.getByTestId("this-design")).toContainText("Saved on this device");
+
+    await sceneSettled(page);
+    await expectScreen(page, "studio-project-switcher-designs");
   });
 
   // On phone the top bar says the notes once the run is over: the picture is taken after that, not before.

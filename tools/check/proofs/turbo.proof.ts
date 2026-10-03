@@ -88,6 +88,10 @@ describe("what turbo re-runs", () => {
     expect(after("apps/web/components/ui/Button.tsx", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...BROWSER].sort());
   });
 
+  test("a module of the device, whose designs the shell saves and opens on every page: the web app's tasks, and every group", () => {
+    expect(after("apps/web/lib/device/saving.ts", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...BROWSER].sort());
+  });
+
   test("a module of the tools: the tools' tasks, and every group, whose stack the tools start", () => {
     expect(after("tools/lib/ports.ts", aComment)).toEqual([...TOOLS, ...BROWSER].sort());
     expect(after("tools/footprints.ts", aComment)).toEqual(TOOLS.sort());
