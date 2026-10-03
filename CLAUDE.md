@@ -94,7 +94,7 @@ This is production software, not a prototype. The owner's words: "this is not th
   test, a folder or an input: it says what runs again, the rules, and how to run one group (`bun run e2e:<group>`).
 - On GitHub the `check` workflow restores `.turbo/cache` from the last run of the branch or of `main` and saves
   it after every run; a push to `main` runs `--fresh`. pytest runs whole and untraced there
-  (`ROOFTOP_CHECK_SELECT=0`), over every core with pytest-xdist (`tools/check/pytest-arguments.ts`).
+  (`ROOFTOP_CHECK_SELECT=0`), in one process.
 
 ## Commands
 | Command | Use |

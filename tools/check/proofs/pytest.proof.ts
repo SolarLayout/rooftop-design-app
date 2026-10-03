@@ -46,8 +46,7 @@ function run(env: Record<string, string> = {}): Run {
   });
   const output = `${result.stdout}${result.stderr}`;
   const report = output.split("\n").findLast((line) => line.startsWith(REPORT_PREFIX))?.slice(REPORT_PREFIX.length) ?? "";
-  // One process writes "tests/x.py::test PASSED"; a worker of pytest-xdist (the run without selection) "[gw0] [ 50%] PASSED tests/x.py::test".
-  const ran = [...output.matchAll(/^(?:(tests\/\S+::\S+) (?:PASSED|FAILED|ERROR)|\[gw\d+\] \[\s*\d+%\] (?:PASSED|FAILED|ERROR) (tests\/\S+::\S+))/gm)].map((match) => (match[1] ?? match[2])!);
+  const ran = [...output.matchAll(/^(tests\/\S+::\S+) (PASSED|FAILED|ERROR)/gm)].map((match) => match[1]!);
   return { code: result.status ?? 1, report, ran, output };
 }
 

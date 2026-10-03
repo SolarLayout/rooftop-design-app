@@ -7,16 +7,16 @@
 // (tests/always_run.py) runs in every run whatever testmon selects. Arguments are passed on to pytest
 // (`bun run test -- tests/api` in apps/api), for a hand that wants a part of the suite.
 //
-// With ROOFTOP_CHECK_SELECT=0 there is no selection and no tracing: pytest runs the suite whole, spread
-// over every core by pytest-xdist (pytest-arguments.ts), as on GitHub, where the task is cached whole by
-// turbo and testmon's data is never kept (decision 4 of plan/phase-04b-plan.md).
+// With ROOFTOP_CHECK_SELECT=0 there is no selection and no tracing: pytest runs the suite whole, in one
+// process, as on GitHub, where the task is cached whole by turbo and testmon's data is never kept (decision
+// 4 of plan/phase-04b-plan.md). Not spread over cores: the runner's two are saturated by one process, and a
+// test that times the API (/layout well under a second) fails beside a worker.
 
 import { Database } from "bun:sqlite";
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { API_DIR } from "../lib/paths.ts";
-import { pytestArguments } from "./pytest-arguments.ts";
 import { dataKey, readDataKeyInputs } from "./pytest-data-key.ts";
 import { FRESH_VARIABLE, REPORT_PREFIX, SELECT_VARIABLE } from "./pytest-selected-report.ts";
 import { describePytestRun, parsePytestCounts } from "./pytest-summary.ts";
@@ -89,7 +89,7 @@ if (selecting) {
 }
 const known = rebuilt ? 0 : (knownTests() ?? 0);
 
-const { output, code } = await runPytest(pytestArguments(selecting), process.argv.slice(2));
+const { output, code } = await runPytest(selecting ? ["--testmon"] : ["-p", "no:testmon"], process.argv.slice(2));
 // Testmon's "changed files" are the test files whose tests are affected, not the files that changed.
 const changed = /^testmon: (changed files: .*?|new DB, .*?|The packages installed .*?)(, environment: default)?$/m
   .exec(output)?.[1]

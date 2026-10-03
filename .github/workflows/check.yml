@@ -12,9 +12,9 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    # The check without the browser tests takes about eight minutes here when nothing is cached (pytest whole over
-    # the runner's cores, the web app's types, lint and tests, the proofs); the limit leaves room for a slow runner.
-    # A job that hits it is cancelled before the cache is saved, so the next run starts cold again.
+    # The check without the browser tests takes ten to eleven minutes here when nothing is cached (pytest whole in
+    # one process about eight, the web app's types, lint and tests, the proofs); the limit leaves room for a slow
+    # runner. A job that hits it is cancelled before the cache is saved, so the next run starts cold again.
     timeout-minutes: 15
     env:
       NEXT_TELEMETRY_DISABLED: "1"
