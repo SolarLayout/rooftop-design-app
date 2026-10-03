@@ -2,11 +2,11 @@ import { describe, expect, test } from "bun:test";
 import { SAVE_DEBOUNCE } from "../../components/ui/design-numbers";
 import type { DesignResult, Project } from "../api";
 import { clockOfTheTest } from "../clock-of-the-test";
-import { createProjectStore } from "../stores/project-store";
+import { canUndo as canUndoOf_, createProjectStore, type ProjectStore } from "../stores/project-store";
 import { createResultsStore } from "../stores/results-store";
 import type { DesignsDb } from "./designs-db";
 import type { KeptDesign } from "./kept-design";
-import { createSaving, failureOf, idOf, keptDesignsOf, savingOf } from "./saving";
+import { createSaving, failureOf, idOf, keptDesignsOf, listedAtOf, savingOf } from "./saving";
 
 // Saving (plan/phase-10-plan.md, step 2, decisions 2 and 3): a committed edit writes the design to the device SAVE_DEBOUNCE
 // after the last one; the demo is not kept until it is edited (D32); the id of the open design is remembered; a failure
@@ -68,6 +68,8 @@ function fakeDb(kept: KeptDesign[] = []) {
     },
   };
 }
+
+const canUndoOf = (project: ProjectStore) => canUndoOf_(project.getState());
 
 /** Lets what was promised settle. */
 const settled = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
@@ -489,6 +491,129 @@ describe("the designs on this device", () => {
 
     expect(keptDesignsOf(saving.getState())).toEqual([]);
     expect(said).toEqual(["The designs on this device could not be read: the browser gave no reason."]);
+  });
+});
+
+describe("when the list was last read or changed", () => {
+  test("is the store's clock at that moment, so that a card's \"Edited …\" is worked out of a time of the store, never of the render", async () => {
+    const { project, saving, pass, setNow } = setUp([BLOCK_B]);
+    expect(listedAtOf(saving.getState())).toBe(0);
+
+    setNow(50_000);
+    saving.getState().start();
+    await settled();
+    expect(listedAtOf(saving.getState())).toBe(50_000);
+
+    project.getState().open(DEMO);
+    setNow(99_000);
+    project.getState().commit(tilt(20));
+    pass(SAVE_DEBOUNCE);
+    await settled();
+    expect(listedAtOf(saving.getState())).toBe(99_000);
+  });
+});
+
+describe("a design renamed from its card", () => {
+  test("one that is not open: its record is written with the new name, in the document too; the list follows; nothing is said", async () => {
+    const { saving, device, said } = setUp([BLOCK_B]);
+    saving.getState().start();
+    await settled();
+
+    await saving.getState().rename("kept-b", "Block B, east wing");
+
+    expect(device.records.get("kept-b")).toMatchObject({ id: "kept-b", name: "Block B, east wing", document: { name: "Block B, east wing" } });
+    expect(keptDesignsOf(saving.getState()).map((one) => one.name)).toEqual(["Block B, east wing"]);
+    expect(said).toEqual([]);
+  });
+
+  test("the one that is open: the name is a committed edit of the document, which the store then writes as any edit", async () => {
+    const { project, saving, device, pass } = setUp();
+    project.getState().open(DEMO);
+    project.getState().commit(tilt(20));
+    pass(SAVE_DEBOUNCE);
+    await settled();
+
+    await saving.getState().rename("id-1", "Pune demo roof, block B");
+
+    expect(project.getState().project?.name).toBe("Pune demo roof, block B");
+    expect(canUndoOf(project)).toBe(true);
+    pass(SAVE_DEBOUNCE);
+    await settled();
+    expect(device.records.get("id-1")?.name).toBe("Pune demo roof, block B");
+    expect(savingOf(saving.getState())).toBe("saved");
+  });
+
+  test("a record the device refuses to write is said, and the list stays as it was", async () => {
+    const { saving, device, said } = setUp([BLOCK_B]);
+    saving.getState().start();
+    await settled();
+    device.refuseNext("QuotaExceededError");
+
+    await saving.getState().rename("kept-b", "Block C");
+
+    expect(said).toEqual(["The design could not be kept on this device: QuotaExceededError."]);
+    expect(keptDesignsOf(saving.getState()).map((one) => one.name)).toEqual(["Block B"]);
+  });
+
+  test("an id the device has not is nothing to rename: nothing is written, nothing is said", async () => {
+    const { saving, device, said } = setUp([BLOCK_B]);
+    saving.getState().start();
+    await settled();
+
+    await saving.getState().rename("gone", "Block C");
+
+    expect(device.puts).toEqual([]);
+    expect(said).toEqual([]);
+  });
+});
+
+describe("a design removed from its card", () => {
+  test("one that is not open: it leaves the device and the list", async () => {
+    const { saving, device } = setUp([BLOCK_B]);
+    saving.getState().start();
+    await settled();
+
+    await saving.getState().remove("kept-b");
+
+    expect(device.records.has("kept-b")).toBe(false);
+    expect(keptDesignsOf(saving.getState())).toEqual([]);
+  });
+
+  test("the one that is open stays open, not kept any more: the id is forgotten, and its next edit keeps it anew under a new id", async () => {
+    const { project, saving, device, remembered, pass } = setUp();
+    project.getState().open(DEMO);
+    project.getState().commit(tilt(20));
+    pass(SAVE_DEBOUNCE);
+    await settled();
+    expect(savingOf(saving.getState())).toBe("saved");
+
+    await saving.getState().remove("id-1");
+
+    expect(device.records.has("id-1")).toBe(false);
+    expect(savingOf(saving.getState())).toBe("not-kept");
+    expect(idOf(saving.getState())).toBeNull();
+    expect(remembered.at(-1)).toBeNull();
+    expect(project.getState().project?.array.tilt_deg).toBe(20);
+
+    project.getState().commit(tilt(25));
+    pass(SAVE_DEBOUNCE);
+    await settled();
+    expect(idOf(saving.getState())).toBe("id-2");
+    expect([...device.records.keys()]).toEqual(["id-2"]);
+  });
+
+  test("a device that refuses is said, and the design stays listed", async () => {
+    const { saving, device, said } = setUp([BLOCK_B]);
+    saving.getState().start();
+    await settled();
+    device.db.removeDesign = async () => {
+      throw new Error("The design could not be removed from this device: the browser gave no reason.");
+    };
+
+    await saving.getState().remove("kept-b");
+
+    expect(said).toEqual(["The design could not be removed from this device: the browser gave no reason."]);
+    expect(keptDesignsOf(saving.getState()).map((one) => one.name)).toEqual(["Block B"]);
   });
 });
 

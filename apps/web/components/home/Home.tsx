@@ -11,8 +11,10 @@ import { Icon, type IconName } from "@/components/ui/Icon";
 import { Toaster } from "@/components/ui/Toaster";
 import { api, type Project } from "@/lib/api";
 import { demoRunOfText, rawDemoRunOf } from "@/lib/device/demo-run";
-import { keptDesignsOf } from "@/lib/device/saving";
+import { openFromTheSwitcher } from "@/lib/device/opening";
+import { keptDesignsOf, listedAtOf } from "@/lib/device/saving";
 import { failureOf } from "@/lib/flow/design-flow";
+import { cardsOf, copyNameOf } from "@/lib/home/cards";
 import { demoCardOf } from "@/lib/home/home-view";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
 import { pathOfFind, pathOfLens } from "@/lib/routes";
@@ -60,8 +62,10 @@ const SIDES = "px-4 tablet:px-6 desktop:px-16";
  */
 export function Home() {
   const router = useRouter();
-  const { flow, view, toasts } = useStores();
+  const { flow, view, toasts, saving, downloads } = useStores();
   const kept = useSaving(keptDesignsOf);
+  const listedAt = useSaving(listedAtOf);
+  const cards = useMemo(() => cardsOf(kept, listedAt), [kept, listedAt]);
   const [asked, setAsked] = useState<Asked>({ kind: "on-its-way" });
   const [isImportOpen, setImportOpen] = useState(false);
   const [isOpenProjectOpen, setOpenProjectOpen] = useState(false);
@@ -92,6 +96,30 @@ export function Home() {
   }
 
   const take = { import: () => setImportOpen(true), open: () => setOpenProjectOpen(true) };
+  const say = (words: string) => void toasts.show({ kind: "note", words });
+  const toTheStudio = () => router.push(pathOfLens(lensOf(view.getState())));
+  const keptOf = (id: string) => kept.find((one) => one.id === id) ?? null;
+
+  /** A card pressed, or Open in its menu: the design opens from the device and runs again, in the Studio at its last lens. */
+  async function openTheDesign(id: string) {
+    await openFromTheSwitcher(id, { openFromDevice: (one) => saving.getState().openFromDevice(one), say });
+    // A design that could not be opened is said, and the page stays; one that was (or is open already) is shown.
+    if (saving.getState().id === id) toTheStudio();
+  }
+
+  /** Duplicate: a copy named after the design, kept under a new id and opened at once (decision 7). */
+  function duplicate(id: string) {
+    const design = keptOf(id);
+    if (design === null) return;
+    saving.getState().keepAndOpen({ ...design.document, name: copyNameOf(design.name) });
+    toTheStudio();
+  }
+
+  /** Save a copy: the .rtd of that design's document, asked of the API as it is. */
+  function saveACopy(id: string) {
+    const design = keptOf(id);
+    if (design !== null) void downloads.getState().saveACopyOf(design.document);
+  }
 
   return (
     <div className="relative flex min-h-dvh flex-col overflow-x-hidden bg-ground text-text">
@@ -125,9 +153,18 @@ export function Home() {
             </button>
           ))}
         </div>
-        <div className="mt-6 flex flex-col gap-8 tablet:mt-5 tablet:gap-7 desktop:mt-auto desktop:flex-row-reverse desktop:items-end desktop:justify-between desktop:gap-6 desktop:pt-10">
+        {/* The demo's card and "On this device": side by side at the foot on desktop while nothing is kept; with cards, the cards take the width under the demo's card. */}
+        <div className={classNames("mt-6 flex flex-col gap-8 tablet:mt-5 tablet:gap-7 desktop:mt-auto desktop:gap-6 desktop:pt-10", cards.length === 0 ? "desktop:flex-row-reverse desktop:items-end desktop:justify-between" : "desktop:items-end")}>
           <DemoCard demo={demo} onOpen={openTheDemo} className="desktop:shrink-0" />
-          <OnThisDevice count={kept.length} className="desktop:max-w-110" />
+          <OnThisDevice
+            cards={cards}
+            onOpen={(id) => void openTheDesign(id)}
+            onRename={(id, name) => void saving.getState().rename(id, name)}
+            onDuplicate={duplicate}
+            onSaveACopy={saveACopy}
+            onDelete={(id) => void saving.getState().remove(id)}
+            className={cards.length === 0 ? "desktop:max-w-110" : "w-full min-w-0"}
+          />
         </div>
       </main>
       <ImportDrawing open={isImportOpen} onClose={() => setImportOpen(false)} />

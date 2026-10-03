@@ -16,6 +16,8 @@ export type SeededDesign = {
   energyMwh: number | null;
   roofWords: string;
   editedAt: number;
+  /** A design before a system voltage is chosen: its card says what waits (plan/phase-10-plan.md, step 12). */
+  withoutAVoltage?: boolean;
 };
 
 /** The demo's roof, in the words the app makes of its outline and type. */
@@ -43,7 +45,7 @@ export async function withDesignsOnTheDevice(page: Page, designs: SeededDesign[]
           store.put({
             id: design.id,
             name: design.name,
-            document: { ...demo, name: design.name },
+            document: { ...demo, name: design.name, ...(design.withoutAVoltage ? { system_voltage: null } : {}) },
             facts: { roofWords: design.roofWords, dcKwp: design.dcKwp, energyMwh: design.energyMwh },
             editedAt: design.editedAt,
             openedAt: design.editedAt,

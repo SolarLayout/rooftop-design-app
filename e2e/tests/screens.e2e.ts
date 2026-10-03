@@ -20,6 +20,31 @@ test("home", async ({ page }) => {
   await expectScreen(page, "home");
 });
 
+// Home with two designs kept on this device (plan/phase-10-plan.md, step 12; the board "Home, designs on this device"): the demo
+// kept with the facts of its run, Block B not run yet, as cards under On this device.
+test("home, designs on this device", async ({ page }) => {
+  await withDesignsOnTheDevice(page, TWO_DESIGNS, null);
+  await page.reload();
+  await expect(page.getByTestId("demo-name")).toHaveText("Pune demo roof");
+  await expect(page.getByTestId("design-card")).toHaveCount(2);
+
+  await expectScreen(page, "home-designs");
+});
+
+// Delete asked over the dimmed page, as the board draws it.
+test("home, delete asked", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "The board draws Delete asked on desktop.");
+  await withDesignsOnTheDevice(page, TWO_DESIGNS, null);
+  await page.reload();
+  await expect(page.getByTestId("design-card")).toHaveCount(2);
+  const card = page.getByRole("article", { name: "Pune demo roof", exact: true });
+  await card.getByRole("button", { name: "Menu" }).click();
+  await page.getByRole("menu", { name: "Pune demo roof", exact: true }).getByRole("menuitem", { name: "Delete" }).click();
+  await expect(page.getByRole("dialog", { name: "Delete Pune demo roof?" })).toBeVisible();
+
+  await expectScreen(page, "home-delete");
+});
+
 // Find and outline, with the imagery from the fixture tile.
 test("find", async ({ page }) => {
   await findOpened(page);

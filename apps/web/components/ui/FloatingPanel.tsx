@@ -8,12 +8,12 @@ import type { Floating } from "./use-floating";
 type Props = {
   /** Of `useFloating`. */
   floating: Floating;
-  /** How wide the panel is on desktop. On phone and tablet it is as wide as the screen. */
-  width?: "list" | "menu" | "search";
+  /** How wide the panel is on desktop: a list of choices, the project switcher's menu, the search's places, the menu of a card. On phone and tablet it is as wide as the screen. */
+  width?: "list" | "menu" | "search" | "card";
   children: ReactNode;
 };
 
-const WIDTH = { list: "desktop:w-80", menu: "desktop:w-85", search: "desktop:w-100" };
+const WIDTH = { list: "desktop:w-80", menu: "desktop:w-85", search: "desktop:w-100", card: "desktop:w-60" };
 
 // A popover of the browser has colours and a width of its own, and cuts off what stands out of it. While
 // it is closed the browser does not show it; open, it is a column.

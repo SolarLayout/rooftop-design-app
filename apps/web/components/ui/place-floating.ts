@@ -16,10 +16,11 @@ type Asked = {
   /** The side it is on when there is room. */
   side: Side;
   /**
-   * Over or under the control: its left edge on the left edge of the control, or its middle on the middle of the
-   * control. Beside it: its top on the top of the control, or its middle on the middle.
+   * Over or under the control: its left edge on the left edge of the control, its middle on the middle of the control, or
+   * its right edge on the right edge (the menu of a card, whose button stands at the card's right). Beside it: its top on
+   * the top of the control, its middle on the middle, or its bottom on the bottom.
    */
-  align: "start" | "middle";
+  align: "start" | "middle" | "end";
   /** What stays between the two. */
   gap: number;
 };
@@ -50,8 +51,9 @@ export function placeOf({ anchor, size, screen, side, align, gap }: Asked): Plac
   };
   const taken = !hasRoom[side] && hasRoom[OTHER[side]] ? OTHER[side] : side;
 
-  const x = isBeside ? along[taken] : align === "start" ? anchor.left : anchor.left + anchor.width / 2 - size.width / 2;
-  const y = isBeside ? (align === "start" ? anchor.top : anchor.top + anchor.height / 2 - size.height / 2) : along[taken];
+  const alongTheControl = (start: number, length: number, extent: number) => (align === "start" ? start : align === "end" ? start + length - extent : start + length / 2 - extent / 2);
+  const x = isBeside ? along[taken] : alongTheControl(anchor.left, anchor.width, size.width);
+  const y = isBeside ? alongTheControl(anchor.top, anchor.height, size.height) : along[taken];
 
   return {
     x: Math.round(inside(x, SCREEN_MARGIN, Math.max(SCREEN_MARGIN, screen.width - size.width - SCREEN_MARGIN))),

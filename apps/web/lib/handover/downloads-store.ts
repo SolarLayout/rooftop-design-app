@@ -64,6 +64,12 @@ export type DownloadsState = {
   ask: (kind: ExportKind) => Promise<ExportedFile>;
   /** The pages of the report for the document as it is now: from the API once per edit, then kept. What came, or did not, is in the state. */
   askPages: () => Promise<void>;
+  /**
+   * Saves the project file of *document*, a design that is not the open one (plan/phase-10-plan.md, step 12: Save a copy on a
+   * card of Home): asked of the API as it is and saved under the name the API gives; nothing is kept of it. A failure is a
+   * toast with the API's words and Try again.
+   */
+  saveACopyOf: (document: Project) => Promise<void>;
   /** Another design is opened: nothing of the one before stays. */
   clear: () => void;
 };
@@ -170,6 +176,16 @@ export function createDownloadsStore({ api, save = saveBlob, day = todayOfTheBro
 
     const downloadAll = (): Promise<void> => saved(EVERYTHING, get().all, (all) => set({ all }), () => void downloadAll());
 
+    async function saveACopyOf(document: Project): Promise<void> {
+      try {
+        const file = await api.exportDesign(THE_DOCUMENT_ITSELF, document, { day: day() });
+        save(file.blob, file.name);
+      } catch (error) {
+        const { message } = failureOf(error);
+        toasts.show({ kind: "note", words: message, action: { label: TRY_AGAIN, run: () => void saveACopyOf(document) } });
+      }
+    }
+
     return {
       byItem: {},
       all: IDLE,
@@ -181,6 +197,7 @@ export function createDownloadsStore({ api, save = saveBlob, day = todayOfTheBro
       downloadAll,
       ask,
       askPages,
+      saveACopyOf,
       clear() {
         asking.clear();
         set({ byItem: {}, all: IDLE, kept: {}, pages: null, pagesStatus: IDLE });

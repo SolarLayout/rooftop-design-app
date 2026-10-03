@@ -73,6 +73,7 @@ const STROKED = {
     </>
   ),
   minus: <path d="M5 12h14" />,
+  more: <path d="M12 5v.01M12 12v.01M12 19v.01" />,
   // The needle of the north control: its point in the accent, the N under it. Turned as one by `turned`.
   north: (
     <>
