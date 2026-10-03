@@ -102,13 +102,18 @@ export interface paths {
         put?: never;
         /**
          * Export
-         * @description A file of the design, for the option the project has chosen.
+         * @description A file of the design, for the option the project has chosen; or the project file.
          *
          *     pdf: the report, A4 landscape. dxf: the layout, R2010 in metres, a layer for every string.
          *     kmz: roof, obstacles and the modules in use, for Google Earth. csv: the 8,760 hours.
-         *     sld: the single-line diagram as a PNG.
+         *     sld: the single-line diagram as a PNG. rtd: the project file, format 2, as the desktop app reads
+         *     it: the request as the engine holds it, and nothing of the design.
          *
-         *     The project must name its chosen option, and the design must have it.
+         *     day: the reader's day (YYYY-MM-DD), printed on page 1 of the report; without it the server's
+         *     today. Every kind takes it; the report reads it.
+         *
+         *     For every kind but rtd the project must name its chosen option, and the design must have it.
+         *     rtd needs no chosen option, no system voltage, no weather and no run.
          */
         post: operations["exportDesign"];
         delete?: never;
@@ -2202,10 +2207,12 @@ export interface operations {
     };
     exportDesign: {
         parameters: {
-            query?: never;
+            query?: {
+                day?: string | null;
+            };
             header?: never;
             path: {
-                kind: "pdf" | "dxf" | "kmz" | "csv" | "sld";
+                kind: "pdf" | "dxf" | "kmz" | "csv" | "sld" | "rtd";
             };
             cookie?: never;
         };
@@ -2221,6 +2228,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "application/json": string;
                     "application/pdf": string;
                     "application/vnd.google-earth.kmz": string;
                     "image/png": string;
