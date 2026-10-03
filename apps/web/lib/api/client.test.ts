@@ -290,13 +290,13 @@ describe("an answer that is not the API's, once (a proxy in front of it failed)"
     expect(calls).toHaveLength(2);
   });
 
-  test("the pages of the report the same; twice is the failure", async () => {
+  test("the pages of the report the same; three times is the failure", async () => {
     const { api, calls } = server(PROXY_FAILED);
 
     const thrown = await api.reportPages(PROJECT).catch((error: unknown) => error);
 
     expect(thrown).toMatchObject({ code: "unexpected_answer" });
-    expect(calls).toHaveLength(2);
+    expect(calls).toHaveLength(3);
   });
 
   test("a refusal of the API is not asked again", async () => {

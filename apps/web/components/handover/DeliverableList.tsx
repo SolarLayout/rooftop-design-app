@@ -75,7 +75,7 @@ export function DeliverableList({ rows, item, shown, downloads, onSaveACopy, all
             {isAllOnItsWay ? <ProgressRing size={16} /> : null}
             Download all
           </Button>
-          <span className={classNames("type-caption text-text-2", !canDownloadAll && "opacity-disabled")}>{zipFacts}</span>
+          <span className="type-caption text-text-2">{zipFacts}</span>
         </div>
       </div>
       <ul data-testid="deliverables" className="flex flex-col gap-1.5">

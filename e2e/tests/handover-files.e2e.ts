@@ -213,9 +213,12 @@ test.describe("the hourly data (step 20, decision 8)", () => {
   /** The item open with the file the API answered for the preview, as text. */
   async function theHourlyData(page: Page): Promise<{ answer: Answer; document: Document; text: string; requests: Request[] }> {
     const requests = csvAsked(page);
-    const answered = page.waitForResponse((response) => isRequestFor("csv")(response.request()) && response.ok(), { timeout: RUN });
     const { answer, document } = await theItem(page, "hourly-data");
-    const text = await (await answered).text();
+    // The file as the API writes it, asked once more by the test itself (the browser's own answer cannot be read once
+    // the page has taken its body); the preview is of the option shown.
+    const asked = await page.request.post("/api/export/csv", { data: { ...document, chosen_option: answer.chosen_option } });
+    expect(asked.ok()).toBe(true);
+    const text = await asked.text();
     await expect(rows(page)).toHaveCount(SHOWN, { timeout: RUN });
     return { answer, document, text, requests };
   }
@@ -331,6 +334,5 @@ test.describe("Download all (step 21, decision 10)", () => {
 
     await expect(page.getByTestId("deliverables").getByTestId("deliverable-facts").first()).toContainText("Choose a system voltage", { timeout: RUN });
     await expect(downloadAll(page)).toHaveAttribute("aria-disabled", "true");
-    await expect(page.getByTestId("download-all").getByText("6 files · one zip")).toHaveCSS("opacity", "0.45");
   });
 });

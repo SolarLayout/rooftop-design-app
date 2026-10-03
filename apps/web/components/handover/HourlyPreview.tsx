@@ -72,7 +72,8 @@ export function HourlyPreview({ file, failure, onTryAgain }: Props) {
   }
   return (
     <div data-testid="hourly-data" className="flex min-w-0 flex-col gap-4">
-      <section aria-label="The first rows of the file" className={CARD}>
+      {/* The card scrolls sideways where six columns do not fit: it takes the focus, so that the keyboard can scroll it. */}
+      <section aria-label="The first rows of the file" tabIndex={0} className={classNames(CARD, "focus-ring")}>
         <Rows head={head} />
       </section>
       <FactRows title="Columns" rows={csvColumnsOf(head.header)} mono nameWidth="m" testId="csv-column" />
