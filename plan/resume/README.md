@@ -30,6 +30,7 @@ asks for one. Paste the block inside the file into a new session started in this
 | 010 | `010-phase-7-studio-strings.md` | Phase 7: the plan, the boards it lacks, the pull requests of the Strings lens | 2026-10-02 | used by session 11, 2026-10-02. The plan, the six boards, the five pull requests (#53 to #57) and the close are done |
 | 011 | `011-phase-8-performance.md` | Phase 8: the plan, the boards it lacks, the pull requests of Performance | 2026-10-02 | used by session 12, 2026-10-02 to 2026-10-03. The plan, the six boards, the four pull requests (#58 to #61) and the close are done |
 | 012 | `012-phase-9-handover.md` | Phase 9: the plan, the boards it lacks, the pull requests of Handover and the exports | 2026-10-03 | used by session 13, 2026-10-03. The plan, the four boards, the four pull requests (#62, #64 to #66) and the close are done; the browser step was split on the way (#63) |
+| 013 | `013-phase-10-home-projects-present.md` | Phase 10: the plan, the boards it lacks, the pull requests of Home, the projects on the device and Present; unattended, pre-approved by the owner | 2026-10-03 | open; in use by session 13 |
 
 ## Shape of a prompt file
 
