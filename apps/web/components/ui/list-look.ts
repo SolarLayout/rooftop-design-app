@@ -19,3 +19,15 @@ export const ROW_MARKED = "bg-surface-2";
 
 /** One fact at the right of a row. */
 export const FACT = "type-caption text-text-3";
+
+/**
+ * A row of a menu (the project switcher's, a card's): 52 high on phone and tablet, 44 on desktop, an icon of 18 and a fact
+ * at the right; under the pointer or the keyboard on `surface-2`.
+ */
+export const MENU_ROW = classNames(
+  "flex h-13 items-center gap-3 rounded-item px-2.5 select-none focus-ring desktop:h-11",
+  "hovered:bg-surface-2 focus-visible:bg-surface-2",
+);
+
+/** A row of a menu that does something when pressed. */
+export const PRESSABLE_MENU_ROW = classNames(MENU_ROW, "w-full cursor-pointer text-left");

@@ -9,7 +9,7 @@
 // The calls go through the client of the API (lib/api) and nothing else.
 import { DESIGN_PAUSE, TIME_REST } from "../../components/ui/design-numbers";
 import { partsOfAnEdit } from "./edit-parts";
-import { api as apiOfTheApp, ApiError, type Api, type Project } from "../api";
+import { api as apiOfTheApp, ApiError, type Api, type DesignResult, type Project } from "../api";
 import { CLOCK_OF_THE_BROWSER, type Clock } from "../clock";
 import { stepOfLoading, weatherRequestOf, withWeatherLoaded } from "../performance/weather-source";
 import { hoursOf, QUARTER_HOUR } from "../scene/sun-day";
@@ -26,13 +26,18 @@ type Options = {
   view: ViewStore;
   api?: FlowApi;
   clock?: Clock;
+  /** Hears the run of the untouched demo when it lands (plan/phase-10-plan.md, step 11): Home's card shows its numbers. */
+  onDemoRan?: (design: DesignResult) => void;
 };
 
 export type DesignFlow = {
   /** Begins to listen to the project. A design that is open already is asked for at once. */
   start: () => void;
-  /** Asks the API for the demo and opens it, as it is handed out. Until it is there the design is on its way. */
-  openDemo: () => void;
+  /**
+   * Opens the demo: the document handed in, at once and without a request (Home has it for its card), or else the API's,
+   * asked for and opened as it is handed out; until it is there the design is on its way.
+   */
+  openDemo: (demo?: Project) => void;
   /** Asks again for what failed, at once, with the document as it is now. */
   tryAgain: () => void;
   /** Gives up what is on its way and listens no longer. */
@@ -54,8 +59,10 @@ export function failureOf(error: unknown): Failure {
   };
 }
 
-export function createDesignFlow({ project, results, view, api = apiOfTheApp, clock = CLOCK_OF_THE_BROWSER }: Options): DesignFlow {
+export function createDesignFlow({ project, results, view, api = apiOfTheApp, clock = CLOCK_OF_THE_BROWSER, onDemoRan }: Options): DesignFlow {
   let followed = 0;
+  /** The edit at which the demo was opened: the run of that edit is the untouched demo's. Edits only grow, so no later edit is it. */
+  let demoEdit: number | null = null;
   /** The document of the edit followed last: what the next edit is compared with. */
   let documentFollowed: Project | null = null;
   let sunCall: AbortController | null = null;
@@ -197,22 +204,29 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
       });
   }
 
-  function openDemo() {
+  function openDemo(given?: Project) {
     giveUpTheDemo();
     giveUpTheLayout();
     giveUpTheRun();
     hasTheDemoFailed = false;
-    const call = new AbortController();
-    demoCall = call;
     // The edit that the demo will be: until then the results say that it is on its way.
     const edit = project.getState().edit + 1;
+    if (given !== undefined) {
+      demoEdit = edit;
+      project.getState().open(given);
+      return;
+    }
+    const call = new AbortController();
+    demoCall = call;
     results.getState().clear();
     results.getState().designBegan(edit);
     api
       .getDemo({ signal: call.signal })
       .then(
         (demo) => {
-          if (!call.signal.aborted) project.getState().open(demo);
+          if (call.signal.aborted) return;
+          demoEdit = edit;
+          project.getState().open(demo);
         },
         (error: unknown) => {
           if (call.signal.aborted) return;
@@ -289,8 +303,11 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
         },
       })
       .then(
-        // An option chosen while the run was on its way is the one the run lands with (plan/phase-07-plan.md, decision 3).
-        (design) => results.getState().designArrived(edit, withTheChoice(design, project.getState().project?.chosen_option)),
+        (design) => {
+          // An option chosen while the run was on its way is the one the run lands with (plan/phase-07-plan.md, decision 3).
+          results.getState().designArrived(edit, withTheChoice(design, project.getState().project?.chosen_option));
+          if (edit === demoEdit) onDemoRan?.(design);
+        },
         (error: unknown) => {
           if (call.signal.aborted) return;
           if (isForWantOfWeather(error) && weatherLoadedFor !== edit) return loadTheWeatherThenRun(document, edit);

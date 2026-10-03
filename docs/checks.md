@@ -59,7 +59,7 @@ groups are data, `tools/check/e2e-groups.ts`; `turbo.json` and the root scripts 
 | studio | `array-lens`, `build`, `history`, `lens-switches`, `manipulation`, `modules`, `roof-lens`, `selection`, `shade-map`, `shadow-outlines`, `shell-vitals`, `stage`, `strings-*`, `sun-*`, `time` | `components/studio`, `components/scene`, `lib/scene`, `lib/studio`, `lib/roof-card.ts`, `lib/scene-palette.ts`, and find's (Build and the Roof lens's Edit cross into Find) |
 | performance | `performance*` | `components/performance`, `lib/performance`, and studio's and find's (a voltage is chosen in the Strings lens; a roof is built on the map) |
 | handover | `handover*` | `components/handover`, `lib/handover` |
-| home | `home*` | `components/home`, `lib/home` (Home, and Open a project: a dialog the shell opens from the project switcher on every page) |
+| home | `home*` | `components/home`, `lib/home` (Home, and Open a project: a dialog the shell opens from the project switcher on every page), and find's (Home's search is Find's, and "Find my roof" leads to the map at the place) |
 | shell | `api-client`, `device*`, `fonts`, `routes`, `screens`, `shell`, `smoke`, `tokens` | every other group's, and every baseline but the kit's |
 
 **The base**, an input of every group: `apps/web/app`, `components/shell`, `components/ui`, the files at the roots of
@@ -76,7 +76,7 @@ helpers and fixtures of `e2e`, the tools that start the stack, the lockfile, `.n
 | `components/home`, `lib/home` | home, shell |
 | `components/performance`, `lib/performance` | performance, shell |
 | `components/studio`, `components/scene`, `lib/scene`, `lib/studio` | studio, performance, shell |
-| `components/find`, `lib/map`, `lib/outline` | find, studio, performance, shell |
+| `components/find`, `lib/map`, `lib/outline` | find, studio, performance, home, shell |
 | `components/kit` or a `kit*.png` baseline | kit |
 | a suite of `e2e/tests` | its group alone |
 | any other baseline | shell |
@@ -91,7 +91,8 @@ alone, find 2, studio 12, performance 4, handover 1.5, shell 9.5; everything 31 
 
 1. **A new suite is placed by its name.** `groupOf` refuses a file of `e2e/tests` that no group claims, and `bun test
    tools` fails until the suite is named in `tools/check/e2e-groups.ts`. Choose the group whose inputs the suite can see;
-   a suite that opens two workspaces belongs to the one that sees the other's folders (performance sees the Studio's).
+   a suite that opens two workspaces belongs to the one that sees the other's folders (performance sees the Studio's, home
+   sees Find's).
 2. **A new folder of the web app is placed.** A file of `apps/web` that no group's inputs match fails the test "some
    group sees every file of the web app". A folder of one workspace goes to that group's own inputs; a folder every page
    uses goes to the base.

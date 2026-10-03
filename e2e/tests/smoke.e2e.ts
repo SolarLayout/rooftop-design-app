@@ -1,7 +1,7 @@
 import { expect, test } from "../fixtures";
 import { webUrl } from "../stack";
 
-test("home page loads, names the app and reaches the API", async ({ page }) => {
+test("home page loads, names the app and reaches the API for the demo's card", async ({ page }) => {
   const consoleErrors: string[] = [];
 
   page.on("console", (message) => {
@@ -13,12 +13,13 @@ test("home page loads, names the app and reaches the API", async ({ page }) => {
   expect(response?.status()).toBe(200);
   expect(new URL(page.url()).origin, "the tests run against the test stack").toBe(webUrl());
 
-  await expect(page.getByRole("heading", { level: 1, name: "SolarLayout Rooftop" })).toBeVisible();
+  await expect(page.getByRole("img", { name: "SolarLayout Rooftop" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: /Find your roof/ })).toBeVisible();
   await expect(page).toHaveTitle("SolarLayout Rooftop");
 
-  const apiStatus = page.getByTestId("api-status");
-  await expect(apiStatus).toHaveAttribute("data-state", "reachable");
-  await expect(apiStatus).toHaveText("API reachable (version 0.1.0)");
+  // The demo's card is read from the API: its name on the page says the API was reached.
+  await expect(page.getByTestId("demo-card")).toHaveAttribute("data-state", "here");
+  await expect(page.getByTestId("demo-name")).toHaveText("Pune demo roof");
 
   const width = await page.evaluate(() => ({
     scroll: document.documentElement.scrollWidth,

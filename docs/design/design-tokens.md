@@ -64,6 +64,18 @@ theme (`:root`).
 | `--color-obstacle-fill` | `rgba(11,14,19,.55)` | The fill of an obstacle drawn on the map: the ground at 55 % |
 | `--color-module-glass` | `#16294D` | The glass of the module glyph on the equipment card: the module's blue of the 3D palette |
 | `--color-module-frame` | `#33558C` | The frame of the module glyph, and the line between its two halves |
+| `--color-module-cell-line` | `#2A4675` | The line between the cells of a module drawn in the DOM: the 3D palette's `moduleCellLine` |
+| `--color-scene-roof` | `#D3D6DB` | The roof slab of the 3D view drawn in the DOM (the illustration of Home): the 3D palette's `roof` |
+| `--color-scene-roof-edge` | `#ECEEF0` | Its edges and the parapet's cap: the palette's `roofEdge` |
+| `--color-scene-parapet-lit` | `#B9BEC6` | The parapet toward the light: the palette's `parapetLit` |
+| `--color-scene-parapet-shade` | `#8E95A0` | The parapet away from it: the palette's `parapetShade` |
+| `--color-scene-wall-lit` | `#4A5262` | The building's wall toward the light: the palette's `wallLit` |
+| `--color-scene-wall-shade` | `#2E3440` | The wall away from it: the palette's `wallShade` |
+| `--color-scene-obstacle-top` | `#F1F2F4` | The top of an obstacle: the palette's `obstacleTop` |
+| `--color-scene-obstacle-lit` | `#C2C7CF` | An obstacle's face toward the light: the palette's `obstacleLit` |
+| `--color-scene-obstacle-shade` | `#868D99` | Its face away from it: the palette's `obstacleShade` |
+| `--color-scene-grid` | `#1B222D` | The grid of the ground: the palette's `gridLine` |
+| `--color-scene-ground-dark` | `#20242C` | The far edge of a wall in shade: the palette's `lightGround` |
 
 There is no error red. A result that does not fit is a note: exclamation mark in a circle, accent colour, with
 the reason.
@@ -112,6 +124,7 @@ The shape of a page is a token too, so that the paper has its height before the 
 | Token | Value | Use |
 |---|---|---|
 | `--aspect-paper` | `297 / 210` | A4 landscape: the paper's skeleton while the pages come (`aspect-paper`) |
+| `--aspect-thumbnail` | `320 / 180` | The tile of a design card on Home: the kept thumbnail's own shape (`aspect-thumbnail`) |
 
 ## 3D scene palette (TypeScript, `apps/web/lib/scene-palette.ts`)
 
@@ -212,6 +225,7 @@ height and tracking together.
 | `--text-title` | `--font-sans` | `600` | `16px` | `20px` | `0` | Card titles |
 | `--text-body` | `--font-sans` | `400` | `14px` | `20px` | `0` | Body on desktop |
 | `--text-body-touch` | `--font-sans` | `400` | `15px` | `20px` | `0` | Body on phone and tablet |
+| `--text-lead` | `--font-sans` | `400` | `18px` | `27px` | `0` | The subtitle under the headline of Home, on tablet and desktop |
 | `--text-small` | `--font-sans` | `400` | `13px` | `20px` | `0` | Secondary lines |
 | `--text-caption` | `--font-sans` | `400` | `12px` | `20px` | `0` | Hints, labels of values, units |
 | `--text-caption-s` | `--font-sans` | `400` | `11px` | `16px` | `0` | The caption of a thumbnail where 12 does not fit (the report's pages on tablet, 72 wide) |

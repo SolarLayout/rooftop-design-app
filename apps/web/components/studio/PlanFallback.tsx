@@ -3,8 +3,7 @@
 import { classNames } from "@/components/ui/class-names";
 import { NorthIcon } from "@/components/find/NorthIcon";
 import type { Layout, Roof } from "@/lib/api";
-import { pathOf, viewBoxOf } from "@/lib/scene/plan";
-import { solidsOf } from "@/lib/scene/obstacles";
+import { footprintsOf, pathOf, viewBoxOf } from "@/lib/scene/plan";
 
 type Props = {
   roof: Roof;
@@ -17,27 +16,6 @@ type Props = {
 
 /** Metres of room around the roof. */
 const MARGIN = 6;
-
-const flat = () => 0;
-
-/** The footprint of an obstacle as a polygon of the plan, from its solids: a box's corners, a disc, a prism's points. */
-function footprintsOf(roof: Roof): { exterior: [number, number][]; holes: never[] }[] {
-  return roof.obstacles.flatMap((obstacle) =>
-    solidsOf(obstacle, flat).flatMap((solid) => {
-      if (solid.kind === "box") {
-        const { x, y, length, width, rotationDeg } = solid.box;
-        const turn = (rotationDeg * Math.PI) / 180;
-        const corner = (dx: number, dy: number): [number, number] => [x + dx * Math.cos(turn) - dy * Math.sin(turn), y + dx * Math.sin(turn) + dy * Math.cos(turn)];
-        return [{ exterior: [corner(-length / 2, -width / 2), corner(length / 2, -width / 2), corner(length / 2, width / 2), corner(-length / 2, width / 2)], holes: [] }];
-      }
-      if (solid.kind === "cylinder") {
-        const points = Array.from({ length: 24 }, (_, n): [number, number] => [solid.x + solid.radius * Math.cos((n / 24) * 2 * Math.PI), solid.y + solid.radius * Math.sin((n / 24) * 2 * Math.PI)]);
-        return [{ exterior: points, holes: [] }];
-      }
-      return [{ exterior: solid.points.map(([x, y]): [number, number] => [x, y]), holes: [] }];
-    }),
-  );
-}
 
 /**
  * The plan of the design where the scene cannot draw (plan step 9, docs/design/guidelines.md, "No

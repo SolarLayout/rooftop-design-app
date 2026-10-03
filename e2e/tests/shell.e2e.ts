@@ -276,7 +276,7 @@ test.describe("the project switcher, in the shell", () => {
     await menu.getByRole("menuitem", { name: "Home" }).click();
 
     await expect(page).toHaveURL(/\/$/);
-    await expect(page.getByRole("heading", { level: 1, name: "SolarLayout Rooftop" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: /Find your roof/ })).toBeVisible();
   });
 
   test("open, axe finds nothing serious or critical", async ({ page }) => {

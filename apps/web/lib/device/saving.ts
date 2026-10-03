@@ -10,8 +10,9 @@ import { createStore } from "zustand/vanilla";
 import { SAVE_DEBOUNCE } from "../../components/ui/design-numbers";
 import type { Project } from "../api";
 import { CLOCK_OF_THE_BROWSER, type Clock } from "../clock";
+import { withName } from "../flow/name-field";
 import type { ProjectState, ProjectStore } from "../stores/project-store";
-import { designOf, type ResultsState, type ResultsStore } from "../stores/results-store";
+import { designOf, layoutOf, type ResultsState, type ResultsStore } from "../stores/results-store";
 import type { DesignsDb } from "./designs-db";
 import { keptOf, type KeptDesign } from "./kept-design";
 
@@ -26,6 +27,8 @@ export type SavingState = {
   id: string | null;
   /** The designs kept on this device, the newest edited first. */
   designs: KeptDesign[];
+  /** When *designs* was last read or changed, in milliseconds since the epoch: what "Edited …" on a card is worked out against. */
+  listedAt: number;
   /**
    * Opens the design of this id from the device: the document into the project store (the flow then runs it as it
    * runs the demo), the state Saved, the id remembered. False when the device has none of that id; throws the device's
@@ -39,6 +42,17 @@ export type SavingState = {
    * open is left as it is, under its own id.
    */
   keepAndOpen: (document: Project) => void;
+  /**
+   * Renames the design of this id (plan/phase-10-plan.md, step 12, Rename on a card of Home): the open one by a committed
+   * edit of the document's name, which is then written as any edit; another by its record written anew, the name in the
+   * document too. What the device refuses is said. An id the device has not is nothing to rename.
+   */
+  rename: (id: string, name: string) => Promise<void>;
+  /**
+   * Removes the design of this id from the device (step 12, Delete on a card of Home). The open design stays open, not
+   * kept any more: its id is forgotten, and its next edit keeps it anew under a new id. What the device refuses is said.
+   */
+  remove: (id: string) => Promise<void>;
   /** Writes again at once what the device refused. */
   tryAgain: () => void;
   /** Reads the designs of the device: in the browser, once the app is there (the stores are made on the server too). */
@@ -80,16 +94,19 @@ export function createSaving({ project, results, db, clock = CLOCK_OF_THE_BROWSE
   let giveUpTheWait: (() => void) | null = null;
 
   const store = createStore<SavingState>()((set, get) => {
-    /** The designs listed with *kept* in the place of the one of its id, the newest edited first. */
-    function listedWith(kept: KeptDesign): KeptDesign[] {
-      return [kept, ...get().designs.filter((one) => one.id !== kept.id)].sort((a, b) => b.editedAt - a.editedAt);
+    /** The list as it is now, the newest edited first, with the time it was made. */
+    function listed(designs: KeptDesign[]): Pick<SavingState, "designs" | "listedAt"> {
+      return { designs: [...designs].sort((a, b) => b.editedAt - a.editedAt), listedAt: now() };
     }
+
+    /** The designs listed with *kept* in the place of the one of its id. */
+    const listedWith = (kept: KeptDesign) => listed([kept, ...get().designs.filter((one) => one.id !== kept.id)]);
 
     function write(record: KeptDesign) {
       pending = null;
       db.putDesign(record).then(
         () => {
-          set({ designs: listedWith(record) });
+          set(listedWith(record));
           if (current.id !== record.id) return;
           remember(record.id);
           // An edit heard meanwhile waits for its own write: the state stays Saving.
@@ -113,7 +130,8 @@ export function createSaving({ project, results, db, clock = CLOCK_OF_THE_BROWSE
     function recordOf(id: string): KeptDesign {
       const document = project.getState().project;
       if (document === null) throw new Error("No design is open: nothing can be kept.");
-      return { ...keptOf({ id, document, design: designOf(results.getState()), now: current.editedAt }), openedAt: current.openedAt };
+      const kept = keptOf({ id, document, design: designOf(results.getState()), layout: layoutOf(results.getState())?.layout ?? null, now: current.editedAt });
+      return { ...kept, openedAt: current.openedAt };
     }
 
     function schedule(id: string) {
@@ -143,7 +161,7 @@ export function createSaving({ project, results, db, clock = CLOCK_OF_THE_BROWSE
       // The time of opening goes into the record; the facts stay what they were until a run lands here.
       const record = { ...kept, openedAt: current.openedAt };
       db.putDesign(record).then(
-        () => set({ designs: listedWith(record) }),
+        () => set(listedWith(record)),
         (error: unknown) => {
           if (current.id === kept.id) set({ saving: "not-saved", failure: wordsOf(error) });
         },
@@ -165,10 +183,14 @@ export function createSaving({ project, results, db, clock = CLOCK_OF_THE_BROWSE
       if (current.id !== null) schedule(current.id);
     }
 
+    /** A run or a layout that lands belongs to the kept design: its facts, its thumbnail (decision 6). */
     function heardTheResults(state: ResultsState, before: ResultsState) {
+      if (current.id === null) return;
       const design = designOf(state);
-      if (design === null || design === designOf(before) || current.id === null) return;
-      schedule(current.id);
+      const layout = layoutOf(state);
+      const ranAnew = design !== null && design !== designOf(before);
+      const laidOutAnew = layout !== null && layout !== layoutOf(before);
+      if (ranAnew || laidOutAnew) schedule(current.id);
     }
 
     const stopHearingTheProject = project.subscribe(heardTheProject);
@@ -179,6 +201,7 @@ export function createSaving({ project, results, db, clock = CLOCK_OF_THE_BROWSE
       failure: null,
       id: null,
       designs: [],
+      listedAt: 0,
 
       async openFromDevice(id) {
         if (current.id === id && project.getState().project !== null) return true;
@@ -190,8 +213,40 @@ export function createSaving({ project, results, db, clock = CLOCK_OF_THE_BROWSE
       },
 
       keepAndOpen(document) {
-        expected = keptOf({ id: newId(), document, design: null, now: now() });
+        expected = keptOf({ id: newId(), document, design: null, layout: null, now: now() });
         project.getState().open(document);
+      },
+
+      async rename(id, name) {
+        if (current.id === id) {
+          project.getState().commit((document) => withName(document, name));
+          return;
+        }
+        const kept = get().designs.find((one) => one.id === id);
+        if (kept === undefined) return;
+        const record: KeptDesign = { ...kept, name, document: { ...kept.document, name } };
+        try {
+          await db.putDesign(record);
+          set(listedWith(record));
+        } catch (error) {
+          say?.(wordsOf(error));
+        }
+      },
+
+      async remove(id) {
+        try {
+          await db.removeDesign(id);
+        } catch (error) {
+          return say?.(wordsOf(error));
+        }
+        set(listed(get().designs.filter((one) => one.id !== id)));
+        if (current.id !== id) return;
+        giveUpTheWait?.();
+        giveUpTheWait = null;
+        pending = null;
+        current = { ...current, id: null };
+        set({ saving: "not-kept", failure: null, id: null });
+        remember(null);
       },
 
       tryAgain() {
@@ -203,7 +258,7 @@ export function createSaving({ project, results, db, clock = CLOCK_OF_THE_BROWSE
 
       start() {
         db.listDesigns().then(
-          (designs) => set({ designs: [...designs].sort((a, b) => b.editedAt - a.editedAt) }),
+          (designs) => set(listed(designs)),
           (error: unknown) => say?.(wordsOf(error)),
         );
       },
@@ -225,3 +280,4 @@ export const savingOf = (state: SavingState) => state.saving;
 export const failureOf = (state: SavingState) => state.failure;
 export const idOf = (state: SavingState) => state.id;
 export const keptDesignsOf = (state: SavingState) => state.designs;
+export const listedAtOf = (state: SavingState) => state.listedAt;

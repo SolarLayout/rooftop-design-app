@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, type ComponentProps, type KeyboardEvent } from "react";
+import { useRef, useState, type ComponentProps } from "react";
 import { classNames } from "@/components/ui/class-names";
 import { LIST_GAP } from "@/components/ui/design-numbers";
 import { FloatingPanel } from "@/components/ui/FloatingPanel";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { IconButton } from "@/components/ui/IconButton";
-import { indexAfterKey } from "@/components/ui/list-keys";
-import { FACT, LIST } from "@/components/ui/list-look";
+import { FACT, LIST, MENU_ROW, PRESSABLE_MENU_ROW } from "@/components/ui/list-look";
+import { onMenuKeyDown } from "@/components/ui/menu-keys";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
 import { useFloating } from "@/components/ui/use-floating";
@@ -72,20 +72,6 @@ const ACTIONS: Action[] = [
 
 const LABEL = "px-2.5 pt-2 pb-1 type-section text-text-3 uppercase";
 const DIVIDER = "mx-1 h-px shrink-0 bg-line";
-const ROW = classNames(
-  "flex h-13 items-center gap-3 rounded-item px-2.5 select-none focus-ring desktop:h-11",
-  "hovered:bg-surface-2 focus-visible:bg-surface-2",
-);
-const PRESSABLE_ROW = classNames(ROW, "w-full cursor-pointer text-left");
-
-/** The arrows go through the rows of the menu the key was pressed in, Home and End to its ends; a key that leads nowhere scrolls nothing. */
-function onMenuKeyDown(event: KeyboardEvent<HTMLUListElement>) {
-  const items = [...event.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]')];
-  const current = items.findIndex((item) => item === document.activeElement);
-  const to = indexAfterKey(items.length, current === -1 ? null : current, event.key, new Set());
-  if (to !== null || ["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) event.preventDefault();
-  if (to !== null) items[to]?.focus();
-}
 
 type MenuProps = Pick<Design, "name"> & {
   saving: Saving;
@@ -166,7 +152,7 @@ function OnThisDevice({ designs, onTake, onOpenDesign }: Required<Pick<MenuProps
               onTake();
               onOpenDesign?.(id);
             }}
-            className={PRESSABLE_ROW}
+            className={PRESSABLE_MENU_ROW}
           >
             {isOpen ? <Icon name="tick" stroke="tick" size={18} className="text-accent" /> : <Icon name="file" size={18} stroke="light" className="text-text-2" />}
             {/* The fact stands under the name, as the board draws it: the names and the roof's words are long, the panel is not. */}
@@ -210,7 +196,7 @@ export function ProjectMenu({ name, saving, onOpenNotes, onImport, onOpenProject
           return (
             <li key={action} role="none">
               {href !== undefined ? (
-                <Link role="menuitem" tabIndex={-1} href={href} onClick={onTake} className={classNames(ROW, "cursor-pointer")}>
+                <Link role="menuitem" tabIndex={-1} href={href} onClick={onTake} className={classNames(MENU_ROW, "cursor-pointer")}>
                   {inside}
                 </Link>
               ) : run !== undefined ? (
@@ -222,12 +208,12 @@ export function ProjectMenu({ name, saving, onOpenNotes, onImport, onOpenProject
                     onTake();
                     run();
                   }}
-                  className={PRESSABLE_ROW}
+                  className={PRESSABLE_MENU_ROW}
                 >
                   {inside}
                 </button>
               ) : (
-                <span role="menuitem" aria-disabled="true" tabIndex={-1} className={classNames(ROW, "cursor-default opacity-disabled")}>
+                <span role="menuitem" aria-disabled="true" tabIndex={-1} className={classNames(MENU_ROW, "cursor-default opacity-disabled")}>
                   {inside}
                 </span>
               )}

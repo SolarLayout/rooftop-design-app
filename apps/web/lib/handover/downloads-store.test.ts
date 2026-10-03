@@ -498,3 +498,46 @@ describe("the option a file is asked for (the API refuses a file of the design w
     expect(noRun.calls[0]!.document.chosen_option).toBe("");
   });
 });
+
+describe("a copy of a design that is not open (plan/phase-10-plan.md, step 12: Save a copy on a card of Home)", () => {
+  const BLOCK_B = { name: "Block B", format: 2 } as unknown as Project;
+
+  test("asks the API for the project file of that document, as it is, and saves it under the name the API gives", async () => {
+    const { store, calls, saved, answer } = made();
+
+    const done = store.getState().saveACopyOf(BLOCK_B);
+
+    expect(calls).toEqual([{ kind: "rtd", document: BLOCK_B, day: DAY }]);
+    answer(0, "Block-B.rtd");
+    await done;
+
+    expect(saved.map((file) => file.name)).toEqual(["Block-B.rtd"]);
+    expect(store.getState().kept).toEqual({});
+  });
+
+  test("needs no design to be open", async () => {
+    const { store, calls, answer } = made(null);
+
+    const done = store.getState().saveACopyOf(BLOCK_B);
+    answer(0, "Block-B.rtd");
+    await done;
+
+    expect(calls).toHaveLength(1);
+  });
+
+  test("a failure is a toast with the API's words and Try again, which asks again", async () => {
+    const { store, calls, saved, toasts, refuse, answer } = made();
+
+    await Promise.all([store.getState().saveACopyOf(BLOCK_B), settled().then(() => refuse(0))]);
+
+    expect(saved).toEqual([]);
+    expect(toasts).toEqual([{ kind: "note", words: "Choose a stringing option first.", action: { label: "Try again", run: expect.any(Function) } }]);
+
+    toasts[0]!.action!.run();
+    await settled();
+    answer(1, "Block-B.rtd");
+    await settled();
+    expect(calls).toHaveLength(2);
+    expect(saved.map((file) => file.name)).toEqual(["Block-B.rtd"]);
+  });
+});

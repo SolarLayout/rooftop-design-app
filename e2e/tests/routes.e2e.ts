@@ -23,7 +23,7 @@ const ITEMS = [
 
 test("home answers", async ({ page }) => {
   expect((await page.goto("/"))?.status()).toBe(200);
-  await expect(page.getByRole("heading", { level: 1, name: "SolarLayout Rooftop" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: /Find your roof/ })).toBeVisible();
 });
 
 for (const [lens, name] of LENSES) {

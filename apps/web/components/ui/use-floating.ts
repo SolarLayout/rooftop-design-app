@@ -7,7 +7,7 @@ import { placeOf, type Side } from "./place-floating";
 type Options = {
   /** The side of the control that the panel is on when there is room. */
   side: Side;
-  align: "start" | "middle";
+  align: "start" | "middle" | "end";
   /** What stays between the control and the panel. */
   gap: number;
 };

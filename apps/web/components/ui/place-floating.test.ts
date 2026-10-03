@@ -114,3 +114,17 @@ describe("placeOf: beside the control, at its right", () => {
     });
   });
 });
+
+describe("placeOf: aligned to the end", () => {
+  test("under the control, its right edge on the right edge of the control: the menu of a card, whose button stands at the card's right", () => {
+    const place = placeOf({ anchor: BUTTON, size: { width: 240, height: 230 }, screen: SCREEN, side: "below", align: "end", gap: 6 });
+
+    expect(place).toEqual({ x: 440, y: 446, side: "below" });
+  });
+
+  test("beside the control, its bottom on the bottom of the control", () => {
+    const place = placeOf({ anchor: BUTTON, size: { width: 120, height: 100 }, screen: SCREEN, side: "right", align: "end", gap: 8 });
+
+    expect(place).toEqual({ x: 688, y: 340, side: "right" });
+  });
+});

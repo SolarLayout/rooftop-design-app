@@ -12,11 +12,85 @@ import { boxFrameOf, handlesSettled, inThePlan, metresFrom, obstacleSelectedOnSt
 // picture beside the preview in docs/design/previews, then renew the baseline:
 //   bun tools/with-node.ts playwright test screens --update-snapshots   (in e2e/)
 
+// Home as the boards draw it on three sizes (plan/phase-10-plan.md, step 11): the demo's card read from the API, nothing kept.
 test("home", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByTestId("api-status")).toHaveAttribute("data-state", "reachable");
+  await expect(page.getByTestId("demo-name")).toHaveText("Pune demo roof");
 
   await expectScreen(page, "home");
+});
+
+const RUN_OF_HOME = 90_000;
+
+/**
+ * Two designs on this device as the app keeps them: the demo edited in the Studio (its roof type East-west), kept at that edit
+ * with its run's facts and the plan of its layout as the thumbnail; and Block B seeded beside it, not run yet (the roof alone).
+ */
+async function theDemoKeptBesideBlockB(page: Page): Promise<void> {
+  await withDesignsOnTheDevice(page, [TWO_DESIGNS[1]!], null);
+  await page.goto("/studio/roof");
+  const roofType = page.getByRole("radiogroup", { name: "Roof type" }).filter({ visible: true });
+  await expect(roofType.getByRole("radio", { name: "Tilted rows" })).toHaveAttribute("aria-checked", "true", { timeout: RUN_OF_HOME });
+  // The untouched demo's run lands first, so that the demo's card says its numbers on every size alike (decision 5).
+  await expect(page.getByRole("region", { name: "Design vitals" }).getByText("MWh")).toBeVisible({ timeout: RUN_OF_HOME });
+  const ran = page.waitForResponse((response) => response.url().endsWith("/api/design") && response.ok() && (response.request().postDataJSON() as { roof: { roof_type: string } }).roof.roof_type === "flat_ew", { timeout: RUN_OF_HOME });
+  const vitalsEnergy = page.getByRole("region", { name: "Design vitals" }).getByTestId("stat-value").filter({ hasText: "MWh" }).first();
+  const energyBefore = await vitalsEnergy.textContent();
+  await roofType.getByRole("radio", { name: "East-west" }).click();
+  await ran;
+  await expect(vitalsEnergy).not.toHaveText(energyBefore ?? "", { timeout: RUN_OF_HOME });
+  const energy = Number.parseFloat((await vitalsEnergy.textContent())!.replace(/[^\d.]/g, ""));
+  // The run's facts and the plan are written to the device a moment after the run lands: the page is left once the record
+  // carries the energy of this run (not the untouched demo's) and the plan of this layout.
+  await expect
+    .poll(
+      () =>
+        page.evaluate(async (energy) => {
+          const db = await new Promise<IDBDatabase>((resolve, reject) => {
+            const opening = indexedDB.open("rooftop", 1);
+            opening.onsuccess = () => resolve(opening.result);
+            opening.onerror = () => reject(opening.error);
+          });
+          type Record = { name: string; facts: { dcKwp: number | null; energyMwh: number | null }; thumbnail: string | null };
+          const kept = await new Promise<Record[]>((resolve, reject) => {
+            const request = db.transaction("designs", "readonly").objectStore("designs").getAll();
+            request.onsuccess = () => resolve(request.result as Record[]);
+            request.onerror = () => reject(request.error);
+          });
+          db.close();
+          const demo = kept.find((one) => one.name === "Pune demo roof");
+          return demo !== undefined && demo.facts.energyMwh !== null && Math.abs(demo.facts.energyMwh - energy) < 0.05 && demo.thumbnail !== null && demo.thumbnail.includes('data-module="true"');
+        }, energy),
+      { timeout: RUN_OF_HOME },
+    )
+    .toBe(true);
+  await page.goto("/");
+  await expect(page.getByTestId("demo-name")).toHaveText("Pune demo roof");
+  await expect(page.getByTestId("design-card")).toHaveCount(2);
+  await expect(page.getByRole("article", { name: "Pune demo roof", exact: true })).toContainText("MWh");
+}
+
+// Home with two designs kept on this device (plan/phase-10-plan.md, step 12; the board "Home, designs on this device"): the demo
+// kept with the facts of its run and its plan, Block B not run yet, as cards under On this device.
+test("home, designs on this device", async ({ page }) => {
+  test.setTimeout(RUN_OF_HOME * 2);
+  await theDemoKeptBesideBlockB(page);
+
+  await expectScreen(page, "home-designs");
+});
+
+// Delete asked over the dimmed page, as the board draws it.
+test("home, delete asked", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "The board draws Delete asked on desktop.");
+  test.setTimeout(RUN_OF_HOME * 2);
+  await theDemoKeptBesideBlockB(page);
+  const card = page.getByRole("article", { name: "Pune demo roof", exact: true });
+  await card.scrollIntoViewIfNeeded();
+  await card.getByRole("button", { name: "Menu" }).click();
+  await page.getByRole("menu", { name: "Pune demo roof", exact: true }).getByRole("menuitem", { name: "Delete" }).click();
+  await expect(page.getByRole("dialog", { name: "Delete Pune demo roof?" })).toBeVisible();
+
+  await expectScreen(page, "home-delete");
 });
 
 // Find and outline, with the imagery from the fixture tile.
