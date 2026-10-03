@@ -3,7 +3,7 @@
 // total with one decimal and, on the totals, its unit; each with its mark on the cascade. Pure.
 import { shown } from "../../components/ui/number-entry";
 import type { DesignOption, LossStep, Module } from "../api";
-import { cascadeOf, isNothing, type Mark } from "./cascade";
+import { cascadeOf, isNothing, type Mark } from "../format/cascade";
 import type { RunOfTheChain } from "./loss-fields";
 
 export type ChainRow = {

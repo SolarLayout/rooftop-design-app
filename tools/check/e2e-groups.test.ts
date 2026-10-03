@@ -14,8 +14,8 @@ const ownOf = (group: Group) => group.own;
 const intersection = <T>(a: Set<T>, b: Set<T>) => [...a].filter((item) => b.has(item));
 
 describe("the groups of the browser tests", () => {
-  test("there are seven, in the order the check runs them", () => {
-    expect(GROUPS.map((group) => group.id)).toEqual(["kit", "find", "studio", "performance", "handover", "home", "shell"]);
+  test("there are eight, in the order the check runs them", () => {
+    expect(GROUPS.map((group) => group.id)).toEqual(["kit", "find", "studio", "performance", "handover", "home", "present", "shell"]);
   });
 
   test("every suite in e2e/tests belongs to exactly one group, by its name", () => {
@@ -27,7 +27,7 @@ describe("the groups of the browser tests", () => {
   });
 
   test("a suite whose name matches no group is refused, naming the groups", () => {
-    expect(() => groupOf("weather-station.e2e.ts")).toThrow(/weather-station\.e2e\.ts.*kit, find, studio, performance, handover, home, shell/s);
+    expect(() => groupOf("weather-station.e2e.ts")).toThrow(/weather-station\.e2e\.ts.*kit, find, studio, performance, handover, home, present, shell/s);
   });
 
   test("every pattern of suites matches a file: no pattern is dead", () => {

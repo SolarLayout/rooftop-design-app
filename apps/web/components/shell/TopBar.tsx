@@ -1,10 +1,8 @@
-import { Button } from "@/components/ui/Button";
 import { iconButtonLook } from "@/components/ui/button-look";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
-import { Tooltip } from "@/components/ui/Tooltip";
-import { HANDOVER, type Lens, type Workspace } from "@/lib/routes";
+import { HANDOVER, PRESENT, type Lens, type Workspace } from "@/lib/routes";
 import { Logo } from "./Logo";
 import { ProjectSwitcher } from "./ProjectSwitcher";
 import { SaveState, type Saving } from "./SaveState";
@@ -46,16 +44,12 @@ const BAR = classNames(
 const WORD_WHERE_THERE_IS_ROOM = "sr-only tablet-wide:not-sr-only";
 const WORD_FROM_DESKTOP = "sr-only desktop:not-sr-only";
 
-export const WHY_NOT_PRESENT = "Comes with Home and projects";
-
-/** Present comes with Home and the projects on the device: until then it is shown and cannot be used. */
+/** Present leads to the tour of the design on the whole screen (plan/phase-10-plan.md, decision 8); the phone has none. */
 export function Present({ className }: { className?: string }) {
   return (
-    <Tooltip words={WHY_NOT_PRESENT}>
-      <Button size="s" icon="play" aria-disabled="true" className={classNames("w-touch px-0 desktop:w-auto desktop:px-3.5", className)}>
-        <span className={WORD_FROM_DESKTOP}>Present</span>
-      </Button>
-    </Tooltip>
+    <ButtonLink size="s" icon="play" href={PRESENT} className={classNames("w-touch px-0 desktop:w-auto desktop:px-3.5", className)}>
+      <span className={WORD_FROM_DESKTOP}>Present</span>
+    </ButtonLink>
   );
 }
 

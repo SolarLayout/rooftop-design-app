@@ -259,6 +259,7 @@
   --opacity-hint: 0.35;
   --opacity-band: 0.55;
   --opacity-wash: 0.14;
+  --opacity-gone: 0;
   --brightness-lift: 1.14;
 
   --stroke-icon: 2;
@@ -814,6 +815,10 @@
 @utility opacity-wash {
   opacity: var(--opacity-wash);
 }
+/* What has faded away and stays in the page: the hint of Present after the first loop. */
+@utility opacity-gone {
+  opacity: var(--opacity-gone);
+}
 /* A bar of a chart under the pointer or with the keyboard focus. */
 @utility lifted {
   filter: brightness(var(--brightness-lift));
@@ -1001,6 +1006,10 @@
 /* Text that stands on the satellite imagery is read against whatever is under it. */
 @utility on-imagery {
   text-shadow: var(--shadow-text-on-imagery);
+}
+/* The fade of the stage into the ground under the words of Present: nothing of the stage under them is cut, it darkens. */
+@utility stage-fade {
+  background-image: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--color-ground) 88%, transparent));
 }
 
 @utility stroke-icon {

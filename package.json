@@ -30,6 +30,7 @@
     "e2e:performance": "bun tools/e2e-group.ts performance",
     "e2e:handover": "bun tools/e2e-group.ts handover",
     "e2e:home": "bun tools/e2e-group.ts home",
+    "e2e:present": "bun tools/e2e-group.ts present",
     "e2e:shell": "bun tools/e2e-group.ts shell",
     "proofs": "bun test ./tools/check/proofs/turbo.proof.ts ./tools/check/proofs/pytest.proof.ts"
   },

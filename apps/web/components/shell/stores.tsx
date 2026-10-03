@@ -84,8 +84,8 @@ function createStores(): Stores {
   return { project, results, view, flow, play, toasts, downloads, saving };
 }
 
-/** What the user's system says of motion (decision 4: under it, play moves an hour a second). */
-const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
+/** What the user's system says of motion (decision 4: under it, play moves an hour a second; Present's tour is cuts). */
+export const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 
 /**
  * The stores of the design that is open, for the whole app: a roof outlined on the map is the design the

@@ -4,7 +4,7 @@
 // no group is refused, so that a new suite is placed on purpose (tools/check/e2e-groups.test.ts holds
 // turbo.json and package.json equal to this file).
 
-export type GroupId = "kit" | "find" | "studio" | "performance" | "handover" | "home" | "shell";
+export type GroupId = "kit" | "find" | "studio" | "performance" | "handover" | "home" | "present" | "shell";
 
 export type Group = {
   id: GroupId;
@@ -78,10 +78,13 @@ const HANDOVER_OWN = ["apps/web/components/handover/**", "apps/web/lib/handover/
 // shell imports the dialog, so a change to it runs home and shell (plan/phase-10-plan.md, decision 12). Home's search is
 // Find's, and "Find my roof" leads to the map at the place: home.e2e.ts crosses into Find, as performance's suites do.
 const HOME_OWN = ["apps/web/components/home/**", "apps/web/lib/home/**", ...FIND_OWN];
+// Present reuses the Studio's stage (plan/phase-10-plan.md, decisions 8 and 12): it sees the Studio's folders. The soak
+// of Present (e2e/soak) is run by hand, never by the check; it is placed here so that every file of e2e is seen.
+const PRESENT_OWN = ["apps/web/components/present/**", "apps/web/lib/present/**", "e2e/soak/**", ...STUDIO_OWN];
 // The screens suite pictures every page but the kit's, whose pictures the kit suite takes: this group runs
 // whenever anything of the web changed.
 const SHELL_OWN = [
-  ...new Set([...KIT_OWN, ...FIND_OWN, ...STUDIO_OWN, ...PERFORMANCE_OWN, ...HANDOVER_OWN, ...HOME_OWN].filter((pattern) => pattern !== KIT_BASELINES)),
+  ...new Set([...KIT_OWN, ...FIND_OWN, ...STUDIO_OWN, ...PERFORMANCE_OWN, ...HANDOVER_OWN, ...HOME_OWN, ...PRESENT_OWN].filter((pattern) => pattern !== KIT_BASELINES)),
   "e2e/baselines/*/*/*.png",
   `!${KIT_BASELINES}`,
 ];
@@ -113,6 +116,7 @@ export const GROUPS: readonly Group[] = [
   { id: "performance", suites: ["performance*.e2e.ts"], own: PERFORMANCE_OWN },
   { id: "handover", suites: ["handover*.e2e.ts"], own: HANDOVER_OWN },
   { id: "home", suites: ["home*.e2e.ts"], own: HOME_OWN },
+  { id: "present", suites: ["present*.e2e.ts"], own: PRESENT_OWN },
   {
     id: "shell",
     // device*.e2e.ts opens every workspace and the map: the group that sees them all.

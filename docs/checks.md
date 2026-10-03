@@ -47,7 +47,7 @@ runner's two cores are saturated by one process, two workers took the same eight
 
 ## The browser tests in groups
 
-The 1,700 browser tests are seven turbo tasks, run one after the other by the check (seven Playwright runs at once would
+The 1,750 browser tests are eight turbo tasks, run one after the other by the check (eight Playwright runs at once would
 overload the machine), the test stack started once by the check when a group is going to run and stopped after. The
 groups are data, `tools/check/e2e-groups.ts`; `turbo.json` and the root scripts `e2e:<group>` are held equal to it by
 `tools/check/e2e-groups.test.ts`.
@@ -60,6 +60,7 @@ groups are data, `tools/check/e2e-groups.ts`; `turbo.json` and the root scripts 
 | performance | `performance*` | `components/performance`, `lib/performance`, and studio's and find's (a voltage is chosen in the Strings lens; a roof is built on the map) |
 | handover | `handover*` | `components/handover`, `lib/handover` |
 | home | `home*` | `components/home`, `lib/home` (Home, and Open a project: a dialog the shell opens from the project switcher on every page), and find's (Home's search is Find's, and "Find my roof" leads to the map at the place) |
+| present | `present*` | `components/present`, `lib/present`, the soak `e2e/soak` (run by hand, never by the check), and studio's (Present reuses the Studio's stage) |
 | shell | `api-client`, `device*`, `fonts`, `routes`, `screens`, `shell`, `smoke`, `tokens` | every other group's, and every baseline but the kit's |
 
 **The base**, an input of every group: `apps/web/app`, `components/shell`, `components/ui`, the files at the roots of
@@ -74,9 +75,10 @@ helpers and fixtures of `e2e`, the tools that start the stack, the lockfile, `.n
 |---|---|
 | `components/handover`, `lib/handover` | handover, shell |
 | `components/home`, `lib/home` | home, shell |
+| `components/present`, `lib/present` | present, shell |
 | `components/performance`, `lib/performance` | performance, shell |
-| `components/studio`, `components/scene`, `lib/scene`, `lib/studio` | studio, performance, shell |
-| `components/find`, `lib/map`, `lib/outline` | find, studio, performance, home, shell |
+| `components/studio`, `components/scene`, `lib/scene`, `lib/studio` | studio, performance, present, shell |
+| `components/find`, `lib/map`, `lib/outline` | find, studio, performance, home, present, shell |
 | `components/kit` or a `kit*.png` baseline | kit |
 | a suite of `e2e/tests` | its group alone |
 | any other baseline | shell |

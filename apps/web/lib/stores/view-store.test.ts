@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { Obstacle } from "../api";
 import type { DraftObstacle } from "../studio/obstacle-fields";
-import { cameraOf, cameraRequestOf, createViewStore, draftOf, draggingOf, isPlayingOf, isShadeMapShownOf, lensOf, litStringsOf, onTheRoofOf, sunTabOf, northRequestOf, selectionOf, showsSunPathOf, stringColouringOf, stringsShownByOf, sunTimeOf, toReviewOf, tracedStringOf } from "./view-store";
+import { cameraFromOf, cameraMoveOf, cameraOf, cameraRequestOf, createViewStore, presentationOf, draftOf, draggingOf, isPlayingOf, isShadeMapShownOf, lensOf, litStringsOf, onTheRoofOf, sunTabOf, northRequestOf, selectionOf, showsSunPathOf, stringColouringOf, stringsShownByOf, sunTimeOf, toReviewOf, tracedStringOf } from "./view-store";
 
 describe("the view", () => {
   test("it begins on the first lens, in 3D, on the design day", () => {
@@ -336,5 +336,74 @@ describe("the strings on the roof", () => {
     expect(litStringsOf(store.getState())).toEqual(["S12"]);
     store.getState().clearSelection();
     expect(litStringsOf(store.getState())).toEqual(["S12"]);
+  });
+
+  // Present's camera (plan/phase-10-plan.md, step 17, decision 10): a preset asked for with a time moves there; the Studio's presets are instant.
+  test("a preset asked for with a time to take moves there from the preset before; one asked for plainly is a cut", () => {
+    const store = createViewStore();
+    expect(cameraMoveOf(store.getState())).toBe(0);
+
+    store.getState().setCamera("plan");
+    store.getState().setCamera("3d", { over: 4000 });
+
+    expect(cameraOf(store.getState())).toBe("3d");
+    expect(cameraFromOf(store.getState())).toBe("plan");
+    expect(cameraMoveOf(store.getState())).toBe(4000);
+
+    store.getState().setCamera("fit");
+    expect(cameraFromOf(store.getState())).toBe("3d");
+    expect(cameraMoveOf(store.getState())).toBe(0);
+  });
+});
+
+// The presentation (plan/phase-10-plan.md, step 17): Present's reveal and colouring, over the view while the tour runs; null in the Studio.
+describe("the presentation", () => {
+  const PRESENTING = { reveal: { building: 1, obstacles: 0.5, modules: 0 }, colouring: null } as const;
+
+  test("there is none at the start; one set is read back; the same set again changes nothing", () => {
+    const store = createViewStore();
+    expect(presentationOf(store.getState())).toBeNull();
+
+    store.getState().setPresentation(PRESENTING);
+    expect(presentationOf(store.getState())).toEqual(PRESENTING);
+    const before = store.getState();
+    store.getState().setPresentation({ reveal: { building: 1, obstacles: 0.5, modules: 0 }, colouring: null });
+    expect(store.getState()).toBe(before);
+
+    store.getState().setPresentation(null);
+    expect(presentationOf(store.getState())).toBeNull();
+  });
+
+  test("the strings are coloured by what the presentation says, whatever the lens; by nothing when it says none", () => {
+    const store = createViewStore();
+    store.getState().setPresentation({ ...PRESENTING, colouring: "mppt" });
+    expect(stringsShownByOf(store.getState())).toBe("mppt");
+
+    store.getState().showLens("strings");
+    store.getState().colourStringsBy("inverter");
+    expect(stringsShownByOf(store.getState())).toBe("mppt");
+
+    store.getState().setPresentation(PRESENTING);
+    expect(stringsShownByOf(store.getState())).toBeNull();
+
+    store.getState().setPresentation(null);
+    expect(stringsShownByOf(store.getState())).toBe("inverter");
+  });
+
+  test("under a presentation no string is lit, the shade map and the sun path are not drawn, whatever the lens holds", () => {
+    const store = createViewStore();
+    store.getState().showLens("strings");
+    store.getState().select({ kind: "string", label: "S12" });
+    store.getState().setPresentation({ ...PRESENTING, colouring: "mppt" });
+    expect(litStringsOf(store.getState())).toEqual([]);
+
+    store.getState().showLens("sun");
+    store.getState().showSunTab("shade-map");
+    expect(isShadeMapShownOf(store.getState())).toBe(false);
+    expect(showsSunPathOf(store.getState())).toBe(false);
+
+    store.getState().setPresentation(null);
+    expect(isShadeMapShownOf(store.getState())).toBe(true);
+    expect(showsSunPathOf(store.getState())).toBe(true);
   });
 });

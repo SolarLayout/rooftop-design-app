@@ -66,7 +66,7 @@ for (const { name, path, heading } of WORKSPACES) {
       await expect(bar(page).getByRole("link", { name: "Export" })).toBeVisible();
       await expect(page.getByRole("heading", { level: 1 })).toHaveText([heading]);
       await expect(page.getByRole("main")).toHaveCount(1);
-      if (!isPhone(testInfo.project.name)) await expect(bar(page).getByRole("button", { name: "Present" })).toBeVisible();
+      if (!isPhone(testInfo.project.name)) await expect(bar(page).getByRole("link", { name: "Present" })).toHaveAttribute("href", "/present");
       expect(faults).toEqual([]);
     });
 

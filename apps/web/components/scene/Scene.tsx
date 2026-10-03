@@ -16,7 +16,7 @@ import { whatIsDrawnOf } from "@/lib/scene/what-is-drawn";
 import type { Cursor, StageStore } from "@/lib/scene/stage-store";
 import { projectOf } from "@/lib/stores/project-store";
 import { layoutOf, stringsOnTheRoofOf } from "@/lib/stores/results-store";
-import { cameraOf, draftOf, draggingOf, lensOf, selectionOf, showsSunPathOf, toReviewOf } from "@/lib/stores/view-store";
+import { cameraOf, draftOf, draggingOf, lensOf, presentationOf, selectionOf, showsSunPathOf, toReviewOf, type Reveal } from "@/lib/stores/view-store";
 import { withDraftAt, withObstacleReplaced } from "@/lib/studio/obstacle-fields";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
 import { Building, BUILDING_DEPTH } from "./Building";
@@ -49,17 +49,24 @@ const COUNTS_MODULE_WRITES = process.env.NODE_ENV !== "production";
 /** What a press on the roof places the draft on: the roof itself and what lies on it. */
 const ON_THE_ROOF = new Set<Picked["what"]>(["roof", "module", "keepout"]);
 
+/** The Studio shows the whole design: the reveal of Present is for its tour alone (plan/phase-10-plan.md, step 17). */
+const WHOLE: Reveal = { building: 1, obstacles: 1, modules: 1 };
+
 /**
  * The 3D scene of the Studio: the design that is open, drawn from the stores, about the roof's centroid
  * (plan/phase-05-plan.md, decisions 1 and 2). It is loaded in the browser alone. A press selects what it
  * hit (decision 10); with a draft standing, a press on the roof places the draft there (decision 15); the
  * selected obstacle is dragged on the roof plane and drawn where the pointer has it (decision 12). The
  * scene reads nothing of the time: the light, the camera and the sun path's marker do, so that the time
- * redraws them alone (plan/reference/r3f-notes.md, fix 12). The sun path is drawn in the Sun lens alone.
+ * redraws them alone (plan/reference/r3f-notes.md, fix 12). The sun path is drawn in the Sun lens alone. Under
+ * Present's tour (plan/phase-10-plan.md, decision 8) the same scene draws the design as far as the tour reveals it,
+ * with nothing selected, no draft, no drag and no kept-clear areas.
  */
 export function Scene({ onContextLost, stage }: Props) {
   const project = useProject(projectOf);
   const layout = useResults(layoutOf);
+  const presentation = useView(presentationOf);
+  const reveal = presentation?.reveal ?? WHOLE;
   const selection = useView(selectionOf);
   const draft = useView(draftOf);
   const toReview = useView(toReviewOf);
@@ -125,6 +132,8 @@ export function Scene({ onContextLost, stage }: Props) {
   if (!roof || !frame || !about) return null;
   const [cx, cy] = frame.centroid;
   const [ox, oy, oz] = toScene([-cx, -cy, 0]);
+  // What the scene outlines as selected: nothing under Present's tour, which keeps the Studio's selection for its return.
+  const shown = presentation ? null : selection;
 
   /** Where a ray of the pointer meets the roof plane, in the document's metres; null when it never does. */
   function onTheRoof(event: ThreeEvent<MouseEvent>): XY | null {
@@ -151,29 +160,31 @@ export function Scene({ onContextLost, stage }: Props) {
       <SunLight radius={frame.radius} />
       {showsSunPath ? <SunPath centre={frame.centroid} radius={frame.radius} stage={stage} /> : null}
       <group position={[ox, oy, oz]}>
-        <Building roof={roof} onPressRoof={(event) => pressed({ what: "roof" }, event)} onOverRoof={over("roof", "pointer")} />
+        <Building roof={roof} reveal={reveal.building} onPressRoof={(event) => pressed({ what: "roof" }, event)} onOverRoof={over("roof", "pointer")} />
         <Obstacles
           obstacles={roof.obstacles}
-          selected={selection?.kind === "obstacle" ? selection.index : null}
+          reveal={reveal.obstacles}
+          selected={shown?.kind === "obstacle" ? shown.index : null}
           toReview={toReview}
           onSelect={(index) => pressed({ what: "obstacle", index })}
-          onOver={(index, isOver) => over(`obstacle-${index}`, selection?.kind === "obstacle" && selection.index === index && canBeDragged(roof.obstacles[index]) ? "grab" : "pointer")(isOver)}
+          onOver={(index, isOver) => over(`obstacle-${index}`, shown?.kind === "obstacle" && shown.index === index && canBeDragged(roof.obstacles[index]) ? "grab" : "pointer")(isOver)}
           about={about}
           roofOutline={roof.outline}
-          dragging={dragging}
+          dragging={presentation ? null : dragging}
           onDrag={(next) => {
             view.getState().setDragging(next);
             stage.getState().setOver("drag", next ? "grabbing" : null);
           }}
           onDrop={(index, obstacle) => store.getState().commit((design) => withObstacleReplaced(design, index, obstacle))}
         />
-        {draft ? <Footprint obstacle={draft} heightAt={frame.heightAt} /> : null}
+        {draft && !presentation ? <Footprint obstacle={draft} heightAt={frame.heightAt} /> : null}
         {layout ? (
           <Modules
             layout={layout.layout}
             heightAt={frame.heightAt}
             flushClearance={flushClearance}
-            selected={selection?.kind === "module" ? selection.index : null}
+            reveal={reveal.modules}
+            selected={shown?.kind === "module" ? shown.index : null}
             onPressModule={(instanceId, event) => pressed({ what: "module", instanceId }, event)}
             onOverModules={over("modules", "pointer")}
             onWrite={COUNTS_MODULE_WRITES ? stage.getState().countModuleWrite : undefined}
@@ -184,11 +195,11 @@ export function Scene({ onContextLost, stage }: Props) {
         ) : null}
         {markers.length ? <InverterMarkers markers={markers} /> : null}
         <ShadowOutlines heightAt={frame.heightAt} />
-        {layout && drawn.keptClear ? (
+        {layout && drawn.keptClear && !presentation ? (
           <KeepOut
             parts={layout.layout.keepout}
             heightAt={frame.heightAt}
-            selected={selection?.kind === "keepout" ? selection.index : null}
+            selected={shown?.kind === "keepout" ? shown.index : null}
             onSelect={(index, event) => pressed({ what: "keepout", index }, event)}
             onOver={(index, isOver) => over(`keepout-${index}`, "pointer")(isOver)}
           />
