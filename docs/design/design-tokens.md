@@ -212,6 +212,7 @@ height and tracking together.
 | `--text-body-touch` | `--font-sans` | `400` | `15px` | `20px` | `0` | Body on phone and tablet |
 | `--text-small` | `--font-sans` | `400` | `13px` | `20px` | `0` | Secondary lines |
 | `--text-caption` | `--font-sans` | `400` | `12px` | `20px` | `0` | Hints, labels of values, units |
+| `--text-caption-s` | `--font-sans` | `400` | `11px` | `16px` | `0` | The caption of a thumbnail where 12 does not fit (the report's pages on tablet, 72 wide) |
 | `--text-section` | `--font-sans` | `500` | `12px` | `20px` | `0.06em` | Section labels in panels, uppercase, colour text-3 |
 | `--text-value-l` | `--font-mono` | `500` | `17px` | `20px` | `0` | Values in the vitals on tablet |
 | `--text-value` | `--font-mono` | `500` | `16px` | `20px` | `0` | Values in the vitals on desktop and phone |
