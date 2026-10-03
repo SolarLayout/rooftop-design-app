@@ -28,7 +28,7 @@ Always:
 | 6 | Studio: Sun lens | `phase-06-studio-sun.md` | done (#48 to #52); how: `phase-06-plan.md` |
 | 7 | Studio: Strings lens | `phase-07-studio-strings.md` | done (#53 to #57); how: `phase-07-plan.md` |
 | 8 | Performance | `phase-08-performance.md` | done (#58 to #61); how: `phase-08-plan.md` |
-| 9 | Handover and exports | `phase-09-handover.md` | not started |
+| 9 | Handover and exports | `phase-09-handover.md` | done (#62, #64 to #66); how: `phase-09-plan.md` |
 | 10 | Home, projects on the device, Present mode | `phase-10-home-projects-present.md` | not started |
 | 11 | Hardening for the tradeshow | `phase-11-hardening.md` | not started |
 
