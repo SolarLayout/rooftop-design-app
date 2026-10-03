@@ -187,6 +187,31 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/project/open": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Open Project
+         * @description Read a project file (.rtd) of format 1 or 2 with the engine's own reader.
+         *
+         *     The project comes back as a request carries it, in the current format. A file of format 1 names its
+         *     PAN, its OND and its CSV weather by path without their text: a note per file, in the engine's words,
+         *     says that the design asks for it again until it is chosen. A text that is not JSON, a JSON that is no
+         *     project and a format this version does not read are refused in words.
+         */
+        post: operations["openProject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/roof/from-map": {
         parameters: {
             query?: never;
@@ -1218,6 +1243,19 @@ export interface components {
             y?: number;
         };
         /**
+         * OpenedProject
+         * @description The project the file holds, as a request carries it, and the notes on what it lacks.
+         */
+        OpenedProject: {
+            /**
+             * Notes
+             * @description One note per PAN, OND or CSV weather the file names by path without its text: the design asks for that file again, in these words, until it is chosen
+             */
+            notes: string[];
+            /** @description The project of the file, written in the current format */
+            project: components["schemas"]["Project"];
+        };
+        /**
          * Option
          * @description A stringing the user may choose, with its full results.
          */
@@ -1549,6 +1587,16 @@ export interface components {
              * @enum {string}
              */
             weather_source?: "pvgis" | "nasa" | "csv";
+        };
+        /**
+         * ProjectFile
+         * @description The file as the text it holds, under its name.
+         */
+        ProjectFile: {
+            /** Name */
+            name: string;
+            /** Text */
+            text: string;
         };
         /**
          * ReportPage
@@ -2398,6 +2446,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LayoutResponse"];
+                };
+            };
+            /** @description The request cannot be used; the message says why. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    openProject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProjectFile"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OpenedProject"];
                 };
             };
             /** @description The request cannot be used; the message says why. */

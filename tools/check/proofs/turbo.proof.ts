@@ -84,6 +84,11 @@ describe("what turbo re-runs", () => {
     expect(after("apps/web/components/handover/Handover.tsx", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...browser("handover", "shell")].sort());
   });
 
+  test("a component of Home, whose dialog the switcher opens on every page but whose suites alone test it: the web app's tasks, and home and shell alone", () => {
+    expect(after("apps/web/components/home/OpenProject.tsx", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...browser("home", "shell")].sort());
+    expect(after("apps/web/lib/home/open-project.ts", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...browser("home", "shell")].sort());
+  });
+
   test("a component of ui, which every page uses: the web app's tasks, and every group", () => {
     expect(after("apps/web/components/ui/Button.tsx", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...BROWSER].sort());
   });

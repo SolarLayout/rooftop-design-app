@@ -11,6 +11,7 @@ import { withName } from "@/lib/flow/name-field";
 import { workspaceOf } from "@/lib/routes";
 import { latitudeOf, longitudeOf, nameOf, projectOf } from "@/lib/stores/project-store";
 import { lensOf } from "@/lib/stores/view-store";
+import { OpenProject } from "@/components/home/OpenProject";
 import { Toaster } from "@/components/ui/Toaster";
 import { ImportDrawing } from "./ImportDrawing";
 import { NotesDrawer } from "./NotesDrawer";
@@ -46,6 +47,7 @@ function Frame({ children }: { children: ReactNode }) {
   const toasts = useToasts();
   const [areNotesOpen, setNotesOpen] = useState(false);
   const [isImportOpen, setImportOpen] = useState(false);
+  const [isOpenProjectOpen, setOpenProjectOpen] = useState(false);
 
   // A workspace without a design opens the design remembered as open, from the device, else the demo (decision 2 of
   // plan/phase-10-plan.md); the flow runs what is opened. A kept design that cannot be read opens the demo and says so.
@@ -88,6 +90,7 @@ function Frame({ children }: { children: ReactNode }) {
           notes={notes.length}
           onOpenNotes={ofTheShell.open}
           onImport={() => setImportOpen(true)}
+          onOpenProject={() => setOpenProjectOpen(true)}
           // The name is a committed edit like any other, undone by key (plan/phase-09-plan.md, decision 13).
           onRename={(name) => project.getState().commit((document) => withName(document, name))}
           onSaveACopy={() => void downloads.getState().download("project-file")}
@@ -108,6 +111,7 @@ function Frame({ children }: { children: ReactNode }) {
         }}
       />
       <ImportDrawing open={isImportOpen} onClose={() => setImportOpen(false)} />
+      <OpenProject open={isOpenProjectOpen} onClose={() => setOpenProjectOpen(false)} />
       {/* What the app says, in the page from the start: a download that failed (plan/phase-09-plan.md, decision 12). */}
       <Toaster toasts={toasts} aboveTheTabBar />
     </NotesContext.Provider>

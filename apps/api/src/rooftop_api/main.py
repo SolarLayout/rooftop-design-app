@@ -4,7 +4,7 @@ from fastapi import FastAPI
 
 from rooftop_api import __version__
 from rooftop_api.errors import install_error_handlers
-from rooftop_api.routers import demo, design, equipment, export, layout, meta, roof, sun, weather
+from rooftop_api.routers import demo, design, equipment, export, layout, meta, project, roof, sun, weather
 
 app = FastAPI(
     title="SolarLayout Rooftop API",
@@ -12,5 +12,5 @@ app = FastAPI(
     description="Stateless: every response is a pure function of the request.",
 )
 install_error_handlers(app)
-for module in (meta, demo, equipment, roof, layout, sun, weather, design, export):
+for module in (meta, demo, project, equipment, roof, layout, sun, weather, design, export):
     app.include_router(module.router)

@@ -29,6 +29,7 @@ export type OutlineOnMap = Requests["OutlineOnMap"];
 export type MapShapeRequest = Requests["MapShape"];
 export type SunRequest = Requests["SunRequest"];
 export type WeatherRequest = Requests["WeatherRequest"];
+export type ProjectFile = Requests["ProjectFile"];
 
 export type ModuleResponse = Answers["ModuleResponse"];
 export type Module = Answers["Module"];
@@ -67,5 +68,6 @@ export type SummaryRow = Answers["SummaryRow"];
 export type WeatherSummary = Answers["WeatherSummary"];
 export type ReportPages = Answers["ReportPages"];
 export type ReportPage = Answers["ReportPage"];
+export type OpenedProject = Answers["OpenedProject"];
 
 export type ExportKind = "pdf" | "dxf" | "kmz" | "csv" | "sld" | "rtd" | "zip";

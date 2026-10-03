@@ -56,6 +56,7 @@ describe("the calls that answer with JSON", () => {
     ["computeLayout", "/api/layout", PROJECT],
     ["computeSun", "/api/sun", { lat: 18.52, lon: 73.86, doy: 355 }],
     ["loadWeather", "/api/weather", { source: "pvgis", lat: 18.52, lon: 73.86 }],
+    ["openProject", "/api/project/open", { name: "Pune-demo-roof.rtd", text: '{"format": 2}' }],
   ] as const)("%s posts its request as JSON to %s and hands out the answer", async (name, url, request) => {
     const { api, calls } = server(() => json({ answered: name }));
 

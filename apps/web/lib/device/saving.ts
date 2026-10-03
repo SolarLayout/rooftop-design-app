@@ -8,6 +8,7 @@
 // A write that fails says Not saved with the device's words; the next edit, or Try again, tries again.
 import { createStore } from "zustand/vanilla";
 import { SAVE_DEBOUNCE } from "../../components/ui/design-numbers";
+import type { Project } from "../api";
 import { CLOCK_OF_THE_BROWSER, type Clock } from "../clock";
 import type { ProjectState, ProjectStore } from "../stores/project-store";
 import { designOf, type ResultsState, type ResultsStore } from "../stores/results-store";
@@ -31,6 +32,13 @@ export type SavingState = {
    * words when it cannot be read. The design that is open already is left as it is.
    */
   openFromDevice: (id: string) => Promise<boolean>;
+  /**
+   * Keeps *document* on this device as a new design, under a new id, and opens it: the document into the project store
+   * (the flow then runs it as it runs any design), the state Saved, the id remembered. For a project file opened
+   * (plan/phase-10-plan.md, step 9): never the demo's id, never the id of a design kept already. The design that was
+   * open is left as it is, under its own id.
+   */
+  keepAndOpen: (document: Project) => void;
   /** Writes again at once what the device refused. */
   tryAgain: () => void;
   /** Reads the designs of the device: in the browser, once the app is there (the stores are made on the server too). */
@@ -179,6 +187,11 @@ export function createSaving({ project, results, db, clock = CLOCK_OF_THE_BROWSE
         expected = kept;
         project.getState().open(kept.document);
         return true;
+      },
+
+      keepAndOpen(document) {
+        expected = keptOf({ id: newId(), document, design: null, now: now() });
+        project.getState().open(document);
       },
 
       tryAgain() {

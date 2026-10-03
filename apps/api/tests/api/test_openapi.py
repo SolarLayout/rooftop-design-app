@@ -18,6 +18,7 @@ OPERATIONS = {
     ("post", "/design"): "runDesign",
     ("post", "/export/{kind}"): "exportDesign",
     ("post", "/export/report-pages"): "reportPages",
+    ("post", "/project/open"): "openProject",
 }
 
 

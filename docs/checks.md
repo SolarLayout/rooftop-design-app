@@ -47,7 +47,7 @@ runner's two cores are saturated by one process, two workers took the same eight
 
 ## The browser tests in groups
 
-The 1,700 browser tests are six turbo tasks, run one after the other by the check (six Playwright runs at once would
+The 1,700 browser tests are seven turbo tasks, run one after the other by the check (seven Playwright runs at once would
 overload the machine), the test stack started once by the check when a group is going to run and stopped after. The
 groups are data, `tools/check/e2e-groups.ts`; `turbo.json` and the root scripts `e2e:<group>` are held equal to it by
 `tools/check/e2e-groups.test.ts`.
@@ -59,6 +59,7 @@ groups are data, `tools/check/e2e-groups.ts`; `turbo.json` and the root scripts 
 | studio | `array-lens`, `build`, `history`, `lens-switches`, `manipulation`, `modules`, `roof-lens`, `selection`, `shade-map`, `shadow-outlines`, `shell-vitals`, `stage`, `strings-*`, `sun-*`, `time` | `components/studio`, `components/scene`, `lib/scene`, `lib/studio`, `lib/roof-card.ts`, `lib/scene-palette.ts`, and find's (Build and the Roof lens's Edit cross into Find) |
 | performance | `performance*` | `components/performance`, `lib/performance`, and studio's and find's (a voltage is chosen in the Strings lens; a roof is built on the map) |
 | handover | `handover*` | `components/handover`, `lib/handover` |
+| home | `home*` | `components/home`, `lib/home` (Home, and Open a project: a dialog the shell opens from the project switcher on every page) |
 | shell | `api-client`, `device*`, `fonts`, `routes`, `screens`, `shell`, `smoke`, `tokens` | every other group's, and every baseline but the kit's |
 
 **The base**, an input of every group: `apps/web/app`, `components/shell`, `components/ui`, the files at the roots of
@@ -72,6 +73,7 @@ helpers and fixtures of `e2e`, the tools that start the stack, the lockfile, `.n
 | Changed | Groups that run |
 |---|---|
 | `components/handover`, `lib/handover` | handover, shell |
+| `components/home`, `lib/home` | home, shell |
 | `components/performance`, `lib/performance` | performance, shell |
 | `components/studio`, `components/scene`, `lib/scene`, `lib/studio` | studio, performance, shell |
 | `components/find`, `lib/map`, `lib/outline` | find, studio, performance, shell |
@@ -136,7 +138,9 @@ every cache; `--only=e2e` and `--skip=e2e` take steps by id.
   `lib/scene/string-colours.ts`; `lib/stores/view-store.ts` imports `lib/scene/drag.ts`). The base is not walked, so a
   change to one of those files runs its folder's groups and shell, not the other workspaces' interaction suites. The fix is
   Phase 11's: the shared state's helpers moved beside the stores, or a rule-test that the base imports nothing of the
-  groups' folders (`plan/phase-04b-test-caching.md`, the open item).
+  groups' folders (`plan/phase-04b-test-caching.md`, the open item). The shell also opens the dialog Open a project
+  (`components/shell/Shell.tsx` imports `components/home/OpenProject.tsx`, plan phase 10, step 9): a change to the dialog
+  runs home and shell, not the workspaces' suites, none of which opens it.
 - The screens suite pictures every page in one file, so shell runs for every web change. Pictures of one workspace could
   move into its group's suite; then a Handover change would pay about 3 minutes of browser tests, not 11.
 - A suite that changed runs whole: Playwright has no selection by test, as pytest has with testmon.

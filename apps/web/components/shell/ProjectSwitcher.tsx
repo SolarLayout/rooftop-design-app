@@ -55,16 +55,16 @@ export function ProjectTrigger({ name, place, open, className, ...rest }: Trigge
 }
 
 /**
- * An action of the menu: it leads to an address, it opens the import of a drawing, or it saves a copy of the project file;
- * one that does none of these comes with a later phase.
+ * An action of the menu: it leads to an address, or it does something: opens a project file, opens the import of a
+ * drawing, or saves a copy of the project file. A row whose doing is not given is shown and cannot be used.
  */
-type Action = { name: string; icon: IconName; fact?: string; href?: string; does?: "import" | "save" };
+type Action = { name: string; icon: IconName; fact?: string; href?: string; does?: "open" | "import" | "save" };
 
-// What has neither an address nor a thing to do comes with a later phase (Open a project, Phase 10): it is shown and cannot
-// be used. Save a copy downloads the .rtd the API writes (plan/phase-09-plan.md, step 8).
+// Open a project opens its dialog (plan/phase-10-plan.md, step 9); Save a copy downloads the .rtd the API writes
+// (plan/phase-09-plan.md, step 8).
 const ACTIONS: Action[] = [
   { name: "New design", icon: "plus", fact: "Find the roof", href: "/find" },
-  { name: "Open a project", icon: "folder", fact: ".rtd" },
+  { name: "Open a project", icon: "folder", fact: ".rtd", does: "open" },
   { name: "Import a drawing", icon: "upload", fact: "KMZ, KML, DXF", does: "import" },
   { name: "Save a copy", icon: "download", fact: ".rtd", does: "save" },
   { name: "Home", icon: "home", href: "/" },
@@ -92,6 +92,8 @@ type MenuProps = Pick<Design, "name"> & {
   onOpenNotes: () => void;
   /** Import a drawing was taken: the dialog of the import opens (plan/phase-05-plan.md, decision 13). */
   onImport: () => void;
+  /** Open a project was taken: the dialog of the project file opens (plan/phase-10-plan.md, step 9). Without it the row is shown and cannot be used. */
+  onOpenProject?: () => void;
   /** A row that leads somewhere, or does something, was taken. */
   onTake: () => void;
   /** Save a copy was taken: the project file is downloaded (plan/phase-09-plan.md, step 8). Without it the row is shown and cannot be used. */
@@ -180,8 +182,8 @@ function OnThisDevice({ designs, onTake, onOpenDesign }: Required<Pick<MenuProps
 }
 
 /** What the project switcher holds: this design, the designs on this device, what can be done. */
-export function ProjectMenu({ name, saving, onOpenNotes, onImport, onTake, onSaveACopy, onRename, designs = [], onOpenDesign, shownAs }: MenuProps) {
-  const doers: Record<NonNullable<Action["does"]>, (() => void) | undefined> = { import: onImport, save: onSaveACopy };
+export function ProjectMenu({ name, saving, onOpenNotes, onImport, onOpenProject, onTake, onSaveACopy, onRename, designs = [], onOpenDesign, shownAs }: MenuProps) {
+  const doers: Record<NonNullable<Action["does"]>, (() => void) | undefined> = { open: onOpenProject, import: onImport, save: onSaveACopy };
 
   return (
     <div data-testid="project-menu" className={classNames(LIST, "desktop:gap-0")}>
@@ -237,10 +239,10 @@ export function ProjectMenu({ name, saving, onOpenNotes, onImport, onTake, onSav
   );
 }
 
-type Props = Design & Pick<MenuProps, "saving" | "onOpenNotes" | "onImport" | "onSaveACopy" | "onRename" | "designs" | "onOpenDesign">;
+type Props = Design & Pick<MenuProps, "saving" | "onOpenNotes" | "onImport" | "onOpenProject" | "onSaveACopy" | "onRename" | "designs" | "onOpenDesign">;
 
 /** The design that is open, and the way to another one. On phone and tablet it opens as a bottom sheet. */
-export function ProjectSwitcher({ name, place, saving, onOpenNotes, onImport, onSaveACopy, onRename, designs, onOpenDesign }: Props) {
+export function ProjectSwitcher({ name, place, saving, onOpenNotes, onImport, onOpenProject, onSaveACopy, onRename, designs, onOpenDesign }: Props) {
   const [floating, trigger] = useFloating({ side: "below", align: "start", gap: LIST_GAP });
   const panel = useRef<HTMLDivElement>(null);
 
@@ -270,6 +272,7 @@ export function ProjectSwitcher({ name, place, saving, onOpenNotes, onImport, on
             saving={saving}
             onOpenNotes={onOpenNotes}
             onImport={onImport}
+            onOpenProject={onOpenProject}
             onTake={floating.close}
             onSaveACopy={onSaveACopy}
             onRename={onRename}

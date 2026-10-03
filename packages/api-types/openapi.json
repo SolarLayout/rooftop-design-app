@@ -1965,6 +1965,29 @@
         "title": "Obstacle",
         "type": "object"
       },
+      "OpenedProject": {
+        "description": "The project the file holds, as a request carries it, and the notes on what it lacks.",
+        "properties": {
+          "notes": {
+            "description": "One note per PAN, OND or CSV weather the file names by path without its text: the design asks for that file again, in these words, until it is chosen",
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "project": {
+            "$ref": "#/components/schemas/Project",
+            "description": "The project of the file, written in the current format"
+          }
+        },
+        "required": [
+          "project",
+          "notes"
+        ],
+        "title": "OpenedProject",
+        "type": "object"
+      },
       "Option": {
         "description": "A stringing the user may choose, with its full results.",
         "properties": {
@@ -2642,6 +2665,28 @@
           "roof"
         ],
         "title": "Project",
+        "type": "object"
+      },
+      "ProjectFile": {
+        "description": "The file as the text it holds, under its name.",
+        "properties": {
+          "name": {
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "text": {
+            "maxLength": 10000000,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "text"
+        ],
+        "title": "ProjectFile",
         "type": "object"
       },
       "ReportPage": {
@@ -4236,6 +4281,48 @@
         "summary": "Layout",
         "tags": [
           "layout"
+        ]
+      }
+    },
+    "/project/open": {
+      "post": {
+        "description": "Read a project file (.rtd) of format 1 or 2 with the engine's own reader.\n\nThe project comes back as a request carries it, in the current format. A file of format 1 names its\nPAN, its OND and its CSV weather by path without their text: a note per file, in the engine's words,\nsays that the design asks for it again until it is chosen. A text that is not JSON, a JSON that is no\nproject and a format this version does not read are refused in words.",
+        "operationId": "openProject",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectFile"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenedProject"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request cannot be used; the message says why."
+          }
+        },
+        "summary": "Open Project",
+        "tags": [
+          "project"
         ]
       }
     },

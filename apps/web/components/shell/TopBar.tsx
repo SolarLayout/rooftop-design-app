@@ -24,6 +24,8 @@ type Props = {
   onOpenNotes: () => void;
   /** Import a drawing was taken in the project switcher. */
   onImport: () => void;
+  /** Open a project was taken in the project switcher (plan/phase-10-plan.md, step 9). */
+  onOpenProject?: () => void;
   /** The name was edited in the project switcher (plan/phase-09-plan.md, decision 13). */
   onRename?: (name: string) => void;
   /** Save a copy was taken in the project switcher (plan/phase-09-plan.md, step 8). */
@@ -75,7 +77,7 @@ export function Export() {
 const countOf = (notes: number) => (notes === 0 ? "Nothing to review" : notes === 1 ? "1 note to review" : `${notes} notes to review`);
 
 /** The bar at the top of the three workspaces. */
-export function TopBar({ name, place, workspace, lens, saving, notes, onOpenNotes, onImport, onRename, onSaveACopy, designs, onOpenDesign }: Props) {
+export function TopBar({ name, place, workspace, lens, saving, notes, onOpenNotes, onImport, onOpenProject, onRename, onSaveACopy, designs, onOpenDesign }: Props) {
   return (
     <header className={BAR}>
       <Logo />
@@ -86,6 +88,7 @@ export function TopBar({ name, place, workspace, lens, saving, notes, onOpenNote
         saving={saving}
         onOpenNotes={onOpenNotes}
         onImport={onImport}
+        onOpenProject={onOpenProject}
         onSaveACopy={onSaveACopy}
         onRename={onRename}
         designs={designs}

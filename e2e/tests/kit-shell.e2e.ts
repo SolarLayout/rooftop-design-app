@@ -549,17 +549,17 @@ test.describe("Project switcher", () => {
     await expect(last(page)).toHaveText("Last pressed: Open, hinjewadi");
   });
 
-  test("Home leads home, New design to the map; what comes with a later phase is shown and cannot be used", async ({ page }) => {
+  test("Home leads home, New design to the map; Open a project, Import a drawing and Save a copy are rows that can be pressed", async ({ page }) => {
     const menu = example(page, "switcher-open").getByTestId("project-menu");
 
     await expect(menu.getByRole("menuitem", { name: "Home" })).toHaveAttribute("href", "/");
     await expect(menu.getByRole("menuitem", { name: "New design" })).toHaveAttribute("href", "/find");
-    const open = menu.getByRole("menuitem", { name: "Open a project" });
-    await expect(open).toHaveAttribute("aria-disabled", "true");
-    await expect(open).toHaveCSS("opacity", "0.45");
-    // Import a drawing opens its dialog (Phase 5, step 13); Save a copy downloads the project file (Phase 9, step 8): rows that can be pressed.
-    await expect(menu.getByRole("menuitem", { name: "Import a drawing" })).not.toHaveAttribute("aria-disabled", "true");
-    await expect(menu.getByRole("menuitem", { name: "Save a copy" })).not.toHaveAttribute("aria-disabled", "true");
+    // Open a project opens its dialog (Phase 10, step 9); Import a drawing its (Phase 5, step 13); Save a copy downloads the project file (Phase 9, step 8).
+    for (const name of ["Open a project", "Import a drawing", "Save a copy"]) {
+      await expect(menu.getByRole("menuitem", { name })).not.toHaveAttribute("aria-disabled", "true");
+      await menu.getByRole("menuitem", { name }).click();
+      await expect(last(page)).toHaveText(`Last pressed: ${name}`);
+    }
   });
 
   test("it opens, the focus goes to its first row, and Escape gives the focus back", async ({ page }) => {
@@ -597,17 +597,18 @@ test.describe("Project switcher", () => {
     await expect(rows.nth(0)).toBeFocused();
   });
 
-  test("a row that cannot be used does nothing, and the panel stays", async ({ page }) => {
+  test("a row taken by the keyboard does its thing and closes the panel", async ({ page }) => {
     const trigger = example(page, "switcher").getByRole("button", { name: /Pune demo roof/ });
     await trigger.scrollIntoViewIfNeeded();
     await trigger.click();
     const menu = page.getByRole("menu", { name: "Project" }).and(page.locator("[popover] *"));
 
-    // The second row, Open a project, comes with a later phase.
+    // The second row, Open a project.
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
 
-    await expect(menu).toBeVisible();
+    await expect(last(page)).toHaveText("Last pressed: Open a project");
+    await expect(menu).toBeHidden();
     await expect(page).toHaveURL(/\/kit\/shell$/);
   });
 
