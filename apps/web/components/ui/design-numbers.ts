@@ -67,3 +67,6 @@ export const MARKER_RADIUS = 4;
 
 /** Pixels of the ring in the surface colour around a marker, so that it stays legible on the line. */
 export const MARKER_RING = 2;
+
+/** A design is written to the device this long after the last committed edit, in milliseconds: edits shortly after each other are one write. */
+export const SAVE_DEBOUNCE = 600;
