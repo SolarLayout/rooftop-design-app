@@ -39,11 +39,11 @@ export function Preview({ row, view, onTryAgain, onAction, isOnItsWay = false, c
       <div className={HEAD}>
         <div className="flex min-w-0 grow flex-col gap-0.5">
           <h2 className="type-lens-touch tablet:type-title">{row.name}</h2>
-          {row.facts === null ? (
+          {row.about === null ? (
             <Skeleton kind="text" className="my-1 w-44" />
           ) : (
             <span data-testid="preview-facts" className={classNames(FACTS, view.isDimmed && "opacity-updating")}>
-              {row.facts}
+              {row.about}
             </span>
           )}
         </div>

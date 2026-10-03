@@ -66,7 +66,7 @@ const switcher = (page: Page) => bar(page).getByRole("button", { name: /^(Pune d
 const rows = (page: Page) => page.getByTestId("deliverables").getByTestId("deliverable");
 const rowFacts = (page: Page) => page.getByTestId("deliverables").getByTestId("deliverable-facts");
 const card = (page: Page) => page.getByTestId("project-file-card");
-const preview = (page: Page) => page.getByRole("main");
+const preview = (page: Page) => page.getByTestId("preview");
 const previewAction = (page: Page) => page.getByTestId("preview-action").getByRole("button").filter({ visible: true });
 const projectFile = (page: Page) => page.getByTestId("project-file");
 const nameField = (page: Page) => projectFile(page).getByRole("textbox", { name: "Name" });
@@ -145,8 +145,8 @@ test.describe("the list (decisions 3 and 14)", () => {
     await expect(page).toHaveURL(/\/handover\/bill-of-materials$/);
     await expect(preview(page).getByRole("heading", { level: 2, name: "Bill of materials" })).toBeVisible();
     if (isPhone(testInfo.project.name)) {
-      await expect(page.getByRole("complementary", { name: "Deliverables" })).toBeHidden();
-      await page.getByRole("link", { name: "Handover", exact: true }).click();
+      await expect(page.getByRole("navigation", { name: "Deliverables" })).toBeHidden();
+      await page.getByRole("link", { name: "Back to Handover" }).click();
       await expect(page).toHaveURL(/\/handover$/);
       await expect(rows(page).first()).toBeVisible();
       return;
@@ -169,9 +169,13 @@ test.describe("before a voltage (decision 11)", () => {
 
     if (!isPhone(testInfo.project.name)) {
       await expect(rowFacts(page)).toHaveText(Array<string>(7).fill(title), { timeout: RUN });
-      for (const row of await rows(page).all()) await expect(row).toHaveCSS("opacity", "0.45");
+      // The icon of a waiting row is dim; its words and its badge stay readable, since the row is a link that works.
+      for (const row of await rows(page).all()) {
+        await expect(row.locator("> span").last()).toHaveCSS("opacity", "0.45");
+        await expect(row).toHaveCSS("opacity", "1");
+      }
       await expect(card(page)).toContainText(`${stemOf(DEMO_NAME)}.rtd · opens offline`);
-      await expect(card(page)).not.toHaveCSS("opacity", "0.45");
+      await expect(card(page)).toHaveCSS("opacity", "1");
       await expect(card(page).getByRole("button", { name: "Save a copy" })).not.toHaveAttribute("aria-disabled", "true");
     }
     const waits = page.getByTestId("files-wait");

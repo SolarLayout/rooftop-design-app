@@ -86,6 +86,25 @@ describe("before options (decision 11)", () => {
     }
     expect(rows[7]).toMatchObject({ waits: false, facts: "Pune-demo-roof.rtd · opens offline" });
   });
+
+  test("the preview's line says what is known of the item without an option, else the API's title", () => {
+    const rows = deliverablesOf({ ...AT_REST, design: BEFORE_A_VOLTAGE });
+
+    expect(rows.map((row) => row.about)).toEqual([
+      "A4 landscape",
+      "Choose a system voltage to size the strings",
+      "Choose a system voltage to size the strings",
+      "Choose a system voltage to size the strings",
+      "Metres · one layer per string",
+      "Choose a system voltage to size the strings",
+      "Choose a system voltage to size the strings",
+      "Pune-demo-roof.rtd · opens offline",
+    ]);
+  });
+
+  test("with an option the preview's line is the row's", () => {
+    expect(deliverablesOf(AT_REST).every((row) => row.about === row.facts)).toBe(true);
+  });
 });
 
 describe("the first load", () => {

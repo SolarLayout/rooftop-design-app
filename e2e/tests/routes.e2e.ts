@@ -57,9 +57,9 @@ for (const [item, name] of ITEMS) {
     await expect(page.getByRole("heading", { level: 2, name, exact: true })).toBeVisible();
     await expect(page).toHaveTitle(`${name} · Handover · SolarLayout Rooftop`);
     // On phone the item is pushed over the list, and a row at the top leads back to it (plan/phase-09-plan.md, decision 3).
-    const back = page.getByRole("link", { name: "Handover", exact: true });
+    const back = page.getByRole("link", { name: "Back to Handover" });
     if (testInfo.project.name === "phone") await expect(back).toHaveAttribute("href", "/handover");
-    else await expect(page.getByRole("complementary", { name: "Deliverables" })).toBeVisible();
+    else await expect(page.getByRole("navigation", { name: "Deliverables" })).toBeVisible();
   });
 }
 

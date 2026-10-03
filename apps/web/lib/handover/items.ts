@@ -19,6 +19,11 @@ export type Deliverable = {
   action: string | null;
   /** The line under the name; null while nothing was ever there, where a skeleton stands. */
   facts: string | null;
+  /**
+   * The line under the item's name in its preview: its facts; before options what is known without an option (the
+   * report's paper size, the drawing's units), else the API's title as the row; null while nothing was ever there.
+   */
+  about: string | null;
   /** The item waits: before options it cannot be downloaded, and its row is dim. The project file never waits. */
   waits: boolean;
 };
@@ -45,6 +50,8 @@ const SHAPES: Record<HandoverItem, Shape> = {
 };
 
 const PROJECT_FILE: HandoverItem = "project-file";
+/** What is known of an item without an option. */
+const KNOWN_WITHOUT_AN_OPTION: Partial<Record<HandoverItem, string>> = { report: "A4 landscape", "cad-layout": "Metres · one layer per string" };
 const SAVE_A_COPY = "Save a copy";
 
 /** The lines of the bill of materials the facts count, by the engine's item names. */
@@ -104,11 +111,16 @@ export function deliverablesOf({ name, design, pages }: Asked): Deliverable[] {
   return HANDOVER_ITEMS.map(({ id, name: itemName }): Deliverable => {
     const shape = SHAPES[id];
     if (id === PROJECT_FILE) {
-      return { id, name: itemName, ...shape, action: SAVE_A_COPY, facts: name === null ? null : `${projectFileNameOf(name)} · opens offline`, waits: name === null };
+      const facts = name === null ? null : `${projectFileNameOf(name)} · opens offline`;
+      return { id, name: itemName, ...shape, action: SAVE_A_COPY, facts, about: facts, waits: name === null };
     }
     const action = shape.kind === null ? null : `Download ${shape.badge}`;
-    if (design === null) return { id, name: itemName, ...shape, action, facts: null, waits: true };
-    if (option === null) return { id, name: itemName, ...shape, action, facts: design.no_options?.title ?? null, waits: true };
-    return { id, name: itemName, ...shape, action, facts: factsOf(id, design, option, pages), waits: false };
+    if (design === null) return { id, name: itemName, ...shape, action, facts: null, about: null, waits: true };
+    if (option === null) {
+      const title = design.no_options?.title ?? null;
+      return { id, name: itemName, ...shape, action, facts: title, about: KNOWN_WITHOUT_AN_OPTION[id] ?? title, waits: true };
+    }
+    const facts = factsOf(id, design, option, pages);
+    return { id, name: itemName, ...shape, action, facts, about: facts, waits: false };
   });
 }

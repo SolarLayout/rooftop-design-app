@@ -32,6 +32,8 @@ const LIST = classNames(
   "desktop:w-handover-list desktop:border-r desktop:border-line-subtle desktop:pt-7 desktop:pr-6 desktop:pb-6 desktop:pl-10",
 );
 const PREVIEW = classNames("min-w-0 grow flex-col gap-3 px-page-x-phone pt-2 pb-5", "tablet:gap-4 tablet:p-0", "desktop:pt-7 desktop:pr-10 desktop:pb-6 desktop:pl-8");
+/** The name of the back row: the tab bar's link is "Handover" already, and a name is given once. */
+const BACK_TO_THE_LIST = "Back to Handover";
 const BACK = classNames(
   "-ml-2.5 flex h-touch items-center gap-1.5 self-start rounded-row px-2.5 text-text-2 select-none",
   "press-motion focus-ring hovered:text-text tablet:hidden",
@@ -76,14 +78,14 @@ export function Handover({ item }: Props) {
   }
 
   return (
-    <div className={PAGE}>
-      <aside aria-label="Deliverables" className={classNames(LIST, item === null ? "flex" : "hidden tablet:flex")}>
+    <main className={PAGE}>
+      <nav aria-label="Deliverables" className={classNames(LIST, item === null ? "flex" : "hidden tablet:flex")}>
         <DeliverableList rows={view.rows} item={item} shown={shown} downloads={byItem} onSaveACopy={() => void downloads.getState().download("project-file")} />
-      </aside>
-      <main className={classNames(PREVIEW, item === null ? "hidden tablet:flex" : "flex")}>
+      </nav>
+      <section aria-label={row.name} data-testid="preview" className={classNames(PREVIEW, item === null ? "hidden tablet:flex" : "flex")}>
         {/* On phone the item is pushed over the list: the row at the top leads back to it. */}
         <h1 className="sr-only tablet:hidden">Handover</h1>
-        <Link href={HANDOVER} className={BACK}>
+        <Link href={HANDOVER} aria-label={BACK_TO_THE_LIST} className={BACK}>
           <Icon name="chevron-left" size={16} />
           Handover
         </Link>
@@ -94,7 +96,7 @@ export function Handover({ item }: Props) {
             <NotBuiltYet />
           )}
         </Preview>
-      </main>
-    </div>
+      </section>
+    </main>
   );
 }

@@ -854,10 +854,16 @@ test.describe("the shell", () => {
     await expectWholeScreen(page, "handover-no-voltage");
   });
 
+  // The project file's item once the run has landed: its size is there, and what is in it says the weather and the option.
+  const projectFileLanded = async (page: Page) => {
+    await expect(page.getByTestId("project-file").getByTestId("file-size")).toBeVisible({ timeout: RUN });
+    await expect(page.getByTestId("in-the-file").filter({ hasText: "Weather" })).toContainText("hours", { timeout: RUN });
+  };
+
   // The project file (the board "Handover, previews", last part): the name as a field, the file's name and size, what is in it.
   test("handover, the project file", async ({ page }, testInfo) => {
     await page.goto("/handover/project-file");
-    await expect(page.getByTestId("project-file").getByTestId("file-size")).toBeVisible({ timeout: RUN });
+    await projectFileLanded(page);
     await settled(page, testInfo.project.name);
 
     await expectWholeScreen(page, "handover-project-file");
@@ -867,7 +873,7 @@ test.describe("the shell", () => {
   test("handover, the name edited", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name === "tablet", "The board draws the edited name on desktop and phone.");
     await page.goto("/handover/project-file");
-    await expect(page.getByTestId("project-file").getByTestId("file-size")).toBeVisible({ timeout: RUN });
+    await projectFileLanded(page);
     await settled(page, testInfo.project.name);
     const field = page.getByTestId("project-file").getByRole("textbox", { name: "Name" });
     await field.fill("Pune demo roof, block B");

@@ -40,14 +40,15 @@ const BADGE_OPEN: Record<Open, string> = {
 const ICON: Record<Open, string> = { no: "text-text-3", here: "text-text", beside: "text-text-3 tablet:text-text" };
 
 export function DeliverableRow({ row, open, isOnItsWay = false }: Props) {
+  // Before options the download icon is dim: the file cannot be made. The words and the badge stay as they are, since the
+  // row is a link that works and its facts say what is missing (dimmed text would fall under the contrast asked); at the
+  // first load the skeleton says it instead.
+  const isDim = row.waits && row.facts !== null;
   return (
-    <Link
-      href={pathOfItem(row.id)}
-      aria-current={open === "here" ? "page" : undefined}
-      data-testid="deliverable"
-      className={classNames(ROW, OPEN[open], row.waits && "opacity-disabled")}
-    >
-      <span className={classNames(BADGE, BADGE_OPEN[open])}>{row.badge}</span>
+    <Link href={pathOfItem(row.id)} aria-current={open === "here" ? "page" : undefined} data-testid="deliverable" className={classNames(ROW, OPEN[open])}>
+      <span aria-hidden="true" className={classNames(BADGE, BADGE_OPEN[open])}>
+        {row.badge}
+      </span>
       <span className="flex min-w-0 grow flex-col gap-0.5">
         <span className="font-medium">{row.name}</span>
         {row.facts === null ? (
@@ -58,7 +59,7 @@ export function DeliverableRow({ row, open, isOnItsWay = false }: Props) {
           </span>
         )}
       </span>
-      <span className={classNames("flex shrink-0", ICON[open])}>
+      <span className={classNames("flex shrink-0", ICON[open], isDim && "opacity-disabled")}>
         {isOnItsWay ? (
           <ProgressRing size={16} label="On its way" />
         ) : (
