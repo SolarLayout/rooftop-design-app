@@ -7,7 +7,13 @@ import { cardsOf, copyNameOf, deleteQuestionOf, NOT_RUN_YET, WAITING_FOR_A_VOLTA
 // this device"): the newest edited first, each with its name, the roof's words, the capacity and the energy of its last run
 // or what waits in their place, and when it was edited; the copy's name; the question before a delete, word for word.
 
-const DEMO = { name: "Pune demo roof", system_voltage: 1500 } as unknown as Project;
+const RECTANGLE: [number, number][] = [
+  [0, 0],
+  [90, 0],
+  [90, 40],
+  [0, 40],
+];
+const DEMO = { name: "Pune demo roof", system_voltage: 1500, roof: { lat: 18.52, lon: 73.86, outline: RECTANGLE, roof_type: "flat_tilted", source: "coordinates", obstacles: [] } } as unknown as Project;
 const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
 const NOW = new Date(2026, 9, 3, 12).getTime();
@@ -17,6 +23,7 @@ const kept = ({ document, ...over }: Partial<Omit<KeptDesign, "document">> & { d
   name: "Pune demo roof",
   document: { ...DEMO, ...document } as Project,
   facts: { roofWords: "90.0 × 40.0 m flat roof, tilted rows", dcKwp: 357.28, energyMwh: 617.8405373922709 },
+  thumbnail: null,
   editedAt: NOW - 2 * HOUR,
   openedAt: NOW - 2 * HOUR,
   ...over,
@@ -32,8 +39,16 @@ describe("the cards", () => {
         facts: { capacity: { number: "357.28", unit: "kWp" }, energy: { number: "617.8", unit: "MWh" } },
         waiting: null,
         edited: "Edited 2 hours ago",
+        thumbnail: expect.stringMatching(/^<svg /),
       },
     ]);
+  });
+
+  test("the thumbnail kept with the design is the card's; a record kept before there were thumbnails gets the plan of its roof alone", () => {
+    expect(cardsOf([kept({ thumbnail: "<svg data-kept></svg>" })], NOW)[0]!.thumbnail).toBe("<svg data-kept></svg>");
+    const drawn = cardsOf([kept({ thumbnail: null })], NOW)[0]!.thumbnail;
+    expect(drawn).toContain('data-part="roof"');
+    expect(drawn).not.toContain("data-module");
   });
 
   test("before a system voltage is chosen the numbers cannot exist: the card says what waits, never 0", () => {

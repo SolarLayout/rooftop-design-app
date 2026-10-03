@@ -1,8 +1,9 @@
 // A design kept on this device (plan/phase-10-plan.md, step 1, decision 1): the document whole, as the API hands it
 // out, with the facts of its card worked out here so that Home and the project switcher show them without a run. The
 // results are never kept: a design opened runs again (D5). Pure: what is written and read is lib/device/designs-db.ts.
-import type { DesignResult, Project } from "../api";
+import type { DesignResult, Layout, Project } from "../api";
 import { roofSizeOf } from "../roof-card";
+import { thumbnailOf } from "./thumbnail";
 
 export type KeptFacts = {
   /** The roof in words: "90.0 × 40.0 m flat roof, tilted rows". */
@@ -20,6 +21,8 @@ export type KeptDesign = {
   name: string;
   document: Project;
   facts: KeptFacts;
+  /** The plan of the kept layout as an SVG of 320 by 180 (decision 6); null in a record kept before there were thumbnails. */
+  thumbnail: string | null;
   /** Milliseconds since the epoch of the last committed edit. */
   editedAt: number;
   /** The same, of the last time it was opened on this device. */
@@ -54,13 +57,15 @@ type Kept = {
   document: Project;
   /** The last run of this design; null before one. */
   design: DesignResult | null;
+  /** The last layout of this design, whose positions the thumbnail draws; null before one: the roof alone then. */
+  layout: Layout | null;
   /** Milliseconds since the epoch. */
   now: number;
 };
 
 /** The design as it is kept, edited and opened now; who keeps it carries the times on from the record before. */
-export function keptOf({ id, document, design, now }: Kept): KeptDesign {
-  return { id, name: document.name, document, facts: factsOf(document, design), editedAt: now, openedAt: now };
+export function keptOf({ id, document, design, layout, now }: Kept): KeptDesign {
+  return { id, name: document.name, document, facts: factsOf(document, design), thumbnail: thumbnailOf(document.roof, layout), editedAt: now, openedAt: now };
 }
 
 const MINUTE = 60_000;

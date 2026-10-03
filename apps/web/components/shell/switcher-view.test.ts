@@ -10,6 +10,7 @@ const kept = (id: string, name: string, editedAt: number, facts: Partial<KeptDes
   id,
   name,
   document: { name } as unknown as Project,
+  thumbnail: null,
   facts: { roofWords: "90.0 × 40.0 m flat roof, tilted rows", dcKwp: null, energyMwh: null, ...facts },
   editedAt,
   openedAt: editedAt,

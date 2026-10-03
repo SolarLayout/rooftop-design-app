@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { DesignResult, Project } from "../api";
+import type { DesignResult, Layout, Project } from "../api";
 import { factsOf, keptOf, roofWordsOf, whenOf } from "./kept-design";
 
 // A design kept on this device (plan/phase-10-plan.md, step 1, decision 1): the document whole, and the facts of its
@@ -70,13 +70,14 @@ describe("the facts of the card", () => {
 
 describe("the kept design", () => {
   test("is the document whole under its id and name, with the facts, edited and opened now", () => {
-    const kept = keptOf({ id: "a1", document: DEMO, design: RUN, now: NOON });
+    const kept = keptOf({ id: "a1", document: DEMO, design: RUN, layout: null, now: NOON });
 
     expect(kept).toEqual({
       id: "a1",
       name: "Pune demo roof",
       document: DEMO,
       facts: { roofWords: "90.0 × 40.0 m flat roof, tilted rows", dcKwp: 357.28, energyMwh: 617.8405373922709 },
+      thumbnail: expect.stringMatching(/^<svg [\s\S]*<\/svg>$/),
       editedAt: NOON,
       openedAt: NOON,
     });
@@ -84,7 +85,15 @@ describe("the kept design", () => {
   });
 
   test("the name is the document's: a renamed document is kept under its new name", () => {
-    expect(keptOf({ id: "a1", document: { ...DEMO, name: "Block B" }, design: null, now: NOON }).name).toBe("Block B");
+    expect(keptOf({ id: "a1", document: { ...DEMO, name: "Block B" }, design: null, layout: null, now: NOON }).name).toBe("Block B");
+  });
+
+  test("the thumbnail is the plan of the kept layout's positions (decision 6): the roof alone before a layout, the modules once one has come", () => {
+    const placed = (idx: number) => ({ idx, outline: [[idx * 3, 2], [idx * 3 + 2.3, 2], [idx * 3 + 2.3, 3.1], [idx * 3, 3.1]] });
+    const layout = { inner: [], keepout: [], modules: [placed(0), placed(1)] } as unknown as Layout;
+
+    expect(keptOf({ id: "a1", document: DEMO, design: null, layout: null, now: NOON }).thumbnail).not.toContain("data-module");
+    expect(keptOf({ id: "a1", document: DEMO, design: RUN, layout, now: NOON }).thumbnail?.split('data-module="true"')).toHaveLength(3);
   });
 });
 

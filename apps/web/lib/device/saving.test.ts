@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { SAVE_DEBOUNCE } from "../../components/ui/design-numbers";
-import type { DesignResult, Project } from "../api";
+import type { DesignResult, LayoutResponse, Project } from "../api";
 import { clockOfTheTest } from "../clock-of-the-test";
 import { canUndo as canUndoOf_, createProjectStore, type ProjectStore } from "../stores/project-store";
 import { createResultsStore } from "../stores/results-store";
@@ -31,9 +31,11 @@ const BLOCK_B: KeptDesign = {
   name: "Block B",
   document: { ...DEMO, name: "Block B" },
   facts: { roofWords: "90.0 × 40.0 m flat roof, tilted rows", dcKwp: null, energyMwh: null },
+  thumbnail: null,
   editedAt: 1_000,
   openedAt: 1_000,
 };
+const LAYOUT = { layout: { inner: [], keepout: [], modules: [{ idx: 0, outline: [[2, 2], [4.3, 2], [4.3, 3.1], [2, 3.1]] }] }, readouts: {} } as unknown as LayoutResponse;
 
 const tilt = (degrees: number) => (project: Project) => ({ ...project, array: { ...project.array, tilt_deg: degrees } });
 const named = (name: string) => (project: Project) => ({ ...project, name });
@@ -140,6 +142,7 @@ describe("a committed edit", () => {
       name: "Pune demo roof",
       document: project.getState().project!,
       facts: { roofWords: "90.0 × 40.0 m flat roof, tilted rows", dcKwp: null, energyMwh: null },
+      thumbnail: expect.stringContaining('data-part="roof"'),
       editedAt: 20_000,
       openedAt: 10_000,
     });
@@ -491,6 +494,41 @@ describe("the designs on this device", () => {
 
     expect(keptDesignsOf(saving.getState())).toEqual([]);
     expect(said).toEqual(["The designs on this device could not be read: the browser gave no reason."]);
+  });
+});
+
+describe("the thumbnail (plan/phase-10-plan.md, step 13, decision 6)", () => {
+  test("a design written before its layout came carries the roof alone; the layout landing writes it again with the modules", async () => {
+    const { project, results, saving, device, pass } = setUp();
+    project.getState().open(DEMO);
+    project.getState().commit(tilt(20));
+    pass(SAVE_DEBOUNCE);
+    await settled();
+    expect(device.puts).toHaveLength(1);
+    expect(device.puts[0]!.thumbnail).toContain('data-part="roof"');
+    expect(device.puts[0]!.thumbnail).not.toContain("data-module");
+
+    results.getState().layoutAsked(project.getState().edit);
+    results.getState().layoutArrived(project.getState().edit, LAYOUT);
+    expect(savingOf(saving.getState())).toBe("saving");
+    pass(SAVE_DEBOUNCE);
+    await settled();
+
+    expect(device.puts).toHaveLength(2);
+    expect(device.puts[1]!.thumbnail).toContain('data-module="true"');
+    expect(savingOf(saving.getState())).toBe("saved");
+  });
+
+  test("a layout that lands for a design not kept (the demo untouched) writes nothing", async () => {
+    const { project, results, device, pass } = setUp();
+    project.getState().open(DEMO);
+
+    results.getState().layoutAsked(project.getState().edit);
+    results.getState().layoutArrived(project.getState().edit, LAYOUT);
+    pass(SAVE_DEBOUNCE);
+    await settled();
+
+    expect(device.puts).toEqual([]);
   });
 });
 

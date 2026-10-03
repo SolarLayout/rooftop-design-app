@@ -42,8 +42,8 @@ export const MENU = "Menu";
 
 const CARD = "relative flex flex-col gap-3 rounded-card border border-line bg-surface-1 p-card-compact text-text shadow-card";
 const PRESS = "cursor-pointer press-motion focus-ring";
-/** The tile of the thumbnail: 320 by 180 in its own units, scaled across the card on surface-2 (decision 6). */
-const TILE = classNames("block aspect-video w-full overflow-hidden rounded-row bg-surface-2", PRESS, "hovered:bg-control-hover");
+/** The tile of the thumbnail: the plan of 320 by 180 in its own units, scaled across the card on surface-2 (decision 6). */
+const TILE = classNames("block aspect-video w-full overflow-hidden rounded-row bg-surface-2 *:size-full", PRESS, "hovered:lifted");
 
 /**
  * A design kept on this device (plan/phase-10-plan.md, step 12, decisions 6 and 7; the board "Home, designs on this device"):
@@ -66,7 +66,8 @@ export function DesignCard({ card, onOpen, onRename, onDuplicate, onSaveACopy, o
   return (
     <article aria-label={card.name} data-testid="design-card" className={classNames(CARD, className)}>
       <div className="relative">
-        <button type="button" aria-label={`Open ${card.name}`} onClick={onOpen} className={TILE} />
+        {/* The thumbnail is the app's own SVG, kept with the design on this device (lib/device/thumbnail.ts): its colours are classes of the page's tokens. */}
+        <button type="button" aria-label={`Open ${card.name}`} onClick={onOpen} className={TILE} dangerouslySetInnerHTML={{ __html: card.thumbnail }} />
         <IconButton
           ref={trigger}
           label={MENU}

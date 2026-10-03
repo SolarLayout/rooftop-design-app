@@ -12,7 +12,7 @@ import type { Project } from "../api";
 import { CLOCK_OF_THE_BROWSER, type Clock } from "../clock";
 import { withName } from "../flow/name-field";
 import type { ProjectState, ProjectStore } from "../stores/project-store";
-import { designOf, type ResultsState, type ResultsStore } from "../stores/results-store";
+import { designOf, layoutOf, type ResultsState, type ResultsStore } from "../stores/results-store";
 import type { DesignsDb } from "./designs-db";
 import { keptOf, type KeptDesign } from "./kept-design";
 
@@ -130,7 +130,8 @@ export function createSaving({ project, results, db, clock = CLOCK_OF_THE_BROWSE
     function recordOf(id: string): KeptDesign {
       const document = project.getState().project;
       if (document === null) throw new Error("No design is open: nothing can be kept.");
-      return { ...keptOf({ id, document, design: designOf(results.getState()), now: current.editedAt }), openedAt: current.openedAt };
+      const kept = keptOf({ id, document, design: designOf(results.getState()), layout: layoutOf(results.getState())?.layout ?? null, now: current.editedAt });
+      return { ...kept, openedAt: current.openedAt };
     }
 
     function schedule(id: string) {
@@ -182,10 +183,14 @@ export function createSaving({ project, results, db, clock = CLOCK_OF_THE_BROWSE
       if (current.id !== null) schedule(current.id);
     }
 
+    /** A run or a layout that lands belongs to the kept design: its facts, its thumbnail (decision 6). */
     function heardTheResults(state: ResultsState, before: ResultsState) {
+      if (current.id === null) return;
       const design = designOf(state);
-      if (design === null || design === designOf(before) || current.id === null) return;
-      schedule(current.id);
+      const layout = layoutOf(state);
+      const ranAnew = design !== null && design !== designOf(before);
+      const laidOutAnew = layout !== null && layout !== layoutOf(before);
+      if (ranAnew || laidOutAnew) schedule(current.id);
     }
 
     const stopHearingTheProject = project.subscribe(heardTheProject);
@@ -208,7 +213,7 @@ export function createSaving({ project, results, db, clock = CLOCK_OF_THE_BROWSE
       },
 
       keepAndOpen(document) {
-        expected = keptOf({ id: newId(), document, design: null, now: now() });
+        expected = keptOf({ id: newId(), document, design: null, layout: null, now: now() });
         project.getState().open(document);
       },
 

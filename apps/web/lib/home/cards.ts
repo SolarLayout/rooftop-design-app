@@ -3,6 +3,7 @@
 // components draw what this gives, and the saving store does what the menu asks.
 import type { KeptDesign } from "../device/kept-design";
 import { whenOf } from "../device/kept-design";
+import { thumbnailOf } from "../device/thumbnail";
 import { LONGEST_NAME } from "../flow/name-field";
 import { dcCapacity, energy, type Quantity } from "../format/vitals";
 
@@ -16,12 +17,14 @@ export type DesignCard = {
   waiting: string | null;
   /** "Edited 2 hours ago". */
   edited: string;
+  /** The plan of the kept layout as an SVG (decision 6); for a record kept before there were thumbnails, the plan of its roof alone. */
+  thumbnail: string;
 };
 
 export const WAITING_FOR_A_VOLTAGE = "Waiting for a system voltage";
 export const NOT_RUN_YET = "Not run yet";
 
-function cardOf({ id, name, document, facts, editedAt }: KeptDesign, now: number): DesignCard {
+function cardOf({ id, name, document, facts, thumbnail, editedAt }: KeptDesign, now: number): DesignCard {
   const { dcKwp, energyMwh } = facts;
   const numbers = dcKwp !== null && energyMwh !== null ? { capacity: dcCapacity(dcKwp), energy: energy(energyMwh) } : null;
   return {
@@ -31,6 +34,7 @@ function cardOf({ id, name, document, facts, editedAt }: KeptDesign, now: number
     facts: numbers,
     waiting: numbers !== null ? null : document.system_voltage === null ? WAITING_FOR_A_VOLTAGE : NOT_RUN_YET,
     edited: whenOf(editedAt, now),
+    thumbnail: thumbnail ?? thumbnailOf(document.roof, null),
   };
 }
 

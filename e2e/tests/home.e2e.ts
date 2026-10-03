@@ -12,7 +12,8 @@ import { expect, test } from "../fixtures";
 // cards of the designs kept on this device (step 12, decisions 6 and 7): a design kept after an edit stands with its name, the
 // roof's words, the capacity and the energy of the run and "Edited just now"; a card opens its design; Rename in place changes
 // the card and the kept design; Duplicate makes "Copy of …" and opens it; Save a copy downloads the .rtd; Delete asks and
-// removes. Every number and every word is read from the API's answers or the device's own records.
+// removes. The tile of a card is the plan of the kept layout (step 13, decision 6): the module rows once a layout has come,
+// the roof alone before. Every number and every word is read from the API's answers or the device's own records.
 
 const RUN = 90_000;
 const DEMO_NAME = "Pune demo roof";
@@ -212,6 +213,12 @@ test.describe("the cards of the designs on this device", () => {
     await expect(kept.getByTestId("stat-value").filter({ hasText: "kWp" })).toHaveText(capacity);
     await expect(kept.getByTestId("stat-value").filter({ hasText: "MWh" })).toHaveText(energy);
     await expect(kept).toContainText("Edited just now");
+    // The tile is the plan of the kept layout: the roof, the tank and the module rows of the run that landed.
+    const plan = kept.getByRole("button", { name: `Open ${DEMO_NAME}` }).locator("svg");
+    await expect(plan).toHaveAttribute("viewBox", /^-?[\d.]+ -?[\d.]+ [\d.]+ [\d.]+$/);
+    await expect(plan.locator('[data-part="roof"]')).toHaveCount(1);
+    await expect(plan.locator('[data-part="obstacle"]')).toHaveCount(6);
+    expect(await plan.locator("[data-module]").count()).toBeGreaterThan(100);
     await expect(onThisDevice(page)).toContainText("Nothing leaves this browser until you export.");
     await expect(onThisDevice(page)).not.toContainText("Designs you save appear here.");
   });
@@ -224,6 +231,10 @@ test.describe("the cards of the designs on this device", () => {
     await expect(card(page, "Block B").getByTestId("card-waiting")).toHaveText("Not run yet");
     await expect(card(page, "Warehouse 7").getByTestId("card-waiting")).toHaveText("Waiting for a system voltage");
     await expect(card(page, "Block B").getByText("kWp")).toHaveCount(0);
+    // A record kept without a thumbnail shows the plan of its roof alone: no layout has come for it here.
+    const plan = card(page, "Block B").getByRole("button", { name: "Open Block B" }).locator("svg");
+    await expect(plan.locator('[data-part="roof"]')).toHaveCount(1);
+    await expect(plan.locator("[data-module]")).toHaveCount(0);
 
     await card(page, "Block B").getByRole("button", { name: "Block B", exact: true }).click();
 
