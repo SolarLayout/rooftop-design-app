@@ -3,7 +3,8 @@
 // committed edit of one not yet kept, writes the kept design SAVE_DEBOUNCE after the last edit, so that edits shortly
 // after each other are one write. The demo is not kept until it is edited (D32); then it is a design like any other,
 // under an id made here. The facts of the card follow the last run, so a run that lands is written too. The id of
-// the open design is remembered (localStorage, one key) so that a reload finds it; a design not kept remembers nothing.
+// the open design is remembered (lib/device/remembered.ts, one key of localStorage) so that a reload finds it; a design
+// not kept remembers nothing.
 // A write that fails says Not saved with the device's words; the next edit, or Try again, tries again.
 import { createStore } from "zustand/vanilla";
 import { SAVE_DEBOUNCE } from "../../components/ui/design-numbers";
@@ -32,6 +33,8 @@ export type SavingState = {
   openFromDevice: (id: string) => Promise<boolean>;
   /** Writes again at once what the device refused. */
   tryAgain: () => void;
+  /** Reads the designs of the device: in the browser, once the app is there (the stores are made on the server too). */
+  start: () => void;
   /** Hears the stores no longer. */
   stop: () => void;
 };
@@ -163,11 +166,6 @@ export function createSaving({ project, results, db, clock = CLOCK_OF_THE_BROWSE
     const stopHearingTheProject = project.subscribe(heardTheProject);
     const stopHearingTheResults = results.subscribe(heardTheResults);
 
-    db.listDesigns().then(
-      (designs) => set({ designs: [...designs].sort((a, b) => b.editedAt - a.editedAt) }),
-      (error: unknown) => say?.(wordsOf(error)),
-    );
-
     return {
       saving: "not-kept",
       failure: null,
@@ -188,6 +186,13 @@ export function createSaving({ project, results, db, clock = CLOCK_OF_THE_BROWSE
         pending = recordOf(current.id);
         set({ saving: "saving", failure: null });
         writeWhatWaits();
+      },
+
+      start() {
+        db.listDesigns().then(
+          (designs) => set({ designs: [...designs].sort((a, b) => b.editedAt - a.editedAt) }),
+          (error: unknown) => say?.(wordsOf(error)),
+        );
       },
 
       stop() {

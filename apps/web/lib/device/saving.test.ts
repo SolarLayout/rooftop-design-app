@@ -391,9 +391,12 @@ describe("another design opened", () => {
 });
 
 describe("the designs on this device", () => {
-  test("are listed when the store is made, the newest edited first, and a design written joins them", async () => {
+  test("are listed when the store is started, the newest edited first, and a design written joins them", async () => {
     const older = { ...BLOCK_B, id: "kept-a", name: "Block A", editedAt: 500 };
     const { project, saving, pass, setNow } = setUp([older, BLOCK_B]);
+    expect(keptDesignsOf(saving.getState())).toEqual([]);
+
+    saving.getState().start();
     await settled();
     expect(keptDesignsOf(saving.getState()).map((one) => one.name)).toEqual(["Block B", "Block A"]);
 
@@ -416,6 +419,7 @@ describe("the designs on this device", () => {
     };
 
     const saving = createSaving({ project, results, db: device.db, clock: clockOfTheTest().clock, remember: () => undefined, say: (words) => said.push(words) });
+    saving.getState().start();
     await settled();
 
     expect(keptDesignsOf(saving.getState())).toEqual([]);

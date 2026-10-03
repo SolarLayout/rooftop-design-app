@@ -1,9 +1,9 @@
 import { classNames } from "@/components/ui/class-names";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { StatusMark } from "@/components/ui/StatusMark";
+import type { Saving } from "@/lib/device/saving";
 
-/** Not kept: the demo, and every design before designs are kept on the device. */
-export type Saving = "saved" | "saving" | "not-kept" | "not-saved";
+export type { Saving };
 
 type Props = {
   state: Saving;

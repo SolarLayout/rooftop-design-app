@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { savingOf } from "@/lib/device/saving";
 import { placeInShort } from "@/lib/format/place";
 import { withName } from "@/lib/flow/name-field";
 import { workspaceOf } from "@/lib/routes";
@@ -11,7 +12,7 @@ import { Toaster } from "@/components/ui/Toaster";
 import { ImportDrawing } from "./ImportDrawing";
 import { NotesDrawer } from "./NotesDrawer";
 import type { Note } from "./notes-view";
-import { useNotes, useProject, useStores, useToasts, useView } from "./stores";
+import { useNotes, useProject, useSaving, useStores, useToasts, useView } from "./stores";
 import { TopBar } from "./TopBar";
 import { TabBar } from "./WorkspaceNav";
 
@@ -28,8 +29,9 @@ export function useNotesOfTheShell(): Notes {
 
 function Frame({ children }: { children: ReactNode }) {
   const workspace = workspaceOf(usePathname());
-  const { flow, project, downloads } = useStores();
+  const { flow, project, downloads, saving } = useStores();
   const name = useProject(nameOf);
+  const savingState = useSaving(savingOf);
   const latitude = useProject(latitudeOf);
   const longitude = useProject(longitudeOf);
   const lens = useView(lensOf);
@@ -54,8 +56,7 @@ function Frame({ children }: { children: ReactNode }) {
           place={place}
           workspace={workspace}
           lens={lens}
-          // Designs are kept on the device from Phase 10 on.
-          saving="not-kept"
+          saving={savingState}
           notes={notes.length}
           onOpenNotes={ofTheShell.open}
           onImport={() => setImportOpen(true)}
@@ -66,7 +67,16 @@ function Frame({ children }: { children: ReactNode }) {
         <div data-workspace-frame className="relative flex min-h-0 grow flex-col overflow-y-auto">{children}</div>
         <TabBar current={workspace} lens={lens} />
       </div>
-      <NotesDrawer open={areNotesOpen} notes={notes} onClose={() => setNotesOpen(false)} onTryAgain={flow.tryAgain} />
+      {/* Try again asks again for what failed, whichever it was: a call of the API, or the write to the device. Each does nothing when nothing of its failed. */}
+      <NotesDrawer
+        open={areNotesOpen}
+        notes={notes}
+        onClose={() => setNotesOpen(false)}
+        onTryAgain={() => {
+          flow.tryAgain();
+          saving.getState().tryAgain();
+        }}
+      />
       <ImportDrawing open={isImportOpen} onClose={() => setImportOpen(false)} />
       {/* What the app says, in the page from the start: a download that failed (plan/phase-09-plan.md, decision 12). */}
       <Toaster toasts={toasts} aboveTheTabBar />

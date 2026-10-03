@@ -57,7 +57,7 @@ const BELOW_TARGET = design({ chosen: OPTION_D, moduleNotes: [] });
 const WITHOUT_A_VOLTAGE = design({ chosen: null, moduleNotes: [] });
 
 const UNREACHABLE = { code: "api_unreachable", message: "The server cannot be reached. Check the connection and try again." };
-const NO_FAILURE = { layoutNotes: null, designFailure: null, layoutFailure: null };
+const NO_FAILURE = { layoutNotes: null, designFailure: null, layoutFailure: null, savingFailure: null };
 
 const FITTING = { type: "progress", step: "Fitting modules on the roof", fraction: 0.08 } as const;
 const SHADING = { type: "progress", step: "Computing hourly shading for every module", fraction: 0.62 } as const;
