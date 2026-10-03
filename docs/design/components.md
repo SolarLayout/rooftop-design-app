@@ -775,8 +775,9 @@ The trigger is on `surface-2` with a border `line`, its chevron turned. Panel: 3
 `line-strong`, radius `radius-card-s`, `shadow-float`, padding 6.
 "This design": the name with a tick in accent, and under it the state of saving. "On this device": the designs
 kept here, the newest edited first, each a row of 44 like the actions' (a file icon of 18 in text-2, the name, and
-at the right in `text-caption`, text-3, the capacity of its last run, "357.28 kWp", or the roof's words before a
-run with a chosen option, "90.0 × 40.0 m flat roof, tilted rows"); the design that is open has the tick in accent
+under it in `text-caption`, text-3, the capacity of its last run, "357.28 kWp", or the roof's words before a
+run with a chosen option, "90.0 × 40.0 m flat roof, tilted rows": under the name, not at its right, since the
+names and the roof's words are long and the panel is 340); the design that is open has the tick in accent
 in the place of the icon. Without any, "Designs you save appear here." Then the actions, rows of 44 with an icon
 of 18 in text-2 and a fact at the right in `text-caption`, text-3: New design (Find the roof), Open a project
 (.rtd), Import a drawing (KMZ, KML, DXF), Save a copy (.rtd), Home. Sections are divided by a line `line`; their
@@ -789,8 +790,8 @@ made by `rowsOnTheDeviceOf` (`components/shell/switcher-view.ts`) of the designs
 - The designs on this device and the actions are each a `menu`: the arrows go through the rows of the menu the
   key is pressed in, Home and End to its ends. Open, the focus is on the first row of the panel. A design's row
   pressed closes the switcher and opens that design from the device, which runs again as the demo does (Phase
-  10, step 5); the open one says so to a screen reader (`aria-current`). A long name is cut with an ellipsis
-  before the fact is.
+  10, step 5); the open one says so to a screen reader (`aria-current`). A name or a fact too long for the row
+  is cut with an ellipsis.
 - An action that comes with a later phase is shown and cannot be used (`aria-disabled`, opacity
   `opacity-disabled`). It takes the focus, so that it is found. Today that is Open a project (Phase 10).
   Import a drawing opens its dialog (Phase 5, step 13). Save a copy downloads the project file, the `.rtd` the API

@@ -149,7 +149,7 @@ function ThisDesign({ name, saving, onOpenNotes, onTake, onRename, shownAs }: Om
   );
 }
 
-/** The designs kept on this device as rows of the menu: the open one marked with the tick; a row pressed opens its design. */
+/** The designs kept on this device as rows of the menu, the fact under the name: the open one marked with the tick; a row pressed opens its design. */
 function OnThisDevice({ designs, onTake, onOpenDesign }: Required<Pick<MenuProps, "designs">> & Pick<MenuProps, "onTake" | "onOpenDesign">) {
   return (
     <ul role="menu" aria-label="On this device" onKeyDown={onMenuKeyDown} className="mb-1 flex flex-col gap-0.5">
@@ -167,8 +167,11 @@ function OnThisDevice({ designs, onTake, onOpenDesign }: Required<Pick<MenuProps
             className={PRESSABLE_ROW}
           >
             {isOpen ? <Icon name="tick" stroke="tick" size={18} className="text-accent" /> : <Icon name="file" size={18} stroke="light" className="text-text-2" />}
-            <span className="min-w-0 grow truncate">{name}</span>
-            <span className={classNames(FACT, "min-w-0 max-w-1/2 truncate")}>{fact}</span>
+            {/* The fact stands under the name, as the board draws it: the names and the roof's words are long, the panel is not. */}
+            <span className="flex min-w-0 grow flex-col">
+              <span className="truncate">{name}</span>
+              <span className={classNames(FACT, "truncate")}>{fact}</span>
+            </span>
           </button>
         </li>
       ))}

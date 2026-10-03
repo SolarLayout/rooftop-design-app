@@ -1,5 +1,5 @@
 // The rows under "On this device" in the project switcher (plan/phase-10-plan.md, step 5): the designs kept on this
-// device, the newest edited first, each with its name and one fact at the right. A pure function: the component draws
+// device, the newest edited first, each with its name and one fact under it. A pure function: the component draws
 // what it gives.
 import type { KeptDesign } from "../../lib/device/kept-design";
 import { dcCapacity, said } from "../../lib/format/vitals";
