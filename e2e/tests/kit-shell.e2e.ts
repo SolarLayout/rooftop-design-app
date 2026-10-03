@@ -688,7 +688,7 @@ test.describe("Present and Export", () => {
     const go = example(page, "export").getByRole("link", { name: "Export" });
     const box = await boxOf(go);
 
-    await expect(go).toHaveAttribute("href", "/handover/report");
+    await expect(go).toHaveAttribute("href", "/handover");
     await expect(go).toHaveCSS("background-color", COLOUR.accent);
     await expect(go).toHaveCSS("color", COLOUR.accentInk);
     expect(box.height).toBe(isDesktop(testInfo.project.name) ? 36 : 44);
@@ -722,7 +722,7 @@ test.describe("Workspace navigation", () => {
 
     await expect(nav.getByRole("link", { name: "Studio" }).first()).toHaveAttribute("href", "/studio/array");
     await expect(nav.getByRole("link", { name: "Performance" }).first()).toHaveAttribute("href", "/performance");
-    await expect(nav.getByRole("link", { name: "Handover" }).first()).toHaveAttribute("href", "/handover/report");
+    await expect(nav.getByRole("link", { name: "Handover" }).first()).toHaveAttribute("href", "/handover");
   });
 
   test("tablet: a link takes the pointer 44 high", async ({ page }, testInfo) => {

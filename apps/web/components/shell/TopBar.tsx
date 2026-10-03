@@ -4,7 +4,7 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
 import { Tooltip } from "@/components/ui/Tooltip";
-import { FIRST_ITEM, pathOfItem, type Lens, type Workspace } from "@/lib/routes";
+import { HANDOVER, type Lens, type Workspace } from "@/lib/routes";
 import { Logo } from "./Logo";
 import { ProjectSwitcher } from "./ProjectSwitcher";
 import { SaveState, type Saving } from "./SaveState";
@@ -55,7 +55,7 @@ export function Export() {
       kind="primary"
       size="s"
       icon="download"
-      href={pathOfItem(FIRST_ITEM)}
+      href={HANDOVER}
       className="w-touch px-0 tablet-wide:w-auto tablet-wide:px-4"
     >
       <span className={WORD_WHERE_THERE_IS_ROOM}>Export</span>
