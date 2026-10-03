@@ -1,4 +1,4 @@
-"""The files of a design."""
+"""The files of a design, and the project file."""
 
 from typing import Literal
 
@@ -8,7 +8,7 @@ from rooftop_api import schemas
 from rooftop_api.errors import JSON_ERROR_RESPONSES
 from rooftop_api.services import export as service
 
-ExportKind = Literal["pdf", "dxf", "kmz", "csv", "sld"]
+ExportKind = Literal["pdf", "dxf", "kmz", "csv", "sld", "rtd"]
 FILE = {"schema": {"type": "string", "format": "binary"}}
 FILES = {
     200: {
@@ -22,13 +22,15 @@ router = APIRouter(tags=["export"], responses={**JSON_ERROR_RESPONSES, **FILES})
 
 @router.post("/export/{kind}", response_class=Response, operation_id="exportDesign")
 def export(kind: ExportKind, project: schemas.Project) -> Response:
-    """A file of the design, for the option the project has chosen.
+    """A file of the design, for the option the project has chosen; or the project file.
 
     pdf: the report, A4 landscape. dxf: the layout, R2010 in metres, a layer for every string.
     kmz: roof, obstacles and the modules in use, for Google Earth. csv: the 8,760 hours.
-    sld: the single-line diagram as a PNG.
+    sld: the single-line diagram as a PNG. rtd: the project file, format 2, as the desktop app reads
+    it: the request as the engine holds it, and nothing of the design.
 
-    The project must name its chosen option, and the design must have it.
+    For every kind but rtd the project must name its chosen option, and the design must have it.
+    rtd needs no chosen option, no system voltage, no weather and no run.
     """
     file = service.export(kind, project)
     return Response(
