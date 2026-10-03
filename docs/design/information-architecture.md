@@ -13,6 +13,7 @@ separate screens, and there is no Run button.
 | Studio | `/studio/[lens]` | Shape the design on the 3D roof. `lens` is `roof`, `array`, `sun` or `strings` |
 | Performance | `/performance` | Prove the energy: KPIs, P-values, loss chain, monthly, 25 years, weather, assumptions |
 | Handover | `/handover/[item]` | Deliver: report, single-line diagram, BOM, cable schedule, DXF, KMZ, hourly CSV, project file |
+| Present | `/present` | Show: the design's tour on the whole screen without the shell, looping until a key or a touch returns to the Studio |
 
 Studio, Performance and Handover are the three **workspaces**. They share one project and one top bar.
 

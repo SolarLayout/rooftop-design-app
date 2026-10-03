@@ -922,8 +922,9 @@ In code: `TopBar`, `WorkspaceNav`, `TabBar`, `LensNav`, `Shell`, `Studio` (`comp
   open says so (`aria-current`). They look as the segmented control and the rail of the mockups.
 - The Studio is entered at the lens that was opened last.
 - On tablet a link of the workspaces is 36 high and takes the pointer 44 high.
-- Present comes with Phase 10. Until then it is shown and cannot be used: dimmed, without shadow, and its
-  tooltip says "Comes with Home and projects". It takes the focus. The phone has no Present.
+- Present is a link to `/present` in the look of a secondary button (`plan/phase-10-plan.md`, decision 8): the tour
+  of the design on the whole screen, without the shell, left by any key, pointer or touch to the Studio's last lens
+  (the board "Present"). On desktop with its word, on tablet the icon alone, 44. The phone has no Present.
 - Export is a link to Handover. It shows its icon alone on phone, and on tablet under 820 wide.
 - Where the top bar is short of room: `guidelines.md`, "Responsive rules".
 - The Layers button of the rail, the view controls and the time control belong to the stage and come with it
