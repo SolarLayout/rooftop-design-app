@@ -39,7 +39,10 @@ while the suite saturated the machine's twenty cores. A CI-scale job is not an i
 Every task also keys on the lockfile, the toolchain (`ROOFTOP_TOOLCHAIN`, set by the check from the versions of Node, bun,
 uv and Python), `turbo.json` and the check's own code (`tools/check.ts`, `tools/check/**`): a change to the check runs
 everything once. The caches are `.turbo/` here and `.turbo/cache` on GitHub, never committed. On GitHub the browser step is
-left out (`--skip=e2e`); a push to `main` runs `--fresh`.
+left out (`--skip=e2e`); a push to `main` runs `--fresh`. There pytest runs whole and untraced (`ROOFTOP_CHECK_SELECT=0`),
+spread over the runner's cores by pytest-xdist (`tools/check/pytest-arguments.ts`): in one process the 720 tests took eight
+minutes of a job allowed fifteen, and a job that hits its limit is cancelled before the cache is saved, so that the next
+run starts cold again. Here, with the selection, testmon traces one process and xdist is not used.
 
 ## The browser tests in groups
 
