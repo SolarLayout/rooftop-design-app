@@ -43,6 +43,7 @@ from rooftop_api.schemas.health import Health
 from rooftop_api.schemas.layout import Keepout, Layout, LayoutReadouts, LayoutResponse, PlacedModule
 from rooftop_api.schemas.losses import Losses
 from rooftop_api.schemas.project import Project, RoofInput
+from rooftop_api.schemas.project_file import MAX_PROJECT_TEXT, OpenedProject, ProjectFile
 from rooftop_api.schemas.report import ReportPage, ReportPages
 from rooftop_api.schemas.roof import Obstacle, Roof
 from rooftop_api.schemas.roof_import import ImportedRoof, RoofFile
@@ -81,11 +82,13 @@ __all__ = [
     "LayoutResponse",
     "LossStep",
     "Losses",
+    "MAX_PROJECT_TEXT",
     "Module",
     "ModuleResponse",
     "MpptLoad",
     "NoOptions",
     "Obstacle",
+    "OpenedProject",
     "Option",
     "PVString",
     "PValue",
@@ -93,6 +96,7 @@ __all__ = [
     "Point",
     "Polygon",
     "Project",
+    "ProjectFile",
     "ReportPage",
     "ReportPages",
     "Roof",

@@ -100,7 +100,8 @@ def _known(cls, d: dict) -> dict:
     return {k: v for k, v in d.items() if k in names}
 
 
-def _not_included(what: str, path: str, kind: str = "") -> str:
+def not_included(what: str, path: str, kind: str = "") -> str:
+    """The words for a file the project names by path without its text: it must be chosen again."""
     name = file_name(path) + (f" ({kind})" if kind else "")
     return f"The {what} file {name} is not included in this project. Choose it again."
 
@@ -108,7 +109,7 @@ def _not_included(what: str, path: str, kind: str = "") -> str:
 def _here(path: str, what: str, kind: str, field_name: str, local_files: bool) -> str:
     """The path of a PAN or OND file of the project, or the error that asks for the file again."""
     if not local_files or not Path(path).is_file():
-        raise MissingEquipmentFile(_not_included(what, path, kind), field=field_name)
+        raise MissingEquipmentFile(not_included(what, path, kind), field=field_name)
     return path
 
 
@@ -190,7 +191,7 @@ class Design:
             if p.weather_source != "csv" and not download:
                 raise WeatherNotLoaded(self._weather_missing_message(), field="weather_json")
             if p.weather_source == "csv" and p.weather_csv and not p.weather_csv_text and not self.local_files:
-                raise WeatherNotLoaded(_not_included("CSV weather", p.weather_csv), field="weather_csv")
+                raise WeatherNotLoaded(not_included("CSV weather", p.weather_csv), field="weather_csv")
             self.weather = wx.load(p.weather_source, p.roof.lat, p.roof.lon, p.weather_csv or None,
                                    p.weather_csv_text, cache)
             p.weather_json = self.weather.to_json()
