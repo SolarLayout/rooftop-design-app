@@ -133,7 +133,8 @@ test.describe("the list (decisions 3 and 14)", () => {
       return;
     }
     await expect(preview(page).getByRole("heading", { level: 2, name: "Design report" })).toBeVisible();
-    await expect(page.getByTestId("preview-facts")).toHaveText(factsOf(answer)[0]!);
+    // The report's pages count themselves into its facts once they come (handover-report.e2e.ts): the paper size stands either way.
+    await expect(page.getByTestId("preview-facts")).toContainText(factsOf(answer)[0]!);
     await expect(previewAction(page)).toHaveAccessibleName("Download PDF");
   });
 

@@ -240,3 +240,35 @@ describe("exportDesign", () => {
     expect(thrown).toMatchObject({ status: 422, code: "no_option_chosen", field: "chosen_option" });
   });
 });
+
+describe("reportPages (plan/phase-09-plan.md, decision 5)", () => {
+  const PAGES = { day: "2026-10-03", dpi: 150, pages: [{ number: 1, title: "Summary", width: 1753, height: 1240, png: "iVBORw0KGgo=" }] };
+
+  test("posts the project as JSON to /export/report-pages with the reader's day, and hands out the pages", async () => {
+    const { api, calls } = server(() => json(PAGES));
+
+    const answer = await api.reportPages(PROJECT, { day: "2026-10-03" });
+
+    expect(answer).toEqual(PAGES);
+    expect(calls.map((call) => [call.method, call.url, call.body])).toEqual([["POST", "/api/export/report-pages?day=2026-10-03", PROJECT]]);
+    expect(calls[0]!.headers["content-type"]).toBe("application/json");
+  });
+
+  test("without a day the API prints its own today: no query", async () => {
+    const { api, calls } = server(() => json(PAGES));
+
+    await api.reportPages(PROJECT);
+
+    expect(calls.map((call) => call.url)).toEqual(["/api/export/report-pages"]);
+  });
+
+  test("the pages refused are thrown as the error of the API, as the PDF's are", async () => {
+    const refused = { error: { code: "system_voltage_missing", message: "Choose a system voltage to size the strings", field: "system_voltage" } };
+    const { api } = server(() => json(refused, 422));
+
+    const thrown = await api.reportPages(PROJECT, { day: "2026-10-03" }).catch((error: unknown) => error);
+
+    expect(thrown).toBeInstanceOf(ApiError);
+    expect(thrown).toMatchObject({ status: 422, code: "system_voltage_missing", field: "system_voltage" });
+  });
+});

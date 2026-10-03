@@ -198,6 +198,7 @@
   --columns-p-values-phone: 1fr 1fr 1.5fr;
   --columns-loss-chain: 210px 84px 64px 232px minmax(0, 1fr);
   --columns-loss-chain-tablet: 230px 96px 72px 196px minmax(0, 1fr);
+  --aspect-paper: 297 / 210;
   --columns-loss-chain-phone: minmax(0, 1fr) auto auto;
 
   --radius-swatch: 3px;
@@ -399,6 +400,7 @@
   --grid-template-columns-loss-chain: var(--columns-loss-chain);
   --grid-template-columns-loss-chain-tablet: var(--columns-loss-chain-tablet);
   --grid-template-columns-loss-chain-phone: var(--columns-loss-chain-phone);
+  --aspect-paper: var(--aspect-paper);
 
   --breakpoint-tablet: 640px;
   --breakpoint-desktop: 1101px;

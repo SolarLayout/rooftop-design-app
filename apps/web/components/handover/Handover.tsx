@@ -7,15 +7,17 @@ import { useDownloads, useProject, useResults, useStores } from "@/components/sh
 import { useHistoryKeys } from "@/components/shell/use-history-keys";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
-import { byItemOf, keptOf } from "@/lib/handover/downloads-store";
+import { byItemOf, keptOf, pagesOf, pagesStatusOf } from "@/lib/handover/downloads-store";
 import { withName } from "@/lib/flow/name-field";
 import { pageViewOf } from "@/lib/handover/page-view";
+import { reportViewOf, type ShownPage } from "@/lib/handover/report-view";
 import { FIRST_ITEM, HANDOVER, type HandoverItem } from "@/lib/routes";
 import { editOf, nameOf, projectOf } from "@/lib/stores/project-store";
 import { designFailureOf, designOf, designStatusOf } from "@/lib/stores/results-store";
 import { DeliverableList } from "./DeliverableList";
 import { Preview } from "./Preview";
 import { ProjectFilePreview } from "./ProjectFilePreview";
+import { PageButton, ReportPreview, ReportSkeleton } from "./ReportPreview";
 
 type Props = {
   /** The item that is open; null at the list's own address, where desktop and tablet show the first item beside the list. */
@@ -43,7 +45,8 @@ const BACK = classNames(
  * The Handover workspace (the boards "Handover" on three sizes and "Handover, states"): the list of what is delivered, its
  * facts from the run's chosen option, the weather and the document (decision 14), and the preview of the item that is
  * open; before options the API's words leading to the Strings lens, at the first load skeletons, a run that failed the
- * API's words with Try again (decision 11).
+ * API's words with Try again (decision 11). The report's pages are asked for once per edit while its item is open and has
+ * an option, with the reader's day, as its PDF is (decisions 2 and 5).
  */
 export function Handover({ item }: Props) {
   const { flow, downloads, project } = useStores();
@@ -52,16 +55,32 @@ export function Handover({ item }: Props) {
   const edit = useProject(editOf);
   const byItem = useDownloads(byItemOf);
   const projectFile = useDownloads((state) => keptOf(state, "rtd", edit));
+  const keptPages = useDownloads(pagesOf);
+  const pagesStatus = useDownloads(pagesStatusOf);
+  const [shownPage, setShownPage] = useState<ShownPage>(null);
   // The page's edits (the name) are committed edits like the Studio's: the keys of the history undo and redo them.
   useHistoryKeys();
   const design = useResults(designOf);
   const designStatus = useResults(designStatusOf);
   const failure = useResults(designFailureOf);
-  const view = useMemo(() => pageViewOf({ name, design, designStatus, failure, pages: null }), [name, design, designStatus, failure]);
+  const pages = keptPages?.answer.pages.length ?? null;
+  const view = useMemo(() => pageViewOf({ name, design, designStatus, failure, pages }), [name, design, designStatus, failure, pages]);
   const shown = item ?? FIRST_ITEM;
   const row = view.rows.find((one) => one.id === shown) ?? view.rows[0]!;
   const download = row.kind === null ? undefined : () => void downloads.getState().download(row.id);
   const isProjectFileOpen = shown === "project-file" && document !== null;
+  const isReport = shown === "report";
+  // The pages are asked once per edit while the report is open with an option; the store keeps them (decision 5). A refusal
+  // is said under the head by the body, with Try again, which asks here too.
+  const isReportOpen = isReport && !row.waits;
+  useEffect(() => {
+    if (!isReportOpen) return;
+    void downloads.getState().askPages();
+  }, [downloads, edit, isReportOpen]);
+  const askPagesAgain = () => void downloads.getState().askPages();
+  const report = useMemo(() => reportViewOf({ kept: keptPages, edit, status: pagesStatus, shown: shownPage }), [keptPages, edit, pagesStatus, shownPage]);
+  /** The page chosen is kept for these very pages: new pages begin at the first. */
+  const showPage = (page: number) => setShownPage(keptPages === null ? null : { edit: keptPages.edit, page });
   // The .rtd is asked once per edit of the document while its item is open, for its size; Save a copy saves the same bytes
   // (decision 9). A file that did not come is said by Save a copy, in a toast; here its size is left out.
   const [askFailedFor, setAskFailedFor] = useState<number | null>(null);
@@ -89,8 +108,26 @@ export function Handover({ item }: Props) {
           <Icon name="chevron-left" size={16} />
           Handover
         </Link>
-        <Preview row={row} view={view} onTryAgain={flow.tryAgain} onAction={download} isOnItsWay={byItem[row.id]?.status === "on-its-way"}>
-          {isProjectFileOpen ? (
+        <Preview
+          row={row}
+          view={view}
+          onTryAgain={flow.tryAgain}
+          onAction={download}
+          isOnItsWay={byItem[row.id]?.status === "on-its-way"}
+          actions={
+            isReport ? (
+              <>
+                <PageButton direction="previous" view={report} onPage={showPage} />
+                <PageButton direction="next" view={report} onPage={showPage} />
+              </>
+            ) : undefined
+          }
+          words={isReport ? report.head : undefined}
+          skeleton={isReport ? <ReportSkeleton /> : undefined}
+        >
+          {isReport ? (
+            <ReportPreview view={report} onPage={showPage} onTryAgain={askPagesAgain} />
+          ) : isProjectFileOpen ? (
             <ProjectFilePreview document={document} design={design} bytes={projectFile?.blob.size ?? null} isWaitingForBytes={askFailedFor !== edit} onRename={rename} />
           ) : (
             <NotBuiltYet />

@@ -105,6 +105,12 @@ alone: the legend says the range and a selected module its value (plan/phase-06-
 | `--color-paper-muted` | `#4A4F57` | Secondary text on the sheet |
 | `--color-paper-line` | `#DDD9CF` | Lines on the sheet |
 
+The shape of a page is a token too, so that the paper has its height before the page is there:
+
+| Token | Value | Use |
+|---|---|---|
+| `--aspect-paper` | `297 / 210` | A4 landscape: the paper's skeleton while the pages come (`aspect-paper`) |
+
 ## 3D scene palette (TypeScript, `apps/web/lib/scene-palette.ts`)
 
 Not CSS: the 3D scene takes its colours from a TypeScript palette, because three.js cannot read a stylesheet.
