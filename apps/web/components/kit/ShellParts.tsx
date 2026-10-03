@@ -164,7 +164,7 @@ export function ProjectAndSaving({ onPress }: Props) {
             <ProjectMenu name={DESIGN.name} saving="not-kept" onOpenNotes={openNotes} onImport={() => onPress("Import a drawing")} onTake={() => undefined} onSaveACopy={() => onPress("Save a copy")} onRename={(name) => onPress(`Rename, ${name}`)} />
           </div>
         </Wide>
-        <Wide name="switcher-designs" caption="Designs on this device: the newest edited first, the open one with the tick, the capacity or the roof at the right (plan phase 10, step 5)">
+        <Wide name="switcher-designs" caption="Designs on this device: the newest edited first, the open one with the tick, the capacity or the roof under the name (plan phase 10, step 5)">
           <div className="desktop:w-85">
             <ProjectMenu
               name={DESIGN.name}
