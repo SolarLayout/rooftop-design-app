@@ -28,6 +28,8 @@ asks for one. Paste the block inside the file into a new session started in this
 | 008 | `008-phase-5-studio-roof-array.md` | Phase 5: the plan, the boards it lacks, the first pull request of the 3D roof and the lenses | 2026-09-30 | used by session 9, 2026-09-30 to 2026-10-02. The plan, the six boards, the five pull requests (#42 to #47) and the close are done |
 | 009 | `009-phase-6-studio-sun.md` | Phase 6: the plan, the boards it lacks, the pull requests of the Sun lens | 2026-10-02 | used by session 10, 2026-10-02. The plan, the six boards, the four pull requests and the light's fix (#48 to #52) and the close are done |
 | 010 | `010-phase-7-studio-strings.md` | Phase 7: the plan, the boards it lacks, the pull requests of the Strings lens | 2026-10-02 | used by session 11, 2026-10-02. The plan, the six boards, the five pull requests (#53 to #57) and the close are done |
+| 011 | `011-phase-8-performance.md` | Phase 8: the plan, the boards it lacks, the pull requests of Performance | 2026-10-02 | used by session 12, 2026-10-02 to 2026-10-03. The plan, the six boards, the four pull requests (#58 to #61) and the close are done |
+| 012 | `012-phase-9-handover.md` | Phase 9: the plan, the boards it lacks, the pull requests of Handover and the exports | 2026-10-03 | open; next |
 
 ## Shape of a prompt file
 
@@ -41,4 +43,3 @@ Written: date, by which session. Status: open | used | superseded by NNN.
 ## Notes for the owner
 (what to expect, how long, what may need a decision)
 ```
-| 011 | `011-phase-8-performance.md` | Phase 8: the plan, the boards it lacks, the pull requests of Performance | 2026-10-02 | used by session 12 |

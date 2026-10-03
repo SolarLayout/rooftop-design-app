@@ -89,8 +89,8 @@ run. The test stack's API starts with downloads of weather off (`ROOFTOP_WEATHER
 ## Next, in order
 
 1. Phase 9, Handover and exports (`plan/phase-09-handover.md`): the plan first, the way `phase-08-plan.md` was written, then the
-   boards it lacks (Handover on tablet and phone, the previews, the states), then the pull requests. A resume prompt is written when
-   the owner asks.
+   boards it lacks (Handover on tablet and phone, the previews, the states), then the pull requests. Work order:
+   `plan/resume/012-phase-9-handover.md`.
 2. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
 3. In parallel with any phase: the screens still to draw (Phase 0).
 
