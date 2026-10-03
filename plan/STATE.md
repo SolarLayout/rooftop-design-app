@@ -3,10 +3,10 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-03, session 13, Phase 9 in progress: the plan and the four boards of step 0 approved; pull request 1 (#62,
-the Handover frame, the `.rtd` download, the report's day, the name) and 2 (#64, the report previewed as the engine's pages, the PDF of the
-same day) merged; the browser step of `bun check` split into six groups and the fast check made the gate (#63, D54, D55, `docs/checks.md`).
-`main` is green.
+**Last updated:** 2026-10-03, session 13, at the close of Phase 9: #62 (the Handover frame, the `.rtd` download, the report's day, the
+name), #64 (the report previewed as the engine's pages), #65 (the SLD, the bill of materials, the cable schedule), #66 (the zip, the CAD
+layout, the Google Earth model, the hourly data, Download all) are merged; #63 split the browser step of `bun check` into groups and made
+the fast check the gate (D54, D55). `main` is green. Phase 10 is begun unattended at the owner's pre-approval (session 13, message 18).
 
 ## Where we are
 
@@ -22,14 +22,15 @@ same day) merged; the browser step of `bun check` split into six groups and the 
 | 6 Studio, Sun lens | Done (session 10: #48 to #52) | What exists, what was decided, what was found: `phase-06-studio-sun.md`, "As built". How it was built: `phase-06-plan.md` |
 | 7 Studio, Strings lens | Done (session 11: #53 to #57) | What exists, what was decided, what was found: `phase-07-studio-strings.md`, "As built". How it was built: `phase-07-plan.md` |
 | 8 Performance | Done (session 12: #58 to #61) | What exists, what was decided, what was found: `phase-08-performance.md`, "As built". How it was built: `phase-08-plan.md` |
-| 9 Handover and exports | In progress (session 13) | The plan: `phase-09-plan.md`; the boards approved 2026-10-03 |
-| 10 to 11 | Not started | |
+| 9 Handover and exports | Done (session 13: #62, #64 to #66; #63 on the way) | What exists, what was decided, what was found: `phase-09-handover.md`, "As built". How it was built: `phase-09-plan.md` |
+| 10 Home, projects on the device, Present | In progress (session 13, unattended) | Pre-approved whole by the owner; the plan `phase-10-plan.md` comes first |
+| 11 | Not started | |
 
 ## In flight
 
-- `feat/phase-9-sld-tables` (pull request 3: the SLD drawn in the browser, the bill of materials, the DC cable schedule with sorting
-  and Copy as table): built by an agent, being rebased over #64; the session runs its browser tests next.
-- `feat/phase-9-files` (pull request 4: the zip, the DXF, KMZ and CSV previews, Download all): being built by an agent.
+Nothing of Phase 9. Phase 10 begins: the resume prompt `plan/resume/013-phase-10-home-projects-present.md`, then its plan, its boards, its
+pull requests, all without a stop for approval (the owner, 2026-10-03: "You are pre-approved for all Phase 10 work"); after Phase 10 the
+resume prompt for Phase 11 is written and the session waits for the owner.
 
 ## What the web app has today
 
@@ -47,7 +48,8 @@ same day) merged; the browser step of `bun check` split into six groups and the 
 | The places that have an address: workspaces, lenses, items of Handover | `apps/web/lib/routes.ts` |
 | The shell: top bar, navigation, project switcher, state of saving, vitals, notes; the frame of the Studio | `apps/web/components/shell`; around `apps/web/app/(workspaces)` |
 | The stores for React, and the hooks that read them | `apps/web/components/shell/stores.tsx` |
-| Routes | `/` (a placeholder with "Find my roof"), `/find` (the map, the search, the outline), `/studio/[lens]` (Roof, Array, Sun and Strings built), `/performance` (built), `/handover` (the list; on desktop and tablet with the first item beside it) and `/handover/[item]` (the item, pushed over the list on phone; the project file built, the other bodies placeholders until pull requests 2 to 4) |
+| Routes | `/` (a placeholder with "Find my roof"), `/find` (the map, the search, the outline), `/studio/[lens]` (Roof, Array, Sun and Strings built), `/performance` (built), `/handover` (the list; on desktop and tablet with the first item beside it) and `/handover/[item]` (the item, pushed over the list on phone; every item built) |
+| Handover: the list with its facts from the run, the preview frame and its states, the downloads (a blob saved by an anchor, a store without React, a file kept per edit, up to three tries, a failure as a toast), the shell's `Toaster`, the project file with the name as a `TextField` and Save a copy (here and in the switcher); the report as the engine's pages in the paper frame with thumbnails, keys and Download PDF of the same day; the SLD as an SVG from the system in the series colours with a tooltip per MPPT and the engine's PNG; the bill of materials and the cable schedule as tables with sorting and Copy as table; the CAD layout (the engine's plan, the DXF's layers), the Google Earth model (the KML's names, what is not in it), the hourly data (the CSV's first rows and its columns); Download all as one zip | `apps/web/components/handover`, `apps/web/lib/handover`; `components/ui/TextField.tsx`, `Table.tsx` (sorting), `ValueTooltip.tsx` (a side); `components/shell/ProjectSwitcher.tsx`, `NoOptionsCard.tsx`, `UnderTheTitle.tsx`, `use-history-keys.ts`; `lib/flow/name-field.ts` |
 | The map: the provider, Esri, the search's reading of what is typed, the scale bar, the states without a map | `apps/web/lib/map` |
 | The outline: the frame of metres, the measures, snapping, typed lengths, the rectangle, the history, the nudge, the obstacles, the roof by hand, the reducer | `apps/web/lib/outline` |
 | Find and outline: the screen, the map (MapLibre), the search, the outline drawn on the map, the panel, the tools (the ways to outline while the roof is open; the obstacles once it is closed), the height dialog, the obstacle list, the roof type, Build; the roof by hand and the plan drawn without a map | `apps/web/components/find` |
@@ -83,24 +85,26 @@ the map and opens the demo (D44).
 | `POST /layout`, `POST /sun` | `computeLayout`, `computeSun` |
 | `POST /weather` | `loadWeather` |
 | `POST /design`, progress as events | `runDesign` |
-| `POST /export/{pdf,dxf,kmz,csv,sld,rtd}?day=` | `exportDesign` |
+| `POST /export/{pdf,dxf,kmz,csv,sld,rtd,zip}?day=` | `exportDesign` |
 | `POST /export/report-pages?day=` | `reportPages` |
 
 On the demo: a design run takes 12 s, also after a change of the weather source (the shading computed again); 1.7 s after a
 change of a loss, of Uc or of the voltage (the candidates simulated in threads); 0.28 s after a change of degradation, the CO2
 factor, the exceedance levels or a sigma (worked out after the memo); 0.2 s when nothing changed; an export 0.2 to 0.9 s after a
-run. The test stack's API starts with downloads of weather off (`ROOFTOP_WEATHER_DOWNLOADS=off`); the dev stack downloads.
+run; the report's six pages as images about 1 s and 940 KB; the zip of everything 1.5 to 1.7 s and 373 KB. The test stack's API starts with downloads of weather off (`ROOFTOP_WEATHER_DOWNLOADS=off`); the dev stack downloads.
 
 ## Next, in order
 
-1. Phase 9's pull requests 2 to 4 (`plan/phase-09-plan.md`), each checked with the groups it reaches (D55). Work order:
-   `plan/resume/012-phase-9-handover.md`.
+1. Phase 10, Home, projects on the device, Present mode (`plan/phase-10-home-projects-present.md`): the resume prompt 013, the plan the
+   way `phase-09-plan.md` was written, the boards it lacks (Home on tablet and phone, the designs on this device, Open a project, Present),
+   the pull requests, each checked with the groups it reaches (D55), every picture looked at beside its board; all without a stop for
+   approval (pre-approved by the owner, 2026-10-03). Then the resume prompt for Phase 11, and wait for the owner.
 2. The browser tests made lighter and steadier, each as a pull request of its own when the owner says: each workspace's pictures moved
-   from `screens.e2e.ts` into its group's suite (a Handover change would then pay about 3 minutes of browser tests, not 11); hardware
-   WebGL for the tests, measured against the baselines on the Studio group first (the owner's yes before the ten-minute run); the kit on
-   two sizes rather than three; fewer workers; a production build of the web app for the test stack.
-2. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
-3. In parallel with any phase: the screens still to draw (Phase 0).
+   from `screens.e2e.ts` into its group's suite (a Handover change would then pay about 3 minutes of browser tests, not 11); the kit on
+   two sizes rather than three; fewer workers; a production build of the web app for the test stack, which would also tell whether the
+   rewrite's dropped answers are `next dev`'s alone.
+3. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
+4. In parallel with any phase: the screens still to draw (Phase 0).
 
 ## Facts about this machine and setup
 
@@ -124,7 +128,7 @@ run. The test stack's API starts with downloads of weather off (`ROOFTOP_WEATHER
 
 | Item | Where it belongs |
 |---|---|
-| Shown and cannot be used, each until its phase: Present (Phase 10); in the project switcher Open a project (Phase 10); on Handover "Download all" (Phase 9, pull request 4) | The phase that builds each makes it a link or a button |
+| Shown and cannot be used, each until its phase: Present (Phase 10); in the project switcher Open a project (Phase 10) | Phase 10 makes each a link or a button |
 | The drawer of the notes comes and goes without motion; the tokens have 240 ms for panels | Phase 11, or when the owner asks |
 | The obstacle list of Find shows each height and does not edit it (the Roof lens does); trees are not drawn on the map; the by-hand roof's corners are not dragged on the map | Phase 11, or when the owner asks |
 | The Esri key is baked into the page at build time: the "no key" state is seen only on a build without it, and the tests reach the no-map states through "no WebGL" | Phase 11 |
@@ -134,6 +138,8 @@ run. The test stack's API starts with downloads of weather off (`ROOFTOP_WEATHER
 | On Bedrock the session has no Artifact tool: the design canvas at claude.ai cannot be read or published from here. The boards are approved from the previews in `docs/design/previews`, and the canvas is behind the repo by ImportHeights with the DXF's place, the six boards of Phase 6 and the six of Phase 7 (the redrawn Sun and Strings lenses and ten new) | When a session has the tool again: publish the repo's boards |
 | On phone the chip "INV-1" can stand over an edge label of the roof (the demo's 90.0 m) | Phase 11, or when the owner asks |
 | The plan drawn without WebGL shows no strings: the Strings lens there has its inspector alone | Phase 11 |
+| The report row of Handover says "A4 landscape" until the report has been opened once, when the pages' count is known; the facts could ask the pages on the workspace's open | Phase 11, or when the owner asks |
+| Agents wrote a document change into a code commit twice in Phase 9 (`components.md`, `design-tokens.md`); the briefs say "a commit of its own" now | Known |
 | The option captions follow the engine's rule of decision 11 (`phase-07-plan.md`); "Fills the inverter" and "Lower clipping" were the old board's words, kept | The owner may give others |
 | A desktop `.rtd` whose chosen option was its custom one by "n×s×k" opens with the offered option of that key, its custom kept (the custom's key is "custom") | Known |
 | `.github/workflows/e2e.yml` has never been run. It runs on Linux, and the screens have baselines for `darwin` only: its first run will write its own and fail | Phase 11, or when browser tests are wanted in CI |
@@ -152,7 +158,7 @@ run. The test stack's API starts with downloads of weather off (`ROOFTOP_WEATHER
 | The names of the demo's equipment are shown as the files state them: "INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560", "WattPower Systems Pvt.Ltd WP-330KTL-H1". The mockups show "Insolation INA-144MHC-TF-560". The module card of the Array lens shows the PAN's names as they are (Phase 5, decision 14) | The owner gives the names to show; the Strings lens follows the files too (Phase 7, decision 15) |
 | NASA POWER is asked for the year 2023 and the times of a CSV are read as UTC, as on the desktop; neither can be set in a request. The select says "NASA POWER 2023" and the CSV dialog says the times are read as UTC (Phase 8, decision 19) | Phase 11, or when the owner asks |
 | The memo for the shading in the tests (#37, session 7). Measured before: pytest 151 s here; 66 hourly shadings for 15 distinct inputs and 208 simulations for 66; the repeats cost 76 s and 10 s, of which 48 s are the proofs of the memo, of progress reporting and of a fresh server, which must stay without a memo. Now one memo (`apps/api/tests/kept.py`) serves the whole pytest session, the engine tests and the API alike: pytest 122 s here, the demo's shading computed once. On GitHub the same code took 155 s in one run and 279 s in the next, and 274 s after the memo: the runners vary two-fold, so the mark of 6 min 30 s is a poor rule there; the checks of #37 and #38 took 5 min 38 s and 5 min 33 s. Four workers with pytest-xdist would give 66 s here (measured, not adopted: a dependency and a change of its own) | If a check passes the mark again: pytest-xdist, pinned, as a pull request of its own, after the owner's yes. Since Phase 4.5 the mark matters only when `apps/api` changed: a push that leaves it alone skips pytest |
-| The web app's rewrite drops a request to the API now and then (socket hang up, ECONNRESET; a bare "Internal Server Error" to the browser) while the API answered 200; seen six times in 48 tests of the report's pages. Done in #64: uvicorn keeps a connection alive 75 s, the client asks an export once more, the test waits for the good answer; the retried tests pass. A production build and a proxy in front of it are untried | Phase 11; watch the flaky list of the handover group |
+| The web app's rewrite in `next dev` drops a request to the API now and then (socket hang up, ECONNRESET on its side; a bare "Internal Server Error" to the browser) while the API answered 200: 47 of 48 drops were the report's pages (940 KB); none from the shell, sequential, four at a time or with compression accepted; under the handover group's load the phone's report tests can time out on it and pass alone. Done: uvicorn keeps a connection alive 75 s, an export is asked up to three times, the tests count the good answers. Untried: a production build and a proxy in front of the API | Phase 11; the flaky list of the handover group |
 | Hardware WebGL for the browser tests was tried (2026-10-03): a Studio picture is drawn five to six times faster on the GPU than in software, but the satellite ground was missing in later runs and the cause was not found; software rendering stays. The GPU trial's configuration is a scratch file, not in the repo | Phase 11, or when the owner asks |
 | Under the load of a full check (ten workers, the Studio in software WebGL on three sizes, the machine's twenty cores saturated) a 5 s wait ran out on a different test in each of four full runs of #62 (Edit's navigation in `build.e2e.ts`, the number field on phone, the years' keyboard, New design from the switcher), each green alone. Done in #62: Edit's test waits with the run's time, the charts' tooltips leave only when their anchor moved, every expectation waits 15 s. The split of the browser step and one retry per test come with `feat/check-e2e-groups`; hardware WebGL for the tests is to be measured (the owner's yes first) | Watch. The whole suite runs only when the owner says (D55, coming with the split) |
 | The charts' keyboard tests run on desktop alone: on tablet the focus can scroll the frame and the moving page takes the tooltip away by design. Since #62 a tooltip leaves on a scroll only when its anchor moved (`isStill`) | Known; written in the phase file |
