@@ -86,6 +86,13 @@ const STROKED = {
     </>
   ),
   parapet: <path d="M3 19V8h18v11M3 8V6h18v2" />,
+  // The pencil of Rename: a name that can be edited.
+  pencil: (
+    <>
+      <path d="M4 20h4L18.5 9.5a2.12 2.12 0 0 0-3-3L5 17z" />
+      <path d="m13.5 6.5 3 3" />
+    </>
+  ),
   performance: <path d="M5 20V10M12 20V4M19 20v-7" />,
   plus: <path d="M12 5v14M5 12h14" />,
   rectangle: <rect x="3.5" y="6.5" width="17" height="11" rx="1" />,

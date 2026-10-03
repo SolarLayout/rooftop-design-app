@@ -18,9 +18,16 @@ type Entry = {
 /**
  * Draft, then commit. What is typed is a draft and changes nothing. Enter or leaving the field commits it; Escape gives
  * the value back. `onCommit` hears a value only when it is another than before. `onDraft` hears every change of the
- * draft, and null when the draft is gone, for what follows the words as they are typed.
+ * draft, and null when the draft is gone, for what follows the words as they are typed. `onDone` hears every commit with
+ * what the field says of it, null when the entry stood: for a field that is shown for one entry.
  */
-export function useTextEntry(value: string, rules: TextRules, onCommit: (value: string) => void, onDraft?: (draft: string | null) => void): Entry {
+export function useTextEntry(
+  value: string,
+  rules: TextRules,
+  onCommit: (value: string) => void,
+  onDraft?: (draft: string | null) => void,
+  onDone?: (said: string | null) => void,
+): Entry {
   const [draft, setDraft] = useState<string | null>(null);
   const [said, setSaid] = useState<string | null>(null);
 
@@ -37,6 +44,7 @@ export function useTextEntry(value: string, rules: TextRules, onCommit: (value: 
     setSaid(result.said);
     onDraft?.(null);
     if (result.value !== value) onCommit(result.value);
+    onDone?.(result.said);
   }
 
   return {

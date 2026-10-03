@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { placeInShort } from "@/lib/format/place";
+import { withName } from "@/lib/handover/name-field";
 import { workspaceOf } from "@/lib/routes";
 import { latitudeOf, longitudeOf, nameOf, projectOf } from "@/lib/stores/project-store";
 import { lensOf } from "@/lib/stores/view-store";
@@ -58,6 +59,8 @@ function Frame({ children }: { children: ReactNode }) {
           notes={notes.length}
           onOpenNotes={ofTheShell.open}
           onImport={() => setImportOpen(true)}
+          // The name is a committed edit like any other, undone by key (plan/phase-09-plan.md, decision 13).
+          onRename={(name) => project.getState().commit((document) => withName(document, name))}
         />
         <div data-workspace-frame className="relative flex min-h-0 grow flex-col overflow-y-auto">{children}</div>
         <TabBar current={workspace} lens={lens} />

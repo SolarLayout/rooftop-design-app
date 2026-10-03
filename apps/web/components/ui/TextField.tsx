@@ -13,6 +13,8 @@ type Props = TextRules & {
   onCommit: (value: string) => void;
   /** Hears the draft as it is typed, and null when it is gone: for what follows the words live. */
   onDraft?: (draft: string | null) => void;
+  /** Hears every commit, with what the field says of it: null when the entry stood. For a field shown for one entry. */
+  onDone?: (said: string | null) => void;
   /** The label is for the screen reader alone: the row around the field names it. */
   labelHidden?: boolean;
   /** A line under the field, in the style of what it says: what the words are for. */
@@ -31,10 +33,10 @@ const LABEL = "w-18 shrink-0 text-text-2";
 const UNDER = "tablet:pl-21";
 
 /** The number field's well for words (docs/design/components.md, "Text field"). */
-export function TextField({ label, value, onCommit, onDraft, maxLength, needed, labelHidden = false, detail = null, placeholder, disabled = false, shownAs, initialFocus, className }: Props) {
+export function TextField({ label, value, onCommit, onDraft, onDone, maxLength, needed, labelHidden = false, detail = null, placeholder, disabled = false, shownAs, initialFocus, className }: Props) {
   const id = useId();
   const names = { said: `${id}-said`, detail: `${id}-detail` };
-  const entry = useTextEntry(value, { maxLength, needed }, onCommit, onDraft);
+  const entry = useTextEntry(value, { maxLength, needed }, onCommit, onDraft, onDone);
   const under = labelHidden ? undefined : UNDER;
 
   return (

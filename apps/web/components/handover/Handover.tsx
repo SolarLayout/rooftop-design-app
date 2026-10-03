@@ -1,18 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { NotBuiltYet } from "@/components/shell/NotBuiltYet";
 import { useDownloads, useProject, useResults, useStores } from "@/components/shell/stores";
+import { useHistoryKeys } from "@/components/studio/use-history-keys";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
-import { byItemOf } from "@/lib/handover/downloads-store";
+import { byItemOf, keptOf } from "@/lib/handover/downloads-store";
+import { withName } from "@/lib/handover/name-field";
 import { pageViewOf } from "@/lib/handover/page-view";
 import { FIRST_ITEM, HANDOVER, type HandoverItem } from "@/lib/routes";
-import { nameOf } from "@/lib/stores/project-store";
+import { editOf, nameOf, projectOf } from "@/lib/stores/project-store";
 import { designFailureOf, designOf, designStatusOf } from "@/lib/stores/results-store";
 import { DeliverableList } from "./DeliverableList";
 import { Preview } from "./Preview";
+import { ProjectFilePreview } from "./ProjectFilePreview";
 
 type Props = {
   /** The item that is open; null at the list's own address, where desktop and tablet show the first item beside the list. */
@@ -41,9 +44,14 @@ const BACK = classNames(
  * API's words with Try again (decision 11).
  */
 export function Handover({ item }: Props) {
-  const { flow, downloads } = useStores();
+  const { flow, downloads, project } = useStores();
   const name = useProject(nameOf);
+  const document = useProject(projectOf);
+  const edit = useProject(editOf);
   const byItem = useDownloads(byItemOf);
+  const projectFile = useDownloads((state) => keptOf(state, "rtd", edit));
+  // The page's edits (the name) are committed edits like the Studio's: the keys of the history undo and redo them.
+  useHistoryKeys();
   const design = useResults(designOf);
   const designStatus = useResults(designStatusOf);
   const failure = useResults(designFailureOf);
@@ -51,6 +59,21 @@ export function Handover({ item }: Props) {
   const shown = item ?? FIRST_ITEM;
   const row = view.rows.find((one) => one.id === shown) ?? view.rows[0]!;
   const download = row.kind === null ? undefined : () => void downloads.getState().download(row.id);
+  const isProjectFileOpen = shown === "project-file" && document !== null;
+  // The .rtd is asked once per edit of the document while its item is open, for its size; Save a copy saves the same bytes
+  // (decision 9). A file that did not come is said by Save a copy, in a toast; here its size is left out.
+  const [askFailedFor, setAskFailedFor] = useState<number | null>(null);
+  useEffect(() => {
+    if (!isProjectFileOpen) return;
+    downloads
+      .getState()
+      .ask("rtd")
+      .catch(() => setAskFailedFor(edit));
+  }, [downloads, edit, isProjectFileOpen]);
+
+  function rename(next: string) {
+    project.getState().commit((before) => withName(before, next));
+  }
 
   return (
     <div className={PAGE}>
@@ -65,7 +88,11 @@ export function Handover({ item }: Props) {
           Handover
         </Link>
         <Preview row={row} view={view} onTryAgain={flow.tryAgain} onAction={download} isOnItsWay={byItem[row.id]?.status === "on-its-way"}>
-          <NotBuiltYet />
+          {isProjectFileOpen ? (
+            <ProjectFilePreview document={document} design={design} bytes={projectFile?.blob.size ?? null} isWaitingForBytes={askFailedFor !== edit} onRename={rename} />
+          ) : (
+            <NotBuiltYet />
+          )}
         </Preview>
       </main>
     </div>
