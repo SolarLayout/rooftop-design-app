@@ -36,7 +36,7 @@ describe("the tour", () => {
     expect(cameraMoveOf(view.getState())).toBe(4000);
     expect(cameraRequestOf(view.getState())).toBe(requests + 2);
     expect(hourShown()).toBe(10.5);
-    expect(tour.view.getState()).toEqual({ isRunning: true, scene: "satellite", words: "The satellite from above tilts into 3D", figures: 0, loop: 0, isReduced: false });
+    expect(tour.view.getState()).toEqual({ isRunning: true, scene: "satellite", words: "The satellite from above tilts into 3D", figures: 0, loop: 0, into: 0, isReduced: false });
   });
 
   test("the scenes follow on the clock, a tick at a time; the camera is asked for once a scene, and only when it must change", () => {

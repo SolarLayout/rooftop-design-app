@@ -32,6 +32,8 @@ export type TourView = {
   figures: number;
   /** How many loops are over. */
   loop: number;
+  /** Milliseconds into the scene under way. */
+  into: number;
   isReduced: boolean;
 };
 
@@ -42,7 +44,7 @@ export type Tour = {
   view: StoreApi<TourView>;
 };
 
-const NOT_RUNNING: TourView = { isRunning: false, scene: null, words: "", figures: 0, loop: 0, isReduced: false };
+const NOT_RUNNING: TourView = { isRunning: false, scene: null, words: "", figures: 0, loop: 0, into: 0, isReduced: false };
 
 export function createTour({ view, clock, hoursOf, isReduced }: Options): Tour {
   const shown = createStore<TourView>(() => NOT_RUNNING);
@@ -73,7 +75,7 @@ export function createTour({ view, clock, hoursOf, isReduced }: Options): Tour {
     const hour = state.hour ?? held!.hour;
     const { sunTime } = view.getState();
     if (sunTime.hour !== hour) view.getState().setSunTime({ ...sunTime, hour });
-    shown.setState({ isRunning: true, scene: state.scene, words: state.words, figures: state.figures, loop: state.loop });
+    shown.setState({ isRunning: true, scene: state.scene, words: state.words, figures: state.figures, loop: state.loop, into: state.into });
   }
 
   function tick() {

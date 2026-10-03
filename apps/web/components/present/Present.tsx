@@ -18,7 +18,7 @@ import { CLOCK_OF_THE_BROWSER } from "@/lib/clock";
 import { createTour, type Tour } from "@/lib/present/create-tour";
 import { factsWordsOf, waitingWordsOf } from "@/lib/present/words";
 import { pathOfLens } from "@/lib/routes";
-import { createStageStore } from "@/lib/scene/stage-store";
+import { createStageStore, groundOf, type StageStore } from "@/lib/scene/stage-store";
 import { revealedCountOf } from "@/lib/scene/reveal";
 import { hoursOf } from "@/lib/scene/sun-day";
 import { nameOf, projectOf } from "@/lib/stores/project-store";
@@ -120,7 +120,7 @@ export function Present() {
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 z-stage-overlay h-45 stage-fade" />
       <Words tour={tour} facts={facts} waiting={waiting} />
       <Hint tour={tour} />
-      <OnTheStage tour={tour} />
+      <OnTheStage tour={tour} stage={stage} />
     </main>
   );
 }
@@ -154,8 +154,11 @@ function Hint({ tour }: { tour: Tour }) {
 }
 
 /** The text equivalent of the stage under the tour (docs/design/guidelines.md, "Accessibility"): what stands on the roof as far as it is revealed, the time, the strings. */
-function OnTheStage({ tour }: { tour: Tour }) {
+function OnTheStage({ tour, stage }: { tour: Tour; stage: StageStore }) {
   const scene = useStore(tour.view, (state) => state.scene);
+  const into = useStore(tour.view, (state) => state.into);
+  const loop = useStore(tour.view, (state) => state.loop);
+  const ground = useStore(stage, groundOf);
   const isReduced = useStore(tour.view, (state) => state.isReduced);
   const layout = useResults(layoutOf);
   const sunDay = useResults(sunDayOf);
@@ -166,12 +169,13 @@ function OnTheStage({ tour }: { tour: Tour }) {
   const modules = layout?.layout.modules.length ?? 0;
   const revealed = revealedCountOf(modules, presentation?.reveal.modules ?? 1);
   return (
-    <ul aria-label="On the roof" className="sr-only" data-scene={scene ?? undefined} data-motion={isReduced ? "reduced" : undefined}>
+    <ul aria-label="On the roof" className="sr-only" data-scene={scene ?? undefined} data-into={scene ? into : undefined} data-loop={scene ? loop : undefined} data-motion={isReduced ? "reduced" : undefined}>
       {layout ? (
         <li data-testid="present-modules">
           {shown(revealed, 0)} of {shown(modules, 0)} modules in {shown(layout.layout.n_rows, 0)} rows
         </li>
       ) : null}
+      {ground === "none" ? null : <li data-testid="present-ground">{ground === "imagery" ? "The ground is the satellite imagery" : "The ground is plain, with a grid"}</li>}
       {sunDay ? <li data-testid="present-sun">{readOutOf(sunDay.dayOfYear, hour, sun)}</li> : null}
       {strings && layout ? (
         <li data-testid="present-strings">{stringsWordsOf({ option: strings.option, strings: strings.strings, colouring: strings.colouring, positions: modules, selected: null }).strings}</li>
