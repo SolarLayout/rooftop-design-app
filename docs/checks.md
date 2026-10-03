@@ -40,9 +40,10 @@ Every task also keys on the lockfile, the toolchain (`ROOFTOP_TOOLCHAIN`, set by
 uv and Python), `turbo.json` and the check's own code (`tools/check.ts`, `tools/check/**`): a change to the check runs
 everything once. The caches are `.turbo/` here and `.turbo/cache` on GitHub, never committed. On GitHub the browser step is
 left out (`--skip=e2e`); a push to `main` runs `--fresh`. There pytest runs whole and untraced (`ROOFTOP_CHECK_SELECT=0`),
-spread over the runner's cores by pytest-xdist (`tools/check/pytest-arguments.ts`): in one process the 720 tests took eight
-minutes of a job allowed fifteen, and a job that hits its limit is cancelled before the cache is saved, so that the next
-run starts cold again. Here, with the selection, testmon traces one process and xdist is not used.
+in one process: the 730 tests take about eight minutes of a job allowed fifteen, and a job that hits its limit is cancelled
+before the cache is saved, so that the next run starts cold again. pytest-xdist was tried (#68) and taken out (#70): the
+runner's two cores are saturated by one process, two workers took the same eight minutes, and the test that times
+`/layout` ("well under a second") failed beside a worker.
 
 ## The browser tests in groups
 
