@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/Button";
 import { classNames } from "@/components/ui/class-names";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { Tooltip } from "@/components/ui/Tooltip";
 import type { DownloadStatus } from "@/lib/handover/downloads-store";
 import type { Deliverable } from "@/lib/handover/items";
 import type { HandoverItem } from "@/lib/routes";
@@ -18,12 +17,14 @@ type Props = {
   downloads: Partial<Record<HandoverItem, DownloadStatus>>;
   /** Save a copy of the project file was pressed: the .rtd is downloaded (plan/phase-09-plan.md, step 8). */
   onSaveACopy: () => void;
+  /** The state of Download all: the zip on its way, or not. */
+  all: DownloadStatus;
+  /** Download all was pressed: the zip of everything is downloaded (plan/phase-09-plan.md, step 21, decision 10). */
+  onDownloadAll: () => void;
 };
 
-/** Download all comes with the zip (plan/phase-09-plan.md, pull request 4): until then it is shown and cannot be used. */
-export const WHY_NOT_DOWNLOAD_ALL = "Comes with the zip";
-
 const PROJECT_FILE: HandoverItem = "project-file";
+const ON_ITS_WAY = "on-its-way";
 
 // The head: the title with its line under it; Download all with its facts at the right on desktop, in a row under the
 // title on tablet, across the width on phone.
@@ -42,11 +43,20 @@ function openOf(row: Deliverable, item: HandoverItem | null, shown: HandoverItem
   return item === null ? "beside" : "here";
 }
 
-/** The list of what is delivered: the head, the rows, the project file. */
-export function DeliverableList({ rows, item, shown, downloads, onSaveACopy }: Props) {
+/**
+ * The list of what is delivered: the head with Download all, the rows, the project file. Download all is the zip of the
+ * files, each named as its own download (decision 10): it needs a chosen option as the five files do, and is dim with their
+ * rows before one; on its way it shows the ring and is dim without its shadow.
+ */
+export function DeliverableList({ rows, item, shown, downloads, onSaveACopy, all, onDownloadAll }: Props) {
   const projectFile = rows.find((row) => row.id === PROJECT_FILE) ?? null;
-  const isProjectFileOnItsWay = downloads[PROJECT_FILE]?.status === "on-its-way";
+  const isProjectFileOnItsWay = downloads[PROJECT_FILE]?.status === ON_ITS_WAY;
   const canSave = projectFile !== null && !projectFile.waits && !isProjectFileOnItsWay;
+  const files = rows.filter((row) => row.kind !== null);
+  const isAllOnItsWay = all.status === ON_ITS_WAY;
+  // The zip holds the files of the design: it can be made once they can, which the rows of the design say.
+  const canDownloadAll = files.some((row) => row.id !== PROJECT_FILE && !row.waits);
+  const zipFacts = `${files.length} files · one zip`;
 
   return (
     <>
@@ -55,13 +65,17 @@ export function DeliverableList({ rows, item, shown, downloads, onSaveACopy }: P
           <h1 className="type-lens-touch tablet:type-page">Handover</h1>
           <p className="type-small text-text-2 tablet:type-body-touch desktop:type-body">Everything the installer, the client and the utility need</p>
         </div>
-        <div className={DOWNLOAD_ALL}>
-          <Tooltip words={WHY_NOT_DOWNLOAD_ALL} className="w-full tablet:w-auto">
-            <Button icon="download" aria-disabled="true" className="w-full tablet:w-auto">
-              Download all
-            </Button>
-          </Tooltip>
-          <span className="type-caption text-text-2">6 files · one zip</span>
+        <div data-testid="download-all" className={DOWNLOAD_ALL}>
+          <Button
+            icon={isAllOnItsWay ? undefined : "download"}
+            aria-disabled={canDownloadAll && !isAllOnItsWay ? undefined : "true"}
+            onClick={canDownloadAll && !isAllOnItsWay ? onDownloadAll : undefined}
+            className="w-full tablet:w-auto"
+          >
+            {isAllOnItsWay ? <ProgressRing size={16} /> : null}
+            Download all
+          </Button>
+          <span className="type-caption text-text-2">{zipFacts}</span>
         </div>
       </div>
       <ul data-testid="deliverables" className="flex flex-col gap-1.5">
@@ -69,7 +83,7 @@ export function DeliverableList({ rows, item, shown, downloads, onSaveACopy }: P
           .filter((row) => row.id !== PROJECT_FILE)
           .map((row) => (
             <li key={row.id}>
-              <DeliverableRow row={row} open={openOf(row, item, shown)} isOnItsWay={downloads[row.id]?.status === "on-its-way"} />
+              <DeliverableRow row={row} open={openOf(row, item, shown)} isOnItsWay={downloads[row.id]?.status === ON_ITS_WAY} />
             </li>
           ))}
       </ul>

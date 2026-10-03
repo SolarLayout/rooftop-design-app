@@ -40,6 +40,8 @@ export type Api = ReturnType<typeof createApi>;
 const JSON_TYPE = "application/json";
 const EVENT_STREAM = "text/event-stream";
 const RUN_CUT_SHORT = "The design run ended before its result arrived. Run it again.";
+/** How many times an export is asked for when the answer is not the API's. */
+const EXPORT_TRIES = 3;
 const FILE_NAMES: Record<ExportKind, string> = {
   pdf: "rooftop-design-report.pdf",
   dxf: "rooftop-design-layout.dxf",
@@ -47,6 +49,7 @@ const FILE_NAMES: Record<ExportKind, string> = {
   csv: "rooftop-design-hourly.csv",
   sld: "rooftop-design-single-line-diagram.png",
   rtd: "rooftop-design.rtd",
+  zip: "rooftop-design.zip",
 };
 
 export function createApi({ base = "/api", fetch: fetcher = globalThis.fetch }: ApiOptions = {}) {
@@ -80,15 +83,16 @@ export function createApi({ base = "/api", fetch: fetcher = globalThis.fetch }: 
   const dayQuery = (day: string | undefined) => (day === undefined ? "" : `?${new URLSearchParams({ day })}`);
 
   /**
-   * A call made once more when the answer was not the API's: a proxy in front of it (the web app's rewrite) has failed a
-   * request now and then with a bare "Internal Server Error" while the API had answered 200. Only for a call that can be
-   * made twice without harm: the exports.
+   * A call made again, up to three times in all, when the answer was not the API's: a proxy in front of it (the web app's
+   * rewrite in `next dev`) drops a request now and then with a bare "Internal Server Error" while the API had answered 200,
+   * the report's pages most of all (plan/STATE.md, the watch item). Only for a call that can be made again without harm: the
+   * exports.
    */
-  async function onceMore<Answer>(call: () => Promise<Answer>): Promise<Answer> {
+  async function onceMore<Answer>(call: () => Promise<Answer>, tries = EXPORT_TRIES): Promise<Answer> {
     try {
       return await call();
     } catch (error) {
-      if (error instanceof ApiError && error.code === "unexpected_answer") return call();
+      if (tries > 1 && error instanceof ApiError && error.code === "unexpected_answer") return onceMore(call, tries - 1);
       throw error;
     }
   }

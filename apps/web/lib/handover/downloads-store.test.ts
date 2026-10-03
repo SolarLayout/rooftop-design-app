@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import type { ExportKind, ExportedFile, Project, ProjectRequest, ReportPages } from "../api";
 import { ApiError } from "../api";
 import type { ToastAsked } from "../../components/ui/toast-queue";
-import { createDownloadsStore, pagesOf, pagesStatusOf, statusOf } from "./downloads-store";
+import { allStatusOf, createDownloadsStore, pagesOf, pagesStatusOf, statusOf } from "./downloads-store";
 
 // A download (plan/phase-09-plan.md, decision 12): the file of the API saved by the browser, the item's state while it is on
 // its way and when it failed, a failure said in a toast with Try again, two presses while on its way one download.
@@ -190,6 +190,79 @@ describe("a download", () => {
   });
 });
 
+describe("Download all (plan/phase-09-plan.md, step 21, decision 10): the zip of everything", () => {
+  test("asks the API for the zip with the document and the day, is on its way until it comes, then saves it and rests", async () => {
+    const { store, calls, saved, answer } = made();
+
+    const done = store.getState().downloadAll();
+
+    expect(allStatusOf(store.getState())).toEqual({ status: "on-its-way" });
+    expect(calls).toEqual([{ kind: "zip", document: DOCUMENT, day: DAY }]);
+    answer(0, "Pune-demo-roof.zip");
+    await done;
+
+    expect(allStatusOf(store.getState())).toEqual({ status: "idle" });
+    expect(saved.map((file) => file.name)).toEqual(["Pune-demo-roof.zip"]);
+  });
+
+  test("two presses while it is on its way are one download; the items' own states are untouched", async () => {
+    const { store, calls, saved, answer } = made();
+
+    const first = store.getState().downloadAll();
+    const second = store.getState().downloadAll();
+    answer(0, "Pune-demo-roof.zip");
+    await Promise.all([first, second]);
+
+    expect(calls).toHaveLength(1);
+    expect(saved).toHaveLength(1);
+    expect(store.getState().byItem).toEqual({});
+  });
+
+  test("a zip that failed says so in the API's words, in its state and in a toast with Try again, which asks again", async () => {
+    const { store, calls, saved, toasts, refuse, answer } = made();
+
+    const done = store.getState().downloadAll();
+    refuse(0);
+    await done;
+
+    expect(allStatusOf(store.getState())).toEqual({ status: "failed", message: "Choose a stringing option first." });
+    expect(saved).toEqual([]);
+    expect(toasts).toHaveLength(1);
+    expect(toasts[0]).toMatchObject({ kind: "note", words: "Choose a stringing option first." });
+    toasts[0]!.action!.run();
+    expect(allStatusOf(store.getState())).toEqual({ status: "on-its-way" });
+    answer(1, "Pune-demo-roof.zip");
+    await settled();
+
+    expect(calls).toHaveLength(2);
+    expect(saved).toHaveLength(1);
+    expect(allStatusOf(store.getState())).toEqual({ status: "idle" });
+  });
+
+  test("the zip names the option shown when the document names none, as the files of the design do", async () => {
+    const { store, calls } = made({ document: { ...DOCUMENT, chosen_option: "" }, edit: 3, chosen: "26x24x1" });
+
+    void store.getState().downloadAll();
+    await settled();
+
+    expect(calls[0]!.document.chosen_option).toBe("26x24x1");
+  });
+
+  test("while no design is open nothing is asked; another design opened rests the state", async () => {
+    const none = made(null);
+    await none.store.getState().downloadAll();
+    expect(none.calls).toEqual([]);
+
+    const { store, refuse } = made();
+    const done = store.getState().downloadAll();
+    refuse(0);
+    await done;
+    store.getState().clear();
+
+    expect(allStatusOf(store.getState())).toEqual({ status: "idle" });
+  });
+});
+
 describe("a file kept for the document's edit (decision 9: the .rtd is asked once per edit)", () => {
   test("asked twice for one edit, the file comes from the API once, and the download saves the same bytes", async () => {
     const { store, calls, saved, answer } = made();
@@ -206,6 +279,18 @@ describe("a file kept for the document's edit (decision 9: the .rtd is asked onc
     await store.getState().download("project-file");
     expect(calls).toHaveLength(1);
     expect(saved[0]!.blob).toBe(a.blob);
+  });
+
+  test("the CSV asked for the preview of the hourly data and then downloaded is one request, the same bytes (decision 8)", async () => {
+    const { store, calls, saved, answer } = made();
+
+    const asked = store.getState().ask("csv");
+    answer(0, "Pune-demo-roof-hourly.csv");
+    const file = await asked;
+    await store.getState().download("hourly-data");
+
+    expect(calls.map((call) => call.kind)).toEqual(["csv"]);
+    expect(saved).toEqual([{ blob: file.blob, name: "Pune-demo-roof-hourly.csv" }]);
   });
 
   test("another edit of the document asks anew, and the file of before is gone", async () => {

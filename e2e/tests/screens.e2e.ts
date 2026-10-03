@@ -1003,4 +1003,52 @@ test.describe("the shell", () => {
 
     await expectScreen(page, "handover-table-copied");
   });
+
+  // The CAD layout (the board "Handover, previews"): the engine's plan in its paper frame, the layers beside it on desktop and under it below that.
+  test("handover, the CAD layout", async ({ page }, testInfo) => {
+    await dayFixed(page);
+    await page.goto("/handover/cad-layout");
+    await expect(page.getByTestId("layer")).toHaveCount(8, { timeout: RUN });
+    await expect(page.getByTestId("plan-image")).toBeVisible({ timeout: RUN });
+    await expect.poll(() => page.getByTestId("plan-image").evaluate((image) => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0), { timeout: RUN }).toBe(true);
+    await settled(page, testInfo.project.name);
+
+    await expectWholeScreen(page, "handover-cad-layout");
+  });
+
+  // The Google Earth model (the same board): what is in the file and what is not, two columns on desktop.
+  test("handover, the Google Earth model", async ({ page }, testInfo) => {
+    await page.goto("/handover/earth-model");
+    await expect(page.getByTestId("kml-inside")).toHaveCount(8, { timeout: RUN });
+    await settled(page, testInfo.project.name);
+
+    await expectWholeScreen(page, "handover-earth-model");
+  });
+
+  // The hourly data (the same board): the header and the first eight rows in their card, the columns under it.
+  test("handover, the hourly data", async ({ page }, testInfo) => {
+    await page.goto("/handover/hourly-data");
+    await expect(page.getByTestId("csv-row")).toHaveCount(8, { timeout: RUN });
+    await settled(page, testInfo.project.name);
+
+    await expectWholeScreen(page, "handover-hourly-data");
+  });
+
+  // Download all on its way (the board "Handover, states", "A download on its way"): the ring in the button, dim without its shadow; the route is held.
+  test("handover, Download all on its way", async ({ page }, testInfo) => {
+    test.skip(!isDesktop(testInfo.project.name), "The board draws Download all on its way on desktop.");
+    await page.route("**/api/export/zip**", () => {
+      // Held: the zip stays on its way for the picture.
+    });
+    await dayFixed(page);
+    await page.goto("/handover");
+    await factsLanded(page);
+    await reportLanded(page);
+    await settled(page, testInfo.project.name);
+    await page.getByRole("button", { name: "Download all" }).click();
+    await expect(page.getByRole("button", { name: "Download all" })).toHaveAttribute("aria-disabled", "true");
+    await page.mouse.move(0, 0);
+
+    await expectWholeScreen(page, "handover-download-all");
+  });
 });

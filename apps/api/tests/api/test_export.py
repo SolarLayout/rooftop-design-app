@@ -27,9 +27,12 @@ OF_THE_DESIGN = {
     "kmz": ("application/vnd.google-earth.kmz", "Pune-demo.kmz"),
     "csv": ("text/csv; charset=utf-8", "Pune-demo-hourly.csv"),
     "sld": ("image/png", "Pune-demo-single-line-diagram.png"),
+    "zip": ("application/zip", "Pune-demo.zip"),
 }
 # The project file is of the request alone.
 KINDS = {**OF_THE_DESIGN, "rtd": ("application/json", "Pune-demo.rtd")}
+# What the zip holds, in its order: the five files of the design and the project file.
+IN_THE_ZIP = ["pdf", "dxf", "kmz", "csv", "sld", "rtd"]
 
 
 @pytest.fixture
@@ -250,6 +253,46 @@ def test_the_same_request_gives_the_same_content_in_the_files_that_bear_the_time
     assert _pages(exported_again["pdf"]) == _pages(exported["pdf"].content)
 
 
+# ── the zip ──────────────────────────────────────────────────────────────────
+def _archive(content: bytes) -> zipfile.ZipFile:
+    return zipfile.ZipFile(io.BytesIO(content))
+
+
+def test_the_zip_holds_the_six_files_each_named_as_its_own_download(exported):
+    with _archive(exported["zip"].content) as archive:
+        assert archive.namelist() == [KINDS[kind][1] for kind in IN_THE_ZIP]
+        assert all(entry.compress_type == zipfile.ZIP_DEFLATED for entry in archive.infolist())
+        assert all(entry.file_size > 0 for entry in archive.infolist())
+
+
+def test_each_file_in_the_zip_is_its_own_export(exported):
+    with _archive(exported["zip"].content) as archive:
+        inside = {kind: archive.read(KINDS[kind][1]) for kind in IN_THE_ZIP}
+
+    for kind in ("csv", "sld", "rtd"):
+        assert inside[kind] == exported[kind].content, kind
+    assert _pages(inside["pdf"]) == _pages(exported["pdf"].content)
+    assert _drawn(inside["dxf"]) == _drawn(exported["dxf"].content)
+    assert _kml(inside["kmz"]) == _kml(exported["kmz"].content)
+
+
+def test_the_report_in_the_zip_prints_the_day_asked_for(client, chosen):
+    with _archive(client.post("/export/zip?day=2025-01-31", json=chosen).content) as archive:
+        page = _pages(archive.read("Pune-demo-report.pdf"))[0]
+
+    assert "SolarLayout Rooftop · 31 Jan 2025" in page
+
+
+def test_the_project_file_in_the_zip_is_of_the_request_as_the_rtd_is(client, chosen):
+    chosen["name"] = "Block B"
+
+    with _archive(client.post("/export/zip", json=chosen).content) as archive:
+        written = _rtd(archive.read("Block-B.rtd"))
+
+    assert Project.from_json(written) == _as_the_engine_has_it(chosen)
+    assert written["name"] == "Block B"
+
+
 # ── the name of the file ─────────────────────────────────────────────────────
 @pytest.mark.parametrize(("kind", "ending"), [("csv", "-hourly.csv"), ("rtd", ".rtd")])
 @pytest.mark.parametrize(
@@ -336,7 +379,7 @@ def test_a_project_without_weather_is_refused_as_by_the_design_run(client, chose
     assert error_of(response)["code"] == "weather_not_loaded"
 
 
-def test_a_kind_that_is_none_of_the_six_is_refused(client, chosen):
+def test_a_kind_that_is_none_of_the_seven_is_refused(client, chosen):
     response = client.post("/export/xlsx", json=chosen)
 
     assert response.status_code == 422

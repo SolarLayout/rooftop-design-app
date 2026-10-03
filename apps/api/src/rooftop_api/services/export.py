@@ -1,9 +1,11 @@
 """The files of a design: report, drawing, Google Earth model, hourly data, single-line diagram; the
-project file, which is of the request alone; and the pages of the report as images."""
+project file, which is of the request alone; the zip of them all; and the pages of the report as images."""
 
 import base64
+import io
 import re
 import threading
+import zipfile
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
@@ -55,7 +57,8 @@ def rtd_bytes(project: Project) -> bytes:
     return project.to_text().encode("utf-8")
 
 
-KINDS: dict[str, Kind] = {
+# The files, one by one: the five of the design and the project file. The zip holds them all, in this order.
+IN_THE_ZIP: dict[str, Kind] = {
     "pdf": Kind("application/pdf", "-report.pdf", files.export_pdf_bytes, drawn=True, dated=True),
     "dxf": Kind("image/vnd.dxf", "-layout.dxf", files.export_dxf_bytes),
     "kmz": Kind("application/vnd.google-earth.kmz", ".kmz", files.export_kmz_bytes),
@@ -63,19 +66,42 @@ KINDS: dict[str, Kind] = {
     "sld": Kind("image/png", "-single-line-diagram.png", files.export_sld_bytes, drawn=True),
     "rtd": Kind("application/json", ".rtd", rtd_bytes, needs_design=False),
 }
+ZIP = "zip"
 
 
 def export(kind: str, project: schemas.Project, day: date | None = None) -> File:
-    """The file of *kind*: of the option the project has chosen, or of the request alone.
+    """The file of *kind*: of the option the project has chosen, or of the request alone; or the zip of
+    them all.
 
     *day* is the reader's day, printed by the kinds that are dated; None prints the server's today.
     """
     made = KINDS[kind]
-    if made.needs_design:
+    if kind == ZIP:
+        content = zipped(project, day)
+    elif made.needs_design:
         content = _written(made, _design_of(project), day)
     else:
         content = made.write(convert.project_to_engine(project))
     return File(content, made.media_type, file_stem(project.name), made.ending)
+
+
+def zipped(project: schemas.Project, day: date | None = None) -> bytes:
+    """Every file in one archive, each named as its own download would be (plan/phase-09-plan.md,
+    decision 10): the five files of the option the project has chosen, and the project file of the
+    request alone, as /export/rtd writes it. The whole archive is written under the drawing lock, since
+    the report and the diagram inside are drawn."""
+    design = _design_of(project)
+    request = convert.project_to_engine(project)
+    stem = file_stem(project.name)
+    out = io.BytesIO()
+    with DRAWING, zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as archive:
+        for made in IN_THE_ZIP.values():
+            content = _content(made, design, day) if made.needs_design else made.write(request)
+            archive.writestr(stem + made.ending, content)
+    return out.getvalue()
+
+
+KINDS: dict[str, Kind] = {**IN_THE_ZIP, ZIP: Kind("application/zip", ".zip", zipped, drawn=True, dated=True)}
 
 
 def report_pages(project: schemas.Project, day: date | None = None) -> schemas.ReportPages:
@@ -116,11 +142,16 @@ def _design_of(project: schemas.Project) -> Design:
 
 
 def _written(made: Kind, design: Design, day: date | None) -> bytes:
-    given = (design, day) if made.dated else (design,)
+    """The file of a kind of the design, the drawn ones under the lock."""
     if made.drawn:
         with DRAWING:
-            return made.write(*given)
-    return made.write(*given)
+            return _content(made, design, day)
+    return _content(made, design, day)
+
+
+def _content(made: Kind, design: Design, day: date | None) -> bytes:
+    """The file of a kind of the design, written by its writer; the lock is the caller's affair."""
+    return made.write(design, day) if made.dated else made.write(design)
 
 
 def require_option(design: Design, chosen: str) -> None:

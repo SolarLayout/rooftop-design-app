@@ -8,7 +8,7 @@ import { useHistoryKeys } from "@/components/shell/use-history-keys";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
 import { bomViewOf } from "@/lib/handover/bom-view";
-import { byItemOf, keptOf, pagesOf, pagesStatusOf } from "@/lib/handover/downloads-store";
+import { allStatusOf, byItemOf, keptOf, pagesOf, pagesStatusOf } from "@/lib/handover/downloads-store";
 import { IN_THE_REPORT } from "@/lib/handover/in-the-report";
 import { scheduleViewOf } from "@/lib/handover/schedule-view";
 import type { Sort } from "@/components/ui/table-sort";
@@ -18,7 +18,10 @@ import { reportViewOf, type ShownPage } from "@/lib/handover/report-view";
 import { FIRST_ITEM, HANDOVER, type HandoverItem } from "@/lib/routes";
 import { editOf, nameOf, projectOf } from "@/lib/stores/project-store";
 import { chosenOptionOf, designFailureOf, designOf, designStatusOf } from "@/lib/stores/results-store";
+import { CadPreview } from "./CadPreview";
 import { DeliverableList } from "./DeliverableList";
+import { EarthPreview } from "./EarthPreview";
+import { HourlyPreview } from "./HourlyPreview";
 import { Preview } from "./Preview";
 import { BillOfMaterials } from "./BillOfMaterials";
 import { CableSchedule } from "./CableSchedule";
@@ -26,6 +29,7 @@ import { CopyAsTable } from "./CopyAsTable";
 import { ProjectFilePreview } from "./ProjectFilePreview";
 import { PageButton, ReportPreview, ReportSkeleton } from "./ReportPreview";
 import { SingleLineDiagram } from "./SingleLineDiagram";
+import { useAskedFile } from "./use-asked-file";
 
 type Props = {
   /** The item that is open; null at the list's own address, where desktop and tablet show the first item beside the list. */
@@ -62,6 +66,7 @@ export function Handover({ item }: Props) {
   const document = useProject(projectOf);
   const edit = useProject(editOf);
   const byItem = useDownloads(byItemOf);
+  const all = useDownloads(allStatusOf);
   const projectFile = useDownloads((state) => keptOf(state, "rtd", edit));
   const keptPages = useDownloads(pagesOf);
   const pagesStatus = useDownloads(pagesStatusOf);
@@ -92,13 +97,18 @@ export function Handover({ item }: Props) {
   const tools = shown === "bill-of-materials" ? tableActions(bom) : shown === "cable-schedule" ? tableActions(schedule) : undefined;
   const isProjectFileOpen = shown === "project-file" && document !== null;
   const isReport = shown === "report";
-  // The pages are asked once per edit while the report is open with an option; the store keeps them (decision 5). A refusal
-  // is said under the head by the body, with Try again, which asks here too.
-  const isReportOpen = isReport && !row.waits;
+  const isCadLayout = shown === "cad-layout";
+  // The CSV is asked once per edit while the hourly data is open with an option, and kept for Download CSV (decision 8).
+  const csv = useAskedFile("csv", shown === "hourly-data" && !row.waits);
+  // The document, the run and the option the files are of; null until there is a chosen option.
+  const files = document !== null && design !== null && option !== null ? { document, design, option } : null;
+  // The pages are asked once per edit while the report, or the CAD layout with the engine's plan among them (decision 8), is
+  // open with an option; the store keeps them (decision 5). A refusal is said by the body, with Try again, which asks here too.
+  const arePagesWanted = (isReport || isCadLayout) && !row.waits;
   useEffect(() => {
-    if (!isReportOpen) return;
+    if (!arePagesWanted) return;
     void downloads.getState().askPages();
-  }, [downloads, edit, isReportOpen]);
+  }, [downloads, edit, arePagesWanted]);
   const askPagesAgain = () => void downloads.getState().askPages();
   const report = useMemo(() => reportViewOf({ kept: keptPages, edit, status: pagesStatus, shown: shownPage }), [keptPages, edit, pagesStatus, shownPage]);
   /** The page chosen is kept for these very pages: new pages begin at the first. */
@@ -121,7 +131,15 @@ export function Handover({ item }: Props) {
   return (
     <main className={PAGE}>
       <nav aria-label="Deliverables" className={classNames(LIST, item === null ? "flex" : "hidden tablet:flex")}>
-        <DeliverableList rows={view.rows} item={item} shown={shown} downloads={byItem} onSaveACopy={() => void downloads.getState().download("project-file")} />
+        <DeliverableList
+          rows={view.rows}
+          item={item}
+          shown={shown}
+          downloads={byItem}
+          onSaveACopy={() => void downloads.getState().download("project-file")}
+          all={all}
+          onDownloadAll={() => void downloads.getState().downloadAll()}
+        />
       </nav>
       <section aria-label={row.name} data-testid="preview" className={classNames(PREVIEW, item === null ? "hidden tablet:flex" : "flex")}>
         {/* On phone the item is pushed over the list: the row at the top leads back to it. */}
@@ -150,6 +168,12 @@ export function Handover({ item }: Props) {
         >
           {isReport ? (
             <ReportPreview view={report} onPage={showPage} onTryAgain={askPagesAgain} />
+          ) : isCadLayout ? (
+            files && <CadPreview files={files} report={report} onTryAgain={askPagesAgain} />
+          ) : shown === "earth-model" ? (
+            files && <EarthPreview files={files} />
+          ) : shown === "hourly-data" ? (
+            <HourlyPreview file={csv.file} failure={csv.failure} onTryAgain={csv.askAgain} />
           ) : isProjectFileOpen ? (
             <ProjectFilePreview document={document} design={design} bytes={projectFile?.blob.size ?? null} isWaitingForBytes={askFailedFor !== edit} onRename={rename} />
           ) : shown === "single-line-diagram" && option && design ? (
