@@ -742,8 +742,11 @@ In code: `ProjectSwitcher`; `ProjectTrigger` and `ProjectMenu` for what is seen 
 - The actions are a `menu`: the arrows go through its rows, Home and End to its ends. Open, the focus is on
   its first row.
 - An action that comes with a later phase is shown and cannot be used (`aria-disabled`, opacity
-  `opacity-disabled`). It takes the focus, so that it is found. Today that is Open a project and Save a copy.
-  Import a drawing opens its dialog (Phase 5, step 13).
+  `opacity-disabled`). It takes the focus, so that it is found. Today that is Open a project (Phase 10).
+  Import a drawing opens its dialog (Phase 5, step 13). Save a copy downloads the project file, the `.rtd` the API
+  writes, named after the design (Phase 9, step 8); it needs no chosen option and no run.
+- "This design" carries a quiet Rename (a pencil of 18) that turns the name into the text field; a commit edits the
+  document's name, Escape gives it back (Phase 9, decision 13).
 - The icons of the rows have the stroke of the navigation, 1.7; the board draws 1.8.
 - The place of the design, "18.52° N · 73.86° E", has two decimals, as the mockups have it. It is shown on
   desktop from 1360 wide.
