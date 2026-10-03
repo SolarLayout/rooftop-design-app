@@ -142,6 +142,7 @@ test.describe("the shell", () => {
   test.describe.configure({ timeout: RUN + 30_000 });
 
   const isPhone = (projectName: string) => projectName === "phone";
+  const isDesktop = (projectName: string) => projectName === "desktop";
   const design = (page: Page) => page.getByRole("banner").getByRole("button", { name: /Pune demo roof/ });
   const vitals = (page: Page) => page.getByRole("region", { name: "Design vitals" });
 
@@ -821,23 +822,68 @@ test.describe("the shell", () => {
   const factsLanded = async (page: Page) => {
     await expect(page.getByTestId("deliverables").getByTestId("deliverable-facts").nth(1)).toContainText("strings of", { timeout: RUN });
   };
+  // The report's page 1 prints the day of the report, which is the browser's (plan/phase-09-plan.md, decision 2): the page's
+  // clock is fixed before the page is opened, so that the picture does not move with the calendar.
+  const DAY_OF_THE_REPORT = new Date("2026-10-03T09:00:00");
+  const dayFixed = (page: Page) => page.clock.install({ time: DAY_OF_THE_REPORT });
+  // The paper with its page and every thumbnail drawn: the images are decoded before the picture is taken.
+  const reportLanded = async (page: Page) => {
+    await expect(page.getByTestId("page-image")).toBeVisible({ timeout: RUN });
+    await expect
+      .poll(() => page.getByTestId("preview").locator("img").evaluateAll((images) => images.every((image) => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0)), { timeout: RUN })
+      .toBe(true);
+  };
 
   test("handover", async ({ page }, testInfo) => {
+    await dayFixed(page);
     await page.goto("/handover");
     await factsLanded(page);
+    if (!isPhone(testInfo.project.name)) await reportLanded(page);
     await settled(page, testInfo.project.name);
 
     await expectWholeScreen(page, "handover");
   });
 
-  // The report pushed over the list on phone (the board "Handover, tablet and phone"): the back row, the head, the body.
+  // The report pushed over the list on phone (the board "Handover, tablet and phone"): the back row, the head, the paper, previous and next, the row of thumbnails.
   test("handover, the report pushed", async ({ page }, testInfo) => {
     test.skip(!isPhone(testInfo.project.name), "The pushed screen is of the phone.");
+    await dayFixed(page);
     await page.goto("/handover/report");
-    await expect(page.getByTestId("preview-facts")).toContainText("A4 landscape", { timeout: RUN });
+    await reportLanded(page);
     await settled(page, testInfo.project.name);
 
     await expectWholeScreen(page, "handover-report-pushed");
+  });
+
+  // Page 2 of the report after Next (the board "Handover"): the words of the head, the second thumbnail current.
+  test("handover, the report at page 2", async ({ page }, testInfo) => {
+    test.skip(!isDesktop(testInfo.project.name), "The pages turned are pictured on desktop.");
+    await dayFixed(page);
+    await page.goto("/handover");
+    await factsLanded(page);
+    await reportLanded(page);
+    await settled(page, testInfo.project.name);
+    await page.getByRole("button", { name: "Next page" }).filter({ visible: true }).click();
+    await expect(page.getByTestId("page-words").filter({ visible: true })).toContainText("Page 2 of");
+    await reportLanded(page);
+    await page.mouse.move(0, 0);
+
+    await expectWholeScreen(page, "handover-report-page-2");
+  });
+
+  // The pages on their way (the board "Handover, states", "The first load"): the paper as a block of the page's shape and six thumbnail skeletons; the route is held.
+  test("handover, the report loading", async ({ page }, testInfo) => {
+    test.skip(!isDesktop(testInfo.project.name), "The skeletons of the paper are pictured on desktop.");
+    await page.route("**/api/export/report-pages**", () => {
+      // Held: the pages stay on their way for the picture.
+    });
+    await dayFixed(page);
+    await page.goto("/handover");
+    await factsLanded(page);
+    await expect(page.getByTestId("report-skeleton")).toBeVisible({ timeout: RUN });
+    await settled(page, testInfo.project.name);
+
+    await expectWholeScreen(page, "handover-report-loading");
   });
 
   // Before a system voltage (the board "Handover, states"): every row but the project file dim with the API's title, the decision card in the preview.

@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import type { Page, Request } from "@playwright/test";
+import { readFileSync } from "node:fs";
 import { expect, test } from "../fixtures";
 
 // The design report's paper preview, pull request 2 of Phase 9 (plan/phase-09-plan.md, steps 11 and 12, decisions 2, 4 and
@@ -7,7 +8,8 @@ import { expect, test } from "../fixtures";
 // engine draws them; the thumbnails are the answer's pages with its titles; the paper shows the first page at the answer's
 // size; previous, next, the thumbnails and the keys turn the pages and the head's words follow, the ends dim; on phone the
 // row of thumbnails scrolls sideways, never the page; the facts count the pages; a failure to get the pages is said under the
-// head in the API's words, and Try again asks again. Every number and word is read from the API's answer.
+// head in the API's words, and Try again asks again; Download PDF saves the API's PDF of the same day as the pages. Every
+// number and word is read from the API's answer and the downloaded file.
 
 const RUN = 90_000;
 
@@ -17,6 +19,8 @@ type PagesAnswer = { day: string; dpi: number; pages: PageAnswer[] };
 const isPhone = (projectName: string) => projectName === "phone";
 const isDesktop = (projectName: string) => projectName === "desktop";
 const isPagesRequest = (request: Request) => /\/api\/export\/report-pages(\?|$)/.test(request.url());
+const isPdfRequest = (request: Request) => /\/api\/export\/pdf(\?|$)/.test(request.url());
+const dayOf = (request: Request) => new URL(request.url()).searchParams.get("day");
 
 const preview = (page: Page) => page.getByTestId("preview");
 const paper = (page: Page) => page.getByTestId("paper");
@@ -30,6 +34,7 @@ const facts = (page: Page) => page.getByTestId("preview-facts");
 const reportRowFacts = (page: Page) => page.getByTestId("deliverables").getByTestId("deliverable-facts").first();
 const failed = (page: Page) => preview(page).getByTestId("run-failed");
 const rows = (page: Page) => page.getByTestId("deliverables").getByTestId("deliverable");
+const downloadPdf = (page: Page) => page.getByTestId("preview-action").getByRole("button", { name: "Download PDF" }).filter({ visible: true });
 
 const nameOf = (one: PageAnswer) => `Page ${one.number}, ${one.title}`;
 const wordsOf = (pages: PagesAnswer, number: number) => `Page ${number} of ${pages.pages.length} · ${pages.pages[number - 1]!.title}`;
@@ -87,7 +92,7 @@ test.describe("the pages (decisions 4 and 5)", () => {
     });
 
     expect(requests).toHaveLength(1);
-    expect(new URL(requests[0]!.url()).searchParams.get("day")).toBe(day);
+    expect(dayOf(requests[0]!)).toBe(day);
     expect(pages.day).toBe(day);
     expect(pages.pages.length).toBeGreaterThan(1);
     for (const [index, one] of pages.pages.entries()) await expect(thumbnail(page).nth(index)).toHaveAccessibleName(nameOf(one));
@@ -203,6 +208,25 @@ test.describe("the pages (decisions 4 and 5)", () => {
     await expect(failed(page)).toHaveCount(0);
     await expectPage(page, pages, 1);
     expect(requests).toHaveLength(2);
+  });
+
+  test("desktop: Download PDF saves the API's PDF, asked with the day of the pages: named after the design, a PDF, with as many page objects as the preview has pages (decisions 2 and 15)", async ({ page }, testInfo) => {
+    test.skip(!isDesktop(testInfo.project.name), "Downloads are captured on desktop alone (decision 15).");
+    const { pages, requests } = await theReport(page, testInfo.project.name);
+
+    const asked = page.waitForRequest(isPdfRequest);
+    const download = page.waitForEvent("download");
+    await downloadPdf(page).click();
+    const [request, file] = await Promise.all([asked, download]);
+
+    expect(dayOf(request)).toBe(dayOf(requests[0]!));
+    expect(file.suggestedFilename()).toMatch(/-report\.pdf$/);
+    const bytes = readFileSync((await file.path())!);
+    expect(bytes.subarray(0, 5).toString("latin1")).toBe("%PDF-");
+    // Every page of a PDF is an object "/Type /Page"; "/Pages" is their tree, counted out.
+    const pageObjects = bytes.toString("latin1").match(/\/Type\s*\/Page(?!s)/g) ?? [];
+    expect(pageObjects).toHaveLength(pages.pages.length);
+    await expect(downloadPdf(page)).not.toHaveAttribute("aria-disabled", "true");
   });
 
   test("axe finds nothing serious or critical on the report", async ({ page }, testInfo) => {

@@ -485,8 +485,25 @@ Row 64 high: format badge 44 by 28 (accent for the selected row), title, one lin
 icon (file) or a chevron (opens a view).
 
 ## Paper preview
-`color-paper` sheet, radius 6, `shadow-panel`, ink text. Page thumbnails at the right, 132 wide; the current one
-has an accent border.
+The design report's pages as the engine draws them, the same drawing as the PDF (plan/phase-09-plan.md, decisions 4
+and 5; the boards "Handover" on three sizes). The paper: `color-paper` sheet, radius `radius-xs` (6), `shadow-panel`,
+as high as the page it shows; the page's image at the paper's width with the answer's own size, so that nothing jumps
+while it loads. The thumbnails are buttons, each the page scaled into a slot with its caption under it; the current one
+(`aria-current`) has the accent border on `surface-2`, the others the `line` border; the name of each is "Page 2,
+Layout". On desktop they stand in a column of 132 at the right of the paper, 8 apart, the slot 70 high, the caption
+"2 · Layout"; on tablet in a row of 72 under the paper, 6 apart, the slot 45; on phone in a row of 56, 4 apart, the
+slot 35, the number alone in mono, a row that scrolls sideways if it must. Previous and next are secondary icon buttons
+of 40 (44 on touch), dim and `aria-disabled` at the ends: on tablet and desktop in the head before the primary action,
+with "Page 1 of 6 · Summary" after the facts; on phone under the paper, with the words between them. Left and Right on
+the focused paper or thumbnails turn the pages; on the thumbnails the focus follows.
+
+States: while the pages come, a breathing block of the page's shape (`aspect-paper`) and six thumbnail skeletons; the
+head's buttons dim until they are there. A failure: the API's words under the head with Try again, no toast, since
+nothing was pressed. An edit of the document asks the pages again; the ones of before stay, dimmed
+(`opacity-updating`), until the new ones come.
+
+In code: `ReportPreview`, `PageButton` and `ReportSkeleton` (`components/handover/ReportPreview.tsx`); the page, the
+words and the bounds in `lib/handover/report-view.ts`; the pages kept per edit in `lib/handover/downloads-store.ts`.
 
 # Round 4
 

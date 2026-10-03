@@ -349,6 +349,22 @@ describe("the pages of the report, kept per edit as the files are (plan/phase-09
     expect(pagesStatusOf(store.getState())).toEqual({ status: "idle" });
   });
 
+  test("the pages and the PDF are asked with the same day, the reader's, so that the preview and the file agree (decision 2)", async () => {
+    const { store, calls, answerPages, answer } = made();
+    const pages = store.getState().askPages();
+    answerPages(0, pagesOfDay(DAY));
+    await pages;
+
+    const pdf = store.getState().download("report");
+    answer(1, "Pune-demo-roof-report.pdf");
+    await pdf;
+
+    expect(calls.map((call) => [call.kind, call.day])).toEqual([
+      ["pages", DAY],
+      ["pdf", DAY],
+    ]);
+  });
+
   test("another design opened: nothing of the one before stays", async () => {
     const { store, answerPages } = made();
     const first = store.getState().askPages();
