@@ -47,6 +47,19 @@ describe("describeTasks", () => {
     });
   });
 
+  test("with names: what ran and what was unchanged, each by its name", () => {
+    const names = (taskId: string) => taskId.replace("//#e2e:", "");
+    expect(describeTasks([ran("//#e2e:kit"), hit("//#e2e:find"), hit("//#e2e:shell")], names)).toEqual({
+      state: "partly",
+      detail: "ran kit; unchanged find, shell, cached at 956b01f",
+    });
+    expect(describeTasks([ran("//#e2e:kit"), ran("//#e2e:find")], names)).toEqual({ state: "ok", detail: "ran kit, find" });
+    expect(describeTasks([hit("//#e2e:kit")], names)).toEqual({
+      state: "skipped",
+      detail: "inputs unchanged, cached at 956b01f (turbo hash cccc3333)",
+    });
+  });
+
   test("hits made at several commits name each commit", () => {
     const older = { ...hit("a#x"), madeAt: "4278bbe" };
     expect(describeTasks([hit("b#x"), older]).detail).toMatch(/cached at 956b01f, 4278bbe/);

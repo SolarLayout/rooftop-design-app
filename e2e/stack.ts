@@ -33,6 +33,20 @@ export function readTestStack(): TestStack | null {
   }
 }
 
+async function answers(url: string): Promise<boolean> {
+  try {
+    const response = await fetch(url, { signal: AbortSignal.timeout(2_000) });
+    return response.status === 200;
+  } catch {
+    return false;
+  }
+}
+
+/** Both halves of the stack the pid file names answer: it can be used as it is. */
+export async function isUp(stack: TestStack | null): Promise<boolean> {
+  return stack !== null && (await answers(stack.web)) && (await answers(stack.apiHealth));
+}
+
 /** The address of the web app under test, with the real port. */
 export function webUrl(): string {
   return process.env[WEB_URL_VARIABLE] ?? readTestStack()?.web ?? PREFERRED_WEB_URL;

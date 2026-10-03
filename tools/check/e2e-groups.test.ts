@@ -119,7 +119,7 @@ describe("turbo.json and package.json hold the groups", () => {
   const root = JSON.parse(readFileSync(join(REPO_ROOT, "package.json"), "utf8")) as { scripts: Record<string, string> };
 
   test("turbo.json has a task for each group and no other browser task by group", () => {
-    const tasks = Object.keys(turbo.tasks).filter((id) => id.startsWith("//#e2e:"));
+    const tasks = Object.keys(turbo.tasks).filter((id) => id.startsWith("//#e2e"));
     expect(tasks).toEqual(GROUPS.map(taskOf));
   });
 
