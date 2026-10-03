@@ -22,7 +22,7 @@ import { isEntered, NOTHING_ENTERED, type ByHand } from "@/lib/outline/by-hand";
 import { frameAt, toMetres } from "@/lib/outline/frame";
 import { nameOf, obstaclesOfMap } from "@/lib/outline/obstacles";
 import { isClosedAndSettled, outlineAfter, START } from "@/lib/outline/outline-state";
-import { pathOfLens } from "@/lib/routes";
+import { pathOfLens, placeOfFindAddress } from "@/lib/routes";
 import { latitudeOf, longitudeOf, projectOf } from "@/lib/stores/project-store";
 import { MapButtons } from "./MapButtons";
 import { ByHandPanel } from "./ByHandPanel";
@@ -75,7 +75,10 @@ type Entry = "map" | "hand";
 /** Find the roof on the map and outline it: the flagship (plan/phase-04-find-and-outline.md). */
 export function Find() {
   const router = useRouter();
-  const isEditing = useSearchParams().get("edit") === "roof";
+  const params = useSearchParams();
+  const isEditing = params.get("edit") === "roof";
+  // From Home's search (plan/phase-10-plan.md, step 11): the screen begins as if the place had just been found here.
+  const [placeAsked] = useState(() => placeOfFindAddress(params));
   const { project: store } = useStores();
   const project = useProject(projectOf);
   const latitude = useProject(latitudeOf);
@@ -83,8 +86,8 @@ export function Find() {
   const webGL = useWebGL();
   const [tilesFailed, setTilesFailed] = useState(false);
   const [map, setMap] = useState<MapLibre | null>(null);
-  const [step, setStep] = useState<Step>("find");
-  const [foundAt, setFoundAt] = useState<FoundPlace | null>(null);
+  const [step, setStep] = useState<Step>(placeAsked ? "outline" : "find");
+  const [foundAt, setFoundAt] = useState<FoundPlace | null>(placeAsked);
   const [outline, on] = useReducer(outlineAfter, START);
   const [toolTaken, setTool] = useState<Tool>("corners");
   // The toolbar follows the roof: closed (and no drag going on), an obstacle is drawn; opened again, the outline is.
@@ -94,12 +97,13 @@ export function Find() {
   const [roofType, setRoofType] = useState<RoofType>("flat_tilted");
   const [building, setBuilding] = useState<Building>({ kind: "idle" });
   const [entry, setEntry] = useState<Entry>("map");
-  const [hand, setHand] = useState<ByHand>(NOTHING_ENTERED);
+  const [hand, setHand] = useState<ByHand>(placeAsked ? { ...NOTHING_ENTERED, lat: placeAsked.lat, lon: placeAsked.lon } : NOTHING_ENTERED);
   const loaded = useRef(false);
-  // The map begins at the roof of the design that is open; without one, from far.
-  const [view, setView] = useState<MapView>(() =>
-    latitude === null || longitude === null ? FROM_FAR : { lon: longitude, lat: latitude, zoom: ROOF_ZOOM },
-  );
+  // The map begins at the place asked for in the address, else at the roof of the design that is open; without either, from far.
+  const [view, setView] = useState<MapView>(() => {
+    if (placeAsked) return { lon: placeAsked.lon, lat: placeAsked.lat, zoom: ROOF_ZOOM };
+    return latitude === null || longitude === null ? FROM_FAR : { lon: longitude, lat: latitude, zoom: ROOF_ZOOM };
+  });
 
   const state = useMemo(
     () => mapStateOf({ hasKey: PROVIDER !== null, hasWebGL: webGL ?? true, tilesFailed }),

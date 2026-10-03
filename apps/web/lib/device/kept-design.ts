@@ -38,14 +38,15 @@ export function roofWordsOf(document: Project): string {
   return `${roofSizeOf(document.roof)} ${TYPE_WORDS[document.roof.roof_type]}`;
 }
 
+/** The numbers of a run: the DC capacity and the energy of year 1 of its chosen option; null before a run with one. */
+export function numbersOf(design: DesignResult | null): Pick<KeptFacts, "dcKwp" | "energyMwh"> {
+  const chosen = design?.options.find((option) => option.key === design.chosen_option) ?? null;
+  return { dcKwp: chosen?.dc_kwp ?? null, energyMwh: chosen?.energy.energy_mwh ?? null };
+}
+
 /** The facts of the card: of the document, and of the chosen option of the last run when there is one. */
 export function factsOf(document: Project, design: DesignResult | null): KeptFacts {
-  const chosen = design?.options.find((option) => option.key === design.chosen_option) ?? null;
-  return {
-    roofWords: roofWordsOf(document),
-    dcKwp: chosen?.dc_kwp ?? null,
-    energyMwh: chosen?.energy.energy_mwh ?? null,
-  };
+  return { roofWords: roofWordsOf(document), ...numbersOf(design) };
 }
 
 type Kept = {

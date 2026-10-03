@@ -1,4 +1,5 @@
 // The places of the app that have a name of their own in the address (docs/design/information-architecture.md).
+import { placeInFull } from "./format/place";
 
 /** The three workspaces. They share one project and one top bar. */
 export const WORKSPACES = [
@@ -58,6 +59,45 @@ export function pathOfWorkspace(workspace: Workspace, lens: Lens) {
   if (workspace === "studio") return pathOfLens(lens);
   if (workspace === "handover") return HANDOVER;
   return "/performance" as const;
+}
+
+/** Find and outline: the map, the roof outlined on it (plan/phase-04-plan.md). */
+export const FIND = "/find";
+
+/** A place found for Find, carried in its address: Home's search leads there with it (plan/phase-10-plan.md, step 11). */
+export type PlaceInAddress = {
+  lat: number;
+  lon: number;
+  /** The place in words: the geocoder's label when it was found by words, the coordinates in full otherwise. */
+  label: string;
+  /** Found by words: the design takes the label as its name (D49). */
+  byWords: boolean;
+};
+
+const AT = "at";
+const PLACE = "place";
+
+/** The address of Find: with a place, `/find?at=<lat>,<lon>`, and for a place found by words `&place=<label>` as well. */
+export function pathOfFind(place: PlaceInAddress | null = null): string {
+  if (place === null) return FIND;
+  const params = new URLSearchParams({ [AT]: `${place.lat},${place.lon}` });
+  if (place.byWords) params.set(PLACE, place.label);
+  return `${FIND}?${params}`;
+}
+
+const isLatitude = (value: number) => Number.isFinite(value) && Math.abs(value) <= 90;
+const isLongitude = (value: number) => Number.isFinite(value) && Math.abs(value) <= 180;
+
+/** The place an address of Find carries; null without one, or with one that is no pair of coordinates. */
+export function placeOfFindAddress(params: URLSearchParams): PlaceInAddress | null {
+  const at = params.get(AT);
+  if (at === null) return null;
+  const parts = at.split(",");
+  if (parts.length !== 2 || parts.some((part) => part.trim() === "")) return null;
+  const [lat, lon] = parts.map(Number) as [number, number];
+  if (!isLatitude(lat) || !isLongitude(lon)) return null;
+  const label = params.get(PLACE);
+  return label === null ? { lat, lon, label: placeInFull(lat, lon), byWords: false } : { lat, lon, label, byWords: true };
 }
 
 /** The workspace that an address is in, or null. */

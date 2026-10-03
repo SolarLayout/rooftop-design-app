@@ -1,6 +1,8 @@
 "use client";
 
 import { useId, useReducer, useRef, useState, type KeyboardEvent } from "react";
+import { Button } from "@/components/ui/Button";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { classNames } from "@/components/ui/class-names";
 import { LIST_GAP } from "@/components/ui/design-numbers";
 import { FloatingPanel } from "@/components/ui/FloatingPanel";
@@ -26,8 +28,14 @@ type Props = {
   onPlace: (place: FoundPlace) => void;
   /** The label of the place that was found, beside the field. */
   found: string | null;
-  /** Floating over the map (Find), or a field of a form (the import of a drawing). */
-  look?: "floating" | "field";
+  /** Floating over the map (Find), a field of a form (the import of a drawing), or the well of Home with its primary action inside (`hero`). */
+  look?: "floating" | "field" | "hero";
+  /**
+   * The primary action of Home's search (the board "Home"): a link to *href* while nothing is typed, so that it leads to
+   * Find by itself; with words typed it searches them, with coordinates or a link it takes them. On phone it stands under
+   * the well, as wide as it.
+   */
+  hero?: { label: string; href: string };
   className?: string;
 };
 
@@ -39,8 +47,20 @@ const BOX = "flex h-12 min-w-0 items-center gap-3 rounded-card-s border border-l
 const FIELD = "flex h-10 min-w-0 items-center gap-2.5 rounded-control border border-line bg-well px-3 shadow-well";
 const NOTE = "flex min-h-11 items-center gap-2.5 px-2.5 text-text-2";
 
+// Home's well: 76 high with the action inside at the right from tablet up; on phone the form alone is the well, 56 high,
+// and the action stands under it. The focus inside gives the well the accent line and the halo, as every well has.
+const HERO = classNames(
+  "flex min-w-0 flex-col gap-2.5 tablet:h-19 tablet:flex-row tablet:items-center tablet:gap-3 tablet:pr-2.5 tablet:pl-5",
+  "tablet:rounded-bar tablet:border tablet:border-line-strong tablet:bg-well tablet:shadow-well tablet:focused:border-accent tablet:focused:shadow-well-focus",
+);
+const HERO_FORM = classNames(
+  "flex h-14 min-w-0 items-center gap-3 rounded-bar border border-line-strong bg-well px-4 shadow-well focused:border-accent focused:shadow-well-focus",
+  "tablet:h-auto tablet:grow tablet:rounded-none tablet:border-0 tablet:bg-transparent tablet:px-0 tablet:shadow-none",
+);
+const HERO_ACTION = "w-full max-tablet:h-12 max-tablet:rounded-row tablet:w-auto";
+
 /** The field of the search: words for the geocoder, coordinates, or a maps link; the places found under it. */
-export function Search({ provider, near, onPlace, found, look = "floating", className }: Props) {
+export function Search({ provider, near, onPlace, found, look = "floating", hero, className }: Props) {
   const id = useId();
   const [typed, setTyped] = useState("");
   const [state, dispatch] = useReducer(searchStateAfter, IDLE);
@@ -127,20 +147,24 @@ export function Search({ provider, near, onPlace, found, look = "floating", clas
   }
 
   const listId = `${id}-places`;
+  const formId = `${id}-search`;
   const isListOpen = state.kind === "found";
+  const isHero = look === "hero";
+  const hasWords = typed.trim() !== "";
 
   return (
-    <div className={classNames("flex min-w-0 items-center gap-2 tablet:gap-2.5", className)}>
+    <div className={classNames(isHero ? HERO : "flex min-w-0 items-center gap-2 tablet:gap-2.5", className)}>
       <form
+        id={formId}
         ref={anchor}
         role="search"
-        className={classNames(look === "field" ? FIELD : BOX, "min-w-0 grow")}
+        className={classNames(isHero ? HERO_FORM : look === "field" ? FIELD : BOX, "min-w-0 grow")}
         onSubmit={(event) => {
           event.preventDefault();
           onSubmit();
         }}
       >
-        <Icon name="search" size={18} className="text-text-2" />
+        <Icon name="search" size={isHero ? 22 : 18} className="text-text-2" />
         <input
           type="text"
           role="combobox"
@@ -155,7 +179,7 @@ export function Search({ provider, near, onPlace, found, look = "floating", clas
           value={typed}
           onChange={(event) => setTyped(event.target.value)}
           onKeyDown={onKeyDown}
-          className="min-w-0 grow border-0 bg-transparent text-text outline-none placeholder:text-text-3 type-body-touch desktop:type-body"
+          className={classNames("min-w-0 grow border-0 bg-transparent text-text outline-none placeholder:text-text-3", isHero ? "text-(length:--text-title)" : "type-body-touch desktop:type-body")}
         />
         {state.kind === "searching" ? (
           <ProgressRing size={16} label="Searching" />
@@ -165,7 +189,20 @@ export function Search({ provider, near, onPlace, found, look = "floating", clas
           </span>
         ) : null}
       </form>
-      {typed === "" && found === null ? (
+      {hero ? (
+        hasWords ? (
+          <Button type="submit" form={formId} kind="primary" size="xl" className={HERO_ACTION}>
+            {hero.label}
+            <Icon name="arrow-right" size={18} />
+          </Button>
+        ) : (
+          <ButtonLink kind="primary" size="xl" href={hero.href} className={HERO_ACTION}>
+            {hero.label}
+            <Icon name="arrow-right" size={18} />
+          </ButtonLink>
+        )
+      ) : null}
+      {!isHero && typed === "" && found === null ? (
         <button
           type="button"
           aria-label="Use my location"

@@ -12,9 +12,10 @@ import { boxFrameOf, handlesSettled, inThePlan, metresFrom, obstacleSelectedOnSt
 // picture beside the preview in docs/design/previews, then renew the baseline:
 //   bun tools/with-node.ts playwright test screens --update-snapshots   (in e2e/)
 
+// Home as the boards draw it on three sizes (plan/phase-10-plan.md, step 11): the demo's card read from the API, nothing kept.
 test("home", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByTestId("api-status")).toHaveAttribute("data-state", "reachable");
+  await expect(page.getByTestId("demo-name")).toHaveText("Pune demo roof");
 
   await expectScreen(page, "home");
 });

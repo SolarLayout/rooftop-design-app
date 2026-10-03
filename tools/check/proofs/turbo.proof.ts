@@ -70,8 +70,8 @@ describe("what turbo re-runs", () => {
     expect(changed(turboHashes(worktree.path, TOOLCHAIN))).toEqual([]);
   });
 
-  test("a module of Find: the web app's tasks, and the groups that see Find (find, and the Studio, Performance and the shell, which cross into it)", () => {
-    const reached = [...E2E.slice(0, 1), ...WEB, ...browser("find", "studio", "performance", "shell")].sort();
+  test("a module of Find: the web app's tasks, and the groups that see Find (find, and the Studio, Performance, Home and the shell, which cross into it)", () => {
+    const reached = [...E2E.slice(0, 1), ...WEB, ...browser("find", "studio", "performance", "home", "shell")].sort();
     expect(after("apps/web/lib/outline/snap.ts", aComment)).toEqual(reached);
     expect(after("apps/web/components/find/RoofMap.tsx", aComment)).toEqual(reached);
   });

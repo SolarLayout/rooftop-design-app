@@ -75,8 +75,9 @@ const STUDIO_OWN = [
 const PERFORMANCE_OWN = ["apps/web/components/performance/**", "apps/web/lib/performance/**", ...STUDIO_OWN];
 const HANDOVER_OWN = ["apps/web/components/handover/**", "apps/web/lib/handover/**"];
 // Home and the dialogs it shares with the project switcher (Open a project), which the shell opens on every page: the
-// shell imports the dialog, so a change to it runs home and shell (plan/phase-10-plan.md, decision 12).
-const HOME_OWN = ["apps/web/components/home/**", "apps/web/lib/home/**"];
+// shell imports the dialog, so a change to it runs home and shell (plan/phase-10-plan.md, decision 12). Home's search is
+// Find's, and "Find my roof" leads to the map at the place: home.e2e.ts crosses into Find, as performance's suites do.
+const HOME_OWN = ["apps/web/components/home/**", "apps/web/lib/home/**", ...FIND_OWN];
 // The screens suite pictures every page but the kit's, whose pictures the kit suite takes: this group runs
 // whenever anything of the web changed.
 const SHELL_OWN = [

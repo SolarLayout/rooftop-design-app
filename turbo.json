@@ -363,7 +363,10 @@
         "!**/__pycache__/**",
         "e2e/tests/home*.e2e.ts",
         "apps/web/components/home/**",
-        "apps/web/lib/home/**"
+        "apps/web/lib/home/**",
+        "apps/web/components/find/**",
+        "apps/web/lib/map/**",
+        "apps/web/lib/outline/**"
       ],
       "outputs": []
     },
