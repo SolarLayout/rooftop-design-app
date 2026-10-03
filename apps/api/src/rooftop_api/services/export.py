@@ -5,6 +5,7 @@ import re
 import threading
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import date
 from urllib.parse import quote
 
 from rooftop_api import convert, schemas
@@ -27,6 +28,7 @@ class Kind:
     write: Callable[..., bytes]  # of the Design, or of the engine's Project when needs_design is False
     needs_design: bool = True  # False: of the request alone; nothing is prepared or run for it
     drawn: bool = False  # made with matplotlib
+    dated: bool = False  # prints the day of the report, which the writer takes after the design
 
 
 @dataclass(frozen=True)
@@ -51,7 +53,7 @@ def rtd_bytes(project: Project) -> bytes:
 
 
 KINDS: dict[str, Kind] = {
-    "pdf": Kind("application/pdf", "-report.pdf", files.export_pdf_bytes, drawn=True),
+    "pdf": Kind("application/pdf", "-report.pdf", files.export_pdf_bytes, drawn=True, dated=True),
     "dxf": Kind("image/vnd.dxf", "-layout.dxf", files.export_dxf_bytes),
     "kmz": Kind("application/vnd.google-earth.kmz", ".kmz", files.export_kmz_bytes),
     "csv": Kind("text/csv; charset=utf-8", "-hourly.csv", files.export_csv_bytes),
@@ -60,11 +62,14 @@ KINDS: dict[str, Kind] = {
 }
 
 
-def export(kind: str, project: schemas.Project) -> File:
-    """The file of *kind*: of the option the project has chosen, or of the request alone."""
+def export(kind: str, project: schemas.Project, day: date | None = None) -> File:
+    """The file of *kind*: of the option the project has chosen, or of the request alone.
+
+    *day* is the reader's day, printed by the kinds that are dated; None prints the server's today.
+    """
     made = KINDS[kind]
     if made.needs_design:
-        content = _written(made, _design_of(project))
+        content = _written(made, _design_of(project), day)
     else:
         content = made.write(convert.project_to_engine(project))
     return File(content, made.media_type, file_stem(project.name), made.ending)
@@ -78,11 +83,12 @@ def _design_of(project: schemas.Project) -> Design:
     return design
 
 
-def _written(made: Kind, design: Design) -> bytes:
+def _written(made: Kind, design: Design, day: date | None) -> bytes:
+    given = (design, day) if made.dated else (design,)
     if made.drawn:
         with DRAWING:
-            return made.write(design)
-    return made.write(design)
+            return made.write(*given)
+    return made.write(*given)
 
 
 def require_option(design: Design, chosen: str) -> None:

@@ -4,6 +4,7 @@ import base64
 import io
 import json
 import zipfile
+from datetime import date
 
 import ezdxf
 import pandas as pd
@@ -130,6 +131,34 @@ def test_the_export_is_that_of_the_option_chosen(client, chosen):
     table = pd.read_csv(io.BytesIO(client.post("/export/csv", json=chosen).content))
 
     assert table["p_ac_kw"].sum() / 1000 == pytest.approx(607.7, abs=0.05)
+
+
+# ── the day of the report ────────────────────────────────────────────────────
+def test_the_report_prints_the_day_it_is_asked_for(client, chosen):
+    page = _pages(client.post("/export/pdf?day=2025-01-31", json=chosen).content)[0]
+
+    assert "SolarLayout Rooftop · 31 Jan 2025" in page
+
+
+def test_the_report_prints_the_server_day_when_none_is_asked_for(exported):
+    page = _pages(exported["pdf"].content)[0]
+
+    assert f"SolarLayout Rooftop · {date.today():%d %b %Y}" in page
+
+
+def test_a_day_that_is_not_a_date_is_refused_by_its_field(client, chosen):
+    response = client.post("/export/pdf?day=yesterday", json=chosen)
+
+    assert response.status_code == 422
+    error = error_of(response)
+    assert error["code"] == "invalid_request"
+    assert error["field"] == "day"
+    assert error["message"].startswith("day: ")
+
+
+@pytest.mark.parametrize("kind", KINDS)
+def test_every_kind_takes_the_day(client, chosen, kind):
+    assert client.post(f"/export/{kind}?day=2026-10-03", json=chosen).status_code == 200
 
 
 # ── the project file ─────────────────────────────────────────────────────────

@@ -2,6 +2,7 @@
 
 import io
 import zipfile
+from datetime import date
 
 import pandas as pd
 import pytest
@@ -102,12 +103,33 @@ def test_dxf_bytes_come_back_as_the_roof(demo_design):
 
 @pytest.mark.parametrize(("writer", "source"), WRITERS)
 def test_the_path_form_writes_what_the_bytes_form_returns(writer, source, demo_design, tmp_path, monkeypatch):
-    monkeypatch.setattr(files, source, lambda design: b"the bytes of " + source.encode())
+    monkeypatch.setattr(files, source, lambda design, *given: b"the bytes of " + source.encode())
     path = tmp_path / "out.bin"
 
     getattr(files, writer)(demo_design, path)
 
     assert path.read_bytes() == b"the bytes of " + source.encode()
+
+
+def test_the_path_form_of_the_pdf_passes_the_day_on(demo_design, tmp_path, monkeypatch):
+    monkeypatch.setattr(files, "export_pdf_bytes", lambda design, day: f"the report of {day}".encode())
+
+    files.export_pdf(demo_design, tmp_path / "out.pdf", day=date(2026, 10, 3))
+
+    assert (tmp_path / "out.pdf").read_bytes() == b"the report of 2026-10-03"
+
+
+# ── the day of the report ────────────────────────────────────────────────────
+def test_the_pdf_prints_the_day_it_is_given(demo_design):
+    page = _pages(files.export_pdf_bytes(demo_design, day=date(2025, 1, 31)))[0]
+
+    assert "SolarLayout Rooftop · 31 Jan 2025" in page
+
+
+def test_the_pdf_prints_today_without_a_day(demo_design):
+    page = _pages(files.export_pdf_bytes(demo_design))[0]
+
+    assert f"SolarLayout Rooftop · {date.today():%d %b %Y}" in page
 
 
 @pytest.mark.parametrize(("writer", "source"), WRITERS)

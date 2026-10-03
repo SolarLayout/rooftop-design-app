@@ -1,5 +1,6 @@
 """The files of a design, and the project file."""
 
+from datetime import date
 from typing import Literal
 
 from fastapi import APIRouter, Response
@@ -21,7 +22,7 @@ router = APIRouter(tags=["export"], responses={**JSON_ERROR_RESPONSES, **FILES})
 
 
 @router.post("/export/{kind}", response_class=Response, operation_id="exportDesign")
-def export(kind: ExportKind, project: schemas.Project) -> Response:
+def export(kind: ExportKind, project: schemas.Project, day: date | None = None) -> Response:
     """A file of the design, for the option the project has chosen; or the project file.
 
     pdf: the report, A4 landscape. dxf: the layout, R2010 in metres, a layer for every string.
@@ -29,10 +30,13 @@ def export(kind: ExportKind, project: schemas.Project) -> Response:
     sld: the single-line diagram as a PNG. rtd: the project file, format 2, as the desktop app reads
     it: the request as the engine holds it, and nothing of the design.
 
+    day: the reader's day (YYYY-MM-DD), printed on page 1 of the report; without it the server's
+    today. Every kind takes it; the report reads it.
+
     For every kind but rtd the project must name its chosen option, and the design must have it.
     rtd needs no chosen option, no system voltage, no weather and no run.
     """
-    file = service.export(kind, project)
+    file = service.export(kind, project, day)
     return Response(
         content=file.content,
         media_type=file.media_type,
