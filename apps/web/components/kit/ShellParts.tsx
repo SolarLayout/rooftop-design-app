@@ -10,7 +10,7 @@ import { Export, Present, TopBar } from "@/components/shell/TopBar";
 import { Vitals } from "@/components/shell/Vitals";
 import { TabBar, WorkspaceNav } from "@/components/shell/WorkspaceNav";
 import { Example, Row, Section } from "./Example";
-import { DESIGN, NO_NOTES, NOTES, VITALS } from "./shell-examples";
+import { DESIGN, NO_NOTES, NOTES, ON_THIS_DEVICE, VITALS } from "./shell-examples";
 
 type Props = { onPress: (what: string) => void };
 
@@ -162,6 +162,21 @@ export function ProjectAndSaving({ onPress }: Props) {
           <ProjectTrigger {...DESIGN} open className="self-start" />
           <div className="desktop:w-85">
             <ProjectMenu name={DESIGN.name} saving="not-kept" onOpenNotes={openNotes} onImport={() => onPress("Import a drawing")} onTake={() => undefined} onSaveACopy={() => onPress("Save a copy")} onRename={(name) => onPress(`Rename, ${name}`)} />
+          </div>
+        </Wide>
+        <Wide name="switcher-designs" caption="Designs on this device: the newest edited first, the open one with the tick, the capacity or the roof at the right (plan phase 10, step 5)">
+          <div className="desktop:w-85">
+            <ProjectMenu
+              name={DESIGN.name}
+              saving="saved"
+              onOpenNotes={openNotes}
+              onImport={() => onPress("Import a drawing")}
+              onTake={() => undefined}
+              onSaveACopy={() => onPress("Save a copy")}
+              onRename={(name) => onPress(`Rename, ${name}`)}
+              designs={ON_THIS_DEVICE}
+              onOpenDesign={(id) => onPress(`Open, ${id}`)}
+            />
           </div>
         </Wide>
         <Wide name="switcher-rename" caption="The name edited: Rename turns the row into the text field (plan phase 9, decision 13)">

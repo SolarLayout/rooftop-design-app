@@ -34,3 +34,14 @@ export async function openWhatBelongs({ remembered, openFromDevice, openDemo, sa
   openDemo();
   return "demo";
 }
+
+const NO_LONGER_THERE = "That design is no longer on this device.";
+
+/** Opens the design taken in the project switcher; what cannot be opened is said, and the design that is open stays. */
+export async function openFromTheSwitcher(id: string, { openFromDevice, say }: Pick<Ways, "openFromDevice" | "say">): Promise<void> {
+  try {
+    if (!(await openFromDevice(id))) say(NO_LONGER_THERE);
+  } catch (error) {
+    say(error instanceof Error ? error.message : String(error));
+  }
+}

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { notOpenedWordsOf, openWhatBelongs } from "./opening";
+import { notOpenedWordsOf, openFromTheSwitcher, openWhatBelongs } from "./opening";
 
 // What a workspace without a design opens (plan/phase-10-plan.md, step 4, decision 2): the design remembered as open,
 // from the device, else the demo; a kept design that cannot be read opens the demo and says so with the device's words.
@@ -67,5 +67,34 @@ describe("the words of a design not opened", () => {
 
   test("a fault that is no Error is said as it is", () => {
     expect(notOpenedWordsOf("odd")).toBe("The design kept on this device could not be opened: odd. The demo is open instead.");
+  });
+});
+
+describe("a design taken in the project switcher", () => {
+  test("on the device: opened, nothing said", async () => {
+    const { ways: w, opened, said } = ways({ remembered: null, onTheDevice: ["a1"] });
+
+    await openFromTheSwitcher("a1", w);
+
+    expect(opened).toEqual(["kept a1"]);
+    expect(said).toEqual([]);
+  });
+
+  test("no longer on the device (removed in another tab): said, and the design that is open stays", async () => {
+    const { ways: w, opened, said } = ways({ remembered: null, onTheDevice: [] });
+
+    await openFromTheSwitcher("gone", w);
+
+    expect(opened).toEqual([]);
+    expect(said).toEqual(["That design is no longer on this device."]);
+  });
+
+  test("cannot be read: the device's words said, and the design that is open stays", async () => {
+    const { ways: w, opened, said } = ways({ remembered: null, refuse: true });
+
+    await openFromTheSwitcher("a1", w);
+
+    expect(opened).toEqual([]);
+    expect(said).toEqual([COULD_NOT_READ]);
   });
 });

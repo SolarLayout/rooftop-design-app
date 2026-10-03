@@ -14,6 +14,7 @@ import { TextField } from "@/components/ui/TextField";
 import { useFloating } from "@/components/ui/use-floating";
 import { NAME_RULES } from "@/lib/flow/name-field";
 import { SaveState, type Saving } from "./SaveState";
+import type { DeviceRow } from "./switcher-view";
 
 type Design = {
   /** The name of the design that is open; null while none is. */
@@ -75,6 +76,16 @@ const ROW = classNames(
   "flex h-13 items-center gap-3 rounded-item px-2.5 select-none focus-ring desktop:h-11",
   "hovered:bg-surface-2 focus-visible:bg-surface-2",
 );
+const PRESSABLE_ROW = classNames(ROW, "w-full cursor-pointer text-left");
+
+/** The arrows go through the rows of the menu the key was pressed in, Home and End to its ends; a key that leads nowhere scrolls nothing. */
+function onMenuKeyDown(event: KeyboardEvent<HTMLUListElement>) {
+  const items = [...event.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]')];
+  const current = items.findIndex((item) => item === document.activeElement);
+  const to = indexAfterKey(items.length, current === -1 ? null : current, event.key, new Set());
+  if (to !== null || ["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) event.preventDefault();
+  if (to !== null) items[to]?.focus();
+}
 
 type MenuProps = Pick<Design, "name"> & {
   saving: Saving;
@@ -87,6 +98,10 @@ type MenuProps = Pick<Design, "name"> & {
   onSaveACopy?: () => void;
   /** The name was edited in the row "This design" (plan/phase-09-plan.md, decision 13). Without it the name cannot be edited here. */
   onRename?: (name: string) => void;
+  /** The designs kept on this device, the newest edited first (plan/phase-10-plan.md, step 5); none shows the words of the board. */
+  designs?: readonly DeviceRow[];
+  /** A design of the device was taken: it is opened. */
+  onOpenDesign?: (id: string) => void;
   /** For the kit: the row with its field open, as it looks while the name is edited. */
   shownAs?: "renaming";
 };
@@ -134,19 +149,36 @@ function ThisDesign({ name, saving, onOpenNotes, onTake, onRename, shownAs }: Om
   );
 }
 
-/** What the project switcher holds: this design, the designs on this device, what can be done. */
-export function ProjectMenu({ name, saving, onOpenNotes, onImport, onTake, onSaveACopy, onRename, shownAs }: MenuProps) {
-  const doers: Record<NonNullable<Action["does"]>, (() => void) | undefined> = { import: onImport, save: onSaveACopy };
-  const rows = useRef<HTMLUListElement>(null);
+/** The designs kept on this device as rows of the menu: the open one marked with the tick; a row pressed opens its design. */
+function OnThisDevice({ designs, onTake, onOpenDesign }: Required<Pick<MenuProps, "designs">> & Pick<MenuProps, "onTake" | "onOpenDesign">) {
+  return (
+    <ul role="menu" aria-label="On this device" onKeyDown={onMenuKeyDown} className="mb-1 flex flex-col gap-0.5">
+      {designs.map(({ id, name, fact, isOpen }) => (
+        <li key={id} role="none">
+          <button
+            type="button"
+            role="menuitem"
+            tabIndex={-1}
+            aria-current={isOpen ? "true" : undefined}
+            onClick={() => {
+              onTake();
+              onOpenDesign?.(id);
+            }}
+            className={PRESSABLE_ROW}
+          >
+            {isOpen ? <Icon name="tick" stroke="tick" size={18} className="text-accent" /> : <Icon name="file" size={18} stroke="light" className="text-text-2" />}
+            <span className="min-w-0 grow truncate">{name}</span>
+            <span className={classNames(FACT, "min-w-0 max-w-1/2 truncate")}>{fact}</span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
-  function onKeyDown(event: KeyboardEvent<HTMLUListElement>) {
-    const items = [...(rows.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])];
-    const current = items.findIndex((item) => item === document.activeElement);
-    const to = indexAfterKey(items.length, current === -1 ? null : current, event.key, new Set());
-    // A key of the menu that leads nowhere must not scroll the page either.
-    if (to !== null || ["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) event.preventDefault();
-    if (to !== null) items[to]?.focus();
-  }
+/** What the project switcher holds: this design, the designs on this device, what can be done. */
+export function ProjectMenu({ name, saving, onOpenNotes, onImport, onTake, onSaveACopy, onRename, designs = [], onOpenDesign, shownAs }: MenuProps) {
+  const doers: Record<NonNullable<Action["does"]>, (() => void) | undefined> = { import: onImport, save: onSaveACopy };
 
   return (
     <div data-testid="project-menu" className={classNames(LIST, "desktop:gap-0")}>
@@ -154,9 +186,13 @@ export function ProjectMenu({ name, saving, onOpenNotes, onImport, onTake, onSav
       <ThisDesign name={name} saving={saving} onOpenNotes={onOpenNotes} onTake={onTake} onRename={onRename} shownAs={shownAs} />
       <span className={DIVIDER} />
       <span className={LABEL}>On this device</span>
-      <p className="px-2.5 pt-0.5 pb-2.5 type-small text-text-2">Designs you save appear here.</p>
+      {designs.length === 0 ? (
+        <p className="px-2.5 pt-0.5 pb-2.5 type-small text-text-2">Designs you save appear here.</p>
+      ) : (
+        <OnThisDevice designs={designs} onTake={onTake} onOpenDesign={onOpenDesign} />
+      )}
       <span className={classNames(DIVIDER, "mb-1")} />
-      <ul ref={rows} role="menu" aria-label="Project" onKeyDown={onKeyDown} className="flex flex-col gap-0.5">
+      <ul role="menu" aria-label="Project" onKeyDown={onMenuKeyDown} className="flex flex-col gap-0.5">
         {ACTIONS.map(({ name: action, icon, fact, href, does }) => {
           const run = does === undefined ? undefined : doers[does];
           const inside = (
@@ -181,7 +217,7 @@ export function ProjectMenu({ name, saving, onOpenNotes, onImport, onTake, onSav
                     onTake();
                     run();
                   }}
-                  className={classNames(ROW, "w-full cursor-pointer text-left")}
+                  className={PRESSABLE_ROW}
                 >
                   {inside}
                 </button>
@@ -198,10 +234,10 @@ export function ProjectMenu({ name, saving, onOpenNotes, onImport, onTake, onSav
   );
 }
 
-type Props = Design & Pick<MenuProps, "saving" | "onOpenNotes" | "onImport" | "onSaveACopy" | "onRename">;
+type Props = Design & Pick<MenuProps, "saving" | "onOpenNotes" | "onImport" | "onSaveACopy" | "onRename" | "designs" | "onOpenDesign">;
 
 /** The design that is open, and the way to another one. On phone and tablet it opens as a bottom sheet. */
-export function ProjectSwitcher({ name, place, saving, onOpenNotes, onImport, onSaveACopy, onRename }: Props) {
+export function ProjectSwitcher({ name, place, saving, onOpenNotes, onImport, onSaveACopy, onRename, designs, onOpenDesign }: Props) {
   const [floating, trigger] = useFloating({ side: "below", align: "start", gap: LIST_GAP });
   const panel = useRef<HTMLDivElement>(null);
 
@@ -226,7 +262,17 @@ export function ProjectSwitcher({ name, place, saving, onOpenNotes, onImport, on
       />
       <FloatingPanel floating={floating} width="menu">
         <div ref={panel}>
-          <ProjectMenu name={name} saving={saving} onOpenNotes={onOpenNotes} onImport={onImport} onTake={floating.close} onSaveACopy={onSaveACopy} onRename={onRename} />
+          <ProjectMenu
+            name={name}
+            saving={saving}
+            onOpenNotes={onOpenNotes}
+            onImport={onImport}
+            onTake={floating.close}
+            onSaveACopy={onSaveACopy}
+            onRename={onRename}
+            designs={designs}
+            onOpenDesign={onOpenDesign}
+          />
         </div>
       </FloatingPanel>
     </>

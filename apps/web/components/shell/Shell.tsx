@@ -2,9 +2,9 @@
 
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { openWhatBelongs } from "@/lib/device/opening";
+import { openFromTheSwitcher, openWhatBelongs } from "@/lib/device/opening";
 import { rememberedOf } from "@/lib/device/remembered";
-import { savingOf } from "@/lib/device/saving";
+import { idOf, keptDesignsOf, savingOf } from "@/lib/device/saving";
 import { placeInShort } from "@/lib/format/place";
 import { withName } from "@/lib/flow/name-field";
 import { workspaceOf } from "@/lib/routes";
@@ -15,6 +15,7 @@ import { ImportDrawing } from "./ImportDrawing";
 import { NotesDrawer } from "./NotesDrawer";
 import type { Note } from "./notes-view";
 import { useNotes, useProject, useSaving, useStores, useToasts, useView } from "./stores";
+import { rowsOnTheDeviceOf } from "./switcher-view";
 import { TopBar } from "./TopBar";
 import { TabBar } from "./WorkspaceNav";
 
@@ -34,6 +35,8 @@ function Frame({ children }: { children: ReactNode }) {
   const { flow, project, downloads, saving } = useStores();
   const name = useProject(nameOf);
   const savingState = useSaving(savingOf);
+  const kept = useSaving(keptDesignsOf);
+  const keptId = useSaving(idOf);
   const latitude = useProject(latitudeOf);
   const longitude = useProject(longitudeOf);
   const lens = useView(lensOf);
@@ -56,6 +59,8 @@ function Frame({ children }: { children: ReactNode }) {
 
   const place = latitude === null || longitude === null ? null : placeInShort(latitude, longitude);
   const ofTheShell = useMemo(() => ({ notes, open: () => setNotesOpen(true) }), [notes]);
+  const designs = useMemo(() => rowsOnTheDeviceOf(kept, keptId), [kept, keptId]);
+  const say = (words: string) => void toasts.show({ kind: "note", words });
 
   return (
     <NotesContext.Provider value={ofTheShell}>
@@ -72,6 +77,8 @@ function Frame({ children }: { children: ReactNode }) {
           // The name is a committed edit like any other, undone by key (plan/phase-09-plan.md, decision 13).
           onRename={(name) => project.getState().commit((document) => withName(document, name))}
           onSaveACopy={() => void downloads.getState().download("project-file")}
+          designs={designs}
+          onOpenDesign={(id) => void openFromTheSwitcher(id, { openFromDevice: (one) => saving.getState().openFromDevice(one), say })}
         />
         <div data-workspace-frame className="relative flex min-h-0 grow flex-col overflow-y-auto">{children}</div>
         <TabBar current={workspace} lens={lens} />
