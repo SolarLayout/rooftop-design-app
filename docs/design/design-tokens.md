@@ -124,6 +124,7 @@ The shape of a page is a token too, so that the paper has its height before the 
 | Token | Value | Use |
 |---|---|---|
 | `--aspect-paper` | `297 / 210` | A4 landscape: the paper's skeleton while the pages come (`aspect-paper`) |
+| `--aspect-thumbnail` | `320 / 180` | The tile of a design card on Home: the kept thumbnail's own shape (`aspect-thumbnail`) |
 
 ## 3D scene palette (TypeScript, `apps/web/lib/scene-palette.ts`)
 

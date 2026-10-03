@@ -211,6 +211,7 @@
   --columns-loss-chain: 210px 84px 64px 232px minmax(0, 1fr);
   --columns-loss-chain-tablet: 230px 96px 72px 196px minmax(0, 1fr);
   --aspect-paper: 297 / 210;
+  --aspect-thumbnail: 320 / 180;
   --columns-loss-chain-phone: minmax(0, 1fr) auto auto;
 
   --radius-swatch: 3px;
@@ -428,6 +429,7 @@
   --grid-template-columns-loss-chain-tablet: var(--columns-loss-chain-tablet);
   --grid-template-columns-loss-chain-phone: var(--columns-loss-chain-phone);
   --aspect-paper: var(--aspect-paper);
+  --aspect-thumbnail: var(--aspect-thumbnail);
 
   --breakpoint-tablet: 640px;
   --breakpoint-desktop: 1101px;
