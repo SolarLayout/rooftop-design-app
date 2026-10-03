@@ -20,13 +20,53 @@ test("home", async ({ page }) => {
   await expectScreen(page, "home");
 });
 
-// Home with two designs kept on this device (plan/phase-10-plan.md, step 12; the board "Home, designs on this device"): the demo
-// kept with the facts of its run, Block B not run yet, as cards under On this device.
-test("home, designs on this device", async ({ page }) => {
-  await withDesignsOnTheDevice(page, TWO_DESIGNS, null);
-  await page.reload();
+const RUN_OF_HOME = 90_000;
+
+/**
+ * Two designs on this device as the app keeps them: the demo edited in the Studio (its roof type East-west), kept at that edit
+ * with its run's facts and the plan of its layout as the thumbnail; and Block B seeded beside it, not run yet (the roof alone).
+ */
+async function theDemoKeptBesideBlockB(page: Page): Promise<void> {
+  await withDesignsOnTheDevice(page, [TWO_DESIGNS[1]!], null);
+  await page.goto("/studio/roof");
+  const roofType = page.getByRole("radiogroup", { name: "Roof type" }).filter({ visible: true });
+  await expect(roofType.getByRole("radio", { name: "Tilted rows" })).toHaveAttribute("aria-checked", "true", { timeout: RUN_OF_HOME });
+  const ran = page.waitForResponse((response) => response.url().endsWith("/api/design") && response.ok() && (response.request().postDataJSON() as { roof: { roof_type: string } }).roof.roof_type === "flat_ew", { timeout: RUN_OF_HOME });
+  await roofType.getByRole("radio", { name: "East-west" }).click();
+  await ran;
+  // The run's facts and the plan are written to the device a moment after the run lands: the page is left once they are there.
+  await expect
+    .poll(
+      () =>
+        page.evaluate(async () => {
+          const db = await new Promise<IDBDatabase>((resolve, reject) => {
+            const opening = indexedDB.open("rooftop", 1);
+            opening.onsuccess = () => resolve(opening.result);
+            opening.onerror = () => reject(opening.error);
+          });
+          const kept = await new Promise<{ name: string; facts: { dcKwp: number | null }; thumbnail: string | null }[]>((resolve, reject) => {
+            const request = db.transaction("designs", "readonly").objectStore("designs").getAll();
+            request.onsuccess = () => resolve(request.result as { name: string; facts: { dcKwp: number | null }; thumbnail: string | null }[]);
+            request.onerror = () => reject(request.error);
+          });
+          db.close();
+          const demo = kept.find((one) => one.name === "Pune demo roof");
+          return demo !== undefined && demo.facts.dcKwp !== null && demo.thumbnail !== null && demo.thumbnail.includes('data-module="true"');
+        }),
+      { timeout: RUN_OF_HOME },
+    )
+    .toBe(true);
+  await page.goto("/");
   await expect(page.getByTestId("demo-name")).toHaveText("Pune demo roof");
   await expect(page.getByTestId("design-card")).toHaveCount(2);
+  await expect(page.getByRole("article", { name: "Pune demo roof", exact: true })).toContainText("MWh");
+}
+
+// Home with two designs kept on this device (plan/phase-10-plan.md, step 12; the board "Home, designs on this device"): the demo
+// kept with the facts of its run and its plan, Block B not run yet, as cards under On this device.
+test("home, designs on this device", async ({ page }) => {
+  test.setTimeout(RUN_OF_HOME * 2);
+  await theDemoKeptBesideBlockB(page);
 
   await expectScreen(page, "home-designs");
 });
@@ -34,10 +74,10 @@ test("home, designs on this device", async ({ page }) => {
 // Delete asked over the dimmed page, as the board draws it.
 test("home, delete asked", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "The board draws Delete asked on desktop.");
-  await withDesignsOnTheDevice(page, TWO_DESIGNS, null);
-  await page.reload();
-  await expect(page.getByTestId("design-card")).toHaveCount(2);
+  test.setTimeout(RUN_OF_HOME * 2);
+  await theDemoKeptBesideBlockB(page);
   const card = page.getByRole("article", { name: "Pune demo roof", exact: true });
+  await card.scrollIntoViewIfNeeded();
   await card.getByRole("button", { name: "Menu" }).click();
   await page.getByRole("menu", { name: "Pune demo roof", exact: true }).getByRole("menuitem", { name: "Delete" }).click();
   await expect(page.getByRole("dialog", { name: "Delete Pune demo roof?" })).toBeVisible();

@@ -179,7 +179,7 @@ export function Search({ provider, near, onPlace, found, look = "floating", hero
           value={typed}
           onChange={(event) => setTyped(event.target.value)}
           onKeyDown={onKeyDown}
-          className={classNames("min-w-0 grow border-0 bg-transparent text-text outline-none placeholder:text-text-3", isHero ? "text-(length:--text-title)" : "type-body-touch desktop:type-body")}
+          className={classNames("min-w-0 grow truncate border-0 bg-transparent text-text outline-none placeholder:text-text-3", isHero ? "text-(length:--text-title)" : "type-body-touch desktop:type-body")}
         />
         {state.kind === "searching" ? (
           <ProgressRing size={16} label="Searching" />

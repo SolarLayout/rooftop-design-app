@@ -22,7 +22,8 @@ export function thumbnailOf(roof: Roof, layout: Layout | null): string {
   const parts = [
     path({ exterior: roof.outline, holes: [] }, 'data-part="roof" vector-effect="non-scaling-stroke" class="fill-surface-2 stroke-accent stroke-outline"'),
     ...(layout?.inner ?? []).map((polygon) => path(polygon, 'data-part="inner" vector-effect="non-scaling-stroke" stroke-dasharray="0.6 0.4" class="fill-none stroke-line-strong"')),
-    ...(layout?.modules ?? []).map((module) => path({ exterior: module.outline, holes: [] }, 'data-module="true" class="fill-data-gain"')),
+    // The modules in the glass of the scene, as the boards draw the plan of a card (the Studio's plan without WebGL marks them as data).
+    ...(layout?.modules ?? []).map((module) => path({ exterior: module.outline, holes: [] }, 'data-module="true" class="fill-module-glass"')),
     ...(layout?.keepout ?? []).flatMap((part) => part.polygons.map((polygon) => path(polygon, 'data-part="keepout" vector-effect="non-scaling-stroke" stroke-dasharray="0.5 0.3" class="fill-outline-fill stroke-accent"'))),
     ...footprintsOf(roof).map((polygon) => path(polygon, 'data-part="obstacle" class="fill-text-2"')),
   ];

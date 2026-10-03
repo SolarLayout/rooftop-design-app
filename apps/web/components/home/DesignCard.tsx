@@ -60,7 +60,8 @@ export function DesignCard({ card, onOpen, onRename, onDuplicate, onSaveACopy, o
 
   function openTheMenu() {
     floating.open();
-    panel.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
+    // Without scrolling: a scroll of the page closes the panel (use-floating), and the first row may stand below the fold.
+    panel.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus({ preventScroll: true });
   }
 
   return (

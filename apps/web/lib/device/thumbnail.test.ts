@@ -70,7 +70,7 @@ describe("the thumbnail", () => {
     const svg = thumbnailOf(ROOF, LAYOUT);
 
     expect(svg).toContain('class="fill-surface-2 stroke-accent stroke-outline"');
-    expect(svg).toContain('class="fill-data-gain"');
+    expect(svg).toContain('class="fill-module-glass"');
     expect(svg).not.toMatch(/#[0-9a-fA-F]{3,8}\b|rgba?\(/);
   });
 });

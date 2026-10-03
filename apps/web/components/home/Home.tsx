@@ -123,7 +123,10 @@ export function Home() {
 
   return (
     <div className="relative flex min-h-dvh flex-col overflow-x-hidden bg-ground text-text">
-      <HomeIllustration view="whole" className="pointer-events-none absolute top-37.5 left-117.5 hidden w-260 desktop:block" />
+      {/* The board's picture: 1040 wide at 470 from the left and 150 from the top, the roof ending above the demo's card. */}
+      <div aria-hidden="true" className="pointer-events-none absolute top-37.5 left-117.5 hidden w-260 desktop:block">
+        <HomeIllustration view="whole" />
+      </div>
       <header className={classNames("flex h-14 shrink-0 items-center tablet:h-18", SIDES)}>
         <Logo wordmark="always" />
       </header>

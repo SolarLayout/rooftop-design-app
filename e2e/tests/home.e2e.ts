@@ -39,9 +39,12 @@ const menu = (page: Page, name: string) => page.getByRole("menu", { name, exact:
 
 /** The menu of the card of *name* opened, and its row *row* taken. */
 async function fromTheMenu(page: Page, name: string, row: string): Promise<void> {
+  // The card in view first, as a reader has it: a scroll of the page closes the menu.
+  await card(page, name).scrollIntoViewIfNeeded();
   await card(page, name).getByRole("button", { name: "Menu" }).click();
   await expect(menu(page, name)).toBeVisible();
-  await menu(page, name).getByRole("menuitem", { name: row, exact: true }).click();
+  // The row's name begins with its words; Save a copy carries ".rtd" after them.
+  await menu(page, name).getByRole("menuitem", { name: new RegExp(`^${row}`) }).click();
 }
 
 /** Home with the designs written to the device and their cards shown. */
@@ -349,6 +352,7 @@ test.describe("axe", () => {
 
     expect(await graveFindings(page)).toEqual([]);
 
+    await card(page, DEMO_NAME).scrollIntoViewIfNeeded();
     await card(page, DEMO_NAME).getByRole("button", { name: "Menu" }).click();
     await expect(menu(page, DEMO_NAME)).toBeVisible();
     expect(await graveFindings(page)).toEqual([]);
