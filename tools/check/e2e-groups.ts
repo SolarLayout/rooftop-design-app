@@ -29,6 +29,8 @@ export const BASE_INPUTS: string[] = [
   "apps/web/lib/stores/**",
   "apps/web/lib/flow/**",
   "apps/web/lib/format/**",
+  // The designs kept on the device: the shell saves and opens them, so every page can see them (plan/phase-10-plan.md, decision 12).
+  "apps/web/lib/device/**",
   "apps/web/public/**",
   "apps/web/*",
   "!apps/web/CLAUDE.md",
