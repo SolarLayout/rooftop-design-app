@@ -208,6 +208,18 @@ describe("a file kept for the document's edit (decision 9: the .rtd is asked onc
     expect(saved[0]!.blob).toBe(a.blob);
   });
 
+  test("the CSV asked for the preview of the hourly data and then downloaded is one request, the same bytes (decision 8)", async () => {
+    const { store, calls, saved, answer } = made();
+
+    const asked = store.getState().ask("csv");
+    answer(0, "Pune-demo-roof-hourly.csv");
+    const file = await asked;
+    await store.getState().download("hourly-data");
+
+    expect(calls.map((call) => call.kind)).toEqual(["csv"]);
+    expect(saved).toEqual([{ blob: file.blob, name: "Pune-demo-roof-hourly.csv" }]);
+  });
+
   test("another edit of the document asks anew, and the file of before is gone", async () => {
     const open = { document: DOCUMENT, edit: 3 };
     const { store, calls, answer } = made(open);

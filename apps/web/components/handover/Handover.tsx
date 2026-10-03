@@ -21,6 +21,7 @@ import { chosenOptionOf, designFailureOf, designOf, designStatusOf } from "@/lib
 import { CadPreview } from "./CadPreview";
 import { DeliverableList } from "./DeliverableList";
 import { EarthPreview } from "./EarthPreview";
+import { HourlyPreview } from "./HourlyPreview";
 import { Preview } from "./Preview";
 import { BillOfMaterials } from "./BillOfMaterials";
 import { CableSchedule } from "./CableSchedule";
@@ -28,6 +29,7 @@ import { CopyAsTable } from "./CopyAsTable";
 import { ProjectFilePreview } from "./ProjectFilePreview";
 import { PageButton, ReportPreview, ReportSkeleton } from "./ReportPreview";
 import { SingleLineDiagram } from "./SingleLineDiagram";
+import { useAskedFile } from "./use-asked-file";
 
 type Props = {
   /** The item that is open; null at the list's own address, where desktop and tablet show the first item beside the list. */
@@ -95,6 +97,8 @@ export function Handover({ item }: Props) {
   const isProjectFileOpen = shown === "project-file" && document !== null;
   const isReport = shown === "report";
   const isCadLayout = shown === "cad-layout";
+  // The CSV is asked once per edit while the hourly data is open with an option, and kept for Download CSV (decision 8).
+  const csv = useAskedFile("csv", shown === "hourly-data" && !row.waits);
   // The document, the run and the option the files are of; null until there is a chosen option.
   const files = document !== null && design !== null && option !== null ? { document, design, option } : null;
   // The pages are asked once per edit while the report, or the CAD layout with the engine's plan among them (decision 8), is
@@ -159,6 +163,8 @@ export function Handover({ item }: Props) {
             files && <CadPreview files={files} report={report} onTryAgain={askPagesAgain} />
           ) : shown === "earth-model" ? (
             files && <EarthPreview files={files} />
+          ) : shown === "hourly-data" ? (
+            <HourlyPreview file={csv.file} failure={csv.failure} onTryAgain={csv.askAgain} />
           ) : isProjectFileOpen ? (
             <ProjectFilePreview document={document} design={design} bytes={projectFile?.blob.size ?? null} isWaitingForBytes={askFailedFor !== edit} onRename={rename} />
           ) : shown === "single-line-diagram" && option && design ? (
