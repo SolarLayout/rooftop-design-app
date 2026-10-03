@@ -3,8 +3,8 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-03, session 13, Phase 9 begun: the plan (`phase-09-plan.md`) and the four boards of step 0 are approved and
-on `main`; pull request 1 is being built. `main` is green.
+**Last updated:** 2026-10-03, session 13, Phase 9 in progress: the plan and the four boards of step 0 approved; pull request 1 (#62,
+the Handover frame, the `.rtd` download, the report's day, the name) merged. `main` is green.
 
 ## Where we are
 
@@ -25,11 +25,12 @@ on `main`; pull request 1 is being built. `main` is green.
 
 ## In flight
 
-- `feat/phase-9-handover-frame` (pull request 1 of Phase 9, not yet opened): step 1, the `.rtd` download and the report's day, is built and
-  tested in its worktree; the web part (steps 2 to 8: the routes, the list, the preview frame, the states, the downloads, `TextField`, the
-  name, Save a copy) is being built by an agent.
-- `feat/phase-9-report` (pull request 2), branched from the first: the report's pages drawn one by one and `/export/report-pages` are being
-  built by an agent; the preview comes after pull request 1.
+- `feat/check-e2e-groups` (a pull request of its own, before Phase 9's pull request 2): the browser step of `bun check` split into
+  six turbo tasks keyed on what each group's suites can see (D54), a test that refuses an import across groups, one retry per
+  browser test with the flaky ones listed, `docs/checks.md`, and the rule D55 (the fast check is the gate; the whole browser suite
+  never runs by itself). Built and unit-tested in a worktree; its own check is next.
+- `feat/phase-9-report` (pull request 2): the report's pages drawn one by one in the engine and `/export/report-pages` (steps 9 and
+  10) are built and reviewed in a worktree; the web part (the paper preview, steps 11 and 12) is next, after the split merges.
 
 ## What the web app has today
 
@@ -47,7 +48,7 @@ on `main`; pull request 1 is being built. `main` is green.
 | The places that have an address: workspaces, lenses, items of Handover | `apps/web/lib/routes.ts` |
 | The shell: top bar, navigation, project switcher, state of saving, vitals, notes; the frame of the Studio | `apps/web/components/shell`; around `apps/web/app/(workspaces)` |
 | The stores for React, and the hooks that read them | `apps/web/components/shell/stores.tsx` |
-| Routes | `/` (a placeholder with "Find my roof"), `/find` (the map, the search, the outline), `/studio/[lens]` (Roof, Array, Sun and Strings built), `/performance` (built), `/handover/[item]` (the shell, with placeholders inside) |
+| Routes | `/` (a placeholder with "Find my roof"), `/find` (the map, the search, the outline), `/studio/[lens]` (Roof, Array, Sun and Strings built), `/performance` (built), `/handover` (the list; on desktop and tablet with the first item beside it) and `/handover/[item]` (the item, pushed over the list on phone; the project file built, the other bodies placeholders until pull requests 2 to 4) |
 | The map: the provider, Esri, the search's reading of what is typed, the scale bar, the states without a map | `apps/web/lib/map` |
 | The outline: the frame of metres, the measures, snapping, typed lengths, the rectangle, the history, the nudge, the obstacles, the roof by hand, the reducer | `apps/web/lib/outline` |
 | Find and outline: the screen, the map (MapLibre), the search, the outline drawn on the map, the panel, the tools (the ways to outline while the roof is open; the obstacles once it is closed), the height dialog, the obstacle list, the roof type, Build; the roof by hand and the plan drawn without a map | `apps/web/components/find` |
@@ -83,7 +84,7 @@ the map and opens the demo (D44).
 | `POST /layout`, `POST /sun` | `computeLayout`, `computeSun` |
 | `POST /weather` | `loadWeather` |
 | `POST /design`, progress as events | `runDesign` |
-| `POST /export/{pdf,dxf,kmz,csv,sld}` | `exportDesign` |
+| `POST /export/{pdf,dxf,kmz,csv,sld,rtd}?day=` | `exportDesign` |
 
 On the demo: a design run takes 12 s, also after a change of the weather source (the shading computed again); 1.7 s after a
 change of a loss, of Uc or of the voltage (the candidates simulated in threads); 0.28 s after a change of degradation, the CO2
@@ -92,7 +93,8 @@ run. The test stack's API starts with downloads of weather off (`ROOFTOP_WEATHER
 
 ## Next, in order
 
-1. Phase 9, Handover and exports: the four pull requests of `plan/phase-09-plan.md`, in order; the plan and the boards are done. Work
+1. The split of the browser step (`feat/check-e2e-groups`), checked the new way (`bun check --skip=e2e` and the groups most at risk by
+   hand) and merged; then Phase 9's pull requests 2 to 4 (`plan/phase-09-plan.md`), each checked with the groups it reaches. Work
    order: `plan/resume/012-phase-9-handover.md`.
 2. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
 3. In parallel with any phase: the screens still to draw (Phase 0).
@@ -119,8 +121,7 @@ run. The test stack's API starts with downloads of weather off (`ROOFTOP_WEATHER
 
 | Item | Where it belongs |
 |---|---|
-| Shown and cannot be used, each until its phase: Present (Phase 10); in the project switcher New design and Import a drawing (Phase 4), Open a project and Save a copy (Phase 9 or 10) | The phase that builds each makes it a link or a button |
-| The shell has no toaster: nothing says anything yet. `Toaster` takes a `className`; on phone the toasts stand above the tab bar (`bottom-tabbar`) | The first phase that has something to say |
+| Shown and cannot be used, each until its phase: Present (Phase 10); in the project switcher Open a project (Phase 10); on Handover "Download all" (Phase 9, pull request 4) | The phase that builds each makes it a link or a button |
 | The drawer of the notes comes and goes without motion; the tokens have 240 ms for panels | Phase 11, or when the owner asks |
 | The obstacle list of Find shows each height and does not edit it (the Roof lens does); trees are not drawn on the map; the by-hand roof's corners are not dragged on the map | Phase 11, or when the owner asks |
 | The Esri key is baked into the page at build time: the "no key" state is seen only on a build without it, and the tests reach the no-map states through "no WebGL" | Phase 11 |
@@ -147,10 +148,9 @@ run. The test stack's API starts with downloads of weather off (`ROOFTOP_WEATHER
 | A CSV with GHI alone is split by Erbs: on the Pune year beam 1,435 and diffuse 823 kWh/m2, where PVGIS has 2,000 and 550. The API says so in a note when such a file is loaded, and Performance shows it (Phase 8); a CSV without air temperature takes 25 °C, and the note says to enter the site's ambient | Owner and domain expert |
 | The names of the demo's equipment are shown as the files state them: "INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560", "WattPower Systems Pvt.Ltd WP-330KTL-H1". The mockups show "Insolation INA-144MHC-TF-560". The module card of the Array lens shows the PAN's names as they are (Phase 5, decision 14) | The owner gives the names to show; the Strings lens follows the files too (Phase 7, decision 15) |
 | NASA POWER is asked for the year 2023 and the times of a CSV are read as UTC, as on the desktop; neither can be set in a request. The select says "NASA POWER 2023" and the CSV dialog says the times are read as UTC (Phase 8, decision 19) | Phase 11, or when the owner asks |
-| The report (PDF) prints the date of the server's day | Phase 9 |
 | The memo for the shading in the tests (#37, session 7). Measured before: pytest 151 s here; 66 hourly shadings for 15 distinct inputs and 208 simulations for 66; the repeats cost 76 s and 10 s, of which 48 s are the proofs of the memo, of progress reporting and of a fresh server, which must stay without a memo. Now one memo (`apps/api/tests/kept.py`) serves the whole pytest session, the engine tests and the API alike: pytest 122 s here, the demo's shading computed once. On GitHub the same code took 155 s in one run and 279 s in the next, and 274 s after the memo: the runners vary two-fold, so the mark of 6 min 30 s is a poor rule there; the checks of #37 and #38 took 5 min 38 s and 5 min 33 s. Four workers with pytest-xdist would give 66 s here (measured, not adopted: a dependency and a change of its own) | If a check passes the mark again: pytest-xdist, pinned, as a pull request of its own, after the owner's yes. Since Phase 4.5 the mark matters only when `apps/api` changed: a push that leaves it alone skips pytest |
-| `build.e2e.ts` "Edit shows the design's outline on the map" failed once on tablet in a full check (a 5 s wait on Edit's navigation under load) and passes alone | Watch. If it fails again: make the test wait for the navigation with the run's timeout, as a pull request of its own |
-| The charts' keyboard tests run on desktop alone: on tablet the focus can scroll the frame and the moving page takes the tooltip away by design; one run in eighteen failed so | Known; written in the phase file |
+| Under the load of a full check (ten workers, the Studio in software WebGL on three sizes, the machine's twenty cores saturated) a 5 s wait ran out on a different test in each of four full runs of #62 (Edit's navigation in `build.e2e.ts`, the number field on phone, the years' keyboard, New design from the switcher), each green alone. Done in #62: Edit's test waits with the run's time, the charts' tooltips leave only when their anchor moved, every expectation waits 15 s. The split of the browser step and one retry per test come with `feat/check-e2e-groups`; hardware WebGL for the tests is to be measured (the owner's yes first) | Watch. The whole suite runs only when the owner says (D55, coming with the split) |
+| The charts' keyboard tests run on desktop alone: on tablet the focus can scroll the frame and the moving page takes the tooltip away by design. Since #62 a tooltip leaves on a scroll only when its anchor moved (`isStill`) | Known; written in the phase file |
 | The Performance line of the run says "PVGIS weather", not "PVGIS TMY weather" (decision 2 of the plan): the longer form wraps at 1440 | The owner may prefer the longer words and a two-line header |
 | On phone the assumptions row "Rear shading and mismatch" wraps its label and puts its field on the next line | Phase 11, or when the owner asks |
 | Uc entered shows "Use the roof type's" without the roof type's value: once entered, that value is in no answer of the API | Phase 11, or when the owner asks (the API could say the default beside the value) |
