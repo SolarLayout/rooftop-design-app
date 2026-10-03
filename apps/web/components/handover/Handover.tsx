@@ -8,7 +8,7 @@ import { useHistoryKeys } from "@/components/shell/use-history-keys";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
 import { byItemOf, keptOf } from "@/lib/handover/downloads-store";
-import { withName } from "@/lib/handover/name-field";
+import { withName } from "@/lib/flow/name-field";
 import { pageViewOf } from "@/lib/handover/page-view";
 import { FIRST_ITEM, HANDOVER, type HandoverItem } from "@/lib/routes";
 import { editOf, nameOf, projectOf } from "@/lib/stores/project-store";

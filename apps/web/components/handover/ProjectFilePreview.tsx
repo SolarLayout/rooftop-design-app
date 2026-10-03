@@ -5,7 +5,7 @@ import { classNames } from "@/components/ui/class-names";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
 import type { DesignResult, Project } from "@/lib/api";
-import { NAME_RULES } from "@/lib/handover/name-field";
+import { NAME_RULES } from "@/lib/flow/name-field";
 import { projectFileViewOf, type ContentRow } from "@/lib/handover/project-file";
 
 type Props = {
