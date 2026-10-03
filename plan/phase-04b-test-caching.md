@@ -155,6 +155,8 @@ decisions 1, 4 and 11 of that plan; the rest were the session's.
 
 ### The browser step in groups (session 13, 2026-10-03)
 
+The rules a developer follows, how to run one group and how to read the summary: `docs/checks.md`.
+
 The one task `//#e2e` was keyed on all of `apps/web`, `e2e` and the API: a feature pull request that changed one
 folder paid the whole browser step, 1,680 tests and about 22 minutes. The owner asked for the step to be split
 into tasks keyed on what each one's suites can see. Built as D54: six root tasks `//#e2e:<group>`
