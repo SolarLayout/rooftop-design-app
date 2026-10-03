@@ -99,8 +99,9 @@ describe("the groups of the browser tests", () => {
 
   test("some group sees every file of the web app and of e2e that the browser tests can see", () => {
     const seen = new Set(GROUPS.flatMap((group) => [...filesMatching(inputsOf(group))]));
-    const theWeb = filesMatching(["apps/web/**", "!apps/web/node_modules/**", "!apps/web/.next*/**", "!apps/web/*.tsbuildinfo", "!apps/web/next-env.d.ts", "!apps/web/CLAUDE.md"]);
-    const theTests = filesMatching(["e2e/**", "!e2e/node_modules/**", "!e2e/test-results/**", "!e2e/playwright-report/**", "!e2e/tests/**"]);
+    // What is left out is what the base leaves out: the build's and turbo's own files, the modules, the suites (each its group's).
+    const theWeb = filesMatching(["apps/web/**", "!apps/web/node_modules/**", "!apps/web/.next*/**", "!apps/web/.turbo/**", "!apps/web/*.tsbuildinfo", "!apps/web/next-env.d.ts", "!apps/web/CLAUDE.md"]);
+    const theTests = filesMatching(["e2e/**", "!e2e/node_modules/**", "!e2e/.turbo/**", "!e2e/test-results/**", "!e2e/playwright-report/**", "!e2e/tests/**"]);
     for (const file of [...theWeb, ...theTests]) expect({ file, seen: seen.has(file) }).toEqual({ file, seen: true });
   });
 });
