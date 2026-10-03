@@ -411,6 +411,7 @@
         "e2e/tests/present*.e2e.ts",
         "apps/web/components/present/**",
         "apps/web/lib/present/**",
+        "e2e/soak/**",
         "apps/web/components/studio/**",
         "apps/web/components/scene/**",
         "apps/web/lib/scene/**",
@@ -487,6 +488,7 @@
         "apps/web/lib/home/**",
         "apps/web/components/present/**",
         "apps/web/lib/present/**",
+        "e2e/soak/**",
         "e2e/baselines/*/*/*.png",
         "!e2e/baselines/*/*/kit*.png"
       ],

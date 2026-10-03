@@ -308,6 +308,54 @@ test("with every route of the API refused during the tour, nothing is asked and 
   expect(asked, "routes of the API asked during the tour").toEqual([]);
 });
 
+/** What a page measures of its own frames and memory while the tour runs on the real clock. */
+type Budget = { frames: number; longest: number; over: number; heapBefore: number | null; heapAfter: number | null };
+
+/** Frame times sampled with requestAnimationFrame for `milliseconds`, and the heap of the page before and after. */
+async function budgetOf(page: Page, milliseconds: number): Promise<Budget> {
+  return page.evaluate(
+    (length) =>
+      new Promise<Budget>((resolve) => {
+        const heap = () => (performance as Performance & { memory?: { usedJSHeapSize: number } }).memory?.usedJSHeapSize ?? null;
+        const heapBefore = heap();
+        let frames = 0;
+        let longest = 0;
+        let over = 0;
+        const began = performance.now();
+        let last = began;
+        function frame(now: number) {
+          const took = now - last;
+          last = now;
+          frames += 1;
+          longest = Math.max(longest, took);
+          if (took > 50) over += 1;
+          if (now - began < length) requestAnimationFrame(frame);
+          else resolve({ frames, longest, over, heapBefore, heapAfter: heap() });
+        }
+        requestAnimationFrame(frame);
+      }),
+    milliseconds,
+  );
+}
+
+// The frame budget (plan/phase-10-plan.md, step 21, decision 11; the acceptance): no frame over 50 ms through two loops
+// of the tour, on the real clock, and the heap not grown by more than a quarter. The 30 minutes are the soak's
+// (tools/present-soak.ts), run once by the session.
+test("over two loops on the real clock no frame takes more than 50 ms, and the memory does not climb", async ({ page }) => {
+  test.setTimeout(RUN * 4);
+  await page.goto("/present");
+  await expect(present(page)).toHaveAttribute("data-state", "touring", { timeout: RUN });
+  await expect(modulesSaid(page)).toContainText("modules", { timeout: RUN });
+
+  const budget = await budgetOf(page, 2 * 40_000 + 1_000);
+
+  expect(budget.frames).toBeGreaterThan(100);
+  expect(budget.over, `${budget.over} of ${budget.frames} frames over 50 ms, the longest ${Math.round(budget.longest)} ms`).toBe(0);
+  expect(budget.heapBefore).not.toBeNull();
+  expect(budget.heapAfter!, `the heap went from ${budget.heapBefore} to ${budget.heapAfter}`).toBeLessThanOrEqual(budget.heapBefore! * 1.25);
+  await expect(sceneWords(page)).toBeVisible();
+});
+
 test("the canvas fills the screen with the stage's own background behind it", async ({ page }) => {
   await presentOpened(page);
   const box = (await sceneCanvas(page).boundingBox())!;

@@ -26,7 +26,7 @@ describe("the groups of the browser tests", () => {
     }
   });
 
-    expect(() => groupOf("weather-station.e2e.ts")).toThrow(/weather-station\.e2e\.ts.*kit, find, studio, performance, handover, home, shell/s);
+  test("a suite whose name matches no group is refused, naming the groups", () => {
     expect(() => groupOf("weather-station.e2e.ts")).toThrow(/weather-station\.e2e\.ts.*kit, find, studio, performance, handover, home, present, shell/s);
   });
 
