@@ -18,7 +18,9 @@ import { reportViewOf, type ShownPage } from "@/lib/handover/report-view";
 import { FIRST_ITEM, HANDOVER, type HandoverItem } from "@/lib/routes";
 import { editOf, nameOf, projectOf } from "@/lib/stores/project-store";
 import { chosenOptionOf, designFailureOf, designOf, designStatusOf } from "@/lib/stores/results-store";
+import { CadPreview } from "./CadPreview";
 import { DeliverableList } from "./DeliverableList";
+import { EarthPreview } from "./EarthPreview";
 import { Preview } from "./Preview";
 import { BillOfMaterials } from "./BillOfMaterials";
 import { CableSchedule } from "./CableSchedule";
@@ -92,13 +94,16 @@ export function Handover({ item }: Props) {
   const tools = shown === "bill-of-materials" ? tableActions(bom) : shown === "cable-schedule" ? tableActions(schedule) : undefined;
   const isProjectFileOpen = shown === "project-file" && document !== null;
   const isReport = shown === "report";
-  // The pages are asked once per edit while the report is open with an option; the store keeps them (decision 5). A refusal
-  // is said under the head by the body, with Try again, which asks here too.
-  const isReportOpen = isReport && !row.waits;
+  const isCadLayout = shown === "cad-layout";
+  // The document, the run and the option the files are of; null until there is a chosen option.
+  const files = document !== null && design !== null && option !== null ? { document, design, option } : null;
+  // The pages are asked once per edit while the report, or the CAD layout with the engine's plan among them (decision 8), is
+  // open with an option; the store keeps them (decision 5). A refusal is said by the body, with Try again, which asks here too.
+  const arePagesWanted = (isReport || isCadLayout) && !row.waits;
   useEffect(() => {
-    if (!isReportOpen) return;
+    if (!arePagesWanted) return;
     void downloads.getState().askPages();
-  }, [downloads, edit, isReportOpen]);
+  }, [downloads, edit, arePagesWanted]);
   const askPagesAgain = () => void downloads.getState().askPages();
   const report = useMemo(() => reportViewOf({ kept: keptPages, edit, status: pagesStatus, shown: shownPage }), [keptPages, edit, pagesStatus, shownPage]);
   /** The page chosen is kept for these very pages: new pages begin at the first. */
@@ -150,6 +155,10 @@ export function Handover({ item }: Props) {
         >
           {isReport ? (
             <ReportPreview view={report} onPage={showPage} onTryAgain={askPagesAgain} />
+          ) : isCadLayout ? (
+            files && <CadPreview files={files} report={report} onTryAgain={askPagesAgain} />
+          ) : shown === "earth-model" ? (
+            files && <EarthPreview files={files} />
           ) : isProjectFileOpen ? (
             <ProjectFilePreview document={document} design={design} bytes={projectFile?.blob.size ?? null} isWaitingForBytes={askFailedFor !== edit} onRename={rename} />
           ) : shown === "single-line-diagram" && option && design ? (

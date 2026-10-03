@@ -1,10 +1,11 @@
 "use client";
 
-import type { ComponentProps, KeyboardEvent } from "react";
+import type { KeyboardEvent } from "react";
 import { FailedRow } from "@/components/shell/UnderTheTitle";
 import { classNames } from "@/components/ui/class-names";
 import { IconButton } from "@/components/ui/IconButton";
 import { pageAfterKey, type PageThumb, type ReportView } from "@/lib/handover/report-view";
+import { PAGE_IMAGE, PAPER, PageImage } from "./paper";
 
 type Props = {
   view: ReportView;
@@ -14,12 +15,10 @@ type Props = {
   onTryAgain: () => void;
 };
 
-// The paper (components.md, "Paper preview"; the boards "Handover" on three sizes): color-paper, radius 6, shadow-panel, as
-// high as the page it shows. The page's image stands at the paper's width with its own size, so that nothing jumps while
-// it loads. The paper takes the focus, so that Left and Right turn its pages.
+// The paper (components.md, "Paper preview"; the boards "Handover" on three sizes) takes the focus, so that Left and Right
+// turn its pages.
 const BODY = "flex min-w-0 flex-col gap-3 tablet:gap-4 desktop:flex-row desktop:items-start";
-const PAPER = "block w-full min-w-0 overflow-hidden rounded-xs bg-paper shadow-panel focus-ring";
-const PAGE_IMAGE = "block h-auto w-full";
+const FOCUSED_PAPER = classNames(PAPER, "focus-ring");
 // The thumbnails: on desktop a column of 132 at the right of the paper, 8 apart; on tablet a row of 72 under the paper, 6
 // apart; on phone a row of 56, 4 apart, that scrolls sideways if it must. Each is a button: the page scaled down in a slot of
 // 70 (45, 35) and its caption, "2 · Layout" on desktop and tablet, the number alone on phone; the current one has the accent
@@ -41,12 +40,6 @@ const NUMBER = "type-tick tablet:hidden";
 const PHONE_ROW = "flex items-center gap-3 tablet:hidden";
 
 const THUMBNAIL_SKELETONS = 6;
-
-/** The engine's page as the browser's own img: a data URL the API answered, which next/image could neither fetch nor size better. */
-function PageImage({ alt, ...rest }: ComponentProps<"img"> & { alt: string }) {
-  // eslint-disable-next-line @next/next/no-img-element -- a data URL from the API; next/image adds nothing to it
-  return <img alt={alt} {...rest} />;
-}
 
 /**
  * The first load, and the pages on their way (the board "Handover, states", "The first load"): the paper as a breathing
@@ -127,7 +120,7 @@ export function ReportPreview({ view, onPage, onTryAgain }: Props) {
     <>
       {view.failed ? <FailedRow failed={view.failed} onTryAgain={onTryAgain} /> : null}
       <div className={classNames(BODY, view.isStale && "opacity-updating")}>
-        <figure tabIndex={0} aria-label={view.head ?? undefined} data-testid="paper" onKeyDown={onKeyDown} className={PAPER}>
+        <figure tabIndex={0} aria-label={view.head ?? undefined} data-testid="paper" onKeyDown={onKeyDown} className={FOCUSED_PAPER}>
           <PageImage src={current.src} alt={current.title} width={current.width} height={current.height} data-testid="page-image" className={PAGE_IMAGE} />
         </figure>
         <div className={PHONE_ROW}>

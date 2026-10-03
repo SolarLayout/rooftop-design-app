@@ -104,6 +104,17 @@ export const NO_VOLTAGE = {
 
 export const BEFORE_A_VOLTAGE = { ...DEMO, chosen_option: null, options: [], no_options: NO_VOLTAGE } as unknown as DesignResult;
 
+/** The demo's six obstacles, as far as Handover reads them: the name, the kind, the height. */
+const obstacle = (name: string, kind: string, height: number) => ({ name, kind, height, auto: false });
+export const OBSTACLES = [
+  obstacle("Stair room", "box", 3.0),
+  obstacle("Water tank", "cylinder", 2.0),
+  obstacle("AC unit 1", "box", 1.2),
+  obstacle("AC unit 2", "box", 1.2),
+  obstacle("AC unit 3", "box", 1.2),
+  obstacle("AC unit 4", "box", 1.2),
+];
+
 export const DOCUMENT = {
   name: "Pune demo roof",
   format: 2,
@@ -113,5 +124,5 @@ export const DOCUMENT = {
   weather_csv: "",
   system_voltage: 1500,
   chosen_option: "29x22x1",
-  roof: { lat: 18.52, lon: 73.86 },
+  roof: { lat: 18.52, lon: 73.86, obstacles: OBSTACLES },
 } as unknown as Project;
