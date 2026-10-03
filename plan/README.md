@@ -114,6 +114,7 @@ plan/
   phase-06-plan.md              how Phase 6 is built: what was found, the boards, four pull requests, the decisions, the risks
   phase-07-plan.md              how Phase 7 is built: what was found, the boards, five pull requests, the decisions, the risks
   phase-08-plan.md              how Phase 8 is built: what was found, the boards, four pull requests, the decisions, the risks
+  phase-09-plan.md              how Phase 9 is built: what was found, the boards, four pull requests, the decisions, the risks
   reference/
     functional-inventory.md     every input, output, export and message of the desktop app
     r3f-notes.md                3D fixes already paid for in solar-mms-modeller
