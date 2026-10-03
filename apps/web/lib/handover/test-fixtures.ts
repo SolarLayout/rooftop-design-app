@@ -1,6 +1,6 @@
 // The answer of the API for the demo at 1500 V, as the engine gave it for the boards of Phase 9
 // (docs/design/mockups/handover_data.json); what Handover does not read is left out. For the tests of lib/handover alone.
-import type { DesignOption, DesignResult, Project } from "../api";
+import type { DesignOption, DesignResult, Project, PVString } from "../api";
 
 export const BOM = [
   { item: "PV module", spec: "INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560, 560 Wp, bifacial 0.80", qty: 638.0, unit: "pcs" },
@@ -23,8 +23,41 @@ const row = (string: string, mppt: number, length_m: number) => ({
   size: "4 mm² Cu, 1500 V DC",
 });
 
-/** The 22 strings of option A, four on MPPT 1 to 4 and three on 5 and 6. */
-export const CABLE_SCHEDULE = Array.from({ length: 22 }, (_, index) => row(`S${index + 1}`, Math.min(6, Math.floor(index / 4) + 1), 131.9 - index * 2.5));
+/** The DC cable of each of the 22 strings of option A, in metres, in the engine's order. */
+const LENGTHS_M = [131.9, 97.3, 85.2, 119.8, 119.0, 84.4, 72.3, 106.9, 47.9, 82.5, 118.2, 93.2, 41.9, 76.5, 80.3, 45.7, 33.6, 68.2, 67.4, 32.8, 20.7, 55.3];
+
+/** The MPPT of each string of option A: four on MPPT 1 to 4, three on 5 and 6. */
+const mpptOf = (index: number) => (index < 16 ? Math.floor(index / 4) + 1 : index < 19 ? 5 : 6);
+
+/** The 22 strings of option A, four on MPPT 1 to 4 and three on 5 and 6; their DC cable sums to 1,681.0 m. */
+export const CABLE_SCHEDULE = LENGTHS_M.map((length, index) => row(`S${index + 1}`, mpptOf(index), length));
+
+/** The strings of option A as the system lists them, with what the single-line diagram reads of them. */
+export const STRINGS = LENGTHS_M.map((_, index) => ({ label: `S${index + 1}`, inverter: 1, mppt: mpptOf(index), modules: [] as number[] })) as PVString[];
+
+const load = (mppt: number, strings: number) => ({
+  inverter: 1,
+  mppt,
+  label: `INV-1 · MPPT ${mppt}`,
+  strings,
+  imp_a: strings === 4 ? 54.32 : 40.74,
+  imp_limit_a: 65.0,
+  isc_a: strings === 4 ? 57.2 : 42.900000000000006,
+  isc_limit_a: 65.0,
+  kwp: strings === 4 ? 64.96 : 48.72,
+  ok: true,
+});
+
+export const MPPT_LOADS = [load(1, 4), load(2, 4), load(3, 4), load(4, 4), load(5, 3), load(6, 3)];
+
+export const SYSTEM = {
+  n_series: 29,
+  n_strings: 22,
+  n_inverters: 1,
+  n_modules: 638,
+  strings: STRINGS,
+  inverters: [{ label: "INV-1", position: [31.042985126678104, 39.0] }],
+};
 
 export const A = {
   key: "29x22x1",
@@ -39,6 +72,8 @@ export const A = {
   dcac: 1.2992,
   bom: BOM,
   cable_schedule: CABLE_SCHEDULE,
+  system: SYSTEM,
+  mppt_loads: MPPT_LOADS,
 } as unknown as DesignOption;
 
 /** Option D of the demo: two inverters. */
