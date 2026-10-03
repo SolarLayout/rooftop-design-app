@@ -927,4 +927,80 @@ test.describe("the shell", () => {
 
     await expectWholeScreen(page, "handover-name-edited");
   });
+
+  // The single-line diagram (the board "Handover, previews", first part): the SVG in the Dusk palette at the panel's width;
+  // on phone and tablet the AC side runs down from the inverter.
+  const drawing = (page: Page) => page.getByTestId("sld-drawing");
+  const blockOf = (page: Page, mppt: number) => drawing(page).locator(`[data-testid="mppt-block"][data-mppt="${mppt}"]`);
+
+  test("handover, the single-line diagram", async ({ page }, testInfo) => {
+    await page.goto("/handover/single-line-diagram");
+    await expect(blockOf(page, 1)).toBeVisible({ timeout: RUN });
+    await settled(page, testInfo.project.name);
+
+    await expectWholeScreen(page, "handover-sld");
+  });
+
+  // The block of MPPT 2 under the pointer: lifted, its tooltip at its right (the board draws this state on desktop).
+  test("handover, the single-line diagram, a block under the pointer", async ({ page }, testInfo) => {
+    test.skip(isPhone(testInfo.project.name) || testInfo.project.name === "tablet", "The board draws the block under the pointer on desktop.");
+    await page.goto("/handover/single-line-diagram");
+    await expect(blockOf(page, 1)).toBeVisible({ timeout: RUN });
+    await settled(page, testInfo.project.name);
+    await blockOf(page, 2).hover();
+    await expect(page.getByTestId("value-tooltip").filter({ visible: true })).toBeVisible();
+
+    await expectScreen(page, "handover-sld-hover");
+  });
+
+  // The bill of materials (the board "Handover, previews", second part): the Table, "In the report, page 5" and Copy as table in the head; cards on phone.
+  test("handover, the bill of materials", async ({ page }, testInfo) => {
+    await page.goto("/handover/bill-of-materials");
+    await expect(page.getByTestId("bom")).toContainText("PV module", { timeout: RUN });
+    await settled(page, testInfo.project.name);
+
+    await expectWholeScreen(page, "handover-bom");
+  });
+
+  // The DC cable schedule (the board "Handover, previews", third part), in the engine's order, the total row last.
+  const scheduleLanded = async (page: Page) => {
+    await page.goto("/handover/cable-schedule");
+    await expect(page.getByTestId("cable-schedule")).toContainText("22 strings", { timeout: RUN });
+  };
+
+  test("handover, the cable schedule", async ({ page }, testInfo) => {
+    await scheduleLanded(page);
+    await settled(page, testInfo.project.name);
+
+    await expectWholeScreen(page, "handover-schedule");
+  });
+
+  // Sorted by DC cable m downwards, as the board draws it: the active head in text with its arrow, the longest string first.
+  test("handover, the cable schedule sorted", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop", "The board draws the sorted schedule on desktop.");
+    await scheduleLanded(page);
+    await settled(page, testInfo.project.name);
+    const head = page.getByTestId("cable-schedule").getByRole("columnheader", { name: "DC cable (m)" });
+    await head.getByRole("button").click();
+    await head.getByRole("button").click();
+    await expect(head).toHaveAttribute("aria-sort", "descending");
+    // The press was by the mouse: no focus ring in the picture.
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+
+    await expectWholeScreen(page, "handover-schedule-sorted");
+  });
+
+  // Copy as table pressed (the board "Handover, states"): the toast of something done at the bottom of the screen.
+  test("handover, a table copied", async ({ page, context }, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop", "The board draws the toast of the copy on desktop.");
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.goto("/handover/bill-of-materials");
+    await expect(page.getByTestId("bom")).toContainText("PV module", { timeout: RUN });
+    await settled(page, testInfo.project.name);
+    await page.getByTestId("preview-action").getByRole("button", { name: "Copy as table" }).filter({ visible: true }).click();
+    await expect(page.getByTestId("toast")).toContainText("Bill of materials copied as a table");
+    await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+
+    await expectScreen(page, "handover-table-copied");
+  });
 });
