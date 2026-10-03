@@ -984,6 +984,28 @@ describe("the shadow outlines", () => {
     pass(TIME_REST);
     expect(asked(suns)).toHaveLength(2);
   });
+
+  // Present asks the API for nothing (plan/phase-10-plan.md, step 20, decision 8): its tour moves the hour, and the outlines
+  // of every hour would be asked while the switch stands on. They are let go for the tour and asked again after it.
+  test("under a presentation they are not asked, though the switch is on and the hour moves; after it they are, once", async () => {
+    const { suns, view, pass, results } = await opened();
+    view.getState().showOnTheRoof("shadowOutlines", true);
+    pass(TIME_REST);
+    expect(asked(suns)).toHaveLength(1);
+
+    view.getState().setPresentation({ reveal: { building: 1, obstacles: 1, modules: 1 }, colouring: null });
+    for (const hour of [11, 12, 13, 14]) {
+      view.getState().setSunTime({ day: "design_day", hour });
+      pass(TIME_REST);
+    }
+    expect(asked(suns)).toHaveLength(1);
+    expect(shadowOutlinesOf(results.getState())).toBeNull();
+
+    view.getState().setPresentation(null);
+    pass(TIME_REST);
+    expect(asked(suns)).toHaveLength(2);
+    expect(asked(suns).at(-1)?.request.hours).toEqual([14]);
+  });
 });
 
 // Weather for a design that has none (plan/phase-08-plan.md, step 16, decision 11): the API says when the document

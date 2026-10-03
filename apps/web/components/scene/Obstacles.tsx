@@ -8,6 +8,7 @@ import { FLAT, toScene, toScenePoint, type XY } from "@/lib/scene/adapter";
 import { halfSidesOf, movedTo, onTheRoofPlane, type Dragging } from "@/lib/scene/drag";
 import type { About } from "@/lib/scene/handles";
 import { canBeDragged, footprintOf, ROUND_SEGMENTS, solidsOf, type HeightAt, type Look, type Solid } from "@/lib/scene/obstacles";
+import { risenScaleOf } from "@/lib/scene/reveal";
 import { withObstacleField, type DraftObstacle } from "@/lib/studio/obstacle-fields";
 import { PALETTE, type PaletteName } from "@/lib/scene-palette";
 import { canHover, onPress } from "./pointer";
@@ -31,6 +32,8 @@ type Props = {
   onDrag: (dragging: Dragging | null) => void;
   /** The drop: the obstacle at `index` becomes `obstacle`, one edit. */
   onDrop: (index: number, obstacle: Obstacle) => void;
+  /** How far the obstacles have risen from the roof, 0 to 1 (Present's tour, plan/phase-10-plan.md, step 17); whole unless said. */
+  reveal?: number;
 };
 
 const ROUGHNESS = 0.9;
@@ -231,14 +234,15 @@ function One({ obstacle, shown, index, isSelected, isToReview, isDragged, onSele
  * The obstacles on the roof (plan/phase-05-plan.md, steps 3 and 12): every solid of each one, in the colours
  * of the palette, casting and taking shadows. The selected one has an accent outline, the one under the
  * pointer a lighter one, one whose height is to be reviewed a dashed one; a press on one selects it
- * (decision 10). What the engine added itself is not drawn: the building draws the parapet.
+ * (decision 10). What the engine added itself is not drawn: the building draws the parapet. While Present
+ * reveals them, their height is scaled from the roof plane up to their own: a transform of the group.
  */
-export function Obstacles({ obstacles, selected, toReview, onSelect, onOver, about, roofOutline, dragging, onDrag, onDrop }: Props) {
+export function Obstacles({ obstacles, selected, toReview, onSelect, onOver, about, roofOutline, dragging, onDrag, onDrop, reveal = 1 }: Props) {
   const unitBox = useMemo(() => new BoxGeometry(1, 1, 1), []);
   const materials = useMemo(() => materialsOf(), []);
 
   return (
-    <group>
+    <group scale={[1, risenScaleOf(reveal), 1]}>
       {obstacles.map((obstacle, index) =>
         obstacle.auto ? null : (
           <One

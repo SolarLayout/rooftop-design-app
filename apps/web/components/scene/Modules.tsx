@@ -8,6 +8,7 @@ import type { Layout } from "@/lib/api";
 import type { XY } from "@/lib/scene/adapter";
 import { toScene } from "@/lib/scene/adapter";
 import { moduleMatrixOf, placementOf, traceLineOf, type Placement, type Thickness } from "@/lib/scene/modules";
+import { revealedCountOf } from "@/lib/scene/reveal";
 import { glassColoursOf } from "@/lib/scene/shade-colours";
 import { PALETTE } from "@/lib/scene-palette";
 import { onPress } from "./pointer";
@@ -36,6 +37,8 @@ type Props = {
   onTraceModule?: (instanceId: number | null) => void;
   /** The positions of each string traced or selected, by idx in wired order: a white line through each. */
   traces?: readonly (readonly number[])[];
+  /** How far the modules have filled the roof, 0 to 1 (Present's tour, plan/phase-10-plan.md, step 17): the first share of the positions, row by row; all unless said. */
+  reveal?: number;
 };
 
 /** The frame is the module's body; the glass a thinner sheet stacked over it, inset so that the frame shows around it (r3f-notes, fix 10). */
@@ -64,6 +67,8 @@ const CASING_OPACITY = 0.6;
 
 type SetProps = Press & {
   placements: Placement[];
+  /** How many of the placements are drawn, from the first: the instance count, never the matrices (fix 12). */
+  shown: number;
   thickness: Thickness;
   material: MeshStandardMaterial;
   name: string;
@@ -74,7 +79,7 @@ type SetProps = Press & {
 };
 
 /** One instanced mesh for all the positions: the matrices written when the placements change, never per frame (fixes 11 and 12). */
-function InstancedSet({ placements, thickness, material, name, castShadow, receiveShadow, colours, onPressModule, onOverModules, onWrite, onTraceModule }: SetProps) {
+function InstancedSet({ placements, shown, thickness, material, name, castShadow, receiveShadow, colours, onPressModule, onOverModules, onWrite, onTraceModule }: SetProps) {
   const mesh = useRef<InstancedMesh>(null);
   const capacity = Math.max(1, placements.length);
   const invalidate = useThree((state) => state.invalidate);
@@ -91,6 +96,14 @@ function InstancedSet({ placements, thickness, material, name, castShadow, recei
     // The counter is told, never followed: a new one must not write the matrices again.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placements, thickness, material]);
+
+  // The count apart from the matrices too: the reveal of Present draws the first so many, and writes nothing.
+  useLayoutEffect(() => {
+    const instanced = mesh.current;
+    if (!instanced || instanced.count === shown) return;
+    instanced.count = shown;
+    invalidate();
+  }, [shown, placements, invalidate]);
 
   // The colours apart from the matrices: the shade map or the strings' colours switched writes them alone.
   useLayoutEffect(() => {
@@ -156,11 +169,12 @@ function TraceLine({ points }: { points: ReturnType<typeof traceLineOf> }) {
  * answered, the frame casting the shadow and the glass taking it. A press on one selects its position;
  * the selected one is outlined (plan step 17).
  */
-export function Modules({ layout, heightAt, flushClearance, selected, onPressModule, onOverModules, onWrite, glassColours = null, onTraceModule, traces = NO_TRACES }: Props) {
+export function Modules({ layout, heightAt, flushClearance, selected, onPressModule, onOverModules, onWrite, glassColours = null, onTraceModule, traces = NO_TRACES, reveal = 1 }: Props) {
   const placements = useMemo(
     () => layout.modules.map((module) => placementOf(module, layout.kind, heightAt, flushClearance)),
     [layout, heightAt, flushClearance],
   );
+  const shown = revealedCountOf(placements.length, reveal);
   const frame = useMemo(() => new MeshStandardMaterial({ color: PALETTE.moduleFrame, roughness: 0.5, metalness: 0.6, shadowSide: BackSide }), []);
   // White: each instance takes its colour, the modules' blue, its step of the shade map or its string's.
   const glass = useMemo(() => new MeshStandardMaterial({ roughness: 0.25, metalness: 0.1 }), []);
@@ -173,8 +187,8 @@ export function Modules({ layout, heightAt, flushClearance, selected, onPressMod
 
   return (
     <group>
-      <InstancedSet placements={placements} thickness={FRAME} material={frame} name={FRAME_MESH} castShadow receiveShadow={false} onPressModule={onPressModule} onOverModules={onOverModules} onWrite={onWrite} onTraceModule={onTraceModule} />
-      <InstancedSet placements={placements} thickness={GLASS} material={glass} name={GLASS_MESH} castShadow={false} receiveShadow colours={colours} onPressModule={onPressModule} onOverModules={onOverModules} onWrite={onWrite} onTraceModule={onTraceModule} />
+      <InstancedSet placements={placements} shown={shown} thickness={FRAME} material={frame} name={FRAME_MESH} castShadow receiveShadow={false} onPressModule={onPressModule} onOverModules={onOverModules} onWrite={onWrite} onTraceModule={onTraceModule} />
+      <InstancedSet placements={placements} shown={shown} thickness={GLASS} material={glass} name={GLASS_MESH} castShadow={false} receiveShadow colours={colours} onPressModule={onPressModule} onOverModules={onOverModules} onWrite={onWrite} onTraceModule={onTraceModule} />
       {chosen ? <SelectedOutline placement={chosen} /> : null}
       {lines.map((points, index) => (
         <TraceLine key={index} points={points} />

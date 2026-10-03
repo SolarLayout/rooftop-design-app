@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { BackSide, BufferGeometry, DoubleSide, Float32BufferAttribute, Shape, ShapeGeometry } from "three";
 import { FLAT, toScene, toScenePoint, type XY } from "@/lib/scene/adapter";
 import { frameOf, parapetWallsOf, wallOf, type RoofOfTheScene } from "@/lib/scene/building";
+import { liftOf, risenScaleOf } from "@/lib/scene/reveal";
 import { PALETTE } from "@/lib/scene-palette";
 import { onPress } from "./pointer";
 
@@ -20,6 +21,8 @@ type Props = {
   onPressRoof?: (event: ThreeEvent<MouseEvent>) => void;
   /** The pointer came over the roof surface, or left it. */
   onOverRoof?: (isOver: boolean) => void;
+  /** How far the building has risen from the ground, 0 to 1 (Present's tour, plan/phase-10-plan.md, step 17); whole unless said. */
+  reveal?: number;
 };
 
 /** The roof surface as a shape in the engine's (x, y), each corner lifted to the roof's height there. */
@@ -58,16 +61,17 @@ function edgeOf(roof: RoofOfTheScene): BufferGeometry {
 /**
  * The building: its roof surface, its walls down to the ground, its parapet (plan decision 3 for a pitch).
  * A press on the surface selects the roof; the walls and the parapet take no press (components.md,
- * "Obstacles on the roof").
+ * "Obstacles on the roof"). While Present reveals it, its height is scaled from the ground up to its own,
+ * the roof plane rising with it: a transform of the group, never new geometry.
  */
-export function Building({ roof, onPressRoof, onOverRoof }: Props) {
+export function Building({ roof, onPressRoof, onOverRoof, reveal = 1 }: Props) {
   const surface = useMemo(() => roofGeometryOf(roof), [roof]);
   const walls = useMemo(() => wallsGeometryOf(roof), [roof]);
   const edge = useMemo(() => edgeOf(roof), [roof]);
   const parapet = useMemo(() => parapetWallsOf(roof), [roof]);
 
   return (
-    <group>
+    <group position={[0, liftOf(reveal, BUILDING_DEPTH), 0]} scale={[1, risenScaleOf(reveal), 1]}>
       <mesh
         geometry={surface}
         rotation={FLAT}

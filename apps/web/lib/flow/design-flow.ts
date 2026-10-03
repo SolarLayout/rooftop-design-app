@@ -118,8 +118,9 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
    */
   function followTheShadows() {
     const document = project.getState().project;
-    const { sunTime, onTheRoof } = view.getState();
-    if (document === null || !onTheRoof.shadowOutlines) {
+    const { sunTime, onTheRoof, presentation } = view.getState();
+    // Present asks the API for nothing (plan/phase-10-plan.md, decision 8): its tour moves the hour through the day.
+    if (document === null || !onTheRoof.shadowOutlines || presentation !== null) {
       giveUpTheShadows();
       results.getState().shadowsWanted(null);
       return;
