@@ -28,9 +28,10 @@ the fast check the gate (D54, D55). `main` is green. Phase 10 is begun unattende
 
 ## In flight
 
-Nothing of Phase 9. Phase 10 begins: the resume prompt `plan/resume/013-phase-10-home-projects-present.md`, then its plan, its boards, its
-pull requests, all without a stop for approval (the owner, 2026-10-03: "You are pre-approved for all Phase 10 work"); after Phase 10 the
-resume prompt for Phase 11 is written and the session waits for the owner.
+Phase 10, unattended (the owner's pre-approval): the plan is on `main` (`phase-10-plan.md`); the boards of step 0 are being drawn by two
+agents (`home_data.json` written from the engine); `feat/phase-10-device` (pull request 1: the designs kept on the device, saving, the reload,
+the switcher's "On this device", the warning before leaving) and `feat/phase-10-open-project` (the API's `POST /project/open`, the start of pull
+request 2) are being built by agents in worktrees.
 
 ## What the web app has today
 

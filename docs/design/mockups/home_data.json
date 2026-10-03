@@ -1,0 +1,51 @@
+{
+ "demo_card": {
+  "label": "Demo project",
+  "name": "Pune demo roof",
+  "roof_words": "90 × 40 m flat industrial roof",
+  "dc_kwp": 357.28,
+  "energy_mwh": 617.8405373922709
+ },
+ "kept": [
+  {
+   "name": "Pune demo roof",
+   "roof_words": "90 × 40 m flat industrial roof",
+   "dc_kwp": 357.28,
+   "energy_mwh": 617.8405373922709,
+   "edited": "Edited 2 hours ago"
+  },
+  {
+   "name": "Hinjewadi Phase 2, Pune, Maharashtra",
+   "roof_words": "62 × 28 m flat roof, outlined on satellite",
+   "dc_kwp": null,
+   "energy_mwh": null,
+   "edited": "Edited yesterday",
+   "note": "no voltage chosen yet: the card says what waits"
+  },
+  {
+   "name": "Warehouse 7, Block B",
+   "roof_words": "120 × 45 m flat east-west",
+   "dc_kwp": null,
+   "energy_mwh": null,
+   "edited": "Edited 3 days ago",
+   "note": "the numbers of this card are placeholders for the board: a design built on the device; the builder must not type figures that look like the engine's for it"
+  }
+ ],
+ "words": {
+  "unsupported_format": "This project file is format 3. This version reads formats 1 and 2. Open it with a newer version of the app.",
+  "not_an_rtd": "The file is not a project file (.rtd): it is not JSON.",
+  "delete_question": "Delete Pune demo roof? It is kept on this device alone.",
+  "saving": {
+   "saved": "Saved on this device",
+   "saving": "Saving",
+   "not_kept": "Not kept on this device",
+   "not_saved": "Not saved"
+  },
+  "present_hint": "Press any key or touch the screen to return",
+  "present_words": "Pune demo roof · 357.28 kWp · 617.8 MWh a year",
+  "format1_not_included": [
+   "The module file Test.PAN (PAN) is not included in this project. Choose it again.",
+   "The inverter file Test-S.ond (OND) is not included in this project. Choose it again."
+  ]
+ }
+}
