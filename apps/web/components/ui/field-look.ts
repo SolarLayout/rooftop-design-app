@@ -16,6 +16,9 @@ export const INPUT = classNames(INPUT_BASE, "type-value-s desktop:type-value-fie
 /** The same inside the loss chain: mono 12 on desktop, 13 on tablet; empty for its default, it says the default inside itself. */
 export const INPUT_IN_THE_CHAIN = classNames(INPUT_BASE, "type-value-s tablet:type-value-small desktop:type-value-xs placeholder:text-text-3");
 
+/** The input of a text field: words in Geist, at the left, in the size of body text. */
+export const INPUT_WORDS = classNames(INPUT_BASE, "placeholder:text-text-3");
+
 export const UNIT = "type-caption text-text-2 whitespace-nowrap";
 
 /** What a field says under itself. It takes no room while it says nothing. */

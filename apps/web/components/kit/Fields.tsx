@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { NumberField } from "@/components/ui/NumberField";
 import type { Range } from "@/components/ui/number-entry";
 import { Stepper } from "@/components/ui/Stepper";
+import { TextField } from "@/components/ui/TextField";
 import { Example, Row, Section } from "./Example";
 
 type Props = { onPress: (what: string) => void };
@@ -11,6 +12,8 @@ type Props = { onPress: (what: string) => void };
 const SETBACK: Range = { min: 0, max: 5, decimals: 2, step: 0.25 };
 const CLEARANCE: Range = { min: 0, max: 3, decimals: 2, step: 0.05 };
 const MODULES_IN_TILT = { min: 1, max: 4, decimals: 0, step: 1 };
+/** The rules of a name: 200 characters at most, never empty (plan/phase-09-plan.md, decision 13). */
+const NAME = { maxLength: 200, needed: "A name is needed" };
 
 /** A value, and how often it was committed: the kit says both, so that a test can hold them. */
 function useCommitted(name: string, first: number, onPress: (what: string) => void) {
@@ -25,10 +28,24 @@ function useCommitted(name: string, first: number, onPress: (what: string) => vo
   return { value, onCommit };
 }
 
+/** The words of a field, and how often they were committed. */
+function useCommittedWords(name: string, first: string, onPress: (what: string) => void) {
+  const [value, setValue] = useState(first);
+  const commits = useRef(0);
+
+  function onCommit(next: string) {
+    commits.current += 1;
+    setValue(next);
+    onPress(`${name}, ${next}, commit ${commits.current}`);
+  }
+  return { value, onCommit };
+}
+
 export function Fields({ onPress }: Props) {
   const setback = useCommitted("Setback", 1, onPress);
   const clearance = useCommitted("Lower-edge clearance", 0.5, onPress);
   const modules = useCommitted("Modules in tilt", 2, onPress);
+  const name = useCommittedWords("Name", "Pune demo roof", onPress);
 
   return (
     <Section title="Recessed: fields">
@@ -42,6 +59,19 @@ export function Fields({ onPress }: Props) {
           </Example>
           <Example name="number-field-disabled" caption="Cannot be used">
             <NumberField label="Setback" unit="m" range={SETBACK} labelInside disabled className="w-full" value={1} onCommit={() => undefined} />
+          </Example>
+        </div>
+      </Row>
+      <Row label="Text field, the label before the field">
+        <div className="grid w-full max-w-90 gap-3">
+          <Example name="text-field" caption="Rest. Trimmed, 200 characters at most, never empty">
+            <TextField label="Name" {...NAME} className="w-full" {...name} />
+          </Example>
+          <Example name="text-field-focus" caption="Focus">
+            <TextField label="Name" {...NAME} shownAs="focus" className="w-full" value="Pune demo roof, block B" onCommit={() => undefined} />
+          </Example>
+          <Example name="text-field-hint" caption="With a hint under it">
+            <TextField label="Name" {...NAME} detail="In the name of every file" className="w-full" value="Pune demo roof" onCommit={() => undefined} />
           </Example>
         </div>
       </Row>
