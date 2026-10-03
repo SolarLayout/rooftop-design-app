@@ -12,7 +12,10 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # The check without the browser tests takes about eight minutes here when nothing is cached (pytest whole over
+    # the runner's cores, the web app's types, lint and tests, the proofs); the limit leaves room for a slow runner.
+    # A job that hits it is cancelled before the cache is saved, so the next run starts cold again.
+    timeout-minutes: 15
     env:
       NEXT_TELEMETRY_DISABLED: "1"
       # pytest runs whole and untraced here: the task is cached whole by turbo, and testmon's data is
