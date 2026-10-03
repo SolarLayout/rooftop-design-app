@@ -1225,4 +1225,17 @@ test.describe("the shell", () => {
 
     await expectScreen(page, "present");
   });
+
+  // The last scene, the energy counted and held (the board "Present", frame 6): the stage dimmed under the hero number and
+  // the chain's cascade, the strings lit by MPPT under it. The tour is run forward to the moment the count has landed.
+  test("present, the energy", async ({ page }, testInfo) => {
+    test.skip(!isDesktop(testInfo.project.name), "The board draws the energy scene on desktop.");
+    // The tour run forward through its frames in software WebGL: more than a test's half minute.
+    test.setTimeout(RUN * 3);
+    await presentAtTheStart(page);
+    await page.clock.runFor(36_000);
+    await expect(page.getByTestId("present-energy")).toHaveAttribute("data-state", "counted");
+
+    await expectScreen(page, "present-energy");
+  });
 });

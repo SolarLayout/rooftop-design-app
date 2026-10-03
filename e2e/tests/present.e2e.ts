@@ -220,6 +220,31 @@ test.describe("the tour", () => {
     expect(during, "pixels of the middle band in a series colour").toBeGreaterThanOrEqual(3);
   });
 
+  test("in the last scene the energy counts from 0 to the run's MWh, the chain cascading beside it; before it nothing of the figures is there", async ({ page }) => {
+    const answered = page.waitForResponse((response) => response.url().endsWith("/api/design"), { timeout: RUN });
+    const tour = await presentOpened(page);
+    const events = (await (await answered).text()).split("\n").filter((line) => line.startsWith("data:"));
+    const { result } = JSON.parse(events[events.length - 1]!.slice(5)) as { result: { chosen_option: string; options: { key: string; energy: { energy_mwh: number; steps: { kind: string; label: string; value: number }[] } }[] } };
+    const chosen = result.options.find((option) => option.key === result.chosen_option)!;
+    const mwh = chosen.energy.energy_mwh.toFixed(1);
+    await expect(page.getByTestId("present-energy")).toHaveCount(0);
+
+    await tour.at(5, 1500);
+    const figures = page.getByTestId("present-energy");
+    await expect(figures).toHaveAttribute("data-state", "counting");
+    await expect(figures).toContainText("Energy to grid, year 1");
+    const midway = Number((await figures.getByTestId("stat-value").textContent())!.replace(/[^\d.]/g, ""));
+    expect(midway).toBeGreaterThan(0);
+    expect(midway).toBeLessThan(Number(mwh));
+    expect(await figures.getByTestId("present-chain").locator("[data-look]").count()).toBe(chosen.energy.steps.filter((step) => step.kind === "energy_total" || step.kind === "energy" || step.kind === "result").length);
+
+    await tour.at(5, 6000 + A_FRAME);
+    await expect(figures).toHaveAttribute("data-state", "counted");
+    await expect(figures.getByTestId("stat-value")).toHaveText(`${mwh} MWh`);
+    await expect(figures).toContainText(`Energy to grid ${mwh} MWh`);
+    await expect(figures).toContainText(`Array nominal energy at STC ${chosen.energy.steps.find((step) => step.kind === "energy_total")!.value.toFixed(1)}`);
+  });
+
   test("the loop begins again after 40 s, and the hint has faded", async ({ page }) => {
     const tour = await presentOpened(page);
 

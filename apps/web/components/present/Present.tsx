@@ -25,6 +25,7 @@ import { nameOf, projectOf } from "@/lib/stores/project-store";
 import { chosenOptionOf, isDesignUpdating, layoutOf, noOptionsOf, sunDayOf } from "@/lib/stores/results-store";
 import { lensOf, presentationOf, sunTimeOf } from "@/lib/stores/view-store";
 import { readOutOf } from "@/lib/studio/sun-time";
+import { PresentFigures } from "./PresentFigures";
 
 // The scene draws with WebGL in the browser alone: it is loaded there, never on the server.
 const Scene = dynamic(() => import("@/components/scene/Scene").then((module) => module.Scene), { ssr: false });
@@ -115,6 +116,7 @@ export function Present() {
           <Scene onContextLost={() => setLost(true)} stage={stage} />
         )}
       </div>
+      <PresentFigures tour={tour} />
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 z-stage-overlay h-45 stage-fade" />
       <Words tour={tour} facts={facts} waiting={waiting} />
       <Hint tour={tour} />
