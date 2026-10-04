@@ -5,7 +5,7 @@
 import type { SunDay, SunPosition } from "../stores/results-store";
 import type { XY, XYZ } from "./adapter";
 import type { Sun } from "./camera";
-import { sunAt } from "./sun-day";
+import { sunAt } from "../flow/sun-day";
 
 /** The dome's radius, as a share of the roof's: the arc stands clear of the roof and in the frame of Fit. */
 export const DOME = 1.3;

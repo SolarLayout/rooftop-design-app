@@ -7,7 +7,7 @@ import type { Scale } from "@/components/ui/slider-steps";
 import { Tooltip, type Shortcuts } from "@/components/ui/Tooltip";
 import { useSlide } from "@/components/ui/use-slide";
 import { hourOf } from "@/lib/scene/keepout";
-import { QUARTER_HOUR, type DayHours } from "@/lib/scene/sun-day";
+import { QUARTER_HOUR, type DayHours } from "@/lib/flow/sun-day";
 import type { Tick } from "@/lib/studio/sun-time";
 import type { Size } from "./use-size";
 import { useTime, type Time } from "./use-time";

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useStores } from "@/components/shell/stores";
-import { hoursOf } from "@/lib/scene/sun-day";
+import { hoursOf } from "@/lib/flow/sun-day";
 import { sunDayOf } from "@/lib/stores/results-store";
 import { timeOfKey } from "@/lib/studio/sun-time";
 

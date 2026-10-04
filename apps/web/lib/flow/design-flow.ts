@@ -12,7 +12,7 @@ import { partsOfAnEdit } from "./edit-parts";
 import { api as apiOfTheApp, ApiError, type Api, type DesignResult, type Project } from "../api";
 import { CLOCK_OF_THE_BROWSER, type Clock } from "../clock";
 import { stepOfLoading, weatherRequestOf, withWeatherLoaded } from "../performance/weather-source";
-import { hoursOf, QUARTER_HOUR } from "../scene/sun-day";
+import { hoursOf, QUARTER_HOUR } from "./sun-day";
 import { heldHourOf } from "../studio/sun-time";
 import type { ProjectState, ProjectStore } from "../stores/project-store";
 import { sunKeyOf, withTheChoice, type Failure, type ResultsStore, type SunDay, type SunKey } from "../stores/results-store";

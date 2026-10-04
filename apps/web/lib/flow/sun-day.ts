@@ -1,7 +1,7 @@
 // The sun of the scene from the day /sun answered (plan/phase-06-plan.md, decision 1): its position at an
 // hour of the view, and the hours the time may take. Pure functions; the day is asked once per place and day.
 import type { SunDay } from "../stores/results-store";
-import type { Sun } from "./camera";
+import type { Sun } from "../scene/camera";
 
 /** The step of the time: the timeline, the keys and play move by it, and /sun answers a day at it. */
 export const QUARTER_HOUR = 0.25;

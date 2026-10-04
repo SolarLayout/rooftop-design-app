@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useResults, useView } from "@/components/shell/stores";
 import type { Sun } from "@/lib/scene/camera";
-import { sunAt } from "@/lib/scene/sun-day";
+import { sunAt } from "@/lib/flow/sun-day";
 import { sunDayOf } from "@/lib/stores/results-store";
 import { sunTimeOf } from "@/lib/stores/view-store";
 

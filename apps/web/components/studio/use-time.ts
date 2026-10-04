@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useProject, useResults, useStores, useView } from "@/components/shell/stores";
 import { hourOf } from "@/lib/scene/keepout";
-import { hoursOf, type DayHours } from "@/lib/scene/sun-day";
+import { hoursOf, type DayHours } from "@/lib/flow/sun-day";
 import { projectOf } from "@/lib/stores/project-store";
 import { sunDayOf, type SunDay } from "@/lib/stores/results-store";
 import { isPlayingOf, sunTimeOf, type SunTime } from "@/lib/stores/view-store";

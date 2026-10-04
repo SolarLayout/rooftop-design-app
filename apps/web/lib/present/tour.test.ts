@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { DayHours } from "../scene/sun-day";
+import type { DayHours } from "../flow/sun-day";
 import { LOOP, REDUCED_SCRIPT, SCENES, SCRIPT, stateAt } from "./tour";
 
 // The tour's script (plan/phase-10-plan.md, step 16, decision 9): six scenes in order, 40 s in all, each setting

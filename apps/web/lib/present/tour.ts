@@ -5,7 +5,7 @@
 // state at a moment of the loop is `stateAt`. Under reduced motion each scene is a cut held for its time
 // (docs/design/guidelines.md, "Accessibility"). Pure: the clock and the stores are the driver's.
 import type { Colouring } from "../scene/string-colours";
-import type { DayHours } from "../scene/sun-day";
+import type { DayHours } from "../flow/sun-day";
 import type { CameraPreset } from "../stores/view-store";
 
 export type SceneId = "satellite" | "rising" | "filling" | "day" | "strings" | "energy";

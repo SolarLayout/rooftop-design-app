@@ -14,8 +14,8 @@ import { createProjectStore, editOf, nameOf, projectOf, type ProjectState, type 
 import { createResultsStore, designFailureOf, designOf, designStatusOf, layoutFailureOf, newerLayoutNotesOf, progressOf, readoutsOf, sunDayOf, type ResultsState, type ResultsStore } from "@/lib/stores/results-store";
 import { createViewStore, type ViewState, type ViewStore } from "@/lib/stores/view-store";
 import { CLOCK_OF_THE_BROWSER } from "@/lib/clock";
-import { hoursOf } from "@/lib/scene/sun-day";
-import { createPlay, type Play } from "@/lib/studio/play";
+import { hoursOf } from "@/lib/flow/sun-day";
+import { createPlay, type Play } from "@/lib/flow/play";
 import { notesOf, type Note } from "./notes-view";
 import { vitalsOf, type VitalsView } from "./vitals-view";
 

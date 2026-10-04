@@ -5,7 +5,7 @@
 import type { SunDay } from "../stores/results-store";
 import type { XY, XYZ } from "./adapter";
 import { hourOf } from "./keepout";
-import { sunAt } from "./sun-day";
+import { sunAt } from "../flow/sun-day";
 import { arcOf, pointOnDomeOf } from "./sun-path";
 
 /** What a mark stands for: the day's ends, the window's ends, noon. */
