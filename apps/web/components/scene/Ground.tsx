@@ -7,7 +7,7 @@ import { FLAT, toScenePoint } from "@/lib/scene/adapter";
 import { gridLinesOf, IMAGERY_RADIUS, tilesAround, type Extent } from "@/lib/scene/ground";
 import type { StageStore } from "@/lib/scene/stage-store";
 import { stitchTiles } from "@/lib/scene/stitch";
-import type { Imagery } from "@/lib/map/provider";
+import type { Imagery } from "@/lib/places/provider";
 import { PALETTE } from "@/lib/scene-palette";
 import { onPress } from "./pointer";
 

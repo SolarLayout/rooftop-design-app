@@ -3,7 +3,7 @@
 // the flat frame of lib/outline/frame.ts (the centroid is the origin of the scene, and the API's outline
 // is about it too: D41); and the grid where there is no imagery. Pure functions in the engine's metres,
 // x east, y north; the component lays them with the adapter.
-import type { Imagery } from "../map/provider";
+import type { Imagery } from "../places/provider";
 import { frameAt, toMetres, type Frame } from "../outline/frame";
 import type { XY } from "./adapter";
 

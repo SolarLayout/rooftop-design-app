@@ -12,10 +12,10 @@ import { ProgressRing } from "@/components/ui/ProgressRing";
 import { StatusMark } from "@/components/ui/StatusMark";
 import { useFloating } from "@/components/ui/use-floating";
 import { placeInFull } from "@/lib/format/place";
-import { SearchError } from "@/lib/map/esri";
-import { placeInputOf } from "@/lib/map/place-input";
-import type { MapProvider } from "@/lib/map/provider";
-import { afterKey, IDLE, searchStateAfter } from "@/lib/map/search-state";
+import { SearchError } from "@/lib/places/esri";
+import { placeInputOf } from "@/lib/places/place-input";
+import type { MapProvider } from "@/lib/places/provider";
+import { afterKey, IDLE, searchStateAfter } from "@/lib/places/search-state";
 
 /** A place the user chose: found by words, typed as coordinates, taken from a link, or the device's own. */
 export type FoundPlace = { lon: number; lat: number; label: string; byWords: boolean };

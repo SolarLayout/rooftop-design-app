@@ -18,7 +18,7 @@ import { projectOf } from "@/lib/stores/project-store";
 import { layoutOf, stringsOnTheRoofOf } from "@/lib/stores/results-store";
 import { cameraOf, draftOf, draggingOf, lensOf, presentationOf, selectionOf, showsSunPathOf, toReviewOf, type Reveal } from "@/lib/stores/view-store";
 import { withDraftAt, withObstacleReplaced } from "@/lib/studio/obstacle-fields";
-import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
+import { esriProvider, KEY_OF_THE_APP } from "@/lib/places/esri";
 import { Building, BUILDING_DEPTH } from "./Building";
 import { CameraRig } from "./CameraRig";
 import { Ground } from "./Ground";

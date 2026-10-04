@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
-import { Search, type FoundPlace } from "@/components/find/Search";
+import { Search, type FoundPlace } from "@/components/shell/Search";
 import { ImportDrawing } from "@/components/shell/ImportDrawing";
 import { Logo } from "@/components/shell/Logo";
 import { useSaving, useStores } from "@/components/shell/stores";
@@ -16,7 +16,7 @@ import { keptDesignsOf, listedAtOf } from "@/lib/device/saving";
 import { failureOf } from "@/lib/flow/design-flow";
 import { cardsOf, copyNameOf } from "@/lib/home/cards";
 import { demoCardOf } from "@/lib/home/home-view";
-import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
+import { esriProvider, KEY_OF_THE_APP } from "@/lib/places/esri";
 import { pathOfFind, pathOfLens } from "@/lib/routes";
 import { lensOf } from "@/lib/stores/view-store";
 import { DemoCard, type Demo } from "./DemoCard";

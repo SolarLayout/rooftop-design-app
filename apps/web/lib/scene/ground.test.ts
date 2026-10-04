@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { esriProvider } from "../map/esri";
-import type { Imagery } from "../map/provider";
+import { esriProvider } from "../places/esri";
+import type { Imagery } from "../places/provider";
 import { gridLinesOf, IMAGERY_RADIUS, tilesAround, type Tile } from "./ground";
 
 // The ground under the roof: the tiles of the imagery at the native zoom that cover a square about the

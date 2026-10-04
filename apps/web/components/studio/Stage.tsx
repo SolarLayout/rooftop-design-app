@@ -9,7 +9,7 @@ import { useWebGL } from "@/components/find/use-web-gl";
 import { classNames } from "@/components/ui/class-names";
 import { shown } from "@/components/ui/number-entry";
 import { ProgressRing } from "@/components/ui/ProgressRing";
-import { esriProvider, KEY_OF_THE_APP } from "@/lib/map/esri";
+import { esriProvider, KEY_OF_THE_APP } from "@/lib/places/esri";
 import { calloutOf, hourOf } from "@/lib/scene/keepout";
 import { calloutOfObstacle, wordsOf } from "@/lib/scene/obstacles";
 import { createStageStore, cursorOf, groundOf, moduleWritesOf, type Cursor, type StageStore } from "@/lib/scene/stage-store";

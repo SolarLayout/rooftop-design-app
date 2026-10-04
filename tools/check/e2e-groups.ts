@@ -29,6 +29,8 @@ export const BASE_INPUTS: string[] = [
   "apps/web/lib/stores/**",
   "apps/web/lib/flow/**",
   "apps/web/lib/format/**",
+  // The search for a place and its provider: Find's, Home's and Import a drawing's (plan/phase-11-plan.md, decision 4).
+  "apps/web/lib/places/**",
   // The designs kept on the device: the shell saves and opens them, so every page can see them (plan/phase-10-plan.md, decision 12).
   "apps/web/lib/device/**",
   "apps/web/public/**",
