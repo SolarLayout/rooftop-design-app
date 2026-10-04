@@ -4,12 +4,12 @@
 import { CLOSE_WITHIN, CLOSE_WITHIN_TOUCH, SNAP_DEGREES } from "../../components/ui/design-numbers";
 import { frameAt, type Frame, type LonLat } from "./frame";
 import { canRedo, canUndo, historyOf, redone, undone, withNext, type History } from "./history";
-import { areaOf, bearingOf, centroidOf, compassOf, edgesOf, facingOf, isClockwise, type Facing, type XY } from "./measure";
+import { areaOf, bearingOf, centroidOf, compassOf, edgesOf, facingOf, isClockwise, type Facing, type XY } from "../geometry/measure";
 import { nudged, nudgeOfKey } from "./nudge";
 import { boxOf as obstacleBoxOf, boxWithCorner, FEWEST_POINTS, nameOf, tankOf, type Obstacle, type ObstacleKind, type Shape } from "./obstacles";
 import { rectangleOf, turnedAbout, turnOfHandle } from "./rectangle";
 import { closesOnFirst, snappedCorner } from "./snap";
-import { isRectangle, withEdgeLength } from "./typed-length";
+import { isRectangle, withEdgeLength } from "../geometry/typed-length";
 
 /** A box drawn with the rectangle tool: its four corners before the turn, and the turn. */
 export type Box = { base: readonly XY[]; turn: number };

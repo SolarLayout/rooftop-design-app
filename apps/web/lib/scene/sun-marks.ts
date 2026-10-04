@@ -3,8 +3,8 @@
 // chip in the words of the timeline, placed by projection as the stage's labels are. Pure functions in the
 // engine's metres; the scene projects the points and the DOM over the stage draws the chips.
 import type { SunDay } from "../stores/results-store";
-import type { XY, XYZ } from "./adapter";
-import { hourOf } from "./keepout";
+import type { XY, XYZ } from "../geometry/adapter";
+import { hourOf } from "../geometry/keepout";
 import { sunAt } from "../flow/sun-day";
 import { arcOf, pointOnDomeOf } from "./sun-path";
 

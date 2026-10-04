@@ -1,7 +1,7 @@
 // Where the camera stands and how far it may go, from the roof's radius (plan/phase-05-plan.md,
 // decision 17; plan/reference/r3f-notes.md, fixes 9 and 13). In three's metres: x east, y up, z south.
 import type { CameraPreset } from "../stores/view-store";
-import type { SceneXYZ } from "./adapter";
+import type { SceneXYZ } from "../geometry/adapter";
 
 /** The sun as the API gives it: above the horizon, clockwise from north. */
 export type Sun = { elevationDeg: number; azimuthDeg: number };

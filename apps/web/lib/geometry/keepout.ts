@@ -1,7 +1,7 @@
 // The words of a kept-clear area on the roof (plan/phase-05-plan.md, step 8, decision 4): what /layout
 // answered about one part of the keep-out, and the shade-free window of the array.
 import type { Keepout } from "../api";
-import { areaOf, centroidOf } from "../outline/measure";
+import { areaOf, centroidOf } from "./measure";
 import type { XY } from "./adapter";
 
 export type Window = {

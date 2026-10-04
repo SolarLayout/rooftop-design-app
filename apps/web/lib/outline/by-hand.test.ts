@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { cornersOfRectangle, cornersOfTable, isEntered, type ByHand } from "./by-hand";
-import { areaOf, edgesOf, facingOf } from "./measure";
+import { areaOf, edgesOf, facingOf } from "../geometry/measure";
 
 // The roof entered by hand (plan/phase-04-plan.md, step 15; the board "Enter dimensions by hand"): a
 // rectangle by its length, its width and where its long side faces, or a table of corners, about the

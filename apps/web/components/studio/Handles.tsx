@@ -15,7 +15,7 @@ import { rayAt, stemEndOf, type StageLabel } from "@/lib/scene/projection";
 import { cameraOf, labelsOf, type StageStore } from "@/lib/scene/stage-store";
 import { projectOf } from "@/lib/stores/project-store";
 import { draggingOf, selectionOf } from "@/lib/stores/view-store";
-import { withObstacleReplaced } from "@/lib/studio/obstacle-fields";
+import { withObstacleReplaced } from "@/lib/geometry/obstacle-fields";
 import { useSize } from "./use-size";
 
 type Props = { stage: StageStore };

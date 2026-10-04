@@ -6,7 +6,7 @@ import { PALETTE } from "./scene-palette";
 // The 3D palette is written twice, as the tokens are: for people in the document, for three.js in
 // scene-palette.ts. This holds the two equal.
 
-const DOCUMENT = path.resolve(import.meta.dir, "../../../docs/design/design-tokens.md");
+const DOCUMENT = path.resolve(import.meta.dir, "../../../../docs/design/design-tokens.md");
 
 function paletteOfDocument(): Record<string, string> {
   const markdown = readFileSync(DOCUMENT, "utf8");
@@ -22,7 +22,7 @@ test("the palette of the scene is that of the document, and no other", () => {
   expect<Record<string, string>>({ ...PALETTE }).toEqual(documented);
 });
 
-const STYLESHEET = path.resolve(import.meta.dir, "../app/globals.css");
+const STYLESHEET = path.resolve(import.meta.dir, "../../app/globals.css");
 
 // The sun's marker is DOM over the stage (plan/phase-06-plan.md, decision 10), drawn with CSS tokens: they
 // are the palette's sun and its core, so that the marker and the arc in the scene are one colour.

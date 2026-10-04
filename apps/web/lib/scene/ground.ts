@@ -5,7 +5,7 @@
 // x east, y north; the component lays them with the adapter.
 import type { Imagery } from "../places/provider";
 import { frameAt, toMetres, type Frame } from "../outline/frame";
-import type { XY } from "./adapter";
+import type { XY } from "../geometry/adapter";
 
 /** How far the imagery reaches from the roof's centroid, in metres, each way. */
 export const IMAGERY_RADIUS = 150;

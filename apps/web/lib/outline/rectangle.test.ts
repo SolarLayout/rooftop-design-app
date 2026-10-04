@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { edgesOf, type XY } from "./measure";
+import { edgesOf, type XY } from "../geometry/measure";
 import { rectangleOf, turnedAbout, turnOfHandle } from "./rectangle";
 
 const rounded = (points: XY[]) => points.map(({ x, y }) => ({ x: Math.round(x * 1000) / 1000, y: Math.round(y * 1000) / 1000 }));

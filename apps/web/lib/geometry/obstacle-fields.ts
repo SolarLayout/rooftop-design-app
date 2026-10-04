@@ -4,8 +4,8 @@
 import type { Range } from "../../components/ui/number-entry";
 import { shown } from "../../components/ui/number-entry";
 import type { Obstacle, Project, Roof } from "../api";
-import { areaOf, type XY as XYOf } from "../outline/measure";
-import type { XY } from "../scene/adapter";
+import { areaOf, type XY as XYOf } from "./measure";
+import type { XY } from "./adapter";
 
 export type ObstacleKind = Obstacle["kind"];
 

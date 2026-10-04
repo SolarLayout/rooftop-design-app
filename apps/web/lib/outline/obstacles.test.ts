@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { frameAt, toMetres } from "./frame";
-import type { XY } from "./measure";
+import type { XY } from "../geometry/measure";
 import {
   boxOf,
   boxWithCorner,

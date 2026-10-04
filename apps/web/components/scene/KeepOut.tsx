@@ -4,8 +4,8 @@ import type { ThreeEvent } from "@react-three/fiber";
 import { useMemo, useState } from "react";
 import { BufferGeometry, Float32BufferAttribute, Path, Shape, ShapeGeometry } from "three";
 import type { Keepout } from "@/lib/api";
-import { FLAT, toScenePoint, type XY } from "@/lib/scene/adapter";
-import { colourOf, PALETTE } from "@/lib/scene-palette";
+import { FLAT, toScenePoint, type XY } from "@/lib/geometry/adapter";
+import { colourOf, PALETTE } from "@/lib/geometry/scene-palette";
 import { canHover, onPress } from "./pointer";
 
 type Props = {

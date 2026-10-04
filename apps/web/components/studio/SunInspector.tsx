@@ -9,7 +9,7 @@ import { Segmented } from "@/components/ui/Segmented";
 import { Select } from "@/components/ui/Select";
 import { Stat } from "@/components/ui/Stat";
 import { Switch } from "@/components/ui/Switch";
-import { hourOf } from "@/lib/scene/keepout";
+import { hourOf } from "@/lib/geometry/keepout";
 import { projectOf } from "@/lib/stores/project-store";
 import { sunFailureOf } from "@/lib/stores/results-store";
 import { onTheRoofOf, sunTabOf, type OnTheRoof, type SunTab } from "@/lib/stores/view-store";

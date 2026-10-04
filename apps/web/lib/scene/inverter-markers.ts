@@ -2,7 +2,7 @@
 // the palette's inverterMarker at each place the engine gives the chosen option's inverters, and a chip "INV-1"
 // over its top, placed by the Projector. Pure, in the engine's metres.
 import type { InverterPlace } from "../api";
-import type { XY, XYZ } from "./adapter";
+import type { XY, XYZ } from "../geometry/adapter";
 
 /** The box on the roof: a marker, not the inverter's size, as the board draws it. In metres. */
 export const INVERTER_BOX = { east: 2, north: 1, height: 1.2 } as const;

@@ -1,6 +1,6 @@
 // A selected corner nudged by the arrows: 0.1 m, a metre with Shift.
 import { NUDGE_MM, NUDGE_SHIFT_MM } from "../../components/ui/design-numbers";
-import type { XY } from "./measure";
+import type { XY } from "../geometry/measure";
 
 export type Nudge = { dx: number; dy: number };
 

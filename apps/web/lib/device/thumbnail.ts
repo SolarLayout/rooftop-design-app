@@ -1,10 +1,10 @@
 // The thumbnail of a kept design (plan/phase-10-plan.md, step 13, decision 6): the plan of the kept layout's positions as an
 // SVG string of 320 by 180, drawn as the plan without WebGL draws it (components/studio/PlanFallback.tsx, with the maths of
-// lib/scene/plan.ts): the roof, the setback, the kept-clear areas, the obstacles and the modules, north up, in metres. It is
+// lib/geometry/plan.ts): the roof, the setback, the kept-clear areas, the obstacles and the modules, north up, in metres. It is
 // kept with the design, so that its card shows the roof at once with no run and no canvas; deterministic, the same for a
 // design saved from Performance or Handover where no scene is mounted. Its colours are the tokens of the page, by class.
 import type { Layout, Roof } from "../api";
-import { fittedViewBoxOf, footprintsOf, pathOf, viewBoxOf, type Polygon } from "../scene/plan";
+import { fittedViewBoxOf, footprintsOf, pathOf, viewBoxOf, type Polygon } from "../geometry/plan";
 
 /** The tile, in its own units. */
 export const THUMBNAIL = { width: 320, height: 180 } as const;

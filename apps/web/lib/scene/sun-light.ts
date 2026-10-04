@@ -1,7 +1,7 @@
 // The numbers of the sun light, from the reference project (plan/reference/r3f-notes.md, fixes 5 to 7), the
 // bias held to the engine's shadows (plan/phase-06-plan.md, decision 9), the strengths held to the palette.
 import { Color } from "three";
-import { PALETTE } from "../scene-palette";
+import { PALETTE } from "../geometry/scene-palette";
 // Pure functions of the sun's height in degrees; the component sets what they give on the light.
 
 /** Below this height the light fades, and at the horizon it is out: shadow maps degrade badly there. */

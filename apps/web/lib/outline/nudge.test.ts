@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { XY } from "./measure";
+import type { XY } from "../geometry/measure";
 import { nudged, nudgeOfKey } from "./nudge";
 
 const CORNERS: XY[] = [

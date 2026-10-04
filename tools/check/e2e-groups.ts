@@ -20,9 +20,7 @@ export const BASE_INPUTS: string[] = [
   "apps/web/components/shell/**",
   "apps/web/components/ui/**",
   "apps/web/components/*",
-  // The files at the root of lib, named: turbo applies an exclusion to every input of a task, so the
-  // Studio's roof-card.ts and scene-palette.ts cannot be taken out of `lib/*` without taking them out of
-  // the Studio's own inputs too. A new file there is placed by hand (the test says when one is not).
+  // The files at the root of lib, named one by one: a new file there is placed by hand (the test says when one is not).
   "apps/web/lib/clock*.ts",
   "apps/web/lib/routes*.ts",
   "apps/web/lib/api/**",
@@ -31,6 +29,9 @@ export const BASE_INPUTS: string[] = [
   "apps/web/lib/format/**",
   // The search for a place and its provider: Find's, Home's and Import a drawing's (plan/phase-11-plan.md, decision 4).
   "apps/web/lib/places/**",
+  // The engine's metres and the 3D palette: Find's, the Studio's, the stores', the device's thumbnails' and Home's alike
+  // (plan/phase-11-plan.md, decision 4, widened by the session).
+  "apps/web/lib/geometry/**",
   // The designs kept on the device: the shell saves and opens them, so every page can see them (plan/phase-10-plan.md, decision 12).
   "apps/web/lib/device/**",
   "apps/web/public/**",
@@ -77,8 +78,6 @@ const STUDIO_FOLDERS = [
   "apps/web/components/scene/**",
   "apps/web/lib/scene/**",
   "apps/web/lib/studio/**",
-  "apps/web/lib/roof-card*.ts",
-  "apps/web/lib/scene-palette*.ts",
   ...FIND_FOLDERS,
 ];
 // performance.e2e.ts chooses a voltage in the Strings lens; performance-weather builds a roof on the map.

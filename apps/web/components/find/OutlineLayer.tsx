@@ -8,7 +8,7 @@ import { shown } from "@/components/ui/number-entry";
 import { footprintOutline, FOOTPRINTS_LAYER, FOOTPRINTS_URL, FOOTPRINTS_ZOOM } from "@/lib/map/overture";
 import { metresPerPixel } from "@/lib/map/scale-bar";
 import { frameAt, toLonLat, toMetres, type Frame, type LonLat } from "@/lib/outline/frame";
-import { areaOf, centroidOf, midpointsOf, type XY } from "@/lib/outline/measure";
+import { areaOf, centroidOf, midpointsOf, type XY } from "@/lib/geometry/measure";
 import { foldOf, labelOf, type Obstacle, type ObstacleKind, type Shape } from "@/lib/outline/obstacles";
 import { turnedAbout } from "@/lib/outline/rectangle";
 import type { OutlineEvent, OutlineState } from "@/lib/outline/outline-state";

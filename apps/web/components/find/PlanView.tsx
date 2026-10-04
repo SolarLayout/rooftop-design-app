@@ -8,7 +8,7 @@ import { shown } from "@/components/ui/number-entry";
 import { StatusMark } from "@/components/ui/StatusMark";
 import { useSize } from "@/components/ui/use-size";
 import { scaleBarOf, type ScaleBar } from "@/lib/map/scale-bar";
-import { edgesOf, midpointsOf, type XY } from "@/lib/outline/measure";
+import { edgesOf, midpointsOf, type XY } from "@/lib/geometry/measure";
 import { NorthIcon } from "./NorthIcon";
 
 type Props = {

@@ -3,8 +3,8 @@
 // parapet as walls, the walls of the building from the ground to the roof's edge. Pure functions; the
 // components make geometries of what they give.
 import type { Roof } from "../api";
-import { centroidOf } from "../outline/measure";
-import type { Box, XY, XYZ } from "./adapter";
+import { centroidOf } from "../geometry/measure";
+import type { Box, XY, XYZ } from "../geometry/adapter";
 
 /** What of a roof the scene needs to draw the building. */
 export type RoofOfTheScene = Pick<Roof, "outline" | "parapet_h" | "slope_deg" | "slope_azimuth_deg" | "roof_type">;

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { cornersOfRectangle } from "./by-hand";
-import type { XY } from "./measure";
+import type { XY } from "../geometry/measure";
 import { edgeNamesOf, measurementsOf, outlineAfter, START, type OutlineEvent, type OutlineState } from "./outline-state";
 
 // A roof entered by hand in the reducer (plan/phase-04-plan.md, step 15): its corners come from the

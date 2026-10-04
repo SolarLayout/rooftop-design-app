@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { buildRequestOf, cornersOnMap } from "./build-request";
 import { frameAt, toMetres } from "./frame";
-import type { XY } from "./measure";
+import type { XY } from "../geometry/measure";
 import { outlineAfter, START, type OutlineEvent, type OutlineState } from "./outline-state";
 
 const PUNE = { lon: 73.86, lat: 18.52 };

@@ -3,12 +3,12 @@
 // and the view store keeps the selection.
 import { shown } from "../../components/ui/number-entry";
 import type { CableRow, Layout, PlacedModule } from "../api";
-import { areaOf, centroidOf, edgesOf } from "../outline/measure";
-import { isRectangle } from "../outline/typed-length";
+import { areaOf, centroidOf, edgesOf } from "../geometry/measure";
+import { isRectangle } from "../geometry/typed-length";
 import type { Selection } from "../stores/view-store";
-import type { XY, XYZ } from "./adapter";
-import type { Callout } from "./keepout";
-import type { HeightAt } from "./obstacles";
+import type { XY, XYZ } from "../geometry/adapter";
+import type { Callout } from "../geometry/keepout";
+import type { HeightAt } from "../geometry/obstacles";
 import { numberOfString, type Wired } from "./string-colours";
 
 /** What a press of the pointer hit in the scene. A module is known by the instance of the instanced mesh. */

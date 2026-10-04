@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { PALETTE } from "../scene-palette";
+import { PALETTE } from "../geometry/scene-palette";
 import { categoryOf, mixedToward, seriesColourOf, stringColoursOf, stringsOfTheRunOf, type Wired } from "./string-colours";
 
 // The strings on the roof (plan/phase-07-plan.md, step 13, decision 12): every position of the layout in the

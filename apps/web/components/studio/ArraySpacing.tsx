@@ -6,7 +6,7 @@ import { RangeSlider } from "@/components/ui/RangeSlider";
 import { Segmented } from "@/components/ui/Segmented";
 import { Switch } from "@/components/ui/Switch";
 import type { ArraySpec, LayoutResponse, Roof } from "@/lib/api";
-import { hourOf } from "@/lib/scene/keepout";
+import { hourOf } from "@/lib/geometry/keepout";
 import { ARRAY_RANGES, designDayOf, pitchLineOf, spacingOf, withAzimuthDecided, withDesignDay, withPitchDecided, type Decided, type DesignDay, type SpacingId } from "@/lib/studio/array-fields";
 import { azimuthLineOf, shadedLineOf, WINDOW_SCALE, WINDOW_TICKS, windowCommitted } from "@/lib/studio/array-view";
 import type { ArrayChange } from "./ArrayMounting";

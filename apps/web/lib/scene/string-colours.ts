@@ -5,7 +5,7 @@
 // take the colours per instance.
 import { DIM_TOWARD_STAGE } from "../../components/ui/design-numbers";
 import type { PVString } from "../api";
-import { PALETTE } from "../scene-palette";
+import { PALETTE } from "../geometry/scene-palette";
 
 /** What the strings are coloured by: the Strings lens's colour switch. */
 export type Colouring = "string" | "mppt" | "inverter";

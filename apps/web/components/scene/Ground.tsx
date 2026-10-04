@@ -3,12 +3,12 @@
 import { useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useState } from "react";
 import { BufferGeometry, CanvasTexture, Float32BufferAttribute, SRGBColorSpace } from "three";
-import { FLAT, toScenePoint } from "@/lib/scene/adapter";
+import { FLAT, toScenePoint } from "@/lib/geometry/adapter";
 import { gridLinesOf, IMAGERY_RADIUS, tilesAround, type Extent } from "@/lib/scene/ground";
 import type { StageStore } from "@/lib/scene/stage-store";
 import { stitchTiles } from "@/lib/scene/stitch";
 import type { Imagery } from "@/lib/places/provider";
-import { PALETTE } from "@/lib/scene-palette";
+import { PALETTE } from "@/lib/geometry/scene-palette";
 import { onPress } from "./pointer";
 
 type Props = {

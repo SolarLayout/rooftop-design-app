@@ -1,7 +1,7 @@
 // The engine's shadow outlines on the roof (plan/phase-06-plan.md, decision 9): the polygons /sun answered for
 // the roof surface, as rings at the roof's height, lifted over it and over the kept-clear areas, so that the
 // rendered shadows show inside them. Pure functions in the engine's metres.
-import type { XY, XYZ } from "./adapter";
+import type { XY, XYZ } from "../geometry/adapter";
 
 /** Over the roof, and over the kept-clear areas (2 cm and a little more each): 4 cm. */
 export const OUTLINE_LIFT = 0.04;

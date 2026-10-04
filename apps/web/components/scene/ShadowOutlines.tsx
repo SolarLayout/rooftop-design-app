@@ -3,9 +3,9 @@
 import { useMemo } from "react";
 import { BufferGeometry, Float32BufferAttribute } from "three";
 import { useResults, useView } from "@/components/shell/stores";
-import { toScene, type XY } from "@/lib/scene/adapter";
+import { toScene, type XY } from "@/lib/geometry/adapter";
 import { ringsOf } from "@/lib/scene/shadow-outlines";
-import { PALETTE } from "@/lib/scene-palette";
+import { PALETTE } from "@/lib/geometry/scene-palette";
 import { shadowOutlinesOf } from "@/lib/stores/results-store";
 import { lensOf, onTheRoofOf } from "@/lib/stores/view-store";
 
