@@ -30,13 +30,15 @@ prompt for Phase 11 is written (`plan/resume/014-phase-11-hardening.md`); the se
 ## In flight
 
 Session 14 (2026-10-04): the plan of Phase 11 written and scoped with the owner item by item (`plan/phase-11-plan.md`, "Scoped with the
-owner"; the deferred items in issues #73 to #77; Phase 12, deployment, filed). **Pull request 1, `feat/start`, in progress**: `bun start`
+owner"; the deferred items in issues #73 to #77; Phase 12, deployment, filed). **Pull request 1 is merged (#78)**: `bun start`
 (the start profile: the web app built once, 9 s, and served by `next start`, uvicorn without reload, on the dev ports; `--built` for any
 profile), `tools/proxy-drops.ts`, the drops of the rewrite found at their two causes and fixed (every answer of the API closes its
 connection; the drawn pages kept per project and day; the proxy's timeout 120 s), one log line per request with its time
-(`rooftop_api/timing.py`), the README. Measured: the handover group 204 s built and 227 s in dev mode with 0 drops (325 s and 40 drops
-before); the shell group 642 s and 0 drops. The test stack stays `next dev` (a built stack left running would serve stale code).
-Left for the pull request: the studio group's run, the fresh clone's check, `docs/checks.md` (done on the branch), the check, the pull request.
+(`rooftop_api/timing.py`), the README; a fresh clone's check green. Measured: the handover group 204 s built and 227 s in dev mode with 0
+drops (325 s and 40 drops before); the shell group 642 s and 0 drops; the studio group 952 s and 0 drops. The test stack stays `next dev`
+(a built stack left running would serve stale code). **In flight**: pull request 2 (`check/pictures-by-group`: the pictures by group, the
+kit on two sizes, Present's frames on desktop alone) built by an agent in a worktree from a brief; the board "Stage, Layers" drawn by
+another agent, to be shown to the owner before pull request 3 builds it.
 
 ## What the web app has today
 
