@@ -864,7 +864,8 @@ In code: `NotesDrawer`, and `NotesPanel` for what is seen of it; the notes are m
 - Where a note leads: module and layout to the Array lens, weather to Performance, the option to the Strings
   lens. A call that failed has "Try again".
 - An action of a note closes the drawer.
-- It comes and goes without motion in this phase.
+- It comes and goes in `duration-panel`, eased as a sheet is (`drawer-motion`): the panel slides in from the right on
+  tablet and desktop, from the bottom on phone, and the dim fades with it; under reduced motion it cuts.
 
 ## Project switcher, open
 The trigger is on `surface-2` with a border `line`, its chevron turned. Panel: 340 wide, `surface-1`, border
