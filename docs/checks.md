@@ -95,14 +95,13 @@ helpers and fixtures of `e2e`, the tools that start the stack, the lockfile, `.n
 
 The shell group runs whenever anything of the web changed (its suites open every workspace): it is the floor every web
 change pays, with the shell's own pictures alone (`shell*.png`: the project switcher, Saved on this device, Import a drawing)
-since each workspace's pictures moved into its group (Phase 11, pull request 2). The times below were measured on 2026-10-03,
-before that move, from the test times of a full run over 10 workers: kit about 2.5 minutes alone (then on three sizes), find 2,
-studio 12, performance 4, handover 1.5, shell 9.5; everything 31 minutes under the check's own load. Added by Phase 10 and
-measured the same day: home about 5 minutes (its suites edit the demo and run it), present 10 (its tests one after the other in
-their worker: each renders seconds of the tour frame by frame in software WebGL, and four at once starved each other past their
-time; since then those tests run on desktop alone); the shell group was 13 to 16 minutes with the pictures of every page. Each
-group now carries its own pictures and the shell its own alone: the times are to be renewed by the session that runs the groups
-after the move, and written here.
+since each workspace's pictures moved into its group (Phase 11, pull request 2). Measured on 2026-10-04 after that move, each
+group run alone, one after another, on this machine (the owner's `bun dev` running beside): kit 1.7 minutes (on phone and
+desktop), find 2.4, handover 5.0 (with its 17 pictures), home 3.7, present 4.6 (its frames on desktop alone; 10 before), performance
+6.0, shell 6.7 (13 to 16 before), studio 18.5 (with its 24 pictures; 12 before, without them). Before the move, measured on 2026-10-03 from a full run over 10 workers:
+kit about 2.5 minutes on three sizes, find 2, studio 12, performance 4, handover 1.5, shell 9.5; everything 31 minutes under the
+check's own load; home about 5, present 10. A Handover change pays handover and shell now, about 12 minutes, where it paid 11 to 16
+for the shell's pictures of everything; a Home change about 10.
 
 ## Rules the split makes necessary
 
