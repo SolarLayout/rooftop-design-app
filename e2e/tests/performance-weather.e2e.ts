@@ -312,6 +312,8 @@ test.describe("the assumptions (decisions 6 and 8)", () => {
     await expect(energyTile(page)).toContainText(fixed(chosenOf(after).energy.energy_mwh, 1), { timeout: RUN });
     expect(fixed(chosenOf(after).energy.energy_mwh, 1)).not.toBe(fixed(chosenOf(before).energy.energy_mwh, 1));
     await expect(uc).toHaveValue("25");
+    // Entered, the roof type's stands beside it, from the run's answer (the board "Weather and assumptions").
+    await expect(assumptions(page)).toContainText("29 by roof type", { timeout: RUN });
     await page.waitForTimeout(LONGER_THAN_THE_PAUSE);
     expect(paths.filter((asked) => asked.endsWith("/design"))).toHaveLength(1);
     expect(paths.filter((asked) => asked.endsWith("/layout"))).toEqual([]);

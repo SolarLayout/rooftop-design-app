@@ -4,7 +4,7 @@ import { ASSUMPTION_RANGES, assumptionsOf, LEVEL_RANGE, withAssumption, withLeve
 import { DOCUMENT } from "./test-fixtures";
 
 /** The run's sizing for the demo's flat roof: Uc the roof type's. */
-const SIZING = { uc: 29, uc_from: "roof type", cell_rise_c: 30, cell_rise_from: "roof type", t_min_c: 11.93, t_min_from: "weather", t_max_c: 39.26, t_max_from: "weather" } as DesignResult["sizing"];
+const SIZING = { uc: 29, uc_from: "roof type", uc_default: 29, cell_rise_c: 30, cell_rise_from: "roof type", t_min_c: 11.93, t_min_from: "weather", t_max_c: 39.26, t_max_from: "weather" } as DesignResult["sizing"];
 const SIZING_ENTERED = { ...SIZING, uc: 25, uc_from: "entered" } as DesignResult["sizing"];
 
 const withLosses = (change: Partial<Project["losses"]>): Project => ({ ...DOCUMENT, losses: { ...DOCUMENT.losses, ...change } });
@@ -57,10 +57,14 @@ describe("the assumptions (plan/phase-08-plan.md, decisions 6 and 8; functional-
     expect(field(assumptionsOf(DOCUMENT, null), "uc")).toMatchObject({ value: null, detail: null, reset: null });
   });
 
-  test("Uc entered holds its value and can be given back to the roof type's", () => {
+  test("Uc entered holds its value, says the roof type's beside it (the board \"Weather and assumptions\"), and can be given back", () => {
     const uc = field(assumptionsOf(withLosses({ uc: 25 }), SIZING_ENTERED), "uc");
 
-    expect(uc).toMatchObject({ value: 25, detail: null, reset: "Use the roof type's" });
+    expect(uc).toMatchObject({ value: 25, detail: "29 by roof type", reset: "Use the roof type's" });
+  });
+
+  test("Uc entered before the run answered says nothing of the roof type's yet", () => {
+    expect(field(assumptionsOf(withLosses({ uc: 25 }), null), "uc")).toMatchObject({ value: 25, detail: null, reset: "Use the roof type's" });
   });
 
   test("the levels are three fields of the document's, an empty one where it has fewer", () => {

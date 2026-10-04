@@ -1958,6 +1958,11 @@ export interface components {
              */
             uc: number;
             /**
+             * Uc Default
+             * @description The roof type's Uc, W/m2K: what holds while none is entered, and what a reset gives back
+             */
+            uc_default: number;
+            /**
              * Uc From
              * @enum {string}
              */

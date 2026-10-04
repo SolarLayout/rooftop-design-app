@@ -3288,6 +3288,11 @@
             "title": "Uc",
             "type": "number"
           },
+          "uc_default": {
+            "description": "The roof type's Uc, W/m2K: what holds while none is entered, and what a reset gives back",
+            "title": "Uc Default",
+            "type": "number"
+          },
           "uc_from": {
             "enum": [
               "roof type",
@@ -3305,7 +3310,8 @@
           "cell_rise_c",
           "cell_rise_from",
           "uc",
-          "uc_from"
+          "uc_from",
+          "uc_default"
         ],
         "title": "Sizing",
         "type": "object"
