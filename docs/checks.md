@@ -134,10 +134,18 @@ every cache; `--only=e2e` and `--skip=e2e` take steps by id.
 
 ## Known limits
 
-- The web app's rewrite in front of the API (`next dev`) drops a request now and then with a bare "Internal Server Error"
-  (socket hang up, ECONNRESET) while the API answered 200; seen on the report's pages. The stack's uvicorn keeps a
-  connection alive 75 s now, and an export is asked once more by the client; a test that reads an answer waits for the good
-  one. A production build and a proxy in front of it are untried (Phase 11).
+- The web app's rewrite in front of the API dropped a request now and then with a bare "Internal Server Error" (socket hang up,
+  ECONNRESET) while the API answered 200; mostly the report's pages, `/layout` too. Found and fixed in session 14 (2026-10-04,
+  `feat/start`), two causes: Next's proxy (dev and production alike) frees the upstream socket of a streamed answer and then tears it
+  down under the request that took it, so every answer of the API now closes its connection (`rooftop_api/connections.py`; nothing of
+  the API's is ever pooled); and under a group's load the report's pages queued behind the drawing lock to 33 s at the median while the
+  proxy gave up at 30 s, so the drawn pages are kept per project and day (`services/export.py`, `PAGES`) and the proxy waits 120 s
+  (`next.config.ts`, `proxyTimeout`). The handover group: 204 s and 0 drops where it had been 325 s and 40. The phone's report tests
+  can still need their retry on a cold API under the group's load (the first drawing of the pages behind the other exports' lock);
+  they pass on it and are listed as flaky. `bun tools/proxy-drops.ts --after-design` is the probe that found the first cause.
+- The test stack runs `next dev`, as before. Measured with the fixes (session 14): the handover group 227 s in dev mode and 204 s on the
+  production build (`bun dev:bg --profile test --built`, a build of 9 s), 0 drops in both. The build was not adopted for the check: a
+  built stack left running serves stale code after an edit, where `next dev` reloads it, and the gain is a tenth of a group's time.
 - The shared state reaches into the workspaces' `lib` folders (`components/shell/stores.tsx` imports
   `lib/handover/downloads-store.ts`, `lib/scene/sun-day.ts`, `lib/studio/play.ts`; `lib/flow/design-flow.ts` imports
   `lib/performance/weather-source.ts`, `lib/studio/sun-time.ts`; `lib/stores/results-store.ts` imports
