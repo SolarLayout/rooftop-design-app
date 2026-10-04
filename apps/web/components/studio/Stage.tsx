@@ -24,7 +24,6 @@ import { useSun } from "@/components/scene/use-sun";
 import { useStringsShown } from "@/components/scene/use-strings";
 import { Callout } from "./Callout";
 import { Handles } from "./Handles";
-import { InverterChips } from "./InverterChips";
 import { Labels } from "./Labels";
 import { ShadeLegend } from "./ShadeLegend";
 import { StringLegend } from "./StringLegend";
@@ -128,7 +127,6 @@ export function Stage({ lens, name, className }: Props) {
       </div>
       {cannotDraw ? null : <SunMarks stage={stage} />}
       {cannotDraw ? null : <Labels stage={stage} />}
-      {cannotDraw ? null : <InverterChips stage={stage} />}
       {cannotDraw ? null : <Callout stage={stage} />}
       {cannotDraw ? null : <Handles stage={stage} />}
       <div className="pointer-events-none absolute inset-x-4 top-4 z-stage-overlay flex flex-col gap-0.5 tablet:inset-x-5 desktop:top-5 desktop:left-6">
