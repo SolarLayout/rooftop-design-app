@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Studio } from "@/components/shell/Studio";
+import { Studio } from "@/components/studio/Studio";
 import { isLens, LENSES, type Lens } from "@/lib/routes";
 
 type Props = { params: Promise<{ lens: string }> };

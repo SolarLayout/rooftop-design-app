@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Sheet } from "@/components/ui/Sheet";
 import type { Stop } from "@/components/ui/sheet-stops";
 import { LENSES, type Lens } from "@/lib/routes";
-import { LensNav } from "./LensNav";
+import { LensNav } from "@/components/shell/LensNav";
 import { ArrayInspector } from "@/components/studio/ArrayInspector";
 import { RoofInspector } from "@/components/studio/RoofInspector";
 import { SunInspector } from "@/components/studio/SunInspector";
@@ -13,9 +13,9 @@ import { StringsInspector } from "@/components/studio/StringsInspector";
 import { useHistoryKeys } from "@/components/shell/use-history-keys";
 import { useSunKeys } from "@/components/studio/use-sun-keys";
 import { useSize } from "@/components/studio/use-size";
-import { useNotesOfTheShell } from "./Shell";
-import { useStores, useVitals } from "./stores";
-import { Vitals } from "./Vitals";
+import { useNotesOfTheShell } from "@/components/shell/Shell";
+import { useStores, useVitals } from "@/components/shell/stores";
+import { Vitals } from "@/components/shell/Vitals";
 
 type Props = { lens: Lens };
 
