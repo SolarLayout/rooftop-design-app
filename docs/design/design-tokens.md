@@ -126,10 +126,10 @@ The shape of a page is a token too, so that the paper has its height before the 
 | `--aspect-paper` | `297 / 210` | A4 landscape: the paper's skeleton while the pages come (`aspect-paper`) |
 | `--aspect-thumbnail` | `320 / 180` | The tile of a design card on Home: the kept thumbnail's own shape (`aspect-thumbnail`) |
 
-## 3D scene palette (TypeScript, `apps/web/lib/scene-palette.ts`)
+## 3D scene palette (TypeScript, `apps/web/lib/geometry/scene-palette.ts`)
 
 Not CSS: the 3D scene takes its colours from a TypeScript palette, because three.js cannot read a stylesheet.
-`apps/web/lib/scene-palette.test.ts` reads this table and the file and fails when they differ. Each value is
+`apps/web/lib/geometry/scene-palette.test.ts` reads this table and the file and fails when they differ. Each value is
 a colour as three.js takes it: a hex, or a hex with an alpha for what is see-through (`opacity`).
 
 | Name | Value | Use |
