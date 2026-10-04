@@ -42,8 +42,9 @@ find 2.4, handover 5.0, home 3.7, present 4.6 (10 before), performance 6.0, shel
 **#80 is merged**: the report's pages drawn once per key under asks at once (the handover group 214 s, none flaky); a pending save written
 when the page is left (`flush` on `pagehide`), the device test's race. **#81 is merged** (one roof at a time, up to 30,000 m², at every route; measured at the limit: 7,590 positions, a run of 61 s).
 **#82 is merged** (the base imports nothing of the groups' folders, held by the import walk; 52 files moved to `lib/places`,
-`lib/geometry`, `lib/flow/deliverables`, `lib/stores`, `components/shell`). **In flight**: the board "Stage, Layers" is approved (D57) and on `main`, and an agent builds pull request 3 from it (`feat/layers`); agents build pull request 6 (pytest on GitHub's two
-cores and the engine's profile for #76) and pull request 7 (the polish). **From now to the end of the phase no browser group runs here (D56)**:
+`lib/geometry`, `lib/flow/deliverables`, `lib/stores`, `components/shell`). **#83 is merged** (the BLAS threads pinned on GitHub; the engine's profile `plan/reference/api-profile.md` for #76: the demo's run peaks at
+3.5 GB of memory for 56 MB of result, the roof at the limit at 19 GB; the shading's hot spot a candidate explosion in `object_fraction`).
+**In flight**: the board "Stage, Layers" is approved (D57) and on `main`, and an agent builds pull request 3 from it (`feat/layers`); #84 (`feat/polish`, the seven items) waits for GitHub's check; an agent builds pull request 3 (`feat/layers`). **From now to the end of the phase no browser group runs here (D56)**:
 the pull requests say so, and the groups run once at the close when the owner says.
 
 ## What the web app has today
