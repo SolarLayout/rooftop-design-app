@@ -22,7 +22,7 @@ import { lensOf } from "@/lib/stores/view-store";
 import { DemoCard, type Demo } from "./DemoCard";
 import { HomeIllustration } from "./HomeIllustration";
 import { OnThisDevice } from "./OnThisDevice";
-import { OPEN_A_PROJECT, OpenProject } from "./OpenProject";
+import { OPEN_A_PROJECT, OpenProject } from "@/components/shell/OpenProject";
 
 /** The words of the approved board "Home". */
 export const HEADLINE = ["Find your roof.", "Design it in 3D."] as const;

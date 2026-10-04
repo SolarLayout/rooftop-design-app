@@ -10,7 +10,7 @@ import { withName } from "@/lib/flow/name-field";
 import { workspaceOf } from "@/lib/routes";
 import { latitudeOf, longitudeOf, nameOf } from "@/lib/stores/project-store";
 import { lensOf } from "@/lib/stores/view-store";
-import { OpenProject } from "@/components/home/OpenProject";
+import { OpenProject } from "@/components/shell/OpenProject";
 import { Toaster } from "@/components/ui/Toaster";
 import { ImportDrawing } from "./ImportDrawing";
 import { NotesDrawer } from "./NotesDrawer";
