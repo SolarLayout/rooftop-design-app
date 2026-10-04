@@ -10,7 +10,7 @@ import { Segmented } from "@/components/ui/Segmented";
 import { api, ApiError, type RoofFile } from "@/lib/api";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/places/esri";
 import { pathOfLens } from "@/lib/routes";
-import { base64OfDataUrl, heldWordsOf, importDrawing, kindOfDrawing } from "@/lib/studio/import-drawing";
+import { base64OfDataUrl, heldWordsOf, importDrawing, kindOfDrawing } from "@/lib/flow/import-drawing";
 import { useStores } from "./stores";
 
 type Props = { open: boolean; onClose: () => void };
