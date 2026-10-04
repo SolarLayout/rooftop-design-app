@@ -30,7 +30,7 @@ Always:
 | 8 | Performance | `phase-08-performance.md` | done (#58 to #61); how: `phase-08-plan.md` |
 | 9 | Handover and exports | `phase-09-handover.md` | done (#62, #64 to #66); how: `phase-09-plan.md` |
 | 10 | Home, projects on the device, Present mode | `phase-10-home-projects-present.md` | done (session 13, unattended: #67, #69, #71, #72); how: `phase-10-plan.md` |
-| 11 | Hardening for the tradeshow | `phase-11-hardening.md` | not started |
+| 11 | Hardening for the tradeshow | `phase-11-hardening.md` | in progress (session 14); how: `phase-11-plan.md`, scoped with the owner |
 
 ## Decisions taken (change here if overruled)
 
@@ -118,6 +118,7 @@ plan/
   phase-08-plan.md              how Phase 8 is built: what was found, the boards, four pull requests, the decisions, the risks
   phase-09-plan.md              how Phase 9 is built: what was found, the boards, four pull requests, the decisions, the risks
   phase-10-plan.md              how Phase 10 is built: what was found, the boards, four pull requests, the decisions, the risks
+  phase-11-plan.md              how Phase 11 is built: what was found, scoped with the owner item by item, the steps, the decisions, the risks
   reference/
     functional-inventory.md     every input, output, export and message of the desktop app
     r3f-notes.md                3D fixes already paid for in solar-mms-modeller

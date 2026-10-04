@@ -24,12 +24,18 @@ prompt for Phase 11 is written (`plan/resume/014-phase-11-hardening.md`); the se
 | 8 Performance | Done (session 12: #58 to #61) | What exists, what was decided, what was found: `phase-08-performance.md`, "As built". How it was built: `phase-08-plan.md` |
 | 9 Handover and exports | Done (session 13: #62, #64 to #66; #63 on the way) | What exists, what was decided, what was found: `phase-09-handover.md`, "As built". How it was built: `phase-09-plan.md` |
 | 10 Home, projects on the device, Present | Done (session 13, unattended: #67, #69, #71, #72; #68 and #70 for the check) | What exists, what was decided, what was found: `phase-10-home-projects-present.md`, "As built". How it was built: `phase-10-plan.md` |
-| 11 Hardening for the tradeshow | Not started | The resume prompt 014 waits for the owner |
+| 11 Hardening for the tradeshow | In progress (session 14) | Scoped with the owner: `phase-11-plan.md`, "Scoped with the owner"; issues #73 to #77 hold what was deferred |
 
 ## In flight
 
-Session 14 (2026-10-04) took the resume prompt 014 and wrote the plan of Phase 11 (`plan/phase-11-plan.md`: what was found, no boards, nine
-pull requests, 34 steps, 22 decisions, the risks, two questions, what done means). It waits for the owner's approval; nothing of the phase is built.
+Session 14 (2026-10-04): the plan of Phase 11 written (`plan/phase-11-plan.md`) and scoped with the owner item by item, in plain words
+(`plan/sessions/014/owner-messages.md`). What stands: `bun start` (a production-like local run, the test stack measured on the build, the
+API's timings logged, a fresh clone), the browser tests cheaper, the Layers button (a board first), the base's imports, a roof limit of
+30,000 m² with a pending save flushed and the API away and back, pytest on GitHub with the engine's profile, the polish. Deferred to
+issues #73 to #77 on the owner's decision: the audits and the guide, the journeys and the `e2e` workflow, Present's fixes, the API's
+performance for Lambda (a dedicated piece), the keyboard path and the browsers. The stand demos from live production
+(`rooftop.solarlayout.app`; staging `rooftop.staging.solarlayout.app`, sharing nothing; Vercel and most probably AWS Lambda), deployment a
+dedicated piece after this phase. Pull request 1 (`feat/start`) is next.
 
 ## What the web app has today
 
@@ -194,6 +200,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 | 10 | 2026-10-02 | `plan/sessions/010/record.md`, `plan/sessions/010/owner-messages.md` |
 | 11 | 2026-10-02 | `plan/sessions/011/record.md`, `plan/sessions/011/owner-messages.md` |
 | 12 | 2026-10-02 to 2026-10-03 | `plan/sessions/012/record.md`, `plan/sessions/012/owner-messages.md` |
+| 13 | 2026-10-03 | `plan/sessions/013/record.md`, `plan/sessions/013/owner-messages.md` |
 
 ## Closed, do not reopen
 

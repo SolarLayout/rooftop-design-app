@@ -2,8 +2,9 @@
 
 Written 2026-10-04 by session 14, before anything of the phase is built, as the work order asks
 (`plan/resume/014-phase-11-hardening.md`). Scope and acceptance: `plan/phase-11-hardening.md`. This file says how the phase is
-built, in which order, what is decided, what was found in the code, the API and the checks, and what done means. It waits for the
-owner's approval; the decisions below are proposals until then.
+built, in which order, what is decided, what was found in the code, the API and the checks, and what done means. Scoped with the
+owner on 2026-10-04, item by item (`plan/sessions/014/owner-messages.md`): the section "Scoped with the owner" says what stands and what
+went to an issue; the steps and decisions below are the plan as written and are read through that section.
 
 ## What was found at the start
 
@@ -63,38 +64,49 @@ owner's approval; the decisions below are proposals until then.
 - **The acceptance of the phase file** says "`bun check` green including the full e2e suite"; it was written before D55. The full suite
   runs once, at the close of the phase, when the owner says (decision 18).
 
+## Scoped with the owner, 2026-10-04
+
+Two facts came out of the walk-through and reshape the phase. **The stand demos from live production**, `rooftop.solarlayout.app`
+(staging `rooftop.staging.solarlayout.app`; the two share nothing): the UI on Vercel, the API most probably on AWS Lambda, in a dedicated
+piece of work after this phase, planned when we get there (its known constraints are in issue #76). So the offline demo is moot, the
+operator's guide is written once production exists, and the dry run is on production. **The owner tests the app end to end by hand
+first** and decides the fate of the audits and the browser journeys on what he finds.
+
+What stands, in order:
+
+| # | Pull request | Steps | In one line |
+|---|---|---|---|
+| 1 | `feat/start` | 1, 2, 4, 5 | `bun start`: the web app built once and served as production does, the API without reload, on the dev ports; the test stack measured on the same build (drops, time) and switched if it pays; one log line per request with its time; a fresh clone tried. No relay of our own (step 3 dropped: on Vercel the forwarding is Vercel's) |
+| 2 | `check/pictures-by-group` | 6 to 9 | The browser tests cheaper: each workspace's pictures in its group, the kit on two sizes, Present's frames on desktop alone |
+| 3 | the board, then `feat/layers` | 35 | The Layers button of the rail: a board drawn right after pull request 1 and shown to the owner; built once approved (decision 22 overruled by the owner: "Build it") |
+| 4 | `check/base-imports-nothing` | 10 to 12 | The base imports nothing of the groups' folders, held by a test; the fourteen moves |
+| 5 | `feat/resilience` | 20, 21, 23 (the flush alone), 24 | A roof over 30,000 m² refused in words that say what to do (decision 11 amended); a roof at the limit measured; a pending save written before the page is left; the API stopped and started again |
+| 6 | `check/pytest-on-two-cores` | 28, 29, 36 | The BLAS threads pinned and the pages drawn once, measured; the engine's profile for issue #76 |
+| 7 | `feat/polish` | 33 | The seven small items |
+| 8 | the close | 34 | "As built", the state, the record; the full browser suite once here when the owner says |
+
+What went to an issue, with the owner's reason:
+
+| Steps | What | Issue | Reason |
+|---|---|---|---|
+| 13 to 15 | The parity audit, the numbers audit, the operator's guide | #73 | The owner tests end to end by hand first; the guide once production exists |
+| 16 to 19 | The two journeys, the `e2e` workflow on Linux | #74 | Low value at this point; the fate of the browser tests decided on value against cost after his testing |
+| 25 to 27 | Present's first frame, the thumbnail's dashes, the soak's memory question | #75 | A recorded video of Present serves the stand for now |
+| (new) | The API lean in time and memory for Lambda | #76 | A dedicated piece of work, from the profile of step 36 |
+| 30 to 32 | The keyboard path, reduced motion, WebKit and Firefox | #77 | Not needed at the moment |
+| 22, 23 in part | The strings in the plan without WebGL; the words for a storage that is full | none | Decided by the session on value against probability: a stand machine has WebGL and will not fill 700 KB designs |
+
+Two steps are added: **35, the Layers button** (the board: a toggle in the rail of the stage between the imagery and the plain grid, in
+every lens, as the information architecture says; the state kept in the view store; a test of the toggle and a picture of each ground),
+and **36, the engine's profile** (the demo and a roof at the 30,000 m² limit: time by step of a design run, peak memory by endpoint, the
+hot spots and the gain each would give, as a table in `plan/reference/api-profile.md`, for issue #76).
+
 ## How the work goes
-
-No board is drawn for this phase (step 0 says why). Nine pull requests, the documents between them:
-
-1. `feat/stand`: the stand's profile of the stack on a production build and an API without reload; the test stack measured on the same
-   build; the proxy question settled by measurement; the API's timings in its log; a fresh clone tried. Steps 1 to 5. First, because
-   the drops reach `/layout` and the stand must not run `next dev`, and because the measurement decides what the check's stack is.
-2. `check/pictures-by-group`: the browser tests made lighter. Each workspace's pictures move from `screens.e2e.ts` into a suite of its
-   group; the baselines belong to their group by name; the kit on two sizes; Present's frame-by-frame tests on desktop alone. Steps 6
-   to 9. Every pull request after it pays the shell group.
-3. `check/base-imports-nothing`: a rule-test that the base imports nothing of the groups' folders, and the moves that make it pass.
-   Steps 10 to 12. Reaches every group: `bun check --skip=e2e`, then the studio, home, find and shell groups by hand (D55).
-4. **Documents**: the parity audit and the numbers audit, as tables the owner signs row by row; the operator's guide. Steps 13 to 15.
-   Early, so that the owner can sign while the rest is built; a row that fails becomes a step of pull request 6 or 9.
-5. `feat/journeys`: the stand's journey offline and the visitor's journey, on three sizes, in the shell group; the `e2e` workflow made to
-   run on Linux (the journeys and the smoke, without pictures). Steps 16 to 19.
-6. `feat/resilience`: a roof too large refused in words; 5,000 positions measured and kept usable; the strings in the plan without
-   WebGL; a storage that is full in words; the API stopped and started again. Steps 20 to 24.
-7. `feat/present-first-scene`: the outline alone at the start of the tour; the thumbnail without the dashes; the soak with the heap
-   settled. Steps 25 to 27.
-8. `check/pytest-on-two-cores`: the BLAS threads pinned on GitHub, the drawing tests sharing their pages; measured. Steps 28 and 29.
-9. `feat/keyboard-and-browsers`: the keyboard path through every screen as a suite; reduced motion checked; WebKit and Firefox by hand.
-   Steps 30 to 32.
-10. `feat/polish`: the small open items of `plan/STATE.md` that are Phase 11's, each a commit with its test. Step 33.
-11. The close: the full browser suite once with the owner's yes, "As built", the state, the record, the resume prompt for whatever the
-    owner wants next (the dry run on the hardware is his). Step 34.
 
 Each step one commit; a document change a commit of its own, never mixed with code (D26); a draft pull request after the first step,
 merged on the fast check and the groups the change reaches (D55), every changed picture looked at beside its board before the pull
 request opens. Agents build in worktrees from written briefs; the session runs the browser and makes the baselines. `plan/STATE.md`
-after each pull request. Pull requests 1 to 3 and the documents are this session's; the rest follow in the next sessions with the state
-carrying the place.
+after each pull request. The original order and the eleven pull requests of the first draft are kept in git (`0d6d740`).
 
 ## Step 0: the boards
 
@@ -163,13 +175,13 @@ it, it is drawn and approved first, as a pull request of its own after the phase
 | 2 | The kit is pictured and tested on phone and desktop; the tablet's kit pictures go. The screens of every workspace stay on three sizes | The kit's components lay out as on desktop at 834 but for the sheet, which the workspaces' tablet pictures show; a third of 2.5 minutes for every change to `components/ui` |
 | 3 | Software WebGL stays for the browser tests. Present's frame-by-frame tests run on desktop alone (the tour's logic has no size; the pictures of Present stay on two sizes). Hardware WebGL is not tried again in this phase: the trial of 2026-10-03 lost the satellite ground without a cause found, and the owner's steer was the core work | The present group from 10 minutes to about 5 (measured in step 8); the pictures stay what they are |
 | 4 | The base imports nothing of the groups' folders, held by the import walk; `app/**` is excepted (the pages are the workspaces' entry points). What two workspaces share moves to the base: the dialogs the switcher opens on every page (`OpenProject`, `ImportDrawing` is there already) to `components/shell`; the search and its logic (Find's, Home's and Import a drawing's) to `components/shell/Search.tsx` and `lib/places/`; the Studio's frame to `components/studio`; the helpers the stores and the flow need to `lib/stores` and `lib/flow`. Nothing is rewritten | `docs/checks.md`, known limits: a change to one of the eleven files runs its folder's groups and shell, not the suites of the workspaces that depend on it through the base; `plan/phase-04b-test-caching.md`, the open item |
-| 5 | The stand runs a production build: a third profile `stand` of `tools/dev.ts` (`bun stand`), `next build` once and `next start`, the API without reload, on the dev profile's ports (the two never run at once; `bun stand` refuses while `bun dev` runs), the weather downloads on. The dev profile stays `next dev` for the owner's work | A stand that compiles pages on the first visit, reloads on a file change and runs a proxy known to drop is a surprise in front of an audience; the production build is what Next is for |
+| 5 | `bun start` runs the app as production does on this machine: a third profile `start` of `tools/dev.ts`, `next build` once and `next start`, the API without reload, on the dev profile's ports (the two never run at once; `bun start` refuses while `bun dev` runs), the weather downloads on. The dev profile stays `next dev` for the owner's work. The stand itself demos from production (Vercel, Lambda); `bun start` is the laptop fallback and the local proof of the build (the owner, 2026-10-04) | A stand that compiles pages on the first visit, reloads on a file change and runs a proxy known to drop is a surprise in front of an audience; the production build is what Next is for |
 | 6 | The test stack is built, not `next dev`, when the measurement of step 2 says the drops are gone and the build's time is under what it saves in the groups; otherwise `next dev` stays and step 3 settles the proxy. The rule is written before the measurement so that the measurement decides, not the mood | The rewrite's drops are seen in `next dev` alone because nothing else was ever run; a build takes about a minute and a shell run saves its own waits |
-| 7 | A proxy in front of the API is built only if the production build still drops: a route handler of Next streaming the API's answer, no new dependency. The browser keeps talking to one origin (no CORS) | D4: a dependency is a decision; the one origin is a decision of Phase 1 |
+| 7 | No relay of our own, whatever step 2 measures: on Vercel the `/api/*` forwarding is Vercel's edge proxy, not the Node relay that drops locally, so a relay written here would serve the local run alone. If the build still drops locally, the three tries of the exports stay and the cause is written down (the owner, 2026-10-04; step 3 dropped) | D4: a dependency is a decision; the one origin is a decision of Phase 1 |
 | 8 | The API logs one line per request with its time in uvicorn's logger (a middleware in `rooftop_api`; the engine untouched); the design run's line carries the steps' times. No metrics service | The phase file: "API timings logged"; the stand's log is where the operator looks |
 | 9 | The journeys are two suites of the shell group, `journey-stand.e2e.ts` (the demo, offline: every request to a host that is not the stack refused) and `journey-visitor.e2e.ts` (the roof found, outlined, built, strung, run, exported), on three sizes. They are the end-to-end suite of the phase file | The shell group is the one that sees every workspace (as `device*.e2e.ts` does); a group of their own would run as often and cost the same |
 | 10 | The `e2e` workflow runs the journeys and the smoke on Linux, by hand as before (D20), without pictures: the suites that take pictures skip where the platform is not `darwin` and say so. The whole suite is never run on GitHub (D55). Baselines for Linux are not made | The phase file's "runs in CI" without a second set of 210 pictures to keep; the minutes cost money (D55) |
-| 11 | A roof whose outline is over 100,000 m² (10 hectares) is refused by the API in words at every route that takes an outline. The desktop allowed 2,000 m by 2,000 m (400 hectares) and would have taken minutes; the largest rooftops built are under 10 hectares | `/layout` without a limit took 29 s for 200 hectares (`plan/STATE.md`); a stand must never wait on a stray outline |
+| 11 | A roof whose outline is over 30,000 m² (about 3 MWp at the demo's density; 173 m square, or 300 m by 100 m; eight demo roofs) is refused by the API at every route that takes an outline, in words that say the area, the limit and what to do: "This outline covers 48,500 m². SolarLayout designs one roof at a time, up to 30,000 m² (about 3 MWp). For a larger site, outline each building as its own design." Shown where the outline is drawn, before Build, and for a file that carries such an outline. A single roof over 3 MWp is rare in practice; the multi-megawatt rooftop sites are many buildings; the run at the limit (about 6,500 positions) is measured in step 21 | The owner, 2026-10-04: realistic rooftop sizes, a polite refusal with the reason and what to do; the desktop's 400 hectares and the first draft's 10 were not rooftop numbers | `/layout` without a limit took 29 s for 200 hectares (`plan/STATE.md`); a stand must never wait on a stray outline |
 | 12 | 5,000 positions is measured, not guessed: a roof of 250 by 100 m on the demo's spacing, `/layout`, `/design`, the stage's frame with the machine's graphics, the Strings lens; what is over budget (a frame over 33 ms, a layout over 2 s) is fixed or written down with its cause and the owner's call | The phase file; one measurement is worth the plan's words |
 | 13 | A storage that is full says so in its own words with Save a copy in the note; the IndexedDB adapter's other failures keep the words of today | "Not saved" alone leaves the visitor with no way out; the file is the way out (D5) |
 | 14 | Present's first frame is the satellite with the accent outline alone: at a building share of 0 nothing of the building is drawn and the outline lies on the ground; the roof rises with the building. The ground stays the imagery (the board says its ground stands in for live imagery) | The board |
@@ -180,7 +192,7 @@ it, it is drawn and approved first, as a pull request of its own after the phase
 | 19 | WebKit and Firefox are run by hand against the test stack (`bun run e2e:browsers`: the smoke and the journeys), never in the check; the browsers are installed once by the owner. Safari on iPadOS and iOS and Edge are the dry run's on the hardware | The install needs the network; the check stays what it is; the devices are the owner's |
 | 20 | The parity and numbers audits are two documents under `plan/reference/`, one row per item, each with an empty "Signed" column for the owner, committed to `main` (D26); a row that fails becomes a step of a pull request of this phase, and the row says which | The phase file: "signed off by the owner, row by row" |
 | 21 | The operator's guide is one page in `docs/`, written for someone who has not seen the repo; "reset to the demo" is the deletion of the visitors' cards or the browser's clearing of the site's data, not a feature | One page; nothing to build or draw; the demo itself is never changed on the device (D32: it is kept as a new design at its first edit) |
-| 22 | The Layers button of the rail (the ground switched between the imagery and the plain grid) is not built in this phase unless the owner asks; it has no board. The question is put to him once | An open item since Phase 5 with no board and no ask; the imagery is there whenever the key is |
+| 22 | The Layers button of the rail (the ground switched between the imagery and the plain grid, in any lens) is built in this phase: a board first, shown to the owner right after pull request 1, then the toggle (step 35) | The owner, 2026-10-04: "Build it" (the first draft's default was to drop it) |
 
 ## Risks
 
@@ -197,18 +209,15 @@ it, it is drawn and approved first, as a pull request of its own after the phase
 
 ## Questions for the owner
 
-One at a time, after the plan:
-
-1. **The Layers button** of the rail (the ground switched between the imagery and the plain grid, from the information architecture):
-   build it in this phase with a board first, or drop it from the rail? Default if no answer: dropped from the rail, the item closed.
-2. **The stand's hardware**: which machine and browser is the stand's (a Mac with Chrome? an iPad?), so that the guide names it and the dry
-   run is planned. Default: a Mac with Chrome, the app served from the same machine.
+Both answered on 2026-10-04: the Layers button is built (decision 22); the stand demos from live production, `rooftop.solarlayout.app`, with
+staging at `rooftop.staging.solarlayout.app`, the two sharing nothing; the UI on Vercel, the API most probably on AWS Lambda, in a dedicated
+piece of work after this phase.
 
 ## Done means
 
-The acceptance of `plan/phase-11-hardening.md`, read with D55: the fast check green on every pull request and the whole browser suite green
-once at the close (decision 18); the parity and the numbers audits signed row by row by the owner (steps 13 and 14); the dry run on the
-hardware done by the owner with the operator's guide (step 15). And: the stand runs on a production build with a one-line start
-(`bun stand`); the stand's journey passes offline on three sizes; a roof too large is refused in words; 5,000 positions are measured and
-usable; the browser groups are lighter by the numbers written in `docs/checks.md`; the base imports nothing of the groups' folders; the
-`e2e` workflow has run green once; "As built" written.
+The pull requests of "Scoped with the owner" merged on the fast check and the groups they reach; the whole browser suite green once at the
+close, here, when the owner says (decision 18); `bun start` runs the app as production does with one command; the browser groups lighter by
+the numbers written in `docs/checks.md`; the base imports nothing of the groups' folders; a roof over 30,000 m² refused in words and a roof
+at the limit measured; the Layers button built to its approved board; the engine's profile written for issue #76; the seven items of polish
+done; "As built" written with the deviations and what was found. The audits, the journeys, Present's fixes, the keyboard path and the
+browsers wait in issues #73 to #77 on the owner's own end-to-end test; the dry run is on production, after the deployment piece.
