@@ -36,13 +36,18 @@ cd apps/api && uv sync
 cp apps/web/.env.example apps/web/.env.local   # then fill in; .env.local is never committed
 ```
 
-## The three commands
+## The four commands
 
 ```sh
 bun dev      # start web and API in this terminal; Ctrl+C stops both
-bun stop     # stop both, including leftovers of a crashed run
-bun check    # typecheck, eslint, ruff, import-linter, pytest, bun test, Playwright smoke test
+bun start    # the same as production runs it: the web app built once (10 s) and served by next start, the API without reload
+bun stop     # stop both, including leftovers of a crashed run (--profile start for the start stack)
+bun check    # typecheck, eslint, ruff, import-linter, pytest, bun test, the browser groups the change reaches
 ```
+
+`bun start` is for seeing the app as a visitor would (pages open at once, nothing recompiles) and as the laptop fallback of
+the stand; the stand itself demos from production (`plan/phase-12-deployment.md`). It uses the dev ports, so `bun dev` and
+`bun start` never run together: the second one says which is running and what to stop.
 
 `bun dev` prints two addresses when both answer, normally:
 
@@ -61,9 +66,13 @@ can be up at the same time.
 |---|---|---|---|---|---|
 | `dev` | `bun dev`, `bun dev:bg`, `bun stop`, `bun status` | web 4700, API 4701 | 4702/4703, 4704/4705, 4706/4707, 4708/4709 | `.dev/dev/` | `apps/web/.next` |
 | `test` | Playwright, and so `bun check`; agents | web 4710, API 4711 | 4712/4713, 4714/4715, 4716/4717, 4718/4719 | `.dev/test/` | `apps/web/.next-test` |
+| `start` | `bun start`, `bun stop --profile start`: the web app built and served as production does, the API without reload | the dev ports; never beside `dev` | the same | `.dev/start/` (the build's words in `build.log`) | `apps/web/.next-start` |
 
 - Choose the profile with `--profile test` (`bun dev:bg --profile test`, `bun stop --profile test`) or with
-  `ROOFTOP_PROFILE=test`. The flag wins. `bun stop --all` stops both. `bun status` always shows both.
+  `ROOFTOP_PROFILE=test`. The flag wins. `bun stop --all` stops every profile. `bun status` always shows them all.
+- `--built` runs any profile as `start` does (`bun dev:bg --profile test --built`): the web app built once into the
+  profile's own directory, `next start`, uvicorn without `--reload`. The rewrite's destination is read at build time, so
+  the pair of ports is chosen first and the build follows.
 - When another program holds a preferred port, the stack does not refuse: it names the program (pid and
   command), leaves it alone, and takes the next pair of which both ports are free. It refuses only when all
   five pairs of its range are taken, and then names every holder.
@@ -89,6 +98,7 @@ can be up at the same time.
 | `bun check --only=pytest,unit` | Runs some steps. Ids: `typecheck`, `eslint`, `ruff`, `imports`, `pytest`, `unit`, `e2e` |
 | `bun check --skip=e2e` | Runs everything but some steps |
 | `bun run build` | Production build of the web app, through turbo |
+| `bun tools/proxy-drops.ts` | Asks the web origin for the report's pages many times through the `/api` rewrite and counts the answers that were not 200; `--after-design` asks each one right after a design run, the sequence that found the proxy's drop (session 14) |
 
 ## When a port is taken
 
