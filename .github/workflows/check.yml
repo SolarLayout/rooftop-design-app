@@ -21,11 +21,6 @@ jobs:
       # pytest runs whole and untraced here: the task is cached whole by turbo, and testmon's data is
       # never kept on GitHub (plan/phase-04b-plan.md, decision 4).
       ROOFTOP_CHECK_SELECT: "0"
-      # The runner has two cores, and numpy's BLAS would start a thread per core for every computation: the
-      # threads thrash on them (plan/STATE.md, the item about pytest-xdist on the runner). One thread each.
-      OMP_NUM_THREADS: "1"
-      OPENBLAS_NUM_THREADS: "1"
-      MKL_NUM_THREADS: "1"
     steps:
       - uses: actions/checkout@v4
 
