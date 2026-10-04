@@ -18,6 +18,10 @@ const isDesktop = (projectName: string) => projectName === "desktop";
 const factsLanded = async (page: Page) => {
   await expect(page.getByTestId("deliverables").getByTestId("deliverable-facts").nth(1)).toContainText("strings of", { timeout: RUN });
 };
+// The report's row counts its pages, asked at the workspace's open (plan/phase-11-plan.md, step 33): a picture of the list waits for them.
+const pagesCounted = async (page: Page) => {
+  await expect(page.getByTestId("deliverables").getByTestId("deliverable-facts").first()).toContainText("pages", { timeout: RUN });
+};
 // The report's page 1 prints the day of the report, which is the browser's (plan/phase-09-plan.md, decision 2): the page's
 // clock is fixed before the page is opened, so that the picture does not move with the calendar.
 const DAY_OF_THE_REPORT = new Date("2026-10-03T09:00:00");
@@ -34,6 +38,7 @@ test("handover", async ({ page }, testInfo) => {
   await dayFixed(page);
   await page.goto("/handover");
   await factsLanded(page);
+  await pagesCounted(page);
   if (!isPhone(testInfo.project.name)) await reportLanded(page);
   await topBarSettled(page, testInfo.project.name);
 

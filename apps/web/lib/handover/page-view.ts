@@ -55,3 +55,10 @@ export function pageViewOf({ name, design, designStatus, failure, pages }: Asked
   if (decision) return { kind: "decision", rows, decision, failed: null, isDimmed: isOnItsWay };
   return { kind: "design", rows, decision: null, failed: null, isDimmed: isOnItsWay };
 }
+
+/**
+ * Whether the report's pages are wanted: as soon as the report's row is live, whatever item is open, so that the row
+ * counts its pages from the workspace's open (plan/phase-11-plan.md, step 33); not before the run has an option, when
+ * there are no pages to draw.
+ */
+export const arePagesWantedOf = (view: PageView): boolean => view.rows.some((row) => row.id === "report" && !row.waits);

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { pageViewOf } from "./page-view";
+import { arePagesWantedOf, pageViewOf } from "./page-view";
 import { BEFORE_A_VOLTAGE, DEMO } from "./test-fixtures";
 
 const UNREACHABLE = { code: "api_unreachable", message: "The server cannot be reached. Check the connection and try again." };
@@ -88,5 +88,18 @@ describe("a run that failed", () => {
 
     expect(view.kind).toBe("failed");
     expect(view.decision?.title).toBe("Choose a system voltage to size the strings");
+  });
+});
+
+describe("the report's pages, asked at the workspace's open (plan/phase-11-plan.md, step 33)", () => {
+  test("wanted as soon as the report's row is live, whatever item is open, so that the row counts its pages from the start", () => {
+    expect(arePagesWantedOf(pageViewOf(AT_REST))).toBe(true);
+    expect(arePagesWantedOf(pageViewOf({ ...AT_REST, designStatus: "running" }))).toBe(true);
+  });
+
+  test("not before the run has an option: there are no pages to draw", () => {
+    expect(arePagesWantedOf(pageViewOf({ ...AT_REST, design: null, designStatus: "running" }))).toBe(false);
+    expect(arePagesWantedOf(pageViewOf({ ...AT_REST, design: BEFORE_A_VOLTAGE }))).toBe(false);
+    expect(arePagesWantedOf(pageViewOf({ ...AT_REST, design: null, designStatus: "failed", failure: UNREACHABLE }))).toBe(false);
   });
 });
