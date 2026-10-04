@@ -15,6 +15,8 @@ import shapely
 from shapely.geometry import LineString, MultiPolygon, Point, Polygon, box
 from shapely.ops import unary_union
 
+from .errors import RoofTooLarge
+
 ROOF_TYPES = ("flat_tilted", "flat_ew", "sloped_flush")
 ROOF_TYPE_LABELS = {
     "flat_tilted": "Flat · tilted rows",
@@ -23,6 +25,8 @@ ROOF_TYPE_LABELS = {
 }
 OBSTACLE_KINDS = ("box", "cylinder", "wall", "tree", "building")
 PARAPET_THICKNESS_M = 0.2
+# One roof at a time: about 3 MWp at the demo's density, eight demo roofs (plan/phase-11-plan.md, D11).
+ROOF_AREA_LIMIT_M2 = 30_000.0
 
 
 @dataclass
@@ -147,6 +151,17 @@ class Roof:
                 if d < best_d - 1e-6:
                     best, best_d = az, d
         return round(best, 1)
+
+
+def require_roof_within_limit(outline: list[tuple[float, float]], field: str = "outline") -> None:
+    """Refuse an outline over ROOF_AREA_LIMIT_M2 with RoofTooLarge, naming *field* as the request's.
+
+    The area is the one the Roof gives the outline (its polygon, mended): a closed or a clockwise
+    outline is the same roof. A pure check: it does not touch the outline.
+    """
+    area = Polygon(outline).buffer(0).area
+    if area > ROOF_AREA_LIMIT_M2:
+        raise RoofTooLarge(area, ROOF_AREA_LIMIT_M2, field)
 
 
 def _largest(g) -> Polygon:
