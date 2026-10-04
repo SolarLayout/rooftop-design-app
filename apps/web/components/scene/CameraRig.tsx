@@ -6,9 +6,9 @@ import { useEffect, useMemo, useRef, type ComponentRef } from "react";
 import { OrthographicCamera as Orthographic, TOUCH, Vector3 } from "three";
 import { useView } from "@/components/shell/stores";
 import type { SceneXYZ } from "@/lib/geometry/adapter";
-import { distanceLimitsOf, nearAndFarOf, planZoomOf, presetPositionOf, zoomLimitsOf } from "@/lib/scene/camera";
+import { distanceLimitsOf, framedRadiusOf, nearAndFarOf, planZoomOf, presetPositionOf, zoomLimitsOf } from "@/lib/scene/camera";
 import { ABOVE_THE_ROOF, easeInOut, isSettled, offTheZenith, pathAt, settleShareOf } from "@/lib/scene/camera-move";
-import { cameraFromOf, cameraMoveOf, cameraOf, cameraRequestOf, northRequestOf } from "@/lib/stores/view-store";
+import { cameraFromOf, cameraMoveOf, cameraOf, cameraRequestOf, northRequestOf, showsSunPathOf } from "@/lib/stores/view-store";
 import { useSun } from "./use-sun";
 
 type Props = {
@@ -40,10 +40,13 @@ function fitPlan(camera: Orthographic, zoom: number): void {
  * that the camera stands south of what it looks at, keeping its distance and its height. A preset asked for
  * with a time to take (Present's tour, plan/phase-10-plan.md, decision 10) is reached along a path from the
  * preset before, eased, the camera chasing it in the frame loop with a time constant; the Studio's presets
- * stay cuts.
+ * stay cuts. What the presets frame is the roof; in the Sun lens with the sun path on it is the path's dome,
+ * so that the sun's marker stays on the canvas through the day (plan/phase-11-plan.md, step 33), and the
+ * camera frames again, as a cut, when the path comes or goes.
  */
 export function CameraRig({ radius }: Props) {
   const sun = useSun();
+  const framed = framedRadiusOf(radius, useView(showsSunPathOf));
   const camera = useThree((state) => state.camera);
   const get = useThree((state) => state.get);
   const invalidate = useThree((state) => state.invalidate);
@@ -60,14 +63,14 @@ export function CameraRig({ radius }: Props) {
   const isPlan = preset === "plan";
   const { near, far } = nearAndFarOf(radius);
   const limits = distanceLimitsOf(radius);
-  const zoom = zoomLimitsOf(planZoomOf(radius, size.width, size.height));
+  const zoom = zoomLimitsOf(planZoomOf(framed, size.width, size.height));
 
-  // The presets alone move the camera: the radius, the sun and the size of the moment are read, never followed.
+  // The presets alone move the camera, and what is framed: the sun and the size of the moment are read, never followed.
   useEffect(() => {
-    const to = presetPositionOf(preset, radius, sun);
+    const to = presetPositionOf(preset, framed, sun);
     // A move begins at the preset before, a stand straight above nudged off the zenith so that north is up; the plan's camera cannot move, it cuts.
     if (over > 0 && !(camera instanceof Orthographic)) {
-      const from = offTheZenith(presetPositionOf(fromPreset, radius, sun));
+      const from = offTheZenith(presetPositionOf(fromPreset, framed, sun));
       camera.position.set(from[0], from[1], from[2]);
       move.current = { from, to, over: over / 1000, elapsed: 0 };
     } else {
@@ -77,12 +80,12 @@ export function CameraRig({ radius }: Props) {
     camera.lookAt(0, 0, 0);
     if (camera instanceof Orthographic) {
       const { width, height } = get().size;
-      fitPlan(camera, planZoomOf(radius, width, height));
+      fitPlan(camera, planZoomOf(framed, width, height));
     }
     controls.current?.target.set(0, 0, 0);
     invalidate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [request, camera, get, invalidate]);
+  }, [request, framed, camera, get, invalidate]);
 
   // The move, frame by frame: the camera chases the eased point of the path, and asks for the next frame until it stands there.
   useFrame((state, delta) => {

@@ -1,10 +1,42 @@
 import { describe, expect, test } from "bun:test";
-import { distanceLimitsOf, nearAndFarOf, planZoomOf, presetPositionOf, zoomLimitsOf } from "./camera";
+import { PerspectiveCamera, Vector3 } from "three";
+import { toScene } from "../geometry/adapter";
+import { distanceLimitsOf, framedRadiusOf, nearAndFarOf, planZoomOf, presetPositionOf, zoomLimitsOf, type Sun } from "./camera";
+import { pixelOf } from "./projection";
+import { DOME, pointOnDomeOf } from "./sun-path";
 
 // Where the camera stands for each preset, from the roof's radius (plan decision 17, r3f-notes fixes 9
 // and 13). In three's metres: x east, y up, z south.
 
 const RADIUS = 49.24; // the demo roof
+const CENTRE = [45, 20] as const;
+
+/** The stage on desktop: 1440 less the rail of 72 and the inspector of 384, by 900 less the top bar of 56. */
+const DESKTOP = { width: 984, height: 844 };
+
+/** The sun of the demo's design day, 21 December at Pune: the day's extremes, the hour the Sun lens opens at, the window's end. */
+const DAY_355: Record<string, Sun> = {
+  sunrise: { elevationDeg: 0, azimuthDeg: 114.9 },
+  "10:30": { elevationDeg: 42.6, azimuthDeg: 151.5 },
+  noon: { elevationDeg: 48.03, azimuthDeg: 180 },
+  "16:00": { elevationDeg: 17.972, azimuthDeg: 236.642 },
+  sunset: { elevationDeg: 0, azimuthDeg: 245.1 },
+};
+
+/** Where a point of the sun path over the demo falls on a canvas, from the 3D preset framing `framed` metres about the roof's centre. */
+function pixelOfTheSun(sun: Sun, framed: number, { width, height }: { width: number; height: number }): [number, number] {
+  const camera = new PerspectiveCamera(45, width / height, 1, 1000);
+  const [x, y, z] = presetPositionOf("3d", framed, null);
+  camera.position.set(x, y, z);
+  camera.lookAt(0, 0, 0);
+  camera.updateMatrixWorld();
+  const [px, py, pz] = pointOnDomeOf(sun, CENTRE, RADIUS);
+  const [sx, sy, sz] = toScene([px - CENTRE[0], py - CENTRE[1], pz]);
+  const point = new Vector3(sx, sy, sz).project(camera);
+  return pixelOf([point.x, point.y], width, height);
+}
+
+const isOn = ([x, y]: readonly [number, number], { width, height }: { width: number; height: number }) => x >= 0 && x <= width && y >= 0 && y <= height;
 
 describe("the presets", () => {
   test("3D looks at the roof from the south-west, above it", () => {
@@ -40,6 +72,37 @@ describe("the presets", () => {
 
   test("without a sun the sun's eye is the 3D view", () => {
     expect(presetPositionOf("sun-eye", RADIUS, null)).toEqual(presetPositionOf("3d", RADIUS, null));
+  });
+});
+
+describe("what is framed (plan/phase-11-plan.md, step 33)", () => {
+  test("the roof, unless the sun path is drawn: then its dome, 1.3 times the roof", () => {
+    expect(framedRadiusOf(RADIUS, false)).toBe(RADIUS);
+    expect(framedRadiusOf(RADIUS, true)).toBe(RADIUS * DOME);
+  });
+
+  test("framing the roof alone, the demo's sun at 10:30 and at sunset fall off the desktop canvas: the fault of the open item", () => {
+    expect(isOn(pixelOfTheSun(DAY_355["10:30"]!, RADIUS, DESKTOP), DESKTOP)).toBe(false);
+    expect(isOn(pixelOfTheSun(DAY_355.sunset!, RADIUS, DESKTOP), DESKTOP)).toBe(false);
+  });
+
+  test.each(Object.keys(DAY_355))("framing the dome, the demo's sun at %s falls on the desktop canvas, clear of its edge by the marker's size", (hour) => {
+    const [x, y] = pixelOfTheSun(DAY_355[hour]!, framedRadiusOf(RADIUS, true), DESKTOP);
+    const margin = 20;
+
+    expect(x).toBeGreaterThanOrEqual(margin);
+    expect(x).toBeLessThanOrEqual(DESKTOP.width - margin);
+    expect(y).toBeGreaterThanOrEqual(margin);
+    expect(y).toBeLessThanOrEqual(DESKTOP.height - margin);
+  });
+
+  test("on tablet and phone too", () => {
+    for (const size of [
+      { width: 834, height: 508 },
+      { width: 390, height: 252 },
+    ]) {
+      for (const sun of Object.values(DAY_355)) expect(isOn(pixelOfTheSun(sun, framedRadiusOf(RADIUS, true), size), size)).toBe(true);
+    }
   });
 });
 
