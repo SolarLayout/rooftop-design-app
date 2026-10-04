@@ -4,7 +4,7 @@
 import { shown } from "../ui/number-entry";
 import type { CableRow, DesignOption, InverterPlace, LayoutReadouts, NoOptions } from "../../lib/api";
 import { calloutOfString } from "../../lib/scene/pick";
-import { categoryOf, numberOfString, seriesOf, type Colouring, type Wired } from "../../lib/scene/string-colours";
+import { categoryOf, numberOfString, seriesOf, type Colouring, type Wired } from "../../lib/stores/string-colours";
 import type { Lens } from "../../lib/routes";
 import { isLayoutUpdating, layoutFailureOf, readoutsOf, sunFailureOf, type ResultsState } from "../../lib/stores/results-store";
 

@@ -5,7 +5,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useResults, useView } from "@/components/shell/stores";
 import type { DesignOption, PVString } from "@/lib/api";
 import { shadeColoursOf } from "@/lib/scene/shade-colours";
-import { stringColoursOf, type Colouring } from "@/lib/scene/string-colours";
+import { stringColoursOf, type Colouring } from "@/lib/stores/string-colours";
 import { chosenOptionOf, layoutOf, stringsOnTheRoofOf } from "@/lib/stores/results-store";
 import { litStringsOf, stringsShownByOf } from "@/lib/stores/view-store";
 import { useShadeMapShown } from "./use-shade-map";

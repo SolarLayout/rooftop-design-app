@@ -2,7 +2,7 @@
 // (rooftop_core/plots.py, draw_sld), in its words, from the option's system, its MPPT loads and the equipment. A box per
 // inverter with its label and its words; per MPPT a block "4 × 29 mod" and a line "MPPT 1 · DC", or "MPPT 6 · not used";
 // the AC side: "AC", the ACDB, the meter, the grid. The blocks take the series colour of their MPPT as the Strings lens
-// colours the strings (lib/scene/string-colours.ts, categoryOf by "mppt": the MPPT's number within its inverter, the
+// colours the strings (lib/stores/string-colours.ts, categoryOf by "mppt": the MPPT's number within its inverter, the
 // seventh the first again). Pure; sld-layout.ts places it, SingleLineDiagram draws it.
 import { shown } from "../../components/ui/number-entry";
 import type { DesignOption, Equipment, Inverter, Module, PVString } from "../api";

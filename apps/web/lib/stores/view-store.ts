@@ -2,7 +2,7 @@
 // Nothing of it is a part of the design: it is not in the .rtd document.
 import { createStore } from "zustand/vanilla";
 import type { Lens } from "../routes";
-import type { Colouring } from "../scene/string-colours";
+import type { Colouring } from "./string-colours";
 import { sameObstacle, type Dragging } from "../scene/drag";
 import type { DraftObstacle } from "../geometry/obstacle-fields";
 

@@ -10,7 +10,7 @@ import type { DesignOption, Layout, Project } from "@/lib/api";
 import { calloutOf, type Callout as Words } from "@/lib/geometry/keepout";
 import { calloutOfObstacle } from "@/lib/geometry/obstacles";
 import { calloutOfModule, calloutOfRoof, calloutOfString } from "@/lib/scene/pick";
-import { categoryOf, seriesOf } from "@/lib/scene/string-colours";
+import { categoryOf, seriesOf } from "@/lib/stores/string-colours";
 import type { Swatch } from "@/lib/scene/string-legend";
 import { calloutPlaceOf, chipShiftOf } from "@/lib/scene/callout-place";
 import { cameraOf, labelsOf, type StageStore } from "@/lib/scene/stage-store";

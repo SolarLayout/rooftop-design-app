@@ -5,7 +5,7 @@ import { useStringsOfTheRun } from "@/components/scene/use-strings";
 import { classNames } from "@/components/ui/class-names";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { Segmented } from "@/components/ui/Segmented";
-import type { Colouring } from "@/lib/scene/string-colours";
+import type { Colouring } from "@/lib/stores/string-colours";
 import { stringLegendOf, type LegendEntry, type Swatch } from "@/lib/scene/string-legend";
 import { chosenOptionOf, layoutOf } from "@/lib/stores/results-store";
 import { stringColouringOf, stringsShownByOf } from "@/lib/stores/view-store";

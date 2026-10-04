@@ -9,7 +9,7 @@ import type { Selection } from "../stores/view-store";
 import type { XY, XYZ } from "../geometry/adapter";
 import type { Callout } from "../geometry/keepout";
 import type { HeightAt } from "../geometry/obstacles";
-import { numberOfString, type Wired } from "./string-colours";
+import { numberOfString, type Wired } from "../stores/string-colours";
 
 /** What a press of the pointer hit in the scene. A module is known by the instance of the instanced mesh. */
 export type Picked = { what: "roof" } | { what: "obstacle" | "keepout"; index: number } | { what: "module"; instanceId: number | undefined } | { what: "ground" };
