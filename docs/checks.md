@@ -43,7 +43,11 @@ left out (`--skip=e2e`); a push to `main` runs `--fresh`. There pytest runs whol
 in one process: the 730 tests take about eight minutes of a job allowed fifteen, and a job that hits its limit is cancelled
 before the cache is saved, so that the next run starts cold again. pytest-xdist was tried (#68) and taken out (#70): the
 runner's two cores are saturated by one process, two workers took the same eight minutes, and the test that times
-`/layout` ("well under a second") failed beside a worker.
+`/layout` ("well under a second") failed beside a worker. Since Phase 11 (pull request 6) the workflow pins numpy's BLAS threads
+to one (`OMP_NUM_THREADS`, `OPENBLAS_NUM_THREADS`, `MKL_NUM_THREADS`), so that the library's threads per computation do not
+thrash the two cores; its gain is read from the pytest step's time in the runs after it (decision 17 of the plan: what does not
+pay comes out). Drawing the demo's report pages once per pytest session was tried in the same pull request and taken out: the
+whole suite took 180 s before and 179 s after here, since each file drew them once already and the design behind them is shared.
 
 ## The browser tests in groups
 
