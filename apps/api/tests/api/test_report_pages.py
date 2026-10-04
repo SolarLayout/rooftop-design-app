@@ -46,6 +46,39 @@ def _page_count(pdf: bytes) -> int:
     return len(PdfReader(io.BytesIO(pdf)).pages)
 
 
+# ── kept once drawn ──────────────────────────────────────────────────────────
+def test_the_pages_of_a_project_and_a_day_are_drawn_once_and_then_kept(client, chosen, answered, monkeypatch):
+    from rooftop_api.services import export
+
+    drawn = []
+    monkeypatch.setattr(export.report, "report_pages", lambda *args: drawn.append(args) or [])
+
+    again = client.post(f"/export/report-pages?day={DAY}", json=chosen)
+
+    assert again.status_code == 200
+    assert again.json() == answered.json()
+    assert drawn == []
+
+
+def test_another_day_or_another_project_is_drawn_anew(client, chosen):
+    from rooftop_api.services import export
+
+    other_day = export.pages_key(schemas_project(chosen), date(2025, 1, 31))
+    other_project = export.pages_key(
+        schemas_project({**chosen, "name": "Another name"}), date.fromisoformat(DAY)
+    )
+    same = export.pages_key(schemas_project(chosen), date.fromisoformat(DAY))
+
+    assert len({same, other_day, other_project}) == 3
+    assert export.pages_key(schemas_project(chosen), date.fromisoformat(DAY)) == same
+
+
+def schemas_project(project: dict):
+    from rooftop_api import schemas
+
+    return schemas.Project.model_validate(project)
+
+
 # ── the answer ───────────────────────────────────────────────────────────────
 def test_the_pages_come_as_json_with_the_day_and_the_dpi(answered):
     assert answered.status_code == 200
