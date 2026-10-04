@@ -2,6 +2,7 @@
 project file, which is of the request alone; the zip of them all; and the pages of the report as images."""
 
 import base64
+import hashlib
 import io
 import re
 import threading
@@ -14,6 +15,7 @@ from urllib.parse import quote
 from rooftop_api import convert, schemas
 from rooftop_api.errors import UNPROCESSABLE, ApiError
 from rooftop_api.services import design as design_service
+from rooftop_core import memo
 from rooftop_core.export import files, report
 from rooftop_core.project import Design, Project
 
@@ -24,6 +26,13 @@ LONGEST_NAME = 80
 NOT_IN_A_FILE_NAME = re.compile(r'[\\/:*?"<>|\s\x00-\x1f\x7f]+')
 # matplotlib keeps the figure it draws on in one place for the whole process: one drawing at a time.
 DRAWING = threading.Lock()
+
+# The pages drawn, kept by project and day (plan/phase-11-plan.md, step 3): the same pages are asked for by
+# every visit to the report, and under the load of the browser tests 110 asks of the demo's pages in five
+# minutes queued behind the drawing lock to a median of 33 s (session 14, 2026-10-04). About 940 KB a set;
+# some 30 sets.
+PAGES_BYTES = 32_000_000
+PAGES = memo.Store(PAGES_BYTES, size_of=lambda pages: sum(len(page.png) for page in pages.pages))
 
 
 @dataclass(frozen=True)
@@ -106,9 +115,20 @@ KINDS: dict[str, Kind] = {**IN_THE_ZIP, ZIP: Kind("application/zip", ".zip", zip
 
 def report_pages(project: schemas.Project, day: date | None = None) -> schemas.ReportPages:
     """The pages of the report as PNGs, of the option the project has chosen, for *day* (the server's
-    today when None): the same drawing as the PDF of that day, page for page."""
-    design = _design_of(project)
+    today when None): the same drawing as the PDF of that day, page for page. Drawn once per project and
+    day, then kept (PAGES)."""
     printed = day or date.today()
+    return PAGES.get_or_make(pages_key(project, printed), lambda: _drawn_pages(project, printed))
+
+
+def pages_key(project: schemas.Project, day: date) -> str:
+    """The pages depend on the whole project, the day printed and the dpi, and on nothing else."""
+    digest = hashlib.sha256(project.model_dump_json().encode()).hexdigest()
+    return f"{digest}:{day.isoformat()}:{PAGE_DPI}"
+
+
+def _drawn_pages(project: schemas.Project, printed: date) -> schemas.ReportPages:
+    design = _design_of(project)
     with DRAWING:
         pages = [_page_image(page) for page in report.report_pages(design, printed)]
     return schemas.ReportPages(day=printed, dpi=PAGE_DPI, pages=pages)

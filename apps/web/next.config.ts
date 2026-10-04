@@ -35,6 +35,12 @@ const nextConfig: NextConfig = {
 
   distDir: distDir(),
 
+  // The rewrite's proxy gives an answer 120 s, not Next's 30: under the load of the browser tests the report's pages
+  // took 33 s at the median and 75 s at most at the API (serial drawing), and the proxy's timeout came back as a bare
+  // "Internal Server Error" (socket hang up) while the API answered 200 (session 14, 2026-10-04). The browser tests
+  // wait 90 s for such an answer; a design run of a roof at the limit of 30,000 m² is well under this too.
+  experimental: { proxyTimeout: 120_000 },
+
   async rewrites() {
     return [{ source: "/api/:path*", destination: `${API_ORIGIN}/:path*` }];
   },

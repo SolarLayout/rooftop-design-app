@@ -1,12 +1,17 @@
 // Profiles of the stack. Each has its own ports, pid file, logs and Next build directory, so the
 // developer's `bun dev` and the tests (or an agent) can run at the same time without meeting.
 //
-//   dev   web 4700, api 4701, then 4702/4703 ... 4708/4709    .dev/dev/    .next
-//   test  web 4710, api 4711, then 4712/4713 ... 4718/4719    .dev/test/   .next-test
+//   dev    web 4700, api 4701, then 4702/4703 ... 4708/4709    .dev/dev/     .next         next dev, uvicorn --reload
+//   test   web 4710, api 4711, then 4712/4713 ... 4718/4719    .dev/test/    .next-test    the same, for the tests and agents
+//   start  the dev ports                                       .dev/start/   .next-start   next build then next start, uvicorn without reload
+//
+// `start` runs the app as production does, on this machine (plan/phase-11-plan.md, decision 5): the laptop fallback of the
+// stand and the local proof of the build. It shares the dev range, so the two never run at once; tools/dev.ts refuses the
+// second. `--built` asks the same of any profile (the test stack is measured on the build that way).
 //
 // Everything here is a pure function of its arguments; tools/dev.ts does the looking and the starting.
 
-export type ProfileName = "dev" | "test";
+export type ProfileName = "dev" | "test" | "start";
 export type Pair = { web: number; api: number };
 
 export type Profile = {
@@ -15,13 +20,16 @@ export type Profile = {
   first: number;
   /** Next's build directory, relative to apps/web. One per profile: Next locks it while running. */
   distDir: string;
+  /** `dev`: next dev and uvicorn reloading on a change; `built`: next build then next start, uvicorn without reload. */
+  mode: "dev" | "built";
 };
 
 export const PAIRS_PER_PROFILE = 5;
 
 export const PROFILES: Record<ProfileName, Profile> = {
-  dev: { name: "dev", first: 4700, distDir: ".next" },
-  test: { name: "test", first: 4710, distDir: ".next-test" },
+  dev: { name: "dev", first: 4700, distDir: ".next", mode: "dev" },
+  test: { name: "test", first: 4710, distDir: ".next-test", mode: "dev" },
+  start: { name: "start", first: 4700, distDir: ".next-start", mode: "built" },
 };
 
 export const PROFILE_NAMES = Object.keys(PROFILES) as ProfileName[];
@@ -39,6 +47,16 @@ export function pairsOf(profile: Profile): Pair[] {
 
 export function rangeOf(profile: Profile): { first: number; last: number } {
   return { first: profile.first, last: profile.first + 2 * PAIRS_PER_PROFILE - 1 };
+}
+
+/** The other profiles on the same ports (dev and start): only one of them can run at a time. */
+export function rangeMatesOf(profile: Profile): Profile[] {
+  return PROFILE_NAMES.map((name) => PROFILES[name]).filter((other) => other.name !== profile.name && other.first === profile.first);
+}
+
+/** Whether the stack is built and served as production does: the profile's own mode, or `--built` asked for it. */
+export function isBuilt(profile: Profile, args: readonly string[]): boolean {
+  return profile.mode === "built" || args.includes("--built");
 }
 
 /** Whether the port serves the web app or the API in its pair; null outside the profile's range. */
@@ -88,15 +106,15 @@ export function urlsOf(pair: Pair): { web: string; api: string; apiHealth: strin
 }
 
 /**
- * The note about the satellite map, or null when none is needed. Only the dev profile shows a map to
+ * The note about the satellite map, or null when none is needed. Only the dev and start profiles show a map to
  * a person; tests never touch the network.
  */
 export function mapKeyNote(profile: Profile, webPort: number): string | null {
-  if (profile.name !== "dev" || webPort === MAP_KEY_WEB_PORT) return null;
+  if (profile.name === "test" || webPort === MAP_KEY_WEB_PORT) return null;
   return [
     `Note: the web app is on port ${webPort}, not ${MAP_KEY_WEB_PORT}. The Esri key only accepts`,
     `http://localhost:${MAP_KEY_WEB_PORT} and http://127.0.0.1:${MAP_KEY_WEB_PORT}, so the satellite map will be refused on`,
-    `this port until port ${MAP_KEY_WEB_PORT} is free again (then \`bun stop\` and \`bun dev\`), or until`,
+    `this port until port ${MAP_KEY_WEB_PORT} is free again (then \`bun stop --profile ${profile.name}\` and start again), or until`,
     `http://localhost:${webPort} is added to the key's referrers in the Esri portal.`,
   ].join("\n");
 }

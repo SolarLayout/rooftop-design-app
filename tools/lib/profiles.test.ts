@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { apiEnvOf, choosePair, mapKeyNote, pairsOf, PROFILES, rangeOf, roleOf, selectProfiles, urlsOf } from "./profiles.ts";
+import { apiEnvOf, choosePair, isBuilt, mapKeyNote, pairsOf, PROFILES, rangeMatesOf, rangeOf, roleOf, selectProfiles, urlsOf } from "./profiles.ts";
 
 const { dev, test: testProfile } = PROFILES;
 const busy = (...ports: number[]) => new Set(ports);
@@ -151,7 +151,7 @@ describe("selectProfiles", () => {
   });
 
   test("--all is every profile", () => {
-    expect(selectProfiles(["--all"], {})).toEqual({ ok: true, names: ["dev", "test"] });
+    expect(selectProfiles(["--all"], {})).toEqual({ ok: true, names: ["dev", "test", "start"] });
   });
 
   test("an unknown or missing name is an error that lists the profiles", () => {
@@ -160,5 +160,46 @@ describe("selectProfiles", () => {
     expect(!unknown.ok && unknown.error).toContain("dev, test");
     expect(selectProfiles(["--profile"], {}).ok).toBe(false);
     expect(selectProfiles([], { ROOFTOP_PROFILE: "staging" }).ok).toBe(false);
+  });
+});
+
+describe("the start profile: the app as production runs it, on the dev ports", () => {
+  const { start } = PROFILES;
+
+  test("start shares the dev range, builds into its own directory, and is the one profile that runs a build", () => {
+    expect(start.first).toBe(4700);
+    expect(rangeOf(start)).toEqual(rangeOf(dev));
+    expect(start.distDir).toBe(".next-start");
+    expect(start.mode).toBe("built");
+    expect(dev.mode).toBe("dev");
+    expect(testProfile.mode).toBe("dev");
+  });
+
+  test("dev and start are each other's range mates; test has none", () => {
+    expect(rangeMatesOf(dev).map((profile) => profile.name)).toEqual(["start"]);
+    expect(rangeMatesOf(start).map((profile) => profile.name)).toEqual(["dev"]);
+    expect(rangeMatesOf(testProfile)).toEqual([]);
+  });
+
+  test("start is selected by name and stopped by --all with the others", () => {
+    expect(selectProfiles(["--profile", "start"], {})).toEqual({ ok: true, names: ["start"] });
+    expect(selectProfiles(["--all"], {})).toEqual({ ok: true, names: ["dev", "test", "start"] });
+  });
+
+  test("a start stack off port 4700 gets the map key's note, as the dev stack does; the test stack never", () => {
+    expect(mapKeyNote(start, 4700)).toBeNull();
+    expect(mapKeyNote(start, 4702)).toContain("4702");
+    expect(mapKeyNote(testProfile, 4712)).toBeNull();
+  });
+
+  test("the start stack downloads weather, as the dev stack does", () => {
+    expect(apiEnvOf(start)).toEqual({});
+  });
+
+  test("--built asks for the build of any profile; a profile that is built already needs no flag", () => {
+    expect(isBuilt(dev, ["--built"])).toBe(true);
+    expect(isBuilt(testProfile, ["--detach", "--built"])).toBe(true);
+    expect(isBuilt(testProfile, ["--detach"])).toBe(false);
+    expect(isBuilt(start, [])).toBe(true);
   });
 });

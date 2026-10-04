@@ -6,10 +6,13 @@
 //   bun stop                    stop the dev profile, including leftovers of a crashed run
 //   bun stop --profile test     stop the test profile
 //   bun stop --all              stop both
-//   bun status                  show both profiles
+//   bun status                  show every profile
+//   bun start                   build the web app once and run it as production does (next start, uvicorn without
+//                               reload) on the dev ports: the start profile. Refused while the dev stack runs
+//   bun dev:bg --profile test --built   the same build for the test stack, to measure the browser tests on it
 //
-// Profiles (tools/lib/profiles.ts): dev prefers web 4700 and api 4701, test prefers 4710 and 4711.
-// When another program holds a preferred port, the next free pair of the profile's range is taken.
+// Profiles (tools/lib/profiles.ts): dev prefers web 4700 and api 4701, test prefers 4710 and 4711; start shares the
+// dev ports. When another program holds a preferred port, the next free pair of the profile's range is taken.
 // Only processes of this repo's stack are ever stopped. Another program on a port is named and left alone.
 
 import { spawn, spawnSync, type ChildProcess } from "node:child_process";
@@ -30,12 +33,15 @@ import {
   type PortHolder,
   type Service,
 } from "./lib/ports.ts";
+import { apiCommand, webBuildCommand, webCommand } from "./lib/commands.ts";
 import {
   apiEnvOf,
   choosePair,
+  isBuilt,
   mapKeyNote,
   pairsOf,
   PROFILES,
+  rangeMatesOf,
   rangeOf,
   selectProfiles,
   urlsOf,
@@ -60,6 +66,8 @@ type PidFile = {
   version: 2;
   profile: ProfileName;
   mode: "foreground" | "detached";
+  /** Built and served as production does (next build, next start, uvicorn without reload), or next dev. */
+  built: boolean;
   createdAt: string;
   ports: Pair;
   urls: { web: string; api: string };
@@ -77,11 +85,12 @@ const here = (path: string) => relative(REPO_ROOT, path);
 // ---------------------------------------------------------------------------------------------
 // Where a profile keeps its files
 
-function filesOf(profile: Profile): { directory: string; pidFile: string; log: Record<Service, string> } {
+function filesOf(profile: Profile): { directory: string; pidFile: string; buildLog: string; log: Record<Service, string> } {
   const directory = resolve(DEV_DIR, profile.name);
   return {
     directory,
     pidFile: resolve(directory, "pids.json"),
+    buildLog: resolve(directory, "build.log"),
     log: { web: resolve(directory, "web.log"), api: resolve(directory, "api.log") },
   };
 }
@@ -90,6 +99,7 @@ function filesOf(profile: Profile): { directory: string; pidFile: string; log: R
 const LEGACY_FILES = ["pids.json", "web.log", "api.log"].map((name) => resolve(DEV_DIR, name));
 
 const stopCommand = (profile: Profile) => (profile.name === "dev" ? "bun stop" : `bun stop --profile ${profile.name}`);
+const startCommand = (profile: Profile) => (profile.name === "start" ? "bun start" : profile.name === "dev" ? "bun dev" : `bun dev:bg --profile ${profile.name}`);
 
 // ---------------------------------------------------------------------------------------------
 // Ports
@@ -322,6 +332,13 @@ async function status(): Promise<number> {
     say("");
     say(`${profile.name} profile  (ports ${first} to ${last}, prefers web ${preferred.web} and api ${preferred.api})`);
 
+    // dev and start share their ports: what runs there is the other's, said once under its own heading.
+    const mate = runningRangeMate(profile);
+    if (mate) {
+      say(`  not running; the ${mate.mate.name} stack holds ports ${mate.file.ports.web} and ${mate.file.ports.api} (its heading says more)`);
+      continue;
+    }
+
     const states = scan(profile);
     const ours = states.filter((state) => state.ours.length > 0);
     if (ours.length === 0) say("  not running");
@@ -350,7 +367,7 @@ async function status(): Promise<number> {
       const live = file.services.filter((entry) => stillThatProcess(entry.pid, entry.startedAt));
       const ports = file.ports ? `web ${file.ports.web}, api ${file.ports.api}, ` : "";
       say(
-        `  pid file: ${here(filesOf(profile).pidFile)}, ${ports}${file.mode}, started ${file.createdAt}, ` +
+        `  pid file: ${here(filesOf(profile).pidFile)}, ${ports}${file.mode}${file.built ? ", built" : ""}, started ${file.createdAt}, ` +
           `${live.length} of ${file.services.length} processes alive`,
       );
     } else {
@@ -397,35 +414,61 @@ function prefixLines(child: Child, stream: NodeJS.ReadableStream | null, file: N
   });
 }
 
-function launch(service: Service, profile: Profile, pair: Pair, node: ResolvedNode, detach: boolean): Child {
-  const urls = urlsOf(pair);
-  const log = filesOf(profile).log[service];
+/** What both halves and the build are told: where /api/* goes and where Next builds (read by apps/web/next.config.ts). */
+function envOf(profile: Profile, pair: Pair, node: ResolvedNode, detach: boolean): NodeJS.ProcessEnv {
   const env: NodeJS.ProcessEnv = {
     ...envWithNode(node),
     NEXT_TELEMETRY_DISABLED: "1",
     PYTHONUNBUFFERED: "1",
-    // Read by apps/web/next.config.ts: where /api/* goes, and where Next builds.
     ROOFTOP_PROFILE: profile.name,
     ROOFTOP_WEB_PORT: String(pair.web),
     ROOFTOP_API_PORT: String(pair.api),
     ROOFTOP_DIST_DIR: profile.distDir,
-    PORT: String(pair[service]),
-    ...(service === "api" ? apiEnvOf(profile) : {}),
   };
   delete env.VIRTUAL_ENV;
   if (!detach && useColour) env.FORCE_COLOR = "1";
+  return env;
+}
+
+/**
+ * Builds the web app for the pair (the rewrite's destination is read at build time), into the profile's own
+ * directory; the build's words go to the terminal in the foreground and to build.log in the background. Null
+ * when it built; the reason otherwise.
+ */
+function buildWeb(profile: Profile, pair: Pair, node: ResolvedNode, detach: boolean): string | null {
+  const files = filesOf(profile);
+  const [command, args] = webBuildCommand(node.path, nextBin() ?? "next");
+  const began = Date.now();
+  say(`Building the web app into apps/web/${profile.distDir}${detach ? ` (the words in ${here(files.buildLog)})` : ""} ...`);
+  const result = detach
+    ? (() => {
+        const fd = openSync(files.buildLog, "w");
+        try {
+          return spawnSync(command, args, { cwd: WEB_DIR, env: envOf(profile, pair, node, detach), stdio: ["ignore", fd, fd] });
+        } finally {
+          closeSync(fd);
+        }
+      })()
+    : spawnSync(command, args, { cwd: WEB_DIR, env: envOf(profile, pair, node, detach), stdio: "inherit" });
+  if (result.status === 0) {
+    say(`Built in ${((Date.now() - began) / 1000).toFixed(0)} s.`);
+    return null;
+  }
+  const tail = detach ? logTail(files.buildLog) : "";
+  return `the build of the web app failed (exit code ${result.status ?? "none"}); nothing was started.${tail ? `\nLast lines of ${here(files.buildLog)}:\n${tail}` : ""}`;
+}
+
+function launch(service: Service, profile: Profile, pair: Pair, node: ResolvedNode, detach: boolean, built: boolean): Child {
+  const urls = urlsOf(pair);
+  const log = filesOf(profile).log[service];
+  const env: NodeJS.ProcessEnv = {
+    ...envOf(profile, pair, node, detach),
+    PORT: String(pair[service]),
+    ...(service === "api" ? apiEnvOf(profile) : {}),
+  };
 
   const [command, args, cwd] =
-    service === "web"
-      ? ([node.path, [nextBin() ?? "next", "dev", "-p", String(pair.web)], WEB_DIR] as const)
-      : ([
-          "uv",
-          // A keep-alive well past the proxy's: uvicorn's 5 s closed idle connections just as the web app's rewrite
-          // reused them, and the browser got the proxy's "Internal Server Error" (socket hang up, ECONNRESET) now and
-          // then for an answer the API had given with 200. The proxy drops its idle sockets first now.
-          ["run", "uvicorn", "rooftop_api.main:app", "--host", "127.0.0.1", "--port", String(pair.api), "--reload", "--reload-dir", "src", "--timeout-keep-alive", "75"],
-          API_DIR,
-        ] as const);
+    service === "web" ? ([...webCommand(node.path, nextBin() ?? "next", pair, built), WEB_DIR] as const) : ([...apiCommand(pair, built), API_DIR] as const);
 
   let child: ChildProcess;
   if (detach) {
@@ -499,9 +542,29 @@ function printUrls(profile: Profile, pair: Pair): void {
   }
 }
 
-async function start(profile: Profile, detach: boolean): Promise<number> {
+/** The range mate's stack that is running or starting (dev while start is asked, and the other way round), or null. */
+function runningRangeMate(profile: Profile): { mate: Profile; file: PidFile } | null {
+  for (const mate of rangeMatesOf(profile)) {
+    const file = readPidFile(mate);
+    if (file && file.services.some((entry) => stillThatProcess(entry.pid, entry.startedAt))) return { mate, file };
+  }
+  return null;
+}
+
+async function start(profile: Profile, detach: boolean, built: boolean): Promise<number> {
   const name = `${profile.name} stack`;
   const { first, last } = rangeOf(profile);
+
+  // 0. The other profile on these ports (dev and start share them): one of them at a time, and said by name.
+  const mate = runningRangeMate(profile);
+  if (mate) {
+    complain(
+      `The ${mate.mate.name} stack is running on ports ${mate.file.ports.web} and ${mate.file.ports.api}, which the ${name} shares. ` +
+        `Run \`${stopCommand(mate.mate)}\` first, then \`${startCommand(profile)}\` again.`,
+    );
+    return 1;
+  }
+
   const states = scan(profile);
 
   // 1. Our own stack of this profile, or what is left of it.
@@ -560,14 +623,22 @@ async function start(profile: Profile, detach: boolean): Promise<number> {
   const files = filesOf(profile);
   mkdirSync(files.directory, { recursive: true });
   say(`${DIM}Node ${node.version} at ${node.path}${RESET}`);
-  say(`Starting the ${name}: web on ${pair.web}, api on ${pair.api}${detach ? ", in the background" : ""}.`);
+  if (built) {
+    const failed = buildWeb(profile, pair, node, detach);
+    if (failed) {
+      complain(`The ${name} did not come up: ${failed}`);
+      return 1;
+    }
+  }
+  say(`Starting the ${name}: web on ${pair.web}, api on ${pair.api}${built ? ", as production runs it" : ""}${detach ? ", in the background" : ""}.`);
 
-  const children = ORDER.map((service) => launch(service, profile, pair, node, detach));
+  const children = ORDER.map((service) => launch(service, profile, pair, node, detach, built));
   const urls = urlsOf(pair);
   writePidFile(profile, {
     version: 2,
     profile: profile.name,
     mode: detach ? "detached" : "foreground",
+    built,
     createdAt: new Date().toISOString(),
     ports: pair,
     urls: { web: urls.web, api: urls.api },
@@ -647,18 +718,20 @@ async function start(profile: Profile, detach: boolean): Promise<number> {
 
 // ---------------------------------------------------------------------------------------------
 
-const USAGE = `Usage: bun tools/dev.ts <start [--detach] | stop [--all] | status> [--profile dev|test]
+const USAGE = `Usage: bun tools/dev.ts <start [--detach] [--built] | stop [--all] | status> [--profile dev|test|start]
 
   bun dev                     start the dev profile (web 4700, api 4701) in this terminal
   bun dev:bg                  start it in the background and return when it answers
   bun dev:bg --profile test   the same for the test profile (web 4710, api 4711)
+  bun start                   build the web app once and run it as production does, on the dev ports (the start profile)
   bun stop                    stop the dev profile
-  bun stop --profile test     stop the test profile
-  bun stop --all              stop both
-  bun status                  show both profiles
+  bun stop --profile test     stop the test profile; --profile start the start profile
+  bun stop --all              stop every profile
+  bun status                  show every profile
 
-The profile can also be set with ROOFTOP_PROFILE. When another program holds a port, the next free
-pair in the profile's range of ten ports is used.`;
+--built builds the web app and runs it as production does (next build, next start, uvicorn without reload) for any
+profile; the start profile always does. The profile can also be set with ROOFTOP_PROFILE. When another program holds a
+port, the next free pair in the profile's range of ten ports is used; dev and start share one range and never run together.`;
 
 async function main(): Promise<number> {
   const [command, ...flags] = process.argv.slice(2);
@@ -680,7 +753,7 @@ async function main(): Promise<number> {
         complain("Start one profile at a time: --all only goes with stop.");
         return 2;
       }
-      return start(profiles[0] as Profile, flags.includes("--detach"));
+      return start(profiles[0] as Profile, flags.includes("--detach"), isBuilt(profiles[0] as Profile, flags));
     case "stop":
       return stop(profiles);
     case "status":
