@@ -115,3 +115,7 @@ Build it
 
 due to theremely slow progress - primarily due to e2e tests - we will not run any e2e tests locally for now. only fast lane would be run. this is
 in effect till the whole of Phase 11 is done
+
+## 26. The board "Stage, Layers"
+
+board approved
