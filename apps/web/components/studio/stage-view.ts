@@ -4,6 +4,7 @@
 import { shown } from "../ui/number-entry";
 import type { CableRow, DesignOption, InverterPlace, LayoutReadouts, NoOptions } from "../../lib/api";
 import { calloutOfString } from "../../lib/scene/pick";
+import type { Ground } from "../../lib/scene/stage-store";
 import { categoryOf, numberOfString, seriesOf, type Colouring, type Wired } from "../../lib/stores/string-colours";
 import type { Lens } from "../../lib/routes";
 import { isLayoutUpdating, layoutFailureOf, readoutsOf, sunFailureOf, type ResultsState } from "../../lib/stores/results-store";
@@ -134,4 +135,13 @@ export function stringsWordsOf({ option, strings, colouring, positions, selected
     inverters: `${places.length === 1 ? "Inverter" : "Inverters"} ${places.join("; ")}`,
     selected: callout ? `${callout.title}, selected: ${callout.detail}` : null,
   };
+}
+
+/**
+ * The attribution of the imagery at the stage's bottom left: the provider's words while the imagery is the
+ * ground drawn (guidelines.md, "3D scene"), none otherwise: the plain grid under the roof (the board "Stage,
+ * Layers", decision D57), the moment before the tiles came, or no provider at all.
+ */
+export function attributionOf(ground: Ground, words: string | null): string | null {
+  return ground === "imagery" ? words : null;
 }

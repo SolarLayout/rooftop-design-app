@@ -30,7 +30,7 @@ import { StringLegend } from "./StringLegend";
 import { SunMarks } from "./SunMarks";
 import { LayoutFailed, SunFailed } from "./LayoutFailed";
 import { PlanFallback } from "./PlanFallback";
-import { lineOf, stringsLineOf, stringsWordsOf } from "./stage-view";
+import { attributionOf, lineOf, stringsLineOf, stringsWordsOf } from "./stage-view";
 import { CONTEXT_LOST, NO_WEBGL } from "./stage-words";
 import { useEscapeClears } from "./use-escape-clears";
 import { TimePill, SunTimeline } from "./Time";
@@ -112,6 +112,8 @@ export function Stage({ lens, name, className }: Props) {
   const [stage] = useState(createStageStore);
   const cursor = useStore(stage, cursorOf);
   const moduleWrites = useStore(stage, moduleWritesOf);
+  // The attribution goes with the imagery (D57): it stands only while the imagery is the ground drawn.
+  const attribution = attributionOf(useStore(stage, groundOf), ATTRIBUTION);
   const cannotDraw = webGL === false ? NO_WEBGL : isLost ? CONTEXT_LOST : null;
   const size = useSize();
   useEscapeClears();
@@ -144,9 +146,9 @@ export function Stage({ lens, name, className }: Props) {
       {cannotDraw || size === null ? null : lens === "sun" && size !== "phone" ? <SunTimeline size={size} className={TIMELINE} /> : <TimePill size={size} className={TIME_PILL} />}
       {cannotDraw || size === null ? null : <ShadeLegend size={size} className={SHADE_LEGEND} />}
       {cannotDraw || size === null ? null : <StringLegend size={size} className={STRING_LEGEND} />}
-      {cannotDraw ? null : ATTRIBUTION ? (
+      {cannotDraw ? null : attribution ? (
         <p data-testid="stage-attribution" className="pointer-events-none absolute bottom-1 left-4 z-stage-overlay max-w-full truncate type-label-s text-text-on-imagery on-imagery tablet:left-5 desktop:bottom-1.5 desktop:left-6">
-          {ATTRIBUTION}
+          {attribution}
         </p>
       ) : null}
       <OnTheRoof stage={stage} isScene={!cannotDraw} />
