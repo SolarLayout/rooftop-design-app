@@ -66,6 +66,32 @@ def test_a_point_is_a_pair_of_numbers(document):
     assert (outline["items"]["minItems"], outline["items"]["maxItems"]) == (2, 2)
 
 
+TAKE_AN_OUTLINE = (
+    "/roof/import",
+    "/roof/from-map",
+    "/roof/on-map",
+    "/layout",
+    "/sun",
+    "/design",
+    "/export/{kind}",
+    "/export/report-pages",
+    "/project/open",
+)
+
+
+@pytest.mark.parametrize("path", TAKE_AN_OUTLINE)
+def test_every_route_that_takes_an_outline_says_that_a_roof_over_the_limit_is_refused(document, path):
+    description = document["paths"][path]["post"]["responses"]["422"]["description"]
+
+    assert "roof_too_large" in description
+    assert "30,000 m²" in description
+
+
+@pytest.mark.parametrize("path", ["/equipment/module", "/equipment/inverter", "/weather"])
+def test_a_route_without_an_outline_does_not_say_so(document, path):
+    assert "roof_too_large" not in document["paths"][path]["post"]["responses"]["422"]["description"]
+
+
 def test_the_weather_route_says_that_a_service_elsewhere_can_fail(document):
     answer = document["paths"]["/weather"]["post"]["responses"]["502"]
 

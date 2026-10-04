@@ -33,7 +33,14 @@ def obstacle_from_engine(obstacle: geometry.Obstacle) -> schemas.Obstacle:
     return schemas.Obstacle.model_construct(**values)
 
 
-def roof_to_engine(roof: schemas.Roof) -> geometry.Roof:
+def roof_to_engine(roof: schemas.Roof, at: str = "roof") -> geometry.Roof:
+    """The roof of a request, refused when its outline is over the engine's limit (decision 11).
+
+    This is the one check of the limit for every request that carries a Roof (/layout, /design, the
+    exports, the shadows of /sun); the routes that build the roof otherwise (the map, a roof file, a
+    project file) check once where they build it. *at* is the roof's place in the request, for the field.
+    """
+    geometry.require_roof_within_limit(roof.outline, f"{at}.outline")
     values = roof.model_dump(exclude={"obstacles"})
     return geometry.Roof(**values, obstacles=[obstacle_to_engine(o) for o in roof.obstacles])
 

@@ -8,7 +8,13 @@ from fastapi.testclient import TestClient
 from pydantic import BaseModel, Field
 
 from rooftop_api.errors import ApiError, install_error_handlers
-from rooftop_core.errors import EngineError, MissingEquipmentFile, UnsupportedProjectFormat, WeatherNotLoaded
+from rooftop_core.errors import (
+    EngineError,
+    MissingEquipmentFile,
+    RoofTooLarge,
+    UnsupportedProjectFormat,
+    WeatherNotLoaded,
+)
 
 
 class Site(BaseModel):
@@ -45,6 +51,7 @@ def _app() -> FastAPI:
             ),
             "weather": WeatherNotLoaded("This project has no weather yet.", field="weather_json"),
             "format": UnsupportedProjectFormat("This project file is format 3.", field="format"),
+            "roof": RoofTooLarge(48_500.0, 30_000.0, field="roof.outline"),
             "other": EngineError("The engine could not do this."),
         }[kind]
 
@@ -116,6 +123,7 @@ def test_a_body_that_is_not_json_is_refused_in_the_same_shape(client):
         ("equipment", "equipment_file_missing", "pan_path"),
         ("weather", "weather_not_loaded", "weather_json"),
         ("format", "unsupported_project_format", "format"),
+        ("roof", "roof_too_large", "roof.outline"),
         ("other", "engine_error", None),
     ],
 )
@@ -129,6 +137,8 @@ def test_an_engine_error_passes_its_message_and_field_through(client, kind, code
         "The module file Big.PAN (PAN) is not included.",
         "This project has no weather yet.",
         "This project file is format 3.",
+        "This outline covers 48,500 m². SolarLayout designs one roof at a time, up to 30,000 m² "
+        "(about 3 MWp). For a larger site, outline each building as its own design.",
         "The engine could not do this.",
     }
 

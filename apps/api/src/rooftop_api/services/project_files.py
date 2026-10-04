@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 from rooftop_api import convert, schemas
 from rooftop_api.errors import UNPROCESSABLE, ApiError, validation_message
-from rooftop_core import project
+from rooftop_core import geometry, project
 
 NOT_A_PROJECT_FILE = "The file is not a project file (.rtd): "
 CANNOT_BE_OPENED = "The project file cannot be opened: "
@@ -20,6 +20,9 @@ def open_project(file: schemas.ProjectFile) -> schemas.OpenedProject:
     What comes out is validated as a request is, so that the web app can send it back as one.
     """
     read = _read(_json_of(file.text))
+    # The one check of the limit for a project file: the field is the outline's path in the file, as the
+    # format's and a value's out of range are named by theirs.
+    geometry.require_roof_within_limit(read.roof.outline, "roof.outline")
     return schemas.OpenedProject(project=_as_a_request(read), notes=notes_of(read))
 
 

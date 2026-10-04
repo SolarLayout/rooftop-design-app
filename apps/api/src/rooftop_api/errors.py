@@ -14,10 +14,12 @@ from rooftop_api.schemas.errors import ErrorDetail, ErrorResponse
 from rooftop_core.errors import (
     EngineError,
     MissingEquipmentFile,
+    RoofTooLarge,
     UnsupportedProjectFormat,
     UnusableWeatherFile,
     WeatherNotLoaded,
 )
+from rooftop_core.geometry import ROOF_AREA_LIMIT_M2
 
 logger = logging.getLogger("rooftop_api")
 
@@ -29,22 +31,35 @@ ENGINE_CODES: dict[type[EngineError], str] = {
     WeatherNotLoaded: "weather_not_loaded",
     UnsupportedProjectFormat: "unsupported_project_format",
     UnusableWeatherFile: "not_a_weather_csv",
+    RoofTooLarge: "roof_too_large",
 }
+REFUSED = "The request cannot be used; the message says why."
+# Said by every route that takes an outline: on the map, in a file, or in a project.
+ROOF_LIMIT_NOTE = (
+    f" An outline over {ROOF_AREA_LIMIT_M2:,.0f} m² is refused with the code roof_too_large, before any work."
+)
 # What every route can answer besides its success, for the OpenAPI document.
 ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
-    UNPROCESSABLE: {
-        "model": ErrorResponse,
-        "description": "The request cannot be used; the message says why.",
-    }
+    UNPROCESSABLE: {"model": ErrorResponse, "description": REFUSED}
 }
 # The same for a route that answers with a stream or a file: its faults are JSON all the same, and
 # the document must say so by itself, or it would put them under the media type of the answer.
 JSON_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
     UNPROCESSABLE: {
-        "description": ERROR_RESPONSES[UNPROCESSABLE]["description"],
+        "description": REFUSED,
         "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}},
     }
 }
+
+
+def _about_the_roof_limit(responses: dict[int | str, dict[str, Any]]) -> dict[int | str, dict[str, Any]]:
+    refusal = responses[UNPROCESSABLE]
+    return {**responses, UNPROCESSABLE: {**refusal, "description": refusal["description"] + ROOF_LIMIT_NOTE}}
+
+
+# For the routes that take an outline.
+OUTLINE_ERROR_RESPONSES = _about_the_roof_limit(ERROR_RESPONSES)
+OUTLINE_JSON_ERROR_RESPONSES = _about_the_roof_limit(JSON_ERROR_RESPONSES)
 # What a route can answer when it depends on a service elsewhere.
 SERVICE_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
     **ERROR_RESPONSES,

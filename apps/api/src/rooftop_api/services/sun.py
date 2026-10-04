@@ -21,7 +21,7 @@ def sun_of_day(request: schemas.SunRequest) -> schemas.SunResponse:
 
 def shadows_at(request: schemas.ShadowRequest, lat: float, doy: int) -> schemas.Shadows:
     """Shadows of the parapet and the obstacles on a level plane, with the sun of the place asked for."""
-    roof = convert.roof_to_engine(request.roof)
+    roof = convert.roof_to_engine(request.roof, at="shadows.roof")
     elevation, azimuth = sun_solar_time(lat, doy, request.hour)
     shape = casters_shadow(roof.all_casters(), request.plane_height_m, elevation, azimuth)
     return schemas.Shadows(
