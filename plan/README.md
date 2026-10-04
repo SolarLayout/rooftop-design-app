@@ -31,6 +31,7 @@ Always:
 | 9 | Handover and exports | `phase-09-handover.md` | done (#62, #64 to #66); how: `phase-09-plan.md` |
 | 10 | Home, projects on the device, Present mode | `phase-10-home-projects-present.md` | done (session 13, unattended: #67, #69, #71, #72); how: `phase-10-plan.md` |
 | 11 | Hardening for the tradeshow | `phase-11-hardening.md` | in progress (session 14); how: `phase-11-plan.md`, scoped with the owner |
+| 12 | Deployment: staging and production (Vercel, AWS Lambda; the two sharing nothing); the stand demos from production | `phase-12-deployment.md` | not started; filed 2026-10-04; its plan when it begins |
 
 ## Decisions taken (change here if overruled)
 

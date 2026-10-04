@@ -25,6 +25,7 @@ prompt for Phase 11 is written (`plan/resume/014-phase-11-hardening.md`); the se
 | 9 Handover and exports | Done (session 13: #62, #64 to #66; #63 on the way) | What exists, what was decided, what was found: `phase-09-handover.md`, "As built". How it was built: `phase-09-plan.md` |
 | 10 Home, projects on the device, Present | Done (session 13, unattended: #67, #69, #71, #72; #68 and #70 for the check) | What exists, what was decided, what was found: `phase-10-home-projects-present.md`, "As built". How it was built: `phase-10-plan.md` |
 | 11 Hardening for the tradeshow | In progress (session 14) | Scoped with the owner: `phase-11-plan.md`, "Scoped with the owner"; issues #73 to #77 hold what was deferred |
+| 12 Deployment: staging and production | Not started; filed 2026-10-04 | `phase-12-deployment.md`: what the owner decided (Vercel, AWS Lambda, `rooftop.solarlayout.app` and its staging twin, sharing nothing), the scope as known, the acceptance; its plan when it begins, after Phase 11 and #76 |
 
 ## In flight
 
