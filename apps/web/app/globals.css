@@ -890,6 +890,48 @@
   transition-duration: var(--duration-panel);
   transition-timing-function: var(--ease-out);
 }
+/*
+ * A drawer comes and goes as the panels do (components.md, "Notes to review, the drawer"): its panel slides in from
+ * the bottom on phone and from the right from tablet on, and the dim behind it fades; the dialog stays shown, in
+ * the top layer, while they leave, and is gone at the end.
+ */
+@utility drawer-motion {
+  transition-property: display, overlay;
+  transition-duration: var(--duration-panel);
+  transition-behavior: allow-discrete;
+  &::backdrop {
+    transition-property: background-color, display, overlay;
+    transition-duration: var(--duration-panel);
+    transition-timing-function: var(--ease-out);
+    transition-behavior: allow-discrete;
+  }
+  &:not([open])::backdrop {
+    background-color: transparent;
+  }
+  & > [data-drawer-panel] {
+    transition-property: translate;
+    transition-duration: var(--duration-panel);
+    transition-timing-function: var(--ease-out);
+    translate: 0 100%;
+    @variant tablet {
+      translate: 100% 0;
+    }
+  }
+  &[open] > [data-drawer-panel] {
+    translate: 0 0;
+  }
+  @starting-style {
+    &[open]::backdrop {
+      background-color: transparent;
+    }
+    &[open] > [data-drawer-panel] {
+      translate: 0 100%;
+      @variant tablet {
+        translate: 100% 0;
+      }
+    }
+  }
+}
 @utility raised-by-hover {
   translate: 0 calc(var(--shift-press) * -1);
 }

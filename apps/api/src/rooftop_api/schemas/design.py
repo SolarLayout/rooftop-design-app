@@ -55,6 +55,9 @@ class Sizing(BaseModel):
     cell_rise_from: DefaultFrom
     uc: float = Field(description="Thermal loss factor, W/m2K")
     uc_from: DefaultFrom
+    uc_default: float = Field(
+        description="The roof type's Uc, W/m2K: what holds while none is entered, and what a reset gives back"
+    )
 
 
 class SeriesRange(BaseModel):

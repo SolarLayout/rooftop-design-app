@@ -181,6 +181,7 @@ def _sizing(design: Design) -> schemas.Sizing:
         cell_rise_from="roof type" if p.cell_rise_c is None else "entered",
         uc=p.losses.uc or UC_BY_ROOF[p.roof.roof_type],
         uc_from="entered" if p.losses.uc else "roof type",
+        uc_default=UC_BY_ROOF[p.roof.roof_type],
     )
 
 

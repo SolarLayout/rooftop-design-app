@@ -7,7 +7,7 @@ const VOC_NOTE = "Voc coefficient -0.164 %/°C is outside the usual -0.35 to -0.
 const run = (change: Partial<DesignResult> = {}) =>
   ({
     weather: { t_min_c: 11.93, t_max_c: 39.26 },
-    sizing: { t_min_c: 11.93, t_max_c: 39.26, t_min_from: "weather", t_max_from: "weather", cell_rise_c: 25, cell_rise_from: "roof type", uc: 29, uc_from: "roof type" },
+    sizing: { t_min_c: 11.93, t_max_c: 39.26, t_min_from: "weather", t_max_from: "weather", cell_rise_c: 25, cell_rise_from: "roof type", uc: 29, uc_from: "roof type", uc_default: 29 },
     equipment: { coefficients: { mu_voc_pct: -0.16412, source: "one-diode model" }, module_notes: [VOC_NOTE] },
     ...change,
   }) as unknown as DesignResult;

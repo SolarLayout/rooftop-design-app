@@ -343,6 +343,21 @@ describe("motion", () => {
     expect(made).toContain("transition-timing-function: var(--ease-out);");
   });
 
+  test("a drawer comes and goes in the time of a panel: its panel slides, from the bottom on phone and from the right from tablet on, and the dialog stays while it leaves", async () => {
+    const made = oneLine(await utilitiesOf(["drawer-motion"]));
+
+    // The dialog itself is shown, and in the top layer, until its panel has left.
+    expect(made).toContain(".drawer-motion { transition-property: display, overlay; transition-duration: var(--duration-panel); transition-behavior: allow-discrete;");
+    // Its panel slides in the time and the easing of the panels, from the bottom on phone and from the right from tablet on.
+    const slide = "& > [data-drawer-panel] { transition-property: translate; transition-duration: var(--duration-panel); transition-timing-function: var(--ease-out); translate: 0 100%; @media (width >= 640px) { translate: 100% 0; } }";
+    expect(made).toContain(slide);
+    expect(made).toContain("&[open] > [data-drawer-panel] { translate: 0 0; }");
+    expect(made).toContain("@starting-style { &[open]::backdrop { background-color: transparent; } &[open] > [data-drawer-panel] { translate: 0 100%; @media (width >= 640px) { translate: 100% 0; } } }");
+    // The dim behind it on phone fades with it.
+    expect(made).toContain("&::backdrop { transition-property: background-color, display, overlay; transition-duration: var(--duration-panel); transition-timing-function: var(--ease-out); transition-behavior: allow-discrete; }");
+    expect(made).toContain("&:not([open])::backdrop { background-color: transparent; }");
+  });
+
   test("a ring turns and a skeleton breathes, in the times of the tokens", async () => {
     const made = oneLine(await utilitiesOf(["turning", "breathing"]));
 

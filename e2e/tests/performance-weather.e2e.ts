@@ -312,6 +312,8 @@ test.describe("the assumptions (decisions 6 and 8)", () => {
     await expect(energyTile(page)).toContainText(fixed(chosenOf(after).energy.energy_mwh, 1), { timeout: RUN });
     expect(fixed(chosenOf(after).energy.energy_mwh, 1)).not.toBe(fixed(chosenOf(before).energy.energy_mwh, 1));
     await expect(uc).toHaveValue("25");
+    // Entered, the roof type's stands beside it, from the run's answer (the board "Weather and assumptions").
+    await expect(assumptions(page)).toContainText("29 by roof type", { timeout: RUN });
     await page.waitForTimeout(LONGER_THAN_THE_PAUSE);
     expect(paths.filter((asked) => asked.endsWith("/design"))).toHaveLength(1);
     expect(paths.filter((asked) => asked.endsWith("/layout"))).toEqual([]);
@@ -322,6 +324,25 @@ test.describe("the assumptions (decisions 6 and 8)", () => {
     expect(documentOf(await back).losses.uc).toBeNull();
     await expect(uc).toHaveValue("");
     await expect(assumptions(page).getByRole("button", { name: "Use the roof type's" })).toHaveCount(0);
+  });
+
+  test('on phone a long label wraps inside its row and its field stays beside it, at the right (the board "Weather and assumptions")', async ({ page }, testInfo) => {
+    test.skip(!isPhone(testInfo.project.name), "From tablet on the assumptions are chips, each on one line.");
+    await thePerformancePage(page);
+    const card = (await assumptions(page).boundingBox())!;
+
+    for (const name of ["Rear shading and mismatch", "Exceedance levels"]) {
+      const row = assumptions(page).getByTestId("assumption").filter({ hasText: name });
+      const label = row.getByText(name, { exact: true });
+      const well = row.getByTestId("well").first();
+      const [rowBox, labelBox, wellBox] = [(await row.boundingBox())!, (await label.boundingBox())!, (await well.boundingBox())!];
+      // The label wraps onto two lines, left of the field; the field stands on the row's first line, inside the card.
+      expect(labelBox.height).toBeGreaterThan(wellBox.height / 2);
+      expect(labelBox.x + labelBox.width).toBeLessThanOrEqual(wellBox.x);
+      expect(wellBox.y).toBeGreaterThanOrEqual(rowBox.y);
+      expect(Math.abs(wellBox.y + wellBox.height / 2 - (labelBox.y + labelBox.height / 2))).toBeLessThan(wellBox.height / 2);
+      expect(wellBox.x + wellBox.width).toBeLessThanOrEqual(card.x + card.width);
+    }
   });
 
   test("the levels 50, 90, 99: the second field set to 99 sorts them, and the cells of the energy follow", async ({ page }) => {

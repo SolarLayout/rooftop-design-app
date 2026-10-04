@@ -59,7 +59,7 @@ function NoteRow({ note, onClose, onTryAgain }: { note: Note } & Pick<PanelProps
 /** What is seen of the notes: their count, and each with its reason and where it leads. */
 export function NotesPanel({ notes, onClose, onTryAgain, titleId }: PanelProps) {
   return (
-    <div data-testid="notes-panel" className={PANEL}>
+    <div data-testid="notes-panel" data-drawer-panel className={PANEL}>
       <SheetGrip onClose={onClose} className="tablet:hidden" />
       <div className="flex shrink-0 items-center gap-2.5 pt-3 pr-2.5 pb-3 pl-4 tablet:pt-4.5 tablet:pr-3.5 tablet:pl-5">
         <h2 id={titleId} className="grow type-lens-touch">
@@ -91,7 +91,8 @@ type Props = Omit<PanelProps, "titleId"> & { open: boolean };
 
 /**
  * The notes to review, over the screen: the dialog of the browser, so that the focus goes in, stays in
- * and goes back. Escape closes it, and a press beside it.
+ * and goes back. Escape closes it, and a press beside it. It comes and goes in the time of the panels
+ * (`drawer-motion`): the panel slides, and the dialog stays until it has left, so the panel is always there.
  */
 export function NotesDrawer({ open, onClose, ...panel }: Props) {
   const titleId = useId();
@@ -121,12 +122,12 @@ export function NotesDrawer({ open, onClose, ...panel }: Props) {
         if (event.target === event.currentTarget) onClose();
       }}
       className={classNames(
-        "fixed inset-0 size-full max-h-none max-w-none items-end justify-end bg-transparent text-text outline-none",
+        "drawer-motion fixed inset-0 size-full max-h-none max-w-none items-end justify-end bg-transparent text-text outline-none",
         // On tablet and desktop it stands over the inspector, under the top bar.
         "backdrop:bg-dim open:flex tablet:items-stretch tablet:pt-topbar-tablet tablet:backdrop:bg-transparent desktop:pt-topbar",
       )}
     >
-      {open ? <NotesPanel {...panel} onClose={onClose} titleId={titleId} /> : null}
+      <NotesPanel {...panel} onClose={onClose} titleId={titleId} />
     </dialog>
   );
 }

@@ -124,7 +124,8 @@ test.describe("the list (decisions 3 and 14)", () => {
     const answer = await theHandoverPage(page);
 
     await expect(rows(page)).toHaveCount(7);
-    await expect(rowFacts(page)).toHaveText(factsOf(answer));
+    // The report's row counts its pages once they come (handover-report.e2e.ts), asked at the workspace's open: the paper size stands either way.
+    await expect(rowFacts(page)).toHaveText([/^A4 landscape/, ...factsOf(answer).slice(1)]);
     await expect(card(page)).toContainText(`${stemOf(DEMO_NAME)}.rtd · opens offline`);
     await expect(card(page).getByRole("button", { name: "Save a copy" })).not.toHaveAttribute("aria-disabled", "true");
     // Download all is live with the rows of the design (handover-files.e2e.ts captures its zip).

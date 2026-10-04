@@ -146,6 +146,27 @@ test.describe("the handles of a box", () => {
     expect(layouts[1].roof.obstacles[0].height).toBeCloseTo(raised, 6);
   });
 
+  test("a wheel with the pointer on a handle zooms the view as one beside it does (plan/phase-11-plan.md, step 33)", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.use.hasTouch === true, "A wheel is of the mouse.");
+    const layouts = layoutsOf(page);
+    await stairRoomSelected(page, layouts);
+    await inThePlan(page);
+    await handlesSettled(page);
+    const before = await boxFrameOf(page, 5, 4);
+
+    // Three notches in, the pointer exactly on the north-east corner's handle.
+    const corner = await handleAt(page, "corner-2");
+    await page.mouse.move(corner.x, corner.y);
+    for (let notch = 0; notch < 3; notch += 1) await page.mouse.wheel(0, -100);
+    await handlesSettled(page);
+
+    const after = await boxFrameOf(page, 5, 4);
+    expect(Math.hypot(...after.east)).toBeGreaterThan(Math.hypot(...before.east) * 1.1);
+    // The handles are still the box's: nothing was dragged, the layout was not asked again.
+    await expect(field(page, "Length")).toHaveValue("5.00");
+    expect(layouts).toHaveLength(1);
+  });
+
   test("a wall has no handles and is not dragged: the callout says it is moved by its points", async ({ page }, testInfo) => {
     const layouts = layoutsOf(page);
     await page.goto("/studio/roof");

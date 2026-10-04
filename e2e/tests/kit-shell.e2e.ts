@@ -390,8 +390,26 @@ test.describe("Notes to review, the drawer", () => {
     await opener.click();
     const drawer = page.getByRole("dialog", { name: "Notes to review" });
     await expect(drawer).toBeVisible();
+    // The panel comes in over the time of a panel: it is measured once it stands.
+    await drawer.evaluate((node) => Promise.all(node.getAnimations({ subtree: true }).map((animation) => animation.finished)));
     return { opener, drawer, panel: drawer.getByTestId("notes-panel") };
   }
+
+  test("it comes and goes in the time of a panel, eased as a sheet is: the panel slides, from the right or from the bottom", async ({ page }, testInfo) => {
+    const { drawer, panel } = await opened(page);
+
+    await expect(panel).toHaveCSS("transition-property", "translate");
+    await expect(panel).toHaveCSS("transition-duration", "0.24s");
+    await expect(panel).toHaveCSS("transition-timing-function", "cubic-bezier(0.2, 0.8, 0.2, 1)");
+    await expect(panel).toHaveCSS("translate", "none");
+    // The dialog stays while the panel leaves, and is gone at the end.
+    await expect(drawer).toHaveCSS("transition-property", "display, overlay");
+    await expect(drawer).toHaveCSS("transition-duration", "0.24s");
+    await page.keyboard.press("Escape");
+    // On its way out: down by its height on phone, right by its width from tablet on.
+    await expect(panel).toHaveCSS("translate", isPhone(testInfo.project.name) ? /^0px [\d.]+px$/ : /^[\d.]+px 0px$/);
+    await expect(drawer).toBeHidden();
+  });
 
   test("desktop and tablet: from the right, 384 wide, from under the top bar to the bottom", async ({ page }, testInfo) => {
     test.skip(isPhone(testInfo.project.name), "On phone it is a bottom sheet.");

@@ -13,7 +13,7 @@ import { IN_THE_REPORT } from "@/lib/handover/in-the-report";
 import { scheduleViewOf } from "@/lib/handover/schedule-view";
 import type { Sort } from "@/components/ui/table-sort";
 import { withName } from "@/lib/flow/name-field";
-import { pageViewOf } from "@/lib/handover/page-view";
+import { arePagesWantedOf, pageViewOf } from "@/lib/handover/page-view";
 import { reportViewOf, type ShownPage } from "@/lib/handover/report-view";
 import { FIRST_ITEM, HANDOVER, type HandoverItem } from "@/lib/routes";
 import { editOf, nameOf, projectOf } from "@/lib/stores/project-store";
@@ -57,8 +57,9 @@ const BACK = classNames(
  * The Handover workspace (the boards "Handover" on three sizes and "Handover, states"): the list of what is delivered, its
  * facts from the run's chosen option, the weather and the document (decision 14), and the preview of the item that is
  * open; before options the API's words leading to the Strings lens, at the first load skeletons, a run that failed the
- * API's words with Try again (decision 11). The report's pages are asked for once per edit while its item is open and has
- * an option, with the reader's day, as its PDF is (decisions 2 and 5).
+ * API's words with Try again (decision 11). The report's pages are asked for once per edit as soon as the run has an
+ * option, whatever item is open, with the reader's day, as its PDF is (decisions 2 and 5): the report's row counts its
+ * pages from the workspace's open (plan/phase-11-plan.md, step 33).
  */
 export function Handover({ item }: Props) {
   const { flow, downloads, project } = useStores();
@@ -102,9 +103,10 @@ export function Handover({ item }: Props) {
   const csv = useAskedFile("csv", shown === "hourly-data" && !row.waits);
   // The document, the run and the option the files are of; null until there is a chosen option.
   const files = document !== null && design !== null && option !== null ? { document, design, option } : null;
-  // The pages are asked once per edit while the report, or the CAD layout with the engine's plan among them (decision 8), is
-  // open with an option; the store keeps them (decision 5). A refusal is said by the body, with Try again, which asks here too.
-  const arePagesWanted = (isReport || isCadLayout) && !row.waits;
+  // The pages are asked once per edit as soon as the run has an option, whatever item is open: the report's row counts them,
+  // the report shows them, the CAD layout has the engine's plan among them (decision 8); the store keeps them (decision 5). A
+  // refusal is said by the body of the report and of the CAD layout, with Try again, which asks here too.
+  const arePagesWanted = arePagesWantedOf(view);
   useEffect(() => {
     if (!arePagesWanted) return;
     void downloads.getState().askPages();

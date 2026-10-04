@@ -286,7 +286,20 @@ def test_the_sizing_temperatures_come_from_the_weather(demo_result):
         "cell_rise_from": "roof type",
         "uc": 29.0,
         "uc_from": "roof type",
+        "uc_default": 29.0,
     }
+
+
+def test_uc_entered_is_answered_beside_the_roof_types(client, _demo):
+    """The web shows the roof type's Uc beside an entered one (plan/phase-11-plan.md, step 33)."""
+    project = small(_demo)
+    project["losses"]["uc"] = 25.0
+
+    sizing = result_of(client.post("/design", json=project))["sizing"]
+
+    assert sizing["uc"] == 25.0
+    assert sizing["uc_from"] == "entered"
+    assert sizing["uc_default"] == 29.0
 
 
 def test_the_weather_and_the_shading_of_the_demo(demo_result):

@@ -2,6 +2,7 @@
 // decision 17; plan/reference/r3f-notes.md, fixes 9 and 13). In three's metres: x east, y up, z south.
 import type { CameraPreset } from "../stores/view-store";
 import type { SceneXYZ } from "../geometry/adapter";
+import { DOME } from "./sun-path";
 
 /** The sun as the API gives it: above the horizon, clockwise from north. */
 export type Sun = { elevationDeg: number; azimuthDeg: number };
@@ -16,8 +17,17 @@ export function sunDirectionOf({ elevationDeg, azimuthDeg }: Sun): SceneXYZ {
   return [Math.cos(elevation) * Math.sin(azimuth), Math.sin(elevation), -Math.cos(elevation) * Math.cos(azimuth)];
 }
 
-/** The distance of the 3D view: the whole roof in the frame with room around it. */
+/** The distance of the 3D view: the whole of what is framed in the frame with room around it. */
 const fitDistance = (radius: number) => radius * 2.4;
+
+/**
+ * The radius the presets frame (plan/phase-11-plan.md, step 33): the roof's, unless the sun path is drawn, when it is
+ * the path's dome about the roof, so that the sun's marker stays on the canvas through the day. In the Sun lens with
+ * the path on, Fit and the 3D view frame the dome; every other lens frames the roof as before.
+ */
+export function framedRadiusOf(radius: number, isSunPathShown: boolean): number {
+  return isSunPathShown ? radius * DOME : radius;
+}
 
 /** The room around the roof in the plan, as a share of its diameter. */
 const PLAN_ROOM = 1.15;

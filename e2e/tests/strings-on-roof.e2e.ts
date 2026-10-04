@@ -225,6 +225,12 @@ test.describe("the legend and the inverters", () => {
     // The chip stands centred over the box's top, its foot 4 over it; in the plan the top falls on the engine's place.
     expect(Math.abs(box.x + box.width / 2 - at.x)).toBeLessThan(8);
     expect(Math.abs(box.y + box.height + 4 - at.y)).toBeLessThan(10);
+    // It stands clear of every edge label: on phone it would cover the "90.0 m" of the south edge, and moves off it.
+    for (const label of await page.getByTestId("stage-label").all()) {
+      const edge = (await label.boundingBox())!;
+      const apart = box.x >= edge.x + edge.width || edge.x >= box.x + box.width || box.y >= edge.y + edge.height || edge.y >= box.y + box.height;
+      expect(apart).toBe(true);
+    }
   });
 
   test("option D's two inverters, each with its chip, coloured by inverter", async ({ page }, testInfo) => {

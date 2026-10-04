@@ -468,6 +468,7 @@ layer of their own.
 | `--ease-out`, `--duration-*` | `ease-out`, `duration-` and the name | `duration-press` |
 | `--duration-press`, `--ease-out`, `--shift-press`, `--scale-press` | `press-motion`, `raised-by-hover`, `lowered-by-press` | on every control that is pressed |
 | `--duration-panel`, `--ease-out` | `sheet-motion` | on a sheet that goes to its stop |
+| `--duration-panel`, `--ease-out` | `drawer-motion` | on the dialog of a drawer: its panel slides and its dim fades, and it stays until they have left |
 | `--stroke-*` | `stroke-icon`, `stroke-icon-light`, `stroke-tick`; `stroke-chart`, `stroke-hair`, `stroke-wire` | on the `svg` of an icon; on the line, the gridlines and the crosshair of a chart; on the DC lines of the single-line diagram |
 | `--radius-xs` | `rx-xs` | the corners of a box drawn in an `svg`: the single-line diagram |
 | `--z-*` | `z-` and the name | `z-float` |
