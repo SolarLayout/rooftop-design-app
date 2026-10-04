@@ -110,3 +110,8 @@ keep
 ## 24. The Layers button
 
 Build it
+
+## 25. While pull request 4's browser groups ran
+
+due to theremely slow progress - primarily due to e2e tests - we will not run any e2e tests locally for now. only fast lane would be run. this is
+in effect till the whole of Phase 11 is done

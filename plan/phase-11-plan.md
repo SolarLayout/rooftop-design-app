@@ -103,6 +103,12 @@ hot spots and the gain each would give, as a table in `plan/reference/api-profil
 
 ## How the work goes
 
+**From 2026-10-04 (D56) the gate is the fast lane alone**: `bun check --skip=e2e`; no browser group runs on this machine until the phase is
+done, not even by hand; a suite or a picture a pull request changes is reviewed by reading, and the pull request says the groups were not run.
+The owner's words: "due to the extremely slow progress - primarily due to e2e tests - we will not run any e2e tests locally for now. only fast
+lane would be run. this is in effect till the whole of Phase 11 is done". Decision 18 (the whole suite once at the close) stands.
+
+
 Each step one commit; a document change a commit of its own, never mixed with code (D26); a draft pull request after the first step,
 merged on the fast check and the groups the change reaches (D55), every changed picture looked at beside its board before the pull
 request opens. Agents build in worktrees from written briefs; the session runs the browser and makes the baselines. `plan/STATE.md`
