@@ -7,7 +7,7 @@ import type { Obstacle } from "../api";
 import { boxWithCorner } from "../outline/obstacles";
 import { withObstacleField } from "../geometry/obstacle-fields";
 import { toScene, type XY, type XYZ } from "../geometry/adapter";
-import { onTheRoofPlane, SNAP_M } from "./drag";
+import { onTheRoofPlane, SNAP_M } from "../stores/drag";
 import type { HeightAt } from "../geometry/obstacles";
 
 export type BoxOnTheRoof = { x: number; y: number; length: number; width: number; rotationDeg: number };

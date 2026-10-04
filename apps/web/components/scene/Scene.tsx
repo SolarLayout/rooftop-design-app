@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { useProject, useResults, useStores, useView } from "@/components/shell/stores";
 import { frameOf } from "@/lib/scene/building";
 import { toScene, type XY, type XYZ } from "@/lib/geometry/adapter";
-import { onTheRoofPlane } from "@/lib/scene/drag";
+import { onTheRoofPlane } from "@/lib/stores/drag";
 import { handlePointsOf, type About } from "@/lib/scene/handles";
 import { inverterMarkersOf } from "@/lib/scene/inverter-markers";
 import { anchorOf } from "@/lib/geometry/keepout";

@@ -5,7 +5,7 @@ import { useMemo, useRef, useState } from "react";
 import { BackSide, BoxGeometry, BufferGeometry, CylinderGeometry, EdgesGeometry, ExtrudeGeometry, Float32BufferAttribute, MeshStandardMaterial, Shape, Vector2 } from "three";
 import type { Obstacle } from "@/lib/api";
 import { FLAT, toScene, toScenePoint, type XY } from "@/lib/geometry/adapter";
-import { halfSidesOf, movedTo, onTheRoofPlane, type Dragging } from "@/lib/scene/drag";
+import { halfSidesOf, movedTo, onTheRoofPlane, type Dragging } from "@/lib/stores/drag";
 import type { About } from "@/lib/scene/handles";
 import { canBeDragged, footprintOf, ROUND_SEGMENTS, solidsOf, type HeightAt, type Look, type Solid } from "@/lib/geometry/obstacles";
 import { risenScaleOf } from "@/lib/scene/reveal";

@@ -9,7 +9,7 @@ import { Icon } from "@/components/ui/Icon";
 import { measures } from "@/components/ui/measures";
 import type { Obstacle } from "@/lib/api";
 import { frameOf } from "@/lib/scene/building";
-import { liveWordsOf, type DragBy, type Dragging } from "@/lib/scene/drag";
+import { liveWordsOf, type DragBy, type Dragging } from "@/lib/stores/drag";
 import { obstacleByHandle, type HandleId } from "@/lib/scene/handles";
 import { rayAt, stemEndOf, type StageLabel } from "@/lib/scene/projection";
 import { cameraOf, labelsOf, type StageStore } from "@/lib/scene/stage-store";

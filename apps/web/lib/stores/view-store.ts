@@ -3,7 +3,7 @@
 import { createStore } from "zustand/vanilla";
 import type { Lens } from "../routes";
 import type { Colouring } from "./string-colours";
-import { sameObstacle, type Dragging } from "../scene/drag";
+import { sameObstacle, type Dragging } from "./drag";
 import type { DraftObstacle } from "../geometry/obstacle-fields";
 
 /** Where the camera stands (docs/design/guidelines.md, "3D scene"). */
