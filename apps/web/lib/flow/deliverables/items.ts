@@ -1,9 +1,9 @@
 // The eight items of Handover with their facts, in the words of the board (plan/phase-09-plan.md, decision 14), every
 // number the engine's: from the run's chosen option, the weather and the document. Before options every row but the
 // project file waits and says the API's title (decision 11). Pure.
-import { shown } from "../../components/ui/number-entry";
-import type { DesignOption, DesignResult, ExportKind } from "../api";
-import { HANDOVER_ITEMS, type HandoverItem } from "../routes";
+import { shown } from "../../../components/ui/number-entry";
+import type { DesignOption, DesignResult, ExportKind } from "../../api";
+import { HANDOVER_ITEMS, type HandoverItem } from "../../routes";
 import { projectFileNameOf } from "./file-name";
 
 export type Deliverable = {

@@ -10,9 +10,9 @@ import type { ToastAsked } from "../../components/ui/toast-queue";
 import type { Api, ExportedFile, ExportKind, Project, ReportPages } from "../api";
 import { failureOf } from "../flow/design-flow";
 import type { HandoverItem } from "../routes";
-import { todayOfTheBrowser } from "./day";
-import { kindOf } from "./items";
-import { saveBlob } from "./save-file";
+import { todayOfTheBrowser } from "../flow/deliverables/day";
+import { kindOf } from "../flow/deliverables/items";
+import { saveBlob } from "../flow/deliverables/save-file";
 
 export type DownloadStatus = { status: "idle" } | { status: "on-its-way" } | { status: "failed"; message: string };
 

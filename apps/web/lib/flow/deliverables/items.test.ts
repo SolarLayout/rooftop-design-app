@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import type { DesignResult } from "../api";
+import type { DesignResult } from "../../api";
 import { deliverablesOf, type Deliverable } from "./items";
-import { A, BEFORE_A_VOLTAGE, D, DEMO } from "./test-fixtures";
+import { A, BEFORE_A_VOLTAGE, D, DEMO } from "../../handover/test-fixtures";
 
 const AT_REST = { name: "Pune demo roof", design: DEMO, pages: null } as const;
 const factsOf = (rows: Deliverable[]) => rows.map((row) => [row.id, row.facts]);

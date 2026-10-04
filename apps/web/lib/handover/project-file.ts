@@ -3,7 +3,7 @@
 // document and the run. Pure.
 import { shown } from "../../components/ui/number-entry";
 import type { DesignResult, Project } from "../api";
-import { projectFileNameOf } from "./file-name";
+import { projectFileNameOf } from "../flow/deliverables/file-name";
 
 export type ContentRow = {
   label: string;

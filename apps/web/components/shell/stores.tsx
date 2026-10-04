@@ -9,7 +9,7 @@ import { demoRunOf, rememberDemoRunIn } from "@/lib/device/demo-run";
 import { designsDb } from "@/lib/device/designs-db";
 import { rememberIn } from "@/lib/device/remembered";
 import { createSaving, failureOf as savingFailureOf, type SavingState, type SavingStore } from "@/lib/device/saving";
-import { createDownloadsStore, type DownloadsState, type DownloadsStore } from "@/lib/handover/downloads-store";
+import { createDownloadsStore, type DownloadsState, type DownloadsStore } from "@/lib/stores/downloads-store";
 import { createProjectStore, editOf, nameOf, projectOf, type ProjectState, type ProjectStore } from "@/lib/stores/project-store";
 import { createResultsStore, designFailureOf, designOf, designStatusOf, layoutFailureOf, newerLayoutNotesOf, progressOf, readoutsOf, sunDayOf, type ResultsState, type ResultsStore } from "@/lib/stores/results-store";
 import { createViewStore, type ViewState, type ViewStore } from "@/lib/stores/view-store";
@@ -124,7 +124,7 @@ export function useResults<Value>(selector: (state: ResultsState) => Value): Val
   return useStore(useStores().results, selector);
 }
 
-/** One value of the downloads. The selector is one of lib/handover/downloads-store.ts. */
+/** One value of the downloads. The selector is one of lib/stores/downloads-store.ts. */
 export function useDownloads<Value>(selector: (state: DownloadsState) => Value): Value {
   return useStore(useStores().downloads, selector);
 }

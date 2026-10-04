@@ -6,7 +6,7 @@ import { classNames } from "@/components/ui/class-names";
 import { IconButton } from "@/components/ui/IconButton";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { Skeleton } from "@/components/ui/Skeleton";
-import type { Deliverable } from "@/lib/handover/items";
+import type { Deliverable } from "@/lib/flow/deliverables/items";
 import type { PageView } from "@/lib/handover/page-view";
 
 type Props = {

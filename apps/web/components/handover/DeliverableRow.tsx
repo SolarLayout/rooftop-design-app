@@ -3,7 +3,7 @@ import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { Skeleton } from "@/components/ui/Skeleton";
-import type { Deliverable } from "@/lib/handover/items";
+import type { Deliverable } from "@/lib/flow/deliverables/items";
 import { pathOfItem } from "@/lib/routes";
 
 /**
