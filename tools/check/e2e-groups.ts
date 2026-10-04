@@ -114,6 +114,7 @@ export const GROUPS: readonly Group[] = [
       "shell-vitals.e2e.ts",
       "stage.e2e.ts",
       "strings-*.e2e.ts",
+      "studio-layers.e2e.ts",
       "studio-screens.e2e.ts",
       "sun-*.e2e.ts",
       "time.e2e.ts",

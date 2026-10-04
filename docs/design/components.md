@@ -639,6 +639,13 @@ are in `list-keys.ts`.
   trigger where there is no room under it. It is 320 wide.
 - On phone and tablet the panel is a bottom sheet over a dimmed screen (`color-dim`): `color-chrome`, top
   radius `radius-panel`, the handle of 40 by 4. A press on the handle, or a drag of it downwards, closes it.
+- Asked to stay floating on touch (`onTouch="floating"`; the Layers panel of the stage, decision D57), the panel is
+  beside its control on every size, at its width (`list` 320, `menu` 340, `search` 400, `card` 240), with no sheet,
+  no handle and nothing dimmed; what is in it carries the surface (`surface-1`, border `line-strong`, `radius-card-s`,
+  `shadow-float`, padding 6). Its states are the floating panel's: closed (not shown); open, placed by `place-floating`
+  6 from its control, on the other side where its own has no room, never off the screen; closed by Escape, a press
+  beside it, a scroll of the page or a change of the window's size, the focus back on the control. For a panel that
+  holds one or two controls whose effect must stay in sight while they are used; a list or a menu stays a sheet.
 - With the list open the focus is in it, and the choice that is taken is marked. The arrows stop at the ends
   of the list; Home and End lead to them; a letter leads to the next choice that begins with it.
 - A press beside the list closes it. Scrolling the page or changing the size of the window closes it too.
@@ -948,3 +955,11 @@ switch "Satellite imagery", on by default, its hint "Off: the plain grid" in `te
 under the building with its attribution at the stage's bottom left. Off: the plain ground of the 3D palette with its
 grid, and no attribution. The switch takes effect at once; Escape, the button and a press beside the panel close it,
 and the focus goes back to the button. What it sets is of the view (the view store), not of the design.
+
+Built (Phase 11, pull request 3): `components/studio/ViewControls.tsx`, the `Layers` part; the open look of the button
+in `iconButtonLook`; the panel the `FloatingPanel` with `onTouch="floating"` and `FLOATING_SURFACE`; the ground in
+`lib/stores/view-store.ts` (`ground`, `setGround`, `groundDrawnOf`); the attribution by `attributionOf` in
+`components/studio/stage-view.ts`. Without a map key or a location the ground is the plain grid whatever the switch
+says, and the switch stays as it is; the ground drawn is said in the stage's text equivalent ("The ground is the
+satellite imagery", "The ground is plain, with a grid"). Opened, the focus is on the switch, so that the space bar
+turns it. The panel has no motion of its own, as the kit's FloatingPanel has none.

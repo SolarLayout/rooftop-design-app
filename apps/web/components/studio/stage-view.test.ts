@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { layoutFailedOf, lineOf, stringsLineOf, stringsWordsOf, subLineOf, sunFailedOf } from "./stage-view";
+import { attributionOf, layoutFailedOf, lineOf, stringsLineOf, stringsWordsOf, subLineOf, sunFailedOf } from "./stage-view";
 import type { LayoutReadouts, LayoutResponse } from "@/lib/api";
 import { createResultsStore } from "@/lib/stores/results-store";
 
@@ -174,5 +174,24 @@ describe("the strings on the roof in words", () => {
     expect(of("mppt", "S8").selected).toBe("String 8 · INV-1, MPPT 3, selected: 29 modules · Voc cold 1,480 V · 93 m of cable");
     expect(of("mppt").selected).toBeNull();
     expect(of("mppt", "S40").selected).toBeNull();
+  });
+});
+
+// The imagery carries its attribution wherever it is shown (guidelines.md, "3D scene"), and nowhere else: with the
+// plain grid under the roof (the board "Stage, Layers"), or before the tiles came, the stage's bottom left is empty.
+describe("the attribution of the imagery", () => {
+  const WORDS = "Powered by Esri · Source: Esri";
+
+  test("it stands under the 3D while the imagery is the ground drawn", () => {
+    expect(attributionOf("imagery", WORDS)).toBe(WORDS);
+  });
+
+  test("it leaves with the imagery: the plain ground, and no ground yet, show none", () => {
+    expect(attributionOf("plain", WORDS)).toBeNull();
+    expect(attributionOf("none", WORDS)).toBeNull();
+  });
+
+  test("without a provider there are no words to show", () => {
+    expect(attributionOf("imagery", null)).toBeNull();
   });
 });

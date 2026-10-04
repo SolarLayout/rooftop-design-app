@@ -12,7 +12,7 @@ import { PALETTE } from "@/lib/geometry/scene-palette";
 import { onPress } from "./pointer";
 
 type Props = {
-  /** The imagery of the map; null without a key, and the ground is the plain colour with the grid. */
+  /** The imagery of the map; null without a key, or while the view asks for the plain ground (D57): the plain colour with the grid then. */
   imagery: Imagery | null;
   /** The place of the roof's centroid: the origin of the scene. */
   lat: number;

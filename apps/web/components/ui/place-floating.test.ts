@@ -127,4 +127,16 @@ describe("placeOf: aligned to the end", () => {
 
     expect(place).toEqual({ x: 688, y: 340, side: "right" });
   });
+
+  // The Layers panel of the stage (the board "Stage, Layers"): 240 wide, 6 under the Layers button with their right
+  // edges in line, so that it stays on the stage; the button stands at the stage's right edge on every size.
+  test("the Layers panel hangs 6 under its button with their right edges in line: on desktop, and on the phone 12 from the screen's edge", () => {
+    const onDesktop = placeOf({ anchor: { left: 1000, top: 20, width: 38, height: 38 }, size: { width: 240, height: 94 }, screen: { width: 1440, height: 900 }, side: "below", align: "end", gap: 6 });
+    expect(onDesktop).toEqual({ x: 798, y: 64, side: "below" });
+    expect(onDesktop.x + 240).toBe(1038);
+
+    const onThePhone = placeOf({ anchor: { left: 334, top: 4, width: 44, height: 44 }, size: { width: 240, height: 100 }, screen: { width: 390, height: 844 }, side: "below", align: "end", gap: 6 });
+    expect(onThePhone).toEqual({ x: 138, y: 54, side: "below" });
+    expect(390 - (onThePhone.x + 240)).toBe(12);
+  });
 });

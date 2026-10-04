@@ -220,6 +220,7 @@
         "e2e/tests/shell-vitals.e2e.ts",
         "e2e/tests/stage.e2e.ts",
         "e2e/tests/strings-*.e2e.ts",
+        "e2e/tests/studio-layers.e2e.ts",
         "e2e/tests/studio-screens.e2e.ts",
         "e2e/tests/sun-*.e2e.ts",
         "e2e/tests/time.e2e.ts",
