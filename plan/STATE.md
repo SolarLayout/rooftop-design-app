@@ -40,11 +40,12 @@ drops (325 s and 40 drops before); the shell group 642 s and 0 drops; the studio
 to the group its name begins with), the kit on two sizes, Present's frames on desktop alone; measured after it, each group alone: kit 1.7 min,
 find 2.4, handover 5.0, home 3.7, present 4.6 (10 before), performance 6.0, shell 6.7 (13 to 16 before), studio 18.5 (`docs/checks.md`).
 **#80 is merged**: the report's pages drawn once per key under asks at once (the handover group 214 s, none flaky); a pending save written
-when the page is left (`flush` on `pagehide`), the device test's race. **In flight**: #81 (`feat/roof-limit-api`: one roof at a time, up to 30,000 m², at every route; measured at
-the limit: 7,590 positions, a run of 61 s) waits for GitHub's check; pull request 4 (`check/base-imports-nothing`, 15 commits, 52 files moved,
-the rule green with zero crossings) is checked on the fast lane next; the board "Stage, Layers" (branch `design/stage-layers`, `e07a89a`) waits
-for the owner's eye before pull request 3 builds it. **From now to the end of the phase no browser group runs here (D56)**: the pull requests
-say so, and the groups run once at the close when the owner says.
+when the page is left (`flush` on `pagehide`), the device test's race. **#81 is merged** (one roof at a time, up to 30,000 m², at every route; measured at the limit: 7,590 positions, a run of 61 s).
+**In flight**: #82 (`check/base-imports-nothing`: the base imports nothing of the groups' folders, 52 files moved to `lib/places`,
+`lib/geometry`, `lib/flow/deliverables`, `lib/stores`, `components/shell`) waits for GitHub's check; the board "Stage, Layers" (branch
+`design/stage-layers`, `e07a89a`) waits for the owner's eye before pull request 3 builds it; agents build pull request 6 (pytest on GitHub's two
+cores and the engine's profile for #76) and pull request 7 (the polish). **From now to the end of the phase no browser group runs here (D56)**:
+the pull requests say so, and the groups run once at the close when the owner says.
 
 ## What the web app has today
 
