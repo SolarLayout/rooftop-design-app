@@ -18,11 +18,11 @@ built as pull requests by agents in worktrees from written briefs, each reviewed
 | 7 | The board "Stage, Layers" drawn by an agent, looked at by the session, approved by the owner (D57) | `f7e76cf`, `4dde643` |
 | 8 | Pull request 4 by an agent: the base imports nothing of the groups' folders; the session widened decision 4 when the rule found 21 crossings (`lib/geometry`, `lib/flow/deliverables`) | #82 |
 | 9 | Pull request 5a by an agent: one roof at a time, up to 30,000 m², at every route; measured at the limit (7,590 positions, 61 s); the browser test of the refusal by the session | #81 |
-| 10 | The owner's rule D56: no browser test runs on this machine for the rest of the phase; the fast lane alone is the gate | `plan/README.md`, `d707c6b` |
+| 10 | The owner's rule D56: no browser test runs on this machine for the rest of the phase; the fast lane alone is the gate | `plan/README.md`, `2d814df` |
 | 11 | Pull request 6 by an agent: the BLAS threads pinned on GitHub (measured over three runs, no gain, taken out in #85), the pages drawn once per session (tried, no gain, taken out by the session), the engine's profile for #76 | #83, #85, `plan/reference/api-profile.md` |
 | 12 | Pull request 7 by an agent: the seven items of polish | #84 |
 | 13 | Pull request 3 by an agent: the Layers button to the approved board | #86 |
-| 14 | The close: "As built", the state, this record | `main` |
+| 14 | The close: "As built", the state, this record; the browser suite's one run and the pictures wait for the owner's say (D56) | `main` |
 
 ## How the owner steered the session
 

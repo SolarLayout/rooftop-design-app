@@ -3,10 +3,12 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-03, session 13, at the close of Phase 10, built unattended at the owner's pre-approval: #67 (the designs kept
-on this device), #69 (Open a project: `POST /project/open` and the dialog), #71 (Home on three sizes, the cards, the thumbnail), #72 (Present
-mode) are merged; #68 and #70 mended the check on GitHub (its ten-minute limit had cancelled every run since #66). `main` is green. The resume
-prompt for Phase 11 is written (`plan/resume/014-phase-11-hardening.md`); the session waits for the owner's go-ahead.
+**Last updated:** 2026-10-04, session 14, at the close of Phase 11: the plan written and scoped with the owner item by item; #78 (`bun start`, the
+rewrite's drops fixed at their causes, the API's timing line), #79 (the browser tests cheaper), #80 (the pages drawn once under load, the pending save
+flushed), #81 (one roof up to 30,000 m²), #82 (the base imports nothing of the groups' folders), #83 (the engine's profile for #76), #84 (the polish),
+#85 (the BLAS pinning taken out), #86 (the Layers button) are merged; `main` is green on GitHub. What was dropped or deferred with the owner is in
+issues #73 to #77; Phase 12 (deployment) is filed. One thing waits for the owner's say (D56): the whole browser suite's run here and the renewed
+pictures. No resume prompt was asked for.
 
 ## Where we are
 
@@ -24,30 +26,16 @@ prompt for Phase 11 is written (`plan/resume/014-phase-11-hardening.md`); the se
 | 8 Performance | Done (session 12: #58 to #61) | What exists, what was decided, what was found: `phase-08-performance.md`, "As built". How it was built: `phase-08-plan.md` |
 | 9 Handover and exports | Done (session 13: #62, #64 to #66; #63 on the way) | What exists, what was decided, what was found: `phase-09-handover.md`, "As built". How it was built: `phase-09-plan.md` |
 | 10 Home, projects on the device, Present | Done (session 13, unattended: #67, #69, #71, #72; #68 and #70 for the check) | What exists, what was decided, what was found: `phase-10-home-projects-present.md`, "As built". How it was built: `phase-10-plan.md` |
-| 11 Hardening for the tradeshow | In progress (session 14) | Scoped with the owner: `phase-11-plan.md`, "Scoped with the owner"; issues #73 to #77 hold what was deferred |
+| 11 Hardening for the tradeshow | Done (session 14: #78 to #86), the browser suite's one run and the renewed pictures waiting for the owner's say (D56) | What exists, what deviated, what was found: `phase-11-hardening.md`, "As built". How: `phase-11-plan.md`, scoped with the owner; issues #73 to #77 hold what was deferred |
 | 12 Deployment: staging and production | Not started; filed 2026-10-04 | `phase-12-deployment.md`: what the owner decided (Vercel, AWS Lambda, `rooftop.solarlayout.app` and its staging twin, sharing nothing), the scope as known, the acceptance; its plan when it begins, after Phase 11 and #76 |
 
 ## In flight
 
-Session 14 (2026-10-04): the plan of Phase 11 written and scoped with the owner item by item (`plan/phase-11-plan.md`, "Scoped with the
-owner"; the deferred items in issues #73 to #77; Phase 12, deployment, filed). **Pull request 1 is merged (#78)**: `bun start`
-(the start profile: the web app built once, 9 s, and served by `next start`, uvicorn without reload, on the dev ports; `--built` for any
-profile), `tools/proxy-drops.ts`, the drops of the rewrite found at their two causes and fixed (every answer of the API closes its
-connection; the drawn pages kept per project and day; the proxy's timeout 120 s), one log line per request with its time
-(`rooftop_api/timing.py`), the README; a fresh clone's check green. Measured: the handover group 204 s built and 227 s in dev mode with 0
-drops (325 s and 40 drops before); the shell group 642 s and 0 drops; the studio group 952 s and 0 drops. The test stack stays `next dev`
-(a built stack left running would serve stale code). **Pull request 2 is merged (#79)**: each workspace's pictures in its group's suite (a baseline belongs
-to the group its name begins with), the kit on two sizes, Present's frames on desktop alone; measured after it, each group alone: kit 1.7 min,
-find 2.4, handover 5.0, home 3.7, present 4.6 (10 before), performance 6.0, shell 6.7 (13 to 16 before), studio 18.5 (`docs/checks.md`).
-**#80 is merged**: the report's pages drawn once per key under asks at once (the handover group 214 s, none flaky); a pending save written
-when the page is left (`flush` on `pagehide`), the device test's race. **#81 is merged** (one roof at a time, up to 30,000 m², at every route; measured at the limit: 7,590 positions, a run of 61 s).
-**#82 is merged** (the base imports nothing of the groups' folders, held by the import walk; 52 files moved to `lib/places`,
-`lib/geometry`, `lib/flow/deliverables`, `lib/stores`, `components/shell`). **#83 is merged** (the BLAS threads pinned on GitHub; the engine's profile `plan/reference/api-profile.md` for #76: the demo's run peaks at
-3.5 GB of memory for 56 MB of result, the roof at the limit at 19 GB; the shading's hot spot a candidate explosion in `object_fraction`).
-**In flight**: the board "Stage, Layers" is approved (D57) and on `main`, and an agent builds pull request 3 from it (`feat/layers`); **#84 is merged** (the seven items of polish; the Sun lens frames the whole sun path; the pictures that change wait for the close). **In
-flight**: an agent builds pull request 3 (`feat/layers`). GitHub's pytest with the BLAS threads pinned: 473 s for 787 tests and 459 s for 783
-against 454 s for 745 before, the same per test: no gain, taken out (decision 17). **From now to the end of the phase no browser group runs here (D56)**:
-the pull requests say so, and the groups run once at the close when the owner says.
+Nothing. Phase 11 is closed but for D56's one run: when the owner says, the whole browser suite runs here once (`bun check --fresh` or the eight
+groups one after another), the pictures that changed are renewed and looked at beside their boards (the Studio's view controls on three sizes,
+the Sun lens's framing, Handover on phone, the Performance phone pictures, the strings' chip on phone), and the unrun suites of the phase
+(`studio-layers.e2e.ts`, the polish's tests, the by-hand refusal) are seen to pass. Nothing runs on ports 4700 to 4719 from this session; the
+owner's `bun dev` may.
 
 ## What the web app has today
 
@@ -116,13 +104,13 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 ## Next, in order
 
-1. Phase 11, hardening for the tradeshow (`plan/phase-11-hardening.md`), on the owner's go-ahead: the resume prompt 014, the plan the way
-   `phase-10-plan.md` was written, approval, then the pull requests. The plan takes up the watch items below that are Phase 11's.
-2. The browser tests made lighter and steadier, each as a pull request of its own when the owner says: each workspace's pictures moved
-   from `screens.e2e.ts` into its group's suite (a Handover change would then pay about 3 minutes of browser tests, not 11); the kit on
-   two sizes rather than three; fewer workers; a production build of the web app for the test stack, which would also tell whether the
-   rewrite's dropped answers are `next dev`'s alone.
-3. Three questions for the owner and Prasanta, listed under "Open items" as "Owner and domain expert".
+1. The owner's own end-to-end test of the app by hand (his decision of 2026-10-04), and his say on the browser suite's one run (D56).
+2. Phase 12, deployment (`plan/phase-12-deployment.md`): staging and production on Vercel and Lambda, the stand demoing from production. Its plan
+   is written when the phase begins, as the earlier plans were; the account steps the owner must do himself (the domains, Vercel, AWS, the Esri
+   key's referrers) one at a time. Issue #76 (the API lean for Lambda) belongs with it or just before: the profile says the demo's run peaks at
+   3.5 GB and the roof at the limit at 19 GB.
+3. Issues #73 to #77 as the owner decides after his testing: the audits and the guide, the journeys and the `e2e` workflow, Present's first frame
+   and the soak's memory question, the keyboard path and the browsers.
 4. In parallel with any phase: the screens still to draw (Phase 0).
 
 ## Facts about this machine and setup
@@ -137,8 +125,8 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 | bun, uv, Python | bun 1.3.14; uv; Python 3.12.13, the build that uv manages (`apps/api/.python-version`, `apps/api/pyproject.toml`) |
 | Playwright | `@playwright/test` 1.52.0; its browser (chromium-1169) is already installed. `@axe-core/playwright` 4.13.0 |
 | Baselines of the screens | `e2e/baselines/darwin`, made on this machine. Renew with `bun tools/with-node.ts playwright test <name> --update-snapshots` in `e2e/`, after looking at the new picture |
-| `bun check` | Every step a turbo task, skipped when its inputs have not changed since it was last green (`.turbo/`); the summary says which and why. Unchanged tree: under 2 s. Everything changed, or `--fresh`: about 31 minutes here (1,755 browser tests; the machine's twenty cores saturated by the Studio in software WebGL on three sizes). Since #63 the browser step is six groups keyed on what each can see (`docs/checks.md`): a Handover change runs handover and shell, about 11 minutes; the whole suite runs only when the owner says (D55) (pytest 118 s untraced, 139 s when testmon's data is rebuilt; the browser tests 814 s, 1,345 of them, since the Studio draws in software WebGL on three sizes at once). Inside pytest, testmon runs only the tests a change can have changed, plus the sentinel `test_demo_numbers.py`; a change to the check's own code (`tools/check.ts`, `tools/check/**`) runs everything. While the browser tests run, nothing of `apps/web` or `apps/api` may be edited: the test stack reloads them live, and the browser tests would see the half-made change; while the proofs run (the last step), nothing at all, because they copy the working tree into their worktree. Drafts go to the scratchpad until it ends. Details: `phase-04b-test-caching.md`, "As built" |
-| The check on GitHub | `.turbo/cache` restored from the most recent run of the branch or of `main`, saved by every run; a push to `main` runs `--fresh`; pytest runs whole and untraced there (`ROOFTOP_CHECK_SELECT=0`). A push that changes a document alone: about 25 s in all |
+| `bun check` | Every step a turbo task, skipped when its inputs have not changed since it was last green (`.turbo/`); the summary says which and why. Unchanged tree: under 2 s. `bun check --skip=e2e` (the fast lane, the gate of Phase 11 by D56): about 5 minutes here when pytest runs whole. The browser step is eight groups keyed on what each can see (`docs/checks.md`); measured 2026-10-04 each alone: kit 1.7 min, find 2.4, handover 5.0 (3.6 after #80), home 3.7, present 4.6, performance 6.0, shell 6.7, studio 18.5; the whole suite runs only when the owner says (D55, D56). Inside pytest, testmon runs only the tests a change can have changed, plus the sentinel `test_demo_numbers.py`; a change to the check's own code runs everything. While the browser tests run, nothing of `apps/web` or `apps/api` may be edited; while the proofs run (the last step), nothing at all. Details: `phase-04b-test-caching.md`, "As built" |
+| The check on GitHub | `.turbo/cache` restored from the most recent run of the branch or of `main`, saved by every run; a push to `main` runs `--fresh`; pytest runs whole and untraced there (`ROOFTOP_CHECK_SELECT=0`): 454 to 473 s for 745 to 787 tests, 0.6 s a test (session 14); a pull request's check 6 to 10 minutes. A push that changes a document alone: about 25 s in all |
 | Esri key | In `apps/web/.env.local` as `NEXT_PUBLIC_ESRI_API_KEY`. Never read, print or commit the file. Referrers: `http://localhost:4700`, `http://127.0.0.1:4700`. Expires about 28 Sep 2027 |
 | Design canvas | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy. 21 boards, the same as `docs/design/mockups`. To add or change a board: read the canvas itself (not only a file of it), then publish from a folder shaped `project/<name>` in the scratchpad: `root` that folder, `file_path` its `project/canvas.json`, the boards in `files` by their `project/` paths. A `file_path` outside such a folder lands at the root of the artifact, not under `project/`. The publish is refused by the permission system while the canvas is shared with the link; the owner made it private for the publishes of 2026-09-30 and shares it again after |
 | Design system | `docs/design/` |
@@ -204,6 +192,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 | 11 | 2026-10-02 | `plan/sessions/011/record.md`, `plan/sessions/011/owner-messages.md` |
 | 12 | 2026-10-02 to 2026-10-03 | `plan/sessions/012/record.md`, `plan/sessions/012/owner-messages.md` |
 | 13 | 2026-10-03 | `plan/sessions/013/record.md`, `plan/sessions/013/owner-messages.md` |
+| 14 | 2026-10-04 | `plan/sessions/014/record.md`, `plan/sessions/014/owner-messages.md` |
 
 ## Closed, do not reopen
 
