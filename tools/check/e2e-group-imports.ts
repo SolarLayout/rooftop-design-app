@@ -80,7 +80,9 @@ export function reachableFrom(starts: string[], importsOfFile: (file: string) =>
 /**
  * Whether a file of the base is one the rule walks (the path from the app's root): a source of the web app, not a
  * page (`app/**`: the pages are the entry points of the workspaces and import their workspace's component) and not
- * a test (run by bun, reached by no page).
+ * a test. The base's own `*.test.ts` files are left out on purpose (decided in Phase 11, pull request 4): a test is
+ * run by bun and reached by no page, so what it imports changes no screen, and some read a workspace's fixtures
+ * (`lib/flow/name-field.test.ts` and `lib/format/cascade.test.ts` read Handover's and Performance's `test-fixtures.ts`).
  */
 export function isWalkedOfTheBase(file: string): boolean {
   return /\.tsx?$/.test(file) && !file.startsWith("app/") && !/\.test\.tsx?$/.test(file);
