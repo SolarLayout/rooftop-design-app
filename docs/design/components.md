@@ -362,7 +362,8 @@ then "Not used" while positions are not used. Compact: "MPPT" (or "INV", "String
 swatch. Swatches of 12 (10 compact), radius 3; the words text-2, never a series colour.
 
 Each inverter of the option is a small box on the roof in `inverterMarker` where the engine places it, with a chip
-"INV-1" over it (accent, `accent-ink`, mono 11, `radius-xs`), placed by the Projector. On a pointer device the
+"INV-1" over it (accent, `accent-ink`, mono 11, `radius-xs`), placed by the Projector; a chip that would cover an edge
+label moves off it by the smallest shift, up before sideways (`chip-place.ts`). On a pointer device the
 pointer over a used position traces its string: its glass `stringSelected`, every other position mixed
 `DIM_TOWARD_STAGE` % toward the stage, a line of 2 in white on a casing of 4 in the stage's colour through its
 modules in the order they are wired. A press selects it, a tap on touch: the callout says "String 12 · INV-1, MPPT 3"
