@@ -140,7 +140,7 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
 - A preview is the board rendered at its `$preview` size (the tail of each `.dc.html`) by a scratch Playwright script outside the
   repo: Chromium from `e2e/node_modules/@playwright/test`, the fonts served from `apps/web/app/fonts` and `apps/web/node_modules/geist`
   in place of the Google link in the board's `helmet`, `support.js` stubbed, everything else off the machine refused.
-- `mockups/canvas.json` is the layout of the boards on the canvas: 53 boards. The canvas at claude.ai holds 27 of them,
-  published on 2026-09-30, and is behind the repo by the board ImportHeights changed on 2026-10-01 and the five new boards
-  of Phase 6 with the redrawn Sun lens, the five new boards of Phase 7 with the redrawn Strings lens, and the six new boards of Phase 8 with the redrawn
-  Performance, the four new boards of Phase 9 with the redrawn Handover, the five new boards of Phase 10, and the board "Stage, Layers" of Phase 11: sessions on Bedrock have no Artifact tool to publish them.
+- `mockups/canvas.json` is the layout of the boards on the canvas: 53 boards, in sync with the canvas at claude.ai since
+  2026-10-04 (session 15 published the 26 boards of Phases 6 to 11 and the five boards changed since 2026-09-30; the report's
+  pages of `mockups/handover_pages/` travel with the Handover boards). A session on Bedrock has no Artifact tool: it adds its
+  boards to `canvas.json` (frame, `order`, a row title in `notes`) and the next session with the tool publishes them.

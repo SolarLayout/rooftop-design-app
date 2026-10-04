@@ -189,7 +189,7 @@
    "x": 1520,
    "y": 15700,
    "w": 1440,
-   "h": 2110,
+   "h": 2720,
    "title": "Import with missing heights"
   },
   "SunLensTablet.dc.html": {
@@ -267,112 +267,112 @@
    "title": "Performance · tablet 834",
    "w": 834,
    "x": 0,
-   "y": 27900
+   "y": 28000
   },
   "PerformancePhone.dc.html": {
    "h": 4685,
    "title": "Performance · phone 390",
    "w": 390,
    "x": 914,
-   "y": 27900
+   "y": 28000
   },
   "PerformanceLossChain.dc.html": {
    "h": 5310,
    "title": "Loss chain, edited",
    "w": 1440,
    "x": 1384,
-   "y": 27900
+   "y": 28000
   },
   "PerformanceCharts.dc.html": {
    "h": 3838,
    "title": "Charts, tooltip and table",
    "w": 1440,
    "x": 2904,
-   "y": 27900
+   "y": 28000
   },
   "PerformanceWeather.dc.html": {
    "h": 4358,
    "title": "Weather and assumptions",
    "w": 1440,
    "x": 4424,
-   "y": 27900
+   "y": 28000
   },
   "PerformanceStates.dc.html": {
    "h": 3846,
    "title": "Performance, states",
    "w": 1440,
    "x": 5944,
-   "y": 27900
+   "y": 28000
   },
   "HandoverTablet.dc.html": {
    "h": 1194,
    "title": "Handover · tablet 834",
    "w": 834,
    "x": 0,
-   "y": 33910
+   "y": 34010
   },
   "HandoverPhone.dc.html": {
    "h": 976,
    "title": "Handover · phone 390, the list and the report pushed",
    "w": 820,
    "x": 914,
-   "y": 33910
+   "y": 34010
   },
   "HandoverPreviews.dc.html": {
    "h": 8468,
    "title": "Handover, previews",
    "w": 1440,
    "x": 1814,
-   "y": 33910
+   "y": 34010
   },
   "HandoverStates.dc.html": {
    "h": 6595,
    "title": "Handover, states",
    "w": 1440,
    "x": 3334,
-   "y": 33910
+   "y": 34010
   },
   "HomeTablet.dc.html": {
    "h": 1194,
    "title": "Home · tablet 834",
    "w": 834,
    "x": 0,
-   "y": 42578
+   "y": 42900
   },
   "HomePhone.dc.html": {
    "h": 980,
    "title": "Home · phone 390",
    "w": 390,
    "x": 914,
-   "y": 42578
+   "y": 42900
   },
   "HomeDesigns.dc.html": {
    "h": 4811,
    "title": "Home, designs on this device",
    "w": 1440,
    "x": 1814,
-   "y": 42578
+   "y": 42900
   },
   "OpenProject.dc.html": {
    "h": 3446,
    "title": "Open a project",
    "w": 1440,
    "x": 3334,
-   "y": 42578
+   "y": 42900
   },
   "Present.dc.html": {
    "h": 1703,
    "title": "Present",
    "w": 1440,
    "x": 4854,
-   "y": 42578
+   "y": 42900
   },
   "StageLayers.dc.html": {
    "h": 3939,
    "title": "Stage, Layers",
    "w": 1440,
    "x": 0,
-   "y": 47489
+   "y": 48100
   }
  },
  "createdOnFiles": {
@@ -451,18 +451,34 @@
   "t9": {
    "kind": "title1",
    "maxW": 7464,
-   "text": "6 · Performance — three sizes, the chain, the charts, the weather, the states",
+   "text": "9 · Performance — three sizes, the chain, the charts, the weather, the states",
    "w": 240,
    "x": 0,
-   "y": 27600
+   "y": 27700
   },
   "t10": {
    "kind": "title1",
    "maxW": 4774,
-   "text": "7 · Handover — tablet and phone, the previews, the states",
+   "text": "10 · Handover — tablet and phone, the previews, the states",
    "w": 240,
    "x": 0,
-   "y": 33610
+   "y": 33710
+  },
+  "t11": {
+   "kind": "title1",
+   "maxW": 6294,
+   "text": "11 · Home on tablet and phone, the designs on this device, Open a project, Present",
+   "w": 240,
+   "x": 0,
+   "y": 42600
+  },
+  "t12": {
+   "kind": "title1",
+   "maxW": 1440,
+   "text": "12 · Stage, Layers",
+   "w": 240,
+   "x": 0,
+   "y": 47800
   }
  },
  "order": [
@@ -512,7 +528,13 @@
   "HandoverTablet.dc.html",
   "HandoverPhone.dc.html",
   "HandoverPreviews.dc.html",
-  "HandoverStates.dc.html"
+  "HandoverStates.dc.html",
+  "HomeTablet.dc.html",
+  "HomePhone.dc.html",
+  "HomeDesigns.dc.html",
+  "OpenProject.dc.html",
+  "Present.dc.html",
+  "StageLayers.dc.html"
  ],
  "pages": [],
  "title": "SolarLayout Rooftop — Web Design"
