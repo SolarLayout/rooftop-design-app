@@ -2,12 +2,13 @@ import { describe, expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { E2E_DIR, REPO_ROOT } from "../lib/paths.ts";
-import { BASE_INPUTS, GROUPS, groupById, groupOf, inputsOf, scriptOf, suitesOf, taskOf, type Group } from "./e2e-groups.ts";
+import { BASE_INPUTS, baselinesOf, GROUPS, groupById, groupOf, groupOfBaseline, inputsOf, isBaselines, scriptOf, suitesOf, taskOf, type Group } from "./e2e-groups.ts";
 import { filesMatching as filesOf } from "./input-files.ts";
 
 const filesMatching = (patterns: string[]) => filesOf(patterns, REPO_ROOT);
 
 const SUITES = readdirSync(join(E2E_DIR, "tests")).filter((name) => name.endsWith(".e2e.ts"));
+const BASELINES = [...filesMatching(["e2e/baselines/*/*/*.png"])].sort();
 
 const ownOf = (group: Group) => group.own;
 
@@ -87,15 +88,46 @@ describe("the groups of the browser tests", () => {
     }
   });
 
-  test("shell's own inputs are the union of the others' and every baseline, less the kit's pictures, which the kit suite alone takes", () => {
+  test("shell's own inputs are the union of the others' folders and the shell's own pictures, shell*.png", () => {
     const shell = GROUPS.find((group) => group.id === "shell")!;
     const others = GROUPS.filter((group) => group.id !== "shell").flatMap(ownOf);
-    expect(new Set(shell.own)).toEqual(
-      new Set([...others.filter((pattern) => pattern !== "e2e/baselines/*/*/kit*.png"), "e2e/baselines/*/*/*.png", "!e2e/baselines/*/*/kit*.png"]),
-    );
+    expect(new Set(shell.own)).toEqual(new Set([...others.filter((pattern) => !isBaselines(pattern)), baselinesOf("shell")]));
     const files = filesMatching(shell.own);
-    expect(files.has("e2e/baselines/darwin/desktop/find.png")).toBe(true);
+    expect(files.has("e2e/baselines/darwin/desktop/shell-saved-on-this-device.png")).toBe(true);
+    expect(files.has("e2e/baselines/darwin/desktop/find.png")).toBe(false);
     expect(files.has("e2e/baselines/darwin/desktop/kit.png")).toBe(false);
+  });
+
+  test("a group's own inputs name its pictures by its name, <group>*.png, and no other group's", () => {
+    for (const group of GROUPS) {
+      expect({ group: group.id, baselines: group.own.filter(isBaselines) }).toEqual({ group: group.id, baselines: [baselinesOf(group.id)] });
+    }
+  });
+
+  test("every baseline on disk belongs to exactly one group, by the name its file begins with", () => {
+    expect(BASELINES.length).toBeGreaterThan(100);
+    const ownFiles = new Map(GROUPS.map((group) => [group.id, filesMatching(ownOf(group))]));
+    for (const baseline of BASELINES) {
+      const owners = GROUPS.filter((group) => ownFiles.get(group.id)!.has(baseline)).map((group) => group.id);
+      expect({ baseline, owners }).toEqual({ baseline, owners: [groupOfBaseline(baseline)] });
+    }
+  });
+
+  test("the kit is pictured on phone and desktop alone, so the tablet has no kit*.png (plan/phase-11-plan.md, decision 2)", () => {
+    const kit = BASELINES.filter((baseline) => groupOfBaseline(baseline) === "kit");
+    expect(kit.filter((baseline) => baseline.includes("/tablet/"))).toEqual([]);
+    expect(kit.filter((baseline) => baseline.includes("/phone/")).length).toBeGreaterThan(0);
+    expect(kit.filter((baseline) => baseline.includes("/desktop/")).length).toBeGreaterThan(0);
+  });
+
+  test("a baseline whose name begins with no group's is refused, naming the groups", () => {
+    expect(() => groupOfBaseline("e2e/baselines/darwin/desktop/weather-station.png")).toThrow(
+      /weather-station\.png belongs to no group.*kit, find, studio, performance, handover, home, present, shell/s,
+    );
+    expect(() => groupOfBaseline("e2e/baselines/darwin/desktop/open-project.png")).toThrow(/open-project\.png belongs to no group/);
+    expect(groupOfBaseline("e2e/baselines/darwin/desktop/home-open-project.png")).toBe("home");
+    expect(groupOfBaseline("e2e/baselines/darwin/phone/studio-obstacle-handles.png")).toBe("studio");
+    expect(groupOfBaseline("e2e/baselines/darwin/tablet/kit-part-2.png")).toBe("kit");
   });
 
   test("some group sees every file of the web app and of e2e that the browser tests can see", () => {

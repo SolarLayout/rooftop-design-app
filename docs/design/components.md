@@ -501,7 +501,7 @@ is the drop's "Refused" state at drop time: `note-surface`, the note of 20, "Thi
 and 2. Open it with a newer version of the app."), "Choose another"; Open waits, and the design that is open stays as it
 is (D32). An API that was not reached is refused the same way with Try again under the field, which reads the same file
 again. A second file chosen replaces the first, whatever the first's answer. On phone the dialog is the bottom sheet of
-"Dialog". It is pictured over the Studio (`open-project*.png`); Home opens the same dialog from its row.
+"Dialog". It is pictured over the Studio (`home-open-project*.png`); Home opens the same dialog from its row.
 
 In code: `OpenProject` (`components/home`), opened from the project switcher's row "Open a project" on every workspace
 and from Home; `lib/home/open-project.ts` holds the pure parts (the file by its ending, the request from a `File`, the

@@ -7,6 +7,9 @@ const launchOptions = {
 };
 
 const WITHOUT_A_PAGE = /api-client\.e2e\.ts$/;
+// The kit's suites (kit.e2e.ts, kit-*.e2e.ts) run on phone and desktop alone (plan/phase-11-plan.md, decision 2): its
+// components lay out as on desktop at 834 but for the sheet, which the workspaces' tablet pictures show; a third of the kit's time.
+const THE_KIT = /\/kit(-[^/]+)?\.e2e\.ts$/;
 
 export default defineConfig({
   testDir: "./tests",
@@ -39,7 +42,7 @@ export default defineConfig({
   },
   projects: [
     { name: "phone", testIgnore: WITHOUT_A_PAGE, use: { viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true } },
-    { name: "tablet", testIgnore: WITHOUT_A_PAGE, use: { viewport: { width: 834, height: 1194 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true } },
+    { name: "tablet", testIgnore: [WITHOUT_A_PAGE, THE_KIT], use: { viewport: { width: 834, height: 1194 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true } },
     { name: "desktop", testIgnore: WITHOUT_A_PAGE, use: { viewport: { width: 1440, height: 900 } } },
     // Tests of the web app's client against the real API. They open no page, so one run is enough.
     { name: "api", testMatch: WITHOUT_A_PAGE },

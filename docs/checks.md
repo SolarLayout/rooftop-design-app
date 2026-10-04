@@ -33,7 +33,7 @@ while the suite saturated the machine's twenty cores. A CI-scale job is not an i
 | eslint (web), ruff and import-linter (api) | `lint`, `imports` | the package's files | the same |
 | pytest (api) | `@rooftop/api#test` | the API's files, the weather fixtures of `e2e` | a Python file changed; inside the task pytest-testmon runs only the tests whose code changed, plus the sentinel `tests/engine/test_demo_numbers.py` |
 | bun test (web, tools) | `@rooftop/web#test`, `//#test:tools` | the package's files | the same |
-| Playwright | `//#e2e:<group>`, six tasks | the base and the group's own inputs (below) | something the group's suites can see changed |
+| Playwright | `//#e2e:<group>`, eight tasks | the base and the group's own inputs (below) | something the group's suites can see changed |
 | proofs of the caching | `//#proofs` | the check's code, `turbo.json`, the files the proofs change | the check itself changed |
 
 Every task also keys on the lockfile, the toolchain (`ROOFTOP_TOOLCHAIN`, set by the check from the versions of Node, bun,
@@ -54,14 +54,22 @@ groups are data, `tools/check/e2e-groups.ts`; `turbo.json` and the root scripts 
 
 | Group | Suites, by file name in `e2e/tests` | Own inputs, beside the base |
 |---|---|---|
-| kit | `kit.e2e.ts`, `kit-*.e2e.ts` | `components/kit`, the baselines `kit*.png` |
-| find | `find`, `outline`, `by-hand`, `obstacles` | `components/find`, `lib/map`, `lib/outline` |
-| studio | `array-lens`, `build`, `history`, `lens-switches`, `manipulation`, `modules`, `roof-lens`, `selection`, `shade-map`, `shadow-outlines`, `shell-vitals`, `stage`, `strings-*`, `sun-*`, `time` | `components/studio`, `components/scene`, `lib/scene`, `lib/studio`, `lib/roof-card.ts`, `lib/scene-palette.ts`, and find's (Build and the Roof lens's Edit cross into Find) |
-| performance | `performance*` | `components/performance`, `lib/performance`, and studio's and find's (a voltage is chosen in the Strings lens; a roof is built on the map) |
-| handover | `handover*` | `components/handover`, `lib/handover` |
-| home | `home*` | `components/home`, `lib/home` (Home, and Open a project: a dialog the shell opens from the project switcher on every page), and find's (Home's search is Find's, and "Find my roof" leads to the map at the place) |
-| present | `present*` | `components/present`, `lib/present`, the soak `e2e/soak` (run by hand, never by the check), and studio's (Present reuses the Studio's stage) |
-| shell | `api-client`, `device*`, `fonts`, `routes`, `screens`, `shell`, `smoke`, `tokens` | every other group's, and every baseline but the kit's |
+| kit | `kit.e2e.ts`, `kit-*.e2e.ts` | `components/kit`, the pictures `kit*.png` |
+| find | `find`, `find-screens`, `outline`, `by-hand`, `obstacles` | `components/find`, `lib/map`, `lib/outline`, the pictures `find*.png` |
+| studio | `array-lens`, `build`, `history`, `lens-switches`, `manipulation`, `modules`, `roof-lens`, `selection`, `shade-map`, `shadow-outlines`, `shell-vitals`, `stage`, `strings-*`, `studio-screens`, `sun-*`, `time` | `components/studio`, `components/scene`, `lib/scene`, `lib/studio`, `lib/roof-card.ts`, `lib/scene-palette.ts`, find's folders (Build and the Roof lens's Edit cross into Find), the pictures `studio*.png` |
+| performance | `performance*` (`performance-screens` among them) | `components/performance`, `lib/performance`, studio's and find's folders (a voltage is chosen in the Strings lens; a roof is built on the map), the pictures `performance*.png` |
+| handover | `handover*` (`handover-screens` among them) | `components/handover`, `lib/handover`, the pictures `handover*.png` |
+| home | `home*` (`home-screens` among them) | `components/home`, `lib/home` (Home, and Open a project: a dialog the shell opens from the project switcher on every page), find's folders (Home's search is Find's, and "Find my roof" leads to the map at the place), the pictures `home*.png` |
+| present | `present*` (`present-screens` among them) | `components/present`, `lib/present`, the soak `e2e/soak` (run by hand, never by the check), studio's folders (Present reuses the Studio's stage), the pictures `present*.png` |
+| shell | `api-client`, `device*`, `fonts`, `routes`, `screens`, `shell`, `smoke`, `tokens` | every other group's folders, and the pictures `shell*.png` |
+
+A group's pictures are taken by its screens suite (`<group>-screens.e2e.ts`; the shell's by `screens.e2e.ts`, the kit's by
+`kit.e2e.ts`) and belong to it by name: a group's folders are composed apart from its pictures, so that `find*.png` is find's
+alone though the Studio, Performance, Home and Present see Find's folders. The kit's suites run on phone and desktop (the tablet
+project ignores them, `e2e/playwright.config.ts`: the kit's components lay out as on desktop at 834 but for the sheet, which the
+workspaces' tablet pictures show). Present's tests that run the tour forward frame by frame run on desktop alone (`present.e2e.ts`:
+the tour's logic has no size); what opens Present, reads its words, leaves it and runs axe, and the pictures of Present, run on
+desktop and tablet.
 
 **The base**, an input of every group: `apps/web/app`, `components/shell`, `components/ui`, the files at the roots of
 `components` and `lib` (named one by one, since turbo takes an exclusion out of every input of a task), `lib/api`,
@@ -79,18 +87,21 @@ helpers and fixtures of `e2e`, the tools that start the stack, the lockfile, `.n
 | `components/performance`, `lib/performance` | performance, shell |
 | `components/studio`, `components/scene`, `lib/scene`, `lib/studio` | studio, performance, present, shell |
 | `components/find`, `lib/map`, `lib/outline` | find, studio, performance, home, present, shell |
-| `components/kit` or a `kit*.png` baseline | kit |
+| `components/kit` | kit |
 | a suite of `e2e/tests` | its group alone |
-| any other baseline | shell |
+| a baseline, by the group its name begins with (`kit.png`, `find.png`, `handover.png`, `shell-*.png`) | its group alone (kit, find, handover, shell) |
 | the base: the shell, `components/ui`, the stores, the flow, `lib/device`, the API client, the API, the generated types, the tools, the lockfile | every group |
 | a document | nothing |
 
-The shell group pictures every page (`screens.e2e.ts`) and runs whenever anything of the web changed: it is the floor
-every web change pays. Measured on 2026-10-03, from the test times of a full run over 10 workers: kit about 2.5 minutes
-alone, find 2, studio 12, performance 4, handover 1.5, shell 9.5; everything 31 minutes under the check's own load. Added
-by Phase 10 and measured the same day: home about 5 minutes (its suites edit the demo and run it), present 10 (its tests one
-after the other in their worker: each renders seconds of the tour frame by frame in software WebGL, and four at once starved
-each other past their time); the shell group is 13 to 16 minutes with the pictures of Home and Present.
+The shell group runs whenever anything of the web changed (its suites open every workspace): it is the floor every web
+change pays, with the shell's own pictures alone (`shell*.png`: the project switcher, Saved on this device, Import a drawing)
+since each workspace's pictures moved into its group (Phase 11, pull request 2). Measured on 2026-10-04 after that move, each
+group run alone, one after another, on this machine (the owner's `bun dev` running beside): kit 1.7 minutes (on phone and
+desktop), find 2.4, handover 5.0 (with its 17 pictures), home 3.7, present 4.6 (its frames on desktop alone; 10 before), performance
+6.0, shell 6.7 (13 to 16 before), studio 18.5 (with its 24 pictures; 12 before, without them). Before the move, measured on 2026-10-03 from a full run over 10 workers:
+kit about 2.5 minutes on three sizes, find 2, studio 12, performance 4, handover 1.5, shell 9.5; everything 31 minutes under the
+check's own load; home about 5, present 10. A Handover change pays handover and shell now, about 12 minutes, where it paid 11 to 16
+for the shell's pictures of everything; a Home change about 10.
 
 ## Rules the split makes necessary
 
@@ -105,8 +116,11 @@ each other past their time); the shell group is 13 to 16 minutes with the pictur
    folders up to the base and refuses a file reached outside the group's inputs. A part two workspaces share lives where
    every group sees it: `components/shell` for a component, `lib/flow` or `lib/stores` for logic of the document or the
    results. Never widen a group's inputs to let an import through.
-4. **Baselines belong to the suite that takes them.** The kit's pictures (`kit*.png`) to kit, every other picture to
-   shell. A suite other than `screens.e2e.ts` and `kit.e2e.ts` must not take pictures without the groups being changed.
+4. **Baselines belong to the group whose name they begin with.** `kit*.png` to kit, `find*.png` to find, `studio*.png` to
+   studio, and so on; `shell*.png` to shell. A picture is taken by its group's screens suite (`<group>-screens.e2e.ts`; the
+   shell's by `screens.e2e.ts`, the kit's by `kit.e2e.ts`) and named for that group, so that a changed picture runs its group
+   alone. `groupOfBaseline` refuses a picture no group's name begins, and `bun test tools` fails until it is named for its
+   group. A suite other than a screens suite must not take pictures without the groups being changed.
 5. **Before the check, run the group.** `bun tools/e2e-group.ts handover` (or `bun run e2e:handover`; any Playwright
    argument after it, as `--project=desktop` or `-g "a row pressed"`) runs one group against the test stack
    (`bun dev:bg --profile test`). The check then runs the same suites again under the load of everything else: a test
@@ -155,6 +169,4 @@ every cache; `--only=e2e` and `--skip=e2e` take steps by id.
   groups' folders (`plan/phase-04b-test-caching.md`, the open item). The shell also opens the dialog Open a project
   (`components/shell/Shell.tsx` imports `components/home/OpenProject.tsx`, plan phase 10, step 9): a change to the dialog
   runs home and shell, not the workspaces' suites, none of which opens it.
-- The screens suite pictures every page in one file, so shell runs for every web change. Pictures of one workspace could
-  move into its group's suite; then a Handover change would pay about 3 minutes of browser tests, not 11.
 - A suite that changed runs whole: Playwright has no selection by test, as pytest has with testmon.

@@ -41,7 +41,7 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | Information architecture | `Map.dc.html` | `ia-map.png` | |
 | Home | `Home.dc.html`, `HomeTablet.dc.html`, `HomePhone.dc.html` | `home-desktop.png`, `home-tablet.png`, `home-phone.png` | desktop, tablet, phone |
 | Home, designs on this device | `HomeDesigns.dc.html` | `home-designs.png` | desktop, phone in parts |
-| Open a project | `OpenProject.dc.html` | `open-project.png` | desktop, phone in parts |
+| Open a project | `OpenProject.dc.html` | `home-open-project.png` | desktop, phone in parts |
 | Present | `Present.dc.html` | `present.png` | desktop in parts |
 | Find and outline | `Locate.dc.html`, `LocatePhone.dc.html`, `LocateTablet.dc.html` | `find-outline-desktop.png`, `find-outline-phone.png`, `find-outline-tablet.png` | desktop, phone, tablet |
 | Find and outline, states and tools | `LocateStates.dc.html` | `find-outline-states.png` | |

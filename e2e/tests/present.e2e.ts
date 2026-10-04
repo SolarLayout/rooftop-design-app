@@ -5,13 +5,18 @@ import { pixelsAt, sceneCanvas, stage, type Pixel, type Share } from "../stage";
 
 // Present (plan/phase-10-plan.md, steps 18 to 21, decisions 8 to 11; the board "Present"): the Studio's stage on the whole
 // screen without the shell's chrome, the tour of six scenes on the app's clock, looping; any key or touch returns to the
-// Studio's last lens; reduced motion as cuts; nothing asked of the API; the frame budget. On desktop and tablet: the
-// phone has no Present. The page's clock is installed and run forward scene by scene, so that a test is not 40 s of
-// waiting: every timer and animation frame of the page fires as the clock is run, and the stage stands still between.
+// Studio's last lens; reduced motion as cuts; nothing asked of the API; the frame budget. On desktop and tablet (the
+// phone has no Present), the tour's frames on desktop alone. The page's clock is installed and run forward scene by
+// scene, so that a test is not 40 s of waiting: every timer and animation frame of the page fires as the clock is run,
+// and the stage stands still between.
 
 const RUN = 90_000;
 const isPhone = (projectName: string) => projectName === "phone";
 const isDesktop = (projectName: string) => projectName === "desktop";
+// The tests that run the tour forward frame by frame are the desktop's alone (plan/phase-11-plan.md, decision 3): the tour's
+// logic has no size, and each renders seconds of the tour in software WebGL. What opens Present, reads its words and its hint,
+// leaves it by a key or a touch, and axe run on desktop and tablet; the pictures of Present (present-screens.e2e.ts) on both.
+const FRAMES_ON_DESKTOP = "The tour's logic has no size: its frames are rendered on desktop alone (plan/phase-11-plan.md, decision 3).";
 
 const OPENED = new Date("2026-10-03T09:00:00");
 
@@ -201,7 +206,8 @@ test.describe("the tour", () => {
     expect([stageBox!.width, stageBox!.height]).toEqual([size.width, size.height]);
   });
 
-  test("the scenes are seen in order by their words, each within its time", async ({ page }) => {
+  test("the scenes are seen in order by their words, each within its time", async ({ page }, testInfo) => {
+    test.skip(!isDesktop(testInfo.project.name), FRAMES_ON_DESKTOP);
     const tour = await presentOpened(page);
 
     for (const [index, scene] of SCENES.entries()) {
@@ -210,7 +216,8 @@ test.describe("the tour", () => {
     }
   });
 
-  test("in the modules' scene the stage's text equivalent counts fewer modules than the layout, then all", async ({ page }) => {
+  test("in the modules' scene the stage's text equivalent counts fewer modules than the layout, then all", async ({ page }, testInfo) => {
+    test.skip(!isDesktop(testInfo.project.name), FRAMES_ON_DESKTOP);
     const tour = await presentOpened(page);
     await expect(modulesSaid(page)).toHaveText(/^0 of [\d,]+ modules in \d+ rows$/);
     const total = Number((await modulesSaid(page).textContent())!.match(/of ([\d,]+) modules/)![1]!.replace(",", ""));
@@ -225,7 +232,8 @@ test.describe("the tour", () => {
     await expect(modulesSaid(page)).toHaveText(new RegExp(`^${total.toLocaleString("en-US")} of ${total.toLocaleString("en-US")} modules`));
   });
 
-  test("in the day's scene the time moves from sunrise toward sunset; the strings' scene holds the Studio's hour again", async ({ page }) => {
+  test("in the day's scene the time moves from sunrise toward sunset; the strings' scene holds the Studio's hour again", async ({ page }, testInfo) => {
+    test.skip(!isDesktop(testInfo.project.name), FRAMES_ON_DESKTOP);
     const tour = await presentOpened(page);
     await expect(sunSaid(page)).toContainText("10:30 solar time");
 
@@ -241,7 +249,8 @@ test.describe("the tour", () => {
     await expect(sunSaid(page)).toContainText("10:30 solar time");
   });
 
-  test("in the strings' scene the glass takes the series colours, by MPPT", async ({ page }) => {
+  test("in the strings' scene the glass takes the series colours, by MPPT", async ({ page }, testInfo) => {
+    test.skip(!isDesktop(testInfo.project.name), FRAMES_ON_DESKTOP);
     const tour = await presentOpened(page);
     // The modules whole, the hour held: the band at the end of the filling scene against the same band in the strings' scene.
     await tour.at(2, 5900);
@@ -257,7 +266,8 @@ test.describe("the tour", () => {
     expect(changed.filter((pixel) => seriesOfPixel(pixel) > 0).length, "of them, in a series colour").toBeGreaterThanOrEqual(3);
   });
 
-  test("in the last scene the energy counts from 0 to the run's MWh, the chain cascading beside it; before it nothing of the figures is there", async ({ page }) => {
+  test("in the last scene the energy counts from 0 to the run's MWh, the chain cascading beside it; before it nothing of the figures is there", async ({ page }, testInfo) => {
+    test.skip(!isDesktop(testInfo.project.name), FRAMES_ON_DESKTOP);
     const answered = page.waitForResponse((response) => response.url().endsWith("/api/design"), { timeout: RUN });
     const tour = await presentOpened(page);
     const events = (await (await answered).text()).split("\n").filter((line) => line.startsWith("data:"));
@@ -282,7 +292,8 @@ test.describe("the tour", () => {
     await expect(figures).toContainText(`Array nominal energy at STC ${chosen.energy.steps.find((step) => step.kind === "energy_total")!.value.toFixed(1)}`);
   });
 
-  test("the loop begins again after 40 s, and the hint has faded", async ({ page }) => {
+  test("the loop begins again after 40 s, and the hint has faded", async ({ page }, testInfo) => {
+    test.skip(!isDesktop(testInfo.project.name), FRAMES_ON_DESKTOP);
     const tour = await presentOpened(page);
 
     await tour.at(6, 100);
@@ -294,7 +305,8 @@ test.describe("the tour", () => {
     await expect(present(page).locator("canvas")).toBeVisible();
   });
 
-  test("under reduced motion the scenes are cuts: everything whole from the start of its scene", async ({ page }) => {
+  test("under reduced motion the scenes are cuts: everything whole from the start of its scene", async ({ page }, testInfo) => {
+    test.skip(!isDesktop(testInfo.project.name), FRAMES_ON_DESKTOP);
     await page.emulateMedia({ reducedMotion: "reduce" });
     const tour = await presentOpened(page);
     await expect(onTheRoof(page)).toHaveAttribute("data-motion", "reduced");
@@ -310,7 +322,8 @@ test.describe("the tour", () => {
     await expect(sunSaid(page)).toHaveText(/0[789]:\d\d solar time/);
   });
 
-  test("the stage is drawn: the middle of the screen is the design, not the background", async ({ page }) => {
+  test("the stage is drawn: the middle of the screen is the design, not the background", async ({ page }, testInfo) => {
+    test.skip(!isDesktop(testInfo.project.name), FRAMES_ON_DESKTOP);
     const tour = await presentOpened(page);
     await tour.at(3, 100);
 
@@ -332,7 +345,8 @@ test.describe("the tour", () => {
 
 // Nothing of Present asks the API (plan/phase-10-plan.md, step 20, decision 8): once the design is loaded the tour runs
 // from the results kept in the stores, so it works with the API offline.
-test("with every route of the API refused during the tour, nothing is asked and a whole loop completes", async ({ page }) => {
+test("with every route of the API refused during the tour, nothing is asked and a whole loop completes", async ({ page }, testInfo) => {
+  test.skip(!isDesktop(testInfo.project.name), FRAMES_ON_DESKTOP);
   const tour = await presentOpened(page);
   const asked: string[] = [];
   await page.route("**/api/**", (route) => {
