@@ -14,6 +14,7 @@
   "scripts": {
     "dev": "bun tools/dev.ts start",
     "dev:bg": "bun tools/dev.ts start --detach",
+    "start": "bun tools/dev.ts start --profile start",
     "stop": "bun tools/dev.ts stop",
     "status": "bun tools/dev.ts status",
     "check": "bun tools/check.ts",
