@@ -26,6 +26,11 @@ const CHIP = classNames(
   "desktop:min-h-8.5 desktop:type-small",
 );
 const CAPTION = "type-caption text-text-3 tablet:order-3";
+// On phone the label takes what the field leaves and wraps inside it ("Rear shading and / mismatch", the board "Weather and
+// assumptions"), so that the field stays on its row; what the field says alone drops under them. From tablet on the label
+// is one word run in the chip.
+const LABEL_COLUMN = "flex min-w-0 grow basis-0 flex-col gap-0.5 tablet:contents";
+const LEVELS_LABEL = "min-w-0 grow basis-0 text-text-2 tablet:grow-0 tablet:basis-auto";
 
 /** The width of a well, by what it holds: the board's 84 for Uc with its unit, 64 for a percent, 60 for the albedo, 104 for t/MWh, 40 for a level. */
 const WIDTH: Record<AssumptionId, string> = {
@@ -41,7 +46,7 @@ const LEVEL_WIDTH = "w-13 tablet:w-10";
 function FieldChip({ field, onField }: { field: Field; onField: Props["onField"] }) {
   return (
     <div data-testid="assumption" data-assumption={field.id} className={CHIP}>
-      <div className="flex flex-col gap-0.5 tablet:contents">
+      <div className={LABEL_COLUMN}>
         <span className="text-text-2">{field.label}</span>
         {field.detail ? <span className={CAPTION}>{field.detail}</span> : null}
         {field.reset ? (
@@ -66,7 +71,7 @@ function FieldChip({ field, onField }: { field: Field; onField: Props["onField"]
 function LevelsChip({ field, onLevel }: { field: LevelsField; onLevel: Props["onLevel"] }) {
   return (
     <div data-testid="assumption" data-assumption="p_levels" className={CHIP}>
-      <span className="text-text-2">{field.label}</span>
+      <span className={LEVELS_LABEL}>{field.label}</span>
       {/* The three fields in one wrapping row, so that what a field says can take a line of its own under them. */}
       <span className="flex flex-wrap items-center gap-x-0.5">
         {field.levels.map((level, index) => (
