@@ -35,3 +35,6 @@ next-env.d.ts
 
 # pytest-testmon: which tests each Python file affects; a cache, never committed
 apps/api/.testmondata*
+
+# Worktrees of the agents of this harness, made beside the repo while they work
+.claude/
