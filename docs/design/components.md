@@ -931,3 +931,18 @@ In code: `TopBar`, `WorkspaceNav`, `TabBar`, `LensNav`, `Shell`, `Studio` (`comp
   (Phase 5).
 - The inspector is a placeholder. It stands three times in the page, once for each size; how the real one is
   mounted is decided with it (Phase 5).
+
+## Layers button (the stage)
+The board "Stage, Layers" (`mockups/StageLayers.dc.html`). The fourth control of the view, after Fit and the north
+button, 8 from it, in any lens: a secondary icon button of 38 (44 on tablet and phone), `control` with the line,
+`radius-control` (`radius-row` on touch), `shadow-raised`, the icon of three stacked sheets 20 (22 on touch) in text-2;
+its name is "Layers". States as the icon button's: hover (`control-hover`, `line-hover`, raised by 1,
+`shadow-raised-hover`, the icon in text), pressed, focus (the ring), and open (`control-pressed`, `line-strong`,
+`shadow-pressed`, the icon in text, `aria-expanded`) while its panel is open; never disabled. On the phone it stands
+beside 3D or Plan alone. Pressed, it opens a floating panel of 240 (the `FloatingPanel` at the width of a card's menu:
+`surface-1`, border `line-strong`, `radius-card-s`, `shadow-float`, padding 6) 6 under it with their right edges in
+line, on every size, not a bottom sheet: the title "Layers" in `text-section`, and one row of 44 (48 on touch) with the
+switch "Satellite imagery", on by default, its hint "Off: the plain grid" in `text-caption` text-3. On: the imagery
+under the building with its attribution at the stage's bottom left. Off: the plain ground of the 3D palette with its
+grid, and no attribution. The switch takes effect at once; Escape, the button and a press beside the panel close it,
+and the focus goes back to the button. What it sets is of the view (the view store), not of the design.

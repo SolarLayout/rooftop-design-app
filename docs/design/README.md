@@ -53,6 +53,7 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | Obstacle edited on the roof | `ObstacleOnRoof.dc.html` | `studio-obstacle-on-roof.png` | desktop, phone in parts |
 | Roof types in 3D | `RoofTypes3D.dc.html` | `studio-roof-types-3d.png` | desktop |
 | Studio, Array lens, states | `ArrayLensStates.dc.html` | `studio-array-lens-states.png` | desktop in parts |
+| Stage, Layers | `StageLayers.dc.html` | `studio-stage-layers.png` | desktop; desktop, tablet, phone in parts |
 | Import with missing heights | `ImportHeights.dc.html` | `studio-import-heights.png` | desktop, phone in parts |
 | Studio, Sun lens | `SunLens.dc.html`, `SunLensTablet.dc.html`, `SunLensPhone.dc.html` | `studio-sun-lens-desktop.png`, `studio-sun-lens-tablet.png`, `studio-sun-lens-phone.png` | desktop, tablet, phone |
 | Time on the stage | `SunTime.dc.html` | `studio-sun-time.png` | desktop, tablet, phone in parts |
@@ -132,10 +133,14 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   and word is the engine's and the API's for the Pune demo, kept in `mockups/home_data.json` (the demo card's facts, three kept designs
   with their words and times, the engine's sentences for a file of another format and for the files a format 1 project names without their
   text), so that the boards can be written again without the engine.
+- `mockups/build_phase11_layers_board.py` writes the board "Stage, Layers" (the Layers button of the view controls, its panel with the
+  switch Satellite imagery, the ground as imagery or the plain grid, on desktop whole and in parts on three sizes), drawn on 2026-10-04 by
+  session 14 (`plan/phase-11-plan.md`, decision 22 and step 35). The stages are the approved Studio boards' own, with the button, the panel
+  and the ground changed; the imagery under the 3D is the illustration of the Find boards laid on the ground plane by the boards' projection.
 - A preview is the board rendered at its `$preview` size (the tail of each `.dc.html`) by a scratch Playwright script outside the
   repo: Chromium from `e2e/node_modules/@playwright/test`, the fonts served from `apps/web/app/fonts` and `apps/web/node_modules/geist`
   in place of the Google link in the board's `helmet`, `support.js` stubbed, everything else off the machine refused.
-- `mockups/canvas.json` is the layout of the boards on the canvas: 52 boards. The canvas at claude.ai holds 27 of them,
+- `mockups/canvas.json` is the layout of the boards on the canvas: 53 boards. The canvas at claude.ai holds 27 of them,
   published on 2026-09-30, and is behind the repo by the board ImportHeights changed on 2026-10-01 and the five new boards
   of Phase 6 with the redrawn Sun lens, the five new boards of Phase 7 with the redrawn Strings lens, and the six new boards of Phase 8 with the redrawn
-  Performance, the four new boards of Phase 9 with the redrawn Handover, and the five new boards of Phase 10: sessions on Bedrock have no Artifact tool to publish them.
+  Performance, the four new boards of Phase 9 with the redrawn Handover, the five new boards of Phase 10, and the board "Stage, Layers" of Phase 11: sessions on Bedrock have no Artifact tool to publish them.
