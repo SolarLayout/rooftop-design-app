@@ -3,7 +3,7 @@
 // start. Under reduced motion an hour a second. A time set by anything else (a drag, a key, another day)
 // stops it. A store without React; the clock is given, so that a test lets the time pass.
 import type { Clock } from "../clock";
-import type { DayHours } from "../scene/sun-day";
+import type { DayHours } from "./sun-day";
 import type { ViewStore } from "../stores/view-store";
 
 const STEP = { hours: 0.25, milliseconds: 250 };

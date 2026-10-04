@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { PALETTE } from "../scene-palette";
+import { PALETTE } from "../geometry/scene-palette";
 import type { Tile, TileSet } from "./ground";
 import { stitchTiles, type CanvasLike, type TileFetcher } from "./stitch";
 

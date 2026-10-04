@@ -3,7 +3,7 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo } from "react";
 import { Vector3 } from "three";
-import type { SceneXYZ } from "@/lib/scene/adapter";
+import type { SceneXYZ } from "@/lib/geometry/adapter";
 import { bearingOf, pixelOf, type LabelKind, type StageLabel } from "@/lib/scene/projection";
 import type { StageStore } from "@/lib/scene/stage-store";
 

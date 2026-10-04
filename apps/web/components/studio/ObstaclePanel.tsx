@@ -15,7 +15,7 @@ import { shown } from "@/components/ui/number-entry";
 import { StatusMark } from "@/components/ui/StatusMark";
 import { useFloating } from "@/components/ui/use-floating";
 import type { Obstacle, Project, Roof } from "@/lib/api";
-import { centroidOf } from "@/lib/outline/measure";
+import { centroidOf } from "@/lib/geometry/measure";
 import {
   factOfNewKind,
   factsOf,
@@ -34,7 +34,7 @@ import {
   type DraftObstacle,
   type ObstacleFieldId,
   type ObstacleKind,
-} from "@/lib/studio/obstacle-fields";
+} from "@/lib/geometry/obstacle-fields";
 import { indexToReview, REVIEW_HINT } from "@/lib/studio/review-heights";
 import { draftOf, draggingOf, selectionOf, toReviewOf } from "@/lib/stores/view-store";
 import { fieldsLayoutOf, SECTION } from "./inspector-look";

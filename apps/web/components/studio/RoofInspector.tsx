@@ -12,7 +12,7 @@ import { Segmented } from "@/components/ui/Segmented";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { StatusMark } from "@/components/ui/StatusMark";
 import type { Project, Roof } from "@/lib/api";
-import { roofCardOf, type RoofCard } from "@/lib/roof-card";
+import { roofCardOf, type RoofCard } from "@/lib/geometry/roof-card";
 import { roofFieldsOf, withRoofField, type RoofFieldId } from "@/lib/studio/roof-fields";
 import { HEIGHTS_SET, indexToReview, namesToReview, toReviewWordsOf } from "@/lib/studio/review-heights";
 import { withRoofType } from "@/lib/studio/roof-type";

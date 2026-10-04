@@ -5,7 +5,7 @@ import { Dialog } from "@/components/ui/Dialog";
 import { FileDrop, type FileDropState } from "@/components/ui/FileDrop";
 import { api, ApiError, type WeatherResponse } from "@/lib/api";
 import { CSV_WORDS, csvSummaryLinesOf } from "@/lib/performance/weather-csv";
-import type { WeatherChosen } from "@/lib/performance/weather-source";
+import type { WeatherChosen } from "@/lib/flow/weather-source";
 import { NoteLine } from "./NoteLine";
 
 type Props = {

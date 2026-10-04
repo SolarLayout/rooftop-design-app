@@ -1,6 +1,7 @@
-// What the web app's files import, for the test that a group's own folders reach nothing outside the group's
-// inputs: an import that crosses into another group's folder changes a screen the group pictures without
-// running the group. Pure: the sources and the file system come in as functions.
+// What the web app's files import, for the tests that a group's own folders reach nothing outside the group's
+// inputs and that the base reaches nothing of the groups' own folders: an import that crosses into another
+// group's folder changes a screen the group pictures without running the group. Pure: the sources and the file
+// system come in as functions.
 
 import { dirname, posix } from "node:path";
 
@@ -74,4 +75,22 @@ export function reachableFrom(starts: string[], importsOfFile: (file: string) =>
     }
   }
   return reached;
+}
+
+/**
+ * Whether a file of the base is one the rule walks (the path from the app's root): a source of the web app, not a
+ * page (`app/**`: the pages are the entry points of the workspaces and import their workspace's component) and not
+ * a test. The base's own `*.test.ts` files are left out on purpose (decided in Phase 11, pull request 4): a test is
+ * run by bun and reached by no page, so what it imports changes no screen, and some read a workspace's fixtures
+ * (`lib/flow/name-field.test.ts` and `lib/format/cascade.test.ts` read Handover's and Performance's `test-fixtures.ts`).
+ */
+export function isWalkedOfTheBase(file: string): boolean {
+  return /\.tsx?$/.test(file) && !file.startsWith("app/") && !/\.test\.tsx?$/.test(file);
+}
+
+export type Crossing = { importer: string; imported: string };
+
+/** The imports of the files that land outside, each with the file that made it, in the order of the files and of their imports. */
+export function crossingsOf(files: string[], importsOfFile: (file: string) => string[], isOutside: (file: string) => boolean): Crossing[] {
+  return files.flatMap((file) => importsOfFile(file).filter(isOutside).map((imported) => ({ importer: file, imported })));
 }

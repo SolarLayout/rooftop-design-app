@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/Button";
 import { classNames } from "@/components/ui/class-names";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { Skeleton } from "@/components/ui/Skeleton";
-import type { DownloadStatus } from "@/lib/handover/downloads-store";
-import type { Deliverable } from "@/lib/handover/items";
+import type { DownloadStatus } from "@/lib/stores/downloads-store";
+import type { Deliverable } from "@/lib/flow/deliverables/items";
 import type { HandoverItem } from "@/lib/routes";
 import { DeliverableRow, type Open } from "./DeliverableRow";
 

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { clockOfTheTest } from "../clock-of-the-test";
-import type { DayHours } from "../scene/sun-day";
+import type { DayHours } from "../flow/sun-day";
 import { cameraFromOf, cameraMoveOf, cameraOf, cameraRequestOf, createViewStore, presentationOf, sunTimeOf } from "../stores/view-store";
 import { createTour, TICK } from "./create-tour";
 import { LOOP } from "./tour";

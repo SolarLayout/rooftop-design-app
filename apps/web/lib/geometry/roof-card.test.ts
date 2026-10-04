@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { Roof } from "./api";
+import type { Roof } from "../api";
 import { roofCardOf } from "./roof-card";
 
 const roof = (changes: Partial<Roof> = {}): Roof =>

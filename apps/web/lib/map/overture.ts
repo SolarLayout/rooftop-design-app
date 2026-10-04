@@ -3,7 +3,7 @@
 // cut by a tile edge is proposed as the piece under the press.
 import type { Geometry, Position } from "geojson";
 import { frameAt, toMetres, type Frame, type LonLat } from "../outline/frame";
-import { areaOf, type XY } from "../outline/measure";
+import { areaOf, type XY } from "../geometry/measure";
 
 export const OVERTURE_RELEASE = "2026-09-23.1";
 export const FOOTPRINTS_URL = `https://tiles.overturemaps.org/${OVERTURE_RELEASE}/buildings.pmtiles`;

@@ -8,7 +8,7 @@ import { useHistoryKeys } from "@/components/shell/use-history-keys";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
 import { bomViewOf } from "@/lib/handover/bom-view";
-import { allStatusOf, byItemOf, keptOf, pagesOf, pagesStatusOf } from "@/lib/handover/downloads-store";
+import { allStatusOf, byItemOf, keptOf, pagesOf, pagesStatusOf } from "@/lib/stores/downloads-store";
 import { IN_THE_REPORT } from "@/lib/handover/in-the-report";
 import { scheduleViewOf } from "@/lib/handover/schedule-view";
 import type { Sort } from "@/components/ui/table-sort";

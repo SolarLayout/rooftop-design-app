@@ -3,7 +3,7 @@
 import { classNames } from "@/components/ui/class-names";
 import { NorthIcon } from "@/components/find/NorthIcon";
 import type { Layout, Roof } from "@/lib/api";
-import { footprintsOf, pathOf, viewBoxOf } from "@/lib/scene/plan";
+import { footprintsOf, pathOf, viewBoxOf } from "@/lib/geometry/plan";
 
 type Props = {
   roof: Roof;

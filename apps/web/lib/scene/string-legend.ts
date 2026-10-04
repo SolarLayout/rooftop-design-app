@@ -2,7 +2,7 @@
 // "Studio, Strings lens" on three sizes): what each colour marks, by string, by MPPT or by inverter, then the
 // positions not used. Pure: the swatch is the number of a series colour, which the component draws with its token;
 // the words are never in a series colour.
-import { categoryOf, numberOfString, seriesOf, type Colouring, type Wired } from "./string-colours";
+import { categoryOf, numberOfString, seriesOf, type Colouring, type Wired } from "../stores/string-colours";
 
 /** A series colour by its number, from 1 to 6, or the grey of the positions not used. */
 export type Swatch = number | "unused";

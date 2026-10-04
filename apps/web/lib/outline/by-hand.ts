@@ -3,7 +3,7 @@
 // corners go to the outline reducer as a roof loaded, at that place, and everything after is the same as
 // for a roof drawn on the map: the tiles, the roof type, Build.
 import type { LonLat } from "./frame";
-import type { XY } from "./measure";
+import type { XY } from "../geometry/measure";
 import { turnedAbout } from "./rectangle";
 
 export type Shape = "rectangle" | "corners";

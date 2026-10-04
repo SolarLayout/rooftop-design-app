@@ -7,7 +7,7 @@ import type { DesignResult } from "../api";
 import type { Decision, FailedRow } from "../performance/page-view";
 import { pathOfLens } from "../routes";
 import type { Failure, Status } from "../stores/results-store";
-import { deliverablesOf, type Deliverable } from "./items";
+import { deliverablesOf, type Deliverable } from "../flow/deliverables/items";
 
 export type { Decision, FailedRow };
 

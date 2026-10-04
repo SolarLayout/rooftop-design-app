@@ -20,11 +20,11 @@ import { factsWordsOf, waitingWordsOf } from "@/lib/present/words";
 import { pathOfLens } from "@/lib/routes";
 import { createStageStore, groundOf, type StageStore } from "@/lib/scene/stage-store";
 import { revealedCountOf } from "@/lib/scene/reveal";
-import { hoursOf } from "@/lib/scene/sun-day";
+import { hoursOf } from "@/lib/flow/sun-day";
 import { nameOf, projectOf } from "@/lib/stores/project-store";
 import { chosenOptionOf, isDesignUpdating, layoutOf, noOptionsOf, sunDayOf } from "@/lib/stores/results-store";
 import { lensOf, presentationOf, sunTimeOf } from "@/lib/stores/view-store";
-import { readOutOf } from "@/lib/studio/sun-time";
+import { readOutOf } from "@/lib/flow/sun-time";
 import { PresentFigures } from "./PresentFigures";
 
 // The scene draws with WebGL in the browser alone: it is loaded there, never on the server.

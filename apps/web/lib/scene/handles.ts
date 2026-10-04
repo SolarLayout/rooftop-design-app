@@ -5,10 +5,10 @@ import { Plane, Ray, Vector3 } from "three";
 import { SNAP_DEGREES } from "../../components/ui/design-numbers";
 import type { Obstacle } from "../api";
 import { boxWithCorner } from "../outline/obstacles";
-import { withObstacleField } from "../studio/obstacle-fields";
-import { toScene, type XY, type XYZ } from "./adapter";
-import { onTheRoofPlane, SNAP_M } from "./drag";
-import type { HeightAt } from "./obstacles";
+import { withObstacleField } from "../geometry/obstacle-fields";
+import { toScene, type XY, type XYZ } from "../geometry/adapter";
+import { onTheRoofPlane, SNAP_M } from "../stores/drag";
+import type { HeightAt } from "../geometry/obstacles";
 
 export type BoxOnTheRoof = { x: number; y: number; length: number; width: number; rotationDeg: number };
 

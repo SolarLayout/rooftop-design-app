@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { edgesOf } from "../outline/measure";
+import { edgesOf } from "../geometry/measure";
 import { footprintOutline, FOOTPRINTS_ATTRIBUTION, FOOTPRINTS_URL, ringOf } from "./overture";
 
 // A footprint of Overture, as a tile gives it, to the corners of an outline. The 90 by 40 m rectangle of

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { PALETTE } from "../scene-palette";
+import { PALETTE } from "../geometry/scene-palette";
 import { glassColoursOf, shadeColoursOf } from "./shade-colours";
 
 // The glass of each position (plan/phase-06-plan.md, decision 12; plan/phase-07-plan.md, step 13): the modules'

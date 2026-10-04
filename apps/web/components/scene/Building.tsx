@@ -3,10 +3,10 @@
 import type { ThreeEvent } from "@react-three/fiber";
 import { useMemo } from "react";
 import { BackSide, BufferGeometry, DoubleSide, Float32BufferAttribute, Shape, ShapeGeometry } from "three";
-import { FLAT, toScene, toScenePoint, type XY } from "@/lib/scene/adapter";
+import { FLAT, toScene, toScenePoint, type XY } from "@/lib/geometry/adapter";
 import { frameOf, parapetWallsOf, wallOf, type RoofOfTheScene } from "@/lib/scene/building";
 import { liftOf, risenScaleOf } from "@/lib/scene/reveal";
-import { PALETTE } from "@/lib/scene-palette";
+import { PALETTE } from "@/lib/geometry/scene-palette";
 import { onPress } from "./pointer";
 
 /** How far the building goes down under the roof: the design does not say, so every building is this deep. */

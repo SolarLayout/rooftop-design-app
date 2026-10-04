@@ -2,9 +2,9 @@
 // Nothing of it is a part of the design: it is not in the .rtd document.
 import { createStore } from "zustand/vanilla";
 import type { Lens } from "../routes";
-import type { Colouring } from "../scene/string-colours";
-import { sameObstacle, type Dragging } from "../scene/drag";
-import type { DraftObstacle } from "../studio/obstacle-fields";
+import type { Colouring } from "./string-colours";
+import { sameObstacle, type Dragging } from "./drag";
+import type { DraftObstacle } from "../geometry/obstacle-fields";
 
 /** Where the camera stands (docs/design/guidelines.md, "3D scene"). */
 export const CAMERA_PRESETS = ["3d", "plan", "fit", "sun-eye"] as const;

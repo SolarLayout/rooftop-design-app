@@ -5,7 +5,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, type ComponentRef } from "react";
 import { OrthographicCamera as Orthographic, TOUCH, Vector3 } from "three";
 import { useView } from "@/components/shell/stores";
-import type { SceneXYZ } from "@/lib/scene/adapter";
+import type { SceneXYZ } from "@/lib/geometry/adapter";
 import { distanceLimitsOf, nearAndFarOf, planZoomOf, presetPositionOf, zoomLimitsOf } from "@/lib/scene/camera";
 import { ABOVE_THE_ROOF, easeInOut, isSettled, offTheZenith, pathAt, settleShareOf } from "@/lib/scene/camera-move";
 import { cameraFromOf, cameraMoveOf, cameraOf, cameraRequestOf, northRequestOf } from "@/lib/stores/view-store";

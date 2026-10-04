@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { stringLegendOf } from "./string-legend";
-import type { Wired } from "./string-colours";
+import type { Wired } from "../stores/string-colours";
 
 // The legend of the strings on the stage (plan/phase-07-plan.md, step 14; the boards "Strings on the roof" and
 // "Studio, Strings lens"): by MPPT "MPPT 1" to "MPPT 6", by inverter "INV-1"…, by string the six colours in turn with

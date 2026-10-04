@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { XY } from "./measure";
+import type { XY } from "../geometry/measure";
 import { isClosedAndSettled, outlineAfter, START, type OutlineEvent, type OutlineState } from "./outline-state";
 
 // The obstacles in the reducer of the outline (plan/phase-04-plan.md, step 14): a box, a tank, a wall

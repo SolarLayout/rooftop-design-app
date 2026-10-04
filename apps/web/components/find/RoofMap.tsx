@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { classNames } from "@/components/ui/class-names";
 import { measures } from "@/components/ui/measures";
 import { SCALE_BAR_MAX } from "@/components/ui/design-numbers";
-import type { Imagery } from "@/lib/map/provider";
+import type { Imagery } from "@/lib/places/provider";
 import { metresPerPixel, scaleBarOf, type ScaleBar } from "@/lib/map/scale-bar";
 import { OutlineLayer, type OutlineProps } from "./OutlineLayer";
 

@@ -4,7 +4,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Stat, Stats } from "@/components/ui/Stat";
 import type { DemoCard as Card } from "@/lib/home/home-view";
-import { RUNS_IN_THE_STUDIO } from "@/lib/home/open-project";
+import { RUNS_IN_THE_STUDIO } from "@/lib/flow/open-project";
 
 /** What is known of the demo: on its way from the API, here, or not come with the API's words. */
 export type Demo = { kind: "on-its-way" } | { kind: "here"; card: Card } | { kind: "failed"; words: string };

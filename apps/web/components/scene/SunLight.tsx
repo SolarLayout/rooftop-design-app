@@ -4,7 +4,7 @@ import { useLayoutEffect, useRef } from "react";
 import { DirectionalLight } from "three";
 import { sunDirectionOf, type Sun } from "@/lib/scene/camera";
 import { fadeOf, intensitiesOf, shadowBiasOf } from "@/lib/scene/sun-light";
-import { PALETTE } from "@/lib/scene-palette";
+import { PALETTE } from "@/lib/geometry/scene-palette";
 import { useSun } from "./use-sun";
 
 type Props = {

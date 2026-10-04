@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Obstacle } from "../api";
-import type { DraftObstacle } from "../studio/obstacle-fields";
+import type { DraftObstacle } from "../geometry/obstacle-fields";
 import { cameraFromOf, cameraMoveOf, cameraOf, cameraRequestOf, createViewStore, presentationOf, draftOf, draggingOf, isPlayingOf, isShadeMapShownOf, lensOf, litStringsOf, onTheRoofOf, sunTabOf, northRequestOf, selectionOf, showsSunPathOf, stringColouringOf, stringsShownByOf, sunTimeOf, toReviewOf, tracedStringOf } from "./view-store";
 
 describe("the view", () => {

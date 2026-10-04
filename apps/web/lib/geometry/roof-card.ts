@@ -1,11 +1,11 @@
 // The words of the card of the roof in the Roof lens (the boards "Studio, Roof lens" on three sizes and
 // "Import with missing heights"): where it is, how it was entered, what it has, its size and the direction
 // it faces, and the file it came from. Of the document's metres, which are the API's.
-import { shown } from "../components/ui/number-entry";
-import type { Roof } from "./api";
-import { placeInFull } from "./format/place";
-import { areaOf, edgesOf, facingOf, type XY } from "./outline/measure";
-import { isRectangle } from "./outline/typed-length";
+import { shown } from "../../components/ui/number-entry";
+import type { Roof } from "../api";
+import { placeInFull } from "../format/place";
+import { areaOf, edgesOf, facingOf, type XY } from "./measure";
+import { isRectangle } from "./typed-length";
 
 export type RoofCard = {
   place: string;

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { XY } from "./measure";
+import type { XY } from "../geometry/measure";
 import { edgeNamesOf, measurementsOf, outlineAfter, START, type OutlineEvent, type OutlineState } from "./outline-state";
 
 // The outline as it is drawn: corners in metres in a flat frame, closed or not, one selected, the

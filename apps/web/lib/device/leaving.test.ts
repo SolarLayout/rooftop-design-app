@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { DownloadsState } from "../handover/downloads-store";
+import type { DownloadsState } from "../stores/downloads-store";
 import { shouldWarnBeforeLeaving } from "./leaving";
 
 // The warning before leaving (plan/phase-10-plan.md, step 6): the browser asks before the page is left while a file of

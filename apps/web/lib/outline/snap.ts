@@ -1,6 +1,6 @@
 // Snapping while a corner is placed or dragged: to a right angle with the edge before, to a parallel of
 // an existing edge, and closing on the first corner (plan/phase-04-find-and-outline.md, "Snapping").
-import { bearingOf, type XY } from "./measure";
+import { bearingOf, type XY } from "../geometry/measure";
 
 export type SnappedTo = "right-angle" | "parallel" | null;
 

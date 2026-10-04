@@ -4,13 +4,13 @@ import { useThree, type ThreeEvent } from "@react-three/fiber";
 import { useMemo, useRef, useState } from "react";
 import { BackSide, BoxGeometry, BufferGeometry, CylinderGeometry, EdgesGeometry, ExtrudeGeometry, Float32BufferAttribute, MeshStandardMaterial, Shape, Vector2 } from "three";
 import type { Obstacle } from "@/lib/api";
-import { FLAT, toScene, toScenePoint, type XY } from "@/lib/scene/adapter";
-import { halfSidesOf, movedTo, onTheRoofPlane, type Dragging } from "@/lib/scene/drag";
+import { FLAT, toScene, toScenePoint, type XY } from "@/lib/geometry/adapter";
+import { halfSidesOf, movedTo, onTheRoofPlane, type Dragging } from "@/lib/stores/drag";
 import type { About } from "@/lib/scene/handles";
-import { canBeDragged, footprintOf, ROUND_SEGMENTS, solidsOf, type HeightAt, type Look, type Solid } from "@/lib/scene/obstacles";
+import { canBeDragged, footprintOf, ROUND_SEGMENTS, solidsOf, type HeightAt, type Look, type Solid } from "@/lib/geometry/obstacles";
 import { risenScaleOf } from "@/lib/scene/reveal";
-import { withObstacleField, type DraftObstacle } from "@/lib/studio/obstacle-fields";
-import { PALETTE, type PaletteName } from "@/lib/scene-palette";
+import { withObstacleField, type DraftObstacle } from "@/lib/geometry/obstacle-fields";
+import { PALETTE, type PaletteName } from "@/lib/geometry/scene-palette";
 import { canHover, onPress } from "./pointer";
 
 type Props = {

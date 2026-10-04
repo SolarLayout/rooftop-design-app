@@ -8,7 +8,7 @@ import { Dialog } from "@/components/ui/Dialog";
 import { FileDrop, type FileDropState } from "@/components/ui/FileDrop";
 import { Icon } from "@/components/ui/Icon";
 import { api, type OpenedProject } from "@/lib/api";
-import { isProjectFile, linesOf, NOT_A_PROJECT_FILE, refusalOf, requestOf } from "@/lib/home/open-project";
+import { isProjectFile, linesOf, NOT_A_PROJECT_FILE, refusalOf, requestOf } from "@/lib/flow/open-project";
 import { pathOfLens } from "@/lib/routes";
 import { lensOf } from "@/lib/stores/view-store";
 

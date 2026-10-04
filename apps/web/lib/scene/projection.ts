@@ -3,7 +3,7 @@
 // north control shows. Pure functions; the Projector projects and the components draw.
 import { Raycaster, Vector2, type Camera, type Ray } from "three";
 import { shown } from "../../components/ui/number-entry";
-import type { SceneXYZ, XY, XYZ } from "./adapter";
+import type { SceneXYZ, XY, XYZ } from "../geometry/adapter";
 
 /**
  * A label of a dimension, the anchor of the callout of what is selected, a point a handle of the selected

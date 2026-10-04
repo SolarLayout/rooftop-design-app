@@ -5,7 +5,7 @@ import type { Tick } from "../../components/ui/SliderTrack";
 import { shown, withUnit } from "../../components/ui/number-entry";
 import type { Scale } from "../../components/ui/slider-steps";
 import type { ArraySpec, Coefficients, DesignResult, LayoutResponse, Module, Roof } from "../api";
-import { compassOf } from "../outline/measure";
+import { compassOf } from "../geometry/measure";
 import { WINDOW, type Decided } from "./array-fields";
 
 /** A bearing as the board writes it: "180° S". A whole degree stays whole; a computed one keeps its decimal. */

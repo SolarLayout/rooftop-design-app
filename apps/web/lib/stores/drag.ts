@@ -4,9 +4,9 @@
 import { Plane, Ray, Vector3 } from "three";
 import { shown } from "../../components/ui/number-entry";
 import type { Obstacle } from "../api";
-import type { DraftObstacle } from "../studio/obstacle-fields";
-import { fromScene, type XY } from "./adapter";
-import { footprintOf } from "./obstacles";
+import type { DraftObstacle } from "../geometry/obstacle-fields";
+import { fromScene, type XY } from "../geometry/adapter";
+import { footprintOf } from "../geometry/obstacles";
 
 /** The grid a dragged obstacle snaps to, in metres. */
 export const SNAP_M = 0.1;

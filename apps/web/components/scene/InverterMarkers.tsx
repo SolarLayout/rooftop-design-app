@@ -2,9 +2,9 @@
 
 import { useMemo } from "react";
 import { BoxGeometry, MeshStandardMaterial } from "three";
-import { toScene } from "@/lib/scene/adapter";
+import { toScene } from "@/lib/geometry/adapter";
 import { INVERTER_BOX, type InverterMarker } from "@/lib/scene/inverter-markers";
-import { PALETTE } from "@/lib/scene-palette";
+import { PALETTE } from "@/lib/geometry/scene-palette";
 
 /** The box of every marker: three's x is east, its y up and its z south. */
 const BOX = new BoxGeometry(INVERTER_BOX.east, INVERTER_BOX.height, INVERTER_BOX.north);

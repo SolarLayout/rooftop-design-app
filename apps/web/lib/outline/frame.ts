@@ -2,7 +2,7 @@
 // draws. The document's metres come from the API's projection (decision D41); this frame differs from
 // them by the scale of the projection (lengths within 0.05 m over 100 m) and by the convergence of the
 // grid: the API's y is the grid north of its UTM zone, 0.36° from true north at Pune.
-import type { XY } from "./measure";
+import type { XY } from "../geometry/measure";
 
 export type LonLat = { lon: number; lat: number };
 

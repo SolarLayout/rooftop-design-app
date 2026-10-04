@@ -1,7 +1,7 @@
 // The tiles of the imagery fetched and drawn onto one picture (plan/phase-05-plan.md, decision 8). The
 // fetcher and the canvas come from the caller, so that this runs under bun test with fakes; the component
 // gives it fetch and a canvas of the document.
-import { PALETTE } from "../scene-palette";
+import { PALETTE } from "../geometry/scene-palette";
 import type { Tile, TileSet } from "./ground";
 
 /** Fetches one tile by its address. */

@@ -503,8 +503,8 @@ is (D32). An API that was not reached is refused the same way with Try again und
 again. A second file chosen replaces the first, whatever the first's answer. On phone the dialog is the bottom sheet of
 "Dialog". It is pictured over the Studio (`home-open-project*.png`); Home opens the same dialog from its row.
 
-In code: `OpenProject` (`components/home`), opened from the project switcher's row "Open a project" on every workspace
-and from Home; `lib/home/open-project.ts` holds the pure parts (the file by its ending, the request from a `File`, the
+In code: `OpenProject` (`components/shell`), opened from the project switcher's row "Open a project" on every workspace
+and from Home; `lib/flow/open-project.ts` holds the pure parts (the file by its ending, the request from a `File`, the
 lines of a file read, the refusal from an error); the design is kept by `keepAndOpen` of the saving store.
 
 ## Home
@@ -599,7 +599,7 @@ nothing was pressed. An edit of the document asks the pages again; the ones of b
 (`opacity-updating`), until the new ones come.
 
 In code: `ReportPreview`, `PageButton` and `ReportSkeleton` (`components/handover/ReportPreview.tsx`); the page, the
-words and the bounds in `lib/handover/report-view.ts`; the pages kept per edit in `lib/handover/downloads-store.ts`.
+words and the bounds in `lib/handover/report-view.ts`; the pages kept per edit in `lib/stores/downloads-store.ts`.
 
 ## Fact rows (Handover)
 What a file holds, as rows of a name and what it is, under a section's title (the board "Handover, previews": the

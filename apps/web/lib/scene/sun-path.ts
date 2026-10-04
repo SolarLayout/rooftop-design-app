@@ -3,9 +3,9 @@
 // the shade-free window apart, drawn thicker; the marker at the view's hour. Pure functions in the
 // engine's metres; the adapter alone turns them into three's.
 import type { SunDay, SunPosition } from "../stores/results-store";
-import type { XY, XYZ } from "./adapter";
+import type { XY, XYZ } from "../geometry/adapter";
 import type { Sun } from "./camera";
-import { sunAt } from "./sun-day";
+import { sunAt } from "../flow/sun-day";
 
 /** The dome's radius, as a share of the roof's: the arc stands clear of the roof and in the frame of Fit. */
 export const DOME = 1.3;

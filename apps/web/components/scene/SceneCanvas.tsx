@@ -3,7 +3,7 @@
 import { Canvas } from "@react-three/fiber";
 import { useEffect, useRef, type ReactNode } from "react";
 import { NoToneMapping, PCFShadowMap } from "three";
-import { PALETTE } from "@/lib/scene-palette";
+import { PALETTE } from "@/lib/geometry/scene-palette";
 
 type Props = {
   /** Said once when the browser takes the WebGL context away; the stage then shows the plan instead. */

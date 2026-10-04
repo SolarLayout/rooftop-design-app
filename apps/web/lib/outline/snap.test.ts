@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { XY } from "./measure";
+import type { XY } from "../geometry/measure";
 import { closesOnFirst, snappedCorner } from "./snap";
 
 // Snapping (plan/phase-04-find-and-outline.md): 90° within 3°, parallel to an existing edge within 3°,

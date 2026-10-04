@@ -1,5 +1,5 @@
 // The rectangle tool: a box dragged across the roof, then turned to the building by its handle.
-import { bearingOf, type XY } from "./measure";
+import { bearingOf, type XY } from "../geometry/measure";
 
 /** The four corners of the box between two opposite corners, counter-clockwise from the lowest left. */
 export function rectangleOf(from: XY, to: XY): XY[] | null {

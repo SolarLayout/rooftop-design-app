@@ -56,10 +56,10 @@ groups are data, `tools/check/e2e-groups.ts`; `turbo.json` and the root scripts 
 |---|---|---|
 | kit | `kit.e2e.ts`, `kit-*.e2e.ts` | `components/kit`, the pictures `kit*.png` |
 | find | `find`, `find-screens`, `outline`, `by-hand`, `obstacles` | `components/find`, `lib/map`, `lib/outline`, the pictures `find*.png` |
-| studio | `array-lens`, `build`, `history`, `lens-switches`, `manipulation`, `modules`, `roof-lens`, `selection`, `shade-map`, `shadow-outlines`, `shell-vitals`, `stage`, `strings-*`, `studio-screens`, `sun-*`, `time` | `components/studio`, `components/scene`, `lib/scene`, `lib/studio`, `lib/roof-card.ts`, `lib/scene-palette.ts`, find's folders (Build and the Roof lens's Edit cross into Find), the pictures `studio*.png` |
+| studio | `array-lens`, `build`, `history`, `lens-switches`, `manipulation`, `modules`, `roof-lens`, `selection`, `shade-map`, `shadow-outlines`, `shell-vitals`, `stage`, `strings-*`, `studio-screens`, `sun-*`, `time` | `components/studio`, `components/scene`, `lib/scene`, `lib/studio`, find's folders (Build and the Roof lens's Edit cross into Find), the pictures `studio*.png` |
 | performance | `performance*` (`performance-screens` among them) | `components/performance`, `lib/performance`, studio's and find's folders (a voltage is chosen in the Strings lens; a roof is built on the map), the pictures `performance*.png` |
 | handover | `handover*` (`handover-screens` among them) | `components/handover`, `lib/handover`, the pictures `handover*.png` |
-| home | `home*` (`home-screens` among them) | `components/home`, `lib/home` (Home, and Open a project: a dialog the shell opens from the project switcher on every page), find's folders (Home's search is Find's, and "Find my roof" leads to the map at the place), the pictures `home*.png` |
+| home | `home*` (`home-screens` among them) | `components/home`, `lib/home`, find's folders ("Find my roof" leads to the map at the place), the pictures `home*.png` |
 | present | `present*` (`present-screens` among them) | `components/present`, `lib/present`, the soak `e2e/soak` (run by hand, never by the check), studio's folders (Present reuses the Studio's stage), the pictures `present*.png` |
 | shell | `api-client`, `device*`, `fonts`, `routes`, `screens`, `shell`, `smoke`, `tokens` | every other group's folders, and the pictures `shell*.png` |
 
@@ -73,7 +73,10 @@ desktop and tablet.
 
 **The base**, an input of every group: `apps/web/app`, `components/shell`, `components/ui`, the files at the roots of
 `components` and `lib` (named one by one, since turbo takes an exclusion out of every input of a task), `lib/api`,
-`lib/stores`, `lib/flow`, `lib/format`, `lib/device` (the designs kept on the device: the shell saves and opens them on
+`lib/stores`, `lib/flow` (with `lib/flow/deliverables`: the deliverables' names, file names, day and saved blob, which
+the downloads store needs on every page), `lib/format`, `lib/places` (the search for a place and its provider: Find's,
+Home's and Import a drawing's), `lib/geometry` (the engine's metres and the 3D palette: Find's, the Studio's, the stores'
+and the device's thumbnails' alike), `lib/device` (the designs kept on the device: the shell saves and opens them on
 every page), `public`, the web's configuration files, `packages/api-types`, the API's sources and configuration, the
 helpers and fixtures of `e2e`, the tools that start the stack, the lockfile, `.nvmrc`.
 
@@ -90,7 +93,7 @@ helpers and fixtures of `e2e`, the tools that start the stack, the lockfile, `.n
 | `components/kit` | kit |
 | a suite of `e2e/tests` | its group alone |
 | a baseline, by the group its name begins with (`kit.png`, `find.png`, `handover.png`, `shell-*.png`) | its group alone (kit, find, handover, shell) |
-| the base: the shell, `components/ui`, the stores, the flow, `lib/device`, the API client, the API, the generated types, the tools, the lockfile | every group |
+| the base: the shell, `components/ui`, the stores, the flow, `lib/places`, `lib/geometry`, `lib/device`, the API client, the API, the generated types, the tools, the lockfile | every group |
 | a document | nothing |
 
 The shell group runs whenever anything of the web changed (its suites open every workspace): it is the floor every web
@@ -113,9 +116,13 @@ for the shell's pictures of everything; a Home change about 10.
    group sees every file of the web app". A folder of one workspace goes to that group's own inputs; a folder every page
    uses goes to the base.
 3. **Imports must not cross groups.** `tools/check/e2e-group-imports.test.ts` walks the value imports of each group's own
-   folders up to the base and refuses a file reached outside the group's inputs. A part two workspaces share lives where
-   every group sees it: `components/shell` for a component, `lib/flow` or `lib/stores` for logic of the document or the
-   results. Never widen a group's inputs to let an import through.
+   folders up to the base and refuses a file reached outside the group's inputs. The base is walked too, and imports
+   nothing of the groups' own folders, `app/**` (the pages are the workspaces' entry points and import their workspace's
+   component) and the base's own `*.test.ts` files (run by bun, reached by no page) excepted. The reason: a change to a
+   shared file must run the groups it reaches through the base, and the walk cannot see through the base otherwise, since
+   it stops there. A part two workspaces share lives where every group sees it: `components/shell` for a component,
+   `lib/flow` or `lib/stores` for logic of the document or the results, `lib/places` for the search, `lib/geometry` for
+   the engine's metres. Never widen a group's inputs to let an import through.
 4. **Baselines belong to the group whose name they begin with.** `kit*.png` to kit, `find*.png` to find, `studio*.png` to
    studio, and so on; `shell*.png` to shell. A picture is taken by its group's screens suite (`<group>-screens.e2e.ts`; the
    shell's by `screens.e2e.ts`, the kit's by `kit.e2e.ts`) and named for that group, so that a changed picture runs its group
@@ -160,13 +167,4 @@ every cache; `--only=e2e` and `--skip=e2e` take steps by id.
 - The test stack runs `next dev`, as before. Measured with the fixes (session 14): the handover group 227 s in dev mode and 204 s on the
   production build (`bun dev:bg --profile test --built`, a build of 9 s), 0 drops in both. The build was not adopted for the check: a
   built stack left running serves stale code after an edit, where `next dev` reloads it, and the gain is a tenth of a group's time.
-- The shared state reaches into the workspaces' `lib` folders (`components/shell/stores.tsx` imports
-  `lib/handover/downloads-store.ts`, `lib/scene/sun-day.ts`, `lib/studio/play.ts`; `lib/flow/design-flow.ts` imports
-  `lib/performance/weather-source.ts`, `lib/studio/sun-time.ts`; `lib/stores/results-store.ts` imports
-  `lib/scene/string-colours.ts`; `lib/stores/view-store.ts` imports `lib/scene/drag.ts`). The base is not walked, so a
-  change to one of those files runs its folder's groups and shell, not the other workspaces' interaction suites. The fix is
-  Phase 11's: the shared state's helpers moved beside the stores, or a rule-test that the base imports nothing of the
-  groups' folders (`plan/phase-04b-test-caching.md`, the open item). The shell also opens the dialog Open a project
-  (`components/shell/Shell.tsx` imports `components/home/OpenProject.tsx`, plan phase 10, step 9): a change to the dialog
-  runs home and shell, not the workspaces' suites, none of which opens it.
 - A suite that changed runs whole: Playwright has no selection by test, as pytest has with testmon.

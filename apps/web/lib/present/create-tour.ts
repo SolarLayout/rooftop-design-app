@@ -3,10 +3,10 @@
 // from: the camera's step at the start of each scene, the reveal and the colouring as the presentation, the hour of the
 // day scene as the sun's time. Looping, until it is stopped; then the view is as it was. Its own view (the scene, the
 // words, the energy's count, the loops over) is a store without React for the overlay. Made of the view, the clock, the
-// day's hours and the motion setting alone, as play is (lib/studio/play.ts): nothing of the API is near it.
+// day's hours and the motion setting alone, as play is (lib/flow/play.ts): nothing of the API is near it.
 import { createStore, type StoreApi } from "zustand/vanilla";
 import type { Clock } from "../clock";
-import type { DayHours } from "../scene/sun-day";
+import type { DayHours } from "../flow/sun-day";
 import type { CameraPreset, ViewStore } from "../stores/view-store";
 import { REDUCED_SCRIPT, SCRIPT, stateAt, type Scene, type SceneId, type TourState } from "./tour";
 

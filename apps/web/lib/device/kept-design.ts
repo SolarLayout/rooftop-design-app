@@ -2,7 +2,7 @@
 // out, with the facts of its card worked out here so that Home and the project switcher show them without a run. The
 // results are never kept: a design opened runs again (D5). Pure: what is written and read is lib/device/designs-db.ts.
 import type { DesignResult, Layout, Project } from "../api";
-import { roofSizeOf } from "../roof-card";
+import { roofSizeOf } from "../geometry/roof-card";
 import { thumbnailOf } from "./thumbnail";
 
 export type KeptFacts = {

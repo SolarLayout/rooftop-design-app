@@ -4,8 +4,8 @@
 // geometries of what they give.
 import { shown } from "../../components/ui/number-entry";
 import type { Obstacle } from "../api";
-import { areaOf, centroidOf } from "../outline/measure";
-import { lengthOf, type DraftObstacle } from "../studio/obstacle-fields";
+import { areaOf, centroidOf } from "./measure";
+import { lengthOf, type DraftObstacle } from "./obstacle-fields";
 import type { Box, XY, XYZ } from "./adapter";
 import type { Callout } from "./keepout";
 

@@ -5,7 +5,7 @@
 // whoever brings it: a late answer never replaces a newer one.
 import { createStore } from "zustand/vanilla";
 import type { DesignProgress, DesignResult, LayoutResponse, SunResponse } from "../api";
-import { stringsOfTheRunOf } from "../scene/string-colours";
+import { stringsOfTheRunOf } from "./string-colours";
 import type { SunTime } from "./view-store";
 
 /** Waiting: a design run that is asked for and has not begun, because more edits may follow. */

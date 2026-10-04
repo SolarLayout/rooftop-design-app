@@ -3,7 +3,7 @@
 // its distance from the roof going from the one stand's to the other's, eased in and out; the camera chases the
 // path's point with a time constant, so that nothing jumps and no frame allocates. The path never goes below the
 // roof (docs/design/guidelines.md, "3D scene"). Pure, in three's metres: x east, y up, z south.
-import type { SceneXYZ } from "./adapter";
+import type { SceneXYZ } from "../geometry/adapter";
 
 /** The pole is held this much above the roof plane, in radians: the camera never goes below it (the rig's limit too). */
 export const ABOVE_THE_ROOF = 0.03;

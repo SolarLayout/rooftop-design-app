@@ -5,7 +5,7 @@
 import { shown } from "../../components/ui/number-entry";
 import type { MapShapeRequest } from "../api";
 import { toLonLat, toMetres, type Frame } from "./frame";
-import { areaOf, edgesOf, type XY } from "./measure";
+import { areaOf, edgesOf, type XY } from "../geometry/measure";
 import { rectangleOf } from "./rectangle";
 
 export type ObstacleKind = "box" | "cylinder" | "wall" | "building";

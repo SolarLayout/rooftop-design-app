@@ -3,7 +3,7 @@
 // nothing. Pure functions in the engine's metres; the adapter alone turns them into three's.
 import { Euler, Matrix4, Quaternion, Vector3 } from "three";
 import type { Layout, PlacedModule } from "../api";
-import { toScene, type XY, type XYZ } from "./adapter";
+import { toScene, type XY, type XYZ } from "../geometry/adapter";
 
 export type Placement = {
   /** The middle of the module, in the engine's metres, halfway up its slope. */

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDownloads, useProject, useStores } from "@/components/shell/stores";
 import type { ExportedFile, ExportKind } from "@/lib/api";
 import { failureOf } from "@/lib/flow/design-flow";
-import { keptOf } from "@/lib/handover/downloads-store";
+import { keptOf } from "@/lib/stores/downloads-store";
 import { editOf } from "@/lib/stores/project-store";
 
 type AskedFile = {

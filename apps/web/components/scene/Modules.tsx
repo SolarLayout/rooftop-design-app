@@ -5,12 +5,12 @@ import { useThree, type ThreeEvent } from "@react-three/fiber";
 import { useLayoutEffect, useMemo, useRef } from "react";
 import { BackSide, BoxGeometry, Color, EdgesGeometry, InstancedMesh, MeshStandardMaterial } from "three";
 import type { Layout } from "@/lib/api";
-import type { XY } from "@/lib/scene/adapter";
-import { toScene } from "@/lib/scene/adapter";
+import type { XY } from "@/lib/geometry/adapter";
+import { toScene } from "@/lib/geometry/adapter";
 import { moduleMatrixOf, placementOf, traceLineOf, type Placement, type Thickness } from "@/lib/scene/modules";
 import { revealedCountOf } from "@/lib/scene/reveal";
 import { glassColoursOf } from "@/lib/scene/shade-colours";
-import { PALETTE } from "@/lib/scene-palette";
+import { PALETTE } from "@/lib/geometry/scene-palette";
 import { onPress } from "./pointer";
 
 type Props = {
