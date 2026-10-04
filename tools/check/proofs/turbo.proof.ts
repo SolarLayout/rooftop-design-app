@@ -124,15 +124,18 @@ describe("what turbo re-runs", () => {
     expect(after("e2e/tests/find.e2e.ts", aComment)).toEqual([...E2E, ...browser("find")].sort());
     expect(after("e2e/tests/kit-buttons.e2e.ts", aComment)).toEqual([...E2E, ...browser("kit")].sort());
     expect(after("e2e/tests/screens.e2e.ts", aComment)).toEqual([...E2E, ...browser("shell")].sort());
+    expect(after("e2e/tests/handover-screens.e2e.ts", aComment)).toEqual([...E2E, ...browser("handover")].sort());
   });
 
   test("a fixture of the browser tests, which every suite may read: e2e's tasks, and every group", () => {
     expect(after("e2e/fixtures/geocode-nothing.json", (text) => text.replace("{", "{ "))).toEqual([...E2E, ...BROWSER].sort());
   });
 
-  test("a baseline: e2e's tasks, and the group of the suite that takes the picture (kit's are the kit suite's, every other the screens suite's)", () => {
-    expect(after("e2e/baselines/darwin/desktop/find.png", (bytes) => `${bytes}x`)).toEqual([...E2E, ...browser("shell")].sort());
+  test("a baseline: e2e's tasks, and the group whose name it begins with alone (its screens suite takes it; the shell's are shell*.png)", () => {
+    expect(after("e2e/baselines/darwin/desktop/find.png", (bytes) => `${bytes}x`)).toEqual([...E2E, ...browser("find")].sort());
+    expect(after("e2e/baselines/darwin/desktop/handover.png", (bytes) => `${bytes}x`)).toEqual([...E2E, ...browser("handover")].sort());
     expect(after("e2e/baselines/darwin/desktop/kit.png", (bytes) => `${bytes}x`)).toEqual([...E2E, ...browser("kit")].sort());
+    expect(after("e2e/baselines/darwin/desktop/shell-saved-on-this-device.png", (bytes) => `${bytes}x`)).toEqual([...E2E, ...browser("shell")].sort());
   });
 
   test("a document: nothing", () => {

@@ -152,12 +152,14 @@
         "!**/.turbo/**",
         "!**/__pycache__/**",
         "e2e/tests/find.e2e.ts",
+        "e2e/tests/find-screens.e2e.ts",
         "e2e/tests/outline.e2e.ts",
         "e2e/tests/by-hand.e2e.ts",
         "e2e/tests/obstacles.e2e.ts",
         "apps/web/components/find/**",
         "apps/web/lib/map/**",
-        "apps/web/lib/outline/**"
+        "apps/web/lib/outline/**",
+        "e2e/baselines/*/*/find*.png"
       ],
       "outputs": []
     },
@@ -212,6 +214,7 @@
         "e2e/tests/shell-vitals.e2e.ts",
         "e2e/tests/stage.e2e.ts",
         "e2e/tests/strings-*.e2e.ts",
+        "e2e/tests/studio-screens.e2e.ts",
         "e2e/tests/sun-*.e2e.ts",
         "e2e/tests/time.e2e.ts",
         "apps/web/components/studio/**",
@@ -222,7 +225,8 @@
         "apps/web/lib/scene-palette*.ts",
         "apps/web/components/find/**",
         "apps/web/lib/map/**",
-        "apps/web/lib/outline/**"
+        "apps/web/lib/outline/**",
+        "e2e/baselines/*/*/studio*.png"
       ],
       "outputs": []
     },
@@ -275,7 +279,8 @@
         "apps/web/lib/scene-palette*.ts",
         "apps/web/components/find/**",
         "apps/web/lib/map/**",
-        "apps/web/lib/outline/**"
+        "apps/web/lib/outline/**",
+        "e2e/baselines/*/*/performance*.png"
       ],
       "outputs": []
     },
@@ -319,7 +324,8 @@
         "!**/__pycache__/**",
         "e2e/tests/handover*.e2e.ts",
         "apps/web/components/handover/**",
-        "apps/web/lib/handover/**"
+        "apps/web/lib/handover/**",
+        "e2e/baselines/*/*/handover*.png"
       ],
       "outputs": []
     },
@@ -366,7 +372,8 @@
         "apps/web/lib/home/**",
         "apps/web/components/find/**",
         "apps/web/lib/map/**",
-        "apps/web/lib/outline/**"
+        "apps/web/lib/outline/**",
+        "e2e/baselines/*/*/home*.png"
       ],
       "outputs": []
     },
@@ -420,7 +427,8 @@
         "apps/web/lib/scene-palette*.ts",
         "apps/web/components/find/**",
         "apps/web/lib/map/**",
-        "apps/web/lib/outline/**"
+        "apps/web/lib/outline/**",
+        "e2e/baselines/*/*/present*.png"
       ],
       "outputs": []
     },
@@ -489,8 +497,7 @@
         "apps/web/components/present/**",
         "apps/web/lib/present/**",
         "e2e/soak/**",
-        "e2e/baselines/*/*/*.png",
-        "!e2e/baselines/*/*/kit*.png"
+        "e2e/baselines/*/*/shell*.png"
       ],
       "outputs": []
     },
@@ -526,7 +533,10 @@
         "apps/web/lib/device/saving.ts",
         "e2e/tests/kit-buttons.e2e.ts",
         "e2e/tests/screens.e2e.ts",
+        "e2e/tests/handover-screens.e2e.ts",
         "e2e/baselines/darwin/desktop/kit.png",
+        "e2e/baselines/darwin/desktop/handover.png",
+        "e2e/baselines/darwin/desktop/shell-saved-on-this-device.png",
         "plan/README.md",
         "CLAUDE.md",
         "apps/web/CLAUDE.md"

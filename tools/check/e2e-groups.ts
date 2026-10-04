@@ -58,40 +58,45 @@ export const BASE_INPUTS: string[] = [
   "!**/__pycache__/**",
 ];
 
-const KIT_BASELINES = "e2e/baselines/*/*/kit*.png";
-const KIT_OWN = ["apps/web/components/kit/**", KIT_BASELINES];
-const FIND_OWN = ["apps/web/components/find/**", "apps/web/lib/map/**", "apps/web/lib/outline/**"];
+/** The pictures of a group: every baseline whose name begins with the group's, on every platform and size. */
+export const baselinesOf = (id: GroupId): string => `e2e/baselines/*/*/${id}*.png`;
+/** Whether an input pattern names pictures, as against folders of the web app or of e2e. */
+export const isBaselines = (pattern: string): boolean => pattern.startsWith("e2e/baselines/");
+
+// A group's own inputs are its folders, the folders of the groups it crosses into, and its own pictures alone: a
+// picture belongs to the group whose name it begins with, taken by that group's screens suite (plan/phase-11-plan.md,
+// decision 1). The folders are composed apart from the pictures, so that a change to find.png runs find, not every
+// group that sees Find's folders.
+const KIT_FOLDERS = ["apps/web/components/kit/**"];
+const FIND_FOLDERS = ["apps/web/components/find/**", "apps/web/lib/map/**", "apps/web/lib/outline/**"];
 // Build and the Roof lens's Edit cross into Find; strings-lens and build import e2e/find.ts.
-const STUDIO_OWN = [
+const STUDIO_FOLDERS = [
   "apps/web/components/studio/**",
   "apps/web/components/scene/**",
   "apps/web/lib/scene/**",
   "apps/web/lib/studio/**",
   "apps/web/lib/roof-card*.ts",
   "apps/web/lib/scene-palette*.ts",
-  ...FIND_OWN,
+  ...FIND_FOLDERS,
 ];
 // performance.e2e.ts chooses a voltage in the Strings lens; performance-weather builds a roof on the map.
-const PERFORMANCE_OWN = ["apps/web/components/performance/**", "apps/web/lib/performance/**", ...STUDIO_OWN];
-const HANDOVER_OWN = ["apps/web/components/handover/**", "apps/web/lib/handover/**"];
+const PERFORMANCE_FOLDERS = ["apps/web/components/performance/**", "apps/web/lib/performance/**", ...STUDIO_FOLDERS];
+const HANDOVER_FOLDERS = ["apps/web/components/handover/**", "apps/web/lib/handover/**"];
 // Home and the dialogs it shares with the project switcher (Open a project), which the shell opens on every page: the
 // shell imports the dialog, so a change to it runs home and shell (plan/phase-10-plan.md, decision 12). Home's search is
 // Find's, and "Find my roof" leads to the map at the place: home.e2e.ts crosses into Find, as performance's suites do.
-const HOME_OWN = ["apps/web/components/home/**", "apps/web/lib/home/**", ...FIND_OWN];
+const HOME_FOLDERS = ["apps/web/components/home/**", "apps/web/lib/home/**", ...FIND_FOLDERS];
 // Present reuses the Studio's stage (plan/phase-10-plan.md, decisions 8 and 12): it sees the Studio's folders. The soak
 // of Present (e2e/soak) is run by hand, never by the check; it is placed here so that every file of e2e is seen.
-const PRESENT_OWN = ["apps/web/components/present/**", "apps/web/lib/present/**", "e2e/soak/**", ...STUDIO_OWN];
-// The screens suite pictures every page but the kit's, whose pictures the kit suite takes: this group runs
-// whenever anything of the web changed.
-const SHELL_OWN = [
-  ...new Set([...KIT_OWN, ...FIND_OWN, ...STUDIO_OWN, ...PERFORMANCE_OWN, ...HANDOVER_OWN, ...HOME_OWN, ...PRESENT_OWN].filter((pattern) => pattern !== KIT_BASELINES)),
-  "e2e/baselines/*/*/*.png",
-  `!${KIT_BASELINES}`,
-];
+const PRESENT_FOLDERS = ["apps/web/components/present/**", "apps/web/lib/present/**", "e2e/soak/**", ...STUDIO_FOLDERS];
+// The shell's suites open every workspace (device*.e2e.ts, routes, smoke): this group runs whenever anything of the web
+// changed. Its pictures are the shell's own (the project switcher, Import a drawing, Saved on this device); each
+// workspace's pictures are its own group's.
+const SHELL_FOLDERS = [...new Set([...KIT_FOLDERS, ...FIND_FOLDERS, ...STUDIO_FOLDERS, ...PERFORMANCE_FOLDERS, ...HANDOVER_FOLDERS, ...HOME_FOLDERS, ...PRESENT_FOLDERS])];
 
 export const GROUPS: readonly Group[] = [
-  { id: "kit", suites: ["kit.e2e.ts", "kit-*.e2e.ts"], own: KIT_OWN },
-  { id: "find", suites: ["find.e2e.ts", "outline.e2e.ts", "by-hand.e2e.ts", "obstacles.e2e.ts"], own: FIND_OWN },
+  { id: "kit", suites: ["kit.e2e.ts", "kit-*.e2e.ts"], own: [...KIT_FOLDERS, baselinesOf("kit")] },
+  { id: "find", suites: ["find.e2e.ts", "find-screens.e2e.ts", "outline.e2e.ts", "by-hand.e2e.ts", "obstacles.e2e.ts"], own: [...FIND_FOLDERS, baselinesOf("find")] },
   {
     id: "studio",
     suites: [
@@ -108,34 +113,46 @@ export const GROUPS: readonly Group[] = [
       "shell-vitals.e2e.ts",
       "stage.e2e.ts",
       "strings-*.e2e.ts",
+      "studio-screens.e2e.ts",
       "sun-*.e2e.ts",
       "time.e2e.ts",
     ],
-    own: STUDIO_OWN,
+    own: [...STUDIO_FOLDERS, baselinesOf("studio")],
   },
-  { id: "performance", suites: ["performance*.e2e.ts"], own: PERFORMANCE_OWN },
-  { id: "handover", suites: ["handover*.e2e.ts"], own: HANDOVER_OWN },
-  { id: "home", suites: ["home*.e2e.ts"], own: HOME_OWN },
-  { id: "present", suites: ["present*.e2e.ts"], own: PRESENT_OWN },
+  { id: "performance", suites: ["performance*.e2e.ts"], own: [...PERFORMANCE_FOLDERS, baselinesOf("performance")] },
+  { id: "handover", suites: ["handover*.e2e.ts"], own: [...HANDOVER_FOLDERS, baselinesOf("handover")] },
+  { id: "home", suites: ["home*.e2e.ts"], own: [...HOME_FOLDERS, baselinesOf("home")] },
+  { id: "present", suites: ["present*.e2e.ts"], own: [...PRESENT_FOLDERS, baselinesOf("present")] },
   {
     id: "shell",
     // device*.e2e.ts opens every workspace and the map: the group that sees them all.
     suites: ["api-client.e2e.ts", "device*.e2e.ts", "fonts.e2e.ts", "routes.e2e.ts", "screens.e2e.ts", "shell.e2e.ts", "smoke.e2e.ts", "tokens.e2e.ts"],
-    own: SHELL_OWN,
+    own: [...SHELL_FOLDERS, baselinesOf("shell")],
   },
 ];
 
 const GROUP_NAMES = GROUPS.map((group) => group.id).join(", ");
 
+/** The one group among `owners`, or the error that says why there is none: no owner, or more than one. */
+function theOwner(owners: Group[], what: string, file: string, howToPlace: string): GroupId {
+  if (owners.length === 1) return owners[0]!.id;
+  const trouble = owners.length === 0 ? "belongs to no group" : `is claimed by ${owners.map((group) => group.id).join(" and ")}`;
+  throw new Error(`The ${what} ${file} ${trouble}. Every ${what} belongs to exactly one of the groups ${GROUP_NAMES} by its name: ${howToPlace}.`);
+}
+
 /** The group a suite of e2e/tests belongs to, by its file name. Throws when no group claims it. */
 export function groupOf(file: string): GroupId {
   const owners = GROUPS.filter((group) => group.suites.some((pattern) => new Bun.Glob(pattern).match(file)));
-  if (owners.length === 1) return owners[0]!.id;
-  const trouble = owners.length === 0 ? "belongs to no group" : `is claimed by ${owners.map((group) => group.id).join(" and ")}`;
-  throw new Error(
-    `The browser suite ${file} ${trouble}. Every suite belongs to exactly one of the groups ${GROUP_NAMES} by its name: ` +
-      "place it in tools/check/e2e-groups.ts.",
-  );
+  return theOwner(owners, "browser suite", file, "place it in tools/check/e2e-groups.ts");
+}
+
+/**
+ * The group a baseline belongs to, by the name its file begins with (`e2e/baselines/<platform>/<size>/<group>-<what>.png`,
+ * from the repo's root). Throws when no group's name begins it, so that a picture is never keyed on no group at all.
+ */
+export function groupOfBaseline(file: string): GroupId {
+  const owners = GROUPS.filter((group) => new Bun.Glob(baselinesOf(group.id)).match(file));
+  return theOwner(owners, "baseline", file, "name it for the group whose screens suite takes it (<group>-<what>.png), or shell-<what>.png for the shell's");
 }
 
 export function groupById(id: string): Group | null {

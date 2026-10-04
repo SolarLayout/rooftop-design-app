@@ -3,6 +3,24 @@ import { expect, type Page } from "@playwright/test";
 // The badge of `next dev` is not part of any screen.
 const WITHOUT_THE_DEV_BADGE = "nextjs-portal { display: none !important; }";
 
+/** A design run under load: what the pictures of a workspace wait for before they are taken. */
+const RUN = 90_000;
+
+/** The top bar's button with the project's name, which opens the project switcher. */
+export const projectSwitcher = (page: Page) => page.getByRole("banner").getByRole("button", { name: /Pune demo roof/ });
+
+/** The Design vitals region of the shell, where the run's numbers land. */
+export const vitals = (page: Page) => page.getByRole("region", { name: "Design vitals" });
+
+/**
+ * The top bar as it stands once the run is over, before a picture: the project's button is there, and on phone the top
+ * bar says the notes to review only then. The picture is taken after that, not before.
+ */
+export async function topBarSettled(page: Page, projectName: string): Promise<void> {
+  await expect(projectSwitcher(page)).toBeVisible({ timeout: RUN });
+  if (projectName === "phone") await expect(page.getByRole("banner").getByRole("button", { name: "1 note to review" })).toBeVisible({ timeout: RUN });
+}
+
 /** Compares the whole page with its baseline in e2e/baselines, once the fonts are there. */
 export async function expectScreen(page: Page, name: string): Promise<void> {
   await page.addStyleTag({ content: WITHOUT_THE_DEV_BADGE });
