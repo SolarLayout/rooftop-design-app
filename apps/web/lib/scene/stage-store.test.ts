@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { PerspectiveCamera } from "three";
-import { bearingDegOf, cameraOf, createStageStore, cursorOf, groundOf, labelsOf, moduleWritesOf, sunLabelsOf } from "./stage-store";
+import { bearingDegOf, cameraOf, canvasOf, createStageStore, cursorOf, groundOf, labelsOf, moduleWritesOf, sunLabelsOf } from "./stage-store";
 
 // What the scene tells the DOM over it, written on each drawn frame: it must not wake React for nothing.
 
@@ -127,6 +127,21 @@ describe("the camera", () => {
 
     store.getState().setCamera(camera, 1000, 600);
     expect(cameraOf(store.getState())?.width).toBe(1000);
+  });
+
+  test("the canvas the scene draws on is none until it is told, then the one told, and none again when it goes: the DOM over the stage sends the wheel on to it", () => {
+    const store = createStageStore();
+    expect(canvasOf(store.getState())).toBeNull();
+    const canvas = {} as HTMLCanvasElement;
+
+    store.getState().setCanvas(canvas);
+    expect(canvasOf(store.getState())).toBe(canvas);
+    const before = store.getState();
+    store.getState().setCanvas(canvas);
+    expect(store.getState()).toBe(before);
+
+    store.getState().setCanvas(null);
+    expect(canvasOf(store.getState())).toBeNull();
   });
 
   // The counter of development behind "scrubbing never rebuilds the modules" (plan/phase-06-plan.md, decision 6).

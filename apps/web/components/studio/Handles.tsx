@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type PointerEvent, type ReactNode } from "react";
+import { useRef, type PointerEvent, type ReactNode, type WheelEvent as ReactWheelEvent } from "react";
 import { useStore } from "zustand";
 import { useProject, useStores, useView } from "@/components/shell/stores";
 import { classNames } from "@/components/ui/class-names";
@@ -12,7 +12,8 @@ import { frameOf } from "@/lib/scene/building";
 import { liveWordsOf, type DragBy, type Dragging } from "@/lib/stores/drag";
 import { obstacleByHandle, type HandleId } from "@/lib/scene/handles";
 import { rayAt, stemEndOf, type StageLabel } from "@/lib/scene/projection";
-import { cameraOf, labelsOf, type StageStore } from "@/lib/scene/stage-store";
+import { cameraOf, canvasOf, labelsOf, type StageStore } from "@/lib/scene/stage-store";
+import { wheelInitOf } from "@/lib/scene/wheel-forward";
 import { projectOf } from "@/lib/stores/project-store";
 import { draggingOf, selectionOf } from "@/lib/stores/view-store";
 import { withObstacleReplaced } from "@/lib/geometry/obstacle-fields";
@@ -102,7 +103,8 @@ function Handle({ id, at, isHeld, onBegin, onMove, onEnd, children }: HandleProp
  * ray through the camera, the maths of lib/scene/handles.ts give the obstacle, the scene draws it as it
  * goes, and the drop commits it as one edit. The handles are away while the obstacle itself is dragged;
  * the live label beside the pointer says what changes. They are for the pointer: the fields of the list do
- * the same by number, which is their way for the keyboard.
+ * the same by number, which is their way for the keyboard. A wheel over a handle is sent on to the canvas, so
+ * that the view zooms under the pointer there as it does beside it (plan/phase-11-plan.md, step 33).
  */
 export function Handles({ stage }: Props) {
   const { project: store, view } = useStores();
@@ -111,6 +113,7 @@ export function Handles({ stage }: Props) {
   const dragging = useView(draggingOf);
   const labels = useStore(stage, labelsOf);
   const camera = useStore(stage, cameraOf);
+  const canvas = useStore(stage, canvasOf);
   const size = useSize();
   const layer = useRef<HTMLDivElement>(null);
   const held = useRef<HandleId | null>(null);
@@ -154,11 +157,17 @@ export function Handles({ stage }: Props) {
     view.getState().setDragging(null);
   }
 
+  /** A wheel a handle took goes on to the canvas as a wheel of its own, which the camera's controls take as the browser's. */
+  function sendOn(event: ReactWheelEvent) {
+    canvas?.dispatchEvent(new WheelEvent("wheel", wheelInitOf(event.nativeEvent)));
+  }
+
   const live = dragging ? places[labelHandleOf(dragging) as keyof typeof places] : undefined;
   const shown: Obstacle | undefined = obstacle && !isMoving ? obstacle : undefined;
 
+  // The layer takes no pointer itself: a wheel that reaches it came up from a handle.
   return (
-    <div ref={layer} className="pointer-events-none absolute inset-0 z-stage-overlay overflow-hidden contain-layout">
+    <div ref={layer} onWheel={sendOn} className="pointer-events-none absolute inset-0 z-stage-overlay overflow-hidden contain-layout">
       {shown ? (
         <>
           <svg aria-hidden="true" className="absolute inset-0 size-full overflow-visible">

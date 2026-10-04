@@ -41,11 +41,18 @@ export function useProjection(anchors: readonly Anchor[], write: (labels: StageL
 /**
  * What the camera tells the DOM over the stage, on each drawn frame: where each anchor falls on the
  * canvas, the bearing the camera looks along, and the camera itself with the canvas's size, so that a
- * pointer on the DOM can be turned back into a ray. Written into the stage store, which takes only a change.
+ * pointer on the DOM can be turned back into a ray; and the canvas itself, so that a wheel the DOM took can
+ * be sent on to it. Written into the stage store, which takes only a change.
  */
 export function Projector({ anchors, stage }: Props) {
   const direction = useMemo(() => new Vector3(), []);
+  const canvas = useThree((state) => state.gl.domElement);
   useProjection(anchors, stage.getState().setLabels);
+
+  useEffect(() => {
+    stage.getState().setCanvas(canvas);
+    return () => stage.getState().setCanvas(null);
+  }, [canvas, stage]);
 
   useFrame(({ camera, size }) => {
     camera.getWorldDirection(direction);
