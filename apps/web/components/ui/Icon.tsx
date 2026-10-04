@@ -65,6 +65,14 @@ const STROKED = {
     </>
   ),
   home: <path d="m4 11 8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z" />,
+  // Three stacked sheets: the Layers button of the stage (the board "Stage, Layers").
+  layers: (
+    <>
+      <path d="m12 3.5 8.5 4.25L12 12 3.5 7.75z" />
+      <path d="m3.5 12 8.5 4.25 8.5-4.25" />
+      <path d="m3.5 16.25 8.5 4.25 8.5-4.25" />
+    </>
+  ),
   locate: (
     <>
       <circle cx="12" cy="12" r="3" />
