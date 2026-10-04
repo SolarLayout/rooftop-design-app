@@ -65,8 +65,16 @@ export function buttonLook(kind: ButtonKind, size: ButtonSize): string {
   return classNames(PRESSABLE, "gap-inline", KIND[kind], border, height, size === "xl" ? "px-5" : PADDING[kind]);
 }
 
-export function iconButtonLook(kind: ButtonKind, size: IconButtonSize, shape: "square" | "round"): string {
+/** The look of a button while the panel it opens is open: pressed, and staying so, as the trigger of a Select does. */
+const OPEN: Record<ButtonKind, string> = {
+  primary: "bg-accent-pressed text-accent-ink font-semibold shadow-primary-pressed",
+  secondary: "border border-line-strong bg-control-pressed text-text font-medium shadow-pressed",
+  quiet: "bg-control-pressed text-text shadow-pressed",
+};
+
+/** `isOpen`: the button opens a panel that is open now (the Layers button of the stage); it looks pressed until the panel closes. */
+export function iconButtonLook(kind: ButtonKind, size: IconButtonSize, shape: "square" | "round", isOpen = false): string {
   const border = kind === "secondary" && "border-line pressed:border-line";
   const corners = shape === "round" ? "rounded-full" : "rounded-row desktop:rounded-control";
-  return classNames(PRESSABLE, KIND[kind], border, SIDE[size], corners);
+  return isOpen ? classNames(PRESSABLE, OPEN[kind], SIDE[size], corners) : classNames(PRESSABLE, KIND[kind], border, SIDE[size], corners);
 }

@@ -9,6 +9,12 @@ export const LIST = classNames(
   "desktop:rounded-card-s desktop:border desktop:border-line-strong desktop:bg-surface-1 desktop:p-1.5 desktop:shadow-float",
 );
 
+/**
+ * The surface of a panel that floats at every size, on touch too (the Layers panel of the stage, decision D57): what
+ * LIST has on desktop, the width of the card's menu given by the FloatingPanel around it.
+ */
+export const FLOATING_SURFACE = "flex flex-col rounded-card-s border border-line-strong bg-surface-1 p-1.5 shadow-float";
+
 export const ROW = classNames(
   "flex h-13 cursor-pointer items-center gap-2.5 rounded-item px-2.5 select-none",
   "desktop:h-10",
