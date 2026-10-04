@@ -37,6 +37,12 @@ export type OnTheRoof = { sunPath: boolean; window: boolean; shadowOutlines: boo
 export type SunTab = "shadows" | "shade-map";
 
 /**
+ * What the ground under the roof is asked to be (plan/phase-11-plan.md, step 35; decision D57): the satellite
+ * imagery, or the plain ground of the 3D palette with its grid. Of the view: a project file carries no ground.
+ */
+export type GroundChoice = "imagery" | "plain";
+
+/**
  * What is selected on the roof: the roof, an obstacle, a kept-clear area or a module, by its index in its list;
  * in the Strings lens a string of the chosen option, by its label (plan/phase-07-plan.md, decision 13).
  */
@@ -76,6 +82,8 @@ export type ViewState = {
   dragging: Dragging | null;
   /** Present's tour over the view; null in the Studio. */
   presentation: Presentation | null;
+  /** The ground under the roof, as the Layers panel of the stage sets it: the imagery at first (D57). */
+  ground: GroundChoice;
   showLens: (lens: Lens) => void;
   setToReview: (names: readonly string[]) => void;
   reviewed: (name: string) => void;
@@ -97,12 +105,14 @@ export type ViewState = {
   traceString: (label: string | null) => void;
   /** Present's tour over the view, or null when it ends; the same told again changes nothing. */
   setPresentation: (presentation: Presentation | null) => void;
+  /** The ground asked for; the same told again changes nothing. */
+  setGround: (ground: GroundChoice) => void;
 };
 
 export type ViewStore = ReturnType<typeof createViewStore>;
 
 // As the approved mockups open: the first lens, in 3D, the design day at 10:30.
-const AT_THE_START = { lens: "roof", camera: "3d", cameraRequest: 0, cameraFrom: "3d", cameraMove: 0, northRequest: 0, sunTime: { day: "design_day", hour: 10.5 }, isPlaying: false, onTheRoof: { sunPath: true, window: true, shadowOutlines: false }, sunTab: "shadows", selection: null, stringColouring: "mppt", tracedString: null, draft: null, toReview: [] as string[], dragging: null, presentation: null as Presentation | null } as const;
+const AT_THE_START = { lens: "roof", camera: "3d", cameraRequest: 0, cameraFrom: "3d", cameraMove: 0, northRequest: 0, sunTime: { day: "design_day", hour: 10.5 }, isPlaying: false, onTheRoof: { sunPath: true, window: true, shadowOutlines: false }, sunTab: "shadows", selection: null, stringColouring: "mppt", tracedString: null, draft: null, toReview: [] as string[], dragging: null, presentation: null as Presentation | null, ground: "imagery" as GroundChoice } as const;
 
 function refuseWhatIsNoTime({ day, hour }: SunTime): void {
   if (!(hour >= 0 && hour <= 24)) throw new RangeError(`${hour} is no hour of a day: from 0 to 24.`);
@@ -146,6 +156,7 @@ export function createViewStore() {
     showSunTab: (sunTab) => set((state) => (state.sunTab === sunTab ? state : { sunTab })),
     showOnTheRoof: (what, on) => set((state) => (state.onTheRoof[what] === on ? state : { onTheRoof: { ...state.onTheRoof, [what]: on } })),
     setPresentation: (presentation) => set((state) => (samePresentation(state.presentation, presentation) ? state : { presentation })),
+    setGround: (ground) => set((state) => (state.ground === ground ? state : { ground })),
   }));
 }
 
@@ -183,3 +194,10 @@ export function litStringsOf(state: ViewState): readonly string[] {
 export const draftOf = (state: ViewState) => state.draft;
 export const toReviewOf = (state: ViewState) => state.toReview;
 export const draggingOf = (state: ViewState) => state.dragging;
+export const groundOf = (state: ViewState) => state.ground;
+
+/**
+ * The ground the scene draws: the imagery while the view asks for it and there is imagery to draw; the plain grid
+ * otherwise. Without a map key, or without a location, there is no imagery, whatever the switch says (D57).
+ */
+export const groundDrawnOf = (ground: GroundChoice, hasImagery: boolean): GroundChoice => (hasImagery ? ground : "plain");

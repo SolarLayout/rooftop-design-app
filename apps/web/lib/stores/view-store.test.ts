@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { Obstacle } from "../api";
 import type { DraftObstacle } from "../geometry/obstacle-fields";
-import { cameraFromOf, cameraMoveOf, cameraOf, cameraRequestOf, createViewStore, presentationOf, draftOf, draggingOf, isPlayingOf, isShadeMapShownOf, lensOf, litStringsOf, onTheRoofOf, sunTabOf, northRequestOf, selectionOf, showsSunPathOf, stringColouringOf, stringsShownByOf, sunTimeOf, toReviewOf, tracedStringOf } from "./view-store";
+import { cameraFromOf, cameraMoveOf, cameraOf, cameraRequestOf, createViewStore, groundDrawnOf, groundOf, presentationOf, draftOf, draggingOf, isPlayingOf, isShadeMapShownOf, lensOf, litStringsOf, onTheRoofOf, sunTabOf, northRequestOf, selectionOf, showsSunPathOf, stringColouringOf, stringsShownByOf, sunTimeOf, toReviewOf, tracedStringOf } from "./view-store";
 
 describe("the view", () => {
   test("it begins on the first lens, in 3D, on the design day", () => {
@@ -405,5 +405,30 @@ describe("the presentation", () => {
     store.getState().setPresentation(null);
     expect(isShadeMapShownOf(store.getState())).toBe(true);
     expect(showsSunPathOf(store.getState())).toBe(true);
+  });
+
+  // The ground under the roof (plan/phase-11-plan.md, step 35; decision D57): the imagery at first, or the plain grid;
+  // of the view, not of the design.
+  test("the ground is the imagery at first; set, it is kept; told again, nothing changes", () => {
+    const store = createViewStore();
+    expect(groundOf(store.getState())).toBe("imagery");
+
+    store.getState().setGround("plain");
+    expect(groundOf(store.getState())).toBe("plain");
+
+    const before = store.getState();
+    store.getState().setGround("plain");
+    expect(store.getState()).toBe(before);
+
+    store.getState().setGround("imagery");
+    expect(groundOf(store.getState())).toBe("imagery");
+  });
+
+  test("the ground drawn is the imagery only while the view asks for it and there is imagery to draw", () => {
+    expect(groundDrawnOf("imagery", true)).toBe("imagery");
+    expect(groundDrawnOf("plain", true)).toBe("plain");
+    // Without a key or a location there is no imagery: the plain grid, whatever the switch says (D57).
+    expect(groundDrawnOf("imagery", false)).toBe("plain");
+    expect(groundDrawnOf("plain", false)).toBe("plain");
   });
 });
