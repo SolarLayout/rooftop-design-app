@@ -17,6 +17,7 @@ from typing import Any
 from fastapi import FastAPI
 
 logger = logging.getLogger("rooftop_api.timing")
+HANDLER_NAME = "rooftop_api.timing.stderr"
 
 Scope = MutableMapping[str, Any]
 Message = MutableMapping[str, Any]
@@ -56,13 +57,14 @@ class TimingLog:
 
 
 def install_timing_log(app: FastAPI) -> None:
-    """Every request of *app* gets its line. The logger writes to stderr beside uvicorn's own lines when
-    nobody else has configured it (uvicorn configures its loggers alone), at INFO."""
+    """Every request of *app* gets its line. The logger writes to stderr, where uvicorn's own lines go and
+    where a Lambda's log is read from, through a handler of its own, added once; it does not pass its records
+    up, so that a root logger configured later does not print them twice."""
     app.add_middleware(TimingLog)
-    configured = logger.handlers or logging.getLogger("rooftop_api").handlers or logging.getLogger().handlers
-    if not configured:
+    if not any(getattr(handler, "name", None) == HANDLER_NAME for handler in logger.handlers):
         handler = logging.StreamHandler()
+        handler.set_name(HANDLER_NAME)
         handler.setFormatter(logging.Formatter("INFO:     %(message)s"))
         logger.addHandler(handler)
-        logger.setLevel(logging.INFO)
-        logger.propagate = False
+    logger.setLevel(logging.INFO)
+    logger.propagate = False

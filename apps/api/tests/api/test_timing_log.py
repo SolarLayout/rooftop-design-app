@@ -4,21 +4,42 @@ import logging
 import re
 from collections.abc import Iterator
 
+import pytest
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from fastapi.testclient import TestClient
 
-from rooftop_api.timing import install_timing_log, timing_line
+from rooftop_api.timing import HANDLER_NAME, install_timing_log, logger, timing_line
 
 LINE = re.compile(
     r"^timing method=(?P<method>[A-Z]+) path=(?P<path>\S+) status=(?P<status>\d+|none) ms=(?P<ms>\d+)$"
 )
 
 
-def _lines(caplog) -> list[re.Match[str]]:
-    ours = [record.getMessage() for record in caplog.records if record.name == "rooftop_api.timing"]
-    matches = [LINE.match(message) for message in ours]
-    assert all(matches), ours
+class Heard(logging.Handler):
+    """The lines the timing logger wrote, read from the logger itself: it passes nothing up to the root."""
+
+    def __init__(self) -> None:
+        super().__init__(level=logging.INFO)
+        self.messages: list[str] = []
+
+    def emit(self, record: logging.LogRecord) -> None:
+        self.messages.append(record.getMessage())
+
+
+@pytest.fixture
+def heard() -> Iterator[Heard]:
+    handler = Heard()
+    logger.addHandler(handler)
+    try:
+        yield handler
+    finally:
+        logger.removeHandler(handler)
+
+
+def _lines(heard: Heard) -> list[re.Match[str]]:
+    matches = [LINE.match(message) for message in heard.messages]
+    assert all(matches), heard.messages
     return [match for match in matches if match]
 
 
@@ -28,25 +49,23 @@ def test_the_line_has_the_method_the_path_the_status_and_whole_milliseconds():
     assert timing_line("GET", "/health", None, 0.2) == "timing method=GET path=/health status=none ms=0"
 
 
-def test_a_request_of_the_api_leaves_one_line_with_its_status(client, caplog):
-    with caplog.at_level(logging.INFO, logger="rooftop_api.timing"):
-        client.get("/health")
-        client.post("/layout", json={"not": "a project"})
+def test_a_request_of_the_api_leaves_one_line_with_its_status(client, heard):
+    client.get("/health")
+    client.post("/layout", json={"not": "a project"})
 
-    lines = _lines(caplog)
+    lines = _lines(heard)
     seen = [(line["method"], line["path"], line["status"]) for line in lines]
     assert seen == [("GET", "/health", "200"), ("POST", "/layout", "422")]
     assert all(int(line["ms"]) >= 0 for line in lines)
 
 
-def test_the_query_string_is_not_in_the_line(client, caplog):
-    with caplog.at_level(logging.INFO, logger="rooftop_api.timing"):
-        client.get("/health?day=2026-10-04")
+def test_the_query_string_is_not_in_the_line(client, heard):
+    client.get("/health?day=2026-10-04")
 
-    assert [line["path"] for line in _lines(caplog)] == ["/health"]
+    assert [line["path"] for line in _lines(heard)] == ["/health"]
 
 
-def test_a_streamed_answer_is_timed_to_its_last_chunk(caplog):
+def test_a_streamed_answer_is_timed_to_its_last_chunk(heard):
     app = FastAPI()
     install_timing_log(app)
 
@@ -61,20 +80,21 @@ def test_a_streamed_answer_is_timed_to_its_last_chunk(caplog):
 
         return StreamingResponse(chunks(), media_type="text/plain")
 
-    with caplog.at_level(logging.INFO, logger="rooftop_api.timing"):
-        response = TestClient(app).get("/stream")
+    response = TestClient(app).get("/stream")
 
     assert response.text == "first\nlast\n"
-    (line,) = _lines(caplog)
+    (line,) = _lines(heard)
     assert line["path"] == "/stream" and line["status"] == "200"
     # The line is written once, after the last chunk: at least the 50 ms the stream took.
     assert int(line["ms"]) >= 50
 
 
-def test_the_timing_logger_writes_to_stderr_when_nobody_configured_logging():
-    app = FastAPI()
-    install_timing_log(app)
-    logger = logging.getLogger("rooftop_api.timing")
+def test_the_timing_logger_writes_to_stderr_through_one_handler_of_its_own_and_does_not_pass_records_up():
+    install_timing_log(FastAPI())
+    install_timing_log(FastAPI())
 
+    ours = [handler for handler in logger.handlers if handler.get_name() == HANDLER_NAME]
+    assert len(ours) == 1
+    assert isinstance(ours[0], logging.StreamHandler)
     assert logger.level == logging.INFO
-    assert any(isinstance(handler, logging.StreamHandler) for handler in logger.handlers)
+    assert logger.propagate is False
