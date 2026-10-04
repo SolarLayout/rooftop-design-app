@@ -39,9 +39,10 @@ drops (325 s and 40 drops before); the shell group 642 s and 0 drops; the studio
 (a built stack left running would serve stale code). **Pull request 2 is merged (#79)**: each workspace's pictures in its group's suite (a baseline belongs
 to the group its name begins with), the kit on two sizes, Present's frames on desktop alone; measured after it, each group alone: kit 1.7 min,
 find 2.4, handover 5.0, home 3.7, present 4.6 (10 before), performance 6.0, shell 6.7 (13 to 16 before), studio 18.5 (`docs/checks.md`).
-**In flight**: #80 (`fix/first-tries-under-load`: the report's pages drawn once per key under asks at once; a pending save written when the
-page is left, the device test's race) waits for GitHub's check; the board "Stage, Layers" (branch `design/stage-layers`, `e07a89a`) waits
-for the owner's eye before pull request 3 builds it.
+**#80 is merged**: the report's pages drawn once per key under asks at once (the handover group 214 s, none flaky); a pending save written
+when the page is left (`flush` on `pagehide`), the device test's race. **In flight**: the board "Stage, Layers" (branch `design/stage-layers`,
+`e07a89a`) waits for the owner's eye before pull request 3 builds it; pull request 4 (`check/base-imports-nothing`) and the API half of pull
+request 5 (`feat/roof-limit-api`, the 30,000 m² limit) are being built by agents in worktrees.
 
 ## What the web app has today
 
