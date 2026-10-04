@@ -82,3 +82,24 @@ export const TWO_DESIGNS: SeededDesign[] = [
   { id: "block-b", name: "Block B", dcKwp: null, energyMwh: null, roofWords: DEMO_ROOF_WORDS, editedAt: Date.UTC(2026, 8, 23, 10) },
 ];
 
+export type KeptRecord = { id: string; name: string; facts: { dcKwp: number | null; energyMwh: number | null }; thumbnail: string | null };
+
+/** The designs the device holds now, as the app wrote them. */
+export async function keptDesignsOf(page: Page): Promise<KeptRecord[]> {
+  return page.evaluate(async (dbName) => {
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const opening = indexedDB.open(dbName, 1);
+      opening.onsuccess = () => resolve(opening.result);
+      opening.onerror = () => reject(opening.error);
+    });
+    try {
+      return await new Promise<KeptRecord[]>((resolve, reject) => {
+        const request = db.transaction("designs", "readonly").objectStore("designs").getAll();
+        request.onsuccess = () => resolve(request.result as KeptRecord[]);
+        request.onerror = () => reject(request.error);
+      });
+    } finally {
+      db.close();
+    }
+  }, DEVICE_DB);
+}

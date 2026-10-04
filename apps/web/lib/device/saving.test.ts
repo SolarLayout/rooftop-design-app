@@ -150,6 +150,28 @@ describe("a committed edit", () => {
     expect(remembered).toEqual([null, "id-1"]);
   });
 
+  test("flush writes at once what waits in the debounce (the page is left), and nothing when nothing waits", async () => {
+    const { project, saving, device, pass, setNow } = setUp();
+    project.getState().open(DEMO);
+    setNow(20_000);
+    project.getState().commit(tilt(20));
+    pass(SAVE_DEBOUNCE - 100);
+    await settled();
+    expect(device.puts).toEqual([]);
+
+    saving.getState().flush();
+    await settled();
+
+    expect(device.puts).toHaveLength(1);
+    expect(device.puts[0]!.document).toBe(project.getState().project!);
+    expect(savingOf(saving.getState())).toBe("saved");
+
+    saving.getState().flush();
+    pass(SAVE_DEBOUNCE);
+    await settled();
+    expect(device.puts).toHaveLength(1);
+  });
+
   test("two commits within the debounce are one write, of the later document", async () => {
     const { project, saving, device, pass } = setUp();
     project.getState().open(DEMO);

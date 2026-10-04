@@ -62,6 +62,13 @@ function Frame({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("beforeunload", ask);
   }, [shouldWarn]);
 
+  // The page left within the debounce of a save (a reload, a closed tab): what waits is written now, not lost.
+  useEffect(() => {
+    const flush = () => saving.getState().flush();
+    window.addEventListener("pagehide", flush);
+    return () => window.removeEventListener("pagehide", flush);
+  }, [saving]);
+
   const place = latitude === null || longitude === null ? null : placeInShort(latitude, longitude);
   const ofTheShell = useMemo(() => ({ notes, open: () => setNotesOpen(true) }), [notes]);
   const designs = useMemo(() => rowsOnTheDeviceOf(kept, keptId), [kept, keptId]);
