@@ -55,6 +55,11 @@ export type SavingState = {
   remove: (id: string) => Promise<void>;
   /** Writes again at once what the device refused. */
   tryAgain: () => void;
+  /**
+   * Writes at once what waits in the debounce: for the moment the page is left (`pagehide`), so that a reload or a closed
+   * tab within the 600 ms after an edit or a landed run loses nothing (plan/phase-11-plan.md, step 23).
+   */
+  flush: () => void;
   /** Reads the designs of the device: in the browser, once the app is there (the stores are made on the server too). */
   start: () => void;
   /** Hears the stores no longer. */
@@ -247,6 +252,10 @@ export function createSaving({ project, results, db, clock = CLOCK_OF_THE_BROWSE
         current = { ...current, id: null };
         set({ saving: "not-kept", failure: null, id: null });
         remember(null);
+      },
+
+      flush() {
+        writeWhatWaits();
       },
 
       tryAgain() {

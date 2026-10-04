@@ -60,6 +60,33 @@ def test_the_pages_of_a_project_and_a_day_are_drawn_once_and_then_kept(client, c
     assert drawn == []
 
 
+def test_three_asks_for_the_same_pages_at_once_draw_them_once(client, chosen, monkeypatch):
+    """Three sizes of the browser tests ask for the same pages together: the others wait for the first."""
+    import time
+
+    from rooftop_api.services import export
+
+    drawn = []
+    real = export.report.report_pages
+
+    def slow_report_pages(*args):
+        drawn.append(args)
+        time.sleep(0.2)
+        return real(*args)
+
+    monkeypatch.setattr(export.report, "report_pages", slow_report_pages)
+    project = {**chosen, "name": "Pune demo, three at once"}
+
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        answers = list(
+            pool.map(lambda _: client.post(f"/export/report-pages?day={DAY}", json=project), range(3))
+        )
+
+    assert [answer.status_code for answer in answers] == [200, 200, 200]
+    assert len({answer.text for answer in answers}) == 1
+    assert len(drawn) == 1
+
+
 def test_another_day_or_another_project_is_drawn_anew(client, chosen):
     from rooftop_api.services import export
 

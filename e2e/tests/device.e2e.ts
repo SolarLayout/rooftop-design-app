@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import type { Dialog, Locator, Page } from "@playwright/test";
-import { DEMO_ROOF_WORDS, TWO_DESIGNS, withDesignsOnTheDevice, withTheDesignsRemoved } from "../device";
+import { DEMO_ROOF_WORDS, keptDesignsOf, TWO_DESIGNS, withDesignsOnTheDevice, withTheDesignsRemoved } from "../device";
 import { A_MAP, atTheRoof, drawTheRectangle, roofMap } from "../find";
 import { expect, test } from "../fixtures";
 
@@ -172,6 +172,9 @@ test.describe("two designs", () => {
     await expect.poll(() => savingSeen(page), { timeout: RUN }).toContain("Saving");
     await expect.poll(async () => (await savingSeen(page)).at(-1), { timeout: RUN }).toBe("Saved on this device");
     expect((await savingSeen(page))[0]).toBe("Not kept on this device");
+    // The run's facts reach the device 600 ms after the run lands (the debounce), after the words above may already
+    // say Saved for the layout's write: the page is left only once the demo's card has its capacity.
+    await expect.poll(async () => (await keptDesignsOf(page)).find((one) => one.name === DEMO_NAME)?.facts.dcKwp ?? null, { timeout: RUN }).not.toBeNull();
 
     // A second design: a roof drawn on the map, built, not kept until its roof type is edited.
     await page.goto("/find");
