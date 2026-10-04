@@ -58,6 +58,13 @@ def waiting_result(waiting_run):
 
 
 # ── the stream ───────────────────────────────────────────────────────────────
+def test_the_stream_closes_its_connection_when_it_ends(demo_run):
+    """So that a proxy in front of the API never reuses the stream's socket (Next's rewrite tore it down under
+    the next request: session 14, the report's pages dropped right after a run). The events are unchanged."""
+    assert demo_run.headers["connection"] == "close"
+    assert demo_run.headers["content-type"].startswith("text/event-stream")
+
+
 def test_the_answer_is_a_stream_of_events_that_ends_with_the_result(demo_run):
     events = events_of(demo_run)
 

@@ -5,6 +5,10 @@
 //   bun tools/proxy-drops.ts                               the test stack (.dev/test/pids.json), 200 asks, 4 at a time
 //   bun tools/proxy-drops.ts --web http://localhost:4700   another stack
 //   bun tools/proxy-drops.ts --times 50 --at-once 8
+//   bun tools/proxy-drops.ts --after-design           each ask of the pages right after a design run (its stream read whole),
+//                                                     one at a time: the sequence that dropped 11 of 20 through Next's proxy
+//                                                     on 2026-10-04 and 0 of 20 straight at the API (the proxy freed the
+//                                                     stream's socket and then tore it down under the next request)
 
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -26,11 +30,14 @@ function testStackWeb(): string {
 
 async function main(): Promise<number> {
   const web = flag("--web", testStackWeb());
-  const times = Number(flag("--times", "200"));
-  const atOnce = Number(flag("--at-once", "4"));
+  const afterDesign = process.argv.includes("--after-design");
+  const times = Number(flag("--times", afterDesign ? "20" : "200"));
+  const atOnce = afterDesign ? 1 : Number(flag("--at-once", "4"));
   const demo = (await (await fetch(`${web}/api/demo`)).json()) as Record<string, unknown>;
+  const document = JSON.stringify(demo);
   const project = JSON.stringify({ ...demo, name: "Pune demo", chosen_option: "29x22x1" });
-  console.log(`proxy-drops: ${times} asks of the report's pages through ${web}, ${atOnce} at a time.`);
+  const how = afterDesign ? "each right after a design run" : `${atOnce} at a time`;
+  console.log(`proxy-drops: ${times} asks of the report's pages through ${web}, ${how}.`);
 
   const statuses: (number | null)[] = [];
   let next = 0;
@@ -39,6 +46,15 @@ async function main(): Promise<number> {
     while (next < times) {
       next += 1;
       try {
+        if (afterDesign) {
+          const run = await fetch(`${web}/api/design`, {
+            method: "POST",
+            headers: { "content-type": "application/json", accept: "text/event-stream" },
+            body: document,
+            signal: AbortSignal.timeout(AN_ASK),
+          });
+          await run.text();
+        }
         const response = await fetch(`${web}/api/export/report-pages?day=${DAY}`, {
           method: "POST",
           headers: { "content-type": "application/json" },
