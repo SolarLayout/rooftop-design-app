@@ -103,12 +103,17 @@ def test_a_dxf_in_millimetres_is_read_at_the_place_given(client):
     assert body["missing_heights"] == ["TANK"] and body["notes"] == [HEIGHT_NOTE]
 
 
-def test_a_dxf_read_in_metres_is_a_thousand_times_larger(client):
+def test_a_dxf_read_in_the_wrong_units_is_refused_as_too_large_naming_its_area(client):
+    """Drawn in millimetres, read in metres: a thousand times larger each way, so 800 km², and the
+    area in the refusal is what tells the user to choose the right units."""
     request = {"name": "roof.dxf", "base64": _b64(_dxf()), "lat": 18.52, "lon": 73.86}
 
-    body = client.post("/roof/import", json=request).json()
+    response = client.post("/roof/import", json=request)
 
-    assert Polygon(body["outline"]).area == pytest.approx(800.0e6)
+    assert response.status_code == 422
+    error = error_of(response)
+    assert (error["code"], error["field"]) == ("roof_too_large", "base64")
+    assert error["message"].startswith("This outline covers 800,000,000 m². ")
 
 
 def test_when_every_height_is_in_the_file_there_is_no_note(client):

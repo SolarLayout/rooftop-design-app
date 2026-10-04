@@ -27,6 +27,9 @@ def import_roof(file: schemas.RoofFile) -> schemas.ImportedRoof:
         )
     except ValueError as error:
         raise ApiError(UNPROCESSABLE, "roof_file_unreadable", str(error), "base64") from error
+    # The one check of the limit for a roof read from a file: the file is the field, as for what else
+    # is wrong with its content. A DXF read in the wrong units is 10⁶ times too large, and the area says so.
+    geometry.require_roof_within_limit(roof.outline, "base64")
     return convert.imported_roof_from_engine(
         roof, name, [HEIGHTS_SET] if roof.missing_heights else [], _project_of(roof, name, file)
     )

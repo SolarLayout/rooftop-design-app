@@ -6,7 +6,7 @@ from typing import Literal
 from fastapi import APIRouter, Response
 
 from rooftop_api import schemas
-from rooftop_api.errors import JSON_ERROR_RESPONSES
+from rooftop_api.errors import OUTLINE_JSON_ERROR_RESPONSES
 from rooftop_api.services import export as service
 
 ExportKind = Literal["pdf", "dxf", "kmz", "csv", "sld", "rtd", "zip"]
@@ -18,7 +18,7 @@ FILES = {
     }
 }
 
-router = APIRouter(tags=["export"], responses=JSON_ERROR_RESPONSES)
+router = APIRouter(tags=["export"], responses=OUTLINE_JSON_ERROR_RESPONSES)
 
 
 # Before /export/{kind}: a route with a name of its own must be matched first.

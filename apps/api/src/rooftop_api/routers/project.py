@@ -3,10 +3,10 @@
 from fastapi import APIRouter
 
 from rooftop_api import schemas
-from rooftop_api.errors import ERROR_RESPONSES
+from rooftop_api.errors import OUTLINE_ERROR_RESPONSES
 from rooftop_api.services import project_files
 
-router = APIRouter(prefix="/project", tags=["project"], responses=ERROR_RESPONSES)
+router = APIRouter(prefix="/project", tags=["project"], responses=OUTLINE_ERROR_RESPONSES)
 
 
 @router.post("/open", response_model=schemas.OpenedProject, operation_id="openProject")

@@ -28,6 +28,8 @@ def from_map(drawn: schemas.OutlineOnMap) -> schemas.Project:
     centre = polygon.centroid
     lon, lat = local_to_lonlat([(centre.x, centre.y)], lat0, lon0)[0]
     outline = [(x - centre.x, y - centre.y) for x, y in list(polygon.exterior.coords)[:-1]]
+    # The one check of the limit for a roof drawn on the map: before its obstacles are read.
+    geometry.require_roof_within_limit(outline, "outline")
     counts: dict[str, int] = {}
     obstacles = [_obstacle(shape, index, lat, lon, counts) for index, shape in enumerate(drawn.obstacles)]
     roof = geometry.Roof(
@@ -44,7 +46,8 @@ def from_map(drawn: schemas.OutlineOnMap) -> schemas.Project:
 
 
 def on_map(roof: schemas.Roof) -> schemas.RoofOnMap:
-    """Where the roof and its obstacles are on the map."""
+    """Where the roof and its obstacles are on the map. A roof over the limit is refused as everywhere."""
+    geometry.require_roof_within_limit(roof.outline, "outline")
     outline = [_lonlat(p) for p in local_to_lonlat(roof.outline, roof.lat, roof.lon)]
     return schemas.RoofOnMap(
         outline=outline, obstacles=[_shape(o, roof.lat, roof.lon) for o in roof.obstacles]

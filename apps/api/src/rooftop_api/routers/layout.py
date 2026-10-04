@@ -3,10 +3,10 @@
 from fastapi import APIRouter
 
 from rooftop_api import schemas
-from rooftop_api.errors import ERROR_RESPONSES
+from rooftop_api.errors import OUTLINE_ERROR_RESPONSES
 from rooftop_api.services import layouts as service
 
-router = APIRouter(tags=["layout"], responses=ERROR_RESPONSES)
+router = APIRouter(tags=["layout"], responses=OUTLINE_ERROR_RESPONSES)
 
 
 @router.post("/layout", response_model=schemas.LayoutResponse, operation_id="computeLayout")

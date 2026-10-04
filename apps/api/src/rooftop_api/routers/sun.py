@@ -3,10 +3,10 @@
 from fastapi import APIRouter
 
 from rooftop_api import schemas
-from rooftop_api.errors import ERROR_RESPONSES
+from rooftop_api.errors import OUTLINE_ERROR_RESPONSES
 from rooftop_api.services import sun as service
 
-router = APIRouter(tags=["sun"], responses=ERROR_RESPONSES)
+router = APIRouter(tags=["sun"], responses=OUTLINE_ERROR_RESPONSES)
 
 
 @router.post("/sun", response_model=schemas.SunResponse, operation_id="computeSun")

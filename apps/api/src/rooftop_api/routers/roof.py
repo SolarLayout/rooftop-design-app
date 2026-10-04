@@ -3,10 +3,10 @@
 from fastapi import APIRouter
 
 from rooftop_api import schemas
-from rooftop_api.errors import ERROR_RESPONSES
+from rooftop_api.errors import OUTLINE_ERROR_RESPONSES
 from rooftop_api.services import roof_files, roof_map
 
-router = APIRouter(prefix="/roof", tags=["roof"], responses=ERROR_RESPONSES)
+router = APIRouter(prefix="/roof", tags=["roof"], responses=OUTLINE_ERROR_RESPONSES)
 
 
 @router.post("/import", response_model=schemas.ImportedRoof, operation_id="importRoof")

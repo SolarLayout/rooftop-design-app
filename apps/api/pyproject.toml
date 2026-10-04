@@ -58,6 +58,10 @@ src = ["src", "tests"]
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP"]
 
+# The measurement scripts in tools/ are this project's, beside src and tests.
+[tool.ruff.lint.isort]
+known-first-party = ["tools"]
+
 # The engine and its tests were copied from the desktop app (rooftop-design, commit bf2cb67) and keep
 # its layout, so a diff against the source shows only what was changed here. The desktop app did not
 # limit the line length and used its own layout; every other rule holds for these files too.

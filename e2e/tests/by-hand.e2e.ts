@@ -85,6 +85,34 @@ test.describe("without a map", () => {
     edgesOf(layouts[0].roof.outline).forEach((edge, n) => expect(Math.abs(edge - [90, 40, 90, 40][n]), `edge ${n + 1}`).toBeLessThanOrEqual(0.05));
   });
 
+  test("a roof over 30,000 m² is refused at Build in the API's words, in the panel, and nothing is laid out (Phase 11, decision 11)", async ({ page }) => {
+    test.setTimeout(RUN + 30_000);
+    await withoutWebGL(page);
+    const layouts: string[] = [];
+    page.on("request", (request) => {
+      if (request.url().endsWith("/api/layout")) layouts.push(request.url());
+    });
+    await page.goto("/find");
+    await page.getByRole("status").getByRole("button", { name: "Enter dimensions by hand instead" }).click();
+    await atThePlace(page);
+    await typed(page, "Length", "400");
+    await typed(page, "Width", "300");
+    await typed(page, "Long side faces", "180");
+    await expect(tile(page, "Area")).toHaveText("120,000 m²");
+
+    await page.getByRole("button", { name: "Build this roof" }).click();
+
+    // The area is the API's, from the corners projected to the engine's metres (D41): 119,947 m², not the frame's 120,000.
+    const note = page.getByRole("status").filter({ hasText: "This outline covers" });
+    await expect(note).toHaveText(
+      /^This outline covers 119,9\d\d m²\. SolarLayout designs one roof at a time, up to 30,000 m² \(about 3 MWp\)\. For a larger site, outline each building as its own design\.$/,
+      { timeout: RUN },
+    );
+    await expect(page).toHaveURL(/\/find/);
+    await expect(page.getByRole("button", { name: "Build this roof" })).toBeEnabled();
+    expect(layouts).toEqual([]);
+  });
+
   test("the corner table: a row per corner, three at least; the plan follows the rows", async ({ page }) => {
     await withoutWebGL(page);
     await page.goto("/find");
