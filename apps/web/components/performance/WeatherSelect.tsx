@@ -4,7 +4,7 @@ import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
 import { Select } from "@/components/ui/Select";
 import type { Project } from "@/lib/api";
-import { WEATHER_ITEMS, weatherShownOf, WEATHER_LABELS, type WeatherSource } from "@/lib/performance/weather-source";
+import { WEATHER_ITEMS, weatherShownOf, WEATHER_LABELS, type WeatherSource } from "@/lib/flow/weather-source";
 import type { WeatherLoad } from "./use-weather-load";
 
 type Props = {

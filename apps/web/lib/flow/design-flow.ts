@@ -11,7 +11,7 @@ import { DESIGN_PAUSE, TIME_REST } from "../../components/ui/design-numbers";
 import { partsOfAnEdit } from "./edit-parts";
 import { api as apiOfTheApp, ApiError, type Api, type DesignResult, type Project } from "../api";
 import { CLOCK_OF_THE_BROWSER, type Clock } from "../clock";
-import { stepOfLoading, weatherRequestOf, withWeatherLoaded } from "../performance/weather-source";
+import { stepOfLoading, weatherRequestOf, withWeatherLoaded } from "./weather-source";
 import { hoursOf, QUARTER_HOUR } from "./sun-day";
 import { heldHourOf } from "../studio/sun-time";
 import type { ProjectState, ProjectStore } from "../stores/project-store";

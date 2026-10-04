@@ -6,7 +6,7 @@ import { useHistoryKeys } from "@/components/shell/use-history-keys";
 import { assumptionsOf, withAssumption, withLevel, type AssumptionId } from "@/lib/performance/assumption-fields";
 import { withDegradation } from "@/lib/performance/degradation";
 import { pageViewOf } from "@/lib/performance/page-view";
-import { loadingWordsOf } from "@/lib/performance/weather-source";
+import { loadingWordsOf } from "@/lib/flow/weather-source";
 import { degradationOf, latitudeOf, longitudeOf, nameOf, projectOf, weatherCsvOf, weatherSourceOf } from "@/lib/stores/project-store";
 import { designFailureOf, designOf, designStatusOf, progressOf, readoutsOf } from "@/lib/stores/results-store";
 import { Assumptions } from "./Assumptions";

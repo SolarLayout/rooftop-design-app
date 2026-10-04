@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Project, Weather } from "../api";
-import { DOCUMENT } from "./test-fixtures";
+import { DOCUMENT } from "../performance/test-fixtures";
 import { loadingWordsOf, stepOfLoading, WEATHER_ITEMS, weatherRequestOf, weatherShownOf, withWeather, withWeatherLoaded } from "./weather-source";
 
 const PVGIS_DOCUMENT = { ...DOCUMENT, weather_source: "pvgis", weather_csv: "", weather_csv_text: "", weather_json: null } as Project;

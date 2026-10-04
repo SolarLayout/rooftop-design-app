@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useStores } from "@/components/shell/stores";
 import { api, ApiError } from "@/lib/api";
-import { withWeather, type DownloadedSource, type WeatherChosen } from "@/lib/performance/weather-source";
+import { withWeather, type DownloadedSource, type WeatherChosen } from "@/lib/flow/weather-source";
 
 export type WeatherLoad = {
   /** The source whose hours are on their way; null while none are. */
