@@ -22,7 +22,7 @@ built as pull requests by agents in worktrees from written briefs, each reviewed
 | 11 | Pull request 6 by an agent: the BLAS threads pinned on GitHub (measured over three runs, no gain, taken out in #85), the pages drawn once per session (tried, no gain, taken out by the session), the engine's profile for #76 | #83, #85, `plan/reference/api-profile.md` |
 | 12 | Pull request 7 by an agent: the seven items of polish | #84 |
 | 13 | Pull request 3 by an agent: the Layers button to the approved board | #86 |
-| 14 | The close: "As built", the state, this record; the browser suite's one run and the pictures wait for the owner's say (D56) | `main` |
+| 14 | The close: "As built", the state, this record, the resume prompt 015 for Phase 12 (deployment) at the owner's ask; the browser suite's one run and the pictures wait for his say (D56) | `main`, `plan/resume/015-phase-12-deployment.md` |
 
 ## How the owner steered the session
 

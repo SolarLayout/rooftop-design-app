@@ -1,6 +1,6 @@
 # 014: Phase 11, hardening for the tradeshow
 
-Written: 2026-10-03, by session 13, at the close of Phase 10 (built unattended at the owner's pre-approval). Status: open. After 013 (Phase 10).
+Written: 2026-10-03, by session 13, at the close of Phase 10 (built unattended at the owner's pre-approval). Status: used by session 14, 2026-10-04. After 013 (Phase 10).
 
 ## Paste this
 

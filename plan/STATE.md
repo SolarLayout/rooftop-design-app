@@ -8,7 +8,7 @@ rewrite's drops fixed at their causes, the API's timing line), #79 (the browser 
 flushed), #81 (one roof up to 30,000 m²), #82 (the base imports nothing of the groups' folders), #83 (the engine's profile for #76), #84 (the polish),
 #85 (the BLAS pinning taken out), #86 (the Layers button) are merged; `main` is green on GitHub. What was dropped or deferred with the owner is in
 issues #73 to #77; Phase 12 (deployment) is filed. One thing waits for the owner's say (D56): the whole browser suite's run here and the renewed
-pictures. No resume prompt was asked for.
+pictures. The resume prompt for Phase 12 is written (`plan/resume/015-phase-12-deployment.md`), for a fresh session at the owner's ask.
 
 ## Where we are
 
@@ -105,8 +105,8 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 ## Next, in order
 
 1. The owner's own end-to-end test of the app by hand (his decision of 2026-10-04), and his say on the browser suite's one run (D56).
-2. Phase 12, deployment (`plan/phase-12-deployment.md`): staging and production on Vercel and Lambda, the stand demoing from production. Its plan
-   is written when the phase begins, as the earlier plans were; the account steps the owner must do himself (the domains, Vercel, AWS, the Esri
+2. Phase 12, deployment (`plan/phase-12-deployment.md`), in a fresh session with the resume prompt 015: staging and production on Vercel and
+   Lambda, the stand demoing from production. Its plan is written first and explained item by item, as Phase 11's was; the account steps the owner must do himself (the domains, Vercel, AWS, the Esri
    key's referrers) one at a time. Issue #76 (the API lean for Lambda) belongs with it or just before: the profile says the demo's run peaks at
    3.5 GB and the roof at the limit at 19 GB.
 3. Issues #73 to #77 as the owner decides after his testing: the audits and the guide, the journeys and the `e2e` workflow, Present's first frame

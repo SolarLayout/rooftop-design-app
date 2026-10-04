@@ -119,3 +119,7 @@ in effect till the whole of Phase 11 is done
 ## 26. The board "Stage, Layers"
 
 board approved
+
+## 27. At the close
+
+update state, sesions file etc. next i will work on the deployment in a fresh session
