@@ -36,9 +36,12 @@ profile), `tools/proxy-drops.ts`, the drops of the rewrite found at their two ca
 connection; the drawn pages kept per project and day; the proxy's timeout 120 s), one log line per request with its time
 (`rooftop_api/timing.py`), the README; a fresh clone's check green. Measured: the handover group 204 s built and 227 s in dev mode with 0
 drops (325 s and 40 drops before); the shell group 642 s and 0 drops; the studio group 952 s and 0 drops. The test stack stays `next dev`
-(a built stack left running would serve stale code). **In flight**: pull request 2 (`check/pictures-by-group`: the pictures by group, the
-kit on two sizes, Present's frames on desktop alone) built by an agent in a worktree from a brief; the board "Stage, Layers" drawn by
-another agent, to be shown to the owner before pull request 3 builds it.
+(a built stack left running would serve stale code). **Pull request 2 is merged (#79)**: each workspace's pictures in its group's suite (a baseline belongs
+to the group its name begins with), the kit on two sizes, Present's frames on desktop alone; measured after it, each group alone: kit 1.7 min,
+find 2.4, handover 5.0, home 3.7, present 4.6 (10 before), performance 6.0, shell 6.7 (13 to 16 before), studio 18.5 (`docs/checks.md`).
+**In flight**: #80 (`fix/first-tries-under-load`: the report's pages drawn once per key under asks at once; a pending save written when the
+page is left, the device test's race) waits for GitHub's check; the board "Stage, Layers" (branch `design/stage-layers`, `e07a89a`) waits
+for the owner's eye before pull request 3 builds it.
 
 ## What the web app has today
 
