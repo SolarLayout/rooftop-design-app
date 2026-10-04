@@ -113,6 +113,13 @@ describe("the groups of the browser tests", () => {
     }
   });
 
+  test("the kit is pictured on phone and desktop alone, so the tablet has no kit*.png (plan/phase-11-plan.md, decision 2)", () => {
+    const kit = BASELINES.filter((baseline) => groupOfBaseline(baseline) === "kit");
+    expect(kit.filter((baseline) => baseline.includes("/tablet/"))).toEqual([]);
+    expect(kit.filter((baseline) => baseline.includes("/phone/")).length).toBeGreaterThan(0);
+    expect(kit.filter((baseline) => baseline.includes("/desktop/")).length).toBeGreaterThan(0);
+  });
+
   test("a baseline whose name begins with no group's is refused, naming the groups", () => {
     expect(() => groupOfBaseline("e2e/baselines/darwin/desktop/weather-station.png")).toThrow(
       /weather-station\.png belongs to no group.*kit, find, studio, performance, handover, home, present, shell/s,
