@@ -3,7 +3,7 @@
 import { shown } from "../../components/ui/number-entry";
 import type { Sun } from "../scene/camera";
 import { hourOf, type Callout } from "../geometry/keepout";
-import { hoursOf, QUARTER_HOUR, type DayHours } from "../flow/sun-day";
+import { hoursOf, QUARTER_HOUR, type DayHours } from "./sun-day";
 import type { SunDay } from "../stores/results-store";
 import type { SunTime } from "../stores/view-store";
 

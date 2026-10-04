@@ -10,7 +10,7 @@ import { calloutRowOf, calloutSideOf, chipPlaceOf, isMarkRole, isOnTheCanvas } f
 import { cameraOf, sunLabelsOf, type StageStore } from "@/lib/scene/stage-store";
 import { projectOf } from "@/lib/stores/project-store";
 import { draftOf, selectionOf, sunTimeOf } from "@/lib/stores/view-store";
-import { sunCalloutOf } from "@/lib/studio/sun-time";
+import { sunCalloutOf } from "@/lib/flow/sun-time";
 
 type Props = { stage: StageStore };
 

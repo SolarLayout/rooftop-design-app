@@ -19,7 +19,7 @@ import { chosenOptionOf, designOf, isDesignUpdating, layoutOf, readoutsOf, shado
 import { draftOf, isShadeMapShownOf, lensOf, onTheRoofOf, selectionOf, showsSunPathOf, stringsShownByOf, sunTimeOf, toReviewOf } from "@/lib/stores/view-store";
 import { shadeMapWordsOf } from "@/lib/scene/shade-map";
 import { useShadeMapOfTheRun } from "@/components/scene/use-shade-map";
-import { readOutOf, sunLineOf, sunPathLineOf } from "@/lib/studio/sun-time";
+import { readOutOf, sunLineOf, sunPathLineOf } from "@/lib/flow/sun-time";
 import { useSun } from "@/components/scene/use-sun";
 import { useStringsShown } from "@/components/scene/use-strings";
 import { Callout } from "./Callout";

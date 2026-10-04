@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useStores } from "@/components/shell/stores";
 import { hoursOf } from "@/lib/flow/sun-day";
 import { sunDayOf } from "@/lib/stores/results-store";
-import { timeOfKey } from "@/lib/studio/sun-time";
+import { timeOfKey } from "@/lib/flow/sun-time";
 
 /** What has the focus takes its own keys: a field, a slider, a menu, a list (plan/phase-06-plan.md, decision 17). */
 const TAKES_ITS_OWN_KEYS = 'input, textarea, select, [contenteditable="true"], [role="slider"], [role="menu"], [role="listbox"], [role="combobox"]';

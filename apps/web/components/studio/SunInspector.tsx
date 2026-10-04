@@ -13,7 +13,7 @@ import { hourOf } from "@/lib/geometry/keepout";
 import { projectOf } from "@/lib/stores/project-store";
 import { sunFailureOf } from "@/lib/stores/results-store";
 import { onTheRoofOf, sunTabOf, type OnTheRoof, type SunTab } from "@/lib/stores/view-store";
-import { dateOf, dayOfChoice, dayOfYearOf, daysOf, designDayLineOf, designDayOfYear, partsOf, sunAtOf } from "@/lib/studio/sun-time";
+import { dateOf, dayOfChoice, dayOfYearOf, daysOf, designDayLineOf, designDayOfYear, partsOf, sunAtOf } from "@/lib/flow/sun-time";
 import { ReadOut, SECTION } from "./inspector-look";
 import { ShadeMapSection, ShadingSection } from "./SunShading";
 import { SunTimeline } from "./Time";

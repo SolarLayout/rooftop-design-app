@@ -13,7 +13,7 @@ import { api as apiOfTheApp, ApiError, type Api, type DesignResult, type Project
 import { CLOCK_OF_THE_BROWSER, type Clock } from "../clock";
 import { stepOfLoading, weatherRequestOf, withWeatherLoaded } from "./weather-source";
 import { hoursOf, QUARTER_HOUR } from "./sun-day";
-import { heldHourOf } from "../studio/sun-time";
+import { heldHourOf } from "./sun-time";
 import type { ProjectState, ProjectStore } from "../stores/project-store";
 import { sunKeyOf, withTheChoice, type Failure, type ResultsStore, type SunDay, type SunKey } from "../stores/results-store";
 import type { ViewStore } from "../stores/view-store";
