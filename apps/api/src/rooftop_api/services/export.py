@@ -33,6 +33,17 @@ DRAWING = threading.Lock()
 # some 30 sets.
 PAGES_BYTES = 32_000_000
 PAGES = memo.Store(PAGES_BYTES, size_of=lambda pages: sum(len(page.png) for page in pages.pages))
+# One drawing at a time per key: the Store lets every asker of a missing key make the value, which is right
+# for the cheap, and three sizes asking for the same pages at once drew them three times each, behind one
+# another on the drawing lock (the API's log under the handover group's load: pages asks of 23 to 133 s).
+# The second and the third wait for the first and take what it kept.
+_DRAWING_ONE: dict[str, threading.Lock] = {}
+_DRAWING_ONE_GUARD = threading.Lock()
+
+
+def _one_at_a_time(key: str) -> threading.Lock:
+    with _DRAWING_ONE_GUARD:
+        return _DRAWING_ONE.setdefault(key, threading.Lock())
 
 
 @dataclass(frozen=True)
@@ -118,7 +129,9 @@ def report_pages(project: schemas.Project, day: date | None = None) -> schemas.R
     today when None): the same drawing as the PDF of that day, page for page. Drawn once per project and
     day, then kept (PAGES)."""
     printed = day or date.today()
-    return PAGES.get_or_make(pages_key(project, printed), lambda: _drawn_pages(project, printed))
+    key = pages_key(project, printed)
+    with _one_at_a_time(key):
+        return PAGES.get_or_make(key, lambda: _drawn_pages(project, printed))
 
 
 def pages_key(project: schemas.Project, day: date) -> str:
