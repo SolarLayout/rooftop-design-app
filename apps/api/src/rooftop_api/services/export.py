@@ -10,14 +10,17 @@ import zipfile
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
+from typing import TYPE_CHECKING
 from urllib.parse import quote
 
 from rooftop_api import convert, schemas
 from rooftop_api.errors import UNPROCESSABLE, ApiError
 from rooftop_api.services import design as design_service
 from rooftop_core import memo
-from rooftop_core.export import files, report
 from rooftop_core.project import Design, Project
+
+if TYPE_CHECKING:
+    from rooftop_core.export import report as report_module
 
 NAMELESS = "rooftop-design"
 PAGE_DPI = 150  # sharp at the preview's width on a 2x screen (plan/phase-09-plan.md, decision 5)
@@ -39,6 +42,30 @@ PAGES = memo.Store(PAGES_BYTES, size_of=lambda pages: sum(len(page.png) for page
 # The second and the third wait for the first and take what it kept.
 _DRAWING_ONE: dict[str, threading.Lock] = {}
 _DRAWING_ONE_GUARD = threading.Lock()
+
+
+def _files():
+    """The engine's writers of files, loaded on the first file asked for: they bring matplotlib, which a
+    start of the API should not wait for (Phase 13)."""
+    from rooftop_core.export import files
+
+    return files
+
+
+def _report():
+    """The engine's report, loaded on the first page asked for (see _files)."""
+    from rooftop_core.export import report
+
+    return report
+
+
+def _writer(name: str) -> Callable[..., bytes]:
+    """The writer *name* of the engine's files, found when it is first called."""
+
+    def write(*args, **kwargs) -> bytes:
+        return getattr(_files(), name)(*args, **kwargs)
+
+    return write
 
 
 def _one_at_a_time(key: str) -> threading.Lock:
@@ -79,11 +106,11 @@ def rtd_bytes(project: Project) -> bytes:
 
 # The files, one by one: the five of the design and the project file. The zip holds them all, in this order.
 IN_THE_ZIP: dict[str, Kind] = {
-    "pdf": Kind("application/pdf", "-report.pdf", files.export_pdf_bytes, drawn=True, dated=True),
-    "dxf": Kind("image/vnd.dxf", "-layout.dxf", files.export_dxf_bytes),
-    "kmz": Kind("application/vnd.google-earth.kmz", ".kmz", files.export_kmz_bytes),
-    "csv": Kind("text/csv; charset=utf-8", "-hourly.csv", files.export_csv_bytes),
-    "sld": Kind("image/png", "-single-line-diagram.png", files.export_sld_bytes, drawn=True),
+    "pdf": Kind("application/pdf", "-report.pdf", _writer("export_pdf_bytes"), drawn=True, dated=True),
+    "dxf": Kind("image/vnd.dxf", "-layout.dxf", _writer("export_dxf_bytes")),
+    "kmz": Kind("application/vnd.google-earth.kmz", ".kmz", _writer("export_kmz_bytes")),
+    "csv": Kind("text/csv; charset=utf-8", "-hourly.csv", _writer("export_csv_bytes")),
+    "sld": Kind("image/png", "-single-line-diagram.png", _writer("export_sld_bytes"), drawn=True),
     "rtd": Kind("application/json", ".rtd", rtd_bytes, needs_design=False),
 }
 ZIP = "zip"
@@ -143,12 +170,12 @@ def pages_key(project: schemas.Project, day: date) -> str:
 def _drawn_pages(project: schemas.Project, printed: date) -> schemas.ReportPages:
     design = _design_of(project)
     with DRAWING:
-        pages = [_page_image(page) for page in report.report_pages(design, printed)]
+        pages = [_page_image(page) for page in _report().report_pages(design, printed)]
     return schemas.ReportPages(day=printed, dpi=PAGE_DPI, pages=pages)
 
 
-def _page_image(page: report.Page) -> schemas.ReportPage:
-    png = report.page_png(page, PAGE_DPI)
+def _page_image(page: "report_module.Page") -> schemas.ReportPage:
+    png = _report().page_png(page, PAGE_DPI)
     width, height = png_size(png)
     return schemas.ReportPage(
         number=page.number,

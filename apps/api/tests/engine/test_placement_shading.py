@@ -71,3 +71,18 @@ def test_row_fraction_formula():
     H, D = L * math.sin(b), P - L * math.cos(b)
     t = math.tan(psi)
     assert (H - D * t) / (math.sin(b) + math.cos(b) * t) / L == pytest.approx(expect)
+
+
+def test_the_modules_turned_back_in_one_call_are_shapely_s_own_rotation_to_the_bit():
+    from shapely.affinity import rotate
+    from shapely.geometry import Point, box
+
+    from rooftop_core.placement import rotate_all
+
+    shapes = [box(0.3 * k, 1.1 * k, 0.3 * k + 1.13, 1.1 * k + 2.28) for k in range(40)]
+    origin = Point(12.345, -6.789)
+    for angle in (-37.5, 0.0, 15.0, 90.0, 180.0):
+        one_by_one = [rotate(shape, angle, origin=origin) for shape in shapes]
+        at_once = rotate_all(shapes, angle, origin)
+
+        assert [shape.wkb for shape in at_once] == [shape.wkb for shape in one_by_one]

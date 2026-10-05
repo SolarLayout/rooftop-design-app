@@ -25,6 +25,7 @@ from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 import numpy as np
 import pandas as pd
 
+from .io.pvsyst import Module
 from .options import StringOption
 from .shading import ShadingResult
 
@@ -38,6 +39,7 @@ MEGABYTE = 2**20
 # (55 MB and 507 MB before).
 SHADING_BYTES = 64 * MEGABYTE  # some fifty roofs at the limit
 OPTIONS_BYTES = 64 * MEGABYTE  # the demo takes 4 MB: the hours of the year of five options
+POINTS_BYTES = 32 * MEGABYTE  # operating points: 32 bytes a pair, some 150,000 pairs a length at the limit
 NAMES = ("source",)  # fields that name the file a module or an inverter came from
 NOT_FOR_SHADING = ("albedo",)  # fields of the roof that only the simulation looks at
 # Fields of the losses that only the figures after the year look at: no hour of a simulation depends on them.
@@ -50,6 +52,10 @@ class Memo(Protocol):
     def shading(self, key: str, make: Callable[[], ShadingResult]) -> ShadingResult: ...
 
     def options(self, key: str, make: Callable[[], list[StringOption]]) -> list[StringOption]: ...
+
+    def operating_points(
+        self, key: str, make: Callable[[], tuple[np.ndarray, ...]]
+    ) -> tuple[np.ndarray, ...]: ...
 
 
 class Store:
@@ -105,9 +111,15 @@ class Store:
 class MemoryMemo:
     """Results kept in this process."""
 
-    def __init__(self, shading_bytes: int = SHADING_BYTES, options_bytes: int = OPTIONS_BYTES):
+    def __init__(
+        self,
+        shading_bytes: int = SHADING_BYTES,
+        options_bytes: int = OPTIONS_BYTES,
+        points_bytes: int = POINTS_BYTES,
+    ):
         self.shadings = Store(shading_bytes, _bytes_of_shading)
         self.option_sets = Store(options_bytes, _bytes_of_options)
+        self.points = Store(points_bytes, lambda arrays: sum(array.nbytes for array in arrays))
 
     def shading(self, key: str, make: Callable[[], ShadingResult]) -> ShadingResult:
         return self.shadings.get_or_make(key, lambda: _read_only(make()))
@@ -115,6 +127,11 @@ class MemoryMemo:
     def options(self, key: str, make: Callable[[], list[StringOption]]) -> list[StringOption]:
         kept = self.option_sets.get_or_make(key, lambda: tuple(make()))
         return [dataclasses.replace(option) for option in kept]
+
+    def operating_points(
+        self, key: str, make: Callable[[], tuple[np.ndarray, ...]]
+    ) -> tuple[np.ndarray, ...]:
+        return self.points.get_or_make(key, lambda: tuple(_frozen(array) for array in make()))
 
 
 # ── keys ─────────────────────────────────────────────────────────────────────
@@ -136,6 +153,12 @@ def options_key(design: Design) -> str:
         [p.system_voltage, design.t_min, design.t_max, design.cell_rise, p.voc_coefficient_pct],
         hashlib.sha256(pd.util.hash_pandas_object(weather.data, index=True).to_numpy().tobytes()).hexdigest(),
     )
+
+
+def points_key(module: Module, pairs: np.ndarray) -> str:
+    """The fingerprint of the operating points of *pairs* (irradiance + 1j × temperature) for *module*: the
+    pairs themselves, so that the same pairs, solved the same way, are found whatever loss was edited."""
+    return _fingerprint("points", _without(module, NAMES), hashlib.sha256(pairs.tobytes()).hexdigest())
 
 
 def custom_key(design: Design) -> str:
@@ -174,6 +197,11 @@ def _plain(value: Any) -> Any:
 
 
 # ── what is kept ─────────────────────────────────────────────────────────────
+def _frozen(array: np.ndarray) -> np.ndarray:
+    array.flags.writeable = False
+    return array
+
+
 def _read_only(shading: ShadingResult) -> ShadingResult:
     for array in shading.arrays():
         array.flags.writeable = False

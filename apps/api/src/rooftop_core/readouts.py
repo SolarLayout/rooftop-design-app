@@ -10,7 +10,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from .bom import BomLine, CableRow, bom, cable_schedule
-from .export.files import structure_label, summary_rows
+from .export.summary import structure_label, summary_rows
 from .options import StringOption
 from .project import Design
 from .stringing import DCAC_TARGET, DCAC_WARN, form_strings, max_strings_per_inverter, strings_per_mppt
