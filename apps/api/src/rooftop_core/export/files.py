@@ -24,8 +24,8 @@ from ..geo import local_to_lonlat  # noqa: E402
 from ..project import Design  # noqa: E402
 from .report import A4_L, need_option, report_pages  # noqa: E402
 from .report import schedule_pages as schedule_pages  # noqa: E402
-from .report import structure_label as structure_label  # noqa: E402
-from .report import summary_rows as summary_rows  # noqa: E402
+from .summary import structure_label as structure_label  # noqa: E402
+from .summary import summary_rows as summary_rows  # noqa: E402
 
 
 def export_pdf(d: Design, path: str | Path, day: date | None = None) -> None:

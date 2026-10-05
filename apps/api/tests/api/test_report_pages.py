@@ -8,6 +8,7 @@ from datetime import date
 import pytest
 from pypdf import PdfReader
 
+from rooftop_core.export import report as report_module
 from tests.api.conftest import error_of
 
 pytestmark = pytest.mark.slow
@@ -48,10 +49,9 @@ def _page_count(pdf: bytes) -> int:
 
 # ── kept once drawn ──────────────────────────────────────────────────────────
 def test_the_pages_of_a_project_and_a_day_are_drawn_once_and_then_kept(client, chosen, answered, monkeypatch):
-    from rooftop_api.services import export
 
     drawn = []
-    monkeypatch.setattr(export.report, "report_pages", lambda *args: drawn.append(args) or [])
+    monkeypatch.setattr(report_module, "report_pages", lambda *args: drawn.append(args) or [])
 
     again = client.post(f"/export/report-pages?day={DAY}", json=chosen)
 
@@ -64,17 +64,15 @@ def test_three_asks_for_the_same_pages_at_once_draw_them_once(client, chosen, mo
     """Three sizes of the browser tests ask for the same pages together: the others wait for the first."""
     import time
 
-    from rooftop_api.services import export
-
     drawn = []
-    real = export.report.report_pages
+    real = report_module.report_pages
 
     def slow_report_pages(*args):
         drawn.append(args)
         time.sleep(0.2)
         return real(*args)
 
-    monkeypatch.setattr(export.report, "report_pages", slow_report_pages)
+    monkeypatch.setattr(report_module, "report_pages", slow_report_pages)
     project = {**chosen, "name": "Pune demo, three at once"}
 
     with ThreadPoolExecutor(max_workers=3) as pool:
