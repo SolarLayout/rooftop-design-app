@@ -74,7 +74,7 @@ def test_without_a_system_voltage_nothing_is_sized_or_chosen():
     precomputed = design.prepare()
 
     assert layout.n_modules == 790
-    assert precomputed.shading.f_lin.shape == (8760, 790)
+    assert (precomputed.shading.n_hours, precomputed.shading.n_modules) == (8760, 790)
     assert design.size_series() is None
     assert design.run_options() == []
     assert design.options == []

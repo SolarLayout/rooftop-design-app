@@ -171,18 +171,14 @@ def _plain(value: Any) -> Any:
 
 
 # ── what is kept ─────────────────────────────────────────────────────────────
-def _arrays(shading: ShadingResult) -> list[np.ndarray]:
-    return [getattr(shading, field.name) for field in dataclasses.fields(shading)]
-
-
 def _read_only(shading: ShadingResult) -> ShadingResult:
-    for array in _arrays(shading):
+    for array in shading.arrays():
         array.flags.writeable = False
     return shading
 
 
 def _bytes_of_shading(shading: ShadingResult) -> int:
-    return sum(array.nbytes for array in _arrays(shading))
+    return shading.nbytes
 
 
 def _bytes_of_options(options: tuple[StringOption, ...]) -> int:

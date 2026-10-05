@@ -96,7 +96,8 @@ def test_switching_the_rear_gain_off_gives_a_bifacial_module_none():
 def _beyond_linear(run: Design) -> np.ndarray:
     """The electrical losses of the hours and modules where they are more than the shaded area."""
     shading = run.pre.shading
-    return np.unique(shading.e_mod[shading.e_mod > shading.f_lin + 1e-6])
+    e_mod, f_lin = shading.e_mod_of(), shading.f_lin_of()
+    return np.unique(e_mod[e_mod > f_lin + 1e-6])
 
 
 def test_a_shaded_module_without_half_cells_is_lost_whole(monofacial):

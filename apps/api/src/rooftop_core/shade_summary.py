@@ -26,7 +26,7 @@ class ShadeSummary:
 
 def summarise(pre: Precomputed, modules: Sequence[int] | None = None) -> ShadeSummary:
     """The shading losses of *modules*; of every position when none are named."""
-    count = pre.shading.f_lin.shape[1]
+    count = pre.shading.n_modules
     chosen = np.arange(count) if modules is None else np.asarray(modules, dtype=int)
     open_sky = np.zeros(len(chosen))  # in plane, as if nothing shaded
     past_horizon = np.zeros(len(chosen))
@@ -40,10 +40,12 @@ def summarise(pre: Precomputed, modules: Sequence[int] | None = None) -> ShadeSu
         beam = group["beam"] * beam_passes
         diffuse = group["sky"] + group["gnd"]
         seen = 1.0 - pre.shading.sky_loss[positions].astype(float)
-        lit = 1.0 - pre.shading.f_lin[:, positions].astype(float)
+        beam_past_near = pre.shading.by_blocks(
+            positions, lambda f_lin, beam=beam: beam @ (1.0 - f_lin.astype(float))
+        )
         open_sky[here] = float((group["beam"] + diffuse).sum())
         past_horizon[here] = float((beam + diffuse).sum())
-        past_near[here] = beam @ lit + float(diffuse.sum()) * seen
+        past_near[here] = beam_past_near + float(diffuse.sum()) * seen
     return ShadeSummary(
         modules=[int(i) for i in chosen],
         near_pct_by_module=_lost_pct(past_near, past_horizon),

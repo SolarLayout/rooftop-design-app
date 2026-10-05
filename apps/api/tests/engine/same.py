@@ -11,8 +11,8 @@ from rooftop_core.project import Design
 def assert_same_results(one: Design, other: Design) -> None:
     """Every number of two runs is the same, to the last bit."""
     assert [m.poly.wkt for m in one.layout.modules] == [m.poly.wkt for m in other.layout.modules]
-    for name in ("f_lin", "e_mod", "sky_loss", "far_block"):
-        np.testing.assert_array_equal(getattr(one.pre.shading, name), getattr(other.pre.shading, name))
+    for mine, theirs in zip(one.pre.shading.arrays(), other.pre.shading.arrays(), strict=True):
+        np.testing.assert_array_equal(mine, theirs)
     assert [o.key for o in one.options] == [o.key for o in other.options]
     assert one.p.chosen_option == other.p.chosen_option
     for mine, theirs in zip(one.options, other.options, strict=True):
