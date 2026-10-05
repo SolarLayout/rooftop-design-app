@@ -24,10 +24,10 @@ owner keeps, drops or changes each decision; the section "Scoped with the owner"
   deploys off in each `vercel.json`; the CLI pinned at 59.19.0, because 59.20.0 broke `--prebuilt` on bun's install layout. AWS changes
   there follow the "first law": the owner runs every command; prod after staging; a check after each. Nothing there checks health after a
   deploy, and its documented Lambda rollback does not work.
-- **This account's Lambda memory limit is 3,008 MB** in `ap-south-1` (a request for 5,120 was refused there). A Lambda can have 10,240 MB
-  once AWS raises the account's limit. The profile (`plan/reference/api-profile.md`) puts the demo's run at 3,465 MB with 8 threads and
-  2,122 MB with one; a roof at the 30,000 m² limit at 19,149 and 8,548 MB. **The demo fits at one or two threads; a roof at the limit
-  does not fit at all.**
+- **This account's Lambda memory goes to 10,240 MB** in `ap-south-1`: proved on 2026-10-05 by a throwaway function created at 10,240 MB
+  that ran with it, then deleted. The owner's other repo's notes say 3,008 (a request for 5,120 refused); they are out of date. The profile
+  (`plan/reference/api-profile.md`) puts the demo's run at 3,465 MB with 8 threads and 2,122 MB with one; a roof at the 30,000 m² limit at
+  19,149 and 8,548 MB. **The demo fits; a roof at the limit fits at one thread, under 10,240, and not with 8.**
 - **Nothing in that account is served over HTTP**: no Function URL, no API Gateway, no Route 53. This API is the first. DNS is at GoDaddy;
   the API needs no name of its own (the web origin forwards).
 - **The one long connection is the design run**: `POST /design` answers `text/event-stream` (`routers/design.py`), read with `fetch` and a
@@ -66,13 +66,12 @@ two Esri keys. They share the image repository and the commit an image is built 
    accounts, D5), so a secret between Vercel and the URL protects nothing that `/api/*` does not already open; Vercel's CDN cannot sign
    AWS's requests. The guard against abuse is the bill's: **reserved concurrency** per function (production 10, staging 2), a log
    retention of 30 days, and an AWS budget alarm (the owner's). The URL is not published anywhere but the Vercel variable.
-3. **Memory: proved, then measured, then fitted.** The 3,008 MB limit is second-hand (the owner's other repo's notes); a throwaway
-   function created at 10,240 MB settles it in minutes (the owner's say, 2026-10-05). If it is refused, the owner asks AWS for the limit
-   by a support case and #76 decides meanwhile (a leaner engine, or a lower roof limit on the hosted app). Then staging starts generous,
-   and the size is fitted from what runs: the `Max Memory Used` of Lambda's `REPORT` line per request, the demo and a roof at the limit,
-   the size set to the peak with about 25 % over, and the run's time checked at that size (the memory sets the CPU share, so a smaller size
-   is slower and not always cheaper: the bill is GB-seconds). Timeout 900 s. Simulation threads set for Lambda (a new setting
-   `ROOFTOP_SIMULATION_THREADS`, the default unchanged here), chosen with the size.
+3. **Memory: generous first, then fitted to what runs.** The account allows 10,240 MB (proved). Staging starts at 10,240; the size is then
+   fitted from what runs: the `Max Memory Used` of Lambda's `REPORT` line per request, the demo and a roof at the limit, the size set to the
+   peak with about 25 % over, and the run's time checked at that size (the memory sets the CPU share, so a smaller size is slower and not
+   always cheaper: the bill is GB-seconds). Timeout 900 s. Simulation threads set for Lambda (a new setting `ROOFTOP_SIMULATION_THREADS`,
+   the default unchanged here), chosen with the size: a roof at the limit with 8 threads peaks at 19 GB and does not fit, so #76 makes the
+   options' simulations lean or the threads stay few. (The owner's say, 2026-10-05: try before asking AWS, then fit to the measured use.)
 4. **The memo stays in the process.** A warm Lambda keeps it between requests; a cold one starts empty and a loss edit then costs a whole
    run. Measured on staging (how often a loss edit is answered from the memo); an outside home is #76's if the number says so.
 5. **The web app: one Vercel project, two environments** (Production, `staging`), as the owner made it. Git deploys off
@@ -112,7 +111,8 @@ One at a time, each checked before the next. Steps 1 to 4 do not wait for code.
 2. AWS: the account's Lambda settings read: 2,500 concurrent executions, all unreserved. Done 2026-10-05. Memory is not in Service
    Quotas; a raise would be a support case.
 3. AWS: the two execution roles (logs only); a throwaway function at 10,240 MB on the staging role to prove the memory limit, then
-   deleted (decision 3); the GitHub role with its trust and policy (decision 12).
+   deleted (decision 3; done 2026-10-05, the staging role made and the limit proved); the GitHub role with its trust and policy
+   (decision 12).
 4. GitHub: the `Staging` environment; `Production` kept to `main`; the secret `AWS_ROLE_ARN`, the variables `AWS_REGION`,
    `AWS_ACCOUNT_ID`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`; a Vercel token as `VERCEL_TOKEN`.
 5. AWS, after the first image is pushed by the workflow (PR 3): the two functions from it, the alias `live`, the Function URLs in
@@ -145,7 +145,8 @@ Each with its tests first, `bun check` green (with the browser groups the change
 
 ## Risks
 
-- **Memory at the limit** (decision 3): the one thing that can stop a roof on production. Settled before production, not after.
+- **Memory at the limit** (decision 3): fits in 10,240 at few threads; the fitted size and the threads are settled on staging, before
+  production.
 - **A `.rtd` over 6 MB** cannot be opened on production (the Function URL's limit). Measured on the largest real file; if real files pass
   6 MB, opening reads the file in the browser and sends only the project, or the limit is said in the dialog.
 - **The ping during a long step** unproved for our generator: PR 1 tests it; staging proves it through Vercel.
