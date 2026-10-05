@@ -118,3 +118,13 @@ def test_a_string_across_two_orientations_is_refused(design):
             physics_of(design, [PVString([first.idx, other.idx], 0, first.azimuth, first.center, 1.0)])
     finally:
         design.pre.group_of[other.idx] = design.pre.group_of[first.idx]
+
+
+def test_the_power_at_25_degrees_from_the_spline_is_the_solve_s(design):
+    g = np.array([[0.0, 0.99, 1.0, 37.5, 512.25], [800.0, 1000.0, 1180.7, 3.3, 0.5]])
+
+    got = simulation._at_25(design.mm, g)
+    solved = design.mm.mpp(g.ravel().astype(np.float32).astype(float), np.full(g.size, 25.0))[0]
+
+    np.testing.assert_allclose(got.ravel(), solved, rtol=1e-12, atol=0)
+    assert got[0, 0] == got[0, 1] == got[1, 4] == 0.0  # dark: under 1 W/m²
