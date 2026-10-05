@@ -37,3 +37,4 @@
 23. ok, we are done with perf. i am happy with results. is staging and prod deployment complete and teh smoke result from the deployment jobs in? if not, do it, and post the results here. and that will be all
 24. so at this point, after all the optimizations there is no loss in fidelity in results, right?
 25. i don't understand this gobbledegok. explain in simple terms if we lost parity or not
+26. what is #99 and #100 - are they mission critical?
