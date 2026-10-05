@@ -1,6 +1,6 @@
 # Phase 12: deployment, staging and production
 
-**Status:** not started; filed 2026-10-04 (session 14) so that it is sequenced; its plan is laid out when the phase begins.
+**Status:** in progress (session 16, 2026-10-05): both environments live and smoked; what is left is under "As built".
 **Depends on:** Phase 11 (hardening) and issue #76 (the API lean in time and memory for Lambda). **Before:** the tradeshow, which demos
 from live production.
 
@@ -52,3 +52,48 @@ anything of the engine's numbers.
 - The design run's progress streams on production as it does here; a loss edit answers within the time the profile of Phase 11 set.
 - Nothing of the repo holds a secret; both keys' referrers hold both addresses.
 - The operator's guide written and walked once on production; the dry run done on the stand's hardware.
+
+## As built (so far)
+
+Built in session 16 (2026-10-05). The plan (`phase-12-plan.md`) was written first and changed with the owner as the work went: the
+memory proved before asking AWS (10,240 MB allowed), two GitHub roles, and one deploy workflow by hand instead of an automatic staging
+(D59). The owner made the AWS and Esri pieces, one step at a time, or let the session run them; `infra/aws/README.md` has every
+command. Decisions D58 to D63; the path in `docs/deployment.md`.
+
+### What exists
+
+| Part | Where | Pull request |
+|---|---|---|
+| The API as an arm64 container image: uv's Python and lock, the Lambda Web Adapter streaming the answer, async init, `/health` naming the commit; the simulations' threads from `ROOFTOP_SIMULATION_THREADS` | `apps/api/Dockerfile`, `tests/test_dockerfile.py`, `rooftop_api/settings.py`, `main.py` (lifespan) | #90, #95 |
+| A test that the design run's stream sends keep-alive comments through a silent step | `tests/api/test_design_keepalive.py` | #90 |
+| The web app's API address read at build (`ROOFTOP_API_ORIGIN`; a Vercel build without it stops); git deploys off; region `bom1` | `apps/web/api-origin.ts`, `next.config.ts`, `vercel.json` | #91 |
+| The smoke of a deployed site | `tools/smoke.ts`, `tools/smoke/` | #92 |
+| `deploy`: by hand, Staging or Production; production runs staging's smoked image; the rollback commands in the summary | `.github/workflows/deploy.yml` | #93, #97 |
+| The check skips documents alone | `.github/workflows/check.yml` | #94 |
+| AWS: the ECR repository, two execution roles, two GitHub roles, two functions with alias, Function URL, reserved concurrency and 30-day logs | `infra/aws/` | made by hand |
+| Vercel: `ROOFTOP_API_ORIGIN` and an Esri key per environment; GitHub: the environments, the role ARNs, Vercel's token and IDs | the hosts | made by hand |
+
+### Acceptance, as it stands
+- Both addresses serve the app; the demo opens, runs (streamed) and exports its report pages on each (the smoke, every deploy). Present
+  and the other exports: by hand, the owner.
+- Production is reached by the owner's one action, from staging's smoked image; each side rolled back by one command (tried on staging).
+- The design run streams on production; the roof at the limit ran through Vercel in two minutes, the keep-alive holding the line.
+- Nothing of the repo holds a secret; each Esri key accepts its own address.
+- **Left:** the owner's AWS budget alarm; the browser journeys against staging by hand (#74); the operator's guide (#73) and the dry
+  run on the stand's hardware; Q1 (production's reserved concurrency).
+
+### Found on the way
+- **This account allows 10,240 MB**, not the 3,008 of the owner's other repository's notes: proved by a throwaway function.
+- **GitHub's immutable OIDC subject**: repositories made after 2026-07-15 have the owner's and the repository's IDs in the `sub`
+  claim; a trust on the plain form never matches. Found by review before any run (D62).
+- **A public Function URL needs two permissions** since October 2025, or it answers 403.
+- **zsh does not split `$R` into words**: a command line kept in a variable fails whole; the runbook's commands are written for
+  bash arrays or braces.
+- **The cold start was a fresh image read lazily**, not the imports (1.1 s in the image): 46 to 56 s for the first start on a host,
+  2 to 4 s after; async init (#95) brought a fresh image's first start to 3.5 s.
+- **Memory at the limit** (D61, #96): two threads 10,215 MB of 10,240; one thread 5,652 MB, not slower.
+- **Reserved concurrency of 2 turned a request away** on staging (one visitor's page holds several requests at once): raised to 5;
+  production's 10 is Q1.
+- **A request over 6 MB never reaches the API** (#98); real project files are 0.7 to 2.5 MB.
+- **ECR's scan** reports 8 high CVEs in Debian's base packages; the Python carries its own OpenSSL. Refresh the pinned base when
+  Debian publishes fixes.

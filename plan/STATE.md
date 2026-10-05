@@ -3,11 +3,11 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-05, session 16: Phase 12 under way and **both environments live on `774e0a9`**:
-https://rooftop.staging.solarlayout.app and https://rooftop.solarlayout.app serve the app with the API on Lambda behind them, each
-deployed by `deploy` (by hand, the environment chosen) and smoked (page, health and commit, demo, design run streamed, report pages).
-Pull requests #90 to #95. A fresh image's first start 3.5 s (Init Duration), later cold starts 2 to 4 s; the demo's run 15 to 21 s on
-Lambda, peak memory 1,348 MB of the 10,240 given. What is left of the phase: `plan/phase-12-plan.md`, "What is left" below.
+**Last updated:** 2026-10-05, session 16: Phase 12 nearly done. **Both environments live on `774e0a9`**
+(https://rooftop.staging.solarlayout.app, https://rooftop.solarlayout.app), deployed by `deploy` by hand and smoked; the API on Lambda
+streams; the roof at the limit runs through Vercel in two minutes; a rollback done on staging, each side; one simulation thread on both
+functions (D61). Pull requests #90 to #95 and #97; decisions D58 to D63; the path in `docs/deployment.md`. Phase 13 filed
+(optimization: #76, #96 the memory, #98 large project files). Q1 open: production's reserved concurrency, 10 or 25.
 
 ## Where we are
 
@@ -26,19 +26,19 @@ Lambda, peak memory 1,348 MB of the 10,240 given. What is left of the phase: `pl
 | 9 Handover and exports | Done (session 13: #62, #64 to #66; #63 on the way) | What exists, what was decided, what was found: `phase-09-handover.md`, "As built". How it was built: `phase-09-plan.md` |
 | 10 Home, projects on the device, Present | Done (session 13, unattended: #67, #69, #71, #72; #68 and #70 for the check) | What exists, what was decided, what was found: `phase-10-home-projects-present.md`, "As built". How it was built: `phase-10-plan.md` |
 | 11 Hardening for the tradeshow | Done (session 14: #78 to #86; session 15: D56's run of the whole browser suite and the renewed pictures, #89) | What exists, what deviated, what was found: `phase-11-hardening.md`, "As built". How: `phase-11-plan.md`, scoped with the owner; issues #73 to #77 hold what was deferred |
-| 12 Deployment: staging and production | In progress; both environments live (session 16: #90 to #95) | `phase-12-plan.md`: what was found, 14 decisions, the owner's steps in order (1 to 4 done), the pull requests; `infra/aws/README.md`: what exists on AWS and how it was made |
+| 12 Deployment: staging and production | In progress; both environments live (session 16: #90 to #95, #97) | `phase-12-plan.md`: what was found, 14 decisions, the owner's steps in order (1 to 4 done), the pull requests; `infra/aws/README.md`: what exists on AWS and how it was made |
+| 13 Optimization | Filed 2026-10-05, not started | `phase-13-optimization.md`: #76 (the API lean for Lambda), #96 (the memory of a design run), #98 (project files over 6 MB), the functions fitted |
 
 ## In flight
 
-Phase 12. Live: staging and production on `774e0a9`, both smoked. Left, in order:
-1. A roof at the 30,000 m² limit on staging: its time and its `Max Memory Used`; the memory size and the threads fitted (decision 3),
-   then the functions' configuration changed to match.
-2. A rollback done once on staging, each side (the acceptance).
-3. The browser journeys against staging by hand (#74), the network guard relaxed for that run alone.
-4. The operator's guide (#73) and the dry run on the stand's hardware (the owner).
-5. Watch items: ECR's scan finds 8 high CVEs in Debian's base packages (gcc's runtime, OpenSSL, pcre2, zlib; the Python is uv's own
-   with its own OpenSSL): refresh the pinned base when Debian publishes fixes. No lifecycle rule on ECR yet (one image per deployed
-   commit, about 244 MB each). The Esri keys expire: local 2027-09-28, staging and production about 2027-10-05.
+Phase 12. Live: staging and production on `774e0a9`, smoked; the functions on one simulation thread. Left:
+1. The owner: an AWS budget alarm (D60's guard on the bill); Q1 (production's reserved concurrency).
+2. The browser journeys against staging by hand (#74), the network guard relaxed for that run alone, if the owner wants them.
+3. The operator's guide (#73), then the dry run on the stand's hardware (the owner).
+4. Looked at by eye on production: the satellite imagery and the place search (Esri); Detect building (Overture answers both
+   addresses with CORS, checked).
+5. Watch items: ECR's scan finds 8 high CVEs in Debian's base packages (refresh the pinned base when Debian publishes fixes); no
+   lifecycle rule on ECR (about 244 MB per deployed commit); the Esri keys expire about 2027-10 (local 2027-09-28).
 Nothing runs on ports 4700 to 4719.
 
 ## What the web app has today

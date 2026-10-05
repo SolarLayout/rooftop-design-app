@@ -5,7 +5,9 @@ here was made by hand, once, by the owner, from the commands below; CI only buil
 owner starts it (`.github/workflows/deploy.yml`, with the environment chosen). The files beside this one are the documents the commands apply.
 
 Account `378240665051`, region `ap-south-1`, CLI profile `journium-dev`. That profile defaults to `us-east-1`: every
-command names the region. Under zsh write `${ENV}:live` with braces (`$ENV:l…` is one of zsh's modifiers).
+command names the region. Under zsh write `${ENV}:live` with braces (`$ENV:l…` is one of zsh's modifiers), and never keep
+several options in one variable (`R="--region … --profile …"`): zsh passes it as one word and every command fails. In bash, an
+array: `R=(--region ap-south-1 --profile journium-dev)` and `"${R[@]}"`.
 
 | Thing | Staging | Production |
 |---|---|---|
@@ -14,7 +16,8 @@ command names the region. Under zsh write `${ENV}:live` with braces (`$ENV:l…`
 | Alias the Function URL serves | `live` | `live` |
 | Execution role (logs only) | `solarlayout-rooftop-api-staging-execution` | `solarlayout-rooftop-api-prod-execution` |
 | GitHub's role (its environment alone) | `solarlayout-rooftop-github-staging` | `solarlayout-rooftop-github-prod` |
-| Reserved concurrency | 2 | 10 |
+| Reserved concurrency | 5 (raised from 2: one visitor's page holds several requests at once) | 10 (Q1 in `plan/README.md`: 25?) |
+| Simulation threads (`ROOFTOP_SIMULATION_THREADS`) | 1 | 1 (D61; was 2 at creation) |
 
 ## 1. The ECR repository (done 2026-10-05)
 
@@ -82,7 +85,7 @@ Environments `Staging` and `Production`, each deployable from `main` alone, each
 role above). Repository variables `AWS_REGION`, `AWS_ACCOUNT_ID`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`; secret
 `VERCEL_TOKEN` (scoped to the SolarLayout team).
 
-## 5. The functions (after the first image is in the repository)
+## 5. The functions (done 2026-10-05: staging from `adddc6d`, production from the same image after its smoke)
 
 The first run of `deploy` to Staging pushes the image of its commit and then stops at the web app's build, which needs
 `ROOFTOP_API_ORIGIN` (the Function URL, made here) before anything else moves. With that commit's image (`<sha>`), for each
@@ -92,7 +95,7 @@ environment:
 ENV=staging   # then prod
 F=solarlayout-rooftop-api-${ENV}
 IMAGE=378240665051.dkr.ecr.ap-south-1.amazonaws.com/solarlayout/rooftop-api:<sha>
-RESERVED=2    # 10 for prod
+RESERVED=5    # 10 for prod
 
 aws logs create-log-group --log-group-name /aws/lambda/${F} --region ap-south-1 --profile journium-dev
 aws logs put-retention-policy --log-group-name /aws/lambda/${F} --retention-in-days 30 --region ap-south-1 --profile journium-dev
@@ -100,7 +103,7 @@ aws logs put-retention-policy --log-group-name /aws/lambda/${F} --retention-in-d
 aws lambda create-function --function-name ${F} --package-type Image --code ImageUri=${IMAGE} \
   --architectures arm64 --memory-size 10240 --timeout 900 \
   --role arn:aws:iam::378240665051:role/solarlayout-rooftop-api-${ENV}-execution \
-  --environment "Variables={ROOFTOP_SIMULATION_THREADS=2}" \
+  --environment "Variables={ROOFTOP_SIMULATION_THREADS=1}" \
   --tags owner=solarlayout,app=rooftop,env=${ENV} --region ap-south-1 --profile journium-dev
 aws lambda wait function-active-v2 --function-name ${F} --region ap-south-1 --profile journium-dev
 
