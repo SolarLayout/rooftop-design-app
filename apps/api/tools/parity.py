@@ -29,6 +29,7 @@ from tools.roof_at_the_limit import project_at_the_limit
 HERE = Path(__file__).resolve().parent.parent / "tests" / "fixtures" / "parity"
 ROOFS = {"demo": demo_project, "limit": project_at_the_limit}
 RELATIVE = 1e-6  # energies, powers, irradiations: the bar of D64
+ABSOLUTE = 1e-6  # in the figure's own unit (kW, W/m², °C, MWh): near zero a relative bar says nothing
 PERCENT_POINTS = 1e-3  # a figure in percent may move this much
 
 
@@ -47,12 +48,20 @@ def snapshot_of(design: Design) -> dict[str, Any]:
             for option in design.options
         },
     }
-    return json.loads(json.dumps(taken))
+    return portable(json.loads(json.dumps(taken)))
 
 
 def saved(roof: str) -> dict[str, Any]:
     with gzip.open(path_of(roof), "rt", encoding="utf-8") as f:
-        return json.load(f)
+        return portable(json.load(f))
+
+
+def portable(taken: dict[str, Any]) -> dict[str, Any]:
+    """The snapshot without what belongs to the machine: the equipment's files by name, not by path."""
+    for item in taken["result"].get("equipment", {}).values():
+        if isinstance(item, dict) and item.get("source"):
+            item["source"] = Path(item["source"]).name
+    return taken
 
 
 @dataclass
@@ -94,7 +103,7 @@ def within_the_bar(moved: Moved) -> bool:
         return False
     if "pct" in moved.path.rsplit(".", 1)[-1] and abs(moved.now - moved.was) <= PERCENT_POINTS:
         return True
-    return moved.relative <= RELATIVE
+    return moved.relative <= RELATIVE or abs(moved.now - moved.was) <= ABSOLUTE
 
 
 def family(path: str) -> str:
