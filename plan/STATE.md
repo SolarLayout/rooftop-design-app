@@ -3,12 +3,11 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-04, session 14, at the close of Phase 11: the plan written and scoped with the owner item by item; #78 (`bun start`, the
-rewrite's drops fixed at their causes, the API's timing line), #79 (the browser tests cheaper), #80 (the pages drawn once under load, the pending save
-flushed), #81 (one roof up to 30,000 m²), #82 (the base imports nothing of the groups' folders), #83 (the engine's profile for #76), #84 (the polish),
-#85 (the BLAS pinning taken out), #86 (the Layers button) are merged; `main` is green on GitHub. What was dropped or deferred with the owner is in
-issues #73 to #77; Phase 12 (deployment) is filed. One thing waits for the owner's say (D56): the whole browser suite's run here and the renewed
-pictures. The resume prompt for Phase 12 is written (`plan/resume/015-phase-12-deployment.md`), for a fresh session at the owner's ask.
+**Last updated:** 2026-10-05, session 15: D56 closed. The whole browser suite ran here on the owner's say, all eight groups green; the tests
+Phase 11 wrote and never ran were held to what the app does (every failure was the test's), and 107 pictures were renewed and looked at beside
+their boards (#89). Phase 11 is done. Two issues filed from what the run showed: #87 (under load a reopened design's energy can stay on
+"Opening") and #88 (a black rectangle behind the building in the Studio on phone). Next is the owner's own test by hand, then Phase 12 with the
+resume prompt `plan/resume/015-phase-12-deployment.md`, in a fresh session.
 
 ## Where we are
 
@@ -26,16 +25,12 @@ pictures. The resume prompt for Phase 12 is written (`plan/resume/015-phase-12-d
 | 8 Performance | Done (session 12: #58 to #61) | What exists, what was decided, what was found: `phase-08-performance.md`, "As built". How it was built: `phase-08-plan.md` |
 | 9 Handover and exports | Done (session 13: #62, #64 to #66; #63 on the way) | What exists, what was decided, what was found: `phase-09-handover.md`, "As built". How it was built: `phase-09-plan.md` |
 | 10 Home, projects on the device, Present | Done (session 13, unattended: #67, #69, #71, #72; #68 and #70 for the check) | What exists, what was decided, what was found: `phase-10-home-projects-present.md`, "As built". How it was built: `phase-10-plan.md` |
-| 11 Hardening for the tradeshow | Done (session 14: #78 to #86), the browser suite's one run and the renewed pictures waiting for the owner's say (D56) | What exists, what deviated, what was found: `phase-11-hardening.md`, "As built". How: `phase-11-plan.md`, scoped with the owner; issues #73 to #77 hold what was deferred |
+| 11 Hardening for the tradeshow | Done (session 14: #78 to #86; session 15: D56's run of the whole browser suite and the renewed pictures, #89) | What exists, what deviated, what was found: `phase-11-hardening.md`, "As built". How: `phase-11-plan.md`, scoped with the owner; issues #73 to #77 hold what was deferred |
 | 12 Deployment: staging and production | Not started; filed 2026-10-04 | `phase-12-deployment.md`: what the owner decided (Vercel, AWS Lambda, `rooftop.solarlayout.app` and its staging twin, sharing nothing), the scope as known, the acceptance; its plan when it begins, after Phase 11 and #76 |
 
 ## In flight
 
-Nothing. Phase 11 is closed but for D56's one run: when the owner says, the whole browser suite runs here once (`bun check --fresh` or the eight
-groups one after another), the pictures that changed are renewed and looked at beside their boards (the Studio's view controls on three sizes,
-the Sun lens's framing, Handover on phone, the Performance phone pictures, the strings' chip on phone), and the unrun suites of the phase
-(`studio-layers.e2e.ts`, the polish's tests, the by-hand refusal) are seen to pass. Nothing runs on ports 4700 to 4719 from this session; the
-owner's `bun dev` may.
+Nothing. Nothing runs on ports 4700 to 4719 from this session; the owner's `bun dev` may.
 
 ## What the web app has today
 
@@ -61,7 +56,7 @@ owner's `bun dev` may.
 | The map: the scale bar, the states without a map | `apps/web/lib/map`; the provider, Esri and the search's reading of what is typed in `apps/web/lib/places` (the base: the search `components/shell/Search.tsx` is Find's, Home's and Import a drawing's) |
 | The outline: the frame of metres, snapping, the rectangle, the history, the nudge, the obstacles, the roof by hand, the reducer | `apps/web/lib/outline`; the measures and the typed lengths in `apps/web/lib/geometry` |
 | Find and outline: the screen, the map (MapLibre), the search, the outline drawn on the map, the panel, the tools (the ways to outline while the roof is open; the obstacles once it is closed), the height dialog, the obstacle list, the roof type, Build; the roof by hand and the plan drawn without a map | `apps/web/components/find` |
-| The Layers button of the stage (the board "Stage, Layers", D57): fourth in the view controls on every size; its floating panel of 240 with the switch Satellite imagery; off, the plain grid under the roof and no attribution; the setting is the view's | `components/studio/ViewControls.tsx`; `lib/stores/view-store.ts` (`ground`, `groundDrawnOf`); `components/ui/FloatingPanel.tsx` (`onTouch="floating"`), `floating-panel-look.ts`; `components/studio/stage-view.ts` (`attributionOf`); `e2e/tests/studio-layers.e2e.ts` (unrun, D56) |
+| The Layers button of the stage (the board "Stage, Layers", D57): fourth in the view controls on every size; its floating panel of 240 with the switch Satellite imagery; off, the plain grid under the roof and no attribution; the setting is the view's | `components/studio/ViewControls.tsx`; `lib/stores/view-store.ts` (`ground`, `groundDrawnOf`); `components/ui/FloatingPanel.tsx` (`onTouch="floating"`), `floating-panel-look.ts`; `components/studio/stage-view.ts` (`attributionOf`); `e2e/tests/studio-layers.e2e.ts` |
 | The 3D scene: the canvas, the building, the obstacles, the ground of imagery, the camera and its presets, the modules instanced, the kept-clear areas, the sun light, the projector that places DOM over the canvas, the pointer (selection, hover, the drag) | `apps/web/components/scene`; the maths apart in `apps/web/lib/scene` (pick, handles, projection, the stage store); the adapter of the engine's metres, the obstacles, the kept-clear areas, the plan and the palette in `apps/web/lib/geometry`; the drag in `lib/stores/drag.ts` |
 | The Studio: the stage (title, read-outs, text equivalent, the plan without WebGL, labels, callout, handles, the chip of a failed layout), the view controls, the Roof lens inspector (the roof, the obstacles, the heights to review), the Array lens inspector (the module card, mounting, spacing, the window), undo and redo by key | `apps/web/components/studio` (its frame `Studio.tsx` among them); the words and the fields in `apps/web/lib/studio`; the obstacle's fields and the roof's card in `apps/web/lib/geometry` |
 | The Sun lens: the time on the stage of every lens (the pill) and the timeline, play, the keys, the day; the Sun at the time; shading over the year; the shade map and its legend; On the roof; the states | `components/studio/Time.tsx`, `SunInspector.tsx`, `SunShading.tsx`, `ShadeLegend.tsx`, `SunMarks.tsx`; `lib/flow/sun-time.ts`, `play.ts`; `lib/studio/sun-figures.ts` |
@@ -104,12 +99,12 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 ## Next, in order
 
-1. The owner's own end-to-end test of the app by hand (his decision of 2026-10-04), and his say on the browser suite's one run (D56).
+1. The owner's own end-to-end test of the app by hand (his decision of 2026-10-04).
 2. Phase 12, deployment (`plan/phase-12-deployment.md`), in a fresh session with the resume prompt 015: staging and production on Vercel and
    Lambda, the stand demoing from production. Its plan is written first and explained item by item, as Phase 11's was; the account steps the owner must do himself (the domains, Vercel, AWS, the Esri
    key's referrers) one at a time. Issue #76 (the API lean for Lambda) belongs with it or just before: the profile says the demo's run peaks at
    3.5 GB and the roof at the limit at 19 GB.
-3. Issues #73 to #77 as the owner decides after his testing: the audits and the guide, the journeys and the `e2e` workflow, Present's first frame
+3. Issues #87 and #88 from D56's run (the energy stuck on "Opening" under load; the black rectangle on phone), and #73 to #77 as the owner decides after his testing: the audits and the guide, the journeys and the `e2e` workflow, Present's first frame
    and the soak's memory question, the keyboard path and the browsers.
 4. In parallel with any phase: the screens still to draw (Phase 0).
 
@@ -144,7 +139,8 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 | The option captions follow the engine's rule of decision 11 (`phase-07-plan.md`); "Fills the inverter" and "Lower clipping" were the old board's words, kept | The owner may give others |
 | A desktop `.rtd` whose chosen option was its custom one by "n×s×k" opens with the offered option of that key, its custom kept (the custom's key is "custom") | Known |
 | `.github/workflows/e2e.yml` has never been run. It runs on Linux, and the screens have baselines for `darwin` only: its first run will write its own and fail | Phase 11, or when browser tests are wanted in CI |
-| The Sun lens frames the sun path's dome (#84): near sunset on desktop the marker sits behind the timeline band; a wider zoom or a lower camera target would clear it. The Sun lens's pictures change and wait for the close of Phase 11 | The owner's eye, when the pictures are renewed |
+| The Sun lens frames the sun path's dome (#84): near sunset on desktop the marker sits behind the timeline band, and the chip "sunset 17:27" stands half hidden between the timeline and the vitals; a wider zoom or a lower camera target would clear it. The pictures are renewed (#89): `e2e/baselines/darwin/desktop/studio-sun.png` shows it | The owner's eye |
+| A black rectangle on the ground behind the building in the Studio on phone, in software WebGL; in the approved picture before #84, larger since its framing. Not yet looked at with the GPU | #88 |
 | The scene's shadows read softer than the boards' at a low sun: a shadow is the sky's light alone, a third darker, as set (#51) | When the owner asks |
 | The permission system refuses an agent `bun dev:bg --profile test` ("Interfere With Workloads"): agents write code and unit tests; the session runs the browser for them | Known |
 | Esri's imagery tile host answers with the key from the test stack's port 4710 too, which is not among the key's referrers: the key is scoped, not secret. Watch usage on the Esri dashboard | Deployment |
@@ -162,6 +158,8 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 | Under the load of a full check (ten workers, the Studio in software WebGL on three sizes, the machine's twenty cores saturated) a 5 s wait ran out on a different test in each of four full runs of #62 (Edit's navigation in `build.e2e.ts`, the number field on phone, the years' keyboard, New design from the switcher), each green alone. Done in #62: Edit's test waits with the run's time, the charts' tooltips leave only when their anchor moved, every expectation waits 15 s. The split of the browser step and one retry per test come with `feat/check-e2e-groups`; hardware WebGL for the tests is to be measured (the owner's yes first) | Watch. The whole suite runs only when the owner says (D55, coming with the split) |
 | The charts' keyboard tests run on desktop alone: on tablet the focus can scroll the frame and the moving page takes the tooltip away by design. Since #62 a tooltip leaves on a scroll only when its anchor moved (`isStill`) | Known; written in the phase file |
 | The Performance line of the run says "PVGIS weather", not "PVGIS TMY weather" (decision 2 of the plan): the longer form wraps at 1440 | The owner may prefer the longer words and a two-line header |
+| D56's run (session 15), first tries that failed and passed on the retry, the app's own fault not seen: `device.e2e.ts` "a reload" and "two designs" in every shell run (the vitals on "Opening" for 90 s, #87), `home.e2e.ts` "the demo edited in the Studio is kept" (the same), `handover-screens` "the report pushed" on phone (the pages' drawing), `kit-number-field.e2e.ts` "what is typed is a draft" on desktop once | Watch; #87 for the first three |
+| The proofs of the caching copy the working tree's uncommitted changes as one binary patch, inside a hook of 5 s: 107 changed pictures (a patch of 105 MB) ran past it and the proof failed with "git diff --binary failed" and no words. Committed first, the patch is empty and the proofs pass | Watch; a longer hook time for `makeWorktree` if it bites again, as a pull request of its own (a change to the check's code runs everything) |
 | One browser test failed once in a full run and passes alone, five times of five: `kit-sheet.e2e.ts`, "and by keyboard: the keyboard stops at what scrolls", on desktop. The key End was pressed and the sheet did not scroll. It did not fail again in the nine full runs after | Watch. If it fails again: make the test wait until the content can scroll before the key, as a pull request of its own |
 | In session 6, with a load average above 50 from Chrome, Cursor and the desktop app, full runs of the browser tests took 310 to 340 s and one kit test failed at a time, a different one each run (the toast's place on tablet, the tabs' arrows on phone, the number field on phone); each passed alone, and the runs of the map's own suites passed | Watch. The tests are sound alone; the machine's load is the owner's. If a run on a quiet machine fails one, make that test wait for its result, as a pull request of its own |
 | The browser tests of the shell run the design of the demo on the server of the tests, on three sizes at once. On 2026-09-30 eight phone tests waited more than 90 s on a cold server; since #34 the global setup runs the demo once before the tests begin | Done in #34. Watch that it stays steady |
@@ -193,12 +191,13 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 | 12 | 2026-10-02 to 2026-10-03 | `plan/sessions/012/record.md`, `plan/sessions/012/owner-messages.md` |
 | 13 | 2026-10-03 | `plan/sessions/013/record.md`, `plan/sessions/013/owner-messages.md` |
 | 14 | 2026-10-04 | `plan/sessions/014/record.md`, `plan/sessions/014/owner-messages.md` |
+| 15 | 2026-10-05 | `plan/sessions/015/record.md`, `plan/sessions/015/owner-messages.md` |
 
 ## Closed, do not reopen
 
 - Documents alone go to `main` directly; code goes through a pull request (D26).
-- For the rest of Phase 11 the gate is the fast lane alone, `bun check --skip=e2e`; no browser test runs on this machine until the phase is
-  done (D56, the owner, 2026-10-04). The groups are not started, not even by hand.
+- D56 is done: the fast lane was Phase 11's gate, and the whole browser suite ran once at its close on the owner's say (session 15, #89).
+  From here the rule of D55 holds again: `bun check` runs the browser groups a change can reach; the whole suite runs when the owner says.
 - Legal check on the map stack: approved by the owner (D18).
 - Map provider: Esri plus Overture (D13).
 - The old desktop app's layout and look: rejected. Never a reference.

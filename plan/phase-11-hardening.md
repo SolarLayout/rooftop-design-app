@@ -1,8 +1,7 @@
 # Phase 11: hardening for the tradeshow
 
-**Status:** done (session 14, 2026-10-04: #78 to #86), but for one thing the owner's rule D56 holds back: the whole browser suite runs once
-on this machine when he says, and the pictures that changed (the Studio's view controls, the Sun lens, Handover and Performance on phone) are
-renewed then and looked at beside their boards. What was dropped or deferred with the owner is in issues #73 to #77. **Depends on:** all
+**Status:** done (session 14, 2026-10-04: #78 to #86; session 15, 2026-10-05: D56's run of the whole browser suite, all eight groups green,
+and the renewed pictures, #89). What was dropped or deferred with the owner is in issues #73 to #77. **Depends on:** all
 earlier phases.
 
 ## Goal
@@ -50,14 +49,14 @@ worktree from a written brief, reviewed and checked by the session.
 | One roof at a time, up to 30,000 m²: refused at every route that takes an outline, in words that say the area, the limit and what to do; shown at Build; the measurement at the limit | `rooftop_core/geometry.py` (`require_roof_within_limit`), `errors.py` (`RoofTooLarge`), `rooftop_api/convert.py`, `services/roof_map.py`, `roof_files.py`, `project_files.py`; `apps/api/tools/roof_at_the_limit.py` | #81 |
 | The base imports nothing of the groups' folders, held by the import walk; 52 files moved to where they are shared: `lib/places` (the search, Esri), `lib/geometry` (the metres and the palette), `lib/flow/deliverables` (Handover's names), `lib/stores`, `components/shell` | `tools/check/e2e-group-imports.ts`; `apps/web/lib/places`, `lib/geometry`, `lib/flow`, `lib/stores`, `components/shell`, `components/studio/Studio.tsx` | #82 |
 | The engine's profile for #76: time by step and peak memory for the demo and the roof at the limit, the hot spots | `plan/reference/api-profile.md`, `apps/api/tools/profile_engine.py` | #83 |
-| The Layers button of the stage's view controls, to the board "Stage, Layers" (D57): a panel with one switch, Satellite imagery, that turns the ground between the imagery and the plain grid in every lens; the attribution goes with the imagery; the `FloatingPanel`'s floating-on-touch variant | `components/studio/ViewControls.tsx`, `stage-view.ts` (`attributionOf`), `components/scene/Scene.tsx`, `components/ui/FloatingPanel.tsx`, `floating-panel-look.ts`, `Icon.tsx` (`layers`); `lib/stores/view-store.ts` (`ground`, `groundDrawnOf`); `e2e/tests/studio-layers.e2e.ts` (unrun, D56) | #86 |
+| The Layers button of the stage's view controls, to the board "Stage, Layers" (D57): a panel with one switch, Satellite imagery, that turns the ground between the imagery and the plain grid in every lens; the attribution goes with the imagery; the `FloatingPanel`'s floating-on-touch variant | `components/studio/ViewControls.tsx`, `stage-view.ts` (`attributionOf`), `components/scene/Scene.tsx`, `components/ui/FloatingPanel.tsx`, `floating-panel-look.ts`, `Icon.tsx` (`layers`); `lib/stores/view-store.ts` (`ground`, `groundDrawnOf`); `e2e/tests/studio-layers.e2e.ts` | #86 |
 | The polish: the notes drawer's motion, the assumption rows on phone, the inverter chip off the edge labels, the report's page count from the start, the wheel over a handle, the Sun lens framing the whole sun path, Uc's default beside the entered value (`Sizing.uc_default`) | `app/globals.css` (`drawer-motion`), `components/performance/Assumptions.tsx`, `components/studio/Labels.tsx`, `lib/scene/chip-place.ts`, `lib/handover/page-view.ts`, `lib/scene/wheel-forward.ts`, `lib/scene/camera.ts` (`framedRadiusOf`), `rooftop_api/schemas`, `services/design.py` | #84 |
 
 ### Acceptance, read with D55 and D56
 
 | Asked | Met by |
 |---|---|
-| `bun check` green including the full e2e suite | The fast lane green on every pull request here and on GitHub (#78 to #86). The whole browser suite runs once at the close when the owner says (D56; decision 18 of the plan); the pictures of the Sun lens, the Studio's view controls, Handover on phone and the Performance phone pictures change and are renewed then, looked at beside their boards |
+| `bun check` green including the full e2e suite | The fast lane green on every pull request here and on GitHub (#78 to #86). The whole browser suite ran once at the close on the owner's say (D56; decision 18 of the plan; session 15): all eight groups green, 107 pictures renewed and looked at beside their boards (#89) |
 | Parity and numbers audits signed off | Deferred to #73 at the owner's decision: he tests end to end by hand first |
 | A dry run on the actual tradeshow hardware | The stand demos from production; the dry run follows Phase 12 |
 | End-to-end suite in CI | Deferred to #74 |
@@ -95,3 +94,10 @@ worktree from a written brief, reviewed and checked by the session.
   does not fit the roof at the limit as the code stands (#76).
 - The handover group's first tries on phone and tablet under load were the pages' drawing, not the tests; the shell group's first tries
   on phone (`device.e2e.ts`, three pictures) remain a watch item under load.
+- D56's run (session 15, #89): every browser test the phase wrote and never ran that failed was wrong, not the app. Four were made wrong by
+  the phase's own changes: #84's dome framing put sampled pixels under edge labels (shade map, stage colours), #84 moves the INV-1 chip up on
+  purpose, and the Layers panel covers the middle of the phone's stage. Three read the page wrongly: the drawer's resting `translate` is
+  `0px` and its way out is in percent, a closed dialog leaves the accessibility tree at once, a label has a copy for screen readers. Two
+  pictures depended on time: Handover's items took the page count or not, and "Edited just now" turned at a minute under load.
+- Beyond the tests, the run showed #87 (under load a reopened design's energy can stay on "Opening" for 90 s) and #88 (a black rectangle
+  behind the building in the Studio on phone).
