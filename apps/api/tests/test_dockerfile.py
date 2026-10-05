@@ -39,5 +39,5 @@ def test_the_image_says_which_commit_it_was_built_from():
 
 
 def test_the_options_are_simulated_in_one_thread_on_lambda():
-    # D61: at the roof limit two threads peaked at 10,215 MB of 10,240, one at 5,652 MB and was not slower (#96).
+    # D61: at the roof limit two threads peaked at 10,215 MB of 10,240; one at 5,652 MB, not slower (#96).
     assert environment()["ROOFTOP_SIMULATION_THREADS"] == "1"
