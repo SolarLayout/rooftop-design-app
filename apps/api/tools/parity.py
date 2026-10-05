@@ -1,11 +1,12 @@
 """Parity with the desktop app's outputs (D64): a snapshot of what the engine gives, and its comparison.
 
-The snapshot of a roof is what the API answers for its design run (every figure the app shows: the layout's counts,
-the shading, the sizing, the options with their loss chains, months, years and strings) and the hours of every
-option (the hourly CSV). It was taken with the engine as copied from the desktop app, before Phase 13 changed it;
-a change of the engine is compared with it and the comparison says, per figure, identical or by how much it moved.
+The snapshot of a roof is what the API answers for its design run (every figure the app shows: the
+layout's counts, the shading, the sizing, the options with their loss chains, months, years and strings)
+and the hours of every option (the hourly CSV). It was taken with the engine as copied from the desktop
+app, before Phase 13 changed it; a change of the engine is compared with it, and the comparison says, per
+figure, identical or by how much it moved.
 Run from apps/api:
-  uv run python -m tools.parity save [demo|limit]    the snapshot, into tests/fixtures/parity (once, before the work)
+  uv run python -m tools.parity save [demo|limit]    the snapshot, into tests/fixtures/parity (once)
   uv run python -m tools.parity check [demo|limit]   today's engine against it
 """
 
@@ -33,15 +34,25 @@ PERCENT_POINTS = 1e-3  # a figure in percent may move this much
 
 def snapshot(project: Project) -> dict[str, Any]:
     """What the API answers for the design run of *project*, with no memo, and every option's hours."""
-    design = Design(project)
+    return snapshot_of(Design(project))
+
+
+def snapshot_of(design: Design) -> dict[str, Any]:
+    """What the API answers for the design run of *design*, and every option's hours, as JSON reads them."""
     result = design_service.result(design_service.Run(design, []))
-    return {
+    taken = {
         "result": result.model_dump(mode="json"),
         "hourly": {
             option.key: {name: [float(v) for v in column] for name, column in option.result.hourly.items()}
             for option in design.options
         },
     }
+    return json.loads(json.dumps(taken))
+
+
+def saved(roof: str) -> dict[str, Any]:
+    with gzip.open(path_of(roof), "rt", encoding="utf-8") as f:
+        return json.load(f)
 
 
 @dataclass
@@ -105,13 +116,18 @@ def report(moved: list[Moved]) -> str:
     by_family: dict[str, list[Moved]] = {}
     for m in moved:
         by_family.setdefault(family(m.path), []).append(m)
-    lines = [f"{len(moved):,} figures differ from the snapshot; past the bar: "
-             f"{sum(not within_the_bar(m) for m in moved):,}.", "",
-             "| Figure | Count | Largest relative | Example (was → now) | Within the bar |", "|---|---|---|---|---|"]
+    past = sum(not within_the_bar(m) for m in moved)
+    lines = [
+        f"{len(moved):,} figures differ from the snapshot; past the bar: {past:,}.",
+        "",
+        "| Figure | Count | Largest relative | Example (was → now) | Within the bar |",
+        "|---|---|---|---|---|",
+    ]
     for name, ms in sorted(by_family.items()):
         worst = max(ms, key=lambda m: m.relative)
         ok = all(within_the_bar(m) for m in ms)
-        lines.append(f"| {name} | {len(ms):,} | {worst.relative:.2e} | {worst.was!r} → {worst.now!r} | {'yes' if ok else 'NO'} |")
+        example = f"{worst.was!r} → {worst.now!r}"
+        lines.append(f"| {name} | {len(ms):,} | {worst.relative:.2e} | {example} | {'yes' if ok else 'NO'} |")
     return "\n".join(lines)
 
 
@@ -132,9 +148,7 @@ def main(args: list[str]) -> None:
                 json.dump(now, f, sort_keys=True, separators=(",", ":"))
             print(f"{roof}: saved {path_of(roof)} ({seconds:.1f} s)")
             continue
-        with gzip.open(path_of(roof), "rt", encoding="utf-8") as f:
-            was = json.load(f)
-        print(f"\n## {roof} ({seconds:.1f} s)\n\n{report(differences(was, json.loads(json.dumps(now))))}")
+        print(f"\n## {roof} ({seconds:.1f} s)\n\n{report(differences(saved(roof), now))}")
 
 
 if __name__ == "__main__":

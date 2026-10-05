@@ -22,7 +22,7 @@ from .geometry import Roof
 from .io.pvsyst import Inverter, Module
 from .onediode import ModuleModel
 from .placement import Layout
-from .shading import ShadingResult
+from .shading import BLOCK, ShadingResult
 from .stringing import System
 from .weather import Weather
 
@@ -190,6 +190,7 @@ def simulate(pre: Precomputed, layout: Layout, module: Module, mm: ModuleModel, 
     g_eff = np.zeros((n_h, len(used)), dtype=np.float32)
     beam_pre = np.zeros((n_h, len(used)), dtype=np.float32)   # after far + IAM + soiling, before near shading
     far_ok = ~sh.far_block
+    f_used = sh.f_lin_of(used)
     for gi, key in enumerate(pre.groups):
         g = pre.groups[key]
         cols = np.where(pre.group_of[used] == gi)[0]
@@ -197,7 +198,7 @@ def simulate(pre: Precomputed, layout: Layout, module: Module, mm: ModuleModel, 
             continue
         m_idx = used[cols]
         beam, sky, gnd = g["beam"][:, None], g["sky"][:, None], g["gnd"][:, None]
-        f = sh.f_lin[:, m_idx]
+        f = f_used[:, cols]
         sk = sh.sky_loss[m_idx][None, :]
         k = len(cols)
         nom = beam + sky + gnd
@@ -231,8 +232,14 @@ def simulate(pre: Precomputed, layout: Layout, module: Module, mm: ModuleModel, 
         cols = [pos[m] for m in mods]
         G[:, s] = g_eff[:, cols].mean(axis=1)
         B[:, s] = beam_pre[:, cols].mean(axis=1)
-        F[:, s] = sh.f_lin[:, mods].mean(axis=1)
-        E[:, s] = sh.e_mod[:, mods].max(axis=1)    # the weakest module sets the string current
+        F[:, s] = f_used[:, cols].mean(axis=1)
+    del f_used
+    # The weakest module sets the string current: the electrical shading made a block of strings at a time.
+    members = np.array(strings, dtype=int).reshape(n_s, N)
+    step = max(1, BLOCK // max(N, 1))
+    for i in range(0, n_s, step):
+        block = members[i:i + step]
+        E[:, i:i + len(block)] = sh.e_mod_of(block.ravel()).reshape(n_h, len(block), N).max(axis=2)
     ta = w["temp_air"].to_numpy()[:, None]
     ws = w["wind_speed"].to_numpy()[:, None]
     uc = losses.uc or UC_BY_ROOF.get(roof.roof_type, 29.0)

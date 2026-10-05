@@ -413,7 +413,7 @@ def test_what_is_kept_cannot_be_changed_by_who_gets_it():
     first = run(small_project(), kept)
 
     with pytest.raises(ValueError, match="read-only"):
-        first.pre.shading.f_lin[0, 0] = 1.0
+        first.pre.shading.f_lin_class[0, 0] = 1.0
     first.options[0].letter = "Z"
     first.options.clear()
 

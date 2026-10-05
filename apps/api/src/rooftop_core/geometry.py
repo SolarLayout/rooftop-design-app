@@ -189,16 +189,25 @@ def prism_shadow(fp: Polygon, z_bottom: float, z_top: float, z_recv: float, vx: 
     return shapely.convex_hull(shapely.union(a, b))
 
 
+def solids_of(casters: list[Obstacle]) -> list[tuple[Polygon, float, float]]:
+    """The prisms of every caster, built once for all the positions of the sun they are asked at."""
+    return [solid for ob in casters for solid in ob.solids()]
+
+
 def casters_shadow(casters: list[Obstacle], z_recv: float, elev: float, az: float):
+    return solids_shadow(solids_of(casters), z_recv, elev, az)
+
+
+def solids_shadow(solids: list[tuple[Polygon, float, float]], z_recv: float, elev: float, az: float):
+    """The shadow of the prisms on the horizontal plane z = z_recv with the sun at *elev*, *az*, or None."""
     if elev <= 0:
         return None
     vx, vy = shadow_vector(elev, az)
     parts = []
-    for ob in casters:
-        for fp, z0, z1 in ob.solids():
-            s = prism_shadow(fp, z0, z1, z_recv, vx, vy)
-            if s is not None:
-                parts.append(s)
+    for fp, z0, z1 in solids:
+        s = prism_shadow(fp, z0, z1, z_recv, vx, vy)
+        if s is not None:
+            parts.append(s)
     return unary_union(parts) if parts else None
 
 
@@ -238,6 +247,25 @@ def keepout(roof: Roof, z_recv: float, start: float, end: float, doy: int | None
     return unary_union(parts) if parts else Polygon()
 
 
+SKY_BLOCK = 256  # points of sky_loss_sectors worked out at a time
+
+
+def _blocking_elevations(s: np.ndarray, points: np.ndarray, z: np.ndarray, elev: np.ndarray,
+                         n_sectors: int) -> None:
+    """Raise *elev* (points × sectors, in place) to the elevation of the highest sample in each sector."""
+    dx = s[None, :, 0] - points[:, 0:1]
+    dy = s[None, :, 1] - points[:, 1:2]
+    dz = s[None, :, 2] - z[:, None]
+    dist = np.hypot(dx, dy)
+    ang = np.degrees(np.arctan2(dz, np.maximum(dist, 0.05)))
+    sector = ((np.degrees(np.arctan2(dx, dy)) % 360.0) / (360.0 / n_sectors)).astype(int) % n_sectors
+    ang = np.where(dist < 0.05, 0.0, ang)
+    for k in range(n_sectors):
+        m = sector == k
+        if m.any():
+            elev[:, k] = np.maximum(elev[:, k], np.where(m, ang, -90).max(axis=1))
+
+
 def sky_loss_sectors(points: np.ndarray, z: np.ndarray, casters: list[Obstacle],
                      horizon: list[tuple[float, float]] | None = None, n_sectors: int = 36) -> np.ndarray:
     """Fraction of isotropic diffuse lost at each point to the obstacles and far horizon.
@@ -259,16 +287,9 @@ def sky_loss_sectors(points: np.ndarray, z: np.ndarray, casters: list[Obstacle],
         elev[:] = np.interp(centers, az_h, el_h, period=360.0)[None, :]
     if samples:
         s = np.array(samples)
-        dx = s[None, :, 0] - points[:, 0:1]
-        dy = s[None, :, 1] - points[:, 1:2]
-        dz = s[None, :, 2] - z[:, None]
-        dist = np.hypot(dx, dy)
-        ang = np.degrees(np.arctan2(dz, np.maximum(dist, 0.05)))
-        sector = ((np.degrees(np.arctan2(dx, dy)) % 360.0) / (360.0 / n_sectors)).astype(int) % n_sectors
-        ang = np.where(dist < 0.05, 0.0, ang)
-        for k in range(n_sectors):
-            m = sector == k
-            if m.any():
-                elev[:, k] = np.maximum(elev[:, k], np.where(m, ang, -90).max(axis=1))
+        # A block of points at a time: points × samples is 12 million at the roof limit, 97 MB an array.
+        for i in range(0, len(points), SKY_BLOCK):
+            block = slice(i, i + SKY_BLOCK)
+            _blocking_elevations(s, points[block], z[block], elev[block], n_sectors)
     elev = np.clip(elev, 0, 90)
     return (np.sin(np.radians(elev)) ** 2).mean(axis=1)
