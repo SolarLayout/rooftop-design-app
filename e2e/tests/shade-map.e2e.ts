@@ -1,6 +1,6 @@
 import type { Page, Response } from "@playwright/test";
 import { expect, test } from "../fixtures";
-import { inThePlan, pixelsAt, sceneCanvas, sceneSettled, stage, switchLens, type Pixel, type Share } from "../stage";
+import { cameraSettled, inThePlan, pixelsAt, planFrameOf, sceneCanvas, sceneSettled, stage, switchLens, zoomedInAt, type Pixel, type Share } from "../stage";
 
 // The shading figures and the shade map (plan/phase-06-plan.md, steps 10 to 13, decisions 11 to 14; the boards
 // "Studio, Sun lens" and "Shade map"): every number on the screen is the design run's, read here from its
@@ -84,7 +84,11 @@ test.describe("the shade map", () => {
     const position = result.layout.modules.find((one) => one.idx === idx)!;
     const point = await inThePlan(page);
     const [x, y] = position.outline.reduce(([sx, sy], [px, py]) => [sx + px / 4, sy + py / 4], [0, 0]);
-    const at = point(x, y);
+    // The Sun lens's plan frames the sun path's dome: on phone the most shaded positions, by the west edge, stand
+    // under that edge's label. Zoomed in on the position, the label stands clear of it.
+    await zoomedInAt(page, point(x, y), 3, testInfo.project.use.hasTouch ?? false);
+    await cameraSettled(page);
+    const at = (await planFrameOf(page))(x, y);
     const box = (await sceneCanvas(page).boundingBox())!;
     const share: Share = [(at.x - box.x) / box.width, (at.y - box.y) / box.height];
     const [before] = await pixelsAt(page, [share]);

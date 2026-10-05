@@ -401,13 +401,32 @@ test.describe("Notes to review, the drawer", () => {
     await expect(panel).toHaveCSS("transition-property", "translate");
     await expect(panel).toHaveCSS("transition-duration", "0.24s");
     await expect(panel).toHaveCSS("transition-timing-function", "cubic-bezier(0.2, 0.8, 0.2, 1)");
-    await expect(panel).toHaveCSS("translate", "none");
+    // Open, it rests where it stands: `translate: 0 0`, which the browser computes as 0px.
+    await expect(panel).toHaveCSS("translate", "0px");
     // The dialog stays while the panel leaves, and is gone at the end.
     await expect(drawer).toHaveCSS("transition-property", "display, overlay");
     await expect(drawer).toHaveCSS("transition-duration", "0.24s");
+    // On its way out: down by its height on phone, right by its width from tablet on. A closed dialog leaves the
+    // accessibility tree at once, so the page itself reads the panel's place on every frame while it leaves.
+    const sampled = page.evaluate(
+      () =>
+        new Promise<string[]>((resolve) => {
+          const leaving = document.querySelector<HTMLElement>('dialog[open] [data-testid="notes-panel"]')!;
+          const seen: string[] = [];
+          const until = performance.now() + 1_000;
+          const sample = () => {
+            seen.push(getComputedStyle(leaving).translate);
+            if (performance.now() < until) requestAnimationFrame(sample);
+            else resolve(seen);
+          };
+          requestAnimationFrame(sample);
+        }),
+    );
     await page.keyboard.press("Escape");
-    // On its way out: down by its height on phone, right by its width from tablet on.
-    await expect(panel).toHaveCSS("translate", isPhone(testInfo.project.name) ? /^0px [\d.]+px$/ : /^[\d.]+px 0px$/);
+    // The browser says the way in the unit of the rule, a share of the panel's own size, and leaves out a y of 0.
+    const away = isPhone(testInfo.project.name) ? /^0px [1-9][\d.]*(px|%)$/ : /^[1-9][\d.]*(px|%)( 0px)?$/;
+    const places = await sampled;
+    expect(places.some((place) => away.test(place)), `the panel's places while it leaves: ${[...new Set(places)].join(" | ")}`).toBe(true);
     await expect(drawer).toBeHidden();
   });
 

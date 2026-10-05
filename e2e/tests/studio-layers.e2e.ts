@@ -95,10 +95,13 @@ test.describe("the Layers button of the stage", () => {
     await expect(panel(page)).toBeHidden();
     await expect(layers(page)).toBeFocused();
 
-    // A press beside it, on the stage, closes it.
+    // A press beside it, on the stage below the panel, closes it (on phone the stage's middle is under the panel).
     await opened(page);
     const box = await boxOf(stage(page));
-    await page.mouse.click(box.x + box.width * 0.5, box.y + box.height * 0.5);
+    const under = await boxOf(panel(page));
+    const beside = { x: box.x + box.width * 0.5, y: (under.y + under.height + box.y + box.height) / 2 };
+    expect(beside.y, "the press is on the stage, below the panel").toBeGreaterThan(under.y + under.height);
+    await page.mouse.click(beside.x, beside.y);
     await expect(panel(page)).toBeHidden();
     await expect(layers(page)).toHaveAttribute("aria-expanded", "false");
   });
