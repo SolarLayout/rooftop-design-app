@@ -1,18 +1,11 @@
 import type { NextConfig } from "next";
 
-// tools/dev.ts sets these two when it starts the app, so that the dev stack and the test stack can run
-// side by side. Without them (next build, next typegen, a bare `next dev`) the defaults apply.
-//   ROOFTOP_API_PORT   port of the API that /api/* is forwarded to
-//   ROOFTOP_DIST_DIR   Next's build directory; one per running stack, because Next locks it
-function apiPort(): number {
-  const text = process.env.ROOFTOP_API_PORT ?? "4701";
-  const port = Number(text);
-  if (!Number.isInteger(port) || port < 1 || port > 65535) {
-    throw new Error(`ROOFTOP_API_PORT must be a port number, got "${text}".`);
-  }
-  return port;
-}
+import { apiOrigin } from "./api-origin";
 
+// tools/dev.ts sets ROOFTOP_API_PORT and ROOFTOP_DIST_DIR when it starts the app, so that the dev stack and the test
+// stack can run side by side; a deployed build reads ROOFTOP_API_ORIGIN instead (api-origin.ts). Without them (next
+// build, next typegen, a bare `next dev`) the defaults apply.
+//   ROOFTOP_DIST_DIR   Next's build directory; one per running stack, because Next locks it
 function distDir(): string {
   const directory = process.env.ROOFTOP_DIST_DIR ?? ".next";
   if (!/^\.next[\w-]*$/.test(directory)) {
@@ -21,9 +14,8 @@ function distDir(): string {
   return directory;
 }
 
-// The browser only ever talks to the web origin; Next forwards /api/* to the API, so there is no CORS.
-// 127.0.0.1 and not localhost: uvicorn listens on IPv4 only.
-const API_ORIGIN = `http://127.0.0.1:${apiPort()}`;
+// The browser only ever talks to the web origin; /api/* is forwarded to the API, so there is no CORS.
+const API_ORIGIN = apiOrigin(process.env);
 
 const nextConfig: NextConfig = {
   // Keep this off. React Three Fiber's <Canvas> disposes its WebGL renderer on unmount (it forces a
@@ -39,6 +31,8 @@ const nextConfig: NextConfig = {
   // took 33 s at the median and 75 s at most at the API (serial drawing), and the proxy's timeout came back as a bare
   // "Internal Server Error" (socket hang up) while the API answered 200 (session 14, 2026-10-04). The browser tests
   // wait 90 s for such an answer; a design run of a roof at the limit of 30,000 m² is well under this too.
+  // On Vercel the rewrite is the CDN's, not this server's, and this setting plays no part: the CDN waits 120 s for the
+  // first byte, then as long as a byte comes every 120 s (plan/phase-12-plan.md).
   experimental: { proxyTimeout: 120_000 },
 
   async rewrites() {
