@@ -32,7 +32,8 @@ asks for one. Paste the block inside the file into a new session started in this
 | 012 | `012-phase-9-handover.md` | Phase 9: the plan, the boards it lacks, the pull requests of Handover and the exports | 2026-10-03 | used by session 13, 2026-10-03. The plan, the four boards, the four pull requests (#62, #64 to #66) and the close are done; the browser step was split on the way (#63) |
 | 013 | `013-phase-10-home-projects-present.md` | Phase 10: the plan, the boards it lacks, the pull requests of Home, the projects on the device and Present; unattended, pre-approved by the owner | 2026-10-03 | used by session 13 |
 | 014 | `014-phase-11-hardening.md` | Phase 11: hardening for the tradeshow; the plan first, then the pull requests; the open items of Phase 10 taken up | 2026-10-03 | used by session 14, 2026-10-04. The plan, scoped with the owner item by item, and the nine pull requests (#78 to #86) are done; the browser suite's one run waits for the owner's say (D56) |
-| 015 | `015-phase-12-deployment.md` | Phase 12: deployment, staging and production on Vercel and Lambda; the plan first, explained item by item | 2026-10-04 | open |
+| 015 | `015-phase-12-deployment.md` | Phase 12: deployment, staging and production on Vercel and Lambda; the plan first, explained item by item | 2026-10-04 | used by session 16, 2026-10-05. Both environments live (#90 to #95, #97, #101); #99 and #100 remain of the phase |
+| 016 | `016-phase-13-interview.md` | Phase 13: optimization; the owner's interview first (the code that takes so much memory), then the plan | 2026-10-05 | open |
 
 ## Shape of a prompt file
 

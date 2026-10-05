@@ -3,11 +3,12 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-05, session 16: Phase 12 nearly done. **Both environments live on `774e0a9`**
+**Last updated:** 2026-10-05, end of session 16. Phase 12 nearly done: **both environments live on `666368a`**
 (https://rooftop.staging.solarlayout.app, https://rooftop.solarlayout.app), deployed by `deploy` by hand and smoked; the API on Lambda
-streams; the roof at the limit runs through Vercel in two minutes; a rollback done on staging, each side; one simulation thread on both
-functions (D61). Pull requests #90 to #95 and #97; decisions D58 to D63; the path in `docs/deployment.md`. Phase 13 filed
-(optimization: #76, #96 the memory, #98 large project files). Reserved concurrency: production 100, staging 50.
+streams; the roof at the limit runs through Vercel in two minutes; a rollback done on staging, each side; one simulation thread, set by
+the image (D61, #101); reserved concurrency production 100, staging 50. Pull requests #90 to #95, #97, #101; decisions D58 to D63; the
+path in `docs/deployment.md`. Left of the phase: #99 and #100. **Next: Phase 13 (optimization), starting with the owner's interview**
+(resume prompt 016; issues #96, #76, #98).
 
 ## Where we are
 
@@ -109,13 +110,13 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 ## Next, in order
 
-1. The owner's own end-to-end test of the app by hand (his decision of 2026-10-04).
-2. Phase 12, deployment (`plan/phase-12-deployment.md`), in a fresh session with the resume prompt 015: staging and production on Vercel and
-   Lambda, the stand demoing from production. Its plan is written first and explained item by item, as Phase 11's was; the account steps the owner must do himself (the domains, Vercel, AWS, the Esri
-   key's referrers) one at a time. Issue #76 (the API lean for Lambda) belongs with it or just before: the profile says the demo's run peaks at
-   3.5 GB and the roof at the limit at 19 GB.
-3. Issues #87 and #88 from D56's run (the energy stuck on "Opening" under load; the black rectangle on phone), and #73 to #77 as the owner decides after his testing: the audits and the guide, the journeys and the `e2e` workflow, Present's first frame
-   and the soak's memory question, the keyboard path and the browsers.
+1. Phase 13, optimization, in a fresh session with the resume prompt 016: **the owner's interview first** (he has many inputs on the code
+   that takes so much memory), recorded word for word; then the plan of the phase, explained item by item; then the pull requests, each
+   fix with its numbers before and after on staging. Issues #96 (the memory), #76 (the API lean for Lambda), #98 (project files over 6 MB).
+2. What remains of Phase 12, when the owner says: #99 (the operator's guide, the dry run on the stand's hardware; it closes the phase),
+   #100 (the production guards: the budget alarm, a rate limit per IP at Vercel, CloudWatch alarms).
+3. Issues #87 and #88 from D56's run, and #73 to #77 as the owner decides: the audits, the journeys and the `e2e` workflow, Present's first
+   frame and the soak's memory question, the keyboard path and the browsers.
 4. In parallel with any phase: the screens still to draw (Phase 0).
 
 ## Facts about this machine and setup
@@ -135,6 +136,11 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 | Esri key | In `apps/web/.env.local` as `NEXT_PUBLIC_ESRI_API_KEY`. Never read, print or commit the file. Referrers: `http://localhost:4700`, `http://127.0.0.1:4700`. Expires about 28 Sep 2027 |
 | Design canvas | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy. 21 boards, the same as `docs/design/mockups`. To add or change a board: read the canvas itself (not only a file of it), then publish from a folder shaped `project/<name>` in the scratchpad: `root` that folder, `file_path` its `project/canvas.json`, the boards in `files` by their `project/` paths. A `file_path` outside such a folder lands at the root of the artifact, not under `project/`. The publish is refused by the permission system while the canvas is shared with the link; the owner made it private for the publishes of 2026-09-30 and shares it again after |
 | Design system | `docs/design/` |
+| Deployed | Staging https://rooftop.staging.solarlayout.app, production https://rooftop.solarlayout.app; how: `docs/deployment.md`; AWS: `infra/aws/README.md` |
+| AWS | Account 378240665051, region `ap-south-1`; CLI profile `journium-dev` (defaults to us-east-1: always name the region); AWS CLI 2.37.9 (arm64). The permission system refuses IAM-creating commands from a session: the owner runs those |
+| Vercel CLI | `~/.bun/bin/vercel` (62.2.0, not on the shell's PATH), team `--scope solarlayout`, project `rooftop-design-app` (`prj_fIykVKBGCpvdVQZlJ7Xkfn9sg6u5`); the workflow pins 59.19.0 |
+| Docker | Docker Desktop (29.8, linux/arm64); must be running to build the API's image here; actionlint runs from its image (`rhysd/actionlint:1.7.7`) |
+| Esri keys, deployed | One per environment in Vercel (`NEXT_PUBLIC_ESRI_API_KEY`), each with its own address as referrer; expire about 2027-10-05 |
 
 ## Open items (not blocking)
 
@@ -202,6 +208,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 | 13 | 2026-10-03 | `plan/sessions/013/record.md`, `plan/sessions/013/owner-messages.md` |
 | 14 | 2026-10-04 | `plan/sessions/014/record.md`, `plan/sessions/014/owner-messages.md` |
 | 15 | 2026-10-05 | `plan/sessions/015/record.md`, `plan/sessions/015/owner-messages.md` |
+| 16 | 2026-10-05 | `plan/sessions/016/record.md`, `plan/sessions/016/owner-messages.md` |
 
 ## Closed, do not reopen
 
