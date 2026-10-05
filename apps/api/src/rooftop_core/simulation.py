@@ -262,8 +262,11 @@ def _at_distinct(mm: ModuleModel, g: np.ndarray, t: np.ndarray) -> tuple[np.ndar
     and half the hours are dark (no power by the model's rule, g under 1 W/m²)."""
     out = [np.zeros_like(g), np.zeros_like(g), np.zeros_like(g)]
     lit = g >= 1.0
+    # Solved at the pair in float32, as the desktop app carried a module's irradiance: strings whose sky
+    # differs in the eighth digit share one solve (a few hundred thousand pairs at the limit, not millions).
     # A pair as one complex number: sorted and compared exactly, and many times faster than unique rows.
-    pairs, back = np.unique(g[lit] + 1j * t[lit], return_inverse=True)
+    key = g[lit].astype(np.float32).astype(float) + 1j * t[lit].astype(np.float32).astype(float)
+    pairs, back = np.unique(key, return_inverse=True)
     # Solved a chunk at a time: pvlib's solve holds some forty arrays of its points while it works.
     solved = [np.zeros(len(pairs)) for _ in out]
     for i in range(0, len(pairs), MPP_CHUNK):

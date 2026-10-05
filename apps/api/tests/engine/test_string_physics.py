@@ -80,21 +80,32 @@ def test_a_candidate_from_shared_hours_is_the_candidate_alone(design):
 
     shared, alone = simulation.simulate(*args, held.physics), simulation.simulate(*args)
 
-    assert shared.energy_mwh == alone.energy_mwh
-    assert shared.steps == alone.steps
-    np.testing.assert_array_equal(shared.per_string_shade, alone.per_string_shade)
+    # The same but for the last bits: alone, the solve sees other points (an array's Newton stops when all
+    # of them have converged).
+    assert shared.energy_mwh == pytest.approx(alone.energy_mwh, rel=1e-12)
+    assert [step.value for step in shared.steps] == pytest.approx(
+        [step.value for step in alone.steps], rel=1e-12
+    )
+    np.testing.assert_allclose(shared.per_string_shade, alone.per_string_shade, rtol=1e-12)
 
 
 def test_the_operating_point_of_distinct_pairs_is_that_of_every_pair(design, monkeypatch):
-    g = np.array([[0.0, 0.5, 800.0, 800.0], [800.0, 300.0, 300.0, 1000.0], [1.0, 999.9, 800.0, 0.9]])
-    t = np.array([[25.0, 25.0, 40.0, 40.0], [40.0, 30.0, 30.0, 45.0], [20.0, 44.0, 41.0, 20.0]])
+    """Solved at the pairs in float32, as the desktop app carried the irradiance: the solve of every pair
+    rounded so (to the last bits: an array's Newton stops when all its points have converged, so another
+    array may take another step), and the solve of every pair as it is within D64's bar."""
+    g = np.array([[0.0, 0.5, 800.0, 800.0], [800.0, 300.0, 300.0, 1000.0], [1.0, 999.9, 800.0001, 0.9]])
+    t = np.array([[25.0, 25.0, 40.0, 40.0], [40.0, 30.0, 30.0, 45.0], [20.0, 44.0, 40.0, 20.0]])
     monkeypatch.setattr(simulation, "MPP_CHUNK", 2)
 
     got = simulation._at_distinct(design.mm, g, t)
-    every = design.mm.mpp(g.ravel(), t.ravel())
+    rounded = design.mm.mpp(
+        g.ravel().astype(np.float32).astype(float), t.ravel().astype(np.float32).astype(float)
+    )
+    exact = design.mm.mpp(g.ravel(), t.ravel())
 
-    for mine, theirs in zip(got, every, strict=True):
-        np.testing.assert_allclose(mine.ravel(), theirs, rtol=1e-9, atol=0)
+    for mine, theirs, true in zip(got, rounded, exact, strict=True):
+        np.testing.assert_allclose(mine.ravel(), theirs, rtol=1e-12, atol=0)
+        np.testing.assert_allclose(mine.ravel(), true, rtol=1e-6, atol=0)
     assert got[0][0, 0] == 0.0 and got[0][2, 3] == 0.0  # dark: under 1 W/m²
 
 
