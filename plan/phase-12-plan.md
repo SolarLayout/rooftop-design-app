@@ -80,25 +80,31 @@ two Esri keys. They share the image repository and the commit an image is built 
    the local port when it is unset. The Esri key per environment as a Vercel variable.
 6. **One Esri key per environment**, each with its own address as referrer (the owner makes the second key). *Why*: sharing nothing; a
    key leaked from staging is not production's. The local key keeps its local referrers.
-7. **The path.** The `check` workflow stays the gate (D55). When `check` is green on a push to `main` that touches code (not `plan/`,
-   `docs/` or `*.md` alone), the `deploy` workflow builds the API image once (tagged with the commit), points the staging alias at it,
-   builds the web app for staging, deploys it, and runs the smoke against staging. **Production is the owner's one action**: the
-   `promote` workflow, started by hand with a commit (by default what staging runs), moves the same image to production and builds the
-   web app of the same commit for Production. *Why built twice for the web*: the rewrite and the key are fixed at build (above), so a
-   staging build cannot serve production. The image is never built twice.
-8. **Rollback is one step on each side.** API: the alias `live` back to the previous version (the workflow prints the command; the
-   `promote` workflow with the earlier commit does both sides). Web: `vercel rollback` or the dashboard's Instant Rollback.
+7. **The path: one workflow, by hand.** The `check` workflow stays the gate of a pull request (D55); documents alone run no check
+   (`check.yml`, #94). Nothing deploys on its own (the owner's say, 2026-10-05: "one workflow with the dropdown. no automatic staging -
+   we are cost conscious"). `deploy.yml` is started by hand with the environment chosen, as in the owner's other apps:
+   - **Staging**: a commit of `main` (by default its head); the API's image built once for it (not again if ECR has it), the web app
+     built for staging before anything moves, the alias moved, the web app deployed, the smoke; a passing smoke tags the image
+     `staging-smoked-<sha>`.
+   - **Production**: a commit (by default what staging runs) that passed staging's smoke on that very image; the image is not built
+     again; the web app of the same commit is built for Production. *Why built twice for the web*: the rewrite and the key are fixed at
+     build (above), so a staging build cannot serve production.
+   Git deploys are off on Vercel (`apps/web/vercel.json`). The first draft (#92) deployed staging after every green check of `main` and
+   promoted by a second workflow; it was replaced (#93) before it ever ran.
+8. **Rollback is one step on each side.** API: the alias `live` back to the previous version (each run's summary prints the command);
+   `deploy` with the earlier commit rolls both sides. Web: Vercel's Instant Rollback, or an earlier deployment promoted.
 9. **What is deployed is written down**: each run's summary names the commit, the image digest, the Lambda version, the Vercel deployment
    and the time; `/health` answers the commit it was built from (a build argument).
-10. **The smoke**: `tools/smoke.ts <base URL>` asks `/api/health`, opens the demo, runs it through `/api/design` and waits for the result
-    event, asks the report's first page, and loads `/`. It runs in the workflow after each deploy and by hand. The browser tests against
+10. **The smoke**: `tools/smoke.ts <base URL> --commit <sha>` loads `/`, asks `/api/health` (and that it names the commit), opens the
+    demo, runs it through `/api/design` to the result event, and asks the report's pages for the first option. It runs in the workflow after each deploy and by hand. The browser tests against
     staging (#74) are by hand, with the network guard relaxed for that run alone and said so.
 11. **Configuration as code, by hand where the owner's apps do it by hand.** In the repo: the Dockerfile, `vercel.json`, the workflows,
     and `infra/aws/` with every policy, trust and function setting as JSON and the commands that apply them (`infra/aws/README.md`). No
     Terraform or CDK: the owner's apps have none. Secrets in Vercel's and AWS's stores only; GitHub holds the role's ARN and Vercel's token.
 12. **GitHub reaches AWS through two roles of its own, one per environment**: `solarlayout-rooftop-github-staging` and
     `solarlayout-rooftop-github-prod`, each trusting only a job of this repo in its GitHub environment (`Staging`, `Production`; the
-    `sub` claim `repo:SolarLayout/rooftop-design-app:environment:<name>`), each allowed to push to and read the one ECR repository and to
+    `sub` claim `repo:SolarLayout@279592171/rooftop-design-app@1394664976:environment:<name>`: this repository has GitHub's immutable
+    subject claims, with the owner's and the repository's IDs; the plain form never matches, as review found before any run), each allowed to push to and read the one ECR repository and to
     update, publish and alias its own function alone. No `iam:PassRole`: updating code does not pass a role. The account's GitHub OIDC
     provider is the one the owner's other apps use. Each role's ARN is a secret of its GitHub environment. *Why*: the owner's shared
     role holds rights over solarlayout's downloads and CloudFront; two roles keep a staging job off production's function.

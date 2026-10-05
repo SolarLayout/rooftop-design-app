@@ -28,7 +28,8 @@ sharing nothing; a change reaches staging and then production by a known path, a
   in-process memo is per instance and lost between invocations; see #76); the weather downloads on (PVGIS, NASA POWER) with their
   timeouts inside the function's; CORS not needed while the browser talks to the web origin alone; the API's one log line per request
   (Phase 11) read in CloudWatch; a cold start measured and, if it is felt, kept warm or the first visit designed for it.
-- **The path from a pull request to production**: the `check` workflow stays the gate (D55); a merge to `main` deploys staging; production
+- **The path from a pull request to production**: the `check` workflow stays the gate (D55); a deploy to staging or production is started by hand (the
+  owner's say, 2026-10-05, for cost; `plan/phase-12-plan.md`, decision 7); production
   is promoted from a staging build by hand (the owner's say), never built twice; what is deployed is written in the run's log (the commit,
   the build, the time); a rollback is one step.
 - **Configuration as code**: everything that can be in the repo is (Vercel's project settings as `vercel.json` where they can be, the
@@ -46,7 +47,8 @@ anything of the engine's numbers.
 
 ## Acceptance
 - `rooftop.solarlayout.app` and `rooftop.staging.solarlayout.app` serve the app; the demo opens, runs and exports on each; Present runs.
-- A merge to `main` reaches staging without a hand; production is promoted by the owner's one action and can be rolled back by one.
+- Staging and production are each reached by the owner's one action (`deploy`, the environment chosen), never on their own; production
+  runs only what passed staging's smoke; each side can be rolled back by one.
 - The design run's progress streams on production as it does here; a loss edit answers within the time the profile of Phase 11 set.
 - Nothing of the repo holds a secret; both keys' referrers hold both addresses.
 - The operator's guide written and walked once on production; the dry run done on the stand's hardware.

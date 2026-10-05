@@ -3,11 +3,12 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-05, session 15: D56 closed. The whole browser suite ran here on the owner's say, all eight groups green; the tests
-Phase 11 wrote and never ran were held to what the app does (every failure was the test's), and 107 pictures were renewed and looked at beside
-their boards (#89). Phase 11 is done. Two issues filed from what the run showed: #87 (under load a reopened design's energy can stay on
-"Opening") and #88 (a black rectangle behind the building in the Studio on phone). Next is the owner's own test by hand, then Phase 12 with the
-resume prompt `plan/resume/015-phase-12-deployment.md`, in a fresh session.
+**Last updated:** 2026-10-05, session 16: Phase 12 begun. The plan written and scoped with the owner as it went
+(`plan/phase-12-plan.md`); the API's image (#90), the web app ready for Vercel (#91), the smoke and the AWS runbook (#92), one deploy
+workflow by hand (#93, replacing #92's automatic staging before it ran), the check skipping documents (#94). AWS: the ECR repository, the
+four roles (made by the owner; `infra/aws/README.md`); the account allows 10,240 MB. GitHub: the environments, secrets and variables.
+Next: the first `deploy` to Staging (pushes the image, stops at the web build), then the owner's step 5 (the functions) and step 6
+(Vercel's variables), then Staging again.
 
 ## Where we are
 
@@ -26,11 +27,12 @@ resume prompt `plan/resume/015-phase-12-deployment.md`, in a fresh session.
 | 9 Handover and exports | Done (session 13: #62, #64 to #66; #63 on the way) | What exists, what was decided, what was found: `phase-09-handover.md`, "As built". How it was built: `phase-09-plan.md` |
 | 10 Home, projects on the device, Present | Done (session 13, unattended: #67, #69, #71, #72; #68 and #70 for the check) | What exists, what was decided, what was found: `phase-10-home-projects-present.md`, "As built". How it was built: `phase-10-plan.md` |
 | 11 Hardening for the tradeshow | Done (session 14: #78 to #86; session 15: D56's run of the whole browser suite and the renewed pictures, #89) | What exists, what deviated, what was found: `phase-11-hardening.md`, "As built". How: `phase-11-plan.md`, scoped with the owner; issues #73 to #77 hold what was deferred |
-| 12 Deployment: staging and production | Not started; filed 2026-10-04 | `phase-12-deployment.md`: what the owner decided (Vercel, AWS Lambda, `rooftop.solarlayout.app` and its staging twin, sharing nothing), the scope as known, the acceptance; its plan when it begins, after Phase 11 and #76 |
+| 12 Deployment: staging and production | In progress (session 16: #90 to #94) | `phase-12-plan.md`: what was found, 14 decisions, the owner's steps in order (1 to 4 done), the pull requests; `infra/aws/README.md`: what exists on AWS and how it was made |
 
 ## In flight
 
-Nothing. Nothing runs on ports 4700 to 4719 from this session; the owner's `bun dev` may.
+Phase 12, between the owner's steps: the first `deploy` to Staging, then step 5 (the functions, from that run's image) and step 6
+(Vercel's `ROOFTOP_API_ORIGIN` and Esri keys). The old `deploy staging` workflow is gone (#93). Nothing runs on ports 4700 to 4719.
 
 ## What the web app has today
 
