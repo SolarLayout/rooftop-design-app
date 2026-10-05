@@ -262,21 +262,3 @@ def spread_over_hours(position: np.ndarray, obj_position: np.ndarray, obj_module
     within = np.arange(len(entry)) - np.repeat(np.cumsum(repeat) - repeat, repeat)
     return hours[first[obj_position[entry]] + within], obj_module[entry], obj_fraction[entry]
 
-
-def annual_string_shade(sh: ShadingResult, beam: np.ndarray, strings: list[list[int]]) -> np.ndarray:
-    """Beam-weighted annual shaded fraction per string (used to keep the least shaded). The strings are of one
-    length; they are made a block at a time."""
-    w = np.asarray(beam, dtype=float)
-    tot = max(w.sum(), 1e-9)
-    if not strings:
-        return np.zeros(0)
-    members = np.array(strings, dtype=int)
-    n_strings, n = members.shape
-    step = max(1, BLOCK // n)
-    out = np.zeros(n_strings)
-    for i in range(0, n_strings, step):
-        block = members[i:i + step]
-        weakest = sh.e_mod_of(block.ravel()).reshape(len(w), len(block), n).max(axis=2)
-        # Each string's hours summed alone and in order, as a sum of its own row: the same bits as one by one.
-        out[i:i + len(block)] = np.ascontiguousarray((weakest * w[:, None]).T).sum(axis=1) / tot
-    return out

@@ -23,7 +23,7 @@ from .io.pvsyst import Inverter, Module
 from .onediode import ModuleModel
 from .placement import Layout
 from .shading import BLOCK, ShadingResult
-from .stringing import System
+from .stringing import PVString, System
 from .weather import Weather
 
 UC_BY_ROOF = {"flat_tilted": 29.0, "flat_ew": 20.0, "sloped_flush": 15.0}   # decision 16
@@ -174,92 +174,144 @@ class SimResult:
     lid_pct: float = 0.0
 
 
-def simulate(pre: Precomputed, layout: Layout, module: Module, mm: ModuleModel, inv: Inverter,
-             system: System, losses: Losses, roof: Roof) -> SimResult:
+@dataclass
+class StringPhysics:
+    """The hours of strings of one length, whatever inverter they go to (D66): the irradiance on them, the
+    shading, the cell temperature and the operating point per string, and their parts of the loss chain's
+    irradiation. Worked out once for every string of a length; each candidate of that length takes its columns.
+    """
+
+    column: dict[int, int]   # a string's first module → its column
+    G: np.ndarray            # (hours, strings) effective irradiance on the string, W/m², its modules' mean
+    B: np.ndarray            # (hours, strings) beam after far shading, IAM and soiling, before near shading
+    F: np.ndarray            # (hours, strings) linear near shading, its modules' mean
+    E: np.ndarray            # (hours, strings) electrical near shading: its weakest module's
+    tc: np.ndarray           # (hours, strings) cell temperature
+    p25: np.ndarray          # (hours, strings) power of one module at 25 °C
+    pT: np.ndarray           # (hours, strings) power of one module at the cell temperature
+    vT: np.ndarray           # (hours, strings) its voltage
+    chain: np.ndarray        # (6, strings) Σ hours × modules of the chain's irradiances, in CHAIN's order
+
+    def columns(self, strings: list[PVString]) -> list[int]:
+        return [self.column[s.modules[0]] for s in strings]
+
+
+CHAIN = ("nom", "far", "lin", "iam", "soil", "eff")
+MPP_CHUNK = 16_384  # operating points solved at a time
+
+
+def string_physics(pre: Precomputed, module: Module, mm: ModuleModel, strings: list[PVString], losses: Losses,
+                   roof: Roof) -> StringPhysics:
     w = pre.weather.data
-    n_h = len(w)
+    n_h, n_s = len(w), len(strings)
+    N = len(strings[0].modules) if strings else 0
     sh = pre.shading
-    N = system.n_series
-    strings = [s.modules for s in system.strings]
-    used = np.array([i for s in strings for i in s], dtype=int)
+    members = np.array([s.modules for s in strings], dtype=int).reshape(n_s, N)
     soil = 1.0 - losses.soiling_pct / 100.0
     rear_k = module.bifaciality * (1.0 - losses.rear_loss_pct / 100.0)
-
-    # Irradiance per used module (hours × modules), plus the chain totals.
-    sums = dict.fromkeys(("nom", "far", "lin", "iam", "soil", "eff"), 0.0)
-    g_eff = np.zeros((n_h, len(used)), dtype=np.float32)
-    beam_pre = np.zeros((n_h, len(used)), dtype=np.float32)   # after far + IAM + soiling, before near shading
     far_ok = ~sh.far_block
-    f_used = sh.f_lin_of(used)
-    for gi, key in enumerate(pre.groups):
-        g = pre.groups[key]
-        cols = np.where(pre.group_of[used] == gi)[0]
-        if not len(cols):
-            continue
-        m_idx = used[cols]
-        beam, sky, gnd = g["beam"][:, None], g["sky"][:, None], g["gnd"][:, None]
-        f = f_used[:, cols]
-        sk = sh.sky_loss[m_idx][None, :]
-        k = len(cols)
-        nom = beam + sky + gnd
-        beam_far = beam * far_ok[:, None]
-        sums["nom"] += float(np.broadcast_to(nom, (n_h, k)).sum())
-        sums["far"] += float(np.broadcast_to(beam_far + sky + gnd, (n_h, k)).sum())
-        b_lin = beam_far * (1 - f)
-        d_lin = (sky + gnd) * (1 - sk)
-        sums["lin"] += float((b_lin + d_lin).sum())
-        b_iam = b_lin * g["iam_b"][:, None]
-        d_iam = sky * (1 - sk) * g["iam_d"] + gnd * (1 - sk) * g["iam_g"]
-        sums["iam"] += float((b_iam + d_iam).sum())
-        front = (b_iam + d_iam) * soil
-        sums["soil"] += float(front.sum())
-        tot = front + g["rear"][:, None] * rear_k
-        sums["eff"] += float(tot.sum())
-        g_eff[:, cols] = tot
-        beam_pre[:, cols] = beam_far * g["iam_b"][:, None] * soil
 
-    n_used = max(len(used), 1)
-    irr = {k: v / n_used / 1000.0 for k, v in sums.items()}   # kWh/m² per module
-
-    # Per string.
-    pos = {m: j for j, m in enumerate(used)}
-    n_s = len(strings)
-    G = np.zeros((n_h, n_s))
-    B = np.zeros((n_h, n_s))
     F = np.zeros((n_h, n_s))
     E = np.zeros((n_h, n_s))
-    for s, mods in enumerate(strings):
-        cols = [pos[m] for m in mods]
-        G[:, s] = g_eff[:, cols].mean(axis=1)
-        B[:, s] = beam_pre[:, cols].mean(axis=1)
-        F[:, s] = f_used[:, cols].mean(axis=1)
-    del f_used
-    # The weakest module sets the string current: the electrical shading made a block of strings at a time.
-    members = np.array(strings, dtype=int).reshape(n_s, N)
     step = max(1, BLOCK // max(N, 1))
     for i in range(0, n_s, step):
         block = members[i:i + step]
+        F[:, i:i + len(block)] = sh.f_lin_of(block.ravel()).reshape(n_h, len(block), N).mean(axis=2)
         E[:, i:i + len(block)] = sh.e_mod_of(block.ravel()).reshape(n_h, len(block), N).max(axis=2)
+
+    G = np.zeros((n_h, n_s))
+    B = np.zeros((n_h, n_s))
+    chain = np.zeros((len(CHAIN), n_s))
+    group = pre.group_of[members]                  # (strings, N)
+    if np.any(group != group[:, :1]):
+        raise ValueError("A string spans modules of two orientations; strings are formed along one row.")
+    seen = 1.0 - sh.sky_loss[members].astype(float).mean(axis=1)   # (strings,) the sky its modules see
+    for gi, key in enumerate(pre.groups):
+        g = pre.groups[key]
+        cols = np.where(group[:, 0] == gi)[0]
+        if not len(cols):
+            continue
+        beam_far = g["beam"] * far_ok
+        beam_iam = beam_far * g["iam_b"]
+        diffuse = g["sky"] + g["gnd"]
+        diffuse_iam = g["sky"] * g["iam_d"] + g["gnd"] * g["iam_g"]
+        lit = 1.0 - F[:, cols]
+        B[:, cols] = (beam_iam * soil)[:, None]
+        G[:, cols] = (beam_iam[:, None] * lit + diffuse_iam[:, None] * seen[cols]) * soil + (g["rear"] * rear_k)[:, None]
+        iam = beam_iam @ lit + diffuse_iam.sum() * seen[cols]
+        chain[:, cols] = N * np.array([
+            np.full(len(cols), (g["beam"] + diffuse).sum()),
+            np.full(len(cols), (beam_far + diffuse).sum()),
+            beam_far @ lit + diffuse.sum() * seen[cols],
+            iam,
+            iam * soil,
+            iam * soil + g["rear"].sum() * rear_k,
+        ])
+
     ta = w["temp_air"].to_numpy()[:, None]
     ws = w["wind_speed"].to_numpy()[:, None]
     uc = losses.uc or UC_BY_ROOF.get(roof.roof_type, 29.0)
     tc = pvlib.temperature.pvsyst_cell(G, ta, ws, u_c=uc, u_v=losses.uv, module_efficiency=module.efficiency)
+    p25 = _at_distinct(mm, G, np.full_like(G, 25.0))[0]
+    pT, vT = _at_distinct(mm, G, tc)[:2]
+    return StringPhysics({int(m[0]): j for j, m in enumerate(members)}, G, B, F, E, tc, p25, pT, vT, chain)
+
+
+def _at_distinct(mm: ModuleModel, g: np.ndarray, t: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """mm.mpp of every (g, t), solved once for each distinct lit pair: unshaded strings of a row see the same sun,
+    and half the hours are dark (no power by the model's rule, g under 1 W/m²)."""
+    out = [np.zeros_like(g), np.zeros_like(g), np.zeros_like(g)]
+    lit = g >= 1.0
+    # A pair as one complex number: sorted and compared exactly, and many times faster than unique rows.
+    pairs, back = np.unique(g[lit] + 1j * t[lit], return_inverse=True)
+    # Solved a chunk at a time: pvlib's solve holds some forty arrays of its points while it works.
+    solved = [np.zeros(len(pairs)) for _ in out]
+    for i in range(0, len(pairs), MPP_CHUNK):
+        chunk = pairs[i:i + MPP_CHUNK]
+        for whole, part in zip(solved, mm.mpp(chunk.real, chunk.imag), strict=True):
+            whole[i:i + len(chunk)] = part
+    for o, s in zip(out, solved, strict=True):
+        o[lit] = s[back]
+    return tuple(out)
+
+
+def simulate(pre: Precomputed, layout: Layout, module: Module, mm: ModuleModel, inv: Inverter,
+             system: System, losses: Losses, roof: Roof, physics: StringPhysics | None = None) -> SimResult:
+    """The year of *system*. *physics* holds its strings' hours when they were worked out for its length
+    already (shared by the candidates of a length, D66); without it they are worked out here."""
+    w = pre.weather.data
+    n_h = len(w)
+    N = system.n_series
+    if physics is None:
+        physics = string_physics(pre, module, mm, system.strings, losses, roof)
+    cols = physics.columns(system.strings)
+    n_used = max(system.n_modules, 1)
+    irr = dict(zip(CHAIN, physics.chain[:, cols].sum(axis=1) / n_used / 1000.0, strict=True))  # kWh/m² per module
+    n_s = len(cols)
+    G, B, F, E, tc = (getattr(physics, name)[:, cols] for name in ("G", "B", "F", "E", "tc"))
     pnom_s = N * module.pnom_w
-    flat_g, flat_t = G.ravel(), tc.ravel()
-    p25, _, _ = mm.mpp(flat_g, np.full_like(flat_g, 25.0))
-    pT, vT, _ = mm.mpp(flat_g, flat_t)
-    p25 = p25.reshape(G.shape) * N
-    pT = pT.reshape(G.shape) * N
-    vT = vT.reshape(G.shape) * N
-    e_nom = G / 1000.0 * pnom_s
+    # The chain of a string's power, each step's energy taken as it passes; one array, changed in place.
+    e_nom = float(np.sum(G / 1000.0 * pnom_s)) / 1e6
+    e_25 = float(np.sum(physics.p25[:, cols] * N)) / 1e6
+    vT = physics.vT[:, cols] * N
+    p = physics.pT[:, cols] * N
+    e_T = float(np.sum(p)) / 1e6
     with np.errstate(divide="ignore", invalid="ignore"):
-        extra = np.clip((E - F) * np.divide(B, G, out=np.zeros_like(G), where=G > 1), 0.0, 1.0)
-    p_elec = pT * (1 - extra)
-    p_q = p_elec * (1 - losses.quality_pct / 100.0)
+        extra = np.divide(B, G, out=np.zeros_like(G), where=G > 1)
+    extra *= E - F
+    np.clip(extra, 0.0, 1.0, out=extra)
+    p *= np.subtract(1, extra, out=extra)
+    del extra
+    e_elec = float(np.sum(p)) / 1e6
+    p *= 1 - losses.quality_pct / 100.0
+    e_q = float(np.sum(p)) / 1e6
     lid = losses.lid(module)
-    p_lid = p_q * (1 - lid / 100.0)
-    p_mis = p_lid * (1 - losses.mismatch_pct / 100.0)
-    p_dc = p_mis * (1 - losses.dc_ohmic_pct / 100.0 * np.clip(p_mis / pnom_s, 0, 2))
+    p *= 1 - lid / 100.0
+    e_lid = float(np.sum(p)) / 1e6
+    p *= 1 - losses.mismatch_pct / 100.0
+    e_mis = float(np.sum(p)) / 1e6
+    p *= 1 - losses.dc_ohmic_pct / 100.0 * np.clip(p / pnom_s, 0, 2)
+    p_dc = p
 
     # Inverters.
     inv_of = np.array(system.inverter_of)
@@ -300,13 +352,13 @@ def simulate(pre: Precomputed, layout: Layout, module: Module, mm: ModuleModel, 
         ("IAM", irr["iam"], "irr"),
         ("Soiling", irr["soil"], "irr"),
         ("Bifacial rear gain", irr["eff"], "irr"),
-        ("Array nominal energy at STC", mwh(e_nom), "energy_total"),
-        ("Irradiance level", mwh(p25), "energy"),
-        ("Temperature", mwh(pT), "energy"),
-        ("Electrical shading", mwh(p_elec), "energy"),
-        ("Module quality", mwh(p_q), "energy"),
-        (f"LID{' (PAN)' if losses.lid_pct is None and module.lid_loss_pct is not None else ''}", mwh(p_lid), "energy"),
-        ("Mismatch", mwh(p_mis), "energy"),
+        ("Array nominal energy at STC", e_nom, "energy_total"),
+        ("Irradiance level", e_25, "energy"),
+        ("Temperature", e_T, "energy"),
+        ("Electrical shading", e_elec, "energy"),
+        ("Module quality", e_q, "energy"),
+        (f"LID{' (PAN)' if losses.lid_pct is None and module.lid_loss_pct is not None else ''}", e_lid, "energy"),
+        ("Mismatch", e_mis, "energy"),
         ("DC ohmic", mwh(p_dc), "energy"),
         ("Inverter efficiency", mwh(p_eff_all), "energy"),
         ("Inverter clipping", mwh(p_clip_all), "energy"),
