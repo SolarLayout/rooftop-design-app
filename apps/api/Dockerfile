@@ -35,6 +35,8 @@ ARG ROOFTOP_COMMIT
 # again inside the first request. With async init the adapter ends the start in time and the first request waits for
 # the health check instead, so nothing is run twice.
 # Matplotlib keeps its cache under /tmp, the one place Lambda lets a function write.
+# The options' simulations in one thread (D61): at the roof limit two threads peaked at 10,215 MB of the function's 10,240,
+# one at 5,652 MB and was not slower (117 s against 124 s). Where the memory goes is #96 (Phase 13).
 ENV PATH=/opt/venv/bin:$PATH \
     PYTHONUNBUFFERED=1 \
     MPLCONFIGDIR=/tmp/matplotlib \
@@ -42,6 +44,7 @@ ENV PATH=/opt/venv/bin:$PATH \
     AWS_LWA_READINESS_CHECK_PATH=/health \
     AWS_LWA_INVOKE_MODE=response_stream \
     AWS_LWA_ASYNC_INIT=true \
+    ROOFTOP_SIMULATION_THREADS=1 \
     ROOFTOP_COMMIT=${ROOFTOP_COMMIT}
 USER 1000:1000
 EXPOSE 8080
