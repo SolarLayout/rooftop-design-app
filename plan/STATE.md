@@ -7,7 +7,8 @@ Keep it short and true. History belongs in git and in the phase files, not here.
 and 5,652 MB on Lambda before; about 7.5 s and 921 MB now; the demo 15 s to about 3 s), parity with the desktop app's outputs
 shown against a snapshot (D64), both functions fitted to 1,769 MB (D67), a sub-hourly CSV averaged into hours, a file over 6 MiB
 refused in the Open dialog's words (#98). Pull requests #102 to #106; decisions D64 to D67. Both environments on `beb889e`,
-deployed and smoked (5 of 5 steps each). **Next: Phase 12's #99 and #100**, which the owner held until Phase 13 was done.
+deployed and smoked (5 of 5 steps each). **Next: a session of UI polish driven by the owner**: usability issues and screens broken on
+a real iPhone. #99 and #100 stay open until the owner needs them.
 
 ## Where we are
 
@@ -109,13 +110,15 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 ## Next, in order
 
-1. What remains of Phase 12, when the owner says: #99 (the operator's guide, the dry run on the stand's hardware; it closes the
-   phase), #100 (the production guards: the budget alarm, a rate limit per IP at Vercel, CloudWatch alarms).
-2. Issues #87 and #88 from D56's run, and #73 to #77 as the owner decides (#76 is done by Phase 13 but for its cold start,
-   measured 2 to 4 s and shortened by #106).
-3. In parallel with any phase: the screens still to draw (Phase 0).
-4. Possible later: the report drawn from the web app's own components instead of matplotlib (the owner asked why matplotlib
-   is needed: only for the PDF, its page images and the SLD's PNG); not filed.
+1. **The next session: UI polish, driven by the owner** (2026-10-05: "There are tons of usability issues and many broken screens
+   on real mobile (iPhone) - next session will be driven by me"). He brings the issues; the session follows his lead.
+2. #99 (the operator's guide and the dry run on the stand's hardware; it closes Phase 12) and #100 (the production guards: the
+   budget alarm, a rate limit per IP at Vercel, CloudWatch alarms): kept open, taken up when the owner needs them. Advised: the
+   budget alarm soon (a flood now costs about $8 an hour at 1,769 MB, capped by the 100 instances, and nothing tells the
+   owner); the rate limit before the site is promoted; #99 timed to the stand.
+3. Issues #87 and #88 from D56's run, and #73 to #77 as the owner decides (#76 is done by Phase 13 but for its cold start).
+4. In parallel with any phase: the screens still to draw (Phase 0).
+5. Possible later: the report drawn from the web app's own components instead of matplotlib; not filed.
 
 ## Facts about this machine and setup
 

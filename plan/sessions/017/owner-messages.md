@@ -38,3 +38,4 @@
 24. so at this point, after all the optimizations there is no loss in fidelity in results, right?
 25. i don't understand this gobbledegok. explain in simple terms if we lost parity or not
 26. what is #99 and #100 - are they mission critical?
+27. i will discuss these two issues in next session(s) when i need them. we will keep the issues open. In next immediate session, we will polish UI. There are tons of usability issues and many broken screens on real mobile (iPhone) - next session will be driven by me
