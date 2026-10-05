@@ -1,7 +1,7 @@
 # Phase 13: optimization
 
-**Status:** in progress (session 17): the plan kept whole by the owner (`phase-13-plan.md`, D64 to D67); #102 to #105 merged;
-the functions' memory (1,769 MB) to be set by the owner and measured on staging.
+**Status:** done (session 17, 2026-10-05): #102 to #106; both functions at 1,769 MB, deployed and smoked. The owner: "we are
+done with perf. i am happy with results".
 **Depends on:** Phase 12 (the app deployed, so the numbers are Lambda's).
 
 ## Goal
@@ -53,6 +53,9 @@ On Lambda (staging at #103, 10,240 MB): the limit 6.3 to 6.5 s (117 s before), a
 | The memo held to 128 MB; one thread for 1,769 MB (D67) | `rooftop_core/memo.py`, `apps/api/Dockerfile` | #105 |
 | A CSV with rows under an hour averaged into hours | `rooftop_core/weather.py` (`parse_csv`, `minutes_between_rows`), `csv_weather.py` | #105 |
 | A file over 6 MiB refused in the Open dialog's words (#98) | `apps/web/lib/flow/open-project.ts`, `components/shell/OpenProject.tsx` | #105 |
+| The memo keeps the operating points, keyed by the module and the exact pairs: a loss edit that leaves the irradiance solves nothing | `rooftop_core/memo.py` (`operating_points`, `points_key`), `simulation.py` (`KeptPoints`) | #106 |
+| The placed modules turned back in one transform | `rooftop_core/placement.py` (`rotate_all`) | #106 |
+| matplotlib loaded with the first report or file, not at the start | `rooftop_core/export/summary.py`, `rooftop_api/services/export.py`, `tests/test_startup.py` | #106 |
 
 ### Parity
 #102 and #104 keep every figure of the demo and the limit to the bit. #103 moves energies by at most 2.95e-9 relative, the hours
@@ -77,7 +80,17 @@ unchanged. The report's two plan pages differ by at most 4 levels of 255 on 0.6 
 - **GitHub hiccups**: a deploy waited 17 minutes for a runner and was started again; a push to a pull request started no check
   and the pull request was reopened.
 
-### Left
-- The owner sets 1,769 MB on staging; one deploy; the limit measured there; then production the same (D67).
-- Short of target here: a soiling edit at the limit (2.7 s for 2 s) and the report's pages at the limit (3.5 s for 2 s); the
-  peak at the limit 664 MB against the aim of 512 MB.
+### After #106, and on Lambda
+In the image: the limit 4.1 s; a quality, mismatch, availability or DC-ohmic edit at the limit 1.76 s (target 2 s); a soiling
+edit 2.45 s (it changes the irradiance: solved again); the demo 2.01 s; a start of the API 1.20 s and 175 MB here (1.51 s and
+212 MB with matplotlib). Every endpoint at the limit after a run: `/layout` 0.5 s, the report's pages 4.2 s (then kept), the
+PDF 3.1 s, KMZ 1.8 s, DXF 0.9 s, SLD 0.6 s, CSV 0.4 s, the zip 5.6 s; the container's peak 630 MB.
+
+On Lambda at 1,769 MB (staging, `d95224d`): the limit 7.4 to 7.6 s, a soiling edit 5.5 s, the demo 3.4 s, `Max Memory Used`
+921 MB. At 10,240 MB the same code would be about 5.5 s: numpy's BLAS uses the other cores of a larger function. The owner chose
+1,769 MB for the price (a sixth of 10,240's per second), and the 10 s target holds.
+
+### Not done, by the owner's word ("we are done with perf")
+- A soiling edit at the limit under 2 s (2.45 s here); the report's pages at the limit under 2 s (4.2 s the first time).
+- The aim of 512 MB at the limit (664 MB here; 921 MB on Lambda).
+- The report drawn without matplotlib (the owner asked why it is needed: the PDF, its pages, the SLD's PNG); not filed.

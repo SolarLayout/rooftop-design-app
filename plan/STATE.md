@@ -3,12 +3,11 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-05, end of session 16. Phase 12 nearly done: **both environments live on `666368a`**
-(https://rooftop.staging.solarlayout.app, https://rooftop.solarlayout.app), deployed by `deploy` by hand and smoked; the API on Lambda
-streams; the roof at the limit runs through Vercel in two minutes; a rollback done on staging, each side; one simulation thread, set by
-the image (D61, #101); reserved concurrency production 100, staging 50. Pull requests #90 to #95, #97, #101; decisions D58 to D63; the
-path in `docs/deployment.md`. Left of the phase: #99 and #100. **Next: Phase 13 (optimization), starting with the owner's interview**
-(resume prompt 016; issues #96, #76, #98).
+**Last updated:** 2026-10-05, end of session 17. **Phase 13 (optimization) done**: the engine lean (the roof at the limit 117 s
+and 5,652 MB on Lambda before; about 7.5 s and 921 MB now; the demo 15 s to about 3 s), parity with the desktop app's outputs
+shown against a snapshot (D64), both functions fitted to 1,769 MB (D67), a sub-hourly CSV averaged into hours, a file over 6 MiB
+refused in the Open dialog's words (#98). Pull requests #102 to #106; decisions D64 to D67. Both environments on `beb889e`,
+deployed and smoked (5 of 5 steps each). **Next: Phase 12's #99 and #100**, which the owner held until Phase 13 was done.
 
 ## Where we are
 
@@ -27,20 +26,19 @@ path in `docs/deployment.md`. Left of the phase: #99 and #100. **Next: Phase 13 
 | 9 Handover and exports | Done (session 13: #62, #64 to #66; #63 on the way) | What exists, what was decided, what was found: `phase-09-handover.md`, "As built". How it was built: `phase-09-plan.md` |
 | 10 Home, projects on the device, Present | Done (session 13, unattended: #67, #69, #71, #72; #68 and #70 for the check) | What exists, what was decided, what was found: `phase-10-home-projects-present.md`, "As built". How it was built: `phase-10-plan.md` |
 | 11 Hardening for the tradeshow | Done (session 14: #78 to #86; session 15: D56's run of the whole browser suite and the renewed pictures, #89) | What exists, what deviated, what was found: `phase-11-hardening.md`, "As built". How: `phase-11-plan.md`, scoped with the owner; issues #73 to #77 hold what was deferred |
-| 12 Deployment: staging and production | In progress; both environments live (session 16: #90 to #95, #97) | `phase-12-plan.md`: what was found, 14 decisions, the owner's steps in order (1 to 4 done), the pull requests; `infra/aws/README.md`: what exists on AWS and how it was made |
-| 13 Optimization | Filed 2026-10-05, not started | `phase-13-optimization.md`: #76 (the API lean for Lambda), #96 (the memory of a design run), #98 (project files over 6 MB), the functions fitted |
+| 12 Deployment: staging and production | In progress; both environments live (session 16: #90 to #95, #97); left: #99, #100 | `phase-12-plan.md`: what was found, 14 decisions, the owner's steps in order (1 to 4 done), the pull requests; `infra/aws/README.md`: what exists on AWS and how it was made |
+| 13 Optimization | Done (session 17: #102 to #106) | What was found, the numbers before and after, what exists: `phase-13-optimization.md`, "As built". How: `phase-13-plan.md`, after the owner's interview (`reference/phase-13-interview.md`) |
 
 ## In flight
 
-Phase 12. Live: staging and production on `666368a`, smoked (deployed by the owner); one simulation thread on both, set by the
-image (#101); reserved concurrency 100 and 50. The
-satellite imagery and the place search looked at on production by the owner (2026-10-05). Left, each in an issue:
-1. #99: the operator's guide for the stand, and the dry run on its hardware against production (closes the phase).
+Nothing. Both environments on `beb889e` (the last commit of Phase 13), smoked, 1,769 MB each, one simulation thread, reserved concurrency 100
+(production) and 50 (staging). Left of Phase 12, each in an issue:
+1. #99: the operator's guide for the stand, and the dry run on its hardware against production (closes Phase 12).
 2. #100: the production guards: an AWS budget alarm (the owner's), a rate limit per IP on `/api/*` at Vercel's firewall,
    CloudWatch alarms on throttles, concurrency and errors.
-Not needed (the owner, 2026-10-05): the browser journeys against staging (#74 keeps its other parts).
 Watch items: ECR's scan finds 8 high CVEs in Debian's base packages (refresh the pinned base when Debian publishes fixes); no
-lifecycle rule on ECR (about 244 MB per deployed commit); the Esri keys expire about 2027-10 (local 2027-09-28).
+lifecycle rule on ECR (about 244 MB per deployed commit); the Esri keys expire about 2027-10 (local 2027-09-28); GitHub dropped
+events twice on 2026-10-05 (a deploy waited 17 minutes for a runner; two pull requests started no check until reopened).
 Nothing runs on ports 4700 to 4719.
 
 ## What the web app has today
@@ -103,21 +101,21 @@ a reload opens the design remembered as open; the switcher lists the designs kep
 | `POST /export/{pdf,dxf,kmz,csv,sld,rtd,zip}?day=` | `exportDesign` |
 | `POST /export/report-pages?day=` | `reportPages` |
 
-On the demo: a design run takes 12 s, also after a change of the weather source (the shading computed again); 1.7 s after a
-change of a loss, of Uc or of the voltage (the candidates simulated in threads); 0.28 s after a change of degradation, the CO2
-factor, the exceedance levels or a sigma (worked out after the memo); 0.2 s when nothing changed; an export 0.2 to 0.9 s after a
+On the demo (Phase 13, the API's Linux image, one thread): a design run takes 2 s; about 0.9 s after a change of a loss (the
+shading kept; the operating points kept too when the irradiance does not change); 0.14 s after a change of degradation, the
+CO2 factor, the exceedance levels or a sigma; on Lambda at 1,769 MB about 3.4 s. The roof at the limit 4.1 s here, about 7.5 s
+on Lambda, under 1 GB; an export 0.2 to 0.9 s after a
 run; the report's six pages as images about 1 s and 940 KB; the zip of everything 1.5 to 1.7 s and 373 KB. The test stack's API starts with downloads of weather off (`ROOFTOP_WEATHER_DOWNLOADS=off`); the dev stack downloads.
 
 ## Next, in order
 
-1. Phase 13, optimization, in a fresh session with the resume prompt 016: **the owner's interview first** (he has many inputs on the code
-   that takes so much memory), recorded word for word; then the plan of the phase, explained item by item; then the pull requests, each
-   fix with its numbers before and after on staging. Issues #96 (the memory), #76 (the API lean for Lambda), #98 (project files over 6 MB).
-2. What remains of Phase 12, when the owner says: #99 (the operator's guide, the dry run on the stand's hardware; it closes the phase),
-   #100 (the production guards: the budget alarm, a rate limit per IP at Vercel, CloudWatch alarms).
-3. Issues #87 and #88 from D56's run, and #73 to #77 as the owner decides: the audits, the journeys and the `e2e` workflow, Present's first
-   frame and the soak's memory question, the keyboard path and the browsers.
-4. In parallel with any phase: the screens still to draw (Phase 0).
+1. What remains of Phase 12, when the owner says: #99 (the operator's guide, the dry run on the stand's hardware; it closes the
+   phase), #100 (the production guards: the budget alarm, a rate limit per IP at Vercel, CloudWatch alarms).
+2. Issues #87 and #88 from D56's run, and #73 to #77 as the owner decides (#76 is done by Phase 13 but for its cold start,
+   measured 2 to 4 s and shortened by #106).
+3. In parallel with any phase: the screens still to draw (Phase 0).
+4. Possible later: the report drawn from the web app's own components instead of matplotlib (the owner asked why matplotlib
+   is needed: only for the PDF, its page images and the SLD's PNG); not filed.
 
 ## Facts about this machine and setup
 
@@ -137,7 +135,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 | Design canvas | https://claude.ai/artifact/Xv8m9Ara4qLMj57DdD1Rjy. 21 boards, the same as `docs/design/mockups`. To add or change a board: read the canvas itself (not only a file of it), then publish from a folder shaped `project/<name>` in the scratchpad: `root` that folder, `file_path` its `project/canvas.json`, the boards in `files` by their `project/` paths. A `file_path` outside such a folder lands at the root of the artifact, not under `project/`. The publish is refused by the permission system while the canvas is shared with the link; the owner made it private for the publishes of 2026-09-30 and shares it again after |
 | Design system | `docs/design/` |
 | Deployed | Staging https://rooftop.staging.solarlayout.app, production https://rooftop.solarlayout.app; how: `docs/deployment.md`; AWS: `infra/aws/README.md` |
-| AWS | Account 378240665051, region `ap-south-1`; CLI profile `journium-dev` (defaults to us-east-1: always name the region); AWS CLI 2.37.9 (arm64). The permission system refuses IAM-creating commands from a session: the owner runs those |
+| AWS | Account 378240665051, region `ap-south-1`; CLI profile `journium-dev` (defaults to us-east-1: always name the region); AWS CLI 2.37.9 (arm64). The permission system refuses IAM-creating commands from a session: the owner runs those. The functions at 1,769 MB (D67), set by the session on the owner's word |
 | Vercel CLI | `~/.bun/bin/vercel` (62.2.0, not on the shell's PATH), team `--scope solarlayout`, project `rooftop-design-app` (`prj_fIykVKBGCpvdVQZlJ7Xkfn9sg6u5`); the workflow pins 59.19.0 |
 | Docker | Docker Desktop (29.8, linux/arm64); must be running to build the API's image here; actionlint runs from its image (`rhysd/actionlint:1.7.7`) |
 | Esri keys, deployed | One per environment in Vercel (`NEXT_PUBLIC_ESRI_API_KEY`), each with its own address as referrer; expire about 2027-10-05 |
@@ -187,7 +185,6 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 | Under the shell group's load on phone, the first try of a few tests runs out: `device.e2e.ts` "two designs" (both tries: a landed run's facts are written 600 ms after it lands and nothing flushes a pending write when the page is left, so the test's hard navigation loses them; Phase 11, pull request 5), "a reload", the picture `home-designs`, "performance, NASA POWER landed", and the phone's report tests of the handover group (`waitForResponse` for the pages ran out at 90 s on the first try, passed on the retry; cause not yet seen). Session 14, with the drops gone | Watch; the device race is Phase 11's; the handover first tries to be looked at with their error contexts |
 | Present's soak of 30 minutes with the machine's graphics (2026-10-03): no frame over 50 ms (the longest 33.4 ms), but the heap stepped once from 35.6 MB to 61.0 MB at minute 21 and stayed there; the soak's gate of a quarter is not met. A step of V8's size class or a slow leak: a longer run, or a heap snapshot at minute 10 and 30 compared, would tell | Phase 11; the acceptance of Phase 10 holds the frames, the memory is to be shown |
 | The `/api` rewrite passes the events of a design run on as they come in `next dev`. A production build (`next start`) and a proxy in front of it have not been tried | Phase 11, deployment |
-| One design run keeps a worker thread busy for 12 s and the process holds up to 576 MB of kept results. How many runs at once a server must carry is not decided | Phase 11 |
 
 ## Past sessions
 
@@ -209,6 +206,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 | 14 | 2026-10-04 | `plan/sessions/014/record.md`, `plan/sessions/014/owner-messages.md` |
 | 15 | 2026-10-05 | `plan/sessions/015/record.md`, `plan/sessions/015/owner-messages.md` |
 | 16 | 2026-10-05 | `plan/sessions/016/record.md`, `plan/sessions/016/owner-messages.md` |
+| 17 | 2026-10-05 | `plan/sessions/017/record.md`, `plan/sessions/017/owner-messages.md` |
 
 ## Closed, do not reopen
 
@@ -227,4 +225,5 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 - The vitals bar is in the Studio only (D38); the two widths where the top bar gives way (D39).
 - The check's cache is turbo's, for every step; pytest-testmon selects here and not on GitHub; pytest-xdist waits for
   the owner's yes (session 8, `phase-04b-plan.md` decisions 1, 4, 13; D53).
-- The figures after the year are worked out after the memo; the candidates are simulated in threads (Phase 8, decisions 5 and 17).
+- The figures after the year are worked out after the memo (Phase 8, decision 5). The options run in one thread at 1,769 MB (D67).
+- Phase 13's rule on numbers is parity with the desktop app's outputs, shown against the snapshot (D64); ADR-0014 of `solarlayout` is not binding on rooftop.

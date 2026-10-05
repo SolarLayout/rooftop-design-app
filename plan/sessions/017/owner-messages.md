@@ -29,3 +29,11 @@
 15. we will size for 3 mb. based on that how much memory we need for Lambda?
 16. what is the bug you are talking about? is it real? tell me in simple terms
 17. average to hourly. what mem we would need for lambda?
+18. run the aws comand yourself
+19. then do production the same way
+20. yes. any more optimizations we wanted to do or had planned?
+21. yes, do the one more PR
+22. dumb question. why is even matplotlib needed? Our UI is all Next.js app
+23. ok, we are done with perf. i am happy with results. is staging and prod deployment complete and teh smoke result from the deployment jobs in? if not, do it, and post the results here. and that will be all
+24. so at this point, after all the optimizations there is no loss in fidelity in results, right?
+25. i don't understand this gobbledegok. explain in simple terms if we lost parity or not
