@@ -1,0 +1,266 @@
+name: deploy
+
+# The one way the app reaches staging or production, started by hand (the owner's say, 2026-10-05: one workflow with a
+# choice of environment, as the owner's other apps; nothing deploys on its own, to keep the cost down).
+#   Staging     the commit (by default the head of main): the API's arm64 image built for it, unless ECR has it
+#               already; the web app built for Vercel's `staging`; the function's alias moved; the web app deployed;
+#               the smoke; when the smoke passes, the image tagged `staging-smoked-<sha>`.
+#   Production  the commit (by default the one staging runs), which must have passed staging's smoke: the very image
+#               staging ran, never built again; the web app of the same commit built for Production (its rewrite and
+#               its key are fixed at build, so a staging build cannot serve production); then the same moves and smoke.
+# In both, the web app is built before anything is moved, so a build that fails leaves the environment as it was.
+# Deploying an earlier commit is the rollback of both sides; each run's summary prints the API's one-command rollback.
+
+run-name: deploy ${{ inputs.commit || 'the default commit' }} to ${{ inputs.environment }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Where to deploy
+        type: environment
+        required: true
+      commit:
+        description: The commit of main (full SHA). Empty, the head of main for Staging, or what staging runs for Production.
+        required: false
+        default: ""
+
+# One deploy per environment at a time, queued, never cancelled: a deploy cut in half leaves the two sides apart.
+concurrency:
+  group: deploy-${{ inputs.environment }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  REPOSITORY: solarlayout/rooftop-api
+  SMOKED: staging-smoked
+  STAGING_SITE: https://rooftop.staging.solarlayout.app
+  VERCEL_CLI: vercel@59.19.0
+  VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+
+jobs:
+  plan:
+    name: what goes where
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      commit: ${{ steps.commit.outputs.sha }}
+      site: ${{ steps.target.outputs.site }}
+      function: ${{ steps.target.outputs.function }}
+      target: ${{ steps.target.outputs.target }}
+    steps:
+      # The environment names everything else; anything but these two (Vercel's own "Preview" among GitHub's
+      # environments) is refused, so that a slip cannot send one environment's build to the other.
+      - id: target
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          case "$ENVIRONMENT" in
+            Staging)
+              { echo "site=$STAGING_SITE"; echo "function=solarlayout-rooftop-api-staging"; echo "target=staging"; } >> "$GITHUB_OUTPUT" ;;
+            Production)
+              { echo "site=https://rooftop.solarlayout.app"; echo "function=solarlayout-rooftop-api-prod"; echo "target=production"; } >> "$GITHUB_OUTPUT" ;;
+            *)
+              echo "::error::Deploy to Staging or Production, not \"$ENVIRONMENT\"."; exit 1 ;;
+          esac
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # The commit asked for, or the default; it must be a whole SHA of main.
+      - id: commit
+        env:
+          ASKED: ${{ inputs.commit }}
+          ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          sha="$ASKED"
+          if [ -z "$sha" ] && [ "$ENVIRONMENT" = Staging ]; then
+            sha=$(git rev-parse origin/main)
+            echo "The head of main: $sha."
+          elif [ -z "$sha" ]; then
+            sha=$(curl -fsS --max-time 20 "$STAGING_SITE/api/health" | jq -r '.commit // empty' 2>/dev/null || true)
+            [ -n "$sha" ] || { echo "::error::Staging does not say what it runs; name the commit to deploy."; exit 1; }
+            echo "Staging runs $sha."
+          fi
+          if ! [[ "$sha" =~ ^[0-9a-f]{40}$ ]]; then echo "::error::\"$sha\" is not a whole commit SHA."; exit 1; fi
+          if ! git merge-base --is-ancestor "$sha" origin/main 2>/dev/null; then
+            echo "::error::$sha is not a commit of main."; exit 1
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    name: the API and the web app
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    environment: ${{ inputs.environment }}
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      COMMIT: ${{ needs.plan.outputs.commit }}
+      FUNCTION: ${{ needs.plan.outputs.function }}
+      SITE: ${{ needs.plan.outputs.site }}
+      TARGET: ${{ needs.plan.outputs.target }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.plan.outputs.commit }}
+
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      # The commit's image, if ECR has it, by digest. Production requires it, and requires the mark of its smoke on
+      # staging on that very image. Only "not found" means not found: any other error of AWS stops the run as it is.
+      - id: image
+        run: |
+          digest_of() {
+            if aws ecr describe-images --repository-name "$REPOSITORY" --image-ids "imageTag=$1" \
+              --query 'imageDetails[0].imageDigest' --output text 2> ecr.err; then return 0; fi
+            grep -q ImageNotFoundException ecr.err && return 0
+            cat ecr.err >&2; exit 1
+          }
+          digest=$(digest_of "$COMMIT")
+          if [ "$TARGET" = production ]; then
+            [ -n "$digest" ] || { echo "::error::No image was built for $COMMIT. Deploy it to Staging first."; exit 1; }
+            smoked_digest=$(digest_of "${SMOKED}-$COMMIT")
+            [ "$smoked_digest" = "$digest" ] || { echo "::error::$COMMIT never passed staging's smoke; it is not deployed to production."; exit 1; }
+          fi
+          [ -n "$digest" ] && echo "ECR has the image of $COMMIT already: $digest."
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+
+      # Built for staging alone, once per commit. The image is for arm64 (Lambda's Graviton); the runner is x86, so
+      # the build runs under QEMU. provenance: false, because Lambda refuses a manifest list.
+      - id: ecr
+        if: steps.image.outputs.digest == ''
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - if: steps.image.outputs.digest == ''
+        uses: docker/setup-qemu-action@v4
+        with:
+          platforms: arm64
+
+      - if: steps.image.outputs.digest == ''
+        uses: docker/setup-buildx-action@v4
+
+      - id: build
+        if: steps.image.outputs.digest == ''
+        uses: docker/build-push-action@v7
+        with:
+          context: apps/api
+          platforms: linux/arm64
+          provenance: false
+          push: true
+          tags: ${{ steps.ecr.outputs.registry }}/${{ env.REPOSITORY }}:${{ needs.plan.outputs.commit }}
+          build-args: ROOFTOP_COMMIT=${{ needs.plan.outputs.commit }}
+          cache-from: type=gha,scope=rooftop-api
+          cache-to: type=gha,scope=rooftop-api,mode=max
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install JavaScript packages
+        run: bun install --frozen-lockfile
+
+      # Vercel's CLI is pinned: the owner's other apps hold 59.19.0 because 59.20.0 broke --prebuilt on bun's install
+      # layout. The build reads the environment's variables (ROOFTOP_API_ORIGIN, the Esri key) from Vercel.
+      - name: Build the web app
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          bun x "$VERCEL_CLI" pull --yes --environment="$TARGET" --token="$VERCEL_TOKEN"
+          bun x "$VERCEL_CLI" build --target="$TARGET" --token="$VERCEL_TOKEN"
+
+      # The image by its digest, never by a tag; a version published for it; the alias the Function URL serves moved
+      # to it. The version it moves from is written down: moving the alias back is the API's rollback.
+      - name: Point the function at the image
+        env:
+          DIGEST: ${{ steps.image.outputs.digest || steps.build.outputs.digest }}
+        run: |
+          image="${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/$REPOSITORY@$DIGEST"
+          previous=$(aws lambda get-alias --function-name "$FUNCTION" --name live --query FunctionVersion --output text)
+          aws lambda update-function-code --function-name "$FUNCTION" --image-uri "$image" --output text --query LastUpdateStatus
+          aws lambda wait function-updated-v2 --function-name "$FUNCTION"
+          version=$(aws lambda publish-version --function-name "$FUNCTION" --description "$COMMIT" --query Version --output text)
+          aws lambda wait published-version-active --function-name "$FUNCTION" --qualifier "$version"
+          aws lambda update-alias --function-name "$FUNCTION" --name live --function-version "$version" --output text --query FunctionVersion
+          {
+            echo "### ${{ inputs.environment }}: the API"
+            echo "| | |"; echo "|---|---|"
+            echo "| Commit | \`$COMMIT\` |"
+            echo "| Image | \`$image\` |"
+            echo "| Function | \`$FUNCTION\`, alias \`live\`: version $previous → **$version** |"
+            echo ""
+            echo "Roll the API back: \`aws lambda update-alias --function-name $FUNCTION --name live --function-version $previous --region ${{ vars.AWS_REGION }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Deploy the web app
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          url=$(bun x "$VERCEL_CLI" deploy --prebuilt --target="$TARGET" --token="$VERCEL_TOKEN")
+          {
+            echo "### ${{ inputs.environment }}: the web app"
+            echo "Deployment \`$url\`, served at $SITE. Roll back: Vercel's dashboard, Deployments, an earlier deployment of this environment, Promote (or Instant Rollback on production)."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  smoke:
+    name: the smoke
+    needs: [plan, deploy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: ${{ inputs.environment }}
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      COMMIT: ${{ needs.plan.outputs.commit }}
+      SITE: ${{ needs.plan.outputs.site }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.plan.outputs.commit }}
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Smoke
+        run: |
+          status=0
+          bun tools/smoke.ts "$SITE" --commit "$COMMIT" > smoke.txt 2>&1 || status=$?
+          cat smoke.txt
+          { echo "### The smoke"; echo '```'; cat smoke.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$status" != 0 ]; then
+            echo "::error::The smoke of $SITE failed. Roll back with the command in the deploy job's summary, or deploy the previous commit."
+          fi
+          exit "$status"
+
+      - if: needs.plan.outputs.target == 'staging'
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      # The mark that this commit passed on staging: the same image under a second tag. Production requires it.
+      - name: Mark the image as smoked on staging
+        if: needs.plan.outputs.target == 'staging'
+        run: |
+          manifest=$(aws ecr batch-get-image --repository-name "$REPOSITORY" --image-ids "imageTag=$COMMIT" \
+            --query 'images[0].imageManifest' --output text)
+          if ! aws ecr put-image --repository-name "$REPOSITORY" --image-tag "${SMOKED}-$COMMIT" \
+            --image-manifest "$manifest" > /dev/null 2> ecr.err; then
+            grep -q ImageAlreadyExistsException ecr.err || { cat ecr.err; exit 1; }
+          fi
+          echo "Tagged \`${SMOKED}-$COMMIT\`: this commit may be deployed to production." >> "$GITHUB_STEP_SUMMARY"
