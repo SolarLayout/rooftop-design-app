@@ -204,6 +204,47 @@ def solids_shadow(solids: list[tuple[Polygon, float, float]], z_recv: float, ele
     return unary_union(parts) if parts else None
 
 
+@dataclass
+class Prisms:
+    """The casters' prisms as arrays, for their shadows at many positions of the sun: every footprint's
+    corners (the ring's closing corner left out), the prism each belongs to, each prism's bottom and top."""
+
+    corners: np.ndarray  # (corners, 2)
+    owner: np.ndarray    # (corners,) the prism of each corner, in order
+    z0: np.ndarray       # (prisms,)
+    z1: np.ndarray       # (prisms,)
+
+
+def prisms_of(solids: list[tuple[Polygon, float, float]]) -> Prisms:
+    rings = [np.asarray(fp.exterior.coords)[:-1] for fp, _, _ in solids]
+    return Prisms(
+        np.concatenate(rings) if rings else np.zeros((0, 2)),
+        np.repeat(np.arange(len(rings)), [len(r) for r in rings]),
+        np.array([z0 for _, z0, _ in solids], dtype=float),
+        np.array([z1 for _, _, z1 in solids], dtype=float),
+    )
+
+
+def prisms_shadow(prisms: Prisms, z_recv: float, elev: float, az: float) -> np.ndarray:
+    """prism_shadow of every prism at once: the hull of its footprint at the bottom and at the top of what is
+    above z_recv, carried along the sun's shadow vector (a convex footprint sweeps into that hull)."""
+    if elev <= 0:
+        return np.array([], dtype=object)
+    vx, vy = shadow_vector(elev, az)
+    lo = np.maximum(prisms.z0, z_recv) - z_recv
+    hi = prisms.z1 - z_recv
+    above = (prisms.z1 > z_recv + 1e-6)[prisms.owner]  # prism_shadow's own test
+    if not above.any():
+        return np.array([], dtype=object)
+    corners, owner = prisms.corners[above], prisms.owner[above]
+    near = corners + np.column_stack((vx * lo[owner], vy * lo[owner]))
+    far = corners + np.column_stack((vx * hi[owner], vy * hi[owner]))
+    _, which = np.unique(owner, return_inverse=True)
+    order = np.argsort(np.concatenate((which, which)), kind="stable")
+    points = np.concatenate((near, far))[order]
+    return shapely.convex_hull(shapely.multipoints(points, indices=np.concatenate((which, which))[order]))
+
+
 def shadow_parts(solids: list[tuple[Polygon, float, float]], z_recv: float, elev: float, az: float) -> list:
     """The shadow of each prism on the horizontal plane z = z_recv with the sun at *elev*, *az*: each convex,
     its bounding box tight, where the union of a parapet's is a ring whose box is the whole roof."""

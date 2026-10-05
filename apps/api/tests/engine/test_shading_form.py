@@ -174,3 +174,23 @@ def test_the_sky_seen_in_blocks_of_points_is_the_sky_seen_at_once(monkeypatch):
     monkeypatch.setattr(geometry, "SKY_BLOCK", 5)
 
     np.testing.assert_array_equal(sky_loss_sectors(points, z, casters), at_once)
+
+
+def test_the_shadows_of_all_prisms_at_once_are_each_prism_s_own():
+    design = a_shaded_roof()
+    solids = geometry.solids_of(design.p.roof.all_casters())
+    prisms = geometry.prisms_of(solids)
+
+    for z, elev, az in [(0.6, 35.0, 120.0), (1.2, 12.5, 250.0), (3.0, 60.0, 180.0), (0.6, -2.0, 90.0)]:
+        vx, vy = geometry.shadow_vector(elev, az)
+        alone = [
+            s for fp, z0, z1 in solids if (s := geometry.prism_shadow(fp, z0, z1, z, vx, vy)) is not None
+        ]
+        at_once = geometry.prisms_shadow(prisms, z, elev, az)
+
+        if elev <= 0:
+            assert len(at_once) == 0
+            continue
+        assert len(at_once) == len(alone) > 0
+        for mine, theirs in zip(at_once, alone, strict=True):
+            assert mine.equals(theirs)  # the same shape (the hull may start at another corner)

@@ -31,7 +31,7 @@ import shapely
 from pvlib import shading as pvshading
 from shapely.ops import unary_union
 
-from .geometry import Roof, shadow_parts, sky_loss_sectors, solids_of
+from .geometry import Roof, prisms_of, prisms_shadow, sky_loss_sectors, solids_of
 from .io.pvsyst import Module
 from .placement import Layout
 
@@ -188,7 +188,7 @@ def object_parts(layout: Layout, roof: Roof, bins: list[tuple[int, int]], on_par
     empty = (np.zeros(0, dtype=np.int32), np.zeros(0, dtype=np.int32), np.zeros(0, dtype=np.float32))
     if not casters or not mods:
         return empty
-    solids = solids_of(casters)
+    prisms = prisms_of(solids_of(casters))
     polys = np.array([m.poly for m in mods], dtype=object)
     areas = shapely.area(polys)
     tree = shapely.STRtree(polys)
@@ -198,8 +198,8 @@ def object_parts(layout: Layout, roof: Roof, bins: list[tuple[int, int]], on_par
         row = np.zeros(len(mods), dtype=np.float32)
         el_c, az_c = max(key[0] * EL_BIN, 0.5), key[1] * AZ_BIN
         for z, members in zgroups.items():
-            parts = shadow_parts(solids, float(z), el_c, az_c)
-            if not parts:
+            parts = prisms_shadow(prisms, float(z), el_c, az_c)
+            if not len(parts):
                 continue
             sh = unary_union(parts)
             if sh.is_empty:
