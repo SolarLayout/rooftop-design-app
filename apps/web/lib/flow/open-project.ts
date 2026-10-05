@@ -10,6 +10,16 @@ export const PROJECT_FILE_ENDING = ".rtd";
 /** The dialog's own words for a file that is no project file by its ending: no request is made for it. */
 export const NOT_A_PROJECT_FILE = "Choose a project file (.rtd).";
 
+/**
+ * The largest request the deployed API takes: AWS Lambda's Function URL refuses one over 6 MiB with its own 413, before
+ * the API sees it (issue #98). The API's own limit on the text (10 MB) is higher; this one is met first.
+ */
+export const MAX_REQUEST_BYTES = 6_291_456;
+
+/** The dialog's own words for a file whose request would pass MAX_REQUEST_BYTES: no request is made for it. */
+export const TOO_LARGE =
+  "This project file is over 6 MB, more than the app can open. Open it in the desktop app, or remove its CSV weather there and choose the weather here.";
+
 /** The browser could not read the file: words of the app, since the API never saw it. */
 export const COULD_NOT_BE_READ = "The file could not be read. Choose another.";
 
@@ -24,6 +34,16 @@ export function isProjectFile(name: string): boolean {
 /** The request of POST /project/open from the file of the device: its name, and the text it holds. */
 export async function requestOf(file: Pick<File, "name" | "text">): Promise<ProjectFile> {
   return { name: file.name, text: await file.text() };
+}
+
+/** The bytes of the request as it is sent: its JSON, in UTF-8. */
+export function requestBytes(request: ProjectFile): number {
+  return new TextEncoder().encode(JSON.stringify(request)).length;
+}
+
+/** Whether the request can reach the deployed API at all (MAX_REQUEST_BYTES). */
+export function fitsTheApi(request: ProjectFile): boolean {
+  return requestBytes(request) <= MAX_REQUEST_BYTES;
 }
 
 /**

@@ -8,7 +8,7 @@ import { Dialog } from "@/components/ui/Dialog";
 import { FileDrop, type FileDropState } from "@/components/ui/FileDrop";
 import { Icon } from "@/components/ui/Icon";
 import { api, type OpenedProject } from "@/lib/api";
-import { isProjectFile, linesOf, NOT_A_PROJECT_FILE, refusalOf, requestOf } from "@/lib/flow/open-project";
+import { fitsTheApi, isProjectFile, linesOf, NOT_A_PROJECT_FILE, refusalOf, requestOf, TOO_LARGE } from "@/lib/flow/open-project";
 import { pathOfLens } from "@/lib/routes";
 import { lensOf } from "@/lib/stores/view-store";
 
@@ -27,9 +27,9 @@ type Chosen = { file: File; opened: OpenedProject | null };
  * word for word, the engine's notes on the files a format 1 project names without their text. Open keeps the project on
  * this device as a new design and opens it in the Studio at its last lens, with no second request. A file the API refuses
  * is refused in the field in the API's words; an API that was not reached offers Try again, which reads the file again.
- * A file that is no .rtd is refused in the dialog's own words, without a request. A second file chosen replaces the
- * first: an answer for a file no longer chosen changes nothing. Opened from the project switcher on every workspace, and
- * from Home.
+ * A file that is no .rtd, or whose request is over what the deployed API takes (#98), is refused in the dialog's own words,
+ * without a request. A second file chosen replaces the first: an answer for a file no longer chosen changes nothing.
+ * Opened from the project switcher on every workspace, and from Home.
  */
 export function OpenProject({ open, onClose }: Props) {
   const router = useRouter();
@@ -48,7 +48,13 @@ export function OpenProject({ open, onClose }: Props) {
     setCanTryAgain(false);
     setState({ kind: "reading", file: file.name });
     try {
-      const opened = await api.openProject(await requestOf(file));
+      const request = await requestOf(file);
+      if (current.current !== file) return;
+      if (!fitsTheApi(request)) {
+        setState({ kind: "refused", reason: TOO_LARGE });
+        return;
+      }
+      const opened = await api.openProject(request);
       if (current.current !== file) return;
       setChosen({ file, opened });
       setState({ kind: "read", file: file.name, lines: linesOf(opened) });
