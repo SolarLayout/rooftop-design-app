@@ -222,12 +222,18 @@ test.describe("the legend and the inverters", () => {
     const chip = page.getByTestId("inverter-chip").filter({ hasText: inverter.label });
     await expect(chip).toBeVisible({ timeout: RUN });
     const box = (await chip.boundingBox())!;
+    const edges = await Promise.all((await page.getByTestId("stage-label").all()).map(async (label) => (await label.boundingBox())!));
     // The chip stands centred over the box's top, its foot 4 over it; in the plan the top falls on the engine's place.
     expect(Math.abs(box.x + box.width / 2 - at.x)).toBeLessThan(8);
-    expect(Math.abs(box.y + box.height + 4 - at.y)).toBeLessThan(10);
-    // It stands clear of every edge label: on phone it would cover the "90.0 m" of the south edge, and moves off it.
-    for (const label of await page.getByTestId("stage-label").all()) {
-      const edge = (await label.boundingBox())!;
+    // Unless it would cover an edge label (on phone the "90.0 m" of the north edge): then it moves up by the smallest
+    // shift, its foot on the label's top (lib/scene/chip-place.ts).
+    const foot = box.y + box.height;
+    const onItsPoint = Math.abs(foot + 4 - at.y) < 10;
+    const upOffALabel =
+      foot < at.y - 4 && edges.some((edge) => Math.abs(edge.y - foot) < 1.5 && edge.x < box.x + box.width && box.x < edge.x + edge.width);
+    expect(onItsPoint || upOffALabel).toBe(true);
+    // It stands clear of every edge label.
+    for (const edge of edges) {
       const apart = box.x >= edge.x + edge.width || edge.x >= box.x + box.width || box.y >= edge.y + edge.height || edge.y >= box.y + box.height;
       expect(apart).toBe(true);
     }

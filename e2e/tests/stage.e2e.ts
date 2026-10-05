@@ -56,12 +56,18 @@ test.describe("the stage", () => {
       const at = point(east, north);
       return [(at.x - box.x) / box.width, (at.y - box.y) / box.height];
     };
-    // A module of the first row 30 m east, clear of the chips of the edges; and the roof the stair room keeps clear
-    // north-east of it, lit at 10:30, when its shadow falls north-north-west: metres of it, also on phone.
+    // A module of the first row near 30 m east, clear of the edges' labels (the picture holds them, and how far the
+    // plan is framed differs by lens and size); and the roof the stair room keeps clear north-east of it, lit at
+    // 10:30, when its shadow falls north-north-west: metres of it, also on phone.
+    const labels = await Promise.all((await page.getByTestId("stage-label").all()).map(async (label) => (await label.boundingBox())!));
+    const SHADOW = 12;
+    const underALabel = (at: { x: number; y: number }) =>
+      labels.some((label) => at.x > label.x - SHADOW && at.x < label.x + label.width + SHADOW && at.y > label.y - SHADOW && at.y < label.y + label.height + SHADOW);
     const middleOf = (outline: [number, number][]) => outline.reduce(([x, y], [px, py]) => [x + px / outline.length, y + py / outline.length], [0, 0]) as [number, number];
     const glassAt = layout.modules
       .filter((module) => module.row === 0)
       .map((module) => middleOf(module.outline))
+      .filter((middle) => !underALabel(point(...middle)))
       .sort((a, b) => Math.abs(a[0] - 30) - Math.abs(b[0] - 30))[0];
 
     const [roof, glass] = await pixelsAt(page, [shareOf([28.5, 22.5]), shareOf(glassAt)]);

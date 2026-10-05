@@ -333,7 +333,8 @@ test.describe("the assumptions (decisions 6 and 8)", () => {
 
     for (const name of ["Rear shading and mismatch", "Exceedance levels"]) {
       const row = assumptions(page).getByTestId("assumption").filter({ hasText: name });
-      const label = row.getByText(name, { exact: true });
+      // The label seen, not its copy for screen readers that names the field.
+      const label = row.getByText(name, { exact: true }).and(row.locator(":not(.sr-only)"));
       const well = row.getByTestId("well").first();
       const [rowBox, labelBox, wellBox] = [(await row.boundingBox())!, (await label.boundingBox())!, (await well.boundingBox())!];
       // The label wraps onto two lines, left of the field; the field stands on the row's first line, inside the card.

@@ -40,16 +40,17 @@ async function theDemoKeptBesideBlockB(page: Page): Promise<void> {
   const energy = Number.parseFloat((await vitalsEnergy.textContent())!.replace(/[^\d.]/g, ""));
   // The run's facts and the plan are written to the device a moment after the run lands: the page is left once the record
   // carries the energy of this run (not the untouched demo's) and the plan of this layout.
+  let editedAt: number | null = null;
   await expect
     .poll(
-      () =>
-        page.evaluate(async (energy) => {
+      async () =>
+        (editedAt = await page.evaluate(async (energy) => {
           const db = await new Promise<IDBDatabase>((resolve, reject) => {
             const opening = indexedDB.open("rooftop", 1);
             opening.onsuccess = () => resolve(opening.result);
             opening.onerror = () => reject(opening.error);
           });
-          type Record = { name: string; facts: { dcKwp: number | null; energyMwh: number | null }; thumbnail: string | null };
+          type Record = { name: string; facts: { dcKwp: number | null; energyMwh: number | null }; thumbnail: string | null; editedAt: number };
           const kept = await new Promise<Record[]>((resolve, reject) => {
             const request = db.transaction("designs", "readonly").objectStore("designs").getAll();
             request.onsuccess = () => resolve(request.result as Record[]);
@@ -57,11 +58,15 @@ async function theDemoKeptBesideBlockB(page: Page): Promise<void> {
           });
           db.close();
           const demo = kept.find((one) => one.name === "Pune demo roof");
-          return demo !== undefined && demo.facts.energyMwh !== null && Math.abs(demo.facts.energyMwh - energy) < 0.05 && demo.thumbnail !== null && demo.thumbnail.includes('data-module="true"');
-        }, energy),
+          const landed = demo !== undefined && demo.facts.energyMwh !== null && Math.abs(demo.facts.energyMwh - energy) < 0.05 && demo.thumbnail !== null && demo.thumbnail.includes('data-module="true"');
+          return landed ? demo.editedAt : null;
+        }, energy)),
       { timeout: RUN_OF_HOME },
     )
-    .toBe(true);
+    .not.toBeNull();
+  // Home says when each design was edited, from the browser's clock: under load the run can take more than a minute, and
+  // "Edited just now" would turn into "1 minute ago". The clock stands at the demo's edit.
+  await page.clock.setFixedTime(editedAt!);
   await page.goto("/");
   await expect(page.getByTestId("demo-name")).toHaveText("Pune demo roof");
   await expect(page.getByTestId("design-card")).toHaveCount(2);

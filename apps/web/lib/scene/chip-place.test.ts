@@ -59,7 +59,7 @@ describe("a chip kept off the labels", () => {
     expect(Math.abs(dx) + Math.abs(dy)).toBeLessThanOrEqual(40);
   });
 
-  test("the demo on phone: INV-1 over the label of the south edge moves up off it", () => {
+  test("the demo on phone: INV-1 over the label of the north edge moves up off it", () => {
     // The plan on phone, 2.2 pixels a metre: the box's top at (195, 150), the edge's middle at (234, 152).
     const chip = chipBoxOf([195, 150], { width: 42, height: 20 }, 4);
     const label = centredBoxOf([234, 152], { width: 52, height: 22 });

@@ -22,6 +22,10 @@ const factsLanded = async (page: Page) => {
 const pagesCounted = async (page: Page) => {
   await expect(page.getByTestId("deliverables").getByTestId("deliverable-facts").first()).toContainText("pages", { timeout: RUN });
 };
+// An item's picture holds the list beside it on desktop and tablet, so it waits for the count too; on phone the item is pushed over the list.
+const listCounted = async (page: Page, projectName: string) => {
+  if (!isPhone(projectName)) await pagesCounted(page);
+};
 // The report's page 1 prints the day of the report, which is the browser's (plan/phase-09-plan.md, decision 2): the page's
 // clock is fixed before the page is opened, so that the picture does not move with the calendar.
 const DAY_OF_THE_REPORT = new Date("2026-10-03T09:00:00");
@@ -69,6 +73,7 @@ test("handover, the report at page 2", async ({ page }, testInfo) => {
   await reportLanded(page);
   await page.mouse.move(0, 0);
 
+  await listCounted(page, testInfo.project.name);
   await expectWholeScreen(page, "handover-report-page-2");
 });
 
@@ -113,6 +118,7 @@ test("handover, the project file", async ({ page }, testInfo) => {
   await projectFileLanded(page);
   await topBarSettled(page, testInfo.project.name);
 
+  await listCounted(page, testInfo.project.name);
   await expectWholeScreen(page, "handover-project-file");
 });
 
@@ -126,6 +132,7 @@ test("handover, the name edited", async ({ page }, testInfo) => {
   await field.fill("Pune demo roof, block B");
   await expect(page.getByTestId("file-name")).toHaveText("Pune-demo-roof,-block-B.rtd");
 
+  await listCounted(page, testInfo.project.name);
   await expectWholeScreen(page, "handover-name-edited");
 });
 
@@ -139,6 +146,7 @@ test("handover, the single-line diagram", async ({ page }, testInfo) => {
   await expect(blockOf(page, 1)).toBeVisible({ timeout: RUN });
   await topBarSettled(page, testInfo.project.name);
 
+  await listCounted(page, testInfo.project.name);
   await expectWholeScreen(page, "handover-sld");
 });
 
@@ -151,6 +159,7 @@ test("handover, the single-line diagram, a block under the pointer", async ({ pa
   await blockOf(page, 2).hover();
   await expect(page.getByTestId("value-tooltip").filter({ visible: true })).toBeVisible();
 
+  await listCounted(page, testInfo.project.name);
   await expectScreen(page, "handover-sld-hover");
 });
 
@@ -160,6 +169,7 @@ test("handover, the bill of materials", async ({ page }, testInfo) => {
   await expect(page.getByTestId("bom")).toContainText("PV module", { timeout: RUN });
   await topBarSettled(page, testInfo.project.name);
 
+  await listCounted(page, testInfo.project.name);
   await expectWholeScreen(page, "handover-bom");
 });
 
@@ -173,6 +183,7 @@ test("handover, the cable schedule", async ({ page }, testInfo) => {
   await scheduleLanded(page);
   await topBarSettled(page, testInfo.project.name);
 
+  await listCounted(page, testInfo.project.name);
   await expectWholeScreen(page, "handover-schedule");
 });
 
@@ -188,6 +199,7 @@ test("handover, the cable schedule sorted", async ({ page }, testInfo) => {
   // The press was by the mouse: no focus ring in the picture.
   await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
 
+  await listCounted(page, testInfo.project.name);
   await expectWholeScreen(page, "handover-schedule-sorted");
 });
 
@@ -202,6 +214,7 @@ test("handover, a table copied", async ({ page, context }, testInfo) => {
   await expect(page.getByTestId("toast")).toContainText("Bill of materials copied as a table");
   await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
 
+  await listCounted(page, testInfo.project.name);
   await expectScreen(page, "handover-table-copied");
 });
 
@@ -214,6 +227,7 @@ test("handover, the CAD layout", async ({ page }, testInfo) => {
   await expect.poll(() => page.getByTestId("plan-image").evaluate((image) => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0), { timeout: RUN }).toBe(true);
   await topBarSettled(page, testInfo.project.name);
 
+  await listCounted(page, testInfo.project.name);
   await expectWholeScreen(page, "handover-cad-layout");
 });
 
@@ -223,6 +237,7 @@ test("handover, the Google Earth model", async ({ page }, testInfo) => {
   await expect(page.getByTestId("kml-inside")).toHaveCount(8, { timeout: RUN });
   await topBarSettled(page, testInfo.project.name);
 
+  await listCounted(page, testInfo.project.name);
   await expectWholeScreen(page, "handover-earth-model");
 });
 
@@ -232,6 +247,7 @@ test("handover, the hourly data", async ({ page }, testInfo) => {
   await expect(page.getByTestId("csv-row")).toHaveCount(8, { timeout: RUN });
   await topBarSettled(page, testInfo.project.name);
 
+  await listCounted(page, testInfo.project.name);
   await expectWholeScreen(page, "handover-hourly-data");
 });
 
@@ -250,5 +266,6 @@ test("handover, Download all on its way", async ({ page }, testInfo) => {
   await expect(page.getByRole("button", { name: "Download all" })).toHaveAttribute("aria-disabled", "true");
   await page.mouse.move(0, 0);
 
+  await listCounted(page, testInfo.project.name);
   await expectWholeScreen(page, "handover-download-all");
 });
