@@ -31,15 +31,14 @@ functions (D61). Pull requests #90 to #95 and #97; decisions D58 to D63; the pat
 
 ## In flight
 
-Phase 12. Live: staging and production on `774e0a9`, smoked; the functions on one simulation thread. Left:
-1. The owner: an AWS budget alarm (D60's guard on the bill); then, recommended, a rate limit per IP on `/api/*` at Vercel's firewall
-   and CloudWatch alarms on throttles and concurrency.
-2. The browser journeys against staging by hand (#74), the network guard relaxed for that run alone, if the owner wants them.
-3. The operator's guide (#73), then the dry run on the stand's hardware (the owner).
-4. Looked at by eye on production: the satellite imagery and the place search (Esri); Detect building (Overture answers both
-   addresses with CORS, checked).
-5. Watch items: ECR's scan finds 8 high CVEs in Debian's base packages (refresh the pinned base when Debian publishes fixes); no
-   lifecycle rule on ECR (about 244 MB per deployed commit); the Esri keys expire about 2027-10 (local 2027-09-28).
+Phase 12. Live: staging and production on `774e0a9`, smoked; one simulation thread on both; reserved concurrency 100 and 50. The
+satellite imagery and the place search looked at on production by the owner (2026-10-05). Left, each in an issue:
+1. #99: the operator's guide for the stand, and the dry run on its hardware against production (closes the phase).
+2. #100: the production guards: an AWS budget alarm (the owner's), a rate limit per IP on `/api/*` at Vercel's firewall,
+   CloudWatch alarms on throttles, concurrency and errors.
+Not needed (the owner, 2026-10-05): the browser journeys against staging (#74 keeps its other parts).
+Watch items: ECR's scan finds 8 high CVEs in Debian's base packages (refresh the pinned base when Debian publishes fixes); no
+lifecycle rule on ECR (about 244 MB per deployed commit); the Esri keys expire about 2027-10 (local 2027-09-28).
 Nothing runs on ports 4700 to 4719.
 
 ## What the web app has today

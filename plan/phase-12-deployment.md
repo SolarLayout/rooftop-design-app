@@ -79,8 +79,9 @@ command. Decisions D58 to D63; the path in `docs/deployment.md`.
 - Production is reached by the owner's one action, from staging's smoked image; each side rolled back by one command (tried on staging).
 - The design run streams on production; the roof at the limit ran through Vercel in two minutes, the keep-alive holding the line.
 - Nothing of the repo holds a secret; each Esri key accepts its own address.
-- **Left:** the owner's AWS budget alarm; the browser journeys against staging by hand (#74); the operator's guide (#73) and the dry
-  run on the stand's hardware.
+- The satellite imagery and the place search looked at on production by the owner.
+- **Left:** #99 (the operator's guide and the dry run, which close the phase) and #100 (the production guards: the budget alarm, a
+  rate limit per IP at Vercel, CloudWatch alarms). The browser journeys against staging: not needed (the owner).
 
 ### Found on the way
 - **This account allows 10,240 MB**, not the 3,008 of the owner's other repository's notes: proved by a throwaway function.
