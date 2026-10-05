@@ -722,6 +722,18 @@
       "Health": {
         "description": "Answer of the health check.",
         "properties": {
+          "commit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The commit the server was built from; null when the build did not say.",
+            "title": "Commit"
+          },
           "status": {
             "const": "ok",
             "title": "Status",
@@ -734,7 +746,8 @@
         },
         "required": [
           "status",
-          "version"
+          "version",
+          "commit"
         ],
         "title": "Health",
         "type": "object"
@@ -4228,7 +4241,7 @@
     },
     "/health": {
       "get": {
-        "description": "Tell the caller that the API is up, and which version it is.",
+        "description": "Tell the caller that the API is up, which version it is, and the commit it was built from.",
         "operationId": "getHealth",
         "responses": {
           "200": {

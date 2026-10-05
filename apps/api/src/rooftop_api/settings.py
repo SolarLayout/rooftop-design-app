@@ -18,3 +18,28 @@ def weather_downloads_on(environ: Mapping[str, str] | None = None) -> bool:
     """Whether this server downloads weather. The process's environment unless *environ* is given."""
     value = (os.environ if environ is None else environ).get(WEATHER_DOWNLOADS, "")
     return value.strip().lower() != OFF
+
+
+# How many threads simulate the stringing options at once. Unset, the engine's own count
+# (rooftop_core.options.SIMULATION_THREADS). On AWS Lambda the memory sets the CPU share, and every thread
+# holds its simulation's arrays at once: fewer threads, less memory (plan/phase-12-plan.md, decision 3).
+SIMULATION_THREADS = "ROOFTOP_SIMULATION_THREADS"
+
+# The commit the server was built from, set by the image's build (apps/api/Dockerfile). Unset in development.
+COMMIT = "ROOFTOP_COMMIT"
+
+
+def simulation_threads(environ: Mapping[str, str] | None = None) -> int | None:
+    """The threads asked for, or None for the engine's own. Anything but a count of 1 or more is refused."""
+    value = (os.environ if environ is None else environ).get(SIMULATION_THREADS, "").strip()
+    if not value:
+        return None
+    if not value.isdigit() or int(value) < 1:
+        raise ValueError(f"{SIMULATION_THREADS} must be a whole number of 1 or more, got {value!r}.")
+    return int(value)
+
+
+def commit(environ: Mapping[str, str] | None = None) -> str | None:
+    """The commit the server was built from, or None when the build did not say."""
+    value = (os.environ if environ is None else environ).get(COMMIT, "").strip()
+    return value or None
