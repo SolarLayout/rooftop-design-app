@@ -164,20 +164,6 @@ def test_blocks_of_modules_give_what_all_at_once_gives(monkeypatch):
     np.testing.assert_array_equal(result.by_blocks(everyone, by_column, electrical=True), whole)
 
 
-def test_the_strings_shade_by_blocks_is_each_string_s_alone(monkeypatch):
-    design = a_shaded_roof()
-    elev, az = the_sun(design)
-    result = kept(design, elev, az)
-    beam = np.linspace(0.0, 900.0, len(elev))
-    strings = [list(range(i, i + 4)) for i in range(0, result.n_modules - 4, 4)]
-    e_mod = result.e_mod_of()
-    alone = [float((e_mod[:, s].max(axis=1) * beam).sum() / beam.sum()) for s in strings]
-
-    monkeypatch.setattr(shading, "BLOCK", 9)
-
-    assert list(shading.annual_string_shade(result, beam, strings)) == alone
-
-
 def test_the_sky_seen_in_blocks_of_points_is_the_sky_seen_at_once(monkeypatch):
     design = a_shaded_roof()
     points = np.array([m.center for m in design.layout.modules])

@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import numpy as np
+from matplotlib.collections import PolyCollection
+from matplotlib.colors import to_rgba
 from matplotlib.patches import PathPatch, Rectangle
 from matplotlib.patches import Polygon as MplPolygon
 from matplotlib.path import Path as MplPath
@@ -54,6 +56,24 @@ def _add_poly(ax, poly: Polygon, **kw):
     ax.add_patch(PathPatch(MplPath(verts, codes), **kw))
 
 
+def _add_modules(ax, layout: Layout, colors: dict[int, str], dim: bool) -> None:
+    """Every module in one collection, coloured by its MPPT or left white: one artist where there were thousands
+    (the plan of a roof at the limit drew 7,590 patches)."""
+    rings, faces, edges, widths = [], [], [], []
+    for m in layout.modules:
+        c = colors.get(m.idx)
+        rings.append(np.asarray(m.poly.exterior.coords))
+        if c:
+            faces.append(to_rgba(c, 0.35 if dim else 1.0))
+            edges.append(to_rgba("white", 0.35 if dim else 1.0))
+            widths.append(0.3)
+        else:
+            faces.append(to_rgba("white"))
+            edges.append(to_rgba(UNUSED_EDGE))
+            widths.append(0.4)
+    ax.add_collection(PolyCollection(rings, facecolors=faces, edgecolors=edges, linewidths=widths, zorder=3))
+
+
 def string_colors(system: System | None) -> dict[int, str]:
     """Module index → colour of its MPPT (MPPTs numbered across inverters)."""
     out = {}
@@ -85,13 +105,7 @@ def draw_plan(ax, roof: Roof, layout: Layout | None, system: System | None = Non
                       zorder=2)
     colors = string_colors(system)
     if layout is not None:
-        for m in layout.modules:
-            c = colors.get(m.idx)
-            if c:
-                _add_poly(ax, m.poly, facecolor=c, edgecolor="white", linewidth=0.3, alpha=0.35 if dim else 1.0,
-                          zorder=3)
-            else:
-                _add_poly(ax, m.poly, facecolor="white", edgecolor=UNUSED_EDGE, linewidth=0.4, zorder=3)
+        _add_modules(ax, layout, colors, dim)
         if system and labels:
             for s, st in enumerate(system.strings):
                 if layout.kind == "flat_ew":   # strings snake across units: label the first module

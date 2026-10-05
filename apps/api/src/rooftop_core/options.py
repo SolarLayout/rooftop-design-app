@@ -18,8 +18,7 @@ from .geometry import Roof
 from .io.pvsyst import Inverter, Module
 from .onediode import ModuleModel
 from .placement import Layout
-from .shading import annual_string_shade
-from .simulation import Losses, Precomputed, SimResult, simulate
+from .simulation import Losses, Precomputed, SimResult, StringPhysics, simulate, string_physics
 from .stringing import (
     DCAC_TARGET,
     DCAC_WARN,
@@ -77,19 +76,35 @@ def verdict(dcac: float) -> tuple[bool, str]:
     return True, ""
 
 
-def ranked_strings(pre: Precomputed, layout: Layout, n: int) -> list[PVString]:
-    strings = form_strings(layout, n)
+@dataclass
+class OfLength:
+    """The strings of one series length, least shaded first, and their hours (shared by its candidates, D66)."""
+
+    ranked: list[PVString]
+    physics: StringPhysics
+
+
+def of_length(pre: Precomputed, layout: Layout, module: Module, mm: ModuleModel, losses: Losses, roof: Roof,
+              n: int, strings: list[PVString] | None = None) -> OfLength:
+    """The strings of *n* modules the layout holds (*strings*, when they are formed already), ordered by their
+    beam-weighted annual shaded fraction (stable: the order they were formed in breaks a tie), with their hours
+    worked out once."""
+    strings = form_strings(layout, n) if strings is None else strings
+    physics = string_physics(pre, module, mm, strings, losses, roof)
     if not strings:
-        return []
+        return OfLength([], physics)
     beam = np.mean([g["beam"] for g in pre.groups.values()], axis=0)
-    shade = annual_string_shade(pre.shading, beam, [s.modules for s in strings])
-    return [strings[i] for i in np.argsort(shade, kind="stable")]
+    total = max(beam.sum(), 1e-9)
+    # Each string's hours summed alone and in order, as a row of its own.
+    shade = np.ascontiguousarray((physics.E * beam[:, None]).T).sum(axis=1) / total
+    return OfLength([strings[i] for i in np.argsort(shade, kind="stable")], physics)
 
 
-def make_option(pre, layout, module, mm, inv, losses, roof, n, s, k, ranked, custom=False) -> StringOption:
+def make_option(pre, layout, module, mm, inv, losses, roof, n, s, k, held: OfLength, custom=False) -> StringOption:
+    ranked = held.ranked
     chosen = ranked[:s]
     system = assign(chosen, n, k, inv, layout)
-    res = simulate(pre, layout, module, mm, inv, system, losses, roof)
+    res = simulate(pre, layout, module, mm, inv, system, losses, roof, held.physics)
     dcac = s * n * module.pnom_w / (k * inv.pnom_kw * 1000.0)
     ok, note = verdict(dcac)
     return StringOption(f"{n}x{s}x{k}", "", n, s, k, len(ranked), res.dc_kwp, dcac, ok, note, system, res,
@@ -112,8 +127,8 @@ def build_options(pre: Precomputed, layout: Layout, module: Module, mm: ModuleMo
                   on_option=None) -> list[StringOption]:
     """*on_option* hears (done, total) after every option that is simulated, in the caller's thread.
 
-    The candidates are simulated in threads (SIMULATION_THREADS) and come out in the order they were made in,
-    the same to the bit as one after the other.
+    The candidates of a length are simulated in threads (SIMULATION_THREADS) and come out in the order they were
+    made in, the same to the bit as one after the other.
     """
     if not rng.ok:
         return []
@@ -121,9 +136,9 @@ def build_options(pre: Precomputed, layout: Layout, module: Module, mm: ModuleMo
     smax = max_strings_per_inverter(module, inv)
     pac = inv.pnom_kw * 1000.0
     combos: list[tuple[int, int, int]] = []
+    formed = {n: form_strings(layout, n) for n in candidates}
     for n in candidates:
-        ranked = ranked_strings(pre, layout, n)
-        avail = len(ranked)
+        avail = len(formed[n])
         if not avail:
             continue
         best = None
@@ -141,21 +156,29 @@ def build_options(pre: Precomputed, layout: Layout, module: Module, mm: ModuleMo
         k_all = math.ceil(avail / smax)
         combos.append((n, avail, k_all))
     seen: set[tuple[int, int, int]] = set()
-    todo: list[tuple[int, int, int, list[PVString]]] = []
-    ranked_cache: dict[int, list[PVString]] = {}
+    todo: list[tuple[int, int, int]] = []
     for n, s, k in combos:
         if (n, s, k) in seen or s < 1:
             continue
         seen.add((n, s, k))
-        todo.append((n, s, k, ranked_cache.setdefault(n, ranked_strings(pre, layout, n))))
+        todo.append((n, s, k))
     total = len(todo)
+    made: list[StringOption | None] = [None] * total
+    done = 0
+    # One length at a time: its strings' hours worked out once, its candidates simulated from them, then let go,
+    # so that no more than one length's hours are held at once.
     with ThreadPoolExecutor(max_workers=workers_for(total), thread_name_prefix="simulate") as pool:
-        futures = [pool.submit(make_option, pre, layout, module, mm, inv, losses, roof, n, s, k, ranked)
-                   for n, s, k, ranked in todo]
-        for done, _ in enumerate(as_completed(futures), start=1):
-            if on_option:
-                on_option(done, total)
-        opts = [future.result() for future in futures]
+        for n in dict.fromkeys(n for n, _, _ in todo):
+            held = of_length(pre, layout, module, mm, losses, roof, n, formed[n])
+            futures = {pool.submit(make_option, pre, layout, module, mm, inv, losses, roof, n, s, k, held): i
+                       for i, (m, s, k) in enumerate(todo) if m == n}
+            for future in as_completed(futures):
+                made[futures[future]] = future.result()
+                done += 1
+                if on_option:
+                    on_option(done, total)
+            del held
+    opts = [option for option in made if option is not None]
     opts.sort(key=lambda o: (not o.ok, -o.result.energy_mwh))
     opts = opts[:max_options]
     for i, o in enumerate(opts):
@@ -191,8 +214,8 @@ def custom_misfit(rng: SeriesRange, layout: Layout, n: int, s: int, k: int) -> C
 
 
 def custom_option(pre, layout, module, mm, inv, losses, roof, n: int, s: int, k: int, letter: str = "X") -> StringOption:
-    ranked = ranked_strings(pre, layout, n)
-    s = min(s, len(ranked))
-    o = make_option(pre, layout, module, mm, inv, losses, roof, n, s, k, ranked, custom=True)
+    held = of_length(pre, layout, module, mm, losses, roof, n)
+    s = min(s, len(held.ranked))
+    o = make_option(pre, layout, module, mm, inv, losses, roof, n, s, k, held, custom=True)
     o.key, o.letter = CUSTOM_KEY, letter
     return o

@@ -29,8 +29,9 @@ from dataclasses import dataclass
 import numpy as np
 import shapely
 from pvlib import shading as pvshading
+from shapely.ops import unary_union
 
-from .geometry import Roof, sky_loss_sectors, solids_of, solids_shadow
+from .geometry import Roof, shadow_parts, sky_loss_sectors, solids_of
 from .io.pvsyst import Module
 from .placement import Layout
 
@@ -197,10 +198,15 @@ def object_parts(layout: Layout, roof: Roof, bins: list[tuple[int, int]], on_par
         row = np.zeros(len(mods), dtype=np.float32)
         el_c, az_c = max(key[0] * EL_BIN, 0.5), key[1] * AZ_BIN
         for z, members in zgroups.items():
-            sh = solids_shadow(solids, float(z), el_c, az_c)
-            if sh is None or sh.is_empty:
+            parts = shadow_parts(solids, float(z), el_c, az_c)
+            if not parts:
                 continue
-            cand = tree.query(sh, predicate="intersects")
+            sh = unary_union(parts)
+            if sh.is_empty:
+                continue
+            # The modules a part of the shadow intersects are those the whole intersects: asked part by part,
+            # the tree tests only the modules in each part's own box.
+            cand = np.unique(tree.query(parts, predicate="intersects")[1])
             cand = np.intersect1d(cand, members, assume_unique=False)
             if len(cand):
                 inter = shapely.area(shapely.intersection(polys[cand], sh))
@@ -262,21 +268,3 @@ def spread_over_hours(position: np.ndarray, obj_position: np.ndarray, obj_module
     within = np.arange(len(entry)) - np.repeat(np.cumsum(repeat) - repeat, repeat)
     return hours[first[obj_position[entry]] + within], obj_module[entry], obj_fraction[entry]
 
-
-def annual_string_shade(sh: ShadingResult, beam: np.ndarray, strings: list[list[int]]) -> np.ndarray:
-    """Beam-weighted annual shaded fraction per string (used to keep the least shaded). The strings are of one
-    length; they are made a block at a time."""
-    w = np.asarray(beam, dtype=float)
-    tot = max(w.sum(), 1e-9)
-    if not strings:
-        return np.zeros(0)
-    members = np.array(strings, dtype=int)
-    n_strings, n = members.shape
-    step = max(1, BLOCK // n)
-    out = np.zeros(n_strings)
-    for i in range(0, n_strings, step):
-        block = members[i:i + step]
-        weakest = sh.e_mod_of(block.ravel()).reshape(len(w), len(block), n).max(axis=2)
-        # Each string's hours summed alone and in order, as a sum of its own row: the same bits as one by one.
-        out[i:i + len(block)] = np.ascontiguousarray((weakest * w[:, None]).T).sum(axis=1) / tot
-    return out
