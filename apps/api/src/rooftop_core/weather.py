@@ -249,8 +249,17 @@ def csv_times(column: pd.Series, tz_offset_h: float = 0.0) -> pd.Series:
     return t - pd.Timedelta(hours=tz_offset_h)
 
 
+def minutes_between_rows(index: pd.DatetimeIndex) -> float:
+    """The usual step of a table's times, in minutes: the median gap between rows in time order; 60 for one row."""
+    if len(index) < 2:
+        return 60.0
+    gaps = pd.Series(index.sort_values()).diff().dropna()
+    return gaps.median().total_seconds() / 60.0
+
+
 def parse_csv(text: str, lat: float, lon: float, tz_offset_h: float = 0.0, name: str = "") -> Weather:
-    """Any hourly CSV with a time and a GHI column; DNI/DHI are split from GHI when missing.
+    """Any CSV with a time and a GHI column, hourly or finer: rows of less than an hour are averaged into hours.
+    DNI/DHI are split from GHI when missing.
 
     *text* is the content of the file; *name* names it in the result and in errors.
     """
@@ -274,10 +283,16 @@ def parse_csv(text: str, lat: float, lon: float, tz_offset_h: float = 0.0, name:
         "wind_speed": pd.to_numeric(wind, errors="coerce").to_numpy() if wind is not None else 1.0,
     }, index=idx)
     dni, dhi = pick(_DNI), pick(_DHI)
-    if dni is not None and dhi is not None:
+    split = dni is None or dhi is None
+    if not split:
         df["dni"] = pd.to_numeric(dni, errors="coerce").fillna(0).to_numpy()
         df["dhi"] = pd.to_numeric(dhi, errors="coerce").fillna(0).to_numpy()
-    else:
+    if minutes_between_rows(idx) < 60:
+        # Every row is taken as an hour by the simulation: rows of less than an hour are averaged into the hour
+        # they begin in (a row is the time from its stamp on, as an hour's row is), before anything else.
+        df = df.sort_index().resample("1h", label="left", closed="left").mean().dropna(subset=["ghi"])
+        df.index = idx = pd.DatetimeIndex(df.index, freq=None)  # as an hourly file's: no frequency of its own
+    if split:
         # The sun is placed at the middle of the hour; its values go in without that index, which
         # is half an hour later than the irradiance and would not line up with it.
         sp = pvlib.solarposition.get_solarposition(idx + pd.Timedelta(minutes=30), lat, lon)
