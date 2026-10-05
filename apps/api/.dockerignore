@@ -1,0 +1,8 @@
+# The image needs pyproject.toml, uv.lock, .python-version and src alone (apps/api/Dockerfile).
+*
+!pyproject.toml
+!uv.lock
+!.python-version
+!src/**
+**/__pycache__
+**/*.pyc

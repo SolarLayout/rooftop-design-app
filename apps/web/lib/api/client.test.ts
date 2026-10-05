@@ -37,9 +37,9 @@ const REFUSED = { error: { code: "weather_not_loaded", message: "Load the weathe
 
 describe("the calls that answer with JSON", () => {
   test("health and demo are read from under /api", async () => {
-    const { api, calls } = server((call) => json(call.url.endsWith("/health") ? { status: "ok", version: "0.1.0" } : PROJECT));
+    const { api, calls } = server((call) => json(call.url.endsWith("/health") ? { status: "ok", version: "0.1.0", commit: null } : PROJECT));
 
-    expect(await api.getHealth()).toEqual({ status: "ok", version: "0.1.0" });
+    expect(await api.getHealth()).toEqual({ status: "ok", version: "0.1.0", commit: null });
     expect(await api.getDemo()).toEqual(PROJECT);
     expect(calls.map((call) => [call.method, call.url])).toEqual([
       ["GET", "/api/health"],
@@ -105,7 +105,7 @@ describe("the calls that answer with JSON", () => {
       base: "http://127.0.0.1:4711",
       fetch: async (input) => {
         calls.push(String(input));
-        return json({ status: "ok", version: "0.1.0" });
+        return json({ status: "ok", version: "0.1.0", commit: null });
       },
     });
 

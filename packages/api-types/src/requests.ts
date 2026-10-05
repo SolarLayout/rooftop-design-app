@@ -156,7 +156,7 @@ export interface paths {
         };
         /**
          * Health
-         * @description Tell the caller that the API is up, and which version it is.
+         * @description Tell the caller that the API is up, which version it is, and the commit it was built from.
          */
         get: operations["getHealth"];
         put?: never;
@@ -636,6 +636,11 @@ export interface components {
          * @description Answer of the health check.
          */
         Health: {
+            /**
+             * Commit
+             * @description The commit the server was built from; null when the build did not say.
+             */
+            commit: string | null;
             /**
              * Status
              * @constant
