@@ -212,7 +212,7 @@ def place(roof: Roof, arr: ArraySpec, module: Module) -> Layout:
                                                           c + 1 in occupied.get(r - 1, ())):
                         front = (L * math.sin(b), rows_y[r] - rows_y[r - 1] - D)
                     modules.append(PlacedModule(
-                        idx=len(modules), poly=to_world(fp), row=r, col=c, line=j, tilt=tilt, azimuth=az,
+                        idx=len(modules), poly=fp, row=r, col=c, line=j, tilt=tilt, azimuth=az,
                         z_low=z_low + u0 * math.sin(b), z_high=z_low + u1 * math.sin(b),
                         fx=x0, fy=y0, front=front, slope_len=L, span=(u0, u1)))
         table_count = _count_tables(modules, n_lines, xs, col_w)
@@ -267,7 +267,7 @@ def place(roof: Roof, arr: ArraySpec, module: Module) -> Layout:
             face_az = (az + 90.0) % 360 if side == 0 else (az - 90.0) % 360
             # frame-west in world = az + 90 because the frame is rotated by az − 180
             modules.append(PlacedModule(
-                idx=len(modules), poly=to_world(fp), row=u, col=c, line=side, tilt=tilt, azimuth=face_az,
+                idx=len(modules), poly=fp, row=u, col=c, line=side, tilt=tilt, azimuth=face_az,
                 z_low=z_low, z_high=z_low + H, fx=x0, fy=y0, front=front, slope_len=L, span=(0.0, L)))
         table_count = len({(m.row, m.col // 10) for m in modules})
         gcr = 2 * L / (W + g) if units_x else 0.0
@@ -275,10 +275,33 @@ def place(roof: Roof, arr: ArraySpec, module: Module) -> Layout:
         n_rows = len({m.row for m in modules})
         notes.append(f"Unit gap {g:.2f} m keeps east-west units shade-free in the window.")
 
+    # The modules were placed in the frame; back to the roof, all of them in one call.
+    for m, world in zip(modules, rotate_all([m.poly for m in modules], -rot, origin), strict=True):
+        m.poly = world
     return Layout(
         kind=rt, modules=modules, azimuth=az, tilt=tilt, pitch=used_pitch, gcr=gcr, slope_len=slope_len,
         table_count=table_count, n_rows=n_rows, inner=inner, usable=usable, keepout=ko,
         obstacle_zone=obstacle_zone, design_doy=doy, psi_min_deg=psi_min, notes=notes)
+
+
+def rotate_all(geoms: list, angle_deg: float, origin) -> np.ndarray:
+    """shapely.affinity.rotate of every geometry about the point *origin*, in one transform: the coefficients and the
+    arithmetic of shapely's own rotate (a·x + b·y + x_off, coordinate by coordinate), so each result is the same to
+    the bit as rotating it alone."""
+    angle = angle_deg * math.pi / 180.0
+    cosp, sinp = math.cos(angle), math.sin(angle)
+    if abs(cosp) < 2.5e-16:
+        cosp = 0.0
+    if abs(sinp) < 2.5e-16:
+        sinp = 0.0
+    x0, y0 = origin.x, origin.y
+    xoff, yoff = x0 - x0 * cosp + y0 * sinp, y0 - x0 * sinp - y0 * cosp
+
+    def turned(coords: np.ndarray) -> np.ndarray:
+        x, y = coords.T
+        return np.stack([cosp * x + -sinp * y + xoff, sinp * x + cosp * y + yoff]).T
+
+    return shapely.transform(np.array(geoms, dtype=object), turned)
 
 
 def _count_tables(modules: list[PlacedModule], n_lines: int, xs: list[float], col_w: float) -> int:
