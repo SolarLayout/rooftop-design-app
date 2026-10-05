@@ -146,3 +146,63 @@ def test_every_hour_of_what_is_read_has_every_value():
 
     assert wx.np.isfinite(weather.data.to_numpy()).all()
     assert weather.data.index.is_unique and not weather.data.index.hasnans
+
+
+# ── rows of less than an hour (Phase 13: the simulation takes a row as an hour) ─────────────────────────
+def _rows_every(minutes: int, hours: int, value_of) -> str:
+    """A file with a row every *minutes* for *hours* hours, the values *value_of*(hour, row of the hour)."""
+    start = wx.pd.Timestamp("2023-06-01")
+    lines = []
+    for h in range(hours):
+        for k in range(60 // minutes):
+            t = start + wx.pd.Timedelta(hours=h, minutes=k * minutes)
+            lines.append(f"{t:%Y-%m-%d %H:%M},{value_of(h, k)}")
+    return f"time,{EVERY_COLUMN}\n" + "\n".join(lines) + "\n"
+
+
+def test_rows_of_fifteen_minutes_are_averaged_into_the_hour_they_begin_in():
+    text = _rows_every(15, 3, lambda h, k: f"{100 * h + 10 * k},{50 * h},{20 * h},{25 + k},{1 + h}")
+
+    weather = csv_weather.read(text, 18.52, 73.86, "site.csv").weather
+
+    assert len(weather.data) == 3
+    assert list(weather.data.index.strftime("%H:%M")) == ["00:00", "01:00", "02:00"]
+    assert list(weather.data["ghi"]) == [15.0, 115.0, 215.0]  # the mean of +0, +10, +20, +30
+    assert list(weather.data["temp_air"]) == [26.5, 26.5, 26.5]
+    assert list(weather.data["wind_speed"]) == [1.0, 2.0, 3.0]
+
+
+def test_rows_that_repeat_each_hour_give_the_hourly_weather_exactly():
+    hourly = _rows_every(60, 24, lambda h, k: f"{40 * h},{30 * h},{10 * h},{20 + h},{h / 10}")
+    quarters = _rows_every(15, 24, lambda h, k: f"{40 * h},{30 * h},{10 * h},{20 + h},{h / 10}")
+
+    wx.pd.testing.assert_frame_equal(
+        csv_weather.read(quarters, 18.52, 73.86, "q.csv").weather.data,
+        csv_weather.read(hourly, 18.52, 73.86, "h.csv").weather.data,
+        check_dtype=False,  # an hourly file of whole numbers stays integer; an average is a float
+    )
+
+
+def test_a_file_of_rows_under_an_hour_says_so_and_an_hourly_one_does_not():
+    quarters = csv_weather.read(_rows_every(15, 2, lambda h, k: A_ROW), 18.52, 73.86, "site.csv")
+    hourly = csv_weather.read(_year(EVERY_COLUMN, A_ROW), 18.52, 73.86, "site.csv")
+
+    assert quarters.notes[0] == (
+        "site.csv gives the weather every 15 minutes. Each hour is the average of its rows "
+        "(the simulation takes a row as an hour)."
+    )
+    assert not any("minutes" in note for note in hourly.notes)
+
+
+def test_without_beam_and_diffuse_the_hours_are_split_after_they_are_averaged():
+    columns, value = "ghi,temp,wind", lambda h, k: f"{0 if h < 6 else 600},25,1"
+    start = wx.pd.Timestamp("2023-06-01")
+    quarter_lines = [
+        f"{start + wx.pd.Timedelta(minutes=15 * i):%Y-%m-%d %H:%M},{value(i // 4, i % 4)}" for i in range(48)
+    ]
+    hour_lines = [f"{start + wx.pd.Timedelta(hours=h):%Y-%m-%d %H:%M},{value(h, 0)}" for h in range(12)]
+
+    quarters = wx.parse_csv(f"time,{columns}\n" + "\n".join(quarter_lines) + "\n", 18.52, 73.86)
+    hours = wx.parse_csv(f"time,{columns}\n" + "\n".join(hour_lines) + "\n", 18.52, 73.86)
+
+    wx.pd.testing.assert_frame_equal(quarters.data, hours.data, check_dtype=False)

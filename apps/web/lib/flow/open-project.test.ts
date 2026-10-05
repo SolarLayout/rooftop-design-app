@@ -1,7 +1,19 @@
 import { describe, expect, test } from "bun:test";
 import type { OpenedProject, Project } from "../api";
 import { ApiError } from "../api";
-import { COULD_NOT_BE_READ, isProjectFile, linesOf, NOT_A_PROJECT_FILE, refusalOf, requestOf, RUNS_IN_THE_STUDIO } from "./open-project";
+import {
+  COULD_NOT_BE_READ,
+  fitsTheApi,
+  isProjectFile,
+  linesOf,
+  MAX_REQUEST_BYTES,
+  NOT_A_PROJECT_FILE,
+  refusalOf,
+  requestBytes,
+  requestOf,
+  RUNS_IN_THE_STUDIO,
+  TOO_LARGE,
+} from "./open-project";
 
 // Open a project (plan/phase-10-plan.md, step 9, decision 4): a file is taken by its ending, read in the browser as text
 // and sent to /project/open as {name, text} as soon as it is chosen; what the API answers stands in the dialog as the
@@ -57,5 +69,29 @@ describe("the refusal", () => {
   test("a fault that is not the API's (the browser could not read the file) is said in the app's words", () => {
     expect(refusalOf(new Error("NotReadableError"))).toEqual({ words: COULD_NOT_BE_READ, canTryAgain: false });
     expect(COULD_NOT_BE_READ).toBe("The file could not be read. Choose another.");
+  });
+});
+
+describe("a file larger than the deployed API takes (#98)", () => {
+  // The Function URL's own limit, 6 MiB, met before the API's 10 MB: a request over it never reaches the API.
+  const ENVELOPE = requestBytes({ name: "big.rtd", text: "" });
+
+  test("is measured as it is sent: its JSON in UTF-8, escapes and all", () => {
+    expect(requestBytes({ name: "a.rtd", text: "" })).toBe('{"name":"a.rtd","text":""}'.length);
+    expect(requestBytes({ name: "a.rtd", text: "é" })).toBe(requestBytes({ name: "a.rtd", text: "" }) + 2);
+    // a, the quote escaped (2), b, the line's end escaped (2)
+    expect(requestBytes({ name: "a.rtd", text: 'a"b\n' })).toBe(requestBytes({ name: "a.rtd", text: "" }) + 6);
+  });
+
+  test("fits up to the limit to the byte, and not one byte over", () => {
+    expect(MAX_REQUEST_BYTES).toBe(6_291_456);
+    expect(fitsTheApi({ name: "big.rtd", text: "x".repeat(MAX_REQUEST_BYTES - ENVELOPE) })).toBe(true);
+    expect(fitsTheApi({ name: "big.rtd", text: "x".repeat(MAX_REQUEST_BYTES - ENVELOPE + 1) })).toBe(false);
+  });
+
+  test("is refused in the dialog's own words: the limit, and what to do", () => {
+    expect(TOO_LARGE).toBe(
+      "This project file is over 6 MB, more than the app can open. Open it in the desktop app, or remove its CSV weather there and choose the weather here.",
+    );
   });
 });

@@ -33,7 +33,10 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 MEGABYTE = 2**20
-SHADING_BYTES = 512 * MEGABYTE  # the demo takes 55 MB: two numbers for every hour and position
+# What the process may keep (D67): a few tenths of the 1,769 MB a function has. A shading is kept by
+# what it depends on since Phase 13 (D65): 1.3 MB for the demo, 1.2 MB for a roof at the limit
+# (55 MB and 507 MB before).
+SHADING_BYTES = 64 * MEGABYTE  # some fifty roofs at the limit
 OPTIONS_BYTES = 64 * MEGABYTE  # the demo takes 4 MB: the hours of the year of five options
 NAMES = ("source",)  # fields that name the file a module or an inverter came from
 NOT_FOR_SHADING = ("albedo",)  # fields of the roof that only the simulation looks at

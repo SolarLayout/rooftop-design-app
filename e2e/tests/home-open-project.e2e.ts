@@ -21,6 +21,8 @@ const NOT_JSON = "The file is not a project file (.rtd): it is not JSON.";
 const FORMAT_3 = "This project file is format 3. This version reads formats 1 and 2. Open it with a newer version of the app.";
 const NOT_AN_RTD = "Choose a project file (.rtd).";
 const NOT_LOADED = "This file was not loaded";
+const TOO_LARGE =
+  "This project file is over 6 MB, more than the app can open. Open it in the desktop app, or remove its CSV weather there and choose the weather here.";
 const UNREACHABLE = "The server cannot be reached. Check the connection and try again.";
 
 const isDesktop = (projectName: string) => projectName === "desktop";
@@ -252,6 +254,17 @@ test.describe("a file that is refused", () => {
     await fileInput(page).setInputFiles(asFile("roof-notes.txt", "The tank is 2.4 m high.\n"));
 
     await refused(page, NOT_AN_RTD);
+    expect(opens).toEqual([]);
+  });
+
+  test("a project file over 6 MB is refused in the field, in the dialog's own words, without a request (#98)", async ({ page }) => {
+    await theRoofLens(page);
+    const opens = requestsTo(page, "/api/project/open");
+    await dialogOpened(page);
+
+    await fileInput(page).setInputFiles(asFile("Heavy-weather.rtd", JSON.stringify({ format: 2, csv: "x".repeat(6_400_000) })));
+
+    await refused(page, TOO_LARGE);
     expect(opens).toEqual([]);
   });
 

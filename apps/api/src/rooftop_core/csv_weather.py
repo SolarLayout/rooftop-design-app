@@ -105,6 +105,13 @@ def _notes(weather: wx.Weather, raw: pd.DataFrame, label: str) -> list[str]:
         )
     if wx.csv_column(raw, wx.CSV_COLUMNS["wind_speed"]) is None:
         notes.append(f"{label} has no wind speed. 1 m/s was taken for every hour.")
+    times = pd.DatetimeIndex(wx.csv_times(wx.csv_column(raw, wx.CSV_COLUMNS["time"]), 0.0)).dropna()
+    step = wx.minutes_between_rows(times)
+    if step < 60:
+        notes.append(
+            f"{label} gives the weather every {step:g} minutes. Each hour is the average of its rows "
+            "(the simulation takes a row as an hour)."
+        )
     if len(weather.data) not in HOURS_OF_A_YEAR:
         notes.append(
             f"{label} has {len(weather.data):,} {'hour' if len(weather.data) == 1 else 'hours'}, not the "
