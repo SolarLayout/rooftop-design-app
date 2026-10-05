@@ -13,7 +13,7 @@ side was made is `infra/aws/README.md`.
 | API | Lambda `solarlayout-rooftop-api-staging`, alias `live`, behind its Function URL | Lambda `solarlayout-rooftop-api-prod`, alias `live`, behind its Function URL |
 | GitHub environment | `Staging` (deploys from `main` alone) | `Production` (deploys from `main` alone) |
 | Simulation threads, memory | 1, 10,240 MB | 1, 10,240 MB |
-| Reserved concurrency | 5 | 10 |
+| Reserved concurrency | 50 | 100 |
 
 The browser talks to the web origin alone: Vercel forwards `/api/*` to the environment's Function URL (`ROOFTOP_API_ORIGIN`,
 read when the web app is built, `apps/web/api-origin.ts`), so there is no CORS and the URL is published nowhere else.

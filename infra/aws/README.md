@@ -16,7 +16,7 @@ array: `R=(--region ap-south-1 --profile journium-dev)` and `"${R[@]}"`.
 | Alias the Function URL serves | `live` | `live` |
 | Execution role (logs only) | `solarlayout-rooftop-api-staging-execution` | `solarlayout-rooftop-api-prod-execution` |
 | GitHub's role (its environment alone) | `solarlayout-rooftop-github-staging` | `solarlayout-rooftop-github-prod` |
-| Reserved concurrency | 5 (raised from 2: one visitor's page holds several requests at once) | 10 (Q1 in `plan/README.md`: 25?) |
+| Reserved concurrency | 50 | 100 (the owner's say, 2026-10-05; first 2 and 10). A ceiling and a slice of the account's 2,500, at no cost; 2,350 stay for the account's other functions |
 | Simulation threads (`ROOFTOP_SIMULATION_THREADS`) | 1 | 1 (D61; was 2 at creation) |
 
 ## 1. The ECR repository (done 2026-10-05)
@@ -95,7 +95,7 @@ environment:
 ENV=staging   # then prod
 F=solarlayout-rooftop-api-${ENV}
 IMAGE=378240665051.dkr.ecr.ap-south-1.amazonaws.com/solarlayout/rooftop-api:<sha>
-RESERVED=5    # 10 for prod
+RESERVED=50   # 100 for prod
 
 aws logs create-log-group --log-group-name /aws/lambda/${F} --region ap-south-1 --profile journium-dev
 aws logs put-retention-policy --log-group-name /aws/lambda/${F} --retention-in-days 30 --region ap-south-1 --profile journium-dev

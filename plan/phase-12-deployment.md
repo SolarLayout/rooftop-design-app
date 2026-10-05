@@ -80,7 +80,7 @@ command. Decisions D58 to D63; the path in `docs/deployment.md`.
 - The design run streams on production; the roof at the limit ran through Vercel in two minutes, the keep-alive holding the line.
 - Nothing of the repo holds a secret; each Esri key accepts its own address.
 - **Left:** the owner's AWS budget alarm; the browser journeys against staging by hand (#74); the operator's guide (#73) and the dry
-  run on the stand's hardware; Q1 (production's reserved concurrency).
+  run on the stand's hardware.
 
 ### Found on the way
 - **This account allows 10,240 MB**, not the 3,008 of the owner's other repository's notes: proved by a throwaway function.
@@ -92,8 +92,8 @@ command. Decisions D58 to D63; the path in `docs/deployment.md`.
 - **The cold start was a fresh image read lazily**, not the imports (1.1 s in the image): 46 to 56 s for the first start on a host,
   2 to 4 s after; async init (#95) brought a fresh image's first start to 3.5 s.
 - **Memory at the limit** (D61, #96): two threads 10,215 MB of 10,240; one thread 5,652 MB, not slower.
-- **Reserved concurrency of 2 turned a request away** on staging (one visitor's page holds several requests at once): raised to 5;
-  production's 10 is Q1.
+- **Reserved concurrency of 2 turned a request away** on staging (one visitor's page holds several requests at once). The owner
+  set 100 for production and 50 for staging; the numbers first written were guesses.
 - **A request over 6 MB never reaches the API** (#98); real project files are 0.7 to 2.5 MB.
 - **ECR's scan** reports 8 high CVEs in Debian's base packages; the Python carries its own OpenSSL. Refresh the pinned base when
   Debian publishes fixes.

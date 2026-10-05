@@ -7,7 +7,7 @@ Keep it short and true. History belongs in git and in the phase files, not here.
 (https://rooftop.staging.solarlayout.app, https://rooftop.solarlayout.app), deployed by `deploy` by hand and smoked; the API on Lambda
 streams; the roof at the limit runs through Vercel in two minutes; a rollback done on staging, each side; one simulation thread on both
 functions (D61). Pull requests #90 to #95 and #97; decisions D58 to D63; the path in `docs/deployment.md`. Phase 13 filed
-(optimization: #76, #96 the memory, #98 large project files). Q1 open: production's reserved concurrency, 10 or 25.
+(optimization: #76, #96 the memory, #98 large project files). Reserved concurrency: production 100, staging 50.
 
 ## Where we are
 
@@ -32,7 +32,8 @@ functions (D61). Pull requests #90 to #95 and #97; decisions D58 to D63; the pat
 ## In flight
 
 Phase 12. Live: staging and production on `774e0a9`, smoked; the functions on one simulation thread. Left:
-1. The owner: an AWS budget alarm (D60's guard on the bill); Q1 (production's reserved concurrency).
+1. The owner: an AWS budget alarm (D60's guard on the bill); then, recommended, a rate limit per IP on `/api/*` at Vercel's firewall
+   and CloudWatch alarms on throttles and concurrency.
 2. The browser journeys against staging by hand (#74), the network guard relaxed for that run alone, if the owner wants them.
 3. The operator's guide (#73), then the dry run on the stand's hardware (the owner).
 4. Looked at by eye on production: the satellite imagery and the place search (Esri); Detect building (Overture answers both
