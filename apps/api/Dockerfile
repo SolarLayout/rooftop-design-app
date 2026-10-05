@@ -30,6 +30,10 @@ COPY --from=build /opt/python /opt/python
 COPY --from=build /opt/venv /opt/venv
 ARG ROOFTOP_COMMIT
 # The adapter: the port it forwards to, the path it waits on before the first request, and the answer streamed.
+# Async init: Lambda gives a function's start 10 s; the first start on a host that has never read this image took 46 s on
+# staging (a fresh image is read lazily; later starts took 2 to 4 s), and past 10 s Lambda stops the start and runs it
+# again inside the first request. With async init the adapter ends the start in time and the first request waits for
+# the health check instead, so nothing is run twice.
 # Matplotlib keeps its cache under /tmp, the one place Lambda lets a function write.
 ENV PATH=/opt/venv/bin:$PATH \
     PYTHONUNBUFFERED=1 \
@@ -37,6 +41,7 @@ ENV PATH=/opt/venv/bin:$PATH \
     PORT=8080 \
     AWS_LWA_READINESS_CHECK_PATH=/health \
     AWS_LWA_INVOKE_MODE=response_stream \
+    AWS_LWA_ASYNC_INIT=true \
     ROOFTOP_COMMIT=${ROOFTOP_COMMIT}
 USER 1000:1000
 EXPOSE 8080
