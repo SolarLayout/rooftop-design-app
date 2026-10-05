@@ -1,9 +1,24 @@
 name: check
 
+# Documents alone run nothing: they go to main directly (decision D26), and no step of the check reads them, but for
+# the design tokens, which three web tests hold the code to (app/globals.test.ts, components/ui/design-numbers.test.ts,
+# lib/geometry/scene-palette.test.ts). The last pattern that matches a file decides.
 on:
   push:
     branches: [main]
+    paths:
+      - "**"
+      - "!plan/**"
+      - "!docs/**"
+      - "!**/*.md"
+      - "docs/design/design-tokens.md"
   pull_request:
+    paths:
+      - "**"
+      - "!plan/**"
+      - "!docs/**"
+      - "!**/*.md"
+      - "docs/design/design-tokens.md"
 
 concurrency:
   group: check-${{ github.ref }}
