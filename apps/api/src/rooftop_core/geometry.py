@@ -200,15 +200,22 @@ def casters_shadow(casters: list[Obstacle], z_recv: float, elev: float, az: floa
 
 def solids_shadow(solids: list[tuple[Polygon, float, float]], z_recv: float, elev: float, az: float):
     """The shadow of the prisms on the horizontal plane z = z_recv with the sun at *elev*, *az*, or None."""
+    parts = shadow_parts(solids, z_recv, elev, az)
+    return unary_union(parts) if parts else None
+
+
+def shadow_parts(solids: list[tuple[Polygon, float, float]], z_recv: float, elev: float, az: float) -> list:
+    """The shadow of each prism on the horizontal plane z = z_recv with the sun at *elev*, *az*: each convex,
+    its bounding box tight, where the union of a parapet's is a ring whose box is the whole roof."""
     if elev <= 0:
-        return None
+        return []
     vx, vy = shadow_vector(elev, az)
     parts = []
     for fp, z0, z1 in solids:
         s = prism_shadow(fp, z0, z1, z_recv, vx, vy)
         if s is not None:
             parts.append(s)
-    return unary_union(parts) if parts else None
+    return parts
 
 
 # ── Design day sun (solar time) ─────────────────────────────────────────────
@@ -260,10 +267,8 @@ def _blocking_elevations(s: np.ndarray, points: np.ndarray, z: np.ndarray, elev:
     ang = np.degrees(np.arctan2(dz, np.maximum(dist, 0.05)))
     sector = ((np.degrees(np.arctan2(dx, dy)) % 360.0) / (360.0 / n_sectors)).astype(int) % n_sectors
     ang = np.where(dist < 0.05, 0.0, ang)
-    for k in range(n_sectors):
-        m = sector == k
-        if m.any():
-            elev[:, k] = np.maximum(elev[:, k], np.where(m, ang, -90).max(axis=1))
+    rows = np.broadcast_to(np.arange(len(points))[:, None], sector.shape)
+    np.maximum.at(elev, (rows, sector), ang)  # each point's highest sample in each sector
 
 
 def sky_loss_sectors(points: np.ndarray, z: np.ndarray, casters: list[Obstacle],

@@ -29,8 +29,9 @@ from dataclasses import dataclass
 import numpy as np
 import shapely
 from pvlib import shading as pvshading
+from shapely.ops import unary_union
 
-from .geometry import Roof, sky_loss_sectors, solids_of, solids_shadow
+from .geometry import Roof, shadow_parts, sky_loss_sectors, solids_of
 from .io.pvsyst import Module
 from .placement import Layout
 
@@ -197,10 +198,15 @@ def object_parts(layout: Layout, roof: Roof, bins: list[tuple[int, int]], on_par
         row = np.zeros(len(mods), dtype=np.float32)
         el_c, az_c = max(key[0] * EL_BIN, 0.5), key[1] * AZ_BIN
         for z, members in zgroups.items():
-            sh = solids_shadow(solids, float(z), el_c, az_c)
-            if sh is None or sh.is_empty:
+            parts = shadow_parts(solids, float(z), el_c, az_c)
+            if not parts:
                 continue
-            cand = tree.query(sh, predicate="intersects")
+            sh = unary_union(parts)
+            if sh.is_empty:
+                continue
+            # The modules a part of the shadow intersects are those the whole intersects: asked part by part,
+            # the tree tests only the modules in each part's own box.
+            cand = np.unique(tree.query(parts, predicate="intersects")[1])
             cand = np.intersect1d(cand, members, assume_unique=False)
             if len(cand):
                 inter = shapely.area(shapely.intersection(polys[cand], sh))
