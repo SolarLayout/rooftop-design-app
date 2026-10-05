@@ -96,9 +96,12 @@ two Esri keys. They share the image repository and the commit an image is built 
 11. **Configuration as code, by hand where the owner's apps do it by hand.** In the repo: the Dockerfile, `vercel.json`, the workflows,
     and `infra/aws/` with every policy, trust and function setting as JSON and the commands that apply them (`infra/aws/README.md`). No
     Terraform or CDK: the owner's apps have none. Secrets in Vercel's and AWS's stores only; GitHub holds the role's ARN and Vercel's token.
-12. **GitHub reaches AWS through a role of its own**, `solarlayout-rooftop-github-actions`, trusting only this repo's `main` branch and its
-    `Staging` and `Production` environments, allowed to push to the one ECR repository and to update and publish the two functions and
-    their aliases. *Why*: the shared role holds rights over solarlayout's downloads and CloudFront.
+12. **GitHub reaches AWS through two roles of its own, one per environment**: `solarlayout-rooftop-github-staging` and
+    `solarlayout-rooftop-github-prod`, each trusting only a job of this repo in its GitHub environment (`Staging`, `Production`; the
+    `sub` claim `repo:SolarLayout/rooftop-design-app:environment:<name>`), each allowed to push to and read the one ECR repository and to
+    update, publish and alias its own function alone. No `iam:PassRole`: updating code does not pass a role. The account's GitHub OIDC
+    provider is the one the owner's other apps use. Each role's ARN is a secret of its GitHub environment. *Why*: the owner's shared
+    role holds rights over solarlayout's downloads and CloudFront; two roles keep a staging job off production's function.
 13. **The owner runs every AWS command that changes something.** I write each one, with what it should answer; the owner pastes the
     answer back; I check it before the next. I may run read-only commands (`describe`, `get`, `list`) to check, unless the owner says no.
 14. **Detect building keeps reading Overture's own host.** D48's mirror is made only if the deployed origin is refused or slow there.
