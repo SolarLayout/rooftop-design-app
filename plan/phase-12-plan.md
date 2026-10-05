@@ -137,8 +137,8 @@ Each with its tests first, `bun check` green (with the browser groups the change
    smoke, summary), `promote.yml` (by hand: image to production, web build of that commit for Production, smoke, summary),
    `tools/smoke.ts` with unit tests of its parts, `infra/aws/` (the JSONs and the commands of the owner's steps). Concurrency per
    environment, queued, never cancelled. The first runs prove it: an image in ECR, then the owner's step 5, then staging served.
-4. **#76, the part production needs**: the demo and a typical roof under 3,008 MB at two threads, measured in the image on Linux; the
-   roof limit settled (decision 3); the cold start measured on staging and, if it is felt, the first visit designed for it or the function
+4. **#76, the part production needs**: the memory size and the threads fitted from staging's measures (decision 3), a roof at the limit
+   inside the size chosen; the cold start measured on staging and, if it is felt, the first visit designed for it or the function
    kept warm on the show's days.
 5. **Documents** (to `main`, D26): the operator's guide (#73), `docs/deployment.md` (how a change reaches production, how to roll back),
    the state.
