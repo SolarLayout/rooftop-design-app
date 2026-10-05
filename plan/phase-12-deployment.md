@@ -70,6 +70,7 @@ command. Decisions D58 to D63; the path in `docs/deployment.md`.
 | The smoke of a deployed site | `tools/smoke.ts`, `tools/smoke/` | #92 |
 | `deploy`: by hand, Staging or Production; production runs staging's smoked image; the rollback commands in the summary | `.github/workflows/deploy.yml` | #93, #97 |
 | The check skips documents alone | `.github/workflows/check.yml` | #94 |
+| One simulation thread on Lambda, held by the image (the functions' own variable removed) | `apps/api/Dockerfile`, `tests/test_dockerfile.py` | #101 |
 | AWS: the ECR repository, two execution roles, two GitHub roles, two functions with alias, Function URL, reserved concurrency and 30-day logs | `infra/aws/` | made by hand |
 | Vercel: `ROOFTOP_API_ORIGIN` and an Esri key per environment; GitHub: the environments, the role ARNs, Vercel's token and IDs | the hosts | made by hand |
 

@@ -31,7 +31,8 @@ functions (D61). Pull requests #90 to #95 and #97; decisions D58 to D63; the pat
 
 ## In flight
 
-Phase 12. Live: staging and production on `774e0a9`, smoked; one simulation thread on both; reserved concurrency 100 and 50. The
+Phase 12. Live: staging and production on `666368a`, smoked (deployed by the owner); one simulation thread on both, set by the
+image (#101); reserved concurrency 100 and 50. The
 satellite imagery and the place search looked at on production by the owner (2026-10-05). Left, each in an issue:
 1. #99: the operator's guide for the stand, and the dry run on its hardware against production (closes the phase).
 2. #100: the production guards: an AWS budget alarm (the owner's), a rate limit per IP on `/api/*` at Vercel's firewall,

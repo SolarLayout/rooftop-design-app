@@ -17,7 +17,7 @@ array: `R=(--region ap-south-1 --profile journium-dev)` and `"${R[@]}"`.
 | Execution role (logs only) | `solarlayout-rooftop-api-staging-execution` | `solarlayout-rooftop-api-prod-execution` |
 | GitHub's role (its environment alone) | `solarlayout-rooftop-github-staging` | `solarlayout-rooftop-github-prod` |
 | Reserved concurrency | 50 | 100 (the owner's say, 2026-10-05; first 2 and 10). A ceiling and a slice of the account's 2,500, at no cost; 2,350 stay for the account's other functions |
-| Simulation threads (`ROOFTOP_SIMULATION_THREADS`) | 1 | 1 (D61; was 2 at creation) |
+| Simulation threads (`ROOFTOP_SIMULATION_THREADS`) | 1, set by the image (#101) | 1, set by the image (#101); the functions carry no variables of their own |
 
 ## 1. The ECR repository (done 2026-10-05)
 
@@ -103,7 +103,6 @@ aws logs put-retention-policy --log-group-name /aws/lambda/${F} --retention-in-d
 aws lambda create-function --function-name ${F} --package-type Image --code ImageUri=${IMAGE} \
   --architectures arm64 --memory-size 10240 --timeout 900 \
   --role arn:aws:iam::378240665051:role/solarlayout-rooftop-api-${ENV}-execution \
-  --environment "Variables={ROOFTOP_SIMULATION_THREADS=1}" \
   --tags owner=solarlayout,app=rooftop,env=${ENV} --region ap-south-1 --profile journium-dev
 aws lambda wait function-active-v2 --function-name ${F} --region ap-south-1 --profile journium-dev
 

@@ -65,8 +65,7 @@ The smoke never calls services outside the app. Looked at by eye on a deploy tha
 | What | Where |
 |---|---|
 | `ROOFTOP_API_ORIGIN`, `NEXT_PUBLIC_ESRI_API_KEY` | Vercel, per environment (encrypted) |
-| `ROOFTOP_SIMULATION_THREADS` | each Lambda function's configuration |
-| The image's settings (the adapter, streaming, async init) | `apps/api/Dockerfile`, held by `apps/api/tests/test_dockerfile.py` |
+| The image's settings (the adapter, streaming, async init, one simulation thread) | `apps/api/Dockerfile`, held by `apps/api/tests/test_dockerfile.py`; the functions carry no variables of their own |
 | `AWS_ROLE_ARN` (each environment's GitHub role) | GitHub, per environment |
 | `AWS_REGION`, `AWS_ACCOUNT_ID`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`; `VERCEL_TOKEN` (secret) | GitHub, the repository |
 | The functions' logs | CloudWatch, `/aws/lambda/<function>`, 30 days; one line per request (`timing method=… path=… status=… ms=…`) and Lambda's `REPORT` line (time, memory) |
