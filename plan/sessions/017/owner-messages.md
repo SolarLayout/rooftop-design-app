@@ -19,3 +19,5 @@
    Q4 scope waits
 6. nothing specific, cover the rest yourself and read it back
 7. looks good. you will optimize your work. you will not run endless UI tests or pythion tests mindlessly since they take a long time. We can write appropriate tests at the end of our work. Not tons of PRs mindlessly. We prove things locally first.
+8. related to shading etc, try to see if we can be innovative - solar-mms-modeller repo does everyuthing in the UI side very successfully
+9. keep all, go ahead with PR 1

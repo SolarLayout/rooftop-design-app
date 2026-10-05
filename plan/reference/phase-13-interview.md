@@ -61,3 +61,9 @@ read back to him at the end for corrections.
 - Things are proven locally first, by measurement; the appropriate tests are written at the end of the work (for this
   phase, in place of test-first).
 - Not many pull requests: few, each worth its review.
+
+## Shading: be innovative (message 8)
+- "Try to see if we can be innovative": `solar-mms-modeller` does everything on the UI side, successfully. What it does, read
+  for this: one row stands for all (an analytic profile-angle formula), the shading keyed to the sun's position, no polygon
+  work per module. The ideas carried into the plan (`plan/phase-13-plan.md`, decision 2): the modules reduced to the classes
+  that shade alike, the shading kept per sun position, the obstacles' part sparse.
