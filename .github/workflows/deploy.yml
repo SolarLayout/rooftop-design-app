@@ -205,14 +205,22 @@ jobs:
             echo "Roll the API back: \`aws lambda update-alias --function-name $FUNCTION --name live --function-version $previous --region ${{ vars.AWS_REGION }}\`"
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # The deployment the domain serves before this one is written down: pointing the domain back at it is the web app's
+      # rollback, one command (tried on staging, 2026-10-05: 3 s).
       - name: Deploy the web app
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
+          domain="${SITE#https://}"
+          previous=$(bun x "$VERCEL_CLI" inspect "$domain" --token="$VERCEL_TOKEN" 2>&1 | awk '$1 == "url" { sub("https://", "", $2); print $2; exit }' || true)
           url=$(bun x "$VERCEL_CLI" deploy --prebuilt --target="$TARGET" --token="$VERCEL_TOKEN")
           {
             echo "### ${{ inputs.environment }}: the web app"
-            echo "Deployment \`$url\`, served at $SITE. Roll back: Vercel's dashboard, Deployments, an earlier deployment of this environment, Promote (or Instant Rollback on production)."
+            echo "Deployment \`$url\`, served at $SITE."
+            if [ -n "$previous" ]; then
+              echo ""
+              echo "Roll the web app back: \`vercel alias set $previous $domain --scope solarlayout\`"
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
 
   smoke:
