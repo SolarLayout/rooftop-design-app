@@ -1,8 +1,8 @@
 # The API on AWS: what exists and how it was made
 
 The API runs on AWS Lambda as a container image behind a Function URL that streams (`plan/phase-12-plan.md`). Everything
-here was made by hand, once, by the owner, from the commands below; CI only builds images and moves aliases
-(`.github/workflows/deploy-staging.yml`, `promote.yml`). The files beside this one are the documents the commands apply.
+here was made by hand, once, by the owner, from the commands below; CI only builds images and moves aliases, when the
+owner starts it (`.github/workflows/deploy.yml`, with the environment chosen). The files beside this one are the documents the commands apply.
 
 Account `378240665051`, region `ap-south-1`, CLI profile `journium-dev`. That profile defaults to `us-east-1`: every
 command names the region. Under zsh write `${ENV}:live` with braces (`$ENV:l…` is one of zsh's modifiers).
@@ -84,8 +84,9 @@ role above). Repository variables `AWS_REGION`, `AWS_ACCOUNT_ID`, `VERCEL_ORG_ID
 
 ## 5. The functions (after the first image is in the repository)
 
-The first run of `deploy staging` pushes the image of its commit and then stops at the function, which does not exist
-yet. With that commit's image (`<sha>`), for each environment:
+The first run of `deploy` to Staging pushes the image of its commit and then stops at the web app's build, which needs
+`ROOFTOP_API_ORIGIN` (the Function URL, made here) before anything else moves. With that commit's image (`<sha>`), for each
+environment:
 
 ```
 ENV=staging   # then prod
@@ -129,5 +130,5 @@ Memory starts at 10,240 MB and is fitted from the `REPORT` lines' `Max Memory Us
 ## Rollback
 
 The API: `aws lambda update-alias --function-name <F> --name live --function-version <previous>`; each deploy's summary
-on GitHub prints the command with the version it moved from. Both sides at once: `promote to production` with the
-earlier commit.
+on GitHub prints the command with the version it moved from. Both sides at once: `deploy` with the earlier commit (to
+Production, a commit that passed staging's smoke).
