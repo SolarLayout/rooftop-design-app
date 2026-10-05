@@ -471,3 +471,39 @@ def test_dropping_the_memo_changes_nothing_but_the_speed():
 
 def copy_of(project: Project) -> Project:
     return Project.from_json(project.to_json())
+
+
+# ── the operating points (Phase 13): an edit that leaves the irradiance finds them kept ───────────────────
+def test_a_loss_edit_that_leaves_the_irradiance_solves_no_operating_point_and_changes_nothing(monkeypatch):
+    from dataclasses import replace
+
+    from rooftop_core import simulation
+
+    kept = memo.MemoryMemo()
+    run(small_project(), kept)
+    edited = small_project()
+    edited.losses = replace(edited.losses, quality_pct=1.0, mismatch_pct=2.0, availability_pct=99.0)
+    solves = Counted(monkeypatch, simulation, "_solve")
+
+    with_memo = run(edited, kept)
+
+    assert solves.calls == 0
+    assert kept.points.entries > 0
+    monkeypatch.undo()
+    assert_same_results(with_memo, run(edited, None))
+
+
+def test_an_edit_of_the_soiling_changes_the_irradiance_and_solves_again(monkeypatch):
+    from dataclasses import replace
+
+    from rooftop_core import simulation
+
+    kept = memo.MemoryMemo()
+    run(small_project(), kept)
+    edited = small_project()
+    edited.losses = replace(edited.losses, soiling_pct=4.0)
+    solves = Counted(monkeypatch, simulation, "_solve")
+
+    run(edited, kept)
+
+    assert solves.calls > 0

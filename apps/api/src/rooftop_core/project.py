@@ -20,7 +20,7 @@ from .options import CustomMisfit, StringOption, build_options, custom_misfit, c
 from .paths import file_name
 from .placement import ArraySpec, Layout, place
 from .resources import SAMPLE_OND, SAMPLE_PAN, sample_path
-from .simulation import Losses, Precomputed, after_the_year, precompute
+from .simulation import KeptPoints, Losses, Precomputed, after_the_year, precompute
 from .stringing import CELL_RISE, SeriesRange, series_range
 
 FILE_SUFFIX = ".rtd"
@@ -309,7 +309,7 @@ class Design:
             more = 1 if simulated else 0       # the custom option is simulated after the others
             heard = (lambda done, total: on_part(done, total + more)) if on_part else None
             return build_options(self.pre, self.layout, self.module, self.mm, self.inverter, rng,
-                                 self.p.losses, self.p.roof, on_option=heard)
+                                 self.p.losses, self.p.roof, on_option=heard, kept=self._kept_points())
 
         offered = self._kept(memo_mod.options_key, build)
         if simulated:
@@ -317,7 +317,8 @@ class Design:
 
             def build_custom() -> list[StringOption]:
                 return [custom_option(self.pre, self.layout, self.module, self.mm, self.inverter,
-                                      self.p.losses, self.p.roof, n, s, k, "ABCDEFGH"[len(offered)])]
+                                      self.p.losses, self.p.roof, n, s, k, "ABCDEFGH"[len(offered)],
+                                      kept=self._kept_points())]
 
             offered = offered + self._kept(memo_mod.custom_key, build_custom)
         # The memo keeps the options as simulated; the figures after the year are this project's. Each
@@ -326,6 +327,13 @@ class Design:
         keys = [o.key for o in self.options]
         if self.p.chosen_option not in keys and self.options:
             self.p.chosen_option = self.options[0].key
+
+    def _kept_points(self) -> KeptPoints | None:
+        """The memo's operating points for this design's module, when there is a memo."""
+        if self.memo is None:
+            return None
+        memo, module = self.memo, self.module
+        return lambda pairs, solve: memo.operating_points(memo_mod.points_key(module, pairs), solve)
 
     def _kept(self, key_of: Callable[[Design], str], build: Callable[[], list[StringOption]]) -> list[StringOption]:
         """What *build* makes, from the memo under the key *key_of* gives the design, when there is one."""

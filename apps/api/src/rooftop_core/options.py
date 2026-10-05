@@ -18,7 +18,7 @@ from .geometry import Roof
 from .io.pvsyst import Inverter, Module
 from .onediode import ModuleModel
 from .placement import Layout
-from .simulation import Losses, Precomputed, SimResult, StringPhysics, simulate, string_physics
+from .simulation import KeptPoints, Losses, Precomputed, SimResult, StringPhysics, simulate, string_physics
 from .stringing import (
     DCAC_TARGET,
     DCAC_WARN,
@@ -85,12 +85,12 @@ class OfLength:
 
 
 def of_length(pre: Precomputed, layout: Layout, module: Module, mm: ModuleModel, losses: Losses, roof: Roof,
-              n: int, strings: list[PVString] | None = None) -> OfLength:
+              n: int, strings: list[PVString] | None = None, kept: KeptPoints | None = None) -> OfLength:
     """The strings of *n* modules the layout holds (*strings*, when they are formed already), ordered by their
     beam-weighted annual shaded fraction (stable: the order they were formed in breaks a tie), with their hours
     worked out once."""
     strings = form_strings(layout, n) if strings is None else strings
-    physics = string_physics(pre, module, mm, strings, losses, roof)
+    physics = string_physics(pre, module, mm, strings, losses, roof, kept)
     if not strings:
         return OfLength([], physics)
     beam = np.mean([g["beam"] for g in pre.groups.values()], axis=0)
@@ -124,7 +124,7 @@ def workers_for(candidates: int) -> int:
 
 def build_options(pre: Precomputed, layout: Layout, module: Module, mm: ModuleModel, inv: Inverter,
                   rng: SeriesRange, losses: Losses, roof: Roof, max_options: int = 5,
-                  on_option=None) -> list[StringOption]:
+                  on_option=None, kept: KeptPoints | None = None) -> list[StringOption]:
     """*on_option* hears (done, total) after every option that is simulated, in the caller's thread.
 
     The candidates of a length are simulated in threads (SIMULATION_THREADS) and come out in the order they were
@@ -169,7 +169,7 @@ def build_options(pre: Precomputed, layout: Layout, module: Module, mm: ModuleMo
     # so that no more than one length's hours are held at once.
     with ThreadPoolExecutor(max_workers=workers_for(total), thread_name_prefix="simulate") as pool:
         for n in dict.fromkeys(n for n, _, _ in todo):
-            held = of_length(pre, layout, module, mm, losses, roof, n, formed[n])
+            held = of_length(pre, layout, module, mm, losses, roof, n, formed[n], kept)
             futures = {pool.submit(make_option, pre, layout, module, mm, inv, losses, roof, n, s, k, held): i
                        for i, (m, s, k) in enumerate(todo) if m == n}
             for future in as_completed(futures):
@@ -213,8 +213,9 @@ def custom_misfit(rng: SeriesRange, layout: Layout, n: int, s: int, k: int) -> C
     return CustomMisfit("strings", n, held, k) if held < k else None
 
 
-def custom_option(pre, layout, module, mm, inv, losses, roof, n: int, s: int, k: int, letter: str = "X") -> StringOption:
-    held = of_length(pre, layout, module, mm, losses, roof, n)
+def custom_option(pre, layout, module, mm, inv, losses, roof, n: int, s: int, k: int, letter: str = "X",
+                  kept: KeptPoints | None = None) -> StringOption:
+    held = of_length(pre, layout, module, mm, losses, roof, n, kept=kept)
     s = min(s, len(held.ranked))
     o = make_option(pre, layout, module, mm, inv, losses, roof, n, s, k, held, custom=True)
     o.key, o.letter = CUSTOM_KEY, letter

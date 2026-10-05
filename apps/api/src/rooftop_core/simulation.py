@@ -10,6 +10,7 @@ ohmic and availability.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field, replace
 
 import numpy as np
@@ -198,12 +199,15 @@ class StringPhysics:
 
 
 CHAIN = ("nom", "far", "lin", "iam", "soil", "eff")
+# Where solved operating points are kept: called with the distinct pairs (irradiance + 1j × temperature, sorted) and
+# what solves them, it gives (p_mp, v_mp, i_mp) of each pair; the memo keeps them by the pairs themselves (D6).
+KeptPoints = Callable[[np.ndarray, Callable[[], tuple[np.ndarray, ...]]], tuple[np.ndarray, ...]]
 MPP_CHUNK = 16_384  # operating points solved at a time
 P25_POINTS = 8_000  # irradiances solved for the spline of the power at 25 °C
 
 
 def string_physics(pre: Precomputed, module: Module, mm: ModuleModel, strings: list[PVString], losses: Losses,
-                   roof: Roof) -> StringPhysics:
+                   roof: Roof, kept: KeptPoints | None = None) -> StringPhysics:
     w = pre.weather.data
     n_h, n_s = len(w), len(strings)
     N = len(strings[0].modules) if strings else 0
@@ -255,7 +259,7 @@ def string_physics(pre: Precomputed, module: Module, mm: ModuleModel, strings: l
     uc = losses.uc or UC_BY_ROOF.get(roof.roof_type, 29.0)
     tc = pvlib.temperature.pvsyst_cell(G, ta, ws, u_c=uc, u_v=losses.uv, module_efficiency=module.efficiency)
     p25 = _at_25(mm, G)
-    pT, vT = _at_distinct(mm, G, tc)[:2]
+    pT, vT = _at_distinct(mm, G, tc, kept)[:2]
     return StringPhysics({int(m[0]): j for j, m in enumerate(members)}, G, B, F, E, tc, p25, pT, vT, chain)
 
 
@@ -276,9 +280,22 @@ def _at_25(mm: ModuleModel, g: np.ndarray) -> np.ndarray:
     return out
 
 
-def _at_distinct(mm: ModuleModel, g: np.ndarray, t: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def _solve(mm: ModuleModel, pairs: np.ndarray) -> tuple[np.ndarray, ...]:
+    """(p_mp, v_mp, i_mp) of each pair, a chunk at a time: pvlib's solve holds some forty arrays of its points."""
+    solved = tuple(np.zeros(len(pairs)) for _ in range(3))
+    for i in range(0, len(pairs), MPP_CHUNK):
+        chunk = pairs[i:i + MPP_CHUNK]
+        for whole, part in zip(solved, mm.mpp(chunk.real, chunk.imag), strict=True):
+            whole[i:i + len(chunk)] = part
+    return solved
+
+
+def _at_distinct(mm: ModuleModel, g: np.ndarray, t: np.ndarray, kept: KeptPoints | None = None
+                 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """mm.mpp of every (g, t), solved once for each distinct lit pair: unshaded strings of a row see the same sun,
-    and half the hours are dark (no power by the model's rule, g under 1 W/m²)."""
+    and half the hours are dark (no power by the model's rule, g under 1 W/m²). *kept* may hold the pairs solved
+    already: an edit of a loss that leaves the irradiance as it was (quality, LID, mismatch, the ohmic losses,
+    availability, the inverter) finds them there."""
     out = [np.zeros_like(g), np.zeros_like(g), np.zeros_like(g)]
     lit = g >= 1.0
     # Solved at the pair in float32, as the desktop app carried a module's irradiance: strings whose sky
@@ -286,12 +303,7 @@ def _at_distinct(mm: ModuleModel, g: np.ndarray, t: np.ndarray) -> tuple[np.ndar
     # A pair as one complex number: sorted and compared exactly, and many times faster than unique rows.
     key = g[lit].astype(np.float32).astype(float) + 1j * t[lit].astype(np.float32).astype(float)
     pairs, back = np.unique(key, return_inverse=True)
-    # Solved a chunk at a time: pvlib's solve holds some forty arrays of its points while it works.
-    solved = [np.zeros(len(pairs)) for _ in out]
-    for i in range(0, len(pairs), MPP_CHUNK):
-        chunk = pairs[i:i + MPP_CHUNK]
-        for whole, part in zip(solved, mm.mpp(chunk.real, chunk.imag), strict=True):
-            whole[i:i + len(chunk)] = part
+    solved = _solve(mm, pairs) if kept is None else kept(pairs, lambda: _solve(mm, pairs))
     for o, s in zip(out, solved, strict=True):
         o[lit] = s[back]
     return tuple(out)
