@@ -21,3 +21,11 @@
 7. looks good. you will optimize your work. you will not run endless UI tests or pythion tests mindlessly since they take a long time. We can write appropriate tests at the end of our work. Not tons of PRs mindlessly. We prove things locally first.
 8. related to shading etc, try to see if we can be innovative - solar-mms-modeller repo does everyuthing in the UI side very successfully
 9. keep all, go ahead with PR 1
+10. PR #102 CI failed
+11. merge both when green, then push for the 10 s target
+12. also you are free to deploy to staging when its needed. we don't want unnecessray deploys and long stretches of waiting
+13. where do results stand as of now?
+14. 6 MB appears to be an unvalid limit. realostic files go to what sizes?
+15. we will size for 3 mb. based on that how much memory we need for Lambda?
+16. what is the bug you are talking about? is it real? tell me in simple terms
+17. average to hourly. what mem we would need for lambda?

@@ -127,7 +127,10 @@ Both permissions: since October 2025 a Function URL with auth `NONE` answers 403
 
 The Function URL's auth is `NONE` (decision 2): the API is public through the web origin in any case; the guard is the
 reserved concurrency. The URL goes into Vercel as that environment's `ROOFTOP_API_ORIGIN`, and nowhere else.
-Memory starts at 10,240 MB and is fitted from the `REPORT` lines' `Max Memory Used` on staging (decision 3).
+Memory started at 10,240 MB and is fitted to 1,769 MB (D67): one whole vCPU, the run being one thread; the roof at the limit
+peaks at 926 MB on Lambda since Phase 13. The owner sets it, staging first, then production:
+`aws lambda update-function-configuration --function-name <F> --memory-size 1769 --region ap-south-1 --profile journium-dev`;
+the next deploy publishes a version with it, which the alias `live` then serves.
 
 ## Rollback
 

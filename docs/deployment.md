@@ -72,8 +72,9 @@ The smoke never calls services outside the app. Looked at by eye on a deploy tha
 
 ## Limits to know
 
-- A request to the API is 6 MB at most (the Function URL's limit). Real project files are 0.7 to 2.5 MB; a larger one fails
-  in AWS's words (#98).
-- A design run at the roof limit (30,000 m²) takes about two minutes and 5.7 GB with one thread; the run streams its
-  progress, and Vercel keeps the line open as long as a byte comes every 120 s (the API sends a keep-alive every 15 s). Where
-  the memory goes is #96 (Phase 13).
+- A request to the API is 6 MB at most (the Function URL's limit). Real project files are 0.7 to 3 MB; a larger one is
+  refused by the Open dialog in its own words before it is sent (#98). A CSV weather of rows less than an hour apart is
+  averaged into hours when it is read.
+- A design run at the roof limit (30,000 m²) takes about 6 s and peaks under 1 GB with one thread (Phase 13; it was two
+  minutes and 5.7 GB); the run streams its progress, and Vercel keeps the line open as long as a byte comes every 120 s
+  (the API sends a keep-alive every 15 s). Each function has 1,769 MB, one whole vCPU (D67).

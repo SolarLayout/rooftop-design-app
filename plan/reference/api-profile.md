@@ -1,5 +1,12 @@
 # The engine's profile
 
+> **Phase 13 (2026-10-05) changed these numbers.** The tables below are the engine as copied from the desktop app. After
+> #102 to #104, in the API's Linux image with one thread: the roof at the limit 4.4 s and 664 MB (132 s and 5,475 MB
+> there before), the demo 1.99 s and 261 MB; on Lambda the limit 6.3 s and 926 MB. The detail is in
+> `plan/phase-13-optimization.md`, "As built". The profile is now taken in the image:
+> `docker run --rm -v "$PWD/tools:/work/tools:ro" -w /work rooftop-api python -m tools.profile_engine limit --threads 1`
+> from `apps/api`, after building the image (`apps/api/Dockerfile`).
+
 Phase 11, step 36, for issue #76 (the API lean in time and memory for AWS Lambda). The demo and the roof at the 30,000 m²
 limit, each run as the API runs a design and with no memo: the time by step, the peak memory, what the memo would hold, the
 report drawn once, what a loss edit costs, and the hot spots. Every number is from a run on 2026-10-04, by the command given
