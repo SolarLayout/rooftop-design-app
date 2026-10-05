@@ -66,11 +66,13 @@ two Esri keys. They share the image repository and the commit an image is built 
    accounts, D5), so a secret between Vercel and the URL protects nothing that `/api/*` does not already open; Vercel's CDN cannot sign
    AWS's requests. The guard against abuse is the bill's: **reserved concurrency** per function (production 10, staging 2), a log
    retention of 30 days, and an AWS budget alarm (the owner's). The URL is not published anywhere but the Vercel variable.
-3. **Memory 3,008 MB, timeout 900 s, simulation threads 2 on Lambda** (a new setting `ROOFTOP_SIMULATION_THREADS`, the default unchanged
-   here). *Why*: the account's limit; at 3,008 MB a Lambda has under two CPUs, so more threads buy little and cost memory. The demo then
-   fits. **A roof at the limit does not**, and #76 must settle it before production: make the engine leaner, or the owner asks AWS for the
-   10,240 MB limit (free, takes days), or the hosted app's roof limit goes down. Recommended: ask AWS now, in parallel, so the choice is
-   not forced by the calendar.
+3. **Memory: proved, then measured, then fitted.** The 3,008 MB limit is second-hand (the owner's other repo's notes); a throwaway
+   function created at 10,240 MB settles it in minutes (the owner's say, 2026-10-05). If it is refused, the owner asks AWS for the limit
+   by a support case and #76 decides meanwhile (a leaner engine, or a lower roof limit on the hosted app). Then staging starts generous,
+   and the size is fitted from what runs: the `Max Memory Used` of Lambda's `REPORT` line per request, the demo and a roof at the limit,
+   the size set to the peak with about 25 % over, and the run's time checked at that size (the memory sets the CPU share, so a smaller size
+   is slower and not always cheaper: the bill is GB-seconds). Timeout 900 s. Simulation threads set for Lambda (a new setting
+   `ROOFTOP_SIMULATION_THREADS`, the default unchanged here), chosen with the size.
 4. **The memo stays in the process.** A warm Lambda keeps it between requests; a cold one starts empty and a loss edit then costs a whole
    run. Measured on staging (how often a loss edit is answered from the memo); an outside home is #76's if the number says so.
 5. **The web app: one Vercel project, two environments** (Production, `staging`), as the owner made it. Git deploys off
@@ -106,9 +108,11 @@ two Esri keys. They share the image repository and the commit an image is built 
 
 One at a time, each checked before the next. Steps 1 to 4 do not wait for code.
 
-1. AWS: the ECR repository `solarlayout/rooftop-api`.
-2. AWS: the request for a Lambda memory limit of 10,240 MB in `ap-south-1` (decision 3; skip if the owner says).
-3. AWS: the two execution roles (logs only), and the GitHub role with its trust and policy (decision 12).
+1. AWS: the ECR repository `solarlayout/rooftop-api`. Done 2026-10-05.
+2. AWS: the account's Lambda settings read: 2,500 concurrent executions, all unreserved. Done 2026-10-05. Memory is not in Service
+   Quotas; a raise would be a support case.
+3. AWS: the two execution roles (logs only); a throwaway function at 10,240 MB on the staging role to prove the memory limit, then
+   deleted (decision 3); the GitHub role with its trust and policy (decision 12).
 4. GitHub: the `Staging` environment; `Production` kept to `main`; the secret `AWS_ROLE_ARN`, the variables `AWS_REGION`,
    `AWS_ACCOUNT_ID`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`; a Vercel token as `VERCEL_TOKEN`.
 5. AWS, after the first image is pushed by the workflow (PR 3): the two functions from it, the alias `live`, the Function URLs in
