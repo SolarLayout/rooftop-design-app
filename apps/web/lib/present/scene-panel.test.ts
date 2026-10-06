@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
 import type { DesignOption, LayoutResponse, Project } from "../api";
-import { A } from "../handover/test-fixtures";
 import { sceneFactsOf, scenePanelOf, type SceneFacts } from "./scene-panel";
 
 // The panel of each scene (the boards "UI fixes · Present, the figures of each scene", D72): its title, the lead
@@ -123,8 +122,12 @@ describe("the facts of the panels, from the stores", () => {
     array: { tilt_deg: 15, ew_tilt_deg: 10, orientation: "portrait" },
   } as unknown as Project;
   const layout = { readouts: { positions: 790, rows: 6 } } as unknown as LayoutResponse;
+  // Option A of the demo, with what the panels read of it alone (a fixture of its own: Present's tests stay in its group).
   const option = {
-    ...A,
+    dc_kwp: 357.28,
+    n_strings: 22,
+    n_series: 29,
+    n_inverters: 1,
     energy: { ac_kw: 275, energy_mwh: 617.84, specific_yield: 1729.4, pr: 0.8655 },
   } as unknown as DesignOption;
 
