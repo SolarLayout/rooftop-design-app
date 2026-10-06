@@ -5,6 +5,7 @@ import { NumberField } from "@/components/ui/NumberField";
 import { shown } from "@/components/ui/number-entry";
 import { Switch } from "@/components/ui/Switch";
 import { edgeNamesOf, measurementsOf, type OutlineEvent, type OutlineState } from "@/lib/outline/outline-state";
+import { SECTION } from "@/components/ui/section-look";
 
 type Props = {
   state: OutlineState;
@@ -15,7 +16,6 @@ type Props = {
 /** Lengths on the map: one decimal (docs/design/guidelines.md, "Lengths"). */
 const LENGTH = { min: 0.1, max: 2000, decimals: 1 };
 
-const SECTION = "type-section text-text-3 uppercase";
 const TILE = "flex flex-col gap-0.5 rounded-row border border-line bg-surface-1 px-3.5 py-3 tablet:px-3 tablet:py-2 desktop:px-3.5 desktop:py-3";
 
 /** One number of the outline: the area, the direction it faces, the corners. */

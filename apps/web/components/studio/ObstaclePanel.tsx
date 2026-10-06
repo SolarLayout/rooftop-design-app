@@ -37,7 +37,7 @@ import {
 } from "@/lib/geometry/obstacle-fields";
 import { indexToReview, REVIEW_HINT } from "@/lib/studio/review-heights";
 import { draftOf, draggingOf, selectionOf, toReviewOf } from "@/lib/stores/view-store";
-import { fieldsLayoutOf, SECTION } from "./inspector-look";
+import { fieldsLayoutOf, SECTION_LINE, SECTION_TEXT } from "./inspector-look";
 import type { Size } from "./use-size";
 
 type Props = { roof: Roof; size: Size };
@@ -324,8 +324,8 @@ export function ObstaclePanel({ roof, size }: Props) {
 
   return (
     <section aria-label="Obstacles" className="flex flex-col gap-2.5">
-      <div className="flex items-center">
-        <h2 className={SECTION}>Obstacles · {own.length}</h2>
+      <div className={classNames("flex items-center", SECTION_LINE)}>
+        <h2 className={SECTION_TEXT}>Obstacles · {own.length}</h2>
         <AddMenu onAdd={add} />
       </div>
       {draft ? (

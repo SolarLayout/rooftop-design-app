@@ -78,6 +78,8 @@ const STUDIO_FOLDERS = [
   "apps/web/components/scene/**",
   "apps/web/lib/scene/**",
   "apps/web/lib/studio/**",
+  // The equipment library's picker opens from the Array and Strings lenses' cards (D75).
+  "apps/web/lib/equipment/**",
   ...FIND_FOLDERS,
 ];
 // performance.e2e.ts chooses a voltage in the Strings lens; performance-weather builds a roof on the map.

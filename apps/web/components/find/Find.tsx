@@ -40,6 +40,7 @@ import { Search, type FoundPlace } from "@/components/shell/Search";
 import { Steps, type Step } from "./Steps";
 import { useOutlineKeys } from "./use-outline-keys";
 import { useWebGL } from "./use-web-gl";
+import { SECTION } from "@/components/ui/section-look";
 
 // The map draws with WebGL in the browser alone: it is loaded there, never on the server.
 const RoofMap = dynamic(() => import("./RoofMap").then((module) => module.RoofMap), { ssr: false });
@@ -276,7 +277,7 @@ export function Find() {
               </>
             )}
             <section className="flex flex-col gap-2.5">
-              <h2 className="hidden type-section text-text-3 uppercase desktop:block">Roof type</h2>
+              <h2 className={classNames("hidden desktop:block", SECTION)}>Roof type</h2>
               <RoofTypeChoice value={roofType} onChange={setRoofType} />
             </section>
             <div className="mt-auto flex flex-col gap-2.5">

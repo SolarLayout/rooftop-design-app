@@ -323,6 +323,8 @@
   --color-accent-ink: #1A1204;
   --color-note-surface: #1E1A10;
   --color-note-line: #3A3220;
+  --color-heading: #FFB020;
+  --color-heading-line: rgba(255,176,32,.28);
   --color-ok: #3DD6A0;
   --color-sun-core: #FFD36B;
   --color-outline-fill: rgba(255,176,32,.09);
@@ -498,6 +500,8 @@
   --color-accent-ink: var(--color-accent-ink);
   --color-note-surface: var(--color-note-surface);
   --color-note-line: var(--color-note-line);
+  --color-heading: var(--color-heading);
+  --color-heading-line: var(--color-heading-line);
   --color-ok: var(--color-ok);
   --color-sun-core: var(--color-sun-core);
   --color-outline-fill: var(--color-outline-fill);
@@ -985,6 +989,11 @@
 @utility border-b-tab {
   border-bottom-width: var(--border-tab);
   border-bottom-style: solid;
+}
+/* The edge of the row chosen in the equipment picker: the line of the active tab, at its left. */
+@utility border-l-tab {
+  border-left-width: var(--border-tab);
+  border-left-style: solid;
 }
 @utility border-handle {
   border-width: var(--border-handle);

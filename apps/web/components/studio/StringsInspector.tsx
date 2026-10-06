@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useProject, useResults, useStores } from "@/components/shell/stores";
 import { classNames } from "@/components/ui/class-names";
 import type { InverterResponse } from "@/lib/api";
@@ -12,13 +12,14 @@ import { withAcCable, withCurrentPerMppt } from "@/lib/studio/inverter-fields";
 import { mpptTableOf } from "@/lib/studio/mppt-table";
 import { optionCardsOf } from "@/lib/studio/option-cards";
 import { stringsViewOf, type Volts } from "@/lib/studio/strings-view";
+import { SECTION } from "./inspector-look";
 import { InverterCard } from "./InverterCard";
 import { InverterLimits } from "./InverterLimits";
 import { MpptTable } from "./MpptTable";
 import { SeriesRange } from "./SeriesRange";
 import { SizingTemperatures } from "./SizingTemperatures";
 import { StringColourSwitch } from "./StringLegend";
-import { ReplaceInverterDialog } from "./ReplaceInverterDialog";
+import { InverterPicker } from "./InverterPicker";
 import { NothingFits, OptionCards, OptionsNote, YourOwn } from "./StringOptions";
 import { SystemVoltage, VoltageDecision, WaitingAndDone } from "./SystemVoltage";
 import { useSize } from "./use-size";
@@ -46,6 +47,9 @@ export function StringsInspector() {
   const designEdit = useResults(designEditOf);
   const [replaced, setReplaced] = useState<Replaced | null>(null);
   const [isReplacing, setReplacing] = useState(false);
+  // Each opening of the picker mounts it afresh: its filters and its choice at rest.
+  const [openings, setOpenings] = useState(0);
+  const heading = useId();
   const [isLimitsOpen, setLimitsOpen] = useState(false);
   const [focusCurrent, setFocusCurrent] = useState(0);
   if (!project) return null;
@@ -80,7 +84,19 @@ export function StringsInspector() {
       <div className="flex flex-col gap-section">
         {/* On phone the colour switch of the strings is the sheet's first thing (the board "Studio, Strings lens, phone"). */}
         {size === "phone" && option ? <StringColourSwitch fill /> : null}
-        <InverterCard inverter={inverter} entered={project.imax_mppt_override ?? null} onReplace={() => setReplacing(true)} />
+        <section aria-labelledby={heading} className="flex flex-col gap-2">
+          <h2 id={heading} className={SECTION}>
+            Inverter
+          </h2>
+          <InverterCard
+            inverter={inverter}
+            entered={project.imax_mppt_override ?? null}
+            onChange={() => {
+              setOpenings((count) => count + 1);
+              setReplacing(true);
+            }}
+          />
+        </section>
         {view.kind === "before-a-voltage" ? (
           <VoltageDecision view={view} onChoose={choose} />
         ) : (
@@ -121,7 +137,7 @@ export function StringsInspector() {
           </>
         )}
       </div>
-      <ReplaceInverterDialog open={isReplacing} onRead={inverterRead} onClose={() => setReplacing(false)} />
+      <InverterPicker key={openings} open={isReplacing} current={inverter?.inverter.source ?? null} onRead={inverterRead} onClose={() => setReplacing(false)} />
     </div>
   );
 }

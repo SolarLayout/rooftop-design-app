@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { StatusMark } from "@/components/ui/StatusMark";
 import { seriesBarOf } from "@/lib/studio/series-bar";
 import type { Sized } from "@/lib/studio/strings-view";
-import { SECTION } from "./inspector-look";
+import { SECTION_LINE, SECTION_TEXT } from "./inspector-look";
 
 /**
  * Modules in series (docs/design/components.md, "Series range bar"; the boards "Studio, Strings lens" and
@@ -24,8 +24,8 @@ export function SeriesRange({ view, isUpdating = false }: { view: Sized; isUpdat
   const bar = range ? seriesBarOf(range, chosen) : null;
   return (
     <section aria-labelledby={heading} data-testid="series-range" data-state={isUpdating && bar ? "updating" : "settled"} className="flex flex-col gap-2">
-      <div className="flex items-center gap-3">
-        <h2 id={heading} className={SECTION}>
+      <div className={classNames("flex items-center gap-3", SECTION_LINE)}>
+        <h2 id={heading} className={SECTION_TEXT}>
           Modules in series
         </h2>
         {isUpdating && bar ? (

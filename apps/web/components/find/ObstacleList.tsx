@@ -5,6 +5,7 @@ import { Icon, type IconName } from "@/components/ui/Icon";
 import { IconButton } from "@/components/ui/IconButton";
 import { factsOf, type Obstacle, type ObstacleKind } from "@/lib/outline/obstacles";
 import type { OutlineEvent, OutlineState } from "@/lib/outline/outline-state";
+import { SECTION } from "@/components/ui/section-look";
 
 type Props = {
   state: OutlineState;
@@ -23,7 +24,7 @@ export function ObstacleList({ state, on, className }: Props) {
   const { obstacles, selectedObstacle } = state;
   return (
     <section aria-label="Obstacles" className={classNames("flex flex-col gap-2.5", className)}>
-      <h2 className="type-section text-text-3 uppercase">Obstacles · {obstacles.length}</h2>
+      <h2 className={SECTION}>Obstacles · {obstacles.length}</h2>
       {obstacles.length === 0 ? (
         <p className="type-small text-text-2">None yet. Draw a box, a tank, a wall or a building with the tools on the map. Each asks its height.</p>
       ) : (

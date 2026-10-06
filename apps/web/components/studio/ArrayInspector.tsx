@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useProject, useResults, useStores } from "@/components/shell/stores";
 import type { ModuleResponse } from "@/lib/api";
 import { moduleShownOf, type ReplacedModule } from "@/lib/studio/array-view";
@@ -8,15 +8,16 @@ import { editOf, openedAtOf, projectOf } from "@/lib/stores/project-store";
 import { designEditOf, designOf, layoutOf } from "@/lib/stores/results-store";
 import { ArrayMounting, type ArrayChange } from "./ArrayMounting";
 import { ArraySpacing } from "./ArraySpacing";
+import { SECTION } from "./inspector-look";
 import { ModuleCard } from "./ModuleCard";
-import { ReplaceModuleDialog } from "./ReplaceModuleDialog";
+import { ModulePicker } from "./ModulePicker";
 
 /** The module read from a replaced file, for the design that was open when it was read. */
 type Replaced = ReplacedModule & { openedAt: number | null };
 
 /**
  * The inspector of the Array lens (the boards "Studio, Array lens" on three sizes and "Studio, Array
- * lens, states"): the module with Replace, the mounting, the spacing and the shade-free window. Every field commits an edit of the document;
+ * lens, states"): the module with Change (D75), the mounting, the spacing and the shade-free window. Every field commits an edit of the document;
  * the layout and the energy follow (decision 16).
  */
 export function ArrayInspector() {
@@ -28,6 +29,9 @@ export function ArrayInspector() {
   const layout = useResults(layoutOf);
   const [replaced, setReplaced] = useState<Replaced | null>(null);
   const [isReplacing, setReplacing] = useState(false);
+  // Each opening of the picker mounts it afresh: its filters and its choice at rest.
+  const [openings, setOpenings] = useState(0);
+  const heading = useId();
 
   // A file read for another design says nothing about this one.
   const shown = moduleShownOf({ design, designEdit, replaced: replaced?.openedAt === openedAt ? replaced : null });
@@ -49,7 +53,18 @@ export function ArrayInspector() {
   return (
     <div className="flex flex-col gap-section tablet:grid tablet:grid-cols-2 tablet:gap-x-8 desktop:flex desktop:flex-col">
       <div className="flex flex-col gap-section">
-        <ModuleCard shown={shown} onReplace={() => setReplacing(true)} />
+        <section aria-labelledby={heading} className="flex flex-col gap-2">
+          <h2 id={heading} className={SECTION}>
+            Module
+          </h2>
+          <ModuleCard
+            shown={shown}
+            onChange={() => {
+              setOpenings((count) => count + 1);
+              setReplacing(true);
+            }}
+          />
+        </section>
         {project ? <ArrayMounting array={project.array} roof={project.roof} onChange={changeArray} /> : null}
       </div>
       {project ? (
@@ -57,7 +72,7 @@ export function ArrayInspector() {
           <ArraySpacing array={project.array} roofType={project.roof.roof_type} layout={layout} onChange={changeArray} />
         </div>
       ) : null}
-      <ReplaceModuleDialog open={isReplacing} onRead={moduleRead} onClose={() => setReplacing(false)} />
+      <ModulePicker key={openings} open={isReplacing} current={shown?.module.source ?? null} onRead={moduleRead} onClose={() => setReplacing(false)} />
     </div>
   );
 }

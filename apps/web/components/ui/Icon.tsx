@@ -136,6 +136,7 @@ const STROKED = {
       <path d="m20 20-3.5-3.5" />
     </>
   ),
+  sort: <path d="m7 15 5 5 5-5M7 9l5-5 5 5" />,
   strings: <path d="M13 2 4 14h7l-1 8 9-12h-7z" />,
   studio: (
     <>
