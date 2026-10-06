@@ -1166,6 +1166,18 @@
     color: var(--color-text);
   }
 
+  /*
+   * The browser's own parts, the scrollbars first, in the dark of the theme: what scrolls has a thin bar in the
+   * strong line's colour on no track (the owner, session 18: the browser's light bar stood beside the inspector).
+   */
+  html {
+    color-scheme: dark;
+    scrollbar-color: var(--color-line-strong) transparent;
+  }
+  * {
+    scrollbar-width: thin;
+  }
+
   body {
     @apply type-body-touch desktop:type-body;
   }

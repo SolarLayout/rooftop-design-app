@@ -88,6 +88,8 @@
 - Touch targets are at least 44 by 44 on phone and tablet.
 - No horizontal page scroll at any width from 360 up. A row that must scroll sideways (vitals on phone) shows
   part of the next item so it is seen to scroll.
+- What scrolls has the theme's bar: the page's colour scheme is dark, the bar thin in `color-line-strong` on no
+  track (session 18). A row that scrolls sideways shows no bar.
 - The 3D keeps a useful size: never under 240 px high.
 - Tables become lists of cards on phone. Charts go full width and keep their labels.
 - Body text is 15 px on touch sizes, 14 on desktop.
