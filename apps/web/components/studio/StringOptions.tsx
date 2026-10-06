@@ -11,7 +11,7 @@ import type { DesignResult, Project } from "@/lib/api";
 import { customBoundsOf, customOf, refusedCardOf, type Custom } from "@/lib/studio/custom-fields";
 import type { OptionCard } from "@/lib/studio/option-cards";
 import type { Sized } from "@/lib/studio/strings-view";
-import { SECTION, SECTION_LINE, SECTION_TEXT } from "./inspector-look";
+import { SECTION } from "./inspector-look";
 
 const CARD = "flex h-13 w-full shrink-0 cursor-pointer items-center gap-3 rounded-row border px-3 text-left focus-ring press-motion";
 const CHOSEN = "border-accent bg-note-surface shadow-halo-selected";
@@ -64,8 +64,8 @@ export function OptionCards({ cards, onChoose }: { cards: readonly OptionCard[];
 
   return (
     <section aria-labelledby={heading} className="flex flex-col gap-1.5">
-      <div className={classNames("flex items-center gap-3", SECTION_LINE)}>
-        <h2 id={heading} className={SECTION_TEXT}>
+      <div className="flex items-center gap-3">
+        <h2 id={heading} className={SECTION}>
           Options
         </h2>
         <span className="ml-auto type-caption whitespace-nowrap text-text-3">series × strings · kWp · DC/AC · MWh</span>

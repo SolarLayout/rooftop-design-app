@@ -324,7 +324,6 @@
   --color-note-surface: #1E1A10;
   --color-note-line: #3A3220;
   --color-heading: #FFB020;
-  --color-heading-line: rgba(255,176,32,.28);
   --color-ok: #3DD6A0;
   --color-sun-core: #FFD36B;
   --color-outline-fill: rgba(255,176,32,.09);
@@ -391,6 +390,7 @@
   --shadow-knob: 0 1px 3px rgba(0,0,0,.5);
   --shadow-handle: 0 2px 6px rgba(0,0,0,.6);
   --shadow-text-on-imagery: 0 1px 3px rgba(0,0,0,.9);
+  --shadow-heading: 0 2px 6px rgba(255,176,32,.6), 0 4px 14px rgba(255,176,32,.35);
   --halo-focus: 0 0 0 3px rgba(255,176,32,.18);
   --halo-selected: 0 0 0 3px rgba(255,176,32,.14);
   --halo-decision: 0 0 0 4px rgba(255,176,32,.14);
@@ -501,7 +501,6 @@
   --color-note-surface: var(--color-note-surface);
   --color-note-line: var(--color-note-line);
   --color-heading: var(--color-heading);
-  --color-heading-line: var(--color-heading-line);
   --color-ok: var(--color-ok);
   --color-sun-core: var(--color-sun-core);
   --color-outline-fill: var(--color-outline-fill);
@@ -563,6 +562,7 @@
   --shadow-knob: var(--shadow-knob);
   --shadow-handle: var(--shadow-handle);
   --shadow-text-on-imagery: var(--shadow-text-on-imagery);
+  --shadow-heading: var(--shadow-heading);
   --shadow-halo-focus: var(--halo-focus);
   --shadow-halo-selected: var(--halo-selected);
   --shadow-halo-decision: var(--halo-decision);
@@ -1099,6 +1099,10 @@
 /* Text that stands on the satellite imagery is read against whatever is under it. */
 @utility on-imagery {
   text-shadow: var(--shadow-text-on-imagery);
+}
+/* A section's heading in an input panel glows faintly in its orange under its words. */
+@utility heading-glow {
+  text-shadow: var(--shadow-heading);
 }
 /* The fade of the stage into the ground under the words of Present: nothing of the stage under them is cut, it darkens. */
 @utility stage-fade {

@@ -1,10 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { SECTION, SECTION_LINE, SECTION_TEXT } from "./section-look";
+import { SECTION } from "./section-look";
 
 describe("the heading of a section in an input panel", () => {
-  test("is in the heading's colour, at 600, uppercase, over its line", () => {
-    expect(SECTION_TEXT.split(" ")).toEqual(expect.arrayContaining(["type-section", "font-semibold", "text-heading", "uppercase"]));
-    expect(SECTION_LINE.split(" ")).toEqual(expect.arrayContaining(["border-b", "border-heading-line"]));
-    expect(SECTION).toBe(`${SECTION_TEXT} ${SECTION_LINE}`);
+  test("is in the heading's colour, at 600, uppercase, with its glow and no line", () => {
+    const classes = SECTION.split(" ");
+    expect(classes).toEqual(expect.arrayContaining(["type-section", "font-semibold", "text-heading", "uppercase", "heading-glow"]));
+    expect(classes.some((name) => name.startsWith("border"))).toBe(false);
   });
 });

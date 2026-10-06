@@ -5,8 +5,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Table } from "@/components/ui/Table";
 import type { Column } from "@/components/ui/table-cells";
 import type { MpptRow, MpptTable as MpptTableView } from "@/lib/studio/mppt-table";
-import { SECTION_LINE, SECTION_TEXT } from "./inspector-look";
-import { classNames } from "@/components/ui/class-names";
+import { SECTION } from "./inspector-look";
 
 const COLUMNS: ReadonlyArray<Column<MpptRow>> = [
   { key: "mppt", head: "MPPT", kind: "name", value: (row) => row.mppt, below: (row) => row.inverter, onCard: (row) => row.title },
@@ -43,8 +42,8 @@ export function MpptTable({ table, onEnterCurrent }: Props) {
   const heading = useId();
   return (
     <section aria-labelledby={heading} data-testid="mppt-table" className="flex flex-col gap-2">
-      <div className={classNames("flex items-baseline gap-3", SECTION_LINE)}>
-        <h2 id={heading} className={SECTION_TEXT}>
+      <div className="flex items-baseline gap-3">
+        <h2 id={heading} className={SECTION}>
           MPPT loading
         </h2>
         <span className="ml-auto type-caption whitespace-nowrap text-text-3">{table.of}</span>

@@ -4,8 +4,7 @@ import { useId } from "react";
 import { Segmented } from "@/components/ui/Segmented";
 import { StatusMark } from "@/components/ui/StatusMark";
 import { VOLTAGES, type BeforeAVoltage, type Volts } from "@/lib/studio/strings-view";
-import { SECTION, SECTION_LINE, SECTION_TEXT } from "./inspector-look";
-import { classNames } from "@/components/ui/class-names";
+import { SECTION } from "./inspector-look";
 
 const VOLTAGE_OPTIONS = VOLTAGES.map((volts) => ({ value: String(volts) as `${Volts}`, label: `${volts} V` }));
 
@@ -84,8 +83,8 @@ export function SystemVoltage({ voltage, onChoose }: { voltage: Volts; onChoose:
   const heading = useId();
   return (
     <section aria-labelledby={heading} className="flex flex-col gap-2">
-      <div className={classNames("flex items-center gap-3", SECTION_LINE)}>
-        <h2 id={heading} className={SECTION_TEXT}>
+      <div className="flex items-center gap-3">
+        <h2 id={heading} className={SECTION}>
           System voltage
         </h2>
         <span className="ml-auto type-caption text-text-3">Your choice</span>
