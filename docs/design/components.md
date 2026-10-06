@@ -592,6 +592,12 @@ with the note's mark, in one note under the field: minutes or seconds past 59, a
 is past 90° offers the swapped place as a row ("Swapped"), which Enter takes. The geocoder's own error is said as "The
 address search is not available right now. Paste coordinates or a maps link instead."
 
+Beside the search (the boards "UI fixes · My location and Search on every size", D78): on Find, one place at the field's
+right, on every size: before anything is typed, Use my location, the square of 48 (`surface-1`, border `line`,
+`radius-card-s`, `shadow-float`; its tooltip "Use my location" on desktop); with something typed, Search, primary, 48 high,
+which does what Enter does; once a place is found, nothing. On Home the well holds Use my location, a quiet icon of 44,
+before Find my roof, while nothing is typed. In code: `besideTheField` in `lib/places/beside-the-field.ts`.
+
 Under the search two rows of 76 (`surface-1`, border `line`, `radius-bar`,
 an icon of 22, the title in `text-title`, a line in `text-small` text-2): "Import a drawing" ("KMZ, KML or DXF with the
 roof and its obstacles") opens the dialog of the import, "Open a project" ("A saved .rtd file, from this device or a

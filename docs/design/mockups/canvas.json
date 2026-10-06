@@ -533,6 +533,30 @@
       "h": 1350,
       "title": "UI fixes · A choice of stringing that no longer fits · phone 390",
       "page": "ui-fixes"
+    },
+    "LocateSearch.dc.html": {
+      "x": 0,
+      "y": 24000,
+      "w": 1552,
+      "h": 2120,
+      "title": "UI fixes · My location and Search on every size · desktop 1440",
+      "page": "ui-fixes"
+    },
+    "LocateSearchTablet.dc.html": {
+      "x": 1632,
+      "y": 24000,
+      "w": 834,
+      "h": 2340,
+      "title": "UI fixes · My location and Search on every size · tablet 834",
+      "page": "ui-fixes"
+    },
+    "LocateSearchPhone.dc.html": {
+      "x": 2546,
+      "y": 24000,
+      "w": 390,
+      "h": 2240,
+      "title": "UI fixes · My location and Search on every size · phone 390",
+      "page": "ui-fixes"
     }
   },
   "createdOnFiles": {
@@ -741,7 +765,10 @@
     "SectionHeadingsPhone.dc.html",
     "ChoiceGone.dc.html",
     "ChoiceGoneTablet.dc.html",
-    "ChoiceGonePhone.dc.html"
+    "ChoiceGonePhone.dc.html",
+    "LocateSearch.dc.html",
+    "LocateSearchTablet.dc.html",
+    "LocateSearchPhone.dc.html"
   ],
   "pages": [
     {
