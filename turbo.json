@@ -64,7 +64,9 @@
         "tools/**",
         "e2e/stack.ts",
         "tsconfig.json",
-        "package.json"
+        "package.json",
+        "apps/web/**",
+        "e2e/**"
       ],
       "outputs": []
     },
