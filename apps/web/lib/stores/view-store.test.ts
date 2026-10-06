@@ -407,21 +407,21 @@ describe("the presentation", () => {
     expect(showsSunPathOf(store.getState())).toBe(true);
   });
 
-  // The ground under the roof (plan/phase-11-plan.md, step 35; decision D57): the imagery at first, or the plain grid;
-  // of the view, not of the design.
-  test("the ground is the imagery at first; set, it is kept; told again, nothing changes", () => {
+  // The ground under the roof (plan/phase-11-plan.md, step 35; decisions D57 and D70): the plain grid at first, or the
+  // imagery once the Layers panel asks for it; of the view, not of the design.
+  test("the ground is the plain grid at first; set, it is kept; told again, nothing changes", () => {
     const store = createViewStore();
-    expect(groundOf(store.getState())).toBe("imagery");
-
-    store.getState().setGround("plain");
     expect(groundOf(store.getState())).toBe("plain");
-
-    const before = store.getState();
-    store.getState().setGround("plain");
-    expect(store.getState()).toBe(before);
 
     store.getState().setGround("imagery");
     expect(groundOf(store.getState())).toBe("imagery");
+
+    const before = store.getState();
+    store.getState().setGround("imagery");
+    expect(store.getState()).toBe(before);
+
+    store.getState().setGround("plain");
+    expect(groundOf(store.getState())).toBe("plain");
   });
 
   test("the ground drawn is the imagery only while the view asks for it and there is imagery to draw", () => {

@@ -64,7 +64,9 @@ def test_the_answer_is_a_whole_project_with_the_defaults_of_the_api(client, demo
     assert body["roof_input"]["mode"] == "corners"
     assert body["format"] == demo["format"]
     assert set(body) == set(demo)
-    assert body["array"] == demo["array"]
+    # A new design starts with one module in tilt; the demo keeps its two (D69). The rest is the demo's.
+    assert body["array"] == {**demo["array"], "modules_in_tilt": 1}
+    assert demo["array"]["modules_in_tilt"] == 2
     assert body["losses"] == demo["losses"]
     assert body["roof"]["parapet_h"] == demo["roof"]["parapet_h"]
 

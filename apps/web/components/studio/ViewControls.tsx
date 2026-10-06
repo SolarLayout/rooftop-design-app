@@ -9,6 +9,7 @@ import { classNames } from "@/components/ui/class-names";
 import { LIST_GAP } from "@/components/ui/design-numbers";
 import { FloatingPanel } from "@/components/ui/FloatingPanel";
 import { Icon } from "@/components/ui/Icon";
+import { IconButton } from "@/components/ui/IconButton";
 import { FLOATING_SURFACE } from "@/components/ui/list-look";
 import { measures } from "@/components/ui/measures";
 import { Segmented } from "@/components/ui/Segmented";
@@ -76,7 +77,8 @@ export function ViewControls({ stage, className }: Props) {
  * pressed while its panel is open; the panel floats 6 under it with their right edges in line, on every size, and
  * holds one switch, Satellite imagery, with the hint of what the other position gives. The switch takes effect at
  * once, so that the ground changes under the roof while the panel is open. Escape, the button and a press beside
- * the panel close it, and the focus goes back to the button. What it sets is of the view, not of the design.
+ * the panel close it, as its close at the top right does (D70), and the focus goes back to the button. The switch is
+ * off at first: the plain grid. What it sets is of the view, not of the design.
  */
 function Layers() {
   const { view } = useStores();
@@ -110,7 +112,10 @@ function Layers() {
       </button>
       <FloatingPanel floating={floating} width="card" onTouch="floating">
         <div ref={panel} id={id} role="dialog" aria-label={LAYERS} className={FLOATING_SURFACE}>
-          <p className="px-2.5 pt-2 pb-1 type-section text-text-3">{LAYERS}</p>
+          <div className="flex items-center justify-between gap-2 pl-2.5">
+            <p className="type-section text-text-3">{LAYERS}</p>
+            <IconButton kind="quiet" size="xs" icon="close" iconSize={18} label="Close" onClick={floating.closeAndGoBack} />
+          </div>
           <div className="flex min-h-12 items-center gap-3 px-2.5 pt-0.5 pb-1.5 desktop:min-h-11">
             <div className="flex min-w-0 grow flex-col gap-0.5">
               <span>{SATELLITE_IMAGERY}</span>

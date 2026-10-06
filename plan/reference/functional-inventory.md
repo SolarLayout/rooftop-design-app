@@ -65,7 +65,7 @@ Tree model: trunk 0.3 m to crown start, crown disc above. The parapet shows as o
 |---|---|---|---|---|---|
 | Tilt (hint from latitude, clamp 5..15) | deg | 15 | 0..45 | `tilt_deg` | tilted |
 | Orientation | enum | portrait | portrait, landscape | `orientation` | tilted, sloped |
-| Modules in tilt | int | 2 | 1..4 | `modules_in_tilt` | tilted, sloped |
+| Modules in tilt | int | 1 (the demo 2; D69) | 1..4 | `modules_in_tilt` | tilted, sloped |
 | Lower-edge clearance | m | 0.5 | 0..3 | `clearance_m` | tilted, E-W |
 | Azimuth + "follow the roof edge" | deg | auto | 0..359.9 | `azimuth_deg` | tilted, E-W |
 | East-west tilt | deg | 10 | 0..30 | `ew_tilt_deg` | E-W |

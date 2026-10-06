@@ -82,7 +82,7 @@ export type ViewState = {
   dragging: Dragging | null;
   /** Present's tour over the view; null in the Studio. */
   presentation: Presentation | null;
-  /** The ground under the roof, as the Layers panel of the stage sets it: the imagery at first (D57). */
+  /** The ground under the roof, as the Layers panel of the stage sets it: the plain grid at first (D57, D70). */
   ground: GroundChoice;
   showLens: (lens: Lens) => void;
   setToReview: (names: readonly string[]) => void;
@@ -112,7 +112,7 @@ export type ViewState = {
 export type ViewStore = ReturnType<typeof createViewStore>;
 
 // As the approved mockups open: the first lens, in 3D, the design day at 10:30.
-const AT_THE_START = { lens: "roof", camera: "3d", cameraRequest: 0, cameraFrom: "3d", cameraMove: 0, northRequest: 0, sunTime: { day: "design_day", hour: 10.5 }, isPlaying: false, onTheRoof: { sunPath: true, window: true, shadowOutlines: false }, sunTab: "shadows", selection: null, stringColouring: "mppt", tracedString: null, draft: null, toReview: [] as string[], dragging: null, presentation: null as Presentation | null, ground: "imagery" as GroundChoice } as const;
+const AT_THE_START = { lens: "roof", camera: "3d", cameraRequest: 0, cameraFrom: "3d", cameraMove: 0, northRequest: 0, sunTime: { day: "design_day", hour: 10.5 }, isPlaying: false, onTheRoof: { sunPath: true, window: true, shadowOutlines: false }, sunTab: "shadows", selection: null, stringColouring: "mppt", tracedString: null, draft: null, toReview: [] as string[], dragging: null, presentation: null as Presentation | null, ground: "plain" as GroundChoice } as const;
 
 function refuseWhatIsNoTime({ day, hour }: SunTime): void {
   if (!(hour >= 0 && hour <= 24)) throw new RangeError(`${hour} is no hour of a day: from 0 to 24.`);
