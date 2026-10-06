@@ -43,6 +43,11 @@ type Props = Omit<ComponentProps<"div">, "children"> & {
   label: string;
   /** The value as it is shown: the number is formatted by who knows the quantity. */
   value: string;
+  /**
+   * The widest value this stat will show, while its value counts toward it (Present's energy): the value stands in that
+   * width from the start, at its right, in tabular figures, so that it neither wiggles nor pushes what is beside it.
+   */
+  holds?: string;
   unit?: string;
   /** What follows the unit, quieter and never dimmed: the DC side of the capacity factor. On phone it takes a line under the value. */
   more?: string;
@@ -58,14 +63,14 @@ type Props = Omit<ComponentProps<"div">, "children"> & {
 const BESIDE: Record<StatLook, string> = { cell: "gap-1.5", lead: "gap-2.5", tile: "gap-1.5", hero: "gap-3.5", figure: "gap-1.5" };
 
 /** One label with its value. It belongs into `Stats`. */
-export function Stat({ label, value, unit, more, mark, dimmed = false, beside, look = "cell", className, ...rest }: Props) {
+export function Stat({ label, value, holds, unit, more, mark, dimmed = false, beside, look = "cell", className, ...rest }: Props) {
   return (
     <div className={classNames("flex min-w-0 flex-col justify-center whitespace-nowrap", FRAME[look], className)} {...rest}>
       <dt className={classNames("text-text-2", LABEL[look])}>{label}</dt>
       <dd className={classNames("flex items-center text-text", more && "flex-wrap", BESIDE[look], VALUE[look])}>
         <span data-testid="stat-value" className={classNames("flex items-center gap-1.5", dimmed && "opacity-updating")}>
           <span>
-            {value}
+            {holds === undefined ? value : <HeldValue value={value} holds={holds} />}
             {/* The space is as wide as a figure of the value: it is outside the unit. */}
             {unit ? " " : null}
             {/* Dimmed, the unit has the colour of the number: in its own it could not be read any more. */}
@@ -78,6 +83,21 @@ export function Stat({ label, value, unit, more, mark, dimmed = false, beside, l
         {more ? <span className="basis-full type-caption text-text-2 tablet:hidden">{more}</span> : null}
       </dd>
     </div>
+  );
+}
+
+/**
+ * A value in the width of the one it holds the place of: the held one in the flow, unseen, gives the width; the value
+ * stands over it at its right. (An inline grid of the two took no width inside the stat's flex boxes.)
+ */
+function HeldValue({ value, holds }: { value: string; holds: string }) {
+  return (
+    <span className="relative inline-block tabular-nums">
+      <span aria-hidden className="invisible">
+        {holds}
+      </span>
+      <span className="absolute top-0 right-0">{value}</span>
+    </span>
   );
 }
 

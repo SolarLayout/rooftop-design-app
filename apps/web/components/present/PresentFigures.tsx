@@ -7,8 +7,7 @@ import { classNames } from "@/components/ui/class-names";
 import { measures } from "@/components/ui/measures";
 import { Stat, Stats } from "@/components/ui/Stat";
 import type { BarLook, Mark } from "@/lib/format/cascade";
-import { energy } from "@/lib/format/vitals";
-import { countedAt, grownMarksOf } from "@/lib/present/counting";
+import { countingEnergy, grownMarksOf } from "@/lib/present/counting";
 import type { Tour } from "@/lib/present/create-tour";
 import { figuresOf } from "@/lib/present/figures";
 import { chosenOptionOf } from "@/lib/stores/results-store";
@@ -40,13 +39,13 @@ export function PresentFigures({ tour }: Props) {
   const option = useResults(chosenOptionOf);
   const figures = useMemo(() => (option ? figuresOf(option) : null), [option]);
   if (scene !== "energy" || !figures) return null;
-  const counted = energy(countedAt(figures.mwh, share));
+  const counted = countingEnergy(figures.mwh, share);
   const marks = grownMarksOf(figures.chain, share);
 
   return (
     <div data-testid="present-energy" data-state={share >= 1 ? "counted" : "counting"} className="pointer-events-none absolute inset-0 z-stage-overlay flex items-center justify-center gap-16 bg-dim px-10 tablet:gap-24">
       <Stats className="flex flex-col">
-        <Stat look="hero" label={figures.label} value={counted.number} unit={counted.unit} />
+        <Stat look="hero" label={figures.label} value={counted.number} holds={counted.holds} unit={counted.unit} />
       </Stats>
       <div className="flex flex-col gap-1.5">
         <span className="type-caption whitespace-nowrap text-text-2">
