@@ -20,6 +20,8 @@ const API_TYPES = ["@rooftop/api-types#typecheck"];
 const API = ["@rooftop/api#lint", "@rooftop/api#imports", "@rooftop/api#test"];
 const TOOLS = ["//#typecheck:tools", "//#test:tools"];
 const PROOFS = ["//#proofs"];
+/** The tools' tests read the web app's imports and the suites of e2e (e2e-groups.test.ts, e2e-group-imports.test.ts): a change to either re-runs them. */
+const SEES_WEB_AND_E2E = "//#test:tools";
 const EVERYTHING = [...WEB, ...E2E, ...BROWSER, ...API_TYPES, ...API, ...TOOLS].sort();
 
 /** Every file a proof changed: each must be an input of the proofs' task, so that a change to it re-runs them. */
@@ -71,39 +73,39 @@ describe("what turbo re-runs", () => {
   });
 
   test("a module of Find: the web app's tasks, and the groups that see Find (find, and the Studio, Performance, Home, Present and the shell, which cross into it)", () => {
-    const reached = [...E2E.slice(0, 1), ...WEB, ...browser("find", "studio", "performance", "home", "present", "shell")].sort();
+    const reached = [...E2E.slice(0, 1), ...WEB, SEES_WEB_AND_E2E, ...browser("find", "studio", "performance", "home", "present", "shell")].sort();
     expect(after("apps/web/lib/outline/snap.ts", aComment)).toEqual(reached);
     expect(after("apps/web/components/find/RoofMap.tsx", aComment)).toEqual(reached);
   });
 
   test("a module of the Studio's scene: the web app's tasks, and studio, performance, present (which reuses the stage) and shell", () => {
-    expect(after("apps/web/lib/scene/pick.ts", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...browser("studio", "performance", "present", "shell")].sort());
+    expect(after("apps/web/lib/scene/pick.ts", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, SEES_WEB_AND_E2E, ...browser("studio", "performance", "present", "shell")].sort());
   });
 
   test("a component of Handover: the web app's tasks, and handover and shell alone", () => {
-    expect(after("apps/web/components/handover/Handover.tsx", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...browser("handover", "shell")].sort());
+    expect(after("apps/web/components/handover/Handover.tsx", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, SEES_WEB_AND_E2E, ...browser("handover", "shell")].sort());
   });
 
   test("a component of Home: the web app's tasks, and home and shell alone", () => {
-    expect(after("apps/web/components/home/Home.tsx", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...browser("home", "shell")].sort());
-    expect(after("apps/web/lib/home/cards.ts", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...browser("home", "shell")].sort());
+    expect(after("apps/web/components/home/Home.tsx", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, SEES_WEB_AND_E2E, ...browser("home", "shell")].sort());
+    expect(after("apps/web/lib/home/cards.ts", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, SEES_WEB_AND_E2E, ...browser("home", "shell")].sort());
   });
 
   test("the dialog Open a project, which the switcher opens on every page and so lives in the shell: the web app's tasks, and every group", () => {
-    expect(after("apps/web/components/shell/OpenProject.tsx", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...BROWSER].sort());
-    expect(after("apps/web/lib/flow/open-project.ts", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...BROWSER].sort());
+    expect(after("apps/web/components/shell/OpenProject.tsx", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, SEES_WEB_AND_E2E, ...BROWSER].sort());
+    expect(after("apps/web/lib/flow/open-project.ts", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, SEES_WEB_AND_E2E, ...BROWSER].sort());
   });
 
   test("a component of Present: the web app's tasks, and present and shell alone", () => {
-    expect(after("apps/web/components/present/Present.tsx", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...browser("present", "shell")].sort());
+    expect(after("apps/web/components/present/Present.tsx", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, SEES_WEB_AND_E2E, ...browser("present", "shell")].sort());
   });
 
   test("a component of ui, which every page uses: the web app's tasks, and every group", () => {
-    expect(after("apps/web/components/ui/Button.tsx", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...BROWSER].sort());
+    expect(after("apps/web/components/ui/Button.tsx", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, SEES_WEB_AND_E2E, ...BROWSER].sort());
   });
 
   test("a module of the device, whose designs the shell saves and opens on every page: the web app's tasks, and every group", () => {
-    expect(after("apps/web/lib/device/saving.ts", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, ...BROWSER].sort());
+    expect(after("apps/web/lib/device/saving.ts", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, SEES_WEB_AND_E2E, ...BROWSER].sort());
   });
 
   test("a module of the tools: the tools' tasks, and every group, whose stack the tools start", () => {
@@ -126,21 +128,21 @@ describe("what turbo re-runs", () => {
   });
 
   test("a browser suite: e2e's tasks, and its own group alone", () => {
-    expect(after("e2e/tests/find.e2e.ts", aComment)).toEqual([...E2E, ...browser("find")].sort());
-    expect(after("e2e/tests/kit-buttons.e2e.ts", aComment)).toEqual([...E2E, ...browser("kit")].sort());
-    expect(after("e2e/tests/screens.e2e.ts", aComment)).toEqual([...E2E, ...browser("shell")].sort());
-    expect(after("e2e/tests/handover-screens.e2e.ts", aComment)).toEqual([...E2E, ...browser("handover")].sort());
+    expect(after("e2e/tests/find.e2e.ts", aComment)).toEqual([...E2E, SEES_WEB_AND_E2E, ...browser("find")].sort());
+    expect(after("e2e/tests/kit-buttons.e2e.ts", aComment)).toEqual([...E2E, SEES_WEB_AND_E2E, ...browser("kit")].sort());
+    expect(after("e2e/tests/screens.e2e.ts", aComment)).toEqual([...E2E, SEES_WEB_AND_E2E, ...browser("shell")].sort());
+    expect(after("e2e/tests/handover-screens.e2e.ts", aComment)).toEqual([...E2E, SEES_WEB_AND_E2E, ...browser("handover")].sort());
   });
 
   test("a fixture of the browser tests, which every suite may read: e2e's tasks, and every group", () => {
-    expect(after("e2e/fixtures/geocode-nothing.json", (text) => text.replace("{", "{ "))).toEqual([...E2E, ...BROWSER].sort());
+    expect(after("e2e/fixtures/geocode-nothing.json", (text) => text.replace("{", "{ "))).toEqual([...E2E, SEES_WEB_AND_E2E, ...BROWSER].sort());
   });
 
   test("a baseline: e2e's tasks, and the group whose name it begins with alone (its screens suite takes it; the shell's are shell*.png)", () => {
-    expect(after("e2e/baselines/darwin/desktop/find.png", (bytes) => `${bytes}x`)).toEqual([...E2E, ...browser("find")].sort());
-    expect(after("e2e/baselines/darwin/desktop/handover.png", (bytes) => `${bytes}x`)).toEqual([...E2E, ...browser("handover")].sort());
-    expect(after("e2e/baselines/darwin/desktop/kit.png", (bytes) => `${bytes}x`)).toEqual([...E2E, ...browser("kit")].sort());
-    expect(after("e2e/baselines/darwin/desktop/shell-saved-on-this-device.png", (bytes) => `${bytes}x`)).toEqual([...E2E, ...browser("shell")].sort());
+    expect(after("e2e/baselines/darwin/desktop/find.png", (bytes) => `${bytes}x`)).toEqual([...E2E, SEES_WEB_AND_E2E, ...browser("find")].sort());
+    expect(after("e2e/baselines/darwin/desktop/handover.png", (bytes) => `${bytes}x`)).toEqual([...E2E, SEES_WEB_AND_E2E, ...browser("handover")].sort());
+    expect(after("e2e/baselines/darwin/desktop/kit.png", (bytes) => `${bytes}x`)).toEqual([...E2E, SEES_WEB_AND_E2E, ...browser("kit")].sort());
+    expect(after("e2e/baselines/darwin/desktop/shell-saved-on-this-device.png", (bytes) => `${bytes}x`)).toEqual([...E2E, SEES_WEB_AND_E2E, ...browser("shell")].sort());
   });
 
   test("a document: nothing", () => {
@@ -149,7 +151,7 @@ describe("what turbo re-runs", () => {
   });
 
   test("a document of the web app: the package's own tasks, which key on every file of the package, and no browser group", () => {
-    expect(after("apps/web/CLAUDE.md", aComment)).toEqual([...E2E.slice(0, 1), ...WEB].sort());
+    expect(after("apps/web/CLAUDE.md", aComment)).toEqual([...E2E.slice(0, 1), ...WEB, SEES_WEB_AND_E2E].sort());
   });
 
   test("the lockfile, turbo.json, the check's own code: everything", () => {
