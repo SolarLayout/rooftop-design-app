@@ -10,8 +10,10 @@ import { Icon } from "@/components/ui/Icon";
 import { FACT, FLOATING_SURFACE, ROW, ROW_MARKED } from "@/components/ui/list-look";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { StatusMark } from "@/components/ui/StatusMark";
+import { Tooltip } from "@/components/ui/Tooltip";
 import { useFloating } from "@/components/ui/use-floating";
 import { placeInFull } from "@/lib/format/place";
+import { besideTheField } from "@/lib/places/beside-the-field";
 import { SearchError } from "@/lib/places/esri";
 import { isAPlace, placeInputOf, type LatLon } from "@/lib/places/place-input";
 import type { MapProvider } from "@/lib/places/provider";
@@ -42,6 +44,7 @@ type Props = {
 export const SEARCH_LABEL = "Search an address or paste coordinates";
 const NO_KEY = "Words cannot be searched for without a map key. Paste coordinates or a maps link instead.";
 const NO_LOCATION = "Your location is not available. Allow it in the browser, or search for the address.";
+const MY_LOCATION = "Use my location";
 
 const BOX = "flex h-12 min-w-0 items-center gap-3 rounded-card-s border border-line bg-surface-1 px-4 shadow-float";
 const FIELD = "flex h-10 min-w-0 items-center gap-2.5 rounded-control border border-line bg-well px-3 shadow-well";
@@ -191,6 +194,8 @@ export function Search({ provider, near, onPlace, found, look = "floating", hero
   const isListOpen = marked !== null;
   const isHero = look === "hero";
   const hasWords = typed.trim() !== "";
+  const beside = besideTheField({ look, typed, found });
+  const locateMark = isLocating ? <ProgressRing size={16} /> : <Icon name="locate" size={18} />;
 
   return (
     <div className={classNames(isHero ? HERO : "flex min-w-0 items-center gap-2 tablet:gap-2.5", className)}>
@@ -224,6 +229,19 @@ export function Search({ provider, near, onPlace, found, look = "floating", hero
         />
         {state.kind === "searching" ? (
           <ProgressRing size={16} label="Searching" />
+        ) : isHero && beside === "locate" ? (
+          // Home's well holds my location before Find my roof, while nothing is typed.
+          <Tooltip words={MY_LOCATION}>
+            <button
+              type="button"
+              aria-label={MY_LOCATION}
+              aria-busy={isLocating}
+              onClick={useMyLocation}
+              className="-mr-1.5 flex size-touch shrink-0 cursor-pointer items-center justify-center rounded-row text-text-2 press-motion focus-ring hovered:bg-control-hover hovered:text-text tablet:mr-0"
+            >
+              {locateMark}
+            </button>
+          </Tooltip>
         ) : found !== null ? (
           <span data-testid="found-at" className="hidden max-w-40 truncate type-small text-text-2 tablet:inline">
             {found}
@@ -243,19 +261,24 @@ export function Search({ provider, near, onPlace, found, look = "floating", hero
           </ButtonLink>
         )
       ) : null}
-      {!isHero && typed === "" && found === null ? (
-        <button
-          type="button"
-          aria-label="Use my location"
-          aria-busy={isLocating}
-          onClick={useMyLocation}
-          className={classNames(
-            "flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-card-s border border-line bg-surface-1 text-text shadow-float",
-            "press-motion focus-ring hovered:bg-control-hover desktop:hidden",
-          )}
-        >
-          {isLocating ? <ProgressRing size={16} /> : <Icon name="locate" size={18} />}
-        </button>
+      {!isHero && beside === "locate" ? (
+        <Tooltip words={MY_LOCATION}>
+          <button
+            type="button"
+            aria-label={MY_LOCATION}
+            aria-busy={isLocating}
+            onClick={useMyLocation}
+            className="flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-card-s border border-line bg-surface-1 text-text shadow-float press-motion focus-ring hovered:bg-control-hover"
+          >
+            {locateMark}
+          </button>
+        </Tooltip>
+      ) : null}
+      {beside === "search" ? (
+        // With something typed, the action that Enter is: the words searched, coordinates or a link taken.
+        <Button type="submit" form={formId} kind="primary" className="h-12 shrink-0 rounded-card-s px-4 desktop:h-12 desktop:rounded-card-s">
+          Search
+        </Button>
       ) : null}
 
       {/* The places float under the field on every size: a sheet would stand under the keyboard of a phone. */}
