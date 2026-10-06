@@ -947,16 +947,19 @@ made by `rowsOnTheDeviceOf` (`components/shell/switcher-view.ts`) of the designs
 - While no design is open, a skeleton stands in the place of the name.
 
 ## State of saving
-In the top bar on desktop, `text-small`, text-2; on tablet and phone in the project switcher only.
+Its mark before the design's name in the project switcher's trigger, on every size (the boards "UI fixes · The state
+of saving, a mark before the name", D74): a slot of 14, whatever the state, so that the name never moves; the words
+are the trigger's tooltip and description, never in the top bar. In the switcher's menu, under the name, mark and
+words as below (`text-caption`), Not saved a button that opens the notes.
 
 | State | Mark | Words |
 |---|---|---|
 | Saved | A dot of 7 in `color-ok`, pulsing in `duration-pulse-saved` | Saved on this device |
 | Saving | A turning ring of 12 | Saving |
 | Not kept: the demo, and every design before Phase 10 | A hollow dot of 7, 1.5 px in text-3 | Not kept on this device |
-| Could not be saved | A note of 16 | Not saved. It is a button and opens the notes |
+| Could not be saved | A note of 16 (14 in the trigger's slot) | Not saved. It is a button and opens the notes |
 
-In code: `SaveState`. Before Phase 10 the shell shows "Not kept on this device" for every design. In the
+In code: `SaveState` (the menu's), `SaveMark` (the trigger's), `SAVING_WORDS`. Before Phase 10 the shell shows "Not kept on this device" for every design. In the
 project switcher the words are `text-caption`.
 
 ## Top bar and navigation
