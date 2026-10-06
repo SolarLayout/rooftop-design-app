@@ -263,10 +263,11 @@ def parse_ond(text: str, source: str = "") -> Inverter:
     """An inverter from the text of an OND file. *source* names the file in the result and in errors."""
     lines = text.splitlines()
     kv = _flat_kv(lines)
-    unit = _s(kv, "UnitAffEnum").lower()
     pnom = _f(kv, "PNomConv")
     pmax = _f(kv, "PMaxOUT")
-    if unit == "w" or pnom > 10000:  # older files give watts
+    # PNomConv is in kW; UnitAffEnum is only the unit PVsyst shows it in.
+    # A power above 10 MW is an older file's watts.
+    if pnom > 10000:
         pnom, pmax = pnom / 1000.0, pmax / 1000.0
     inv = Inverter(
         manufacturer=_s(kv, "Manufacturer"),
