@@ -78,6 +78,8 @@ Tree model: trunk 0.3 m to crown start, crown disc above. The parapet shows as o
 No control on desktop: module gap 0.02 m, flush clearance 0.1 m.
 
 ### 1.4 Module (PAN) and inverter (OND)
+- Web (D75): the module and the inverter can be chosen from the app's library of PAN and OND files (`docs/equipment-library.md`)
+  as well as from a file of one's own; both are read by the same reader.
 - PAN: empty means the bundled module (desktop: `Test.PAN`; web: the same data under its real name, D24). Shown: file, manufacturer, model, Wp, size, Voc, Isc, bypass diodes,
   bifaciality, twin half-cell, and "Coefficients (one-diode model | PAN file): Voc, Vmp, Pmpp in %/degC".
 - OND: empty means the bundled inverter (desktop: `Test-S.ond`; web: the same data under its real name, D24). Shown: file, manufacturer, model, kW, MPPT count, inputs,

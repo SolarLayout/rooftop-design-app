@@ -437,6 +437,54 @@
       "h": 880,
       "title": "UI fixes · The state of saving, a mark before the name · phone 390",
       "page": "ui-fixes"
+    },
+    "EquipmentPicker.dc.html": {
+      "x": 0,
+      "y": 14000,
+      "w": 1552,
+      "h": 3600,
+      "title": "UI fixes · Choose a module or an inverter · desktop 1440",
+      "page": "ui-fixes"
+    },
+    "EquipmentPickerTablet.dc.html": {
+      "x": 1632,
+      "y": 14000,
+      "w": 834,
+      "h": 3960,
+      "title": "UI fixes · Choose a module or an inverter · tablet 834",
+      "page": "ui-fixes"
+    },
+    "EquipmentPickerPhone.dc.html": {
+      "x": 2546,
+      "y": 14000,
+      "w": 390,
+      "h": 3100,
+      "title": "UI fixes · Choose a module or an inverter · phone 390",
+      "page": "ui-fixes"
+    },
+    "EquipmentEntry.dc.html": {
+      "x": 0,
+      "y": 18400,
+      "w": 1552,
+      "h": 1140,
+      "title": "UI fixes · Where the picker opens · desktop 1440",
+      "page": "ui-fixes"
+    },
+    "EquipmentEntryTablet.dc.html": {
+      "x": 1632,
+      "y": 18400,
+      "w": 834,
+      "h": 1020,
+      "title": "UI fixes · Where the picker opens · tablet 834",
+      "page": "ui-fixes"
+    },
+    "EquipmentEntryPhone.dc.html": {
+      "x": 2546,
+      "y": 18400,
+      "w": 390,
+      "h": 1720,
+      "title": "UI fixes · Where the picker opens · phone 390",
+      "page": "ui-fixes"
     }
   },
   "createdOnFiles": {
@@ -633,7 +681,13 @@
     "PresentStatsTablet.dc.html",
     "SaveStateMark.dc.html",
     "SaveStateMarkTablet.dc.html",
-    "SaveStateMarkPhone.dc.html"
+    "SaveStateMarkPhone.dc.html",
+    "EquipmentPicker.dc.html",
+    "EquipmentPickerTablet.dc.html",
+    "EquipmentPickerPhone.dc.html",
+    "EquipmentEntry.dc.html",
+    "EquipmentEntryTablet.dc.html",
+    "EquipmentEntryPhone.dc.html"
   ],
   "pages": [
     {

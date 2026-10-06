@@ -11,7 +11,7 @@ focus ring. An icon-only button has an `aria-label`.
 | Kind | Height | Surface | Text | Shadow | Use |
 |---|---|---|---|---|---|
 | Primary | 36 to 40 in bars, 44 in toolbars, 56 for the main action of a panel | accent | accent-ink, Geist 600 | primary | One per view: Export, Find my roof, Build this roof, Download |
-| Secondary | 36 to 40 (44 on touch) | control, border line-strong | text, Geist 500 | raised | Replace, Edit, Add, Present, Save a copy |
+| Secondary | 36 to 40 (44 on touch) | control, border line-strong | text, Geist 500 | raised | Change, Edit, Add, Present, Save a copy |
 | Quiet | 40 to 44 | none | text-2 (text on hover) | none | Undo, Clear, tools beside a primary tool, "Enter dimensions by hand instead" |
 | Icon | 38 to 48 square | as secondary or quiet | icon 16 to 22 | as kind | Fit, north, zoom, back, remove |
 | Round | 32 to 44 | accent | icon accent-ink | primary | Play |
@@ -175,7 +175,10 @@ In code: `TextField`; its words in `text-entry.ts`.
 ## Cards
 `surface-1`, border `line`, radius `radius-card`, `shadow-card`, padding `space-card`.
 Equipment card (module, inverter): glyph 44 by 56 to 60, name in Geist 600, one or two lines of facts in
-`text-caption`, file name in Geist Mono, a secondary button (Replace).
+`text-caption`, file name in Geist Mono, a secondary button (Change, which opens the picker of "Choose a module or an
+inverter"; its tooltip on desktop "Choose from 119 modules, or use a PAN file", the count the library's). The maker is
+named as people know it (`makerOf`, D75). A file of the app's library has a quiet tag "From the app" after its name
+(11, Geist 500, text-2, border `line-strong`, radius `radius-xs`).
 Selected card: `note-surface`, accent border, `halo-selected`.
 Compact card: radius `radius-card-s`, padding `space-card-compact`.
 
@@ -527,6 +530,41 @@ In code: `OpenProject` (`components/shell`), opened from the project switcher's 
 and from Home; `lib/flow/open-project.ts` holds the pure parts (the file by its ending, the request from a `File`, the
 lines of a file read, the refusal from an error); the design is kept by `keepAndOpen` of the saving store.
 
+## Choose a module or an inverter (the equipment picker)
+The boards "UI fixes · Choose a module or an inverter" and "UI fixes · Where the picker opens" (D75). Change on the module
+card (Array lens) opens "Choose a module"; on the inverter card (Strings lens) "Choose an inverter". The dialog is the kit's,
+wide: 760 on desktop, 680 on tablet; on phone the bottom sheet at its full height, 48 under the top of the screen. In it:
+the title, the filters, the count, the list, the file of one's own, the foot; no sentence under the title (the owner: "not
+needed").
+
+- Filters: a search ("Maker or model") over the maker as the file states it and as people know it, the model and the file's
+  name, and range sliders of the kit: the module's Power (300 to 650 Wp, the library's ends, steps of 5); the inverter's AC
+  power (0.7 to 350 kW, by steps closer at the low end: 0.7, 1, 2, 3, 5, 8, 10, 15, 20, 25, 30, 40, 50, 60, 75, 100, 125,
+  150, 200, 250, 300, 350) and MPPT (1 to 15). At rest the handles stand at the ends. On desktop the search and the sliders
+  share one row; on tablet and phone the search has its own.
+- The count ("20 of 119 modules") with "Clear the filters" when a filter or the search is set (`role="status"`).
+- The list, a listbox of 52 rows (60 on touch, three lines on phone): the model in Geist 500 with its tags, under it the
+  maker as people know it (and the file's data source when one model comes in two files), then the numbers in mono at the
+  right. Module: Wp, efficiency %, size m, bifacial (tablet: no bifacial). Inverter: AC kW, MPPT, MPPT V (the window),
+  Max DC V (tablet: no Max DC V). Tags: "In this design" for the design's own when it is of the library (the list opens on
+  it), "Preliminary" (note colours) for a file its maker calls so. The chosen row: `control-active`, an accent edge of 2
+  inside at the left, the tick. A press chooses; the arrows move the choice, Enter uses it.
+- Sorting: a head of a column that holds one value is a button (the table's sorting); the others are words. The list opens
+  sorted by power, upwards: Wp (AC kW) is the active head with its arrow up. A first press on another head sorts the figures
+  downwards and the names A to Z; a second turns it; a third gives the order by power back. A head that sorts and is not
+  active has a quiet mark of up and down (12, text-3). On phone, with no heads, a select beside the count holds the orders.
+- Nothing found: in the list, "No inverter in the app matches “huawei”." and how to go on, with "Clear the search".
+- The file of one's own: a slim drop of 52 (60 on touch) under the list, dashed `line-strong`, "Or drop a PAN file of your
+  own here" and "Choose a file"; on phone a secondary button "Choose a PAN file of your own" under the primary action. The
+  file is read as the old Replace read it, and refused the same way.
+- The foot: the chosen file's name in mono at the left, Cancel (quiet), "Use this module" (primary), which waits until a row
+  other than the design's own is chosen. Used: the ring and "Reading" in the button while the API reads the file; the dialog
+  closes when it is read. Refused (it should not be: the catalog was written by the same reader), a note under the list in
+  the engine's words; the equipment of before stays (D32).
+
+In code: `EquipmentPicker` (`components/studio`) with `ModulePicker` and `InverterPicker`; `lib/equipment/` holds the pure
+parts: the catalog's types and its fetch, the filters, the search, the sorting, the scale of the AC power, the makers.
+
 ## Home
 The boards "Home" (desktop, approved in round 1), "Home · tablet 834" and "Home · phone 390" (plan phase 10, step 11,
 decision 5). Outside the shell: no top bar; the logo and the name at the top left on every size (`Logo` with
@@ -724,7 +762,8 @@ On phone the button stands under the words and is as wide as the field, 44 high;
 than 88.
 
 ## Dialog
-Over a dimmed screen (`rgba(5,7,10,.72)`), in its middle. Panel: width 340 to 440, `surface-1`, border
+Over a dimmed screen (`rgba(5,7,10,.72)`), in its middle. Panel: width 340 to 440 (wide: 760 on desktop, 680 on tablet, for
+the equipment picker), `surface-1`, border
 `line-strong`, radius `radius-panel`, `shadow-panel`, padding 22. Title in the display face, 22 / 28
 (`text-lens-touch`), a quiet icon button of 32 to close at its right; body in text-2; actions at the right
 with 8 between them: quiet, secondary, primary, the primary one last.

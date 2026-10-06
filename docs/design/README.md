@@ -76,6 +76,8 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | Controls, part 2 | `Controls2.dc.html` | `controls-part-2.png` | |
 | Shell states | `ShellStates.dc.html` | `shell-states.png` | desktop, tablet, phone in parts |
 | Tabs | `Tabs.dc.html` | `tabs.png` | desktop, phone in parts |
+| UI fixes · Choose a module or an inverter | `EquipmentPicker.dc.html`, `EquipmentPickerTablet.dc.html`, `EquipmentPickerPhone.dc.html` | `ui-fixes-equipment-picker-desktop.png`, `ui-fixes-equipment-picker-tablet.png`, `ui-fixes-equipment-picker-phone.png` | desktop, tablet, phone |
+| UI fixes · Where the picker opens | `EquipmentEntry.dc.html`, `EquipmentEntryTablet.dc.html`, `EquipmentEntryPhone.dc.html` | `ui-fixes-equipment-entry-desktop.png`, `ui-fixes-equipment-entry-tablet.png`, `ui-fixes-equipment-entry-phone.png` | desktop, tablet, phone |
 | UI fixes · The state of saving, a mark before the name | `SaveStateMark.dc.html`, `SaveStateMarkTablet.dc.html`, `SaveStateMarkPhone.dc.html` | `ui-fixes-save-state-desktop.png`, `ui-fixes-save-state-tablet.png`, `ui-fixes-save-state-phone.png` | desktop, tablet, phone |
 | UI fixes · Present, the figures of each scene | `PresentStats.dc.html`, `PresentStatsTablet.dc.html` (the scenes in `present_scenes/`) | `ui-fixes-present-stats-desktop.jpg`, `ui-fixes-present-stats-tablet.jpg` | desktop, tablet (Present has no phone) |
 | UI fixes · Coordinates in the search | `SearchCoordinates.dc.html`, `SearchCoordinatesTablet.dc.html`, `SearchCoordinatesPhone.dc.html` | `ui-fixes-search-coordinates-desktop.png`, `ui-fixes-search-coordinates-tablet.png`, `ui-fixes-search-coordinates-phone.png` | desktop, tablet, phone |
@@ -152,10 +154,17 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
 - `mockups/build_ui_fixes_save_state.py` writes the boards "UI fixes · The state of saving, a mark before the name": the
   approved top bars (Main, StudioTablet, StudioPhone) in the four states, the words gone from the desktop's bar, the
   mark before the name; approved on 2026-10-06 (session 18, D74).
+- `mockups/build_ui_fixes_equipment_picker.py` writes the boards "UI fixes · Choose a module or an inverter" (the picker over
+  the library of PAN and OND files: its filters, its list and its sorting, nothing found, reading, refused) from the real rows
+  of `mockups/equipment_picker_data.json`, taken from the owner's indexes of the two libraries; and
+  `mockups/build_ui_fixes_equipment_entry.py` the boards "UI fixes · Where the picker opens" (the module and the inverter cards
+  with Change, and after a file of the library is used, with the numbers the API read from it); approved on 2026-10-06
+  (session 18, D75). The cards there still name the makers as the files do; the owner then asked for the everyday names on the
+  cards too (D75), which `lib/equipment/makers.ts` gives.
 - A preview is the board rendered at its `$preview` size (the tail of each `.dc.html`) by a scratch Playwright script outside the
   repo: Chromium from `e2e/node_modules/@playwright/test`, the fonts served from `apps/web/app/fonts` and `apps/web/node_modules/geist`
   in place of the Google link in the board's `helmet`, `support.js` stubbed, everything else off the machine refused.
-- `mockups/canvas.json` is the layout of the boards on the canvas: 61 boards on two pages since 2026-10-06 ("Approved design", the
+- `mockups/canvas.json` is the layout of the boards on the canvas: 67 boards on two pages since 2026-10-06 ("Approved design", the
   first, holds every board without a `page`; "UI fixes" the boards of session 18 on); the 53 of the first page in sync with the canvas at claude.ai since
   2026-10-04 (session 15 published the 26 boards of Phases 6 to 11 and the five boards changed since 2026-09-30; the report's
   pages of `mockups/handover_pages/` travel with the Handover boards). A session on Bedrock has no Artifact tool: it adds its
