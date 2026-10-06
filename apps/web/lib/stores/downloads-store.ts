@@ -36,12 +36,13 @@ const THE_DOCUMENT_ITSELF: ExportKind = "rtd";
 const EVERYTHING: ExportKind = "zip";
 
 /**
- * The document a file is asked with: as it is for the project file; for a file of the design, naming the option shown
- * when the document names none (the API refuses a file without a chosen option, and the run's recommended one is what
- * every screen shows until the user chooses).
+ * The document a file is asked with: as it is for the project file; for a file of the design, naming the option shown.
+ * That is the document's own choice while the run holds it, and the run's first otherwise: when the document names none,
+ * or names one an edit took away (another module, inverter or voltage changes the options). Every screen shows that
+ * option; the API refuses a file of an option the design does not have.
  */
 export function documentFor(kind: ExportKind, { document, chosen }: Open): Project {
-  if (kind === THE_DOCUMENT_ITSELF || document.chosen_option || chosen === null) return document;
+  if (kind === THE_DOCUMENT_ITSELF || chosen === null || chosen === document.chosen_option) return document;
   return { ...document, chosen_option: chosen };
 }
 

@@ -21,6 +21,7 @@ import {
   sunFailureOf,
 } from "../stores/results-store";
 import { createViewStore, sunTimeOf } from "../stores/view-store";
+import type { ChoiceGone } from "./choice-gone";
 import { createDesignFlow } from "./design-flow";
 
 type Asked<Answer> = {
@@ -80,6 +81,8 @@ const design = (positions: number) =>
   ({ chosen_option: "29x22x1", options: [{ key: "29x22x1" }], no_options: null, readouts: { positions } }) as unknown as DesignResult;
 
 const tilt = (degrees: number) => (project: Project) => ({ ...project, array: { ...project.array, tilt_deg: degrees } });
+const voltage = (volts: 600 | 1000 | 1500) => (document: Project) => ({ ...document, system_voltage: volts });
+const choice = (key: string) => (document: Project) => ({ ...document, chosen_option: key });
 
 const UNREACHABLE = "The server cannot be reached. Check the connection and try again.";
 const SHADING = { type: "progress", step: "Computing hourly shading for every module", fraction: 0.4 } as const;
@@ -95,14 +98,24 @@ function flow() {
   const view = createViewStore();
   /** The runs of the untouched demo, as the flow reports them (plan/phase-10-plan.md, step 11). */
   const demoRuns: DesignResult[] = [];
-  const designFlow = createDesignFlow({ api: server.api, clock: time.clock, project, results, view, onDemoRan: (design) => demoRuns.push(design) });
+  /** The choices taken away, as the flow tells them. */
+  const gone: ChoiceGone[] = [];
+  const designFlow = createDesignFlow({
+    api: server.api,
+    clock: time.clock,
+    project,
+    results,
+    view,
+    onDemoRan: (design) => demoRuns.push(design),
+    onChoiceGone: (choice) => gone.push(choice),
+  });
   designFlow.start();
   const last = <Answer>(list: Array<Asked<Answer>>): Asked<Answer> => {
     const found = list.at(-1);
     if (!found) throw new Error("Nothing was asked.");
     return found;
   };
-  return { ...time, ...server, project, results, view, designFlow, demoRuns, last };
+  return { ...time, ...server, project, results, view, designFlow, demoRuns, gone, last };
 }
 
 /** The demo is open and its first results are there. */
@@ -505,8 +518,6 @@ describe("a committed edit", () => {
 });
 
 describe("an edit asks for what it changes (plan/phase-07-plan.md, decision 2)", () => {
-  const voltage = (volts: 600 | 1000 | 1500) => (document: Project) => ({ ...document, system_voltage: volts });
-  const choice = (key: string) => (document: Project) => ({ ...document, chosen_option: key });
 
   test("a system voltage asks for the run after the pause, and not for the layout", async () => {
     const { project, layouts, runs, results, pass } = await opened();
@@ -589,6 +600,87 @@ describe("an edit asks for what it changes (plan/phase-07-plan.md, decision 2)",
     expect(runs).toHaveLength(2);
     expect(runs[1]?.project.system_voltage).toBe(1000);
     expect(designStatusOf(results.getState())).toBe("running");
+  });
+});
+
+describe("a choice an edit took away (the owner's IKEA design, session 18)", () => {
+  const A = { key: "23x67x7", letter: "A", caption: "Recommended", n_series: 23, n_strings: 67, n_inverters: 7 };
+  const B = { key: "24x64x7", letter: "B", caption: "Fills the inverter", n_series: 24, n_strings: 64, n_inverters: 7 };
+  const runOf = (...options: Array<typeof A>) =>
+    ({ ...design(790), chosen_option: options[0]?.key ?? null, options }) as unknown as DesignResult;
+
+  test("a design opened with a choice its run does not hold takes the option shown: nothing counted, nothing to undo, nothing asked again, and the user told", async () => {
+    const { project, results, runs, layouts, gone, last } = flow();
+    project.getState().open({ ...DEMO, chosen_option: "18x84x7" });
+    const editOpened = project.getState().edit;
+    last(layouts).answer(layout(790));
+    last(runs).answer(runOf(A, B));
+    await settled();
+
+    expect(project.getState().project?.chosen_option).toBe("23x67x7");
+    expect(project.getState().edit).toBe(editOpened);
+    expect(canUndo(project.getState())).toBe(false);
+    expect(runs).toHaveLength(1);
+    expect(layouts).toHaveLength(1);
+    expect(designOf(results.getState())?.chosen_option).toBe("23x67x7");
+    expect(gone).toEqual([{ dropped: { series: 18, strings: 84, inverters: 7 }, shown: A }] as unknown as ChoiceGone[]);
+  });
+
+  test("an edit that takes the choice away: the run of that edit brings it to the option shown; undo gives the edit and its choice back", async () => {
+    const { project, runs, gone, pass, last } = flow();
+    project.getState().open({ ...DEMO, chosen_option: "24x64x7" });
+    last(runs).answer(runOf(A, B));
+    await settled();
+    expect(gone).toEqual([]);
+
+    project.getState().commit(voltage(1000));
+    pass(DESIGN_PAUSE);
+    runs[1]?.answer(runOf(A));
+    await settled();
+
+    expect(project.getState().project?.chosen_option).toBe("23x67x7");
+    expect(gone).toHaveLength(1);
+    project.getState().undo();
+    expect(project.getState().project).toMatchObject({ system_voltage: 1500, chosen_option: "24x64x7" });
+  });
+
+  test("a choice the run holds, and no choice at all, are left as they are and nothing is said", async () => {
+    const held = flow();
+    held.project.getState().open({ ...DEMO, chosen_option: "24x64x7" });
+    held.last(held.runs).answer(runOf(A, B));
+    const none = flow();
+    none.project.getState().open({ ...DEMO, chosen_option: "" });
+    none.last(none.runs).answer(runOf(A, B));
+    await settled();
+
+    expect(held.project.getState().project?.chosen_option).toBe("24x64x7");
+    expect(none.project.getState().project?.chosen_option).toBe("");
+    expect([...held.gone, ...none.gone]).toEqual([]);
+  });
+
+  test("a run without options leaves the choice alone", async () => {
+    const { project, runs, gone, last } = flow();
+    project.getState().open({ ...DEMO, chosen_option: "18x84x7" });
+    last(runs).answer(runOf());
+    await settled();
+
+    expect(project.getState().project?.chosen_option).toBe("18x84x7");
+    expect(gone).toEqual([]);
+  });
+
+  test("an option chosen while the run is on its way, that the run does not hold, gives way to the option shown", async () => {
+    const { project, runs, gone, pass, last } = flow();
+    project.getState().open({ ...DEMO, chosen_option: "24x64x7" });
+    last(runs).answer(runOf(A, B));
+    await settled();
+    project.getState().commit(voltage(1000));
+    pass(DESIGN_PAUSE);
+    project.getState().commit(choice("24x64x7"));
+    runs[1]?.answer(runOf(A));
+    await settled();
+
+    expect(project.getState().project?.chosen_option).toBe("23x67x7");
+    expect(gone).toHaveLength(1);
   });
 });
 

@@ -484,17 +484,30 @@ describe("the option a file is asked for (the API refuses a file of the design w
     expect(calls[0]!.document.chosen_option).toBe("26x24x1");
   });
 
-  test("the document's own choice stands; the project file is the document as it is; without a run nothing is added", async () => {
-    const chosen = made({ document: { ...DOCUMENT, chosen_option: "29x22x1" }, edit: 3, chosen: "26x24x1" });
+  test("a choice the run no longer holds, left by an edit that changed the options, gives way to the option shown", async () => {
+    // The owner's IKEA design: chosen 18x84x7, then the module and the inverter changed; the run shows its first, 23x67x7.
+    const stale = { ...DOCUMENT, chosen_option: "18x84x7" };
+    const report = made({ document: stale, edit: 3, chosen: "23x67x7" });
+    void report.store.getState().download("report");
+    const pages = made({ document: stale, edit: 3, chosen: "23x67x7" });
+    void pages.store.getState().askPages();
+    await settled();
+
+    expect(report.calls[0]!.document.chosen_option).toBe("23x67x7");
+    expect(pages.calls[0]!.document.chosen_option).toBe("23x67x7");
+  });
+
+  test("the document's own choice, when it is the one shown, stands; the project file is the document as it is; without a run nothing is added", async () => {
+    const chosen = made({ document: { ...DOCUMENT, chosen_option: "29x22x1" }, edit: 3, chosen: "29x22x1" });
     void chosen.store.getState().download("report");
-    const file = made({ document: unchosen, edit: 3, chosen: "26x24x1" });
+    const file = made({ document: { ...DOCUMENT, chosen_option: "18x84x7" }, edit: 3, chosen: "26x24x1" });
     void file.store.getState().download("project-file");
     const noRun = made({ document: unchosen, edit: 3, chosen: null });
     void noRun.store.getState().download("report");
     await settled();
 
     expect(chosen.calls[0]!.document.chosen_option).toBe("29x22x1");
-    expect(file.calls[0]!.document.chosen_option).toBe("");
+    expect(file.calls[0]!.document.chosen_option).toBe("18x84x7");
     expect(noRun.calls[0]!.document.chosen_option).toBe("");
   });
 });
