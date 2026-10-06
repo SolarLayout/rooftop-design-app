@@ -6,7 +6,7 @@ import { Icon } from "@/components/ui/Icon";
 import { HANDOVER, HOME, PRESENT, type Lens, type Workspace } from "@/lib/routes";
 import { Logo } from "./Logo";
 import { ProjectSwitcher } from "./ProjectSwitcher";
-import { SaveState, type Saving } from "./SaveState";
+import type { Saving } from "./SaveState";
 import type { DeviceRow } from "./switcher-view";
 import { WorkspaceNav } from "./WorkspaceNav";
 
@@ -102,7 +102,6 @@ export function TopBar({ name, place, workspace, lens, saving, notes, onOpenNote
       <span className="hidden grow tablet:block" />
       <div className="flex shrink-0 items-center gap-2 tablet:gap-3.5 desktop:gap-3">
         {/* Where the bar is short of room, what the project switcher says too goes first. */}
-        <SaveState state={saving} onOpenNotes={onOpenNotes} className="hidden desktop-wide:flex" />
         <span className="flex tablet:hidden">
           <button type="button" aria-label={countOf(notes)} onClick={onOpenNotes} className={iconButtonLook("quiet", "l", "square")}>
             {notes === 0 ? (

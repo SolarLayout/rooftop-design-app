@@ -48,8 +48,8 @@ describe("the intensities", () => {
     expect(levelRoofShareOf(42.6)).toBeCloseTo(1, 2);
   });
 
-  test("in shade it is a third darker", () => {
-    expect(shadeShareOf() / levelRoofShareOf(42.6)).toBeCloseTo(2 / 3, 2);
+  test("in shade it is 55 % darker, so that a shadow reads on the roof (the owner, session 18; D73)", () => {
+    expect(shadeShareOf() / levelRoofShareOf(42.6)).toBeCloseTo(0.45, 2);
   });
 
   test("the sun's light does not change with its height, until it fades at the horizon; the sky's never goes out", () => {

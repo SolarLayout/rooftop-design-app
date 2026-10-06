@@ -20,6 +20,9 @@ const WORDS: Record<Exclude<Saving, "not-saved">, string> = {
   "not-kept": "Not kept on this device",
 };
 
+/** The state of saving in words: what its mark is named, the tooltip of the project switcher (D74). */
+export const SAVING_WORDS: Record<Saving, string> = { ...WORDS, "not-saved": "Not saved" };
+
 const TYPE = { bar: "type-small", menu: "type-caption" };
 const DOT = "size-1.75 shrink-0 rounded-full";
 
@@ -45,6 +48,22 @@ export function SaveState({ state, look = "bar", onOpenNotes, className }: Props
       {state === "saving" ? <ProgressRing size={12} /> : null}
       {state === "not-kept" ? <span data-testid="saving-mark" className={classNames(DOT, "border-dot border-text-3")} /> : null}
       {WORDS[state]}
+    </span>
+  );
+}
+
+/**
+ * The state of saving as a mark alone, before the design's name in the project switcher on every size (the boards "UI
+ * fixes · The state of saving, a mark before the name", D74): a slot of 14 (the least size of an icon) whatever the state, so that nothing beside it
+ * moves when the state changes. For the eye: its words are the switcher's tooltip and description.
+ */
+export function SaveMark({ state }: { state: Saving }) {
+  return (
+    <span data-testid="saving-mark" data-state={state} aria-hidden="true" className="flex size-3.5 shrink-0 items-center justify-center">
+      {state === "saved" ? <span className={classNames(DOT, "bg-ok pulsing")} /> : null}
+      {state === "saving" ? <ProgressRing size={12} /> : null}
+      {state === "not-kept" ? <span className={classNames(DOT, "border-dot border-text-3")} /> : null}
+      {state === "not-saved" ? <StatusMark kind="note" label="Note" wordsShown={false} size={14} /> : null}
     </span>
   );
 }

@@ -11,9 +11,10 @@ import { FACT, LIST, MENU_ROW, PRESSABLE_MENU_ROW } from "@/components/ui/list-l
 import { onMenuKeyDown } from "@/components/ui/menu-keys";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
+import { Tooltip } from "@/components/ui/Tooltip";
 import { useFloating } from "@/components/ui/use-floating";
 import { NAME_RULES } from "@/lib/flow/name-field";
-import { SaveState, type Saving } from "./SaveState";
+import { SAVING_WORDS, SaveMark, SaveState, type Saving } from "./SaveState";
 import type { DeviceRow } from "./switcher-view";
 
 type Design = {
@@ -30,10 +31,10 @@ const TRIGGER = classNames(
 const TRIGGER_CLOSED = "border-transparent bg-transparent hovered:bg-surface-2";
 const TRIGGER_OPEN = "border-line bg-surface-2";
 
-type TriggerProps = Omit<ComponentProps<"button">, "children" | "name"> & Design & { open: boolean };
+type TriggerProps = Omit<ComponentProps<"button">, "children" | "name"> & Design & { open: boolean; saving?: Saving };
 
-/** What opens the project switcher: the name of the design, on desktop where it is, a chevron. */
-export function ProjectTrigger({ name, place, open, className, ...rest }: TriggerProps) {
+/** What opens the project switcher: the mark of the state of saving, the name of the design, on desktop where it is, a chevron. */
+export function ProjectTrigger({ name, place, open, saving, className, ...rest }: TriggerProps) {
   return (
     <button
       type="button"
@@ -43,6 +44,7 @@ export function ProjectTrigger({ name, place, open, className, ...rest }: Trigge
       className={classNames(TRIGGER, open ? TRIGGER_OPEN : TRIGGER_CLOSED, className)}
       {...rest}
     >
+      {saving === undefined || name === null ? null : <SaveMark state={saving} />}
       {name === null ? (
         <Skeleton kind="text" className="w-28" />
       ) : (
@@ -239,18 +241,22 @@ export function ProjectSwitcher({ name, place, saving, onOpenNotes, onImport, on
 
   return (
     <>
-      <ProjectTrigger
-        ref={trigger}
-        name={name}
-        place={place}
-        open={floating.isOpen}
-        onClick={() => (floating.isOpen ? floating.close() : open())}
-        onKeyDown={(event) => {
-          if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
-          event.preventDefault();
-          open();
-        }}
-      />
+      {/* The state of saving is a mark before the name; its words are the trigger's tooltip and description (D74). */}
+      <Tooltip words={SAVING_WORDS[saving]}>
+        <ProjectTrigger
+          ref={trigger}
+          name={name}
+          saving={saving}
+          place={place}
+          open={floating.isOpen}
+          onClick={() => (floating.isOpen ? floating.close() : open())}
+          onKeyDown={(event) => {
+            if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+            event.preventDefault();
+            open();
+          }}
+        />
+      </Tooltip>
       <FloatingPanel floating={floating} width="menu">
         <div ref={panel}>
           <ProjectMenu
