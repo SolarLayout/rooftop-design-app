@@ -8,7 +8,7 @@ import { useView } from "@/components/shell/stores";
 import type { SceneXYZ } from "@/lib/geometry/adapter";
 import { distanceLimitsOf, framedRadiusOf, nearAndFarOf, planZoomOf, presetPositionOf, zoomLimitsOf } from "@/lib/scene/camera";
 import { ABOVE_THE_ROOF, easeInOut, isSettled, offTheZenith, pathAt, settleShareOf } from "@/lib/scene/camera-move";
-import { cameraFromOf, cameraMoveOf, cameraOf, cameraRequestOf, northRequestOf, showsSunPathOf } from "@/lib/stores/view-store";
+import { cameraFromOf, cameraMoveOf, cameraOf, cameraRequestOf, northRequestOf, framesTheDomeOf } from "@/lib/stores/view-store";
 import { useSun } from "./use-sun";
 
 type Props = {
@@ -46,7 +46,7 @@ function fitPlan(camera: Orthographic, zoom: number): void {
  */
 export function CameraRig({ radius }: Props) {
   const sun = useSun();
-  const framed = framedRadiusOf(radius, useView(showsSunPathOf));
+  const framed = framedRadiusOf(radius, useView(framesTheDomeOf));
   const camera = useThree((state) => state.camera);
   const get = useThree((state) => state.get);
   const invalidate = useThree((state) => state.invalidate);
@@ -67,10 +67,11 @@ export function CameraRig({ radius }: Props) {
 
   // The presets alone move the camera, and what is framed: the sun and the size of the moment are read, never followed.
   useEffect(() => {
-    const to = presetPositionOf(preset, framed, sun);
+    const aspect = size.height > 0 ? size.width / size.height : 1;
+    const to = presetPositionOf(preset, framed, sun, aspect);
     // A move begins at the preset before, a stand straight above nudged off the zenith so that north is up; the plan's camera cannot move, it cuts.
     if (over > 0 && !(camera instanceof Orthographic)) {
-      const from = offTheZenith(presetPositionOf(fromPreset, framed, sun));
+      const from = offTheZenith(presetPositionOf(fromPreset, framed, sun, aspect));
       camera.position.set(from[0], from[1], from[2]);
       move.current = { from, to, over: over / 1000, elapsed: 0 };
     } else {

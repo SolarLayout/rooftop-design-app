@@ -10,6 +10,7 @@ import { REDUCED_MOTION, useProject, useResults, useStores, useView } from "@/co
 import { useOpensWhatBelongs } from "@/components/shell/use-opens-what-belongs";
 import { useWebGL } from "@/components/find/use-web-gl";
 import { PlanFallback } from "@/components/studio/PlanFallback";
+import { SunMarks } from "@/components/studio/SunMarks";
 import { CONTEXT_LOST, NO_WEBGL } from "@/components/studio/stage-words";
 import { attributionOf, stringsWordsOf } from "@/components/studio/stage-view";
 import { classNames } from "@/components/ui/class-names";
@@ -26,7 +27,7 @@ import { nameOf, projectOf } from "@/lib/stores/project-store";
 import { chosenOptionOf, isDesignUpdating, layoutOf, noOptionsOf, sunDayOf } from "@/lib/stores/results-store";
 import { lensOf, presentationOf, sunTimeOf } from "@/lib/stores/view-store";
 import { readOutOf } from "@/lib/flow/sun-time";
-import { PresentFigures } from "./PresentFigures";
+import { PresentPanel } from "./PresentPanel";
 
 // The scene draws with WebGL in the browser alone: it is loaded there, never on the server.
 const Scene = dynamic(() => import("@/components/scene/Scene").then((module) => module.Scene), { ssr: false });
@@ -118,7 +119,8 @@ export function Present() {
           <Scene onContextLost={() => setLost(true)} stage={stage} />
         )}
       </div>
-      <PresentFigures tour={tour} />
+      {cannotDraw ? null : <SunMarks stage={stage} callout={false} />}
+      <PresentPanel tour={tour} />
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 z-stage-overlay h-45 stage-fade" />
       <Words tour={tour} facts={facts} waiting={waiting} />
       <Hint tour={tour} />
@@ -147,8 +149,8 @@ function Words({ tour, facts, waiting }: { tour: Tour; facts: string; waiting: s
 }
 
 /**
- * The attribution of the imagery at the bottom left, under the words, as the Studio's stage has it: Present always asks
- * for the imagery (D71), and the attribution stands while it is the ground drawn.
+ * The attribution of the imagery at the bottom left, under the words, as the Studio's stage has it: it stands while the
+ * imagery is the ground drawn, as the Layers panel asks for it.
  */
 function Attribution({ stage }: { stage: StageStore }) {
   const attribution = attributionOf(useStore(stage, groundOf), ATTRIBUTION);

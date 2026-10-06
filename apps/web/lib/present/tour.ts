@@ -32,6 +32,8 @@ export type Scene = {
   colouring: Colouring | null;
   /** How far the energy has counted, from 0 to 1. */
   figuresAt: (share: number) => number;
+  /** Whether the stage draws the sun path, the sun moving along it with the hour (the day scene alone, D72). */
+  sunPath: boolean;
 };
 
 export type TourState = {
@@ -41,12 +43,15 @@ export type TourState = {
   words: string;
   /** Milliseconds into the scene. */
   into: number;
+  /** How far into the scene, from 0 to 1: what the figures of its panel count with (D72). */
+  share: number;
   camera: CameraStep;
   reveal: Reveal;
   /** The hour of the day in solar time; null for the hour held as it was. */
   hour: number | null;
   colouring: Colouring | null;
   figures: number;
+  sunPath: boolean;
   /** How many loops are over. */
   loop: number;
 };
@@ -75,6 +80,7 @@ export const SCENES: readonly Scene[] = [
     dayAt: held,
     colouring: null,
     figuresAt: nothingCounted,
+    sunPath: false,
   },
   {
     id: "rising",
@@ -85,6 +91,7 @@ export const SCENES: readonly Scene[] = [
     dayAt: held,
     colouring: null,
     figuresAt: nothingCounted,
+    sunPath: false,
   },
   {
     id: "filling",
@@ -95,6 +102,7 @@ export const SCENES: readonly Scene[] = [
     dayAt: held,
     colouring: null,
     figuresAt: nothingCounted,
+    sunPath: false,
   },
   {
     id: "day",
@@ -105,6 +113,7 @@ export const SCENES: readonly Scene[] = [
     dayAt: (share) => clamp(share),
     colouring: null,
     figuresAt: nothingCounted,
+    sunPath: true,
   },
   {
     id: "strings",
@@ -115,6 +124,7 @@ export const SCENES: readonly Scene[] = [
     dayAt: held,
     colouring: "mppt",
     figuresAt: nothingCounted,
+    sunPath: false,
   },
   {
     id: "energy",
@@ -125,6 +135,7 @@ export const SCENES: readonly Scene[] = [
     dayAt: held,
     colouring: "mppt",
     figuresAt: (share) => between(share, 0, COUNTING_SHARE),
+    sunPath: false,
   },
 ];
 
@@ -177,11 +188,13 @@ export function stateAt(t: number, hours: DayHours | null, script: readonly Scen
     index,
     words: scene.words,
     into,
+    share,
     camera: scene.camera,
     reveal: scene.revealAt(share),
     hour: day === null || hours === null ? null : hours.from + (hours.to - hours.from) * day,
     colouring: scene.colouring,
     figures: scene.figuresAt(share),
+    sunPath: scene.sunPath,
     loop,
   };
 }

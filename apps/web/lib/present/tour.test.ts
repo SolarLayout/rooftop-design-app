@@ -79,6 +79,13 @@ describe("the state at a moment", () => {
     expect(stateAt(20000, PUNE_DEC).colouring).toBeNull();
   });
 
+  test("the day scene alone draws the sun path (D72); every state says how far into its scene it is", () => {
+    const sunPaths = [0, 5000, 9000, 14000, 27000, 31000].map((t) => [stateAt(t, PUNE_DEC).scene, stateAt(t, PUNE_DEC).sunPath]);
+    expect(sunPaths).toEqual([["satellite", false], ["rising", false], ["filling", false], ["day", true], ["strings", false], ["energy", false]]);
+    expect(stateAt(0, PUNE_DEC).share).toBe(0);
+    expect(stateAt(17000, PUNE_DEC).share).toBe(0.25);
+  });
+
   test("without the day's hours the day scene holds the hour", () => {
     expect(stateAt(20000, null).hour).toBeNull();
   });

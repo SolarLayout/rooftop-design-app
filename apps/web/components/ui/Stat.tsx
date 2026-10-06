@@ -5,7 +5,7 @@ import { classNames } from "./class-names";
  * Cell: one of the vitals. Lead: the first of them, the energy. Tile: a value inside a card. Hero: the energy on
  * Performance, at the display size of 76. Figure: a KPI tile of Performance, a card of its own.
  */
-export type StatLook = "cell" | "lead" | "tile" | "hero" | "figure";
+export type StatLook = "cell" | "lead" | "tile" | "hero" | "figure" | "scene" | "scene-small";
 
 const FRAME: Record<StatLook, string> = {
   cell: "gap-1",
@@ -13,6 +13,8 @@ const FRAME: Record<StatLook, string> = {
   tile: "gap-0.5 rounded-row bg-surface-2 px-3.5 py-2.5",
   hero: "gap-0.5",
   figure: "gap-1 tablet:gap-1.5",
+  scene: "gap-0.5",
+  "scene-small": "gap-0.5",
 };
 
 const LABEL: Record<StatLook, string> = {
@@ -21,6 +23,8 @@ const LABEL: Record<StatLook, string> = {
   tile: "type-caption",
   hero: "type-small tablet:type-body-touch desktop:type-body",
   figure: "type-small tablet:type-body-touch desktop:type-body",
+  scene: "type-small",
+  "scene-small": "type-small",
 };
 
 const VALUE: Record<StatLook, string> = {
@@ -29,6 +33,8 @@ const VALUE: Record<StatLook, string> = {
   tile: "type-value",
   hero: "type-number-hero",
   figure: "type-number-vital tablet:type-number-tile",
+  scene: "type-number-scene-touch desktop:type-number-scene",
+  "scene-small": "type-number-vital-touch",
 };
 
 const UNIT: Record<StatLook, string> = {
@@ -37,6 +43,8 @@ const UNIT: Record<StatLook, string> = {
   tile: "type-caption",
   hero: "type-unit-hero",
   figure: "type-small tablet:type-body",
+  scene: "type-body-touch desktop:type-title",
+  "scene-small": "type-small",
 };
 
 type Props = Omit<ComponentProps<"div">, "children"> & {
@@ -60,7 +68,7 @@ type Props = Omit<ComponentProps<"div">, "children"> & {
   look?: StatLook;
 };
 
-const BESIDE: Record<StatLook, string> = { cell: "gap-1.5", lead: "gap-2.5", tile: "gap-1.5", hero: "gap-3.5", figure: "gap-1.5" };
+const BESIDE: Record<StatLook, string> = { cell: "gap-1.5", lead: "gap-2.5", tile: "gap-1.5", hero: "gap-3.5", figure: "gap-1.5", scene: "gap-2", "scene-small": "gap-1.5" };
 
 /** One label with its value. It belongs into `Stats`. */
 export function Stat({ label, value, holds, unit, more, mark, dimmed = false, beside, look = "cell", className, ...rest }: Props) {
