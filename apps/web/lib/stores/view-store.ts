@@ -195,6 +195,8 @@ export const draftOf = (state: ViewState) => state.draft;
 export const toReviewOf = (state: ViewState) => state.toReview;
 export const draggingOf = (state: ViewState) => state.dragging;
 export const groundOf = (state: ViewState) => state.ground;
+/** The ground the stage asks for: the imagery always under Present (D71), else what the Layers panel says. */
+export const groundAskedOf = (state: ViewState): GroundChoice => (state.presentation ? "imagery" : state.ground);
 
 /**
  * The ground the scene draws: the imagery while the view asks for it and there is imagery to draw; the plain grid

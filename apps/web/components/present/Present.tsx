@@ -11,10 +11,11 @@ import { useOpensWhatBelongs } from "@/components/shell/use-opens-what-belongs";
 import { useWebGL } from "@/components/find/use-web-gl";
 import { PlanFallback } from "@/components/studio/PlanFallback";
 import { CONTEXT_LOST, NO_WEBGL } from "@/components/studio/stage-words";
-import { stringsWordsOf } from "@/components/studio/stage-view";
+import { attributionOf, stringsWordsOf } from "@/components/studio/stage-view";
 import { classNames } from "@/components/ui/class-names";
 import { shown } from "@/components/ui/number-entry";
 import { CLOCK_OF_THE_BROWSER } from "@/lib/clock";
+import { esriProvider, KEY_OF_THE_APP } from "@/lib/places/esri";
 import { createTour, type Tour } from "@/lib/present/create-tour";
 import { factsWordsOf, waitingWordsOf } from "@/lib/present/words";
 import { pathOfLens } from "@/lib/routes";
@@ -32,6 +33,7 @@ const Scene = dynamic(() => import("@/components/scene/Scene").then((module) => 
 
 /** The hint at the bottom right (the board "Present"), fading after the first loop. */
 const HINT = "Press any key or touch the screen to return";
+const ATTRIBUTION = esriProvider(KEY_OF_THE_APP)?.imagery.attribution ?? null;
 
 /** What leaves Present: any key, any press of a pointer, any touch (decision 8). */
 const LEAVES = ["keydown", "pointerdown", "touchstart"] as const;
@@ -120,6 +122,7 @@ export function Present() {
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 z-stage-overlay h-45 stage-fade" />
       <Words tour={tour} facts={facts} waiting={waiting} />
       <Hint tour={tour} />
+      {cannotDraw ? null : <Attribution stage={stage} />}
       <OnTheStage tour={tour} stage={stage} />
     </main>
   );
@@ -140,6 +143,20 @@ function Words({ tour, facts, waiting }: { tour: Tour; facts: string; waiting: s
         </p>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * The attribution of the imagery at the bottom left, under the words, as the Studio's stage has it: Present always asks
+ * for the imagery (D71), and the attribution stands while it is the ground drawn.
+ */
+function Attribution({ stage }: { stage: StageStore }) {
+  const attribution = attributionOf(useStore(stage, groundOf), ATTRIBUTION);
+  if (!attribution) return null;
+  return (
+    <p data-testid="present-attribution" className="pointer-events-none absolute bottom-1.5 left-10 z-stage-overlay max-w-full truncate type-label-s text-text-on-imagery on-imagery">
+      {attribution}
+    </p>
   );
 }
 

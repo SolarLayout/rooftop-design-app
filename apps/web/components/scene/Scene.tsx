@@ -16,7 +16,7 @@ import { whatIsDrawnOf } from "@/lib/scene/what-is-drawn";
 import type { Cursor, StageStore } from "@/lib/scene/stage-store";
 import { projectOf } from "@/lib/stores/project-store";
 import { layoutOf, stringsOnTheRoofOf } from "@/lib/stores/results-store";
-import { cameraOf, draftOf, draggingOf, groundDrawnOf, groundOf, lensOf, presentationOf, selectionOf, showsSunPathOf, toReviewOf, type Reveal } from "@/lib/stores/view-store";
+import { cameraOf, draftOf, draggingOf, groundAskedOf, groundDrawnOf, lensOf, presentationOf, selectionOf, showsSunPathOf, toReviewOf, type Reveal } from "@/lib/stores/view-store";
 import { withDraftAt, withObstacleReplaced } from "@/lib/geometry/obstacle-fields";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/places/esri";
 import { Building, BUILDING_DEPTH } from "./Building";
@@ -72,8 +72,8 @@ export function Scene({ onContextLost, stage }: Props) {
   const toReview = useView(toReviewOf);
   const dragging = useView(draggingOf);
   const showsSunPath = useView(showsSunPathOf);
-  // The ground the Layers panel asks for (decision D57): the imagery while there is one to draw, else the plain grid.
-  const imagery = groundDrawnOf(useView(groundOf), IMAGERY !== null) === "imagery" ? IMAGERY : null;
+  // The ground asked for (D57; under Present always the imagery, D71): the imagery while there is one to draw, else the plain grid.
+  const imagery = groundDrawnOf(useView(groundAskedOf), IMAGERY !== null) === "imagery" ? IMAGERY : null;
   const glass = useGlassOfTheStage();
   const strings = useStringsShown();
   const drawn = whatIsDrawnOf(useView(lensOf), useView(cameraOf));

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { Obstacle } from "../api";
 import type { DraftObstacle } from "../geometry/obstacle-fields";
-import { cameraFromOf, cameraMoveOf, cameraOf, cameraRequestOf, createViewStore, groundDrawnOf, groundOf, presentationOf, draftOf, draggingOf, isPlayingOf, isShadeMapShownOf, lensOf, litStringsOf, onTheRoofOf, sunTabOf, northRequestOf, selectionOf, showsSunPathOf, stringColouringOf, stringsShownByOf, sunTimeOf, toReviewOf, tracedStringOf } from "./view-store";
+import { cameraFromOf, cameraMoveOf, cameraOf, cameraRequestOf, createViewStore, groundAskedOf, groundDrawnOf, groundOf, presentationOf, draftOf, draggingOf, isPlayingOf, isShadeMapShownOf, lensOf, litStringsOf, onTheRoofOf, sunTabOf, northRequestOf, selectionOf, showsSunPathOf, stringColouringOf, stringsShownByOf, sunTimeOf, toReviewOf, tracedStringOf } from "./view-store";
 
 describe("the view", () => {
   test("it begins on the first lens, in 3D, on the design day", () => {
@@ -422,6 +422,19 @@ describe("the presentation", () => {
 
     store.getState().setGround("plain");
     expect(groundOf(store.getState())).toBe("plain");
+  });
+
+  test("under Present the imagery is asked for, whatever the Layers switch says; after it, the switch again (D71)", () => {
+    const store = createViewStore();
+    expect(groundAskedOf(store.getState())).toBe("plain");
+
+    store.getState().setPresentation(PRESENTING);
+    expect(groundAskedOf(store.getState())).toBe("imagery");
+
+    store.getState().setPresentation(null);
+    expect(groundAskedOf(store.getState())).toBe("plain");
+    store.getState().setGround("imagery");
+    expect(groundAskedOf(store.getState())).toBe("imagery");
   });
 
   test("the ground drawn is the imagery only while the view asks for it and there is imagery to draw", () => {
