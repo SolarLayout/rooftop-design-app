@@ -103,6 +103,20 @@ test.describe("the page", () => {
     if (isPhone(testInfo.project.name)) await expect(page.getByTestId("demo-card")).toBeVisible();
   });
 
+  test("the search focused: one well shows the accent line and the halo; from tablet up the form inside it shows none", async ({ page }, testInfo) => {
+    await homeOpened(page);
+    await searchField(page).focus();
+
+    const halos = await searchField(page).evaluate((field) => {
+      const form = field.closest("form") as HTMLElement;
+      const halo = (element: HTMLElement) => getComputedStyle(element).boxShadow.includes("0px 0px 0px 3px");
+      return { form: halo(form), around: halo(form.parentElement as HTMLElement) };
+    });
+    expect(halos, "on phone the form is the well; from tablet up the well is around it").toEqual(
+      isPhone(testInfo.project.name) ? { form: true, around: false } : { form: false, around: true },
+    );
+  });
+
   test("the demo is read for its card, and nothing is opened: no design run on Home", async ({ page }) => {
     const asked: string[] = [];
     page.on("request", (request) => {

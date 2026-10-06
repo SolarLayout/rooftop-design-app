@@ -15,6 +15,9 @@ export const IMAGERY_ATTRIBUTION = "Powered by Esri · Source: Esri, Vantor, Ear
 
 const PLACES_AT_MOST = 5;
 
+/** The geocoder answered with an error of its own: the key refused, the service down (the board "Coordinates in the search"). */
+const UNAVAILABLE = "The address search is not available right now. Paste coordinates or a maps link instead.";
+
 /** The key of the app, put into the page at build time. Empty when the machine has none. */
 export const KEY_OF_THE_APP = process.env.NEXT_PUBLIC_ESRI_API_KEY ?? "";
 
@@ -30,8 +33,9 @@ type Candidate = { address?: unknown; location?: { x?: unknown; y?: unknown }; a
 /** The places of an answer of the geocoder, in its order; an answer of another shape is a fault. */
 export function placesOf(answer: unknown): Place[] {
   if (typeof answer !== "object" || answer === null) throw new SearchError("The search answered in a shape that cannot be read.");
-  const { error, candidates } = answer as { error?: { message?: unknown }; candidates?: unknown };
-  if (error) throw new SearchError(typeof error.message === "string" ? error.message : "The search is not available.");
+  const { error, candidates } = answer as { error?: unknown; candidates?: unknown };
+  // The service's own words ("Invalid Token") tell the user nothing they can act on.
+  if (error) throw new SearchError(UNAVAILABLE);
   if (!Array.isArray(candidates)) throw new SearchError("The search answered in a shape that cannot be read.");
   return candidates.flatMap((candidate: Candidate) => {
     const { address, location, attributes } = candidate;

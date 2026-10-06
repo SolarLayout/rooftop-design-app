@@ -1,541 +1,586 @@
 {
- "v": 3,
- "attachments": {},
- "boards": {
-  "Handover.dc.html": {
-   "h": 900,
-   "title": "Handover · desktop 1440",
-   "w": 1440,
-   "x": 1520,
-   "y": 5494
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Handover.dc.html": {
+      "h": 900,
+      "title": "Handover · desktop 1440",
+      "w": 1440,
+      "x": 1520,
+      "y": 5494
+    },
+    "Home.dc.html": {
+      "h": 900,
+      "title": "Home · desktop 1440",
+      "w": 1440,
+      "x": 1520,
+      "y": 0
+    },
+    "Kit.dc.html": {
+      "h": 640,
+      "is_interactive": true,
+      "title": "Controls, depth and motion",
+      "w": 1440,
+      "x": 3040,
+      "y": 0
+    },
+    "Locate.dc.html": {
+      "h": 900,
+      "title": "Find and outline · desktop 1440",
+      "w": 1440,
+      "x": 0,
+      "y": 1300
+    },
+    "LocatePhone.dc.html": {
+      "h": 844,
+      "title": "Find and outline · phone 390",
+      "w": 390,
+      "x": 1520,
+      "y": 1300
+    },
+    "Main.dc.html": {
+      "h": 900,
+      "title": "Studio, Array lens · desktop 1440",
+      "w": 1440,
+      "x": 0,
+      "y": 2600
+    },
+    "Map.dc.html": {
+      "h": 900,
+      "title": "Information architecture",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "Performance.dc.html": {
+      "h": 2024,
+      "title": "Performance · desktop 1440",
+      "w": 1440,
+      "x": 0,
+      "y": 5494
+    },
+    "RoofLens.dc.html": {
+      "h": 900,
+      "title": "Studio, Roof lens · desktop 1440",
+      "w": 1440,
+      "x": 1990,
+      "y": 1300
+    },
+    "StringsLens.dc.html": {
+      "h": 900,
+      "title": "Studio, Strings lens · desktop 1440",
+      "w": 1800,
+      "x": 1520,
+      "y": 4194
+    },
+    "StringsLensNoVoltage.dc.html": {
+      "h": 900,
+      "title": "Studio, Strings lens · no system voltage yet",
+      "w": 1440,
+      "x": 3400,
+      "y": 4194
+    },
+    "StudioPhone.dc.html": {
+      "h": 844,
+      "title": "Studio, Array lens · phone 390",
+      "w": 390,
+      "x": 2434,
+      "y": 2600
+    },
+    "StudioTablet.dc.html": {
+      "h": 1194,
+      "title": "Studio, Array lens · tablet 834",
+      "w": 834,
+      "x": 1520,
+      "y": 2600
+    },
+    "SunLens.dc.html": {
+      "h": 900,
+      "title": "Studio, Sun lens · desktop 1440",
+      "w": 1440,
+      "x": 0,
+      "y": 4194
+    },
+    "Controls2.dc.html": {
+      "x": 0,
+      "y": 7054,
+      "w": 1440,
+      "h": 1512,
+      "title": "Controls, part 2"
+    },
+    "ShellStates.dc.html": {
+      "x": 1520,
+      "y": 7054,
+      "w": 1440,
+      "h": 1996,
+      "title": "Shell states"
+    },
+    "Tabs.dc.html": {
+      "x": 0,
+      "y": 8646,
+      "w": 1440,
+      "h": 908,
+      "title": "Tabs"
+    },
+    "LocateTablet.dc.html": {
+      "h": 1194,
+      "title": "Find and outline · tablet 834",
+      "w": 834,
+      "x": 3510,
+      "y": 1300
+    },
+    "LocateStates.dc.html": {
+      "h": 2320,
+      "title": "Find and outline, states and tools",
+      "w": 1440,
+      "x": 1520,
+      "y": 8646
+    },
+    "ObstaclesOnMap.dc.html": {
+      "h": 2380,
+      "title": "Obstacles on the map and their heights",
+      "w": 1440,
+      "x": 3040,
+      "y": 8646
+    },
+    "ByHand.dc.html": {
+      "h": 2880,
+      "title": "Enter dimensions by hand",
+      "w": 1440,
+      "x": 0,
+      "y": 9700
+    },
+    "RoofLensTablet.dc.html": {
+      "x": 0,
+      "y": 13000,
+      "w": 834,
+      "h": 1194,
+      "title": "Studio, Roof lens · tablet 834"
+    },
+    "RoofLensPhone.dc.html": {
+      "x": 914,
+      "y": 13000,
+      "w": 390,
+      "h": 844,
+      "title": "Studio, Roof lens · phone 390"
+    },
+    "ObstacleOnRoof.dc.html": {
+      "x": 1384,
+      "y": 13000,
+      "w": 1440,
+      "h": 2580,
+      "title": "Obstacle edited on the roof"
+    },
+    "RoofTypes3D.dc.html": {
+      "x": 2904,
+      "y": 13000,
+      "w": 1440,
+      "h": 2240,
+      "title": "Roof types in 3D"
+    },
+    "ArrayLensStates.dc.html": {
+      "x": 0,
+      "y": 15700,
+      "w": 1440,
+      "h": 3340,
+      "title": "Studio, Array lens, states"
+    },
+    "ImportHeights.dc.html": {
+      "x": 1520,
+      "y": 15700,
+      "w": 1440,
+      "h": 2720,
+      "title": "Import with missing heights"
+    },
+    "SunLensTablet.dc.html": {
+      "h": 1194,
+      "title": "Studio, Sun lens · tablet 834",
+      "w": 834,
+      "x": 0,
+      "y": 19340
+    },
+    "SunLensPhone.dc.html": {
+      "h": 1500,
+      "title": "Studio, Sun lens · phone 390",
+      "w": 390,
+      "x": 914,
+      "y": 19340
+    },
+    "SunTime.dc.html": {
+      "h": 3920,
+      "title": "Time on the stage",
+      "w": 1440,
+      "x": 1384,
+      "y": 19340
+    },
+    "SunPathShadows.dc.html": {
+      "h": 2590,
+      "title": "Sun path and shadow outlines",
+      "w": 1440,
+      "x": 2904,
+      "y": 19340
+    },
+    "ShadeMap.dc.html": {
+      "h": 3600,
+      "title": "Shade map",
+      "w": 1440,
+      "x": 4424,
+      "y": 19340
+    },
+    "StringsLensTablet.dc.html": {
+      "h": 1194,
+      "title": "Studio, Strings lens · tablet 834",
+      "w": 1194,
+      "x": 0,
+      "y": 23560
+    },
+    "StringsLensPhone.dc.html": {
+      "h": 1400,
+      "title": "Studio, Strings lens · phone 390",
+      "w": 750,
+      "x": 1274,
+      "y": 23560
+    },
+    "StringsOnRoof.dc.html": {
+      "h": 3500,
+      "title": "Strings on the roof",
+      "w": 1440,
+      "x": 2104,
+      "y": 23560
+    },
+    "StringsOptions.dc.html": {
+      "h": 3630,
+      "title": "Options and your own",
+      "w": 1440,
+      "x": 3624,
+      "y": 23560
+    },
+    "StringsInverterSizing.dc.html": {
+      "h": 4060,
+      "title": "Inverter and sizing",
+      "w": 1440,
+      "x": 5144,
+      "y": 23560
+    },
+    "PerformanceTablet.dc.html": {
+      "h": 3181,
+      "title": "Performance · tablet 834",
+      "w": 834,
+      "x": 0,
+      "y": 28000
+    },
+    "PerformancePhone.dc.html": {
+      "h": 4685,
+      "title": "Performance · phone 390",
+      "w": 390,
+      "x": 914,
+      "y": 28000
+    },
+    "PerformanceLossChain.dc.html": {
+      "h": 5310,
+      "title": "Loss chain, edited",
+      "w": 1440,
+      "x": 1384,
+      "y": 28000
+    },
+    "PerformanceCharts.dc.html": {
+      "h": 3838,
+      "title": "Charts, tooltip and table",
+      "w": 1440,
+      "x": 2904,
+      "y": 28000
+    },
+    "PerformanceWeather.dc.html": {
+      "h": 4358,
+      "title": "Weather and assumptions",
+      "w": 1440,
+      "x": 4424,
+      "y": 28000
+    },
+    "PerformanceStates.dc.html": {
+      "h": 3846,
+      "title": "Performance, states",
+      "w": 1440,
+      "x": 5944,
+      "y": 28000
+    },
+    "HandoverTablet.dc.html": {
+      "h": 1194,
+      "title": "Handover · tablet 834",
+      "w": 834,
+      "x": 0,
+      "y": 34010
+    },
+    "HandoverPhone.dc.html": {
+      "h": 976,
+      "title": "Handover · phone 390, the list and the report pushed",
+      "w": 820,
+      "x": 914,
+      "y": 34010
+    },
+    "HandoverPreviews.dc.html": {
+      "h": 8468,
+      "title": "Handover, previews",
+      "w": 1440,
+      "x": 1814,
+      "y": 34010
+    },
+    "HandoverStates.dc.html": {
+      "h": 6595,
+      "title": "Handover, states",
+      "w": 1440,
+      "x": 3334,
+      "y": 34010
+    },
+    "HomeTablet.dc.html": {
+      "h": 1194,
+      "title": "Home · tablet 834",
+      "w": 834,
+      "x": 0,
+      "y": 42900
+    },
+    "HomePhone.dc.html": {
+      "h": 980,
+      "title": "Home · phone 390",
+      "w": 390,
+      "x": 914,
+      "y": 42900
+    },
+    "HomeDesigns.dc.html": {
+      "h": 4811,
+      "title": "Home, designs on this device",
+      "w": 1440,
+      "x": 1814,
+      "y": 42900
+    },
+    "OpenProject.dc.html": {
+      "h": 3446,
+      "title": "Open a project",
+      "w": 1440,
+      "x": 3334,
+      "y": 42900
+    },
+    "Present.dc.html": {
+      "h": 1703,
+      "title": "Present",
+      "w": 1440,
+      "x": 4854,
+      "y": 42900
+    },
+    "StageLayers.dc.html": {
+      "h": 3939,
+      "title": "Stage, Layers",
+      "w": 1440,
+      "x": 0,
+      "y": 48100
+    },
+    "SearchCoordinates.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 1900,
+      "title": "UI fixes · Coordinates in the search · desktop 1440",
+      "page": "ui-fixes"
+    },
+    "SearchCoordinatesTablet.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 834,
+      "h": 2340,
+      "title": "UI fixes · Coordinates in the search · tablet 834",
+      "page": "ui-fixes"
+    },
+    "SearchCoordinatesPhone.dc.html": {
+      "x": 2434,
+      "y": 0,
+      "w": 390,
+      "h": 3800,
+      "title": "UI fixes · Coordinates in the search · phone 390",
+      "page": "ui-fixes"
+    }
   },
-  "Home.dc.html": {
-   "h": 900,
-   "title": "Home · desktop 1440",
-   "w": 1440,
-   "x": 1520,
-   "y": 0
+  "createdOnFiles": {
+    "at": "2026-09-29T11:30:00Z",
+    "v": 1
   },
-  "Kit.dc.html": {
-   "h": 640,
-   "is_interactive": true,
-   "title": "Controls, depth and motion",
-   "w": 1440,
-   "x": 3040,
-   "y": 0
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
   },
-  "Locate.dc.html": {
-   "h": 900,
-   "title": "Find and outline · desktop 1440",
-   "w": 1440,
-   "x": 0,
-   "y": 1300
+  "notes": {
+    "t1": {
+      "kind": "title1",
+      "maxW": 4480,
+      "text": "1 · Structure, entry and controls",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    },
+    "t2": {
+      "kind": "title1",
+      "maxW": 2824,
+      "text": "3 · Studio, Array lens — one roof, three screen sizes",
+      "w": 240,
+      "x": 0,
+      "y": 2300
+    },
+    "t3": {
+      "kind": "title1",
+      "maxW": 2960,
+      "text": "5 · Performance and Handover",
+      "w": 240,
+      "x": 0,
+      "y": 5194
+    },
+    "t4": {
+      "kind": "title1",
+      "maxW": 3430,
+      "text": "2 · Find your roof: map to 3D",
+      "w": 240,
+      "x": 0,
+      "y": 1000
+    },
+    "t5": {
+      "kind": "title1",
+      "maxW": 4480,
+      "text": "4 · Studio — Sun and Strings lenses",
+      "w": 240,
+      "x": 0,
+      "y": 3894
+    },
+    "t6": {
+      "kind": "title1",
+      "maxW": 2960,
+      "text": "6 · Controls, part 2, the states of the shell, and tabs",
+      "w": 240,
+      "x": 0,
+      "y": 6754
+    },
+    "t7": {
+      "kind": "title1",
+      "maxW": 4344,
+      "text": "7 · Studio in 3D: the Roof and Array lenses on every size, their states, the roof types",
+      "w": 240,
+      "x": 0,
+      "y": 12700
+    },
+    "t8": {
+      "kind": "title1",
+      "maxW": 5864,
+      "text": "8 · Studio, Sun lens: the lens on every size, the time, the sun path and the shadow outlines, the shade map",
+      "w": 240,
+      "x": 0,
+      "y": 19040
+    },
+    "t9": {
+      "kind": "title1",
+      "maxW": 7464,
+      "text": "9 · Performance — three sizes, the chain, the charts, the weather, the states",
+      "w": 240,
+      "x": 0,
+      "y": 27700
+    },
+    "t10": {
+      "kind": "title1",
+      "maxW": 4774,
+      "text": "10 · Handover — tablet and phone, the previews, the states",
+      "w": 240,
+      "x": 0,
+      "y": 33710
+    },
+    "t11": {
+      "kind": "title1",
+      "maxW": 6294,
+      "text": "11 · Home on tablet and phone, the designs on this device, Open a project, Present",
+      "w": 240,
+      "x": 0,
+      "y": 42600
+    },
+    "t12": {
+      "kind": "title1",
+      "maxW": 1440,
+      "text": "12 · Stage, Layers",
+      "w": 240,
+      "x": 0,
+      "y": 47800
+    },
+    "t13": {
+      "kind": "title1",
+      "maxW": 2824,
+      "text": "UI fixes, for approval",
+      "w": 240,
+      "x": 0,
+      "y": -300,
+      "page": "ui-fixes"
+    }
   },
-  "LocatePhone.dc.html": {
-   "h": 844,
-   "title": "Find and outline · phone 390",
-   "w": 390,
-   "x": 1520,
-   "y": 1300
-  },
-  "Main.dc.html": {
-   "h": 900,
-   "title": "Studio, Array lens · desktop 1440",
-   "w": 1440,
-   "x": 0,
-   "y": 2600
-  },
-  "Map.dc.html": {
-   "h": 900,
-   "title": "Information architecture",
-   "w": 1440,
-   "x": 0,
-   "y": 0
-  },
-  "Performance.dc.html": {
-   "h": 2024,
-   "title": "Performance · desktop 1440",
-   "w": 1440,
-   "x": 0,
-   "y": 5494
-  },
-  "RoofLens.dc.html": {
-   "h": 900,
-   "title": "Studio, Roof lens · desktop 1440",
-   "w": 1440,
-   "x": 1990,
-   "y": 1300
-  },
-  "StringsLens.dc.html": {
-   "h": 900,
-   "title": "Studio, Strings lens · desktop 1440",
-   "w": 1800,
-   "x": 1520,
-   "y": 4194
-  },
-  "StringsLensNoVoltage.dc.html": {
-   "h": 900,
-   "title": "Studio, Strings lens · no system voltage yet",
-   "w": 1440,
-   "x": 3400,
-   "y": 4194
-  },
-  "StudioPhone.dc.html": {
-   "h": 844,
-   "title": "Studio, Array lens · phone 390",
-   "w": 390,
-   "x": 2434,
-   "y": 2600
-  },
-  "StudioTablet.dc.html": {
-   "h": 1194,
-   "title": "Studio, Array lens · tablet 834",
-   "w": 834,
-   "x": 1520,
-   "y": 2600
-  },
-  "SunLens.dc.html": {
-   "h": 900,
-   "title": "Studio, Sun lens · desktop 1440",
-   "w": 1440,
-   "x": 0,
-   "y": 4194
-  },
-  "Controls2.dc.html": {
-   "x": 0,
-   "y": 7054,
-   "w": 1440,
-   "h": 1512,
-   "title": "Controls, part 2"
-  },
-  "ShellStates.dc.html": {
-   "x": 1520,
-   "y": 7054,
-   "w": 1440,
-   "h": 1996,
-   "title": "Shell states"
-  },
-  "Tabs.dc.html": {
-   "x": 0,
-   "y": 8646,
-   "w": 1440,
-   "h": 908,
-   "title": "Tabs"
-  },
-  "LocateTablet.dc.html": {
-   "h": 1194,
-   "title": "Find and outline · tablet 834",
-   "w": 834,
-   "x": 3510,
-   "y": 1300
-  },
-  "LocateStates.dc.html": {
-   "h": 2320,
-   "title": "Find and outline, states and tools",
-   "w": 1440,
-   "x": 1520,
-   "y": 8646
-  },
-  "ObstaclesOnMap.dc.html": {
-   "h": 2380,
-   "title": "Obstacles on the map and their heights",
-   "w": 1440,
-   "x": 3040,
-   "y": 8646
-  },
-  "ByHand.dc.html": {
-   "h": 2880,
-   "title": "Enter dimensions by hand",
-   "w": 1440,
-   "x": 0,
-   "y": 9700
-  },
-  "RoofLensTablet.dc.html": {
-   "x": 0,
-   "y": 13000,
-   "w": 834,
-   "h": 1194,
-   "title": "Studio, Roof lens · tablet 834"
-  },
-  "RoofLensPhone.dc.html": {
-   "x": 914,
-   "y": 13000,
-   "w": 390,
-   "h": 844,
-   "title": "Studio, Roof lens · phone 390"
-  },
-  "ObstacleOnRoof.dc.html": {
-   "x": 1384,
-   "y": 13000,
-   "w": 1440,
-   "h": 2580,
-   "title": "Obstacle edited on the roof"
-  },
-  "RoofTypes3D.dc.html": {
-   "x": 2904,
-   "y": 13000,
-   "w": 1440,
-   "h": 2240,
-   "title": "Roof types in 3D"
-  },
-  "ArrayLensStates.dc.html": {
-   "x": 0,
-   "y": 15700,
-   "w": 1440,
-   "h": 3340,
-   "title": "Studio, Array lens, states"
-  },
-  "ImportHeights.dc.html": {
-   "x": 1520,
-   "y": 15700,
-   "w": 1440,
-   "h": 2720,
-   "title": "Import with missing heights"
-  },
-  "SunLensTablet.dc.html": {
-   "h": 1194,
-   "title": "Studio, Sun lens · tablet 834",
-   "w": 834,
-   "x": 0,
-   "y": 19340
-  },
-  "SunLensPhone.dc.html": {
-   "h": 1500,
-   "title": "Studio, Sun lens · phone 390",
-   "w": 390,
-   "x": 914,
-   "y": 19340
-  },
-  "SunTime.dc.html": {
-   "h": 3920,
-   "title": "Time on the stage",
-   "w": 1440,
-   "x": 1384,
-   "y": 19340
-  },
-  "SunPathShadows.dc.html": {
-   "h": 2590,
-   "title": "Sun path and shadow outlines",
-   "w": 1440,
-   "x": 2904,
-   "y": 19340
-  },
-  "ShadeMap.dc.html": {
-   "h": 3600,
-   "title": "Shade map",
-   "w": 1440,
-   "x": 4424,
-   "y": 19340
-  },
-  "StringsLensTablet.dc.html": {
-   "h": 1194,
-   "title": "Studio, Strings lens · tablet 834",
-   "w": 1194,
-   "x": 0,
-   "y": 23560
-  },
-  "StringsLensPhone.dc.html": {
-   "h": 1400,
-   "title": "Studio, Strings lens · phone 390",
-   "w": 750,
-   "x": 1274,
-   "y": 23560
-  },
-  "StringsOnRoof.dc.html": {
-   "h": 3500,
-   "title": "Strings on the roof",
-   "w": 1440,
-   "x": 2104,
-   "y": 23560
-  },
-  "StringsOptions.dc.html": {
-   "h": 3630,
-   "title": "Options and your own",
-   "w": 1440,
-   "x": 3624,
-   "y": 23560
-  },
-  "StringsInverterSizing.dc.html": {
-   "h": 4060,
-   "title": "Inverter and sizing",
-   "w": 1440,
-   "x": 5144,
-   "y": 23560
-  },
-  "PerformanceTablet.dc.html": {
-   "h": 3181,
-   "title": "Performance · tablet 834",
-   "w": 834,
-   "x": 0,
-   "y": 28000
-  },
-  "PerformancePhone.dc.html": {
-   "h": 4685,
-   "title": "Performance · phone 390",
-   "w": 390,
-   "x": 914,
-   "y": 28000
-  },
-  "PerformanceLossChain.dc.html": {
-   "h": 5310,
-   "title": "Loss chain, edited",
-   "w": 1440,
-   "x": 1384,
-   "y": 28000
-  },
-  "PerformanceCharts.dc.html": {
-   "h": 3838,
-   "title": "Charts, tooltip and table",
-   "w": 1440,
-   "x": 2904,
-   "y": 28000
-  },
-  "PerformanceWeather.dc.html": {
-   "h": 4358,
-   "title": "Weather and assumptions",
-   "w": 1440,
-   "x": 4424,
-   "y": 28000
-  },
-  "PerformanceStates.dc.html": {
-   "h": 3846,
-   "title": "Performance, states",
-   "w": 1440,
-   "x": 5944,
-   "y": 28000
-  },
-  "HandoverTablet.dc.html": {
-   "h": 1194,
-   "title": "Handover · tablet 834",
-   "w": 834,
-   "x": 0,
-   "y": 34010
-  },
-  "HandoverPhone.dc.html": {
-   "h": 976,
-   "title": "Handover · phone 390, the list and the report pushed",
-   "w": 820,
-   "x": 914,
-   "y": 34010
-  },
-  "HandoverPreviews.dc.html": {
-   "h": 8468,
-   "title": "Handover, previews",
-   "w": 1440,
-   "x": 1814,
-   "y": 34010
-  },
-  "HandoverStates.dc.html": {
-   "h": 6595,
-   "title": "Handover, states",
-   "w": 1440,
-   "x": 3334,
-   "y": 34010
-  },
-  "HomeTablet.dc.html": {
-   "h": 1194,
-   "title": "Home · tablet 834",
-   "w": 834,
-   "x": 0,
-   "y": 42900
-  },
-  "HomePhone.dc.html": {
-   "h": 980,
-   "title": "Home · phone 390",
-   "w": 390,
-   "x": 914,
-   "y": 42900
-  },
-  "HomeDesigns.dc.html": {
-   "h": 4811,
-   "title": "Home, designs on this device",
-   "w": 1440,
-   "x": 1814,
-   "y": 42900
-  },
-  "OpenProject.dc.html": {
-   "h": 3446,
-   "title": "Open a project",
-   "w": 1440,
-   "x": 3334,
-   "y": 42900
-  },
-  "Present.dc.html": {
-   "h": 1703,
-   "title": "Present",
-   "w": 1440,
-   "x": 4854,
-   "y": 42900
-  },
-  "StageLayers.dc.html": {
-   "h": 3939,
-   "title": "Stage, Layers",
-   "w": 1440,
-   "x": 0,
-   "y": 48100
-  }
- },
- "createdOnFiles": {
-  "at": "2026-09-29T11:30:00Z",
-  "v": 1
- },
- "designSystems": [],
- "launch": {
-  "view": "canvas"
- },
- "notes": {
-  "t1": {
-   "kind": "title1",
-   "maxW": 4480,
-   "text": "1 · Structure, entry and controls",
-   "w": 240,
-   "x": 0,
-   "y": -300
-  },
-  "t2": {
-   "kind": "title1",
-   "maxW": 2824,
-   "text": "3 · Studio, Array lens — one roof, three screen sizes",
-   "w": 240,
-   "x": 0,
-   "y": 2300
-  },
-  "t3": {
-   "kind": "title1",
-   "maxW": 2960,
-   "text": "5 · Performance and Handover",
-   "w": 240,
-   "x": 0,
-   "y": 5194
-  },
-  "t4": {
-   "kind": "title1",
-   "maxW": 3430,
-   "text": "2 · Find your roof: map to 3D",
-   "w": 240,
-   "x": 0,
-   "y": 1000
-  },
-  "t5": {
-   "kind": "title1",
-   "maxW": 4480,
-   "text": "4 · Studio — Sun and Strings lenses",
-   "w": 240,
-   "x": 0,
-   "y": 3894
-  },
-  "t6": {
-   "kind": "title1",
-   "maxW": 2960,
-   "text": "6 · Controls, part 2, the states of the shell, and tabs",
-   "w": 240,
-   "x": 0,
-   "y": 6754
-  },
-  "t7": {
-   "kind": "title1",
-   "maxW": 4344,
-   "text": "7 · Studio in 3D: the Roof and Array lenses on every size, their states, the roof types",
-   "w": 240,
-   "x": 0,
-   "y": 12700
-  },
-  "t8": {
-   "kind": "title1",
-   "maxW": 5864,
-   "text": "8 · Studio, Sun lens: the lens on every size, the time, the sun path and the shadow outlines, the shade map",
-   "w": 240,
-   "x": 0,
-   "y": 19040
-  },
-  "t9": {
-   "kind": "title1",
-   "maxW": 7464,
-   "text": "9 · Performance — three sizes, the chain, the charts, the weather, the states",
-   "w": 240,
-   "x": 0,
-   "y": 27700
-  },
-  "t10": {
-   "kind": "title1",
-   "maxW": 4774,
-   "text": "10 · Handover — tablet and phone, the previews, the states",
-   "w": 240,
-   "x": 0,
-   "y": 33710
-  },
-  "t11": {
-   "kind": "title1",
-   "maxW": 6294,
-   "text": "11 · Home on tablet and phone, the designs on this device, Open a project, Present",
-   "w": 240,
-   "x": 0,
-   "y": 42600
-  },
-  "t12": {
-   "kind": "title1",
-   "maxW": 1440,
-   "text": "12 · Stage, Layers",
-   "w": 240,
-   "x": 0,
-   "y": 47800
-  }
- },
- "order": [
-  "Map.dc.html",
-  "Home.dc.html",
-  "Kit.dc.html",
-  "Locate.dc.html",
-  "LocatePhone.dc.html",
-  "RoofLens.dc.html",
-  "Main.dc.html",
-  "StudioTablet.dc.html",
-  "StudioPhone.dc.html",
-  "SunLens.dc.html",
-  "StringsLens.dc.html",
-  "StringsLensNoVoltage.dc.html",
-  "Performance.dc.html",
-  "Handover.dc.html",
-  "Controls2.dc.html",
-  "ShellStates.dc.html",
-  "Tabs.dc.html",
-  "LocateTablet.dc.html",
-  "LocateStates.dc.html",
-  "ObstaclesOnMap.dc.html",
-  "ByHand.dc.html",
-  "RoofLensTablet.dc.html",
-  "RoofLensPhone.dc.html",
-  "ObstacleOnRoof.dc.html",
-  "RoofTypes3D.dc.html",
-  "ArrayLensStates.dc.html",
-  "ImportHeights.dc.html",
-  "SunLensTablet.dc.html",
-  "SunLensPhone.dc.html",
-  "SunTime.dc.html",
-  "SunPathShadows.dc.html",
-  "ShadeMap.dc.html",
-  "StringsLensTablet.dc.html",
-  "StringsLensPhone.dc.html",
-  "StringsOnRoof.dc.html",
-  "StringsOptions.dc.html",
-  "StringsInverterSizing.dc.html",
-  "PerformanceTablet.dc.html",
-  "PerformancePhone.dc.html",
-  "PerformanceLossChain.dc.html",
-  "PerformanceCharts.dc.html",
-  "PerformanceWeather.dc.html",
-  "PerformanceStates.dc.html",
-  "HandoverTablet.dc.html",
-  "HandoverPhone.dc.html",
-  "HandoverPreviews.dc.html",
-  "HandoverStates.dc.html",
-  "HomeTablet.dc.html",
-  "HomePhone.dc.html",
-  "HomeDesigns.dc.html",
-  "OpenProject.dc.html",
-  "Present.dc.html",
-  "StageLayers.dc.html"
- ],
- "pages": [],
- "title": "SolarLayout Rooftop — Web Design"
+  "order": [
+    "Map.dc.html",
+    "Home.dc.html",
+    "Kit.dc.html",
+    "Locate.dc.html",
+    "LocatePhone.dc.html",
+    "RoofLens.dc.html",
+    "Main.dc.html",
+    "StudioTablet.dc.html",
+    "StudioPhone.dc.html",
+    "SunLens.dc.html",
+    "StringsLens.dc.html",
+    "StringsLensNoVoltage.dc.html",
+    "Performance.dc.html",
+    "Handover.dc.html",
+    "Controls2.dc.html",
+    "ShellStates.dc.html",
+    "Tabs.dc.html",
+    "LocateTablet.dc.html",
+    "LocateStates.dc.html",
+    "ObstaclesOnMap.dc.html",
+    "ByHand.dc.html",
+    "RoofLensTablet.dc.html",
+    "RoofLensPhone.dc.html",
+    "ObstacleOnRoof.dc.html",
+    "RoofTypes3D.dc.html",
+    "ArrayLensStates.dc.html",
+    "ImportHeights.dc.html",
+    "SunLensTablet.dc.html",
+    "SunLensPhone.dc.html",
+    "SunTime.dc.html",
+    "SunPathShadows.dc.html",
+    "ShadeMap.dc.html",
+    "StringsLensTablet.dc.html",
+    "StringsLensPhone.dc.html",
+    "StringsOnRoof.dc.html",
+    "StringsOptions.dc.html",
+    "StringsInverterSizing.dc.html",
+    "PerformanceTablet.dc.html",
+    "PerformancePhone.dc.html",
+    "PerformanceLossChain.dc.html",
+    "PerformanceCharts.dc.html",
+    "PerformanceWeather.dc.html",
+    "PerformanceStates.dc.html",
+    "HandoverTablet.dc.html",
+    "HandoverPhone.dc.html",
+    "HandoverPreviews.dc.html",
+    "HandoverStates.dc.html",
+    "HomeTablet.dc.html",
+    "HomePhone.dc.html",
+    "HomeDesigns.dc.html",
+    "OpenProject.dc.html",
+    "Present.dc.html",
+    "StageLayers.dc.html",
+    "SearchCoordinates.dc.html",
+    "SearchCoordinatesTablet.dc.html",
+    "SearchCoordinatesPhone.dc.html"
+  ],
+  "pages": [
+    {
+      "id": "approved",
+      "name": "Approved design"
+    },
+    {
+      "id": "ui-fixes",
+      "name": "UI fixes"
+    }
+  ],
+  "title": "SolarLayout Rooftop — Web Design"
 }

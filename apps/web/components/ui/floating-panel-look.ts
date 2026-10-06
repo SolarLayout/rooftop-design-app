@@ -4,14 +4,24 @@ import { classNames } from "./class-names";
 // popover of the browser, placed by `useFloating`. On phone and tablet it is a bottom sheet, unless it is asked to
 // stay floating there too (the Layers panel of the stage, decision D57).
 
-/** How wide the panel is: a list of choices, the project switcher's menu, the search's places, the menu of a card. */
-export type PanelWidth = "list" | "menu" | "search" | "card";
+/**
+ * How wide the panel is: a list of choices, the project switcher's menu, the search's places, the menu of a card; or as
+ * wide as the control that opened it (`control`: the search's places under its field or Home's well), which `useFloating`
+ * gives it as `--width-of-control` when it opens.
+ */
+export type PanelWidth = "list" | "menu" | "search" | "card" | "control";
 
 /** What the panel is on phone and tablet: a bottom sheet over a dimmed screen, or floating beside its control as on desktop. */
 export type OnTouch = "sheet" | "floating";
 
-const WIDTH_ON_DESKTOP: Record<PanelWidth, string> = { list: "desktop:w-80", menu: "desktop:w-85", search: "desktop:w-100", card: "desktop:w-60" };
-const WIDTH: Record<PanelWidth, string> = { list: "w-80", menu: "w-85", search: "w-100", card: "w-60" };
+const WIDTH_ON_DESKTOP: Record<PanelWidth, string> = {
+  list: "desktop:w-80",
+  menu: "desktop:w-85",
+  search: "desktop:w-100",
+  card: "desktop:w-60",
+  control: "desktop:w-(--width-of-control)",
+};
+const WIDTH: Record<PanelWidth, string> = { list: "w-80", menu: "w-85", search: "w-100", card: "w-60", control: "w-(--width-of-control)" };
 
 // A popover of the browser has colours and a width of its own, and cuts off what stands out of it. While
 // it is closed the browser does not show it; open, it is a column.

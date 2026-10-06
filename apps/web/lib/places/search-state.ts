@@ -1,5 +1,7 @@
 // The states of the search for words: searching, the places found with one marked, nothing found, or
-// failed; and what a key does in the list. A pure reducer, so that it is tested without a browser.
+// failed; coordinates refused with why; and what a key does in the list. A pure reducer, so that it is
+// tested without a browser.
+import type { LatLon } from "./place-input";
 import type { Place } from "./provider";
 
 export type SearchState =
@@ -7,12 +9,14 @@ export type SearchState =
   | { kind: "searching"; query: string }
   | { kind: "found"; query: string; places: Place[]; marked: number }
   | { kind: "nothing"; query: string }
-  | { kind: "failed"; query: string; message: string };
+  | { kind: "failed"; query: string; message: string }
+  | { kind: "refused"; why: string; offer: LatLon | null };
 
 export type SearchEvent =
   | { type: "asked"; query: string }
   | { type: "found"; query: string; places: Place[] }
   | { type: "failed"; query: string; message: string }
+  | { type: "refused"; why: string; offer: LatLon | null }
   | { type: "closed" }
   | { type: "taken" }
   | { type: "key"; key: string };
@@ -33,6 +37,8 @@ export function searchStateAfter(state: SearchState, event: SearchEvent): Search
         : { kind: "found", query: event.query, places: event.places, marked: 0 };
     case "failed":
       return isAskedFor(state, event.query) ? { kind: "failed", query: event.query, message: event.message } : state;
+    case "refused":
+      return { kind: "refused", why: event.why, offer: event.offer };
     case "closed":
     case "taken":
       return IDLE;
