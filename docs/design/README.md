@@ -76,6 +76,7 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | Controls, part 2 | `Controls2.dc.html` | `controls-part-2.png` | |
 | Shell states | `ShellStates.dc.html` | `shell-states.png` | desktop, tablet, phone in parts |
 | Tabs | `Tabs.dc.html` | `tabs.png` | desktop, phone in parts |
+| UI fixes · Present, the figures of each scene | `PresentStats.dc.html`, `PresentStatsTablet.dc.html` (the scenes in `present_scenes/`) | `ui-fixes-present-stats-desktop.jpg`, `ui-fixes-present-stats-tablet.jpg` | desktop, tablet (Present has no phone) |
 | UI fixes · Coordinates in the search | `SearchCoordinates.dc.html`, `SearchCoordinatesTablet.dc.html`, `SearchCoordinatesPhone.dc.html` | `ui-fixes-search-coordinates-desktop.png`, `ui-fixes-search-coordinates-tablet.png`, `ui-fixes-search-coordinates-phone.png` | desktop, tablet, phone |
 
 Screens still to draw are listed in `plan/phase-00-design.md`.
@@ -142,10 +143,15 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   phone): coordinates as Google Earth copies them read back under the field, the forms that are read, and the words for what cannot
   be read; approved by the owner on 2026-10-06 (session 18, D68). From session 18 every board for approval comes in the three sizes,
   on the canvas page "UI fixes".
+- `mockups/build_ui_fixes_present_stats.py` writes the boards "UI fixes · Present, the figures of each scene" (desktop and
+  tablet; Present has no phone): each scene of the tour as the app draws it, caught midway (`mockups/present_scenes/`),
+  with the panel of its figures over it and, in the day scene, the sun path; approved by the owner on 2026-10-06
+  (session 18, D72). The canvas's copies show the same screenshots uploaded to it (`--canvas`). Their previews are JPEG:
+  photographs of the stage at the board's size would weigh about 8 MB each as PNG.
 - A preview is the board rendered at its `$preview` size (the tail of each `.dc.html`) by a scratch Playwright script outside the
   repo: Chromium from `e2e/node_modules/@playwright/test`, the fonts served from `apps/web/app/fonts` and `apps/web/node_modules/geist`
   in place of the Google link in the board's `helmet`, `support.js` stubbed, everything else off the machine refused.
-- `mockups/canvas.json` is the layout of the boards on the canvas: 56 boards on two pages since 2026-10-06 ("Approved design", the
+- `mockups/canvas.json` is the layout of the boards on the canvas: 58 boards on two pages since 2026-10-06 ("Approved design", the
   first, holds every board without a `page`; "UI fixes" the boards of session 18 on); the 53 of the first page in sync with the canvas at claude.ai since
   2026-10-04 (session 15 published the 26 boards of Phases 6 to 11 and the five boards changed since 2026-09-30; the report's
   pages of `mockups/handover_pages/` travel with the Handover boards). A session on Bedrock has no Artifact tool: it adds its
