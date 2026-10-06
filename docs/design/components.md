@@ -969,10 +969,11 @@ its name is "Layers". States as the icon button's: hover (`control-hover`, `line
 `shadow-pressed`, the icon in text, `aria-expanded`) while its panel is open; never disabled. On the phone it stands
 beside 3D or Plan alone. Pressed, it opens a floating panel of 240 (the `FloatingPanel` at the width of a card's menu:
 `surface-1`, border `line-strong`, `radius-card-s`, `shadow-float`, padding 6) 6 under it with their right edges in
-line, on every size, not a bottom sheet: the title "Layers" in `text-section`, and one row of 44 (48 on touch) with the
-switch "Satellite imagery", on by default, its hint "Off: the plain grid" in `text-caption` text-3. On: the imagery
+line, on every size, not a bottom sheet: the title "Layers" in `text-section` with a close at its right (the icon
+button `quiet` `xs`, the close icon of 18, "Close"; D70), and one row of 44 (48 on touch) with the
+switch "Satellite imagery", off by default (D70), its hint "Off: the plain grid" in `text-caption` text-3. On: the imagery
 under the building with its attribution at the stage's bottom left. Off: the plain ground of the 3D palette with its
-grid, and no attribution. The switch takes effect at once; Escape, the button and a press beside the panel close it,
+grid, and no attribution. The switch takes effect at once; Escape, the close, the button and a press beside the panel close it,
 and the focus goes back to the button. What it sets is of the view (the view store), not of the design.
 
 Built (Phase 11, pull request 3): `components/studio/ViewControls.tsx`, the `Layers` part; the open look of the button
