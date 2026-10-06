@@ -76,6 +76,7 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | Controls, part 2 | `Controls2.dc.html` | `controls-part-2.png` | |
 | Shell states | `ShellStates.dc.html` | `shell-states.png` | desktop, tablet, phone in parts |
 | Tabs | `Tabs.dc.html` | `tabs.png` | desktop, phone in parts |
+| UI fixes · Coordinates in the search | `SearchCoordinates.dc.html`, `SearchCoordinatesTablet.dc.html`, `SearchCoordinatesPhone.dc.html` | `ui-fixes-search-coordinates-desktop.png`, `ui-fixes-search-coordinates-tablet.png`, `ui-fixes-search-coordinates-phone.png` | desktop, tablet, phone |
 
 Screens still to draw are listed in `plan/phase-00-design.md`.
 
@@ -137,10 +138,15 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   switch Satellite imagery, the ground as imagery or the plain grid, on desktop whole and in parts on three sizes), drawn on 2026-10-04 by
   session 14 (`plan/phase-11-plan.md`, decision 22 and step 35). The stages are the approved Studio boards' own, with the button, the panel
   and the ground changed; the imagery under the 3D is the illustration of the Find boards laid on the ground plane by the boards' projection.
+- `mockups/build_ui_fixes_search_coordinates.py` writes the three boards "UI fixes · Coordinates in the search" (desktop, tablet,
+  phone): coordinates as Google Earth copies them read back under the field, the forms that are read, and the words for what cannot
+  be read; approved by the owner on 2026-10-06 (session 18, D68). From session 18 every board for approval comes in the three sizes,
+  on the canvas page "UI fixes".
 - A preview is the board rendered at its `$preview` size (the tail of each `.dc.html`) by a scratch Playwright script outside the
   repo: Chromium from `e2e/node_modules/@playwright/test`, the fonts served from `apps/web/app/fonts` and `apps/web/node_modules/geist`
   in place of the Google link in the board's `helmet`, `support.js` stubbed, everything else off the machine refused.
-- `mockups/canvas.json` is the layout of the boards on the canvas: 53 boards, in sync with the canvas at claude.ai since
+- `mockups/canvas.json` is the layout of the boards on the canvas: 56 boards on two pages since 2026-10-06 ("Approved design", the
+  first, holds every board without a `page`; "UI fixes" the boards of session 18 on); the 53 of the first page in sync with the canvas at claude.ai since
   2026-10-04 (session 15 published the 26 boards of Phases 6 to 11 and the five boards changed since 2026-09-30; the report's
   pages of `mockups/handover_pages/` travel with the Handover boards). A session on Bedrock has no Artifact tool: it adds its
   boards to `canvas.json` (frame, `order`, a row title in `notes`) and the next session with the tool publishes them.

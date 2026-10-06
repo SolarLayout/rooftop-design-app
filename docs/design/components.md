@@ -520,7 +520,21 @@ the action stands under it, as wide as the well, 48 high. "Find my roof" is a li
 that it leads there by itself; with words typed it searches them and the places found come under the well as in Find;
 coordinates or a maps link typed, or a place taken from the list, lead to `/find?at=<lat>,<lon>` (and `&place=<label>` for
 a place found by words, so that the design is named after it, D49), where Find begins as if the place had just been found
-there: the map at roof zoom, "Outline the roof". Under the search two rows of 76 (`surface-1`, border `line`, `radius-bar`,
+there: the map at roof zoom, "Outline the roof".
+
+What the search reads (the board "UI fixes · Coordinates in the search", D68; Home, Find and Import a drawing alike):
+decimal degrees with a minus or the letters of the compass; degrees, minutes and seconds as Google Earth copies them, with
+typographic marks, the letter first or spaces for the marks; degrees and decimal minutes; the longitude first when its
+letter says so; decimal commas; a maps link. As soon as the text reads as a place, one row under the field says where it
+lands (the pin, "12.91409° N, 77.49199° E", the fact "Coordinates"), marked; Enter, the primary action or a press on it
+goes there. What looks like coordinates (numbers, marks, letters of the compass, signs and separators only; whole numbers
+with spaces alone are a postcode, and words) is never sent to the address search: on Enter it says why it cannot be read,
+with the note's mark, in one note under the field: minutes or seconds past 59, a latitude past 90° or a longitude past
+180°, two of a kind, one alone, a minus its letter contradicts, a part that cannot be read. An unlettered pair whose first
+is past 90° offers the swapped place as a row ("Swapped"), which Enter takes. The geocoder's own error is said as "The
+address search is not available right now. Paste coordinates or a maps link instead."
+
+Under the search two rows of 76 (`surface-1`, border `line`, `radius-bar`,
 an icon of 22, the title in `text-title`, a line in `text-small` text-2): "Import a drawing" ("KMZ, KML or DXF with the
 roof and its obstacles") opens the dialog of the import, "Open a project" ("A saved .rtd file, from this device or a
 colleague") the dialog of the project file; both are buttons.
@@ -645,7 +659,12 @@ are in `list-keys.ts`.
   `shadow-float`, padding 6). Its states are the floating panel's: closed (not shown); open, placed by `place-floating`
   6 from its control, on the other side where its own has no room, never off the screen; closed by Escape, a press
   beside it, a scroll of the page or a change of the window's size, the focus back on the control. For a panel that
-  holds one or two controls whose effect must stay in sight while they are used; a list or a menu stays a sheet.
+  holds one or two controls whose effect must stay in sight while they are used; a list or a menu stays a sheet, but for
+  the search's places (D68).
+- As wide as its control (`width="control"`): the panel takes the width of the element it is anchored to, given by
+  `useFloating` as `--width-of-control` when it opens. The search's places use it, floating on every size under the
+  field, or under Home's whole well (the board "UI fixes · Coordinates in the search"): a sheet would stand under the
+  keyboard of a phone.
 - With the list open the focus is in it, and the choice that is taken is marked. The arrows stop at the ends
   of the list; Home and End lead to them; a letter leads to the next choice that begins with it.
 - A press beside the list closes it. Scrolling the page or changing the size of the window closes it too.
