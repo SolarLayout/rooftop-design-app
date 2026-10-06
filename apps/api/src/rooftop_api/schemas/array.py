@@ -17,7 +17,7 @@ class ArraySpec(Input):
     tilt_deg: Tilt = 15.0
     azimuth_deg: Compass | None = None
     orientation: Orientation = "portrait"
-    modules_in_tilt: Annotated[int, Field(ge=1)] = 2
+    modules_in_tilt: Annotated[int, Field(ge=1)] = 1
     clearance_m: Metres = 0.5
     module_gap_m: Metres = 0.02
     row_pitch_m: Annotated[float, Field(gt=0)] | None = None

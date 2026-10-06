@@ -7,7 +7,7 @@ import pytest
 from shapely.geometry import GeometryCollection, LineString, MultiPolygon, Point, Polygon, box
 
 from rooftop_api import convert, schemas
-from rooftop_core.demo import demo_project, demo_roof
+from rooftop_core.demo import demo_array, demo_project, demo_roof
 from rooftop_core.geometry import Obstacle, Roof
 from rooftop_core.io.pvsyst import read_ond, read_pan
 from rooftop_core.keepout_parts import keepout_parts
@@ -69,6 +69,10 @@ def test_an_array_survives_both_ways_with_and_without_its_automatic_values():
         assert isinstance(schema, schemas.ArraySpec)
         assert convert.array_to_engine(schema) == array
     assert convert.array_from_engine(automatic).azimuth_deg is None
+
+
+def test_an_array_asked_for_without_modules_in_tilt_has_one_as_the_engine_has():
+    assert schemas.ArraySpec().modules_in_tilt == 1 == ArraySpec().modules_in_tilt
 
 
 def test_losses_survive_both_ways():
@@ -209,7 +213,7 @@ def test_an_inverter_carries_its_fields_curves_and_limits():
 
 
 def test_a_layout_carries_its_modules_areas_and_keepout(module):
-    roof, array = demo_roof(), ArraySpec()
+    roof, array = demo_roof(), demo_array()
     layout = place(roof, array, module)
 
     schema = convert.layout_from_engine(layout, keepout_parts(roof, array, layout))

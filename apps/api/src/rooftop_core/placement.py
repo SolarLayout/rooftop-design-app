@@ -27,7 +27,7 @@ class ArraySpec:
     tilt_deg: float = 15.0
     azimuth_deg: float | None = None       # None: roof edge closest to the equator
     orientation: str = "portrait"          # portrait | landscape
-    modules_in_tilt: int = 2
+    modules_in_tilt: int = 1               # a new design: one module up the slope (D69)
     clearance_m: float = 0.5               # lower edge above the roof
     module_gap_m: float = 0.02
     row_pitch_m: float | None = None       # None: shade-free in the window

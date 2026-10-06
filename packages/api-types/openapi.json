@@ -69,7 +69,7 @@
             "type": "number"
           },
           "modules_in_tilt": {
-            "default": 2,
+            "default": 1,
             "minimum": 1.0,
             "title": "Modules In Tilt",
             "type": "integer"
@@ -2442,7 +2442,7 @@
               "ew_tilt_deg": 10.0,
               "flush_clearance_m": 0.1,
               "module_gap_m": 0.02,
-              "modules_in_tilt": 2,
+              "modules_in_tilt": 1,
               "orientation": "portrait",
               "tilt_deg": 15.0,
               "window_end_h": 16.0,

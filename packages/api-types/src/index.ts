@@ -362,7 +362,7 @@ export interface components {
             module_gap_m: number;
             /**
              * Modules In Tilt
-             * @default 2
+             * @default 1
              */
             modules_in_tilt: number;
             /**
@@ -1477,7 +1477,7 @@ export interface components {
              *       "ew_tilt_deg": 10,
              *       "flush_clearance_m": 0.1,
              *       "module_gap_m": 0.02,
-             *       "modules_in_tilt": 2,
+             *       "modules_in_tilt": 1,
              *       "orientation": "portrait",
              *       "tilt_deg": 15,
              *       "window_end_h": 16,
