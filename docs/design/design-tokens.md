@@ -60,7 +60,6 @@ theme (`:root`).
 | `--color-note-surface` | `#1E1A10` | Background of a note or of a selected card |
 | `--color-note-line` | `#3A3220` | Border of a note |
 | `--color-heading` | `#FFB020` | A section's heading in an input panel (the inspectors, Find's panels), in the primary action's orange; weight 600 |
-| `--color-heading-line` | `rgba(255,176,32,.28)` | The line under a section's heading in an input panel |
 | `--color-ok` | `#3DD6A0` | Tick, saved dot, feasible band |
 | `--color-sun-core` | `#FFD36B` | The middle of the sun's marker over the stage: the 3D palette's `sunCore`, round the accent's disc |
 | `--color-outline-fill` | `rgba(255,176,32,.09)` | The fill of the outline on the map: accent at 9 % |
@@ -235,7 +234,7 @@ height and tracking together.
 | `--text-small` | `--font-sans` | `400` | `13px` | `20px` | `0` | Secondary lines |
 | `--text-caption` | `--font-sans` | `400` | `12px` | `20px` | `0` | Hints, labels of values, units |
 | `--text-caption-s` | `--font-sans` | `400` | `11px` | `16px` | `0` | The caption of a thumbnail where 12 does not fit (the report's pages on tablet, 72 wide) |
-| `--text-section` | `--font-sans` | `500` | `12px` | `20px` | `0.06em` | Section labels, uppercase: in text-3 on tables and panels; in the input panels a heading, `color-heading` at 600 over a line `color-heading-line` |
+| `--text-section` | `--font-sans` | `500` | `12px` | `20px` | `0.06em` | Section labels, uppercase: in text-3 on tables and panels; in the input panels a heading, `color-heading` at 600 with the glow `shadow-heading` |
 | `--text-value-l` | `--font-mono` | `500` | `17px` | `20px` | `0` | Values in the vitals on tablet |
 | `--text-value` | `--font-mono` | `500` | `16px` | `20px` | `0` | Values in the vitals on desktop and phone |
 | `--text-value-s` | `--font-mono` | `500` | `15px` | `20px` | `0` | A value beside its label; the choices of a decision card |
@@ -358,6 +357,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--shadow-knob` | `0 1px 3px rgba(0,0,0,.5)` | Switch knob |
 | `--shadow-handle` | `0 2px 6px rgba(0,0,0,.6)` | Map and slider handles |
 | `--shadow-text-on-imagery` | `0 1px 3px rgba(0,0,0,.9)` | Under text that stands on the satellite imagery: the scale, the attribution |
+| `--shadow-heading` | `0 2px 6px rgba(255,176,32,.6), 0 4px 14px rgba(255,176,32,.35)` | The faint glow of the heading's orange under a section's heading in an input panel |
 | `--halo-focus` | `0 0 0 3px rgba(255,176,32,.18)` | Focused field (with an accent border) |
 | `--halo-selected` | `0 0 0 3px rgba(255,176,32,.14)` | Selected card (with an accent border) |
 | `--halo-decision` | `0 0 0 4px rgba(255,176,32,.14)` | A choice only the user can make: the decision card (with an accent border) |
@@ -483,6 +483,7 @@ layer of their own.
 | `--z-*` | `z-` and the name | `z-float` |
 | `--border-*` | `border-` and the name; `border-b-tab` for the line under a tab | `border-handle-touch desktop:border-handle`, `border-dot`, `border-corner`, `border-outline` |
 | `--shadow-text-on-imagery` | `on-imagery` | on text that stands on the satellite imagery |
+| `--shadow-heading` | `heading-glow` | on a section's heading in an input panel |
 | `--x`, `--y`, `--turn` (numbers of the data, set with `measures()`) | `placed`, `turned` | a label of the stage where its point of the scene falls; the needle of the north control |
 
 Tailwind's own palette, sizes of type, radii and shadows do not exist in this app: a utility that is not made
