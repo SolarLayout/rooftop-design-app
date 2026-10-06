@@ -46,7 +46,7 @@ theme (`:root`).
 |---|---|---|---|
 | `--color-text` | `#F2F4F7` | Primary text, values | 16.5:1 |
 | `--color-text-2` | `#A9B2C0` | Labels, units, secondary text | 8.5:1 |
-| `--color-text-3` | `#7C8696` | Hints, section labels, axis ticks | 4.9:1 (4.6:1 on surface-2, the lowest) |
+| `--color-text-3` | `#7C8696` | Hints, labels of tables and panels outside the input panels, axis ticks | 4.9:1 (4.6:1 on surface-2, the lowest) |
 | `--color-text-on-imagery` | `#D5DAE2` | Secondary text over the satellite ground, with a text shadow | |
 
 ## Colour: accent and status
@@ -59,6 +59,8 @@ theme (`:root`).
 | `--color-accent-ink` | `#1A1204` | Text and icons on accent (10.1:1) |
 | `--color-note-surface` | `#1E1A10` | Background of a note or of a selected card |
 | `--color-note-line` | `#3A3220` | Border of a note |
+| `--color-heading` | `#FFB020` | A section's heading in an input panel (the inspectors, Find's panels), in the primary action's orange; weight 600 |
+| `--color-heading-line` | `rgba(255,176,32,.28)` | The line under a section's heading in an input panel |
 | `--color-ok` | `#3DD6A0` | Tick, saved dot, feasible band |
 | `--color-sun-core` | `#FFD36B` | The middle of the sun's marker over the stage: the 3D palette's `sunCore`, round the accent's disc |
 | `--color-outline-fill` | `rgba(255,176,32,.09)` | The fill of the outline on the map: accent at 9 % |
@@ -233,7 +235,7 @@ height and tracking together.
 | `--text-small` | `--font-sans` | `400` | `13px` | `20px` | `0` | Secondary lines |
 | `--text-caption` | `--font-sans` | `400` | `12px` | `20px` | `0` | Hints, labels of values, units |
 | `--text-caption-s` | `--font-sans` | `400` | `11px` | `16px` | `0` | The caption of a thumbnail where 12 does not fit (the report's pages on tablet, 72 wide) |
-| `--text-section` | `--font-sans` | `500` | `12px` | `20px` | `0.06em` | Section labels in panels, uppercase, colour text-3 |
+| `--text-section` | `--font-sans` | `500` | `12px` | `20px` | `0.06em` | Section labels, uppercase: in text-3 on tables and panels; in the input panels a heading, `color-heading` at 600 over a line `color-heading-line` |
 | `--text-value-l` | `--font-mono` | `500` | `17px` | `20px` | `0` | Values in the vitals on tablet |
 | `--text-value` | `--font-mono` | `500` | `16px` | `20px` | `0` | Values in the vitals on desktop and phone |
 | `--text-value-s` | `--font-mono` | `500` | `15px` | `20px` | `0` | A value beside its label; the choices of a decision card |
