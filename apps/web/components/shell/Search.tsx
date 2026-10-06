@@ -48,14 +48,15 @@ const FIELD = "flex h-10 min-w-0 items-center gap-2.5 rounded-control border bor
 const NOTE = "flex min-h-11 items-center gap-2.5 px-2.5 text-text-2";
 
 // Home's well: 76 high with the action inside at the right from tablet up; on phone the form alone is the well, 56 high,
-// and the action stands under it. The focus inside gives the well the accent line and the halo, as every well has.
+// and the action stands under it. The focus inside gives the well the accent line and the halo, as every well has; from
+// tablet up the form inside the well drops its own, or it would draw a second box.
 const HERO = classNames(
   "flex min-w-0 flex-col gap-2.5 tablet:h-19 tablet:flex-row tablet:items-center tablet:gap-3 tablet:pr-2.5 tablet:pl-5",
   "tablet:rounded-bar tablet:border tablet:border-line-strong tablet:bg-well tablet:shadow-well tablet:focused:border-accent tablet:focused:shadow-well-focus",
 );
 const HERO_FORM = classNames(
   "flex h-14 min-w-0 items-center gap-3 rounded-bar border border-line-strong bg-well px-4 shadow-well focused:border-accent focused:shadow-well-focus",
-  "tablet:h-auto tablet:grow tablet:rounded-none tablet:border-0 tablet:bg-transparent tablet:px-0 tablet:shadow-none",
+  "tablet:h-auto tablet:grow tablet:rounded-none tablet:border-0 tablet:bg-transparent tablet:px-0 tablet:shadow-none tablet:focused:shadow-none",
 );
 const HERO_ACTION = "w-full max-tablet:h-12 max-tablet:rounded-row tablet:w-auto";
 
