@@ -5,7 +5,7 @@ import { classNames } from "./class-names";
  * Cell: one of the vitals. Lead: the first of them, the energy. Tile: a value inside a card. Hero: the energy on
  * Performance, at the display size of 76. Figure: a KPI tile of Performance, a card of its own.
  */
-export type StatLook = "cell" | "lead" | "tile" | "hero" | "figure";
+export type StatLook = "cell" | "lead" | "tile" | "hero" | "figure" | "scene" | "scene-small";
 
 const FRAME: Record<StatLook, string> = {
   cell: "gap-1",
@@ -13,6 +13,8 @@ const FRAME: Record<StatLook, string> = {
   tile: "gap-0.5 rounded-row bg-surface-2 px-3.5 py-2.5",
   hero: "gap-0.5",
   figure: "gap-1 tablet:gap-1.5",
+  scene: "gap-0.5",
+  "scene-small": "gap-0.5",
 };
 
 const LABEL: Record<StatLook, string> = {
@@ -21,6 +23,8 @@ const LABEL: Record<StatLook, string> = {
   tile: "type-caption",
   hero: "type-small tablet:type-body-touch desktop:type-body",
   figure: "type-small tablet:type-body-touch desktop:type-body",
+  scene: "type-small",
+  "scene-small": "type-small",
 };
 
 const VALUE: Record<StatLook, string> = {
@@ -29,6 +33,8 @@ const VALUE: Record<StatLook, string> = {
   tile: "type-value",
   hero: "type-number-hero",
   figure: "type-number-vital tablet:type-number-tile",
+  scene: "type-number-scene-touch desktop:type-number-scene",
+  "scene-small": "type-number-vital-touch",
 };
 
 const UNIT: Record<StatLook, string> = {
@@ -37,12 +43,19 @@ const UNIT: Record<StatLook, string> = {
   tile: "type-caption",
   hero: "type-unit-hero",
   figure: "type-small tablet:type-body",
+  scene: "type-body-touch desktop:type-title",
+  "scene-small": "type-small",
 };
 
 type Props = Omit<ComponentProps<"div">, "children"> & {
   label: string;
   /** The value as it is shown: the number is formatted by who knows the quantity. */
   value: string;
+  /**
+   * The widest value this stat will show, while its value counts toward it (Present's energy): the value stands in that
+   * width from the start, at its right, in tabular figures, so that it neither wiggles nor pushes what is beside it.
+   */
+  holds?: string;
   unit?: string;
   /** What follows the unit, quieter and never dimmed: the DC side of the capacity factor. On phone it takes a line under the value. */
   more?: string;
@@ -55,17 +68,17 @@ type Props = Omit<ComponentProps<"div">, "children"> & {
   look?: StatLook;
 };
 
-const BESIDE: Record<StatLook, string> = { cell: "gap-1.5", lead: "gap-2.5", tile: "gap-1.5", hero: "gap-3.5", figure: "gap-1.5" };
+const BESIDE: Record<StatLook, string> = { cell: "gap-1.5", lead: "gap-2.5", tile: "gap-1.5", hero: "gap-3.5", figure: "gap-1.5", scene: "gap-2", "scene-small": "gap-1.5" };
 
 /** One label with its value. It belongs into `Stats`. */
-export function Stat({ label, value, unit, more, mark, dimmed = false, beside, look = "cell", className, ...rest }: Props) {
+export function Stat({ label, value, holds, unit, more, mark, dimmed = false, beside, look = "cell", className, ...rest }: Props) {
   return (
     <div className={classNames("flex min-w-0 flex-col justify-center whitespace-nowrap", FRAME[look], className)} {...rest}>
       <dt className={classNames("text-text-2", LABEL[look])}>{label}</dt>
       <dd className={classNames("flex items-center text-text", more && "flex-wrap", BESIDE[look], VALUE[look])}>
         <span data-testid="stat-value" className={classNames("flex items-center gap-1.5", dimmed && "opacity-updating")}>
           <span>
-            {value}
+            {holds === undefined ? value : <HeldValue value={value} holds={holds} />}
             {/* The space is as wide as a figure of the value: it is outside the unit. */}
             {unit ? " " : null}
             {/* Dimmed, the unit has the colour of the number: in its own it could not be read any more. */}
@@ -78,6 +91,21 @@ export function Stat({ label, value, unit, more, mark, dimmed = false, beside, l
         {more ? <span className="basis-full type-caption text-text-2 tablet:hidden">{more}</span> : null}
       </dd>
     </div>
+  );
+}
+
+/**
+ * A value in the width of the one it holds the place of: the held one in the flow, unseen, gives the width; the value
+ * stands over it at its right. (An inline grid of the two took no width inside the stat's flex boxes.)
+ */
+function HeldValue({ value, holds }: { value: string; holds: string }) {
+  return (
+    <span className="relative inline-block tabular-nums">
+      <span aria-hidden className="invisible">
+        {holds}
+      </span>
+      <span className="absolute top-0 right-0">{value}</span>
+    </span>
   );
 }
 

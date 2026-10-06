@@ -62,6 +62,18 @@
   --text-brand--font-weight: 600;
   --text-brand--font-family: var(--font-display);
 
+  --text-number-scene: 44px;
+  --text-number-scene--line-height: 48px;
+  --text-number-scene--letter-spacing: -0.02em;
+  --text-number-scene--font-weight: 600;
+  --text-number-scene--font-family: var(--font-display);
+
+  --text-number-scene-touch: 40px;
+  --text-number-scene-touch--line-height: 44px;
+  --text-number-scene-touch--letter-spacing: -0.02em;
+  --text-number-scene-touch--font-weight: 600;
+  --text-number-scene-touch--font-family: var(--font-display);
+
   --text-number-tile: 34px;
   --text-number-tile--line-height: 38px;
   --text-number-tile--letter-spacing: -0.02em;
@@ -230,6 +242,8 @@
   --radius-panel: 22px;
   --radius-full: 9999px;
 
+  --blur-panel: 10px;
+
   --border-tab: 2px;
   --border-dot: 1.5px;
   --border-handle: 3px;
@@ -294,6 +308,8 @@
   --color-line-strong: #2F3847;
   --color-line-hover: #3B4658;
   --color-dim: rgba(5,7,10,.72);
+  --color-dim-panel: rgba(5,7,10,.58);
+  --color-line-glass: rgba(255,255,255,.08);
   --color-handle-fill: #FFFFFF;
 
   --color-text: #F2F4F7;
@@ -469,6 +485,8 @@
   --color-line-strong: var(--color-line-strong);
   --color-line-hover: var(--color-line-hover);
   --color-dim: var(--color-dim);
+  --color-dim-panel: var(--color-dim-panel);
+  --color-line-glass: var(--color-line-glass);
   --color-handle-fill: var(--color-handle-fill);
   --color-text: var(--color-text);
   --color-text-2: var(--color-text-2);
@@ -533,6 +551,7 @@
   --shadow-card: var(--shadow-card);
   --shadow-row: var(--shadow-row);
   --shadow-float: var(--shadow-float);
+  --blur-panel: var(--blur-panel);
   --shadow-tooltip: var(--shadow-tooltip);
   --shadow-panel: var(--shadow-panel);
   --shadow-drawer: var(--shadow-drawer);
@@ -599,6 +618,20 @@
   font-size: var(--text-brand);
   line-height: var(--text-brand--line-height);
   letter-spacing: var(--text-brand--letter-spacing);
+}
+@utility type-number-scene {
+  font-family: var(--text-number-scene--font-family);
+  font-weight: var(--text-number-scene--font-weight);
+  font-size: var(--text-number-scene);
+  line-height: var(--text-number-scene--line-height);
+  letter-spacing: var(--text-number-scene--letter-spacing);
+}
+@utility type-number-scene-touch {
+  font-family: var(--text-number-scene-touch--font-family);
+  font-weight: var(--text-number-scene-touch--font-weight);
+  font-size: var(--text-number-scene-touch);
+  line-height: var(--text-number-scene-touch--line-height);
+  letter-spacing: var(--text-number-scene-touch--letter-spacing);
 }
 @utility type-number-tile {
   font-family: var(--text-number-tile--font-family);
@@ -824,6 +857,15 @@
   filter: brightness(var(--brightness-lift));
 }
 
+/* What comes with its moment fades in: the panel of a scene of Present (D72). */
+@keyframes appear {
+  from {
+    opacity: var(--opacity-gone);
+  }
+}
+@utility appearing {
+  animation: appear var(--duration-panel) var(--ease-out);
+}
 /* What waits: a ring turns, a skeleton breathes. Both stand still for those who ask for less motion. */
 @keyframes turn {
   to {

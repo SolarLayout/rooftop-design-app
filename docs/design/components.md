@@ -187,8 +187,27 @@ A status mark may follow the value. Tiles inside a card are flat: `surface-2`, r
 In code: `Stats` is the list, `Stat` one label with its value. Looks: `cell` (vitals: value 16, 17 on tablet),
 `lead` (the energy: display 26, 22 on phone), `tile`, `hero` (the energy on Performance: display 76, its unit
 `text-unit-hero`, the label in body text) and `figure` (a KPI tile of Performance, a card of its own: display 34,
-26 on phone, the label in body text). A quieter figure may follow the unit (`more`: "· 19.7 % DC"); on phone it
-takes a line under the value.
+26 on phone, the label in body text), `scene` (the lead figure of a panel of Present: `text-number-scene`, 44 on
+desktop, 40 on tablet, the label in `text-small`) and `scene-small` (the panel's other figures: display 22). A
+quieter figure may follow the unit (`more`: "· 19.7 % DC"); on phone it takes a line under the value. A value that
+counts toward a final one (`holds`) stands from the start in the final one's width, at its right, in tabular
+figures: it neither wiggles nor pushes what is beside it.
+
+## Present, the panel of a scene
+The boards "UI fixes · Present, the figures of each scene" (`mockups/PresentStats.dc.html`,
+`mockups/PresentStatsTablet.dc.html`; D72). In each of the tour's six scenes one panel at the stage's top left (24 on
+tablet, 40 on desktop), the stage seen through it: `color-dim-panel` over `backdrop-blur-panel`, the edge
+`line-glass`, `radius-card`, `shadow-float`, padding 18 by 22; 304 wide on tablet, 340 on desktop, the energy's 580
+there with the chain beside its figures (under them on tablet). The scene's number and name in `text-section` text-3
+("4 · The sun, 21 December"); the lead figure in the look `scene`, counting over the first three quarters of its
+scene in the place of its final value; two figures in the look `scene-small` beside each other. Place: the roof's
+area, its latitude and longitude. Roof: the obstacles as they rise, the roof's length by width (its corners for a roof
+drawn), the parapet. Array: the positions as the rows fill, the rows, the tilt and the orientation. Sun: the solar
+time, the sun's height and bearing; the stage draws the sun path and the sun along it with the hour marks of the Sun
+lens, without its callout. Strings: the DC capacity, strings × modules in series, inverters × kW. Energy: the energy
+of year 1, the specific yield, the PR, and the chain's cascade from the array's nominal energy to the grid. A scene
+whose facts are not there yet has no panel. It fades in with its scene (`appearing`). Through the whole tour the
+camera frames the sun path's dome, and on a canvas taller than wide it stands back by the aspect.
 
 ## Vitals bar
 Desktop: floating, `surface-1`, `radius-bar`, `shadow-float`, height 78, cells separated by 1 px lines. Order:
@@ -928,16 +947,19 @@ made by `rowsOnTheDeviceOf` (`components/shell/switcher-view.ts`) of the designs
 - While no design is open, a skeleton stands in the place of the name.
 
 ## State of saving
-In the top bar on desktop, `text-small`, text-2; on tablet and phone in the project switcher only.
+Its mark before the design's name in the project switcher's trigger, on every size (the boards "UI fixes · The state
+of saving, a mark before the name", D74): a slot of 14, whatever the state, so that the name never moves; the words
+are the trigger's tooltip and description, never in the top bar. In the switcher's menu, under the name, mark and
+words as below (`text-caption`), Not saved a button that opens the notes.
 
 | State | Mark | Words |
 |---|---|---|
 | Saved | A dot of 7 in `color-ok`, pulsing in `duration-pulse-saved` | Saved on this device |
 | Saving | A turning ring of 12 | Saving |
 | Not kept: the demo, and every design before Phase 10 | A hollow dot of 7, 1.5 px in text-3 | Not kept on this device |
-| Could not be saved | A note of 16 | Not saved. It is a button and opens the notes |
+| Could not be saved | A note of 16 (14 in the trigger's slot) | Not saved. It is a button and opens the notes |
 
-In code: `SaveState`. Before Phase 10 the shell shows "Not kept on this device" for every design. In the
+In code: `SaveState` (the menu's), `SaveMark` (the trigger's), `SAVING_WORDS`. Before Phase 10 the shell shows "Not kept on this device" for every design. In the
 project switcher the words are `text-caption`.
 
 ## Top bar and navigation

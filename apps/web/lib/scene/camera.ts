@@ -35,9 +35,13 @@ const PLAN_ROOM = 1.15;
 /** The least height of the sun's eye, as a share of its distance: a sun on the horizon still looks down. */
 const LOWEST_SUN_EYE = 0.15;
 
-export function presetPositionOf(preset: CameraPreset, radius: number, sun: Sun | null): SceneXYZ {
-  const distance = fitDistance(radius);
-  if (preset === "plan") return [0, distance * 1.2, 0];
+/**
+ * Where a preset puts the camera. The field of view is upright: on a canvas taller than wide (Present on tablet) the view
+ * stands back by the aspect, so that the width holds what the height would (D72); the plan's zoom fits the shorter side.
+ */
+export function presetPositionOf(preset: CameraPreset, radius: number, sun: Sun | null, aspect = 1): SceneXYZ {
+  if (preset === "plan") return [0, fitDistance(radius) * 1.2, 0];
+  const distance = fitDistance(radius) / Math.min(1, aspect);
   if (preset === "sun-eye" && sun) {
     const [x, y, z] = sunDirectionOf(sun);
     const lifted = Math.max(LOWEST_SUN_EYE, y);

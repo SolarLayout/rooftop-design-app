@@ -47,6 +47,14 @@ describe("the presets", () => {
     expect(Math.hypot(x, y, z)).toBeGreaterThan(RADIUS * 1.5);
   });
 
+  test("a portrait canvas: the 3D view stands back by its aspect, so that its width holds what its height would (Present on tablet, D72)", () => {
+    const length = (at: readonly number[]) => Math.hypot(at[0]!, at[1]!, at[2]!);
+    const square = length(presetPositionOf("3d", RADIUS, null));
+    expect(length(presetPositionOf("3d", RADIUS, null, 1.6))).toBeCloseTo(square, 6);
+    expect(length(presetPositionOf("3d", RADIUS, null, 834 / 1194))).toBeCloseTo(square / (834 / 1194), 6);
+    expect(length(presetPositionOf("plan", RADIUS, null, 0.5))).toBeCloseTo(length(presetPositionOf("plan", RADIUS, null)), 6);
+  });
+
   test("Fit is the 3D view framed again", () => {
     expect(presetPositionOf("fit", RADIUS, null)).toEqual(presetPositionOf("3d", RADIUS, null));
   });

@@ -1,11 +1,12 @@
+import Link from "next/link";
 import { iconButtonLook } from "@/components/ui/button-look";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
-import { HANDOVER, PRESENT, type Lens, type Workspace } from "@/lib/routes";
+import { HANDOVER, HOME, PRESENT, type Lens, type Workspace } from "@/lib/routes";
 import { Logo } from "./Logo";
 import { ProjectSwitcher } from "./ProjectSwitcher";
-import { SaveState, type Saving } from "./SaveState";
+import type { Saving } from "./SaveState";
 import type { DeviceRow } from "./switcher-view";
 import { WorkspaceNav } from "./WorkspaceNav";
 
@@ -74,7 +75,15 @@ const countOf = (notes: number) => (notes === 0 ? "Nothing to review" : notes ==
 export function TopBar({ name, place, workspace, lens, saving, notes, onOpenNotes, onImport, onOpenProject, onRename, onSaveACopy, designs, onOpenDesign }: Props) {
   return (
     <header className={BAR}>
-      <Logo />
+      {/* The mark leads home on every size (the owner, session 18), with the ring of every control. On touch the mark alone is
+          28 across: the link is 44 square about it, and gives the 8 on each side back, so that nothing beside it moves. */}
+      <Link
+        href={HOME}
+        aria-label="Home"
+        className="-mx-2 flex min-h-touch min-w-touch shrink-0 items-center justify-center rounded-control focus-ring press-motion desktop:mx-0 desktop:min-w-0 desktop:justify-start"
+      >
+        <Logo />
+      </Link>
       <span className="hidden h-6 w-px shrink-0 bg-line desktop:block" />
       <ProjectSwitcher
         name={name}
@@ -93,7 +102,6 @@ export function TopBar({ name, place, workspace, lens, saving, notes, onOpenNote
       <span className="hidden grow tablet:block" />
       <div className="flex shrink-0 items-center gap-2 tablet:gap-3.5 desktop:gap-3">
         {/* Where the bar is short of room, what the project switcher says too goes first. */}
-        <SaveState state={saving} onOpenNotes={onOpenNotes} className="hidden desktop-wide:flex" />
         <span className="flex tablet:hidden">
           <button type="button" aria-label={countOf(notes)} onClick={onOpenNotes} className={iconButtonLook("quiet", "l", "square")}>
             {notes === 0 ? (

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { Obstacle } from "../api";
 import type { DraftObstacle } from "../geometry/obstacle-fields";
-import { cameraFromOf, cameraMoveOf, cameraOf, cameraRequestOf, createViewStore, groundDrawnOf, groundOf, presentationOf, draftOf, draggingOf, isPlayingOf, isShadeMapShownOf, lensOf, litStringsOf, onTheRoofOf, sunTabOf, northRequestOf, selectionOf, showsSunPathOf, stringColouringOf, stringsShownByOf, sunTimeOf, toReviewOf, tracedStringOf } from "./view-store";
+import { cameraFromOf, cameraMoveOf, cameraOf, cameraRequestOf, createViewStore, framesTheDomeOf, groundDrawnOf, groundOf, presentationOf, draftOf, draggingOf, isPlayingOf, isShadeMapShownOf, lensOf, litStringsOf, onTheRoofOf, sunTabOf, northRequestOf, selectionOf, showsSunPathOf, stringColouringOf, stringsShownByOf, sunTimeOf, toReviewOf, tracedStringOf } from "./view-store";
 
 describe("the view", () => {
   test("it begins on the first lens, in 3D, on the design day", () => {
@@ -35,6 +35,28 @@ describe("the view", () => {
     expect(showsSunPathOf(store.getState())).toBe(true);
 
     store.getState().showOnTheRoof("sunPath", false);
+    expect(showsSunPathOf(store.getState())).toBe(false);
+  });
+
+  test("the camera frames the sun path's dome in the Sun lens with the path on, and through the whole of Present, every scene (D72)", () => {
+    const store = createViewStore();
+    expect(framesTheDomeOf(store.getState())).toBe(false);
+    store.getState().showLens("sun");
+    expect(framesTheDomeOf(store.getState())).toBe(true);
+    store.getState().showOnTheRoof("sunPath", false);
+    expect(framesTheDomeOf(store.getState())).toBe(false);
+
+    store.getState().setPresentation({ reveal: { building: 0, obstacles: 0, modules: 0 }, colouring: null, sunPath: false });
+    expect(framesTheDomeOf(store.getState())).toBe(true);
+  });
+
+  test("under Present the presentation says whether the sun path is drawn, whatever the lens and its switch (D72)", () => {
+    const store = createViewStore();
+    store.getState().setPresentation({ reveal: { building: 1, obstacles: 1, modules: 1 }, colouring: null, sunPath: true });
+    expect(showsSunPathOf(store.getState())).toBe(true);
+
+    store.getState().setPresentation({ reveal: { building: 1, obstacles: 1, modules: 1 }, colouring: null, sunPath: false });
+    store.getState().showLens("sun");
     expect(showsSunPathOf(store.getState())).toBe(false);
   });
 
@@ -358,7 +380,7 @@ describe("the strings on the roof", () => {
 
 // The presentation (plan/phase-10-plan.md, step 17): Present's reveal and colouring, over the view while the tour runs; null in the Studio.
 describe("the presentation", () => {
-  const PRESENTING = { reveal: { building: 1, obstacles: 0.5, modules: 0 }, colouring: null } as const;
+  const PRESENTING = { reveal: { building: 1, obstacles: 0.5, modules: 0 }, colouring: null, sunPath: false } as const;
 
   test("there is none at the start; one set is read back; the same set again changes nothing", () => {
     const store = createViewStore();
@@ -367,8 +389,11 @@ describe("the presentation", () => {
     store.getState().setPresentation(PRESENTING);
     expect(presentationOf(store.getState())).toEqual(PRESENTING);
     const before = store.getState();
-    store.getState().setPresentation({ reveal: { building: 1, obstacles: 0.5, modules: 0 }, colouring: null });
+    store.getState().setPresentation({ reveal: { building: 1, obstacles: 0.5, modules: 0 }, colouring: null, sunPath: false });
     expect(store.getState()).toBe(before);
+    store.getState().setPresentation({ ...PRESENTING, sunPath: true });
+    expect(store.getState()).not.toBe(before);
+    store.getState().setPresentation(PRESENTING);
 
     store.getState().setPresentation(null);
     expect(presentationOf(store.getState())).toBeNull();

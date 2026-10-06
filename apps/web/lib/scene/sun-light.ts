@@ -35,8 +35,11 @@ export function shadowBiasOf(elevationDeg: number, radius: number, mapSize: numb
 /** The height of the sun the light is held to: 10:30 on the design day at Pune, the morning the boards draw. */
 const HELD_AT_DEG = 42.6;
 
-/** In shade a surface is a third darker than in the sun, as the boards draw shadows. */
-const SHADE_SHARE = 2 / 3;
+/**
+ * In shade a surface is 55 % darker than in the sun: a third (the boards' first shade) read too faintly on the roof
+ * (the owner, session 18; D73). The sun and the sky still come to π, so a surface in the sun keeps its colour.
+ */
+const SHADE_SHARE = 0.45;
 
 /** How bright the sky's colour is, as light: its luminance in linear light. */
 const SKY = (() => {
@@ -48,7 +51,7 @@ const SKY = (() => {
  * The strength of the sun light and of the sky's, held to the palette (the boards draw every surface at its
  * colour). Three's Lambert gives back the albedo over π of the light that falls on a surface: a level roof in
  * the sun at HELD_AT_DEG and under the sky gives back its palette colour when the two come to π; in shade the
- * sky alone gives two thirds of that. The sun's strength does not change with its height but fades at the
+ * sky alone gives SHADE_SHARE of that. The sun's strength does not change with its height but fades at the
  * horizon; a lower sun lights a level roof less by the angle alone.
  */
 export function intensitiesOf(elevationDeg: number): { sun: number; ambient: number } {

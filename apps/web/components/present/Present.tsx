@@ -10,11 +10,13 @@ import { REDUCED_MOTION, useProject, useResults, useStores, useView } from "@/co
 import { useOpensWhatBelongs } from "@/components/shell/use-opens-what-belongs";
 import { useWebGL } from "@/components/find/use-web-gl";
 import { PlanFallback } from "@/components/studio/PlanFallback";
+import { SunMarks } from "@/components/studio/SunMarks";
 import { CONTEXT_LOST, NO_WEBGL } from "@/components/studio/stage-words";
-import { stringsWordsOf } from "@/components/studio/stage-view";
+import { attributionOf, stringsWordsOf } from "@/components/studio/stage-view";
 import { classNames } from "@/components/ui/class-names";
 import { shown } from "@/components/ui/number-entry";
 import { CLOCK_OF_THE_BROWSER } from "@/lib/clock";
+import { esriProvider, KEY_OF_THE_APP } from "@/lib/places/esri";
 import { createTour, type Tour } from "@/lib/present/create-tour";
 import { factsWordsOf, waitingWordsOf } from "@/lib/present/words";
 import { pathOfLens } from "@/lib/routes";
@@ -25,13 +27,14 @@ import { nameOf, projectOf } from "@/lib/stores/project-store";
 import { chosenOptionOf, isDesignUpdating, layoutOf, noOptionsOf, sunDayOf } from "@/lib/stores/results-store";
 import { lensOf, presentationOf, sunTimeOf } from "@/lib/stores/view-store";
 import { readOutOf } from "@/lib/flow/sun-time";
-import { PresentFigures } from "./PresentFigures";
+import { PresentPanel } from "./PresentPanel";
 
 // The scene draws with WebGL in the browser alone: it is loaded there, never on the server.
 const Scene = dynamic(() => import("@/components/scene/Scene").then((module) => module.Scene), { ssr: false });
 
 /** The hint at the bottom right (the board "Present"), fading after the first loop. */
 const HINT = "Press any key or touch the screen to return";
+const ATTRIBUTION = esriProvider(KEY_OF_THE_APP)?.imagery.attribution ?? null;
 
 /** What leaves Present: any key, any press of a pointer, any touch (decision 8). */
 const LEAVES = ["keydown", "pointerdown", "touchstart"] as const;
@@ -116,10 +119,12 @@ export function Present() {
           <Scene onContextLost={() => setLost(true)} stage={stage} />
         )}
       </div>
-      <PresentFigures tour={tour} />
+      {cannotDraw ? null : <SunMarks stage={stage} callout={false} />}
+      <PresentPanel tour={tour} />
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 z-stage-overlay h-45 stage-fade" />
       <Words tour={tour} facts={facts} waiting={waiting} />
       <Hint tour={tour} />
+      {cannotDraw ? null : <Attribution stage={stage} />}
       <OnTheStage tour={tour} stage={stage} />
     </main>
   );
@@ -140,6 +145,20 @@ function Words({ tour, facts, waiting }: { tour: Tour; facts: string; waiting: s
         </p>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * The attribution of the imagery at the bottom left, under the words, as the Studio's stage has it: it stands while the
+ * imagery is the ground drawn, as the Layers panel asks for it.
+ */
+function Attribution({ stage }: { stage: StageStore }) {
+  const attribution = attributionOf(useStore(stage, groundOf), ATTRIBUTION);
+  if (!attribution) return null;
+  return (
+    <p data-testid="present-attribution" className="pointer-events-none absolute bottom-1.5 left-10 z-stage-overlay max-w-full truncate type-label-s text-text-on-imagery on-imagery">
+      {attribution}
+    </p>
   );
 }
 

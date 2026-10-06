@@ -36,6 +36,8 @@ theme (`:root`).
 | `--color-line-strong` | `#2F3847` | Borders of secondary buttons and inputs, off switch |
 | `--color-line-hover` | `#3B4658` | Border of a secondary button, hover |
 | `--color-dim` | `rgba(5,7,10,.72)` | Over the screen, under a dialog and under a bottom sheet that opens |
+| `--color-dim-panel` | `rgba(5,7,10,.58)` | A panel of figures over Present's stage, the stage seen through it, blurred (D72) |
+| `--color-line-glass` | `rgba(255,255,255,.08)` | The edge of a panel over the stage that the stage shows through |
 | `--color-handle-fill` | `#FFFFFF` | The handle of a corner on the map: white, so that it reads on any imagery, with an accent line |
 
 ## Colour: text
@@ -219,6 +221,8 @@ height and tracking together.
 | `--text-lens` | `--font-display` | `600` | `26px` | `32px` | `-0.02em` | Lens title, panel title |
 | `--text-lens-touch` | `--font-display` | `600` | `22px` | `28px` | `-0.02em` | Lens title, panel title on phone |
 | `--text-brand` | `--font-display` | `600` | `17px` | `20px` | `-0.01em` | The name of the product in the top bar |
+| `--text-number-scene` | `--font-display` | `600` | `44px` | `48px` | `-0.02em` | The lead figure of a scene of Present, on desktop |
+| `--text-number-scene-touch` | `--font-display` | `600` | `40px` | `44px` | `-0.02em` | The lead figure of a scene of Present, on tablet |
 | `--text-number-tile` | `--font-display` | `600` | `34px` | `38px` | `-0.02em` | KPI tiles |
 | `--text-number-vital` | `--font-display` | `600` | `26px` | `30px` | `-0.02em` | Energy in the vitals on desktop and tablet |
 | `--text-number-vital-touch` | `--font-display` | `600` | `22px` | `26px` | `-0.02em` | Energy in the vitals on phone |
@@ -344,6 +348,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--shadow-card` | `inset 0 1px 0 rgba(255,255,255,.05), 0 1px 2px rgba(0,0,0,.35), 0 16px 40px rgba(0,0,0,.28)` | Cards |
 | `--shadow-row` | `inset 0 1px 0 rgba(255,255,255,.05)` | A row of the inspector that is pressed: an option card, a closed row (the board "Studio, Strings lens") |
 | `--shadow-float` | `inset 0 1px 0 rgba(255,255,255,.06), 0 1px 2px rgba(0,0,0,.45), 0 16px 40px rgba(0,0,0,.5)` | Anything over the 3D or the map |
+| `--blur-panel` | `10px` | Behind a panel of Present's figures: the stage blurred under it (`backdrop-blur-panel`) |
 | `--shadow-tooltip` | `0 1px 2px rgba(0,0,0,.45), 0 8px 20px rgba(0,0,0,.35)` | Tooltips |
 | `--shadow-panel` | `inset 0 1px 0 rgba(255,255,255,.06), 0 2px 4px rgba(0,0,0,.4), 0 24px 64px rgba(0,0,0,.55)` | Large floating panels |
 | `--shadow-drawer` | `-16px 0 40px rgba(0,0,0,.5)` | The drawer of the notes, which comes from the right |
@@ -460,6 +465,8 @@ layer of their own.
 | `--opacity-disabled`, `--opacity-updating` | `opacity-disabled`, `opacity-updating` | `disabled:opacity-disabled` |
 | `--opacity-wash`, `--brightness-lift` | `opacity-wash`, `lifted` | on the wash under the line of a chart; on the bar that is under the pointer |
 | `--opacity-gone` | `opacity-gone` | on the hint of Present once the first loop is over, with `duration-panel` |
+| `--opacity-gone`, `--duration-panel`, `--ease-out` | `appearing` | on the panel of a scene of Present: it fades in with its scene |
+| `--blur-panel` | `backdrop-blur-panel` | on the panel of a scene of Present, over `color-dim-panel` |
 | `--color-ground` | `stage-fade` | the fade of the stage into the ground, 180 high, under the words of Present |
 | `--duration-spin`, `--duration-breathe` | `turning`, `breathing` | on a ring that turns, on a skeleton |
 | `--duration-pulse-saved`, `--halo-saved`, `--halo-saved-out` | `pulsing` | on the saved dot |

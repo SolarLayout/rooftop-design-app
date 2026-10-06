@@ -48,6 +48,9 @@ export function isHandoverItem(value: string): value is HandoverItem {
 export const pathOfLens = (lens: Lens) => `/studio/${lens}` as const;
 export const pathOfItem = (item: HandoverItem) => `/handover/${item}` as const;
 
+/** Home: the search, the ways to a design, the designs on this device. */
+export const HOME = "/";
+
 /**
  * The list of Handover (plan/phase-09-plan.md, decision 3): on desktop and tablet with the first item's preview beside
  * it, on phone the list alone. An item's own address is `pathOfItem`.

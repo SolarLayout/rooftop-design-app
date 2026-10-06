@@ -12,7 +12,11 @@ import { projectOf } from "@/lib/stores/project-store";
 import { draftOf, selectionOf, sunTimeOf } from "@/lib/stores/view-store";
 import { sunCalloutOf } from "@/lib/flow/sun-time";
 
-type Props = { stage: StageStore };
+type Props = {
+  stage: StageStore;
+  /** The marker's callout of the time and the sun; none in Present, whose panel says them (D72). */
+  callout?: boolean;
+};
 
 // The board "Sun path and shadow outlines": a ring of the sun at each hour mark, and its chip beside it in
 // the look of the stage's labels; none on phone.
@@ -38,7 +42,7 @@ const ROW_CHIP: Partial<Record<"beside" | "below" | "above", string>> = { below:
  * puts its point. The callout of what is selected wins: while something is selected the marker has none.
  * For the eye alone: the text equivalent of the stage says the sun and its path in words.
  */
-export function SunMarks({ stage }: Props) {
+export function SunMarks({ stage, callout = true }: Props) {
   const labels = useStore(stage, sunLabelsOf);
   const canvas = useStore(stage, cameraOf);
   const width = canvas?.width ?? 0;
@@ -49,7 +53,7 @@ export function SunMarks({ stage }: Props) {
   const sun = useSun();
   if (labels.length === 0 || !project) return null;
   const marker = labels.find((label) => label.kind === "sun" && label.visible);
-  const words = selection === null && draft === null ? sunCalloutOf(hour, sun, { from: project.array.window_start_h, to: project.array.window_end_h }) : null;
+  const words = callout && selection === null && draft === null ? sunCalloutOf(hour, sun, { from: project.array.window_start_h, to: project.array.window_end_h }) : null;
   const side = marker ? calloutSideOf(marker.x, width) : "right";
   // In the stage's top the callout would stand under the title and the view controls: it goes under the marker.
   const row = marker && canvas ? calloutRowOf(marker.y, canvas.height) : "beside";

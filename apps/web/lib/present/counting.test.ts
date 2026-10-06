@@ -1,9 +1,25 @@
 import { describe, expect, test } from "bun:test";
 import type { Mark } from "../format/cascade";
-import { countedAt, easeOut, grownMarksOf } from "./counting";
+import { countedAt, countingEnergy, easeOut, grownMarksOf } from "./counting";
 
 // The energy counting up in the last scene (plan/phase-10-plan.md, step 19, decision 9): the value at a share of the
 // count, eased out so that it slows as it lands; the chain's bars growing one after another with the same share.
+
+describe("the energy as it counts, steady in its place", () => {
+  test("it holds the final figure's width from the start: the counted figure, the final one held", () => {
+    expect(countingEnergy(617.84, 0)).toEqual({ number: "0.0", unit: "MWh", holds: "617.8" });
+    expect(countingEnergy(617.84, 1)).toEqual({ number: "617.8", unit: "MWh", holds: "617.8" });
+  });
+
+  test("the counted figure never has more characters than the one it holds, so it never pushes what stands beside it", () => {
+    for (const mwh of [9.96, 617.84, 1234.5, 99999.9]) {
+      for (let step = 0; step <= 200; step += 1) {
+        const { number, holds } = countingEnergy(mwh, step / 200);
+        expect(number.length).toBeLessThanOrEqual(holds.length);
+      }
+    }
+  });
+});
 
 describe("the count", () => {
   test("from 0 to the number over the share, slowing toward the end", () => {

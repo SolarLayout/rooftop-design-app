@@ -993,7 +993,7 @@ describe("the shadow outlines", () => {
     pass(TIME_REST);
     expect(asked(suns)).toHaveLength(1);
 
-    view.getState().setPresentation({ reveal: { building: 1, obstacles: 1, modules: 1 }, colouring: null });
+    view.getState().setPresentation({ reveal: { building: 1, obstacles: 1, modules: 1 }, colouring: null, sunPath: false });
     for (const hour of [11, 12, 13, 14]) {
       view.getState().setSunTime({ day: "design_day", hour });
       pass(TIME_REST);
