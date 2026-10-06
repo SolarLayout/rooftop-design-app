@@ -93,3 +93,17 @@ def test_a_file_without_a_name_is_still_refused_in_words():
         parse_pan("nothing useful\n")
 
     assert str(error.value) == "The file: not a PVsyst module file (PNom, Voc or Isc missing)"
+
+
+def test_the_power_of_an_ond_is_in_kilowatts_whatever_its_display_unit():
+    """UnitAffEnum is the unit PVsyst shows the power in; PNomConv is in kW all the same. 30 of the
+    405 OND files the app's library holds say W (the small Solis, the FIMER PVS-100), and were read
+    as a thousandth of their power."""
+    text = Path(fixture_path("Test-S.ond")).read_text(encoding="utf-8")
+    shown_in_watts = text.replace("UnitAffEnum=kW", "UnitAffEnum=W")
+    assert shown_in_watts != text
+
+    inverter = parse_ond(shown_in_watts, "Test-S.ond")
+
+    assert (inverter.pnom_kw, inverter.pmax_kw) == (parse_ond(text).pnom_kw, parse_ond(text).pmax_kw)
+    assert inverter.pnom_kw == 275.0
