@@ -26,7 +26,8 @@ export function Toast({ kind, words, action, onClose, className, ...rest }: Prop
     <div
       data-testid="toast"
       className={classNames(
-        "flex min-h-12 max-w-full items-center gap-2.5 rounded-row border border-line-strong bg-surface-1 py-2 pr-2 pl-3.5 shadow-float",
+        "flex min-h-12 max-w-full flex-wrap items-center gap-x-2.5 gap-y-1 rounded-row border border-line-strong bg-surface-1 py-2 pr-2 pl-3.5 shadow-float",
+        "tablet:flex-nowrap",
         className,
       )}
       {...rest}
@@ -36,11 +37,14 @@ export function Toast({ kind, words, action, onClose, className, ...rest }: Prop
       ) : (
         <StatusMark kind="note" label="Note" wordsShown={false} size={20} />
       )}
-      <span className="grow pr-1.5">{words}</span>
+      <span className="min-w-0 flex-1 pr-1.5">{words}</span>
+      {/* On phone the action stands under the words, at the right, so that the words have the width; then the close. */}
       {action ? (
-        <button type="button" onClick={action.onPress} className={ACTION}>
-          {action.label}
-        </button>
+        <span className="order-last flex basis-full justify-end tablet:order-none tablet:basis-auto">
+          <button type="button" onClick={action.onPress} className={ACTION}>
+            {action.label}
+          </button>
+        </span>
       ) : null}
       {onClose ? <IconButton kind="quiet" size="xs" icon="close" iconSize={18} label="Close" onClick={onClose} /> : null}
     </div>
