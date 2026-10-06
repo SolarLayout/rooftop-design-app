@@ -509,6 +509,30 @@
       "h": 1180,
       "title": "UI fixes · Section headings, three ways · phone 390",
       "page": "ui-fixes"
+    },
+    "ChoiceGone.dc.html": {
+      "x": 0,
+      "y": 22200,
+      "w": 1552,
+      "h": 1180,
+      "title": "UI fixes · A choice of stringing that no longer fits · desktop 1440",
+      "page": "ui-fixes"
+    },
+    "ChoiceGoneTablet.dc.html": {
+      "x": 1632,
+      "y": 22200,
+      "w": 834,
+      "h": 1500,
+      "title": "UI fixes · A choice of stringing that no longer fits · tablet 834",
+      "page": "ui-fixes"
+    },
+    "ChoiceGonePhone.dc.html": {
+      "x": 2546,
+      "y": 22200,
+      "w": 390,
+      "h": 1350,
+      "title": "UI fixes · A choice of stringing that no longer fits · phone 390",
+      "page": "ui-fixes"
     }
   },
   "createdOnFiles": {
@@ -714,7 +738,10 @@
     "EquipmentEntryPhone.dc.html",
     "SectionHeadings.dc.html",
     "SectionHeadingsTablet.dc.html",
-    "SectionHeadingsPhone.dc.html"
+    "SectionHeadingsPhone.dc.html",
+    "ChoiceGone.dc.html",
+    "ChoiceGoneTablet.dc.html",
+    "ChoiceGonePhone.dc.html"
   ],
   "pages": [
     {

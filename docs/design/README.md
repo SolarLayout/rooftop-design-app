@@ -78,6 +78,7 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | Tabs | `Tabs.dc.html` | `tabs.png` | desktop, phone in parts |
 | UI fixes · Choose a module or an inverter | `EquipmentPicker.dc.html`, `EquipmentPickerTablet.dc.html`, `EquipmentPickerPhone.dc.html` | `ui-fixes-equipment-picker-desktop.png`, `ui-fixes-equipment-picker-tablet.png`, `ui-fixes-equipment-picker-phone.png` | desktop, tablet, phone |
 | UI fixes · Where the picker opens | `EquipmentEntry.dc.html`, `EquipmentEntryTablet.dc.html`, `EquipmentEntryPhone.dc.html` | `ui-fixes-equipment-entry-desktop.png`, `ui-fixes-equipment-entry-tablet.png`, `ui-fixes-equipment-entry-phone.png` | desktop, tablet, phone |
+| UI fixes · A choice of stringing that no longer fits | `ChoiceGone.dc.html`, `ChoiceGoneTablet.dc.html`, `ChoiceGonePhone.dc.html` (the shots in `choice_gone/`) | `ui-fixes-choice-gone-desktop.png`, `ui-fixes-choice-gone-tablet.png`, `ui-fixes-choice-gone-phone.png` | desktop, tablet, phone |
 | UI fixes · Section headings, three ways | `SectionHeadings.dc.html`, `SectionHeadingsTablet.dc.html`, `SectionHeadingsPhone.dc.html` (the shots in `section_headings/`) | `ui-fixes-section-headings-desktop.png`, `ui-fixes-section-headings-tablet.png`, `ui-fixes-section-headings-phone.png` | desktop, tablet, phone |
 | UI fixes · The state of saving, a mark before the name | `SaveStateMark.dc.html`, `SaveStateMarkTablet.dc.html`, `SaveStateMarkPhone.dc.html` | `ui-fixes-save-state-desktop.png`, `ui-fixes-save-state-tablet.png`, `ui-fixes-save-state-phone.png` | desktop, tablet, phone |
 | UI fixes · Present, the figures of each scene | `PresentStats.dc.html`, `PresentStatsTablet.dc.html` (the scenes in `present_scenes/`) | `ui-fixes-present-stats-desktop.jpg`, `ui-fixes-present-stats-tablet.jpg` | desktop, tablet (Present has no phone) |
@@ -167,10 +168,13 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
 - `mockups/build_ui_fixes_section_headings.py` writes the boards "UI fixes · Section headings, three ways": the Strings lens
   caught in the browser with the headings restyled (A no line, D a dark shadow, E a glow of their orange; the first round's
   line close and as built are kept in `section_headings/`). The owner chose E, a notch subtler (D76).
+- `mockups/build_ui_fixes_choice_gone.py` writes the boards "UI fixes · A choice of stringing that no longer fits": the note
+  as the app shows it when the owner's IKEA design is opened, caught in the browser at three sizes (`choice_gone/`), with
+  when it is said (D77).
 - A preview is the board rendered at its `$preview` size (the tail of each `.dc.html`) by a scratch Playwright script outside the
   repo: Chromium from `e2e/node_modules/@playwright/test`, the fonts served from `apps/web/app/fonts` and `apps/web/node_modules/geist`
   in place of the Google link in the board's `helmet`, `support.js` stubbed, everything else off the machine refused.
-- `mockups/canvas.json` is the layout of the boards on the canvas: 70 boards on two pages since 2026-10-06 ("Approved design", the
+- `mockups/canvas.json` is the layout of the boards on the canvas: 73 boards on two pages since 2026-10-06 ("Approved design", the
   first, holds every board without a `page`; "UI fixes" the boards of session 18 on); the 53 of the first page in sync with the canvas at claude.ai since
   2026-10-04 (session 15 published the 26 boards of Phases 6 to 11 and the five boards changed since 2026-09-30; the report's
   pages of `mockups/handover_pages/` travel with the Handover boards). A session on Bedrock has no Artifact tool: it adds its

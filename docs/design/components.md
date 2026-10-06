@@ -809,6 +809,10 @@ only place: the Table tab of the chart holds every value. Beside a block of the 
 block's right, 8 from it (`side="right"`), so that no other block is hidden; the list under the diagram holds every block.
 
 ## Toast
+A choice of stringing an edit took away is said in a toast with a note (D77): "The stringing you chose, 18 in series × 84
+strings on 7 inverters, no longer fits this design. Option A, Recommended, is used instead: 23 in series × 67 strings on 7
+inverters." with the action Choose another, which leads to the Strings lens; `choiceGoneWords` in `lib/flow/choice-gone.ts`.
+
 `surface-1`, border `line-strong`, radius `radius-row`, `shadow-float`, 48 high or more, padding 8 8 8 14,
 gap 10. A status mark (tick 18 or note 20), the words, then an action in accent, Geist 500 (height 32), or a
 quiet icon button of 32 to close. At the bottom of the screen in its middle, 24 from the edge; above the tab
@@ -821,6 +825,8 @@ store without React.
 
 - One toast is shown at a time, in the order they came. The 5 s of a toast begin when it is shown.
 - The action of a toast (Undo) closes it. On phone and tablet the action and the close button are 44 high.
+- On phone the words of a toast with an action take its width, and the action stands under them at the right; the close
+  stays beside the words.
 - The place of the toasts is in the page from the start, so that a screen reader hears what comes into it.
   It is in the layer `z-toast`.
 
