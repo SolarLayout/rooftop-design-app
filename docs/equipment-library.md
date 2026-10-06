@@ -27,7 +27,8 @@ preliminary).
 ## Adding files
 
 1. Copy the files into `apps/web/public/equipment/modules/` (PAN) or `apps/web/public/equipment/inverters/` (OND), named
-   `<Maker>_<Model>.PAN` as the owner's libraries name them. Leave out a file its maker has superseded.
+   `<Maker>_<Model>.PAN` as the owner's libraries name them. Leave out a file its maker has superseded, and the owner's
+   `-old` files: they are out of date.
 2. Run `bun equipment:catalog`. It reads every file and writes the catalog. A file the engine cannot read is named with the
    reason and left out of the catalog, and the command fails: remove the file or fix it, and run it again.
 3. A maker the picker should name otherwise than the file does ("Ginlong Technologies" is Solis): add it to
@@ -40,5 +41,5 @@ Removing a file is the same: delete it, run `bun equipment:catalog`, `bun check`
 
 ## What the library held on 2026-10-06
 
-119 modules from 5 makers (300 to 650 Wp) and 405 inverters from 8 makers (0.7 to 350 kW), the superseded inverter files of
-the owner's library left out.
+119 modules from 5 makers (300 to 650 Wp) and 388 inverters from 8 makers (0.7 to 350 kW), the superseded and the `-old`
+inverter files of the owner's library left out.

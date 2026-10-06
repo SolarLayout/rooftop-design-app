@@ -485,6 +485,30 @@
       "h": 1720,
       "title": "UI fixes · Where the picker opens · phone 390",
       "page": "ui-fixes"
+    },
+    "SectionHeadings.dc.html": {
+      "x": 0,
+      "y": 20000,
+      "w": 1552,
+      "h": 900,
+      "title": "UI fixes · Section headings, three ways · desktop 1440",
+      "page": "ui-fixes"
+    },
+    "SectionHeadingsTablet.dc.html": {
+      "x": 1632,
+      "y": 20000,
+      "w": 834,
+      "h": 1880,
+      "title": "UI fixes · Section headings, three ways · tablet 834",
+      "page": "ui-fixes"
+    },
+    "SectionHeadingsPhone.dc.html": {
+      "x": 2546,
+      "y": 20000,
+      "w": 390,
+      "h": 1180,
+      "title": "UI fixes · Section headings, three ways · phone 390",
+      "page": "ui-fixes"
     }
   },
   "createdOnFiles": {
@@ -687,7 +711,10 @@
     "EquipmentPickerPhone.dc.html",
     "EquipmentEntry.dc.html",
     "EquipmentEntryTablet.dc.html",
-    "EquipmentEntryPhone.dc.html"
+    "EquipmentEntryPhone.dc.html",
+    "SectionHeadings.dc.html",
+    "SectionHeadingsTablet.dc.html",
+    "SectionHeadingsPhone.dc.html"
   ],
   "pages": [
     {

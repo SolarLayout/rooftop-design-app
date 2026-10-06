@@ -177,8 +177,7 @@ In code: `TextField`; its words in `text-entry.ts`.
 Equipment card (module, inverter): glyph 44 by 56 to 60, name in Geist 600, one or two lines of facts in
 `text-caption`, file name in Geist Mono, a secondary button (Change, which opens the picker of "Choose a module or an
 inverter"; its tooltip on desktop "Choose from 119 modules, or use a PAN file", the count the library's). The maker is
-named as people know it (`makerOf`, D75). A file of the app's library has a quiet tag "From the app" after its name
-(11, Geist 500, text-2, border `line-strong`, radius `radius-xs`).
+named as people know it (`makerOf`, D75). In its lens the card stands under a section heading, Module or Inverter (D76).
 Selected card: `note-surface`, accent border, `halo-selected`.
 Compact card: radius `radius-card-s`, padding `space-card-compact`.
 
@@ -538,10 +537,12 @@ the title, the filters, the count, the list, the file of one's own, the foot; no
 needed").
 
 - Filters: a search ("Maker or model") over the maker as the file states it and as people know it, the model and the file's
-  name, and range sliders of the kit: the module's Power (300 to 650 Wp, the library's ends, steps of 5); the inverter's AC
-  power (0.7 to 350 kW, by steps closer at the low end: 0.7, 1, 2, 3, 5, 8, 10, 15, 20, 25, 30, 40, 50, 60, 75, 100, 125,
-  150, 200, 250, 300, 350) and MPPT (1 to 15). At rest the handles stand at the ends. On desktop the search and the sliders
-  share one row; on tablet and phone the search has its own.
+  name, and range sliders of the kit, each with its name at the left and its span at the right: the module's Power (300
+  to 650 Wp, the library's ends, steps of 5); the inverter's AC power (0.7 to 350 kW, by steps closer at the low end: 0.7,
+  1, 2, 3, 5, 8, 10, 15, 20, 25, 30, 40, 50, 60, 75, 100, 125, 150, 200, 250, 300, 350), MPPT (1 to 15) and Max DC (the
+  voltages the library holds, 420 to 1,500 V). At rest the handles stand at the ends; they may meet, for one value. The
+  module's search and slider share one row on desktop; the inverter's search has its own row and the three sliders the
+  next (one under the other on phone, where the sliders have no ticks).
 - The count ("20 of 119 modules") with "Clear the filters" when a filter or the search is set (`role="status"`).
 - The list, a listbox of 52 rows (60 on touch, three lines on phone): the model in Geist 500 with its tags, under it the
   maker as people know it (and the file's data source when one model comes in two files), then the numbers in mono at the
