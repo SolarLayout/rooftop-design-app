@@ -9,6 +9,7 @@ import { demoRunOf, rememberDemoRunIn } from "@/lib/device/demo-run";
 import { designsDb } from "@/lib/device/designs-db";
 import { rememberIn } from "@/lib/device/remembered";
 import { createSaving, failureOf as savingFailureOf, type SavingState, type SavingStore } from "@/lib/device/saving";
+import { createChoicesGone, type ChoicesGoneStore } from "@/lib/stores/choices-gone";
 import { createDownloadsStore, type DownloadsState, type DownloadsStore } from "@/lib/stores/downloads-store";
 import { createProjectStore, editOf, nameOf, projectOf, type ProjectState, type ProjectStore } from "@/lib/stores/project-store";
 import { createResultsStore, designFailureOf, designOf, designStatusOf, layoutFailureOf, newerLayoutNotesOf, progressOf, readoutsOf, sunDayOf, type ResultsState, type ResultsStore } from "@/lib/stores/results-store";
@@ -32,6 +33,8 @@ type Stores = {
   downloads: DownloadsStore;
   /** The design kept on this device: its state of saving, the designs of the device (plan/phase-10-plan.md, step 2). */
   saving: SavingStore;
+  /** The choices of stringing an edit took away, waiting for the shell to tell them. */
+  choicesGone: ChoicesGoneStore;
 };
 
 const Context = createContext<Stores | null>(null);
@@ -71,6 +74,7 @@ function createStores(): Stores {
     remember: (id) => rememberIn(window.localStorage)(id),
     say: (words) => void toasts.show({ kind: "note", words }),
   });
+  const choicesGone = createChoicesGone();
   const flow = createDesignFlow({
     project,
     results,
@@ -80,8 +84,9 @@ function createStores(): Stores {
       const run = demoRunOf(design);
       if (run !== null) rememberDemoRunIn(window.localStorage)(run);
     },
+    onChoiceGone: (gone) => choicesGone.getState().heard(gone),
   });
-  return { project, results, view, flow, play, toasts, downloads, saving };
+  return { project, results, view, flow, play, toasts, downloads, saving, choicesGone };
 }
 
 /** What the user's system says of motion (decision 4: under it, play moves an hour a second; Present's tour is cuts). */

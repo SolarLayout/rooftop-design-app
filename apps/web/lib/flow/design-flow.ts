@@ -15,8 +15,9 @@ import { stepOfLoading, weatherRequestOf, withWeatherLoaded } from "./weather-so
 import { hoursOf, QUARTER_HOUR } from "./sun-day";
 import { heldHourOf } from "./sun-time";
 import type { ProjectState, ProjectStore } from "../stores/project-store";
-import { sunKeyOf, withTheChoice, type Failure, type ResultsStore, type SunDay, type SunKey } from "../stores/results-store";
+import { designEditOf, sunKeyOf, withTheChoice, type Failure, type ResultsStore, type SunDay, type SunKey } from "../stores/results-store";
 import type { ViewStore } from "../stores/view-store";
+import { choiceGoneOf, withTheChoiceShown, type ChoiceGone } from "./choice-gone";
 
 export type FlowApi = Pick<Api, "getDemo" | "computeLayout" | "runDesign" | "computeSun" | "loadWeather">;
 
@@ -28,6 +29,8 @@ type Options = {
   clock?: Clock;
   /** Hears the run of the untouched demo when it lands (plan/phase-10-plan.md, step 11): Home's card shows its numbers. */
   onDemoRan?: (design: DesignResult) => void;
+  /** Hears a choice of stringing an edit took away, once the document is brought to the option shown. */
+  onChoiceGone?: (gone: ChoiceGone) => void;
 };
 
 export type DesignFlow = {
@@ -59,7 +62,7 @@ export function failureOf(error: unknown): Failure {
   };
 }
 
-export function createDesignFlow({ project, results, view, api = apiOfTheApp, clock = CLOCK_OF_THE_BROWSER, onDemoRan }: Options): DesignFlow {
+export function createDesignFlow({ project, results, view, api = apiOfTheApp, clock = CLOCK_OF_THE_BROWSER, onDemoRan, onChoiceGone }: Options): DesignFlow {
   let followed = 0;
   /** The edit at which the demo was opened: the run of that edit is the untouched demo's. Edits only grow, so no later edit is it. */
   let demoEdit: number | null = null;
@@ -307,6 +310,7 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
         (design) => {
           // An option chosen while the run was on its way is the one the run lands with (plan/phase-07-plan.md, decision 3).
           results.getState().designArrived(edit, withTheChoice(design, project.getState().project?.chosen_option));
+          if (designEditOf(results.getState()) === edit) bringTheChoiceToTheRun(design);
           if (edit === demoEdit) onDemoRan?.(design);
         },
         (error: unknown) => {
@@ -318,6 +322,19 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
       .finally(() => {
         if (designCall === call) designCall = null;
       });
+  }
+
+  /**
+   * The run that landed is the design's: a choice of stringing it no longer holds (another module, inverter, voltage or
+   * roof changed the options) gives way to the option it shows. The document of the edit that is current is amended:
+   * nothing is counted, nothing kept for undo, nothing asked again; the screens, the files and the saved design agree.
+   */
+  function bringTheChoiceToTheRun(design: DesignResult) {
+    const { project: document, edit } = project.getState();
+    const gone = document === null ? null : choiceGoneOf(document, design);
+    if (gone === null || project.getState().amend(edit, withTheChoiceShown(gone)) === null) return;
+    results.getState().optionChosen(gone.shown.key);
+    onChoiceGone?.(gone);
   }
 
   function runAfterThePause(document: Project, edit: number) {

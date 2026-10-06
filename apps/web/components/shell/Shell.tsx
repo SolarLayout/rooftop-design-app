@@ -19,6 +19,7 @@ import { useDownloads, useNotes, useProject, useSaving, useStores, useToasts, us
 import { rowsOnTheDeviceOf } from "./switcher-view";
 import { TopBar } from "./TopBar";
 import { useOpensWhatBelongs } from "./use-opens-what-belongs";
+import { useSaysChoiceGone } from "./use-says-choice-gone";
 import { TabBar } from "./WorkspaceNav";
 
 type Notes = { notes: readonly Note[]; open: () => void };
@@ -49,6 +50,7 @@ function Frame({ children }: { children: ReactNode }) {
   const [areNotesOpen, setNotesOpen] = useState(false);
   const [isImportOpen, setImportOpen] = useState(false);
   const [isOpenProjectOpen, setOpenProjectOpen] = useState(false);
+  useSaysChoiceGone();
 
   // While a file of Handover is on its way the browser asks before the page is left (plan/phase-10-plan.md, step 6).
   useEffect(() => {
