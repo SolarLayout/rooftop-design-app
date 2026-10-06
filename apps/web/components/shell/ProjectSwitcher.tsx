@@ -29,6 +29,9 @@ const TRIGGER = classNames(
   "press-motion focus-ring tablet:gap-2 tablet:px-2 desktop:h-10 desktop:gap-2.5 desktop:rounded-control desktop:px-3",
 );
 const TRIGGER_CLOSED = "border-transparent bg-transparent hovered:bg-surface-2";
+// With the mark of the state of saving before the name, on desktop the trigger stands 8 nearer the divider and pads 8:
+// the dot 23 after the divider, where the name stood 32 after it (the owner, session 18).
+const MARKED = "desktop:-ml-2 desktop:pl-2";
 const TRIGGER_OPEN = "border-line bg-surface-2";
 
 type TriggerProps = Omit<ComponentProps<"button">, "children" | "name"> & Design & { open: boolean; saving?: Saving };
@@ -41,7 +44,7 @@ export function ProjectTrigger({ name, place, open, saving, className, ...rest }
       aria-haspopup="menu"
       aria-expanded={open}
       aria-label={name === null ? "Project" : undefined}
-      className={classNames(TRIGGER, open ? TRIGGER_OPEN : TRIGGER_CLOSED, className)}
+      className={classNames(TRIGGER, open ? TRIGGER_OPEN : TRIGGER_CLOSED, saving !== undefined && MARKED, className)}
       {...rest}
     >
       {saving === undefined || name === null ? null : <SaveMark state={saving} />}
