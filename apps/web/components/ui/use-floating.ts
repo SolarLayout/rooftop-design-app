@@ -42,9 +42,12 @@ export function useFloating({ side, align, gap }: Options): [floating: Floating,
   function open() {
     const [control, floating] = [anchor.current, panel.current];
     if (!control || !floating) return;
+    const anchorBox = control.getBoundingClientRect();
+    // A panel as wide as its control (floating-panel-look, `control`) takes the control's width before it is measured.
+    floating.style.setProperty("--width-of-control", `${anchorBox.width}px`);
     if (!floating.matches(":popover-open")) floating.showPopover();
     const { x, y } = placeOf({
-      anchor: control.getBoundingClientRect(),
+      anchor: anchorBox,
       size: { width: floating.offsetWidth, height: floating.offsetHeight },
       screen: { width: window.innerWidth, height: window.innerHeight },
       side,

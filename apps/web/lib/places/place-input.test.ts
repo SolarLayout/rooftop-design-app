@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { placeInputOf } from "./place-input";
+import { isAPlace, placeInputOf } from "./place-input";
 
 describe("coordinates", () => {
   test.each([
@@ -19,9 +19,83 @@ describe("coordinates", () => {
     expect(placeInputOf(typed)).toEqual({ kind: "coordinates", lat, lon });
   });
 
-  test("a latitude beyond 90 or a longitude beyond 180 is no place: it is searched for as words", () => {
-    expect(placeInputOf("91, 73.86")).toEqual({ kind: "words", query: "91, 73.86" });
-    expect(placeInputOf("18.52, 181")).toEqual({ kind: "words", query: "18.52, 181" });
+});
+
+// The board "UI fixes · Coordinates in the search", "What is read": each form is the same place.
+describe("coordinates as Google Earth, a GPS and people write them", () => {
+  const PLACE = { kind: "coordinates", lat: 12.914094, lon: 77.491989 };
+  test.each([
+    [`12°54'50.74"N 77°29'31.16"E`],
+    ["12°54′50.74″N, 77°29′31.16″E"],
+    ["12°54’50.74”N 77°29’31.16”E"],
+    [`12°54'50.74''N 77°29'31.16''E`],
+    ["12º54'50.74\"N 77º29'31.16\"E"],
+    [`N 12°54'50.74" E 77°29'31.16"`],
+    ["12 54 50.74 N 77 29 31.16 E"],
+    ["12°54.8456'N 77°29.5193'E"],
+    [`77°29'31.16"E 12°54'50.74"N`],
+    [`12°54'50.74" 77°29'31.16"`],
+    ["12 54 50.74 77 29 31.16"],
+    ["12.914094N 77.491989E"],
+    ["12,914094 77,491989"],
+    ["12,914094; 77,491989"],
+    [`12°54'50.74"n 77°29'31.16"e`],
+  ])("%s is 12.91409° N, 77.49199° E", (typed) => {
+    const input = placeInputOf(typed);
+    expect(input.kind).toBe("coordinates");
+    if (input.kind !== "coordinates") return;
+    expect(input.lat).toBeCloseTo(PLACE.lat, 5);
+    expect(input.lon).toBeCloseTo(PLACE.lon, 5);
+  });
+
+  test("south and west by their letters, or by a minus written in any of its forms", () => {
+    expect(placeInputOf(`33°51'24.42"S 151°12'55.07"E`)).toMatchObject({ kind: "coordinates" });
+    const south = placeInputOf(`33°51'24.42"S 151°12'55.07"E`);
+    if (south.kind === "coordinates") expect(south.lat).toBeCloseTo(-33.856783, 5);
+    const west = placeInputOf("−40.7128, −74.0060");
+    expect(west).toEqual({ kind: "coordinates", lat: -40.7128, lon: -74.006 });
+    expect(placeInputOf("-33.87 S, 151.21 E")).toEqual({ kind: "coordinates", lat: -33.87, lon: 151.21 });
+  });
+});
+
+// The board, "When it cannot be read": what looks like coordinates is never searched for as words.
+describe("what looks like coordinates but cannot be read says why", () => {
+  test.each([
+    [`12°54'65"N 77°29'31"E`, "Minutes and seconds go up to 59. The latitude has 65″: check where it was copied from."],
+    [`12°75'10"N 77°29'31"E`, "Minutes and seconds go up to 59. The latitude has 75′: check where it was copied from."],
+    [`12°54'10"N 77°29'60"E`, "Minutes and seconds go up to 59. The longitude has 60″: check where it was copied from."],
+    [`95°10'00"N 77°29'31"E`, "A latitude goes up to 90°, and this one is 95.16667°. Check where it was copied from."],
+    ["95, 200", "A latitude goes up to 90°, and this one is 95°. Check where it was copied from."],
+    ["12.5, 181", "A longitude goes up to 180°, and this one is 181°. Check where it was copied from."],
+    [`12°54'50"N 77°29'31"N`, "Both are marked N. The latitude takes N or S, the longitude E or W."],
+    ["12.5E 77.5W", "Both are marked E or W. The latitude takes N or S, the longitude E or W."],
+    [`12°54'50.74"N`, "Only the latitude is here. Add the longitude after it: 12°54′50.74″N 77°29′31.16″E."],
+    ["12.914094", "Only the latitude is here. Add the longitude after it: 12°54′50.74″N 77°29′31.16″E."],
+    [`77°29'31.16"E`, "Only the longitude is here. Add the latitude before it: 12°54′50.74″N 77°29′31.16″E."],
+    ["-12.914094N 77.491989E", "−12.91409 is marked N, and a minus means south. Keep the minus or the letter, not both."],
+    ["12.914094N -77.491989E", "−77.49199 is marked E, and a minus means west. Keep the minus or the letter, not both."],
+    [
+      `12°54'50.74"N 77°29"31'E`,
+      "These look like coordinates, but the longitude cannot be read. Write them as 12°54′50.74″N 77°29′31.16″E, or 12.91409, 77.49199.",
+    ],
+    [
+      `12°54"50'N 77°29'31.16"E`,
+      "These look like coordinates, but the latitude cannot be read. Write them as 12°54′50.74″N 77°29′31.16″E, or 12.91409, 77.49199.",
+    ],
+    [
+      "12.5, 77.5, 3.2",
+      "These look like coordinates, but they cannot be read. Write them as 12°54′50.74″N 77°29′31.16″E, or 12.91409, 77.49199.",
+    ],
+  ])("%s", (typed, why) => {
+    expect(placeInputOf(typed)).toEqual({ kind: "unreadable", why, offer: null });
+  });
+
+  test("the longitude first without letters: the place it may mean is offered, never taken", () => {
+    expect(placeInputOf("151.215297, -33.856784")).toEqual({
+      kind: "unreadable",
+      why: "The latitude comes first, and 151.21530 is more than 90°. Did you mean this?",
+      offer: { lat: -33.856784, lon: 151.215297 },
+    });
   });
 });
 
@@ -55,9 +129,30 @@ describe("words and nothing", () => {
 
   test("an address with numbers in it is words", () => {
     expect(placeInputOf("12 MG Road, Pune 411001")).toEqual({ kind: "words", query: "12 MG Road, Pune 411001" });
+    expect(placeInputOf("130, 5th Cross, Vijayshreee Layout")).toEqual({ kind: "words", query: "130, 5th Cross, Vijayshreee Layout" });
+  });
+
+  test("whole numbers with spaces alone between them are words, as a postcode is; with a comma they are coordinates", () => {
+    expect(placeInputOf("411001")).toEqual({ kind: "words", query: "411001" });
+    expect(placeInputOf("560 076")).toEqual({ kind: "words", query: "560 076" });
+    expect(placeInputOf("18, 73")).toEqual({ kind: "coordinates", lat: 18, lon: 73 });
+  });
+
+  test("words that are made of the letters of the compass are still words", () => {
+    expect(placeInputOf("news 24")).toEqual({ kind: "words", query: "news 24" });
   });
 
   test("nothing typed is nothing", () => {
     expect(placeInputOf("   ")).toEqual({ kind: "nothing" });
+  });
+});
+
+describe("a place to go to as it stands", () => {
+  test("coordinates and a maps link are; words, nothing and what cannot be read are not", () => {
+    expect(isAPlace(placeInputOf("12.914094, 77.491989"))).toBe(true);
+    expect(isAPlace(placeInputOf("https://www.google.com/maps/@18.5204,73.8567,19z"))).toBe(true);
+    expect(isAPlace(placeInputOf("MG Road"))).toBe(false);
+    expect(isAPlace(placeInputOf(""))).toBe(false);
+    expect(isAPlace(placeInputOf("95, 200"))).toBe(false);
   });
 });

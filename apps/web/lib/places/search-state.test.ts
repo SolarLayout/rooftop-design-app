@@ -13,6 +13,16 @@ describe("the states of the search", () => {
     expect(IDLE).toEqual({ kind: "idle" });
   });
 
+  test("coordinates that cannot be read: refused, with why and the place they may mean; any search in flight is forgotten", () => {
+    const searching = searchStateAfter(IDLE, { type: "asked", query: "Hinjewadi" });
+    const offer = { lat: -33.856784, lon: 151.215297 };
+    const refused = searchStateAfter(searching, { type: "refused", why: "Did you mean this?", offer });
+
+    expect(refused).toEqual({ kind: "refused", why: "Did you mean this?", offer });
+    expect(searchStateAfter(refused, { type: "found", query: "Hinjewadi", places: PLACES })).toBe(refused);
+    expect(searchStateAfter(refused, { type: "closed" })).toEqual(IDLE);
+  });
+
   test("words asked for: searching, with the words", () => {
     expect(searchStateAfter(IDLE, { type: "asked", query: "Hinjewadi Phase 2" })).toEqual({ kind: "searching", query: "Hinjewadi Phase 2" });
   });

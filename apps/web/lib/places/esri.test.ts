@@ -73,8 +73,10 @@ describe("the search", () => {
     expect(placesOf({ candidates: [{ address: "Somewhere" }, { location: { x: 1, y: 2 } }, ANSWER.candidates[0]] })).toHaveLength(1);
   });
 
-  test("an error of the geocoder is thrown with its words", () => {
-    expect(() => placesOf({ error: { code: 498, message: "Invalid token." } })).toThrow(new SearchError("Invalid token."));
+  test("an error of the geocoder is thrown in plain words, never the service's own", () => {
+    const UNAVAILABLE = "The address search is not available right now. Paste coordinates or a maps link instead.";
+    expect(() => placesOf({ error: { code: 498, message: "Invalid Token" } })).toThrow(new SearchError(UNAVAILABLE));
+    expect(() => placesOf({ error: {} })).toThrow(new SearchError(UNAVAILABLE));
   });
 
   test("an answer of another shape is a fault", () => {

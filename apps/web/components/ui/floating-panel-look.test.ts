@@ -36,4 +36,9 @@ describe("the look of a panel that floats", () => {
     expect(classesOf(floatingPanelLook("search", "floating"))).toContain("w-100");
     expect(classesOf(floatingPanelLook("list", "sheet"))).toContain("desktop:w-80");
   });
+
+  test("as wide as its control: the width the control has, which useFloating gives it when it opens", () => {
+    expect(classesOf(floatingPanelLook("control", "floating"))).toContain("w-(--width-of-control)");
+    expect(classesOf(floatingPanelLook("control", "sheet"))).toContain("desktop:w-(--width-of-control)");
+  });
 });
