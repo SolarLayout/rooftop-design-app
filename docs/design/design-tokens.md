@@ -234,7 +234,7 @@ height and tracking together.
 | `--text-small` | `--font-sans` | `400` | `13px` | `20px` | `0` | Secondary lines |
 | `--text-caption` | `--font-sans` | `400` | `12px` | `20px` | `0` | Hints, labels of values, units |
 | `--text-caption-s` | `--font-sans` | `400` | `11px` | `16px` | `0` | The caption of a thumbnail where 12 does not fit (the report's pages on tablet, 72 wide) |
-| `--text-section` | `--font-sans` | `500` | `12px` | `20px` | `0.06em` | Section labels, uppercase: in text-3 on tables and panels; in the input panels a heading, `color-heading` at 600 with the glow `shadow-heading` |
+| `--text-section` | `--font-sans` | `500` | `12px` | `20px` | `0.06em` | Section labels, uppercase: in text-3 on tables and panels; in the input panels a heading, `color-heading` at 600 with the glow `shadow-heading` under its words |
 | `--text-value-l` | `--font-mono` | `500` | `17px` | `20px` | `0` | Values in the vitals on tablet |
 | `--text-value` | `--font-mono` | `500` | `16px` | `20px` | `0` | Values in the vitals on desktop and phone |
 | `--text-value-s` | `--font-mono` | `500` | `15px` | `20px` | `0` | A value beside its label; the choices of a decision card |
@@ -357,7 +357,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--shadow-knob` | `0 1px 3px rgba(0,0,0,.5)` | Switch knob |
 | `--shadow-handle` | `0 2px 6px rgba(0,0,0,.6)` | Map and slider handles |
 | `--shadow-text-on-imagery` | `0 1px 3px rgba(0,0,0,.9)` | Under text that stands on the satellite imagery: the scale, the attribution |
-| `--shadow-heading` | `0 2px 6px rgba(255,176,32,.6), 0 4px 14px rgba(255,176,32,.35)` | The faint glow of the heading's orange under a section's heading in an input panel |
+| `--shadow-heading` | `0 4px 6px rgba(255,176,32,.4), 0 6px 14px rgba(255,176,32,.22)` | The faint glow of the heading's orange under a section's heading in an input panel, let down under its words |
 | `--halo-focus` | `0 0 0 3px rgba(255,176,32,.18)` | Focused field (with an accent border) |
 | `--halo-selected` | `0 0 0 3px rgba(255,176,32,.14)` | Selected card (with an accent border) |
 | `--halo-decision` | `0 0 0 4px rgba(255,176,32,.14)` | A choice only the user can make: the decision card (with an accent border) |
