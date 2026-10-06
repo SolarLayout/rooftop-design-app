@@ -32,7 +32,7 @@ while the suite saturated the machine's twenty cores. A CI-scale job is not an i
 | typecheck (web, tools, e2e) | `typecheck` per package, `//#typecheck:tools` | the package's files; the tools' files | a file of that package changed |
 | eslint (web), ruff and import-linter (api) | `lint`, `imports` | the package's files | the same |
 | pytest (api) | `@rooftop/api#test` | the API's files, the weather fixtures of `e2e` | a Python file changed; inside the task pytest-testmon runs only the tests whose code changed, plus the sentinel `tests/engine/test_demo_numbers.py` |
-| bun test (web, tools) | `@rooftop/web#test`, `//#test:tools` | the package's files | the same |
+| bun test (web, tools) | `@rooftop/web#test`, `//#test:tools` | the package's files; for the tools' tests also `apps/web/**` and `e2e/**`, which the groups' tests read (session 18: a crossing import passed a pull request as cached and failed on `main`) | the same |
 | Playwright | `//#e2e:<group>`, eight tasks | the base and the group's own inputs (below) | something the group's suites can see changed |
 | proofs of the caching | `//#proofs` | the check's code, `turbo.json`, the files the proofs change | the check itself changed |
 
