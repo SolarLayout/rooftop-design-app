@@ -1,17 +1,18 @@
 "use client";
 
 import { withTrueMinus } from "@/components/shell/notes-view";
-import { Button } from "@/components/ui/Button";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { StatusMark } from "@/components/ui/StatusMark";
 import { moduleCardOf } from "@/lib/studio/module-card";
 import type { ModuleShown } from "@/lib/studio/array-view";
+import { ChangeButton } from "./ChangeButton";
 
 type Props = {
   /** The module shown; null before a run or a file gave one, when the card is a skeleton. */
   shown: ModuleShown | null;
-  onReplace: () => void;
+  /** Opens the picker of the library (D75). */
+  onChange: () => void;
 };
 
 const CARD = "flex flex-col gap-2.5 rounded-card-s border border-line bg-surface-1 p-card-compact shadow-card";
@@ -30,9 +31,9 @@ function ModuleGlyph() {
 /**
  * The module of the design (docs/design/components.md, "Cards", the board "Studio, Array lens, states"):
  * the model, the maker and the Wp, the size, the facts, the coefficients with the engine's notes about
- * them, the file, and Replace. Before a run or a file gave a module, a skeleton says what is waited for.
+ * them, the file, and Change (D75). Before a run or a file gave a module, a skeleton says what is waited for.
  */
-export function ModuleCard({ shown, onReplace }: Props) {
+export function ModuleCard({ shown, onChange }: Props) {
   if (!shown) {
     return (
       <section aria-label="Module" data-testid="module-card" className={CARD}>
@@ -81,9 +82,7 @@ export function ModuleCard({ shown, onReplace }: Props) {
         {card.file}
       </code>
       <div className="flex justify-end">
-        <Button size="s" onClick={onReplace}>
-          Replace
-        </Button>
+        <ChangeButton kind="modules" onChange={onChange} />
       </div>
     </section>
   );

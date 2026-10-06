@@ -1,0 +1,53 @@
+﻿PVObject_=pvModule
+  Version=6.83
+  Flags=$00800043
+
+  PVObject_Commercial=pvCommercial
+    Comment=Silfab
+    Flags=$0041
+    Manufacturer=Silfab
+    Model=SIL-580-XM+
+    DataSource=Kiwa PVEL 2024
+    Width=1.133
+    Height=2.278
+    Depth=0.035
+    Weight=28.500
+    NPieces=100
+    PriceDate=30/09/24 11:21
+  End of PVObject pvCommercial
+
+  Technol=mtSiMono
+  NCelS=72
+  NCelP=2
+  NDiode=3
+  SubModuleLayout=slTwinHalfCells
+  GRef=1000
+  TRef=25.0
+  PNom=580.0
+  PNomTolLow=0.00
+  PNomTolUp=1.80
+  BifacialityFactor=0.703
+  Isc=13.852
+  Voc=52.27
+  Imp=13.101
+  Vmp=44.27
+  muISC=6.93
+  muVocSpec=-126.5
+  muPmpReq=-0.283
+  RShunt=1775
+  Rp_0=1779
+  Rp_Exp=5.50
+  RSerie=0.181
+  Gamma=1.033
+  muGamma=-0.0002
+  VMaxIEC=1500
+  VMaxUL=1500
+  Absorb=0.90
+  ARev=3.200
+  BRev=16.622
+  RDiode=0.010
+  VRevDiode=-0.70
+  AirMassRef=1.500
+  CellArea=165.6
+  SandiaAMCorr=50.000
+End of PVObject pvModule

@@ -1,0 +1,130 @@
+﻿PVObject_=pvGInverter
+  Comment=Fronius International	Verto 30.0 
+  Manufacturer 2024
+  Version=7.4.7
+  ParObj1=2024
+  Flags=$00321460
+
+  PVObject_Commercial=pvCommercial
+    Comment=www.fronius.com
+    Flags=$0041
+    Manufacturer=Fronius International
+    Model=Verto 30.0 
+    DataSource=Manufacturer 2024
+    YearBeg=2024
+    Width=0.574
+    Height=0.865
+    Depth=0.278
+    Weight=43.000
+    NPieces=100
+    PriceDate=06/06/24 13:39
+    Remarks, Count=7
+      Str_1=Technology: transformerless
+      Str_2=Protection: IP66
+      Str_3=Control: no display, status LEDs
+      Str_4=DC SPDs and AC SPDs integrated, Arc Fault Circuit Interruptor integrated
+      Str_5=Isc_pv?Isc_max=Isc(STC)x1.25 according to IEC 60364-7-71, NEC 2020,
+      Str_6=AS/NZS 5033:2021, The factor of 1.25 needs to be taken into account, due to
+      Str_7=this reason in the database the value of Isc_max is lower than our datasheets.
+    End of Remarks=this reason in the database the value of Isc_max is lower than our datasheets.
+  End of PVObject pvCommercial
+  Transfo=Without
+
+  Converter=TConverter
+    PNomConv=30.000
+    PMaxOUT=30.000
+    VOutConv=400.0
+    VMppMin=150
+    VMPPMax=870
+    VmppNom=600.0
+    VAbsMax=1000
+    PSeuil=312.00
+    EfficMax=0.00
+    EfficEuro=0.00
+    FResNorm=0.00
+    ModeOper=MPPT
+    CompPMax=Lim
+    CompVMax=Lim
+    MonoTri=Tri
+    ModeAffEnum=Efficf_PIn
+    UnitAffEnum=kW
+    PNomDC=30.500
+    PMaxDC=45.000
+    IDCMax=0.000
+    IMaxDC=120.000
+    INomAC=44.000
+    IMaxAC=54.000
+    TPNom=50.0
+    TPMax=25.0
+    TPLim1=60.0
+    HasdefaultPThresh=False
+    VNomEff=360.0,600.0,870.0,
+    EfficMaxV=97.590,98.020,97.760,
+    EfficEuroV=97.240,97.800,97.460,
+
+    ProfilPIOV1=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$8089
+      Mode=1
+      Point_1=312.0,0.0
+      Point_2=1500.0,1424.3
+      Point_3=3000.0,2899.2
+      Point_4=6000.0,5839.2
+      Point_5=9000.0,8783.1
+      Point_6=15000.0,14623.5
+      Point_7=22500.0,21854.3
+      Point_8=30000.0,29094.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+
+    ProfilPIOV2=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$8089
+      Mode=1
+      Point_1=312.0,0.0
+      Point_2=1500.0,1432.7
+      Point_3=3000.0,2912.7
+      Point_4=6000.0,5869.8
+      Point_5=9000.0,8819.1
+      Point_6=15000.0,14703.0
+      Point_7=22500.0,22023.0
+      Point_8=30000.0,29310.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+
+    ProfilPIOV3=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$8089
+      Mode=1
+      Point_1=312.0,0.0
+      Point_2=1500.0,1409.8
+      Point_3=3000.0,2889.3
+      Point_4=6000.0,5841.0
+      Point_5=9000.0,8786.7
+      Point_6=15000.0,14664.0
+      Point_7=22500.0,21978.0
+      Point_8=30000.0,29259.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+  End of TConverter
+  NbInputs=8
+  NbMPPT=4
+  TanPhiMin=-9.950
+  TanPhiMax=9.950
+  NbMSInterne=2
+  MasterSlave=No_M_S
+  IsolSurvey =Yes
+  DC_Switch=Yes
+  DiscAdjust=Yes
+  ENS_Protec=Yes
+  MS_Thresh=0.8
+End of PVObject pvGInverter

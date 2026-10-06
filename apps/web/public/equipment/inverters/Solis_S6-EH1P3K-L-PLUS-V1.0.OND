@@ -1,0 +1,90 @@
+﻿PVObject_=pvGInverter
+  Comment=Ginlong Technologies	S6-EH1P3K-L-PLUS_V1.0	Manufacturer 2023
+  Version=7.2.4
+  ParObj1=2023
+  Flags=$00380572
+
+  PVObject_Commercial=pvCommercial
+    Comment=www.ginlong.com
+    Flags=$0041
+    Manufacturer=Ginlong Technologies
+    Model=S6-EH1P3K-L-PLUS_V1.0
+    DataSource=Manufacturer 2023
+    YearBeg=2023
+    Width=0.335
+    Height=0.560
+    Depth=0.253
+    Weight=23.000
+    NPieces=0
+    PriceDate=19/03/19 15:48
+    Currency=EUR
+    Remarks, Count=1
+      Str_1
+    End of Remarks
+  End of PVObject pvCommercial
+  Transfo=Without
+
+  Converter=TConverter
+    PNomConv=3.000
+    PMaxOUT=3.000
+    VOutConv=230.0
+    VMppMin=90
+    VMPPMax=435
+    VmppNom=330.0
+    VAbsMax=500
+    PSeuil=15.0
+    EfficMax=96.20
+    EfficEuro=96.10
+    FResNorm=3.00
+    ModeOper=MPPT
+    CompPMax=Lim
+    CompVMax=Lim
+    MonoTri=Mono
+    ModeAffEnum=Efficf_POut
+    UnitAffEnum=W
+    PNomDC=3.000
+    PMaxDC=6.000
+    IDCMax=0.0
+    IMaxDC=32.0
+    INomDC=18.0
+    INomAC=13.1
+    IMaxAC=13.7
+    TPNom=45.0
+    TPMax=40.0
+    TPLim1=50.0
+    TPLimAbs=60.0
+    PLim1=2.973
+    PLimAbs=2.946
+    PInEffMax =1800.000
+    PThreshEff=2.4
+    HasdefaultPThresh=False
+
+    ProfilPIO=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$008D
+      Mode=1
+      Point_1=15.0,0.0
+      Point_2=90.0,84.5
+      Point_3=150.0,142.4
+      Point_4=300.0,287.1
+      Point_5=600.0,576.4
+      Point_6=900.0,865.5
+      Point_7=1800.0,1731.6
+      Point_8=3000.0,2883.9
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+  End of TConverter
+  NbInputs=2
+  NbMPPT=2
+  TanPhiMin=-0.750
+  TanPhiMax=0.750
+  NbMSInterne=2
+  MasterSlave=No_M_S
+  IsolSurvey =Yes
+  DC_Switch=Yes
+  DiscAdjust=Yes
+  MS_Thresh=0.8
+End of PVObject pvGInverter

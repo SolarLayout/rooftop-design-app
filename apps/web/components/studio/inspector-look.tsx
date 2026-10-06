@@ -5,7 +5,7 @@ import type { Size } from "./use-size";
 // Roof lens"): the section label, how the fields of a section stand, a row with its control at the
 // right, and a value the engine decided, read out with the reason under it.
 
-export const SECTION = "type-section text-text-3 uppercase";
+export { SECTION } from "@/components/ui/section-look";
 
 /**
  * How the fields of a section stand: two to a row with the label inside on tablet and desktop; on phone

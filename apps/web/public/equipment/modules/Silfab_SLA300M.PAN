@@ -1,0 +1,54 @@
+﻿PVObject_=pvModule
+  Version=6.81
+  Flags=$0043
+
+  PVObject_Commercial=pvCommercial
+    Comment=Silfab
+    Flags=$0041
+    Manufacturer=Silfab
+    Model=SLA300M
+    DataSource=PVEL LLC 2019
+    Width=0.990
+    Height=1.650
+    Depth=0.038
+    Diameter=23.000
+    NPieces=100
+    PriceDate=14/08/19 20:36
+    Currency=EUR
+  End of PVObject pvCommercial
+
+  Technol=mtSiMono
+  NCelS=60
+  NCelP=1
+  NDiode=3
+  SubModuleLayout=slInWidth
+  FrontSurface=fsARCoating
+  GRef=1000
+  TRef=25.0
+  PNom=300.0
+  PNomTolLow=0.00
+  PNomTolUp=3.00
+  Isc=9.668
+  Voc=39.92
+  Imp=9.160
+  Vmp=32.75
+  muISC=6.19
+  muVocSpec=-133.0
+  muPmpReq=-0.348
+  RShunt=450
+  Rp_0=1499
+  Rp_Exp=5.50
+  RSerie=0.295
+  Gamma=0.938
+  muGamma=-0.0003
+  VMaxIEC=1000
+  VMaxUL=1000
+  Absorb=0.90
+  ARev=3.200
+  BRev=11.602
+  RDiode=0.010
+  VRevDiode=-0.70
+  AirMassRef=1.500
+  CellArea=244.3
+  SandiaAMCorr=50.000
+End of PVObject pvModule

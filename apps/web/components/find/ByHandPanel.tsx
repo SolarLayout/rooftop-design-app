@@ -8,6 +8,7 @@ import { Segmented } from "@/components/ui/Segmented";
 import type { ByHand, Row, Shape } from "@/lib/outline/by-hand";
 import type { OutlineState } from "@/lib/outline/outline-state";
 import { MeasurementTiles } from "./OutlinePanel";
+import { SECTION } from "@/components/ui/section-look";
 
 type Props = {
   hand: ByHand;
@@ -27,7 +28,6 @@ const FACES = { min: 0, max: 359, decimals: 0 };
 /** A corner: metres east and north of the middle of the roof. */
 const CORNER = { min: -5000, max: 5000, decimals: 2 };
 
-const SECTION = "type-section text-text-3 uppercase";
 const SHAPES: { value: Shape; label: string }[] = [
   { value: "rectangle", label: "Rectangle" },
   { value: "corners", label: "Corners" },

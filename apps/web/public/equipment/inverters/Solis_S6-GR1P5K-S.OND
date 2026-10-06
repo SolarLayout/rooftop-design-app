@@ -1,0 +1,89 @@
+﻿PVObject_=pvGInverter
+  Comment=Ginlong Technologies	S6-GR1P5K-S	Manufacturer 2023
+  Version=6.86
+  ParObj1=2023
+  Flags=$00100572
+
+  PVObject_Commercial=pvCommercial
+    Comment=www.ginlong.com
+    Flags=$0041
+    Manufacturer=Ginlong Technologies
+    Model=S6-GR1P5K-S
+    DataSource=Manufacturer 2023
+    YearBeg=2023
+    Width=0.330
+    Height=0.371
+    Depth=0.161
+    Diameter=12.000
+    Weight=9.000
+    NPieces=0
+    PriceDate=28/10/20 17:17
+    Currency=EUR
+    Remarks, Count=1
+      Str_1
+    End of Remarks
+  End of PVObject pvCommercial
+  Transfo=Without
+
+  Converter=TConverter
+    PNomConv=5.000
+    PMaxOUT=5.000
+    VOutConv=230.0
+    VMppMin=90
+    VMPPMax=550
+    VmppNom=330.0
+    VAbsMax=550
+    PSeuil=25.0
+    EfficMax=97.70
+    EfficEuro=97.10
+    FResNorm=3.00
+    ModeOper=MPPT
+    CompPMax=Lim
+    CompVMax=Lim
+    MonoTri=Mono
+    ModeAffEnum=Efficf_POut
+    UnitAffEnum=kW
+    IDCMax=0.0
+    IMaxDC=32.0
+    INomDC=18.0
+    INomAC=21.7
+    IMaxAC=22.7
+    TPNom=45.0
+    TPMax=45.0
+    TPLim1=55.0
+    TPLimAbs=60.0
+    PLim1=4.300
+    PLimAbs=3.850
+    PInEffMax =3000.000
+    PThreshEff=23.5
+    HasdefaultPThresh=False
+
+    ProfilPIO=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$008D
+      Mode=1
+      Point_1=25,0
+      Point_2=150,126
+      Point_3=250,225
+      Point_4=500,473
+      Point_5=1000,969
+      Point_6=1500,1462
+      Point_7=3000,2931
+      Point_8=5000,4865
+      Point_9=0,0
+      Point_10=0,0
+      Point_11=0,0
+    End of TCubicProfile
+  End of TConverter
+  NbInputs=2
+  NbMPPT=2
+  TanPhiMin=-0.750
+  TanPhiMax=0.750
+  NbMSInterne=2
+  MasterSlave=No_M_S
+  IsolSurvey =Yes
+  DC_Switch=Yes
+  DiscAdjust=Yes
+  MS_Thresh=0.8
+End of PVObject pvGInverter

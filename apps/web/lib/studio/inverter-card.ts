@@ -1,10 +1,10 @@
 // The inverter card of the Strings lens (the boards "Studio, Strings lens" and "Inverter and sizing";
-// docs/design/components.md, "Cards"): the model, the maker as the OND states it with the power and the MPPTs
-// (plan/phase-07-plan.md, decision 15), the current per MPPT with the inputs, and the file. Which inverter it
-// shows while a replaced file's run is on its way, and the edit of a file read (step 17). Pure; the card draws
-// what it gives.
+// docs/design/components.md, "Cards"): the model, the maker as people know it (D75) with the power and the MPPTs,
+// the current per MPPT with the inputs, and the file. Which inverter it shows while a replaced file's run is on its
+// way, and the edit of a file read (step 17). Pure; the card draws what it gives.
 import { shown } from "../../components/ui/number-entry";
 import type { CurrentPerMppt, DesignResult, Inverter, InverterResponse, Project } from "../api";
+import { makerOf } from "../equipment/makers";
 
 export type InverterCard = {
   name: string;
@@ -29,7 +29,7 @@ export function inverterCardOf(inverter: Inverter, ofTheFile: CurrentPerMppt, en
   const inputs = `${shown(inverter.n_inputs, 0)} ${inverter.n_inputs === 1 ? "input" : "inputs"}`;
   return {
     name: inverter.model,
-    line: `${inverter.manufacturer} · ${kilowatts(inverter.pnom_kw)} · ${shown(inverter.n_mppt, 0)} MPPT`,
+    line: `${makerOf(inverter.manufacturer)} · ${kilowatts(inverter.pnom_kw)} · ${shown(inverter.n_mppt, 0)} MPPT`,
     facts: `${perMppt} · ${inputs}`,
     isCurrentKnown: current !== null,
     file: inverter.source,

@@ -1,16 +1,17 @@
 "use client";
 
-import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { StatusMark } from "@/components/ui/StatusMark";
 import { inverterCardOf, type InverterShown } from "@/lib/studio/inverter-card";
+import { ChangeButton } from "./ChangeButton";
 
 type Props = {
   /** The inverter shown, with the current per MPPT of its file; null before a run or a file gave one. */
   inverter: InverterShown | null;
   /** The current per MPPT the user entered in place of the file's; null for none. */
   entered: number | null;
-  onReplace: () => void;
+  /** Opens the picker of the library (D75). */
+  onChange: () => void;
 };
 
 const CARD = "flex flex-col gap-2.5 rounded-card-s border border-line bg-surface-1 p-card-compact shadow-card";
@@ -29,10 +30,10 @@ function InverterGlyph() {
 /**
  * The inverter of the design (the boards "Studio, Strings lens" and "Inverter and sizing"; docs/design/components.md,
  * "Cards"): the model, the maker as the file states it with the power and the MPPTs, the current per MPPT and the
- * inputs, Replace, and the file's name under the card. A current per MPPT that is not known has its line under
+ * inputs, Change (D75), and the file's name under the card. A current per MPPT that is not known has its line under
  * the rest, with a note mark. Before a run read the inverter, skeletons.
  */
-export function InverterCard({ inverter, entered, onReplace }: Props) {
+export function InverterCard({ inverter, entered, onChange }: Props) {
   if (!inverter) {
     return (
       <section aria-label="Inverter" data-testid="inverter-card" className={CARD}>
@@ -68,9 +69,7 @@ export function InverterCard({ inverter, entered, onReplace }: Props) {
             </p>
             {card.isCurrentKnown ? facts : null}
           </div>
-          <Button size="s" onClick={onReplace}>
-            Replace
-          </Button>
+          <ChangeButton kind="inverters" onChange={onChange} />
         </div>
         {card.isCurrentKnown ? null : facts}
       </section>

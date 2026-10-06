@@ -1,0 +1,148 @@
+﻿PVObject_=pvGInverter
+  Comment=Kaco new energy	Blueplanet 87.0 TL3 - INT	Manufacturer 2026
+  Version=7.4.4
+  ParObj1=2018
+  Flags=$00381060
+
+  PVObject_Commercial=pvCommercial
+    Comment=www.kaconewenergy.com
+    Flags=$0041
+    Manufacturer=Kaco new energy
+    Model=Blueplanet 87.0 TL3 - INT
+    DataSource=Manufacturer 2026
+    YearBeg=2018
+    Width=0.699
+    Height=0.719
+    Depth=0.460
+    Weight=78.200
+    NPieces=100
+    PriceDate=28/04/20 11:05
+    Remarks, Count=3
+      Str_1=Technology: Without transformer / SiC
+      Str_2=Protection: IP66/NEMA 4X
+      Str_3
+    End of Remarks
+  End of PVObject pvCommercial
+  Transfo=Without
+
+  Converter=TConverter
+    PNomConv=87.000
+    PMaxOUT=87.000
+    VOutConv=380.0
+    VMppMin=563
+    VMPPMax=1300
+    VmppNom=600.0
+    VAbsMax=1500
+    PSeuil=200.00
+    EfficMax=99.00
+    EfficEuro=98.60
+    FResNorm=0.00
+    ModeOper=MPPT
+    CompPMax=Lim
+    CompVMax=Lim
+    MonoTri=Tri
+    ModeAffEnum=Efficf_POut
+    UnitAffEnum=kW
+    PNomDC=87.000
+    PMaxDC=130.500
+    IDCMax=0.000
+    IMaxDC=300.000
+    INomAC=133.000
+    IMaxAC=133.000
+    TPNom=45.0
+    TPMax=50.0
+    TPLim1=50.0
+    TPLimAbs=60.0
+    PLim1=73.000
+    PLimAbs=43.000
+    HasdefaultPThresh=False
+
+    ProfilPIO=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$008D
+      Mode=1
+      Point_1=200,0
+      Point_2=4350,4281
+      Point_3=21750,21535
+      Point_4=30450,30127
+      Point_5=43500,42982
+      Point_6=56550,55815
+      Point_7=69600,68598
+      Point_8=87000,85591
+      Point_9=0,0
+      Point_10=0,0
+      Point_11=0,0
+    End of TCubicProfile
+    VNomEff=563.0,600.0,1300.0,
+    EfficMaxV=98.840,98.780,97.900,
+    EfficEuroV=98.581,98.497,97.606,
+
+    ProfilPIOV1=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$8089
+      Mode=1
+      Point_1=200.0,0.0
+      Point_2=4442.9,4350.0
+      Point_3=8825.3,8700.0
+      Point_4=13217.9,13050.0
+      Point_5=17604.2,17400.0
+      Point_6=26406.3,26100.0
+      Point_7=44077.4,43500.0
+      Point_8=88666.9,87000.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+
+    ProfilPIOV2=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$8089
+      Mode=1
+      Point_1=200.0,0.0
+      Point_2=4453.3,4350.0
+      Point_3=8832.5,8700.0
+      Point_4=13223.2,13050.0
+      Point_5=17614.9,17400.0
+      Point_6=26425.0,26100.0
+      Point_7=44117.6,43522.0
+      Point_8=88730.2,87000.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+
+    ProfilPIOV3=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$8089
+      Mode=1
+      Point_1=200.0,0.0
+      Point_2=4605.6,4350.0
+      Point_3=8968.1,8700.0
+      Point_4=13375.0,13032.6
+      Point_5=17833.4,17400.0
+      Point_6=26692.6,26100.0
+      Point_7=44433.1,43500.0
+      Point_8=89239.9,87000.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+  End of TConverter
+  NbInputs=1
+  NbMPPT=1
+  TanPhiMin=-3.180
+  TanPhiMax=3.180
+  NbMSInterne=2
+  MasterSlave=No_M_S
+  IsolSurvey =Yes
+  DC_Switch=No
+  AC_Switch=No
+  DiscAdjust=Yes
+  ENS_Protec=Yes
+  MS_Thresh=0.8
+  Night_Loss=5.00
+End of PVObject pvGInverter

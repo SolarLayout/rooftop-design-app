@@ -1,0 +1,141 @@
+PVObject_=pvGInverter
+  Comment=Yaskawa Solectria Solar	XGI 1500-250-250 8-23-23	Manufacturer 2023
+  Version=7.3
+  Flags=$003910C2
+
+  PVObject_Commercial=pvCommercial
+    Flags=$0041
+    Manufacturer=Yaskawa Solectria Solar
+    Model=XGI 1500-250-250 8-23-23
+    DataSource=Manufacturer 2023
+    Width=1.000
+    Height=0.750
+    Depth=0.380
+    Weight=109.000
+    NPieces=100
+    PriceDate=27/10/17 12:07
+    Currency=EUR
+  End of PVObject pvCommercial
+  Transfo=Without
+
+  Converter=TConverter
+    PNomConv=250.000
+    PMaxOUT=250.000
+    VOutConv=600.0
+    VMppMin=860
+    VMPPMax=1250
+    Vmpp_PMax=860.0
+    VAbsMax=1500
+    PSeuil=125.00
+    EfficMax=0.00
+    EfficEuro=0.00
+    FResNorm=3.00
+    ModeOper=MPPT
+    CompPMax=Lim
+    CompVMax=Lim
+    MonoTri=Tri
+    ModeAffEnum=Efficf_POut
+    UnitAffEnum=kW
+    PNomDC=250.000
+    PMaxDC=500.000
+    IDCMax=0.000
+    INomAC=240.600
+    IMaxAC=240.600
+    TPNom=45.0
+    TPMax=25.0
+    TPLim1=50.0
+    TPLimAbs=60.0
+    PLim1=232.500
+    PLimAbs=207.000
+    PInEffMax =50471.369
+    HasdefaultPThresh=False
+
+    ProfilPIO=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$8089
+      Mode=1
+      Point_1=3750,0
+      Point_2=22500,16031
+      Point_3=37500,31102
+      Point_4=75000,68738
+      Point_5=150000,143835
+      Point_6=225000,218722
+      Point_7=450000,441990
+      Point_8=750000,736500
+      Point_9=0,0
+      Point_10=0,0
+      Point_11=0,0
+    End of TCubicProfile
+    VNomEff=860.0,1100.0,1250.0,
+    EfficMaxV=98.930,98.650,98.480,
+    EfficEuroV=98.694,98.388,98.281,
+
+    ProfilPIOV1=TCubicProfile
+      NPtsMax=11
+      NPtsEff=7
+      LastCompile=$8089
+      Mode=1
+      Point_1=125.0,0.0
+      Point_2=24536.1,24200.0
+      Point_3=49959.5,49400.0
+      Point_4=75204.7,74400.0
+      Point_5=126126.1,124600.0
+      Point_6=189312.5,186700.0
+      Point_7=260900.5,256700.0
+      Point_8=0.0,0.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+
+    ProfilPIOV2=TCubicProfile
+      NPtsMax=11
+      NPtsEff=7
+      LastCompile=$8089
+      Mode=1
+      Point_1=125.0,0.0
+      Point_2=24683.8,24200.0
+      Point_3=50096.3,49400.0
+      Point_4=75418.1,74400.0
+      Point_5=126510.3,124600.0
+      Point_6=189890.2,186700.0
+      Point_7=261645.1,256700.0
+      Point_8=0.0,0.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+
+    ProfilPIOV3=TCubicProfile
+      NPtsMax=11
+      NPtsEff=7
+      LastCompile=$8089
+      Mode=1
+      Point_1=125.0,0.0
+      Point_2=24982.1,24400.0
+      Point_3=50182.9,49400.0
+      Point_4=75548.3,74400.0
+      Point_5=126613.1,124600.0
+      Point_6=190025.4,186700.0
+      Point_7=262126.0,256700.0
+      Point_8=0.0,0.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+  End of TConverter
+  NbInputs=1
+  NbMPPT=1
+  TanPhiMin=-0.750
+  TanPhiMax=0.750
+  NbMSInterne=2
+  MasterSlave=No_M_S
+  IsolSurvey =Yes
+  DC_Switch=Yes
+  AC_Switch=Yes
+  DiscAdjust=Yes
+  ENS_Protec=Yes
+  MS_Thresh=0.8
+  Night_Loss=0.30
+End of PVObject pvGInverter

@@ -1,0 +1,89 @@
+﻿PVObject_=pvGInverter
+  Comment=Ginlong Technologies	S5-GC23K-LV	Manufacturer 2021
+  Version=6.86
+  ParObj1=2021
+  Flags=$003C0572
+
+  PVObject_Commercial=pvCommercial
+    Comment=www.ginlong.com
+    Flags=$0041
+    Manufacturer=Ginlong Technologies
+    Model=S5-GC23K-LV
+    DataSource=Manufacturer 2021
+    YearBeg=2021
+    Width=0.647
+    Height=0.629
+    Depth=0.252
+    Weight=37.000
+    NPieces=0
+    PriceDate=06/08/18 13:28
+    Currency=EUR
+    Remarks, Count=1
+      Str_1
+    End of Remarks
+  End of PVObject pvCommercial
+  Transfo=Without
+
+  Converter=TConverter
+    PNomConv=23.000
+    PMaxOUT=25.000
+    VOutConv=220.0
+    VMppMin=200
+    VMPPMax=1000
+    VmppNom=600.0
+    VAbsMax=1100
+    PSeuil=115.0
+    EfficMax=97.80
+    EfficEuro=97.30
+    FResNorm=3.00
+    ModeOper=MPPT
+    CompPMax=Lim
+    CompVMax=Lim
+    MonoTri=Tri
+    ModeAffEnum=Efficf_POut
+    UnitAffEnum=kW
+    IDCMax=0.0
+    IMaxDC=96.0
+    INomDC=18.0
+    INomAC=60.4
+    IMaxAC=65.0
+    TPNom=50.0
+    TPMax=45.0
+    TPLim1=55.0
+    TPLimAbs=60.0
+    PLim1=20.700
+    PLimAbs=18.970
+    PInEffMax =13800.000
+    PThreshEff=67.1
+    HasdefaultPThresh=True
+
+    ProfilPIO=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$008D
+      Mode=1
+      Point_1=115,0
+      Point_2=690,617
+      Point_3=1150,1072
+      Point_4=2300,2210
+      Point_5=4600,4481
+      Point_6=6900,6747
+      Point_7=13800,13513
+      Point_8=23000,22462
+      Point_9=0,0
+      Point_10=0,0
+      Point_11=0,0
+    End of TCubicProfile
+  End of TConverter
+  NbInputs=6
+  NbMPPT=3
+  TanPhiMin=-0.750
+  TanPhiMax=0.750
+  NbMSInterne=2
+  MasterSlave=No_M_S
+  IsolSurvey =Yes
+  DC_Switch=Yes
+  DiscAdjust=Yes
+  MS_Thresh=0.8
+  Night_Loss=1.00
+End of PVObject pvGInverter

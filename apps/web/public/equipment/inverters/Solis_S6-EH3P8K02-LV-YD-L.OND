@@ -1,0 +1,83 @@
+PVObject_=pvGInverter
+  Comment=Ginlong Technologies	S6-EH3P8K02-LV-YD-L	Manufacturer2024
+  Version=7.2
+  ParObj1=2024
+  Flags=$001A0571
+
+  PVObject_Commercial=pvCommercial
+    Comment=Ginlong Technologies
+    Flags=$0041
+    Manufacturer=Ginlong Technologies
+    Model=S6-EH3P8K02-LV-YD-L
+    DataSource=Manufacturer2024
+    YearBeg=2024
+    Width=0.430
+    Height=0.660
+    Depth=0.305
+    Weight=42.000
+    NPieces=100
+    PriceDate=21/10/24 10:54
+  End of PVObject pvCommercial
+
+  Converter=TConverter
+    PNomConv=8.000
+    PMaxOUT=8.000
+    VOutConv=220.0
+    VMppMin=200
+    VMPPMax=850
+    VAbsMax=1000
+    PSeuil=60.0
+    EfficMax=96.20
+    EfficEuro=94.90
+    FResNorm=3.00
+    ModeOper=MPPT
+    CompPMax=Lim
+    CompVMax=Lim
+    MonoTri=Tri
+    ModeAffEnum=Efficf_POut
+    UnitAffEnum=kW
+    IDCMax=0.0
+    IMaxDC=60.0
+    INomAC=21.0
+    IMaxAC=21.0
+    TPNom=45.0
+    TPMax=25.0
+    TPLim1=50.0
+    TPLimAbs=60.0
+    PLim1=7.200
+    PLimAbs=5.600
+    PInEffMax =4800.000
+    PThreshEff=86.2
+    HasdefaultPThresh=False
+
+    ProfilPIO=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$008D
+      Mode=1
+      Point_1=60,0
+      Point_2=240,154
+      Point_3=400,314
+      Point_4=800,713
+      Point_5=1600,1507
+      Point_6=2400,2294
+      Point_7=4800,4618
+      Point_8=8000,7629
+      Point_9=0,0
+      Point_10=0,0
+      Point_11=0,0
+    End of TCubicProfile
+  End of TConverter
+  NbInputs=3
+  NbMPPT=2
+  TanPhiMin=-0.750
+  TanPhiMax=0.750
+  NbMSInterne=2
+  MasterSlave=No_M_S
+  IsolSurvey =Yes
+  DC_Switch=Yes
+  AC_Switch=No
+  DiscAdjust=No
+  MS_Thresh=0.8
+  Night_Loss=30.00
+End of PVObject pvGInverter

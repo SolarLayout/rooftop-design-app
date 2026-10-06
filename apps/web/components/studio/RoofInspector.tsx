@@ -144,7 +144,10 @@ export function RoofInspector({ size }: Props) {
   return (
     <div data-size={size} className="flex flex-col gap-4 tablet:grid tablet:grid-cols-2 tablet:gap-8 desktop:flex desktop:gap-4">
       <div className="flex flex-col gap-4 tablet:gap-5 desktop:contents">
-        <LocationCard card={card} size={size} />
+        <section aria-label="Location" className="flex flex-col gap-2.5">
+          <h2 className={SECTION}>Location</h2>
+          <LocationCard card={card} size={size} />
+        </section>
         {reviewing.length > 0 ? <ReviewNote count={reviewing.length} onReview={review} /> : null}
 
         <section aria-label="Roof type" className="flex flex-col gap-2.5">

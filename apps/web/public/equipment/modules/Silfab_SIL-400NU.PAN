@@ -1,0 +1,55 @@
+PVObject_=pvModule
+  Version=6.79
+  Flags=$0243
+
+  PVObject_Commercial=pvCommercial
+    Comment=Silfab
+    Flags=$0041
+    Manufacturer=Silfab
+    Model=SIL-400NU
+    DataSource=PVEL LLC 2019
+    Width=1.006
+    Height=2.026
+    Depth=0.038
+    Diameter=23.000
+    Weight=22.000
+    NPieces=100
+    PriceDate=14/08/19 20:36
+    Currency=EUR
+  End of PVObject pvCommercial
+
+  Technol=mtSiMono
+  NCelS=72
+  NCelP=1
+  NDiode=3
+  SubModuleLayout=slInLength
+  FrontSurface=fsARCoating
+  GRef=1000
+  TRef=25.0
+  PNom=400.0
+  PNomTolLow=0.00
+  PNomTolUp=3.00
+  Isc=10.450
+  Voc=48.69
+  Imp=9.970
+  Vmp=40.10
+  muISC=6.20
+  muVocSpec=-133.0
+  muPmpReq=-0.348
+  RShunt=550
+  Rp_0=1450
+  Rp_Exp=5.50
+  RSerie=0.275
+  Gamma=0.977
+  muGamma=-0.0004
+  VMaxIEC=1500
+  VMaxUL=1500
+  Absorb=0.90
+  ARev=3.200
+  BRev=11.602
+  RDiode=0.010
+  VRevDiode=-0.70
+  AirMassRef=1.500
+  CellArea=251.9
+  SandiaAMCorr=50.000
+End of PVObject pvModule
