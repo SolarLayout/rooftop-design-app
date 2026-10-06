@@ -115,6 +115,12 @@ def _floats(kv: dict[str, str], key: str) -> list[float]:
     return out
 
 
+def data_source_of(text: str) -> str:
+    """Where the numbers of a PAN or OND file come from, as the file says (``DataSource=``);
+    empty when it does not."""
+    return _s(_flat_kv(text.splitlines()), "DataSource")
+
+
 # ── Module ──────────────────────────────────────────────────────────────────
 @dataclass
 class Module:

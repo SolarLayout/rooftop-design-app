@@ -1,0 +1,146 @@
+﻿PVObject_=pvGInverter
+  Comment=Chint Power Systems (CPS)	CPS SCA50KTL-DO/US-480 (55kVA)	Manufacturer 2021
+  Version=7.2.16
+  ParObj1=2017
+  Flags=$003E15C3
+
+  PVObject_Commercial=pvCommercial
+    Comment=www.chintpowersystems.com
+    Flags=$0041
+    Manufacturer=Chint Power Systems (CPS)
+    Model=CPS SCA50KTL-DO/US-480 (55kVA)
+    DataSource=Manufacturer 2021
+    YearBeg=2017
+    Width=0.600
+    Height=1.000
+    Depth=0.260
+    Weight=60.000
+    NPieces=100
+    PriceDate=01/12/15 15:25
+    Currency=EUR
+    Remarks, Count=1
+      Str_1=Audit 01-06-2022 / Datasheet 04/2021 / CEC Eff. 10/12/2020
+    End of Remarks=Audit 01-06-2022 / Datasheet 04/2021 / CEC Eff. 10/12/2020
+  End of PVObject pvCommercial
+  Transfo=Without
+
+  Converter=TConverter
+    PNomConv=50.000
+    PMaxOUT=55.000
+    VOutConv=480.0
+    VMppMin=200
+    VMPPMax=850
+    Vmpp_PMax=418.5
+    VAbsMax=1000
+    PSeuil=80.0
+    EfficMax=97.00
+    EfficEuro=95.00
+    FResNorm=3.00
+    ModeOper=MPPT
+    CompPMax=Lim
+    CompVMax=Lim
+    MonoTri=Tri
+    ModeAffEnum=Efficf_POut
+    UnitAffEnum=kW
+    PMaxDC=90.000
+    IDCMax=0.0
+    IMaxDC=163.2
+    INomAC=60.1
+    IMaxAC=66.2
+    TPNom=45.0
+    TPMax=40.0
+    TPLim1=50.0
+    TPLimAbs=60.0
+    PLim1=42.500
+    PLimAbs=27.500
+    PInEffMax =25330.000
+    PThreshEff=1919.0
+    HasdefaultPThresh=False
+
+    ProfilPIO=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$8089
+      Mode=1
+      Point_1=300,0
+      Point_2=1500,0
+      Point_3=2500,617
+      Point_4=5000,3281
+      Point_5=10000,8565
+      Point_6=15000,13789
+      Point_7=30000,29100
+      Point_8=50000,48500
+      Point_9=0,0
+      Point_10=0,0
+      Point_11=0,0
+    End of TCubicProfile
+    VNomEff=480.0,730.0,850.0,
+    EfficMaxV=97.900,98.800,98.700,
+    EfficEuroV=97.642,98.695,98.575,
+
+    ProfilPIOV1=TCubicProfile
+      NPtsMax=11
+      NPtsEff=7
+      LastCompile=$8089
+      Mode=1
+      Point_1=300.0,0.0
+      Point_2=5230.0,4999.9
+      Point_3=10330.0,9999.4
+      Point_4=15380.0,14995.5
+      Point_5=25540.0,25003.7
+      Point_6=38340.0,37496.5
+      Point_7=51180.0,50002.9
+      Point_8=0.0,0.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+
+    ProfilPIOV2=TCubicProfile
+      NPtsMax=11
+      NPtsEff=7
+      LastCompile=$8089
+      Mode=1
+      Point_1=80.0,0.0
+      Point_2=5100.0,4998.0
+      Point_3=10140.0,9998.0
+      Point_4=15180.0,14997.8
+      Point_5=25300.0,24996.4
+      Point_6=37990.0,37496.1
+      Point_7=50710.0,50000.1
+      Point_8=0.0,0.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+
+    ProfilPIOV3=TCubicProfile
+      NPtsMax=11
+      NPtsEff=7
+      LastCompile=$8089
+      Mode=1
+      Point_1=300.0,0.0
+      Point_2=5120.0,5002.2
+      Point_3=10150.0,9997.7
+      Point_4=15210.0,14997.1
+      Point_5=25330.0,25000.7
+      Point_6=38030.0,37497.6
+      Point_7=50760.0,49998.6
+      Point_8=0.0,0.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+  End of TConverter
+  NbInputs=15
+  NbMPPT=3
+  TanPhiMin=-0.750
+  TanPhiMax=0.750
+  NbMSInterne=2
+  MasterSlave=No_M_S
+  IsolSurvey =Yes
+  DC_Switch=Yes
+  AC_Switch=Yes
+  MS_Thresh=0.8
+  Night_Loss=1.00
+End of PVObject pvGInverter

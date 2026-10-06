@@ -19,6 +19,7 @@
     "status": "bun tools/dev.ts status",
     "check": "bun tools/check.ts",
     "gen:api": "bun tools/gen-api.ts",
+    "equipment:catalog": "bun tools/equipment-catalog.ts",
     "build": "bun tools/with-node.ts turbo run build",
     "typecheck": "bun tools/with-node.ts turbo run typecheck",
     "lint": "bun tools/with-node.ts turbo run lint",

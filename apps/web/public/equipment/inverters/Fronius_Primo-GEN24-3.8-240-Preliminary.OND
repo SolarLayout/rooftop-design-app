@@ -1,0 +1,127 @@
+﻿PVObject_=pvGInverter
+  Comment=Fronius USA	Primo GEN24 3.8 / 240 Preliminary_OND	Manufacturer 2023
+  Version=7.4.7
+  ParObj1=2024
+  Flags=$00323460
+
+  PVObject_Commercial=pvCommercial
+    Comment=www.fronius.com
+    Flags=$0041
+    Manufacturer=Fronius USA
+    Model=Primo GEN24 3.8 / 240 Preliminary_OND
+    DataSource=Manufacturer 2023
+    YearBeg=2024
+    Width=0.474
+    Height=0.516
+    Depth=0.165
+    Weight=16.100
+    NPieces=100
+    PriceDate=10/06/24 11:45
+    Remarks, Count=3
+      Str_1=Technology: transformerless
+      Str_2=Protection: IP 66
+      Str_3=Control: no display, status LEDs
+    End of Remarks=Control: no display, status LEDs
+  End of PVObject pvCommercial
+  Transfo=Without
+
+  Converter=TConverter
+    PNomConv=3.800
+    PMaxOUT=3.800
+    VOutConv=240.0
+    VMppMin=65
+    VMPPMax=530
+    VmppNom=400.0
+    VAbsMax=600
+    PSeuil=30.00
+    EfficMax=0.00
+    EfficEuro=0.00
+    FResNorm=0.00
+    ModeOper=MPPT
+    CompPMax=Lim
+    CompVMax=Lim
+    MonoTri=Mono
+    ModeAffEnum=Efficf_PIn
+    UnitAffEnum=kW
+    PNomDC=3.800
+    PMaxDC=5.700
+    IDCMax=0.000
+    IMaxDC=44.000
+    TPNom=50.0
+    TPMax=25.0
+    TPLim1=60.0
+    HasdefaultPThresh=False
+    VNomEff=200.0,400.0,480.0,
+    EfficMaxV=96.510,97.410,97.100,
+    EfficEuroV=95.420,96.710,96.150,
+
+    ProfilPIOV1=TCubicProfile
+      NPtsMax=11
+      NPtsEff=7
+      LastCompile=$8089
+      Mode=1
+      Point_1=30.0,0.0
+      Point_2=380.0,338.3
+      Point_3=760.0,714.3
+      Point_4=1140.0,1086.1
+      Point_5=1903.0,1829.5
+      Point_6=2850.0,2752.0
+      Point_7=3800.0,3673.5
+      Point_8=0.0,0.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+
+    ProfilPIOV2=TCubicProfile
+      NPtsMax=11
+      NPtsEff=7
+      LastCompile=$8089
+      Mode=1
+      Point_1=30.0,0.0
+      Point_2=380.0,354.9
+      Point_3=760.0,731.7
+      Point_4=1140.0,1105.8
+      Point_5=1903.0,1854.9
+      Point_6=2850.0,2783.0
+      Point_7=3800.0,3711.1
+      Point_8=0.0,0.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+
+    ProfilPIOV3=TCubicProfile
+      NPtsMax=11
+      NPtsEff=7
+      LastCompile=$8089
+      Mode=1
+      Point_1=30.0,0.0
+      Point_2=380.0,348.8
+      Point_3=760.0,727.2
+      Point_4=1140.0,1101.1
+      Point_5=1900.0,1847.2
+      Point_6=2854.0,2780.7
+      Point_7=3800.0,3703.9
+      Point_8=0.0,0.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+  End of TConverter
+  NbInputs=4
+  NbMPPT=2
+  NbInputsMain=2
+  NbInputsSec=2
+  IscMaxMain=28.8
+  IscMaxSec=15.2
+  TanPhiMin=-0.750
+  TanPhiMax=0.750
+  NbMSInterne=2
+  MasterSlave=No_M_S
+  IsolSurvey =Yes
+  DC_Switch=Yes
+  DiscAdjust=Yes
+  ENS_Protec=Yes
+  MS_Thresh=0.8
+End of PVObject pvGInverter

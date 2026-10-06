@@ -1,0 +1,92 @@
+PVObject_=pvGInverter
+  Comment=Ginlong Technologies	S6-GC50K-US	Manufacturer 2023
+  Version=7.4
+  ParObj1=2023
+  Flags=$001805C2
+
+  PVObject_Commercial=pvCommercial
+    Comment=www.ginlong.com
+    Flags=$0041
+    Manufacturer=Ginlong Technologies
+    Model=S6-GC50K-US
+    DataSource=Manufacturer 2023
+    YearBeg=2023
+    Width=0.647
+    Height=0.629
+    Depth=0.252
+    Weight=37.000
+    NPieces=0
+    PriceDate=08/11/18 16:35
+    Currency=EUR
+    Remarks, Count=1
+      Str_1
+    End of Remarks
+  End of PVObject pvCommercial
+  Transfo=Without
+
+  Converter=TConverter
+    PNomConv=50.000
+    PMaxOUT=50.000
+    VOutConv=480.0
+    VMppMin=180
+    VMPPMax=1000
+    VmppNom=720.0
+    Vmpp_PMax=320.0
+    VAbsMax=1000
+    PSeuil=250.00
+    EfficMax=98.57
+    EfficEuro=98.31
+    FResNorm=3.00
+    ModeOper=MPPT
+    CompPMax=Lim
+    CompVMax=Lim
+    MonoTri=Tri
+    ModeAffEnum=Efficf_POut
+    UnitAffEnum=kW
+    IDCMax=0.000
+    IMaxDC=252.000
+    INomDC=72.000
+    INomAC=60.100
+    IMaxAC=60.100
+    TPNom=53.0
+    TPMax=45.0
+    TPLim1=55.0
+    TPLimAbs=60.0
+    PLim1=47.500
+    PLimAbs=37.500
+    PInEffMax =30000.000
+    PThreshEff=425.40
+    HasdefaultPThresh=False
+
+    ProfilPIO=TCubicProfile
+      NPtsMax=11
+      NPtsEff=7
+      LastCompile=$8089
+      Mode=1
+      Point_1=250,0
+      Point_2=5098,5000
+      Point_3=10201,10000
+      Point_4=15305,15000
+      Point_5=25363,25000
+      Point_6=38114,37500
+      Point_7=51198,50000
+      Point_8=0,0
+      Point_9=0,0
+      Point_10=0,0
+      Point_11=0,0
+    End of TCubicProfile
+  End of TConverter
+  NbInputs=8
+  NbMPPT=4
+  TanPhiMin=-0.750
+  TanPhiMax=0.750
+  NbMSInterne=2
+  MasterSlave=No_M_S
+  IsolSurvey =Yes
+  DC_Switch=Yes
+  AC_Switch=Yes
+  DiscAdjust=Yes
+  ENS_Protec=Yes
+  MS_Thresh=0.8
+  Night_Loss=1.00
+End of PVObject pvGInverter

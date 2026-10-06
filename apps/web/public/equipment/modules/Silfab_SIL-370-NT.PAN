@@ -1,0 +1,52 @@
+﻿PVObject_=pvModule
+  Version=6.81
+  Flags=$0043
+
+  PVObject_Commercial=pvCommercial
+    Comment=Silfab
+    Flags=$0041
+    Manufacturer=Silfab
+    Model=SIL-370_NT
+    DataSource=PVEL LLC 2019
+    Width=0.994
+    Height=1.992
+    Depth=0.038
+    Diameter=23.000
+    NPieces=100
+    PriceDate=14/08/19 20:36
+    Currency=EUR
+  End of PVObject pvCommercial
+
+  Technol=mtSiMono
+  NCelS=72
+  NCelP=1
+  NDiode=3
+  GRef=1000
+  TRef=25.0
+  PNom=370.0
+  PNomTolLow=0.00
+  PNomTolUp=3.00
+  Isc=10.210
+  Voc=47.62
+  Imp=9.530
+  Vmp=38.90
+  muISC=6.19
+  muVocSpec=-133.0
+  muPmpReq=-0.348
+  RShunt=420
+  Rp_0=1499
+  Rp_Exp=5.50
+  RSerie=0.345
+  Gamma=1.033
+  muGamma=-0.0002
+  VMaxIEC=1000
+  VMaxUL=1000
+  Absorb=0.90
+  ARev=3.200
+  BRev=11.602
+  RDiode=0.010
+  VRevDiode=-0.70
+  AirMassRef=1.500
+  CellArea=251.9
+  SandiaAMCorr=50.000
+End of PVObject pvModule

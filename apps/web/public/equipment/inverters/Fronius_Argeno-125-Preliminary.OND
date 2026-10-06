@@ -1,0 +1,88 @@
+﻿PVObject_=pvGInverter
+  Comment=Fronius International	Argeno 125 Preliminary_OND	Manufacturer 2024
+  Version=7.4.7
+  ParObj1=2024
+  Flags=$00330460
+
+  PVObject_Commercial=pvCommercial
+    Comment=www.fronius.com
+    Flags=$0041
+    Manufacturer=Fronius International
+    Model=Argeno 125 Preliminary_OND
+    DataSource=Manufacturer 2024
+    YearBeg=2024
+    Width=1.023
+    Height=0.740
+    Depth=0.330
+    Weight=85.000
+    NPieces=100
+    PriceDate=10/06/24 16:02
+    Remarks, Count=7
+      Str_1=Technology: transformerless
+      Str_2=Protection: IP66
+      Str_3=Control: no display, status LEDs
+      Str_4=DC SPDs and AC SPDs integrated, Arc Fault Circuit Interruptor integrated
+      Str_5=Isc_pv>=Isc_max=Isc(STC)x1.25 according to IEC 60364-7-71, NEC 2020,
+      Str_6=AS/NZS 5033:2021, The factor of 1.25 needs to be taken into account, due to
+      Str_7=this reason in the database the value of Isc_max is lower than our datasheets.
+    End of Remarks=this reason in the database the value of Isc_max is lower than our datasheets.
+  End of PVObject pvCommercial
+  Transfo=Without
+
+  Converter=TConverter
+    PNomConv=125.000
+    PMaxOUT=125.000
+    VOutConv=400.0
+    VMppMin=200
+    VMPPMax=850
+    VmppNom=620.0
+    VAbsMax=1100
+    PSeuil=60.00
+    EfficMax=99.10
+    EfficEuro=98.61
+    FResNorm=0.00
+    ModeOper=MPPT
+    CompPMax=Lim
+    CompVMax=Lim
+    MonoTri=Tri
+    ModeAffEnum=Efficf_PIn
+    UnitAffEnum=kW
+    PNomDC=125.000
+    PMaxDC=250.000
+    IDCMax=0.000
+    IMaxDC=300.000
+    TPNom=50.0
+    TPMax=25.0
+    TPLim1=60.0
+    HasdefaultPThresh=False
+
+    ProfilPIO=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$8089
+      Mode=1
+      Point_1=312,0
+      Point_2=6250,6063
+      Point_3=12500,12337
+      Point_4=24975,24725
+      Point_5=37500,37162
+      Point_6=62500,61813
+      Point_7=93750,92437
+      Point_8=125000,122125
+      Point_9=0,0
+      Point_10=0,0
+      Point_11=0,0
+    End of TCubicProfile
+  End of TConverter
+  NbInputs=20
+  NbMPPT=10
+  TanPhiMin=-0.750
+  TanPhiMax=0.750
+  NbMSInterne=2
+  MasterSlave=No_M_S
+  IsolSurvey =Yes
+  DC_Switch=Yes
+  DiscAdjust=Yes
+  ENS_Protec=Yes
+  MS_Thresh=0.8
+End of PVObject pvGInverter

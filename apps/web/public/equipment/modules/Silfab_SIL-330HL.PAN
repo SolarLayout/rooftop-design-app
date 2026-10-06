@@ -1,0 +1,54 @@
+﻿PVObject_=pvModule
+  Version=7.0.3
+  Flags=$0043
+
+  PVObject_Commercial=pvCommercial
+    Comment=Silfab
+    Flags=$0041
+    Manufacturer=Silfab
+    Model=SIL-330HL
+    DataSource=PVEL LLC 2019
+    Width=1.000
+    Height=1.700
+    Depth=0.038
+    Diameter=23.000
+    NPieces=100
+    PriceDate=14/08/19 20:36
+    Currency=EUR
+  End of PVObject pvCommercial
+
+  Technol=mtSiMono
+  NCelS=60
+  NCelP=2
+  NDiode=3
+  SubModuleLayout=slTwinHalfCells
+  FrontSurface=fsARCoating
+  GRef=1000
+  TRef=25.0
+  PNom=330.0
+  PNomTolLow=0.00
+  PNomTolUp=3.00
+  Isc=10.400
+  Voc=40.48
+  Imp=9.800
+  Vmp=33.73
+  muISC=6.63
+  muVocSpec=-133.0
+  muPmpReq=-0.348
+  RShunt=450
+  Rp_0=1499
+  Rp_Exp=5.50
+  RSerie=0.199
+  Gamma=1.047
+  muGamma=-0.0004
+  VMaxIEC=1000
+  VMaxUL=1000
+  Absorb=0.90
+  ARev=3.200
+  BRev=11.602
+  RDiode=0.010
+  VRevDiode=-0.70
+  AirMassRef=1.500
+  CellArea=126.0
+  SandiaAMCorr=50.000
+End of PVObject pvModule

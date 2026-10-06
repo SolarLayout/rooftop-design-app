@@ -1,0 +1,147 @@
+﻿PVObject_=pvGInverter
+  Comment=Ginlong Technologies	S5-GR3P12K	Manufacturer 2021
+  Version=6.86
+  ParObj1=2021
+  Flags=$001C1562
+
+  PVObject_Commercial=pvCommercial
+    Comment=www.ginlong.com
+    Flags=$0041
+    Manufacturer=Ginlong Technologies
+    Model=S5-GR3P12K
+    DataSource=Manufacturer 2021
+    YearBeg=2021
+    Width=0.310
+    Height=0.563
+    Depth=0.219
+    Weight=17.800
+    NPieces=0
+    PriceDate=25/02/19 17:25
+    Currency=EUR
+    Remarks, Count=1
+      Str_1
+    End of Remarks
+  End of PVObject pvCommercial
+  Transfo=Without
+
+  Converter=TConverter
+    PNomConv=12.000
+    PMaxOUT=13.200
+    VOutConv=400.0
+    VMppMin=160
+    VMPPMax=1000
+    VmppNom=600.0
+    VAbsMax=1100
+    PSeuil=60.0
+    EfficMax=98.70
+    EfficEuro=98.10
+    FResNorm=3.00
+    ModeOper=MPPT
+    CompPMax=Lim
+    CompVMax=Lim
+    MonoTri=Tri
+    ModeAffEnum=Efficf_POut
+    UnitAffEnum=kW
+    PNomDC=12.000
+    IDCMax=0.0
+    IMaxDC=64.0
+    INomDC=18.0
+    INomAC=17.3
+    IMaxAC=19.1
+    TPNom=45.0
+    TPMax=40.0
+    TPLim1=55.0
+    TPLimAbs=60.0
+    PLim1=10.600
+    PLimAbs=9.700
+    PInEffMax =5400.000
+    PThreshEff=149.6
+    HasdefaultPThresh=False
+
+    ProfilPIO=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$8085
+      Mode=1
+      Point_1=45,0
+      Point_2=270,230
+      Point_3=450,410
+      Point_4=900,862
+      Point_5=1800,1762
+      Point_6=2700,2659
+      Point_7=5400,5330
+      Point_8=9000,8846
+      Point_9=0,0
+      Point_10=0,0
+      Point_11=0,0
+    End of TCubicProfile
+    VNomEff=600.0,725.0,850.0,
+    EfficMaxV=98.600,97.741,97.429,
+    EfficEuroV=98.028,97.336,97.015,
+
+    ProfilPIOV1=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$8089
+      Mode=1
+      Point_1=60.0,0.0
+      Point_2=626.6,600.0
+      Point_3=1232.4,1200.0
+      Point_4=2445.2,2400.0
+      Point_5=3651.1,3600.0
+      Point_6=6105.6,6000.0
+      Point_7=9194.9,9000.0
+      Point_8=12292.6,12000.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+
+    ProfilPIOV2=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$8089
+      Mode=1
+      Point_1=60.0,0.0
+      Point_2=636.8,600.0
+      Point_3=1244.2,1200.0
+      Point_4=2462.0,2400.0
+      Point_5=3683.2,3600.0
+      Point_6=6145.7,6000.0
+      Point_7=9240.2,9000.0
+      Point_8=12362.2,12000.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+
+    ProfilPIOV3=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$8089
+      Mode=1
+      Point_1=60.0,0.0
+      Point_2=645.5,600.0
+      Point_3=1252.0,1200.0
+      Point_4=2477.8,2400.0
+      Point_5=3697.6,3600.0
+      Point_6=6158.3,6000.0
+      Point_7=9260.2,9000.0
+      Point_8=12382.6,12000.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+  End of TConverter
+  NbInputs=4
+  NbMPPT=2
+  TanPhiMin=-0.750
+  TanPhiMax=0.750
+  NbMSInterne=2
+  MasterSlave=No_M_S
+  IsolSurvey =Yes
+  DC_Switch=Yes
+  DiscAdjust=Yes
+  MS_Thresh=0.8
+  Night_Loss=1.00
+End of PVObject pvGInverter

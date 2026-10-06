@@ -1,0 +1,147 @@
+﻿PVObject_=pvGInverter
+  Comment=Chint Power Systems (CPS)	CPS SCH100KTL-DO/US-480 (105kVA)	Manufacturer 2021
+  Version=7.2.16
+  ParObj1=2021
+  Flags=$003E11C3
+
+  PVObject_Commercial=pvCommercial
+    Comment=www.chintpowersystems.com
+    Flags=$0041
+    Manufacturer=Chint Power Systems (CPS)
+    Model=CPS SCH100KTL-DO/US-480 (105kVA)
+    DataSource=Manufacturer 2021
+    RevFileName=Atersa.REV
+    YearBeg=2021
+    Width=1.150
+    Height=0.616
+    Depth=0.250
+    Weight=80.000
+    NPieces=100
+    PriceDate=05/02/21 15:25
+    Currency=US$
+    Remarks, Count=1
+      Str_1=Audit 01-06-2022 / Datasheet 03-2021 / CEC Eff 10-01-2021
+    End of Remarks=Audit 01-06-2022 / Datasheet 03-2021 / CEC Eff 10-01-2021
+  End of PVObject pvCommercial
+  Transfo=Without
+
+  Converter=TConverter
+    PNomConv=100.000
+    PMaxOUT=105.000
+    VOutConv=480.0
+    VMppMin=750
+    VMPPMax=1300
+    Vmpp_PMax=760.0
+    VAbsMax=1500
+    PSeuil=200.0
+    EfficMax=97.00
+    EfficEuro=95.00
+    FResNorm=3.00
+    ModeOper=MPPT
+    CompPMax=Lim
+    CompVMax=Lim
+    MonoTri=Tri
+    ModeAffEnum=Efficf_PIn
+    UnitAffEnum=kW
+    PMaxDC=150.000
+    IDCMax=0.0
+    IMaxDC=220.0
+    INomAC=121.5
+    IMaxAC=126.3
+    TPNom=45.0
+    TPMax=40.0
+    TPLim1=50.0
+    TPLimAbs=60.0
+    PLim1=85.000
+    PLimAbs=55.000
+    PInEffMax =30536.300
+    PThreshEff=1919.0
+    HasdefaultPThresh=False
+
+    ProfilPIO=TCubicProfile
+      NPtsMax=11
+      NPtsEff=8
+      LastCompile=$0011
+      Mode=1
+      Point_1=300,0
+      Point_2=1500,0
+      Point_3=2500,617
+      Point_4=5000,3281
+      Point_5=10000,8565
+      Point_6=15000,13789
+      Point_7=30000,29100
+      Point_8=50000,48500
+      Point_9=0,0
+      Point_10=0,0
+      Point_11=0,0
+    End of TCubicProfile
+    VNomEff=760.0,1000.0,1300.0,
+    EfficMaxV=98.920,98.490,98.040,
+    EfficEuroV=98.429,98.112,97.654,
+
+    ProfilPIOV1=TCubicProfile
+      NPtsMax=11
+      NPtsEff=7
+      LastCompile=$8089
+      Mode=1
+      Point_1=200.0,0.0
+      Point_2=10168.7,10020.4
+      Point_3=20259.5,20040.7
+      Point_4=30398.1,30061.1
+      Point_5=50734.6,50101.9
+      Point_6=76338.2,75152.8
+      Point_7=102120.7,100203.7
+      Point_8=0.0,0.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+
+    ProfilPIOV2=TCubicProfile
+      NPtsMax=11
+      NPtsEff=7
+      LastCompile=$8089
+      Mode=1
+      Point_1=200.0,0.0
+      Point_2=10221.6,10020.4
+      Point_3=20345.6,20040.7
+      Point_4=30502.5,30061.1
+      Point_5=50906.9,50101.9
+      Point_6=76584.9,75152.8
+      Point_7=102480.2,100203.7
+      Point_8=0.0,0.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+
+    ProfilPIOV3=TCubicProfile
+      NPtsMax=11
+      NPtsEff=7
+      LastCompile=$8089
+      Mode=1
+      Point_1=200.0,0.0
+      Point_2=10304.5,10020.4
+      Point_3=20474.8,20040.7
+      Point_4=30647.4,30061.1
+      Point_5=51114.7,50101.9
+      Point_6=76887.1,75152.8
+      Point_7=102922.3,100203.7
+      Point_8=0.0,0.0
+      Point_9=0.0,0.0
+      Point_10=0.0,0.0
+      Point_11=0.0,0.0
+    End of TCubicProfile
+  End of TConverter
+  NbInputs=20
+  NbMPPT=1
+  TanPhiMin=-0.750
+  TanPhiMax=0.750
+  NbMSInterne=2
+  MasterSlave=No_M_S
+  IsolSurvey =Yes
+  DC_Switch=Yes
+  AC_Switch=Yes
+  MS_Thresh=0.8
+  Night_Loss=4.00
+End of PVObject pvGInverter
