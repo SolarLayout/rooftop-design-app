@@ -252,6 +252,7 @@
   --border-corner: 4px;
   --border-corner-touch: 5px;
 
+
   --ring-focus: 2px solid var(--color-accent);
   --ring-focus-offset: 2px;
 
@@ -390,7 +391,7 @@
   --shadow-knob: 0 1px 3px rgba(0,0,0,.5);
   --shadow-handle: 0 2px 6px rgba(0,0,0,.6);
   --shadow-text-on-imagery: 0 1px 3px rgba(0,0,0,.9);
-  --shadow-heading: 0 2px 6px rgba(255,176,32,.6), 0 4px 14px rgba(255,176,32,.35);
+  --shadow-heading: 0 4px 6px rgba(255,176,32,.4), 0 6px 14px rgba(255,176,32,.22);
   --halo-focus: 0 0 0 3px rgba(255,176,32,.18);
   --halo-selected: 0 0 0 3px rgba(255,176,32,.14);
   --halo-decision: 0 0 0 4px rgba(255,176,32,.14);
@@ -1100,7 +1101,7 @@
 @utility on-imagery {
   text-shadow: var(--shadow-text-on-imagery);
 }
-/* A section's heading in an input panel glows faintly in its orange under its words. */
+/* A section's heading in an input panel glows faintly in its orange, the glow let down under its words. */
 @utility heading-glow {
   text-shadow: var(--shadow-heading);
 }
