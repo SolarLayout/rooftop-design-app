@@ -78,6 +78,7 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | Tabs | `Tabs.dc.html` | `tabs.png` | desktop, phone in parts |
 | UI fixes · Choose a module or an inverter | `EquipmentPicker.dc.html`, `EquipmentPickerTablet.dc.html`, `EquipmentPickerPhone.dc.html` | `ui-fixes-equipment-picker-desktop.png`, `ui-fixes-equipment-picker-tablet.png`, `ui-fixes-equipment-picker-phone.png` | desktop, tablet, phone |
 | UI fixes · Where the picker opens | `EquipmentEntry.dc.html`, `EquipmentEntryTablet.dc.html`, `EquipmentEntryPhone.dc.html` | `ui-fixes-equipment-entry-desktop.png`, `ui-fixes-equipment-entry-tablet.png`, `ui-fixes-equipment-entry-phone.png` | desktop, tablet, phone |
+| UI fixes · Move and turn the roof and its obstacles | `MoveTurn.dc.html`, `MoveTurnTablet.dc.html`, `MoveTurnPhone.dc.html` (the shots in `move_turn/`) | `ui-fixes-move-turn-desktop.jpg`, `ui-fixes-move-turn-tablet.jpg`, `ui-fixes-move-turn-phone.jpg` | desktop, tablet, phone |
 | UI fixes · My location and Search on every size | `LocateSearch.dc.html`, `LocateSearchTablet.dc.html`, `LocateSearchPhone.dc.html` (the shots in `locate_search/`) | `ui-fixes-locate-search-desktop.jpg`, `ui-fixes-locate-search-tablet.jpg`, `ui-fixes-locate-search-phone.jpg` | desktop, tablet, phone |
 | UI fixes · A choice of stringing that no longer fits | `ChoiceGone.dc.html`, `ChoiceGoneTablet.dc.html`, `ChoiceGonePhone.dc.html` (the shots in `choice_gone/`) | `ui-fixes-choice-gone-desktop.png`, `ui-fixes-choice-gone-tablet.png`, `ui-fixes-choice-gone-phone.png` | desktop, tablet, phone |
 | UI fixes · Section headings, three ways | `SectionHeadings.dc.html`, `SectionHeadingsTablet.dc.html`, `SectionHeadingsPhone.dc.html` (the shots in `section_headings/`) | `ui-fixes-section-headings-desktop.png`, `ui-fixes-section-headings-tablet.png`, `ui-fixes-section-headings-phone.png` | desktop, tablet, phone |
@@ -175,10 +176,14 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
 - `mockups/build_ui_fixes_locate_search.py` writes the boards "UI fixes · My location and Search on every size": Find with
   nothing typed and with an address typed, and Home, caught in the browser at three sizes (`locate_search/`); approved on
   2026-10-07 (D78).
+- `mockups/build_ui_fixes_move_turn.py` writes the boards "UI fixes · Move and turn the roof and its obstacles": Find's map
+  with the demo roof, caught in the browser (`move_turn/`), with what is proposed drawn over it and numbered callouts
+  explained beside each frame: the roof picked up and moved, turned, an obstacle moved and turned (a close-up), the cursor,
+  and the tips; approved on 2026-10-07 (D79), not built yet.
 - A preview is the board rendered at its `$preview` size (the tail of each `.dc.html`) by a scratch Playwright script outside the
   repo: Chromium from `e2e/node_modules/@playwright/test`, the fonts served from `apps/web/app/fonts` and `apps/web/node_modules/geist`
   in place of the Google link in the board's `helmet`, `support.js` stubbed, everything else off the machine refused.
-- `mockups/canvas.json` is the layout of the boards on the canvas: 76 boards on two pages since 2026-10-06 ("Approved design", the
+- `mockups/canvas.json` is the layout of the boards on the canvas: 79 boards on two pages since 2026-10-06 ("Approved design", the
   first, holds every board without a `page`; "UI fixes" the boards of session 18 on); the 53 of the first page in sync with the canvas at claude.ai since
   2026-10-04 (session 15 published the 26 boards of Phases 6 to 11 and the five boards changed since 2026-09-30; the report's
   pages of `mockups/handover_pages/` travel with the Handover boards). A session on Bedrock has no Artifact tool: it adds its

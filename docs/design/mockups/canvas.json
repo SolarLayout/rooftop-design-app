@@ -534,6 +534,30 @@
       "title": "UI fixes · A choice of stringing that no longer fits · phone 390",
       "page": "ui-fixes"
     },
+    "MoveTurn.dc.html": {
+      "x": 0,
+      "y": 26500,
+      "w": 1552,
+      "h": 3520,
+      "title": "UI fixes · Move and turn the roof and its obstacles · desktop 1440",
+      "page": "ui-fixes"
+    },
+    "MoveTurnTablet.dc.html": {
+      "x": 1632,
+      "y": 26500,
+      "w": 834,
+      "h": 3900,
+      "title": "UI fixes · Move and turn the roof and its obstacles · tablet 834",
+      "page": "ui-fixes"
+    },
+    "MoveTurnPhone.dc.html": {
+      "x": 2546,
+      "y": 26500,
+      "w": 390,
+      "h": 2700,
+      "title": "UI fixes · Move and turn the roof and its obstacles · phone 390",
+      "page": "ui-fixes"
+    },
     "LocateSearch.dc.html": {
       "x": 0,
       "y": 24000,
@@ -768,7 +792,10 @@
     "ChoiceGonePhone.dc.html",
     "LocateSearch.dc.html",
     "LocateSearchTablet.dc.html",
-    "LocateSearchPhone.dc.html"
+    "LocateSearchPhone.dc.html",
+    "MoveTurn.dc.html",
+    "MoveTurnTablet.dc.html",
+    "MoveTurnPhone.dc.html"
   ],
   "pages": [
     {
