@@ -37,8 +37,9 @@ is checked by hand in the browser, and its screenshots go into the pull request.
 6. **The description:** "How it was checked" says what was run, pressed and read, and what was not; "Screenshots" holds the
    table, each row named by size and state. **Every pull request that changes what is seen** (a screen, a state, a design,
    the way something is done) has its screenshots in its description, at each size it reaches; none is merged without.
-7. **Look at the description on GitHub** after it is opened (`gh pr view <n> --web`, or the page): the pictures show. A
-   picture that does not show is fixed before anything else.
+7. **Tell the owner** the pull request's link and that its screenshots are in it. The page is not opened to check them
+   (the owner, session 20: "no need to physically open the PR to check the screenshots. i will flag if i don't see any");
+   a picture he flags as not showing is fixed before anything else.
 
 ```js
 // .playwright-mcp/<change>.js, run with browser_run_code_unsafe { filename }

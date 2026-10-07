@@ -3,19 +3,19 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-07, session 19. **D79 built** (#117 to #122). **Phase 14, in-app help, done** (#123 to #137; D80,
-D81): a ? beside every section heading, a help sheet at the edge, how-tos with steps and pictures for every tool of Find.
-**Phase 15, clips in the help, built** (#138 to #141; D82 to D84): seven short clips recorded from the app by `bun help:clips`,
-played in a step's picture frame, opened large on touch; the guides `docs/help-content.md` ("Pictures", "Clips") and
-`docs/screenshots.md`, the READMEs beside the runs. **Left of Phase 15:** the owner plays the clips in Safari on an iPhone or
-iPad. **Deployed:** Staging and Production run `f13375c` (2026-10-07). **Next:** UX, CX and UI work on Find, in a new session.
+**Last updated:** 2026-10-07, session 20. **Find's first step built** (D85; #143 to #145): before a place is found, Find's
+panel says what to do (Start here: search, my location, by hand; what the search understands, as examples a press puts into
+the search; the three steps), a ? opens the how-to "Find the roof"; without a map a place searched opens the entry by hand.
+Session 19 before it: D79 built, Phases 14 and 15 (in-app help, clips) done. **Left of Phase 15:** the owner plays the clips
+in Safari on an iPhone or iPad. **Deployed:** Staging and Production run `f13375c` (2026-10-07); #143 to #145 are not
+deployed yet. **Next:** the owner says (UX, CX and UI on Find goes on, issue by issue).
 
 ## Where we are
 
 | Phase | Status | Notes |
 |---|---|---|
 | 0 Design | Direction approved. 79 boards on the canvas: the approved design, and the page "UI fixes" of session 18 on (D68 to D79) | More screens to draw, listed in `phase-00-design.md`; the canvas and the repo in sync (`docs/design/README.md`, `mockups/canvas.json`) |
-| UI polish | Session 18: #107 to #116 merged; session 19: D79 built (#117, #118, #120 merged; #121 open) | Driven by the owner, issue by issue; the record: `plan/sessions/018/record.md` |
+| UI polish | Session 18: #107 to #116; session 19: D79 built (#117 to #122); session 20: Find's first step (D85, #143 to #145) | Driven by the owner, issue by issue; the records: `plan/sessions/018/`, `019/`, `020/` |
 | 1 Foundation | Done, merged (PR #1) | |
 | 2 Engine and API | Done (PR #7, PRs #11 to #23) | What exists, what was decided, what was found: `phase-02-engine-api.md`, "As built" |
 | 3 Design system and shell | Done (PRs #24 to #33) | What exists, what was decided, what was found: `phase-03-design-system-shell.md`, "As built". How its second half was built: `phase-03-rest-plan.md` |
@@ -35,11 +35,12 @@ iPad. **Deployed:** Staging and Production run `f13375c` (2026-10-07). **Next:**
 
 ## In flight
 
-Nothing open. The owner's standing instructions (sessions 18 and 19): run solo, open the pull requests and merge them on a
-green check, one after the other; no stacked pull requests (#119 once merged into a branch already merged); no browser test
-suites run and no new UI tests; each change checked by hand in the browser with Playwright at three sizes, its screenshots in
-the pull request (the orphan branch `pr-shots`); every board for approval in three sizes on the canvas. The prototype of the
-help is the local branch `design/in-app-help`, never to be merged. Left of Phase 12: #99 and #100. Watch items: ECR's 8 high
+Nothing open. The owner's standing instructions (sessions 18 to 20): run solo once a design is approved, open the pull
+requests and merge them on a green check, one after the other; no stacked pull requests; no browser test suites run and no
+new UI tests; each change checked by hand in the browser with Playwright at three sizes, its screenshots in the pull request
+(the orphan branch `pr-shots`), and the owner told the link (the page is not opened to check them, session 20); every board
+for approval in three sizes on the canvas. Prototypes of boards are local branches never merged (`design/in-app-help`,
+`design/find-tools-help`, `design/help-clips`, `design/find-first-step`). Left of Phase 12: #99 and #100. Watch items: ECR's 8 high
 CVEs in Debian's base; no lifecycle rule on ECR; the Esri keys expire about 2027-10; GitHub delays events now and then.
 
 ## What the web app has today
@@ -110,9 +111,8 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 ## Next, in order
 
-1. The owner's next work, in a new session: Find's first step, a panel that tells the user what to do (resume prompt
-   `plan/resume/018-find-first-step.md`; design first, then build).
-   Before it, or alongside: the owner plays the help's clips in Safari on an iPhone or iPad (Phase 15's last check).
+1. What the owner names next on Find (UX, CX and UI). Alongside: the owner plays the help's clips in Safari on an iPhone or
+   iPad (Phase 15's last check); a deploy of #143 to #145 when he wants them on Staging and Production.
 2. Issue #114: the Strings legend with many MPPT (design first).
 3. #99 and #100 when the owner needs them (advised: the budget alarm soon, the rate limit before the site is promoted).
 4. When browser tests come back: update the suites that use the old words (Replace and its dialogs, the top bar's words,
@@ -147,7 +147,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 | Item | Where it belongs |
 |---|---|
 | On Find, an obstacle turned back to exactly nothing and let go is taken for a press inside the roof, which picks the roof | Issue #142 |
-| The pictures `kit-part-2.png` and Find's screens are to be renewed when the browser suites run again (the help's disc, how-to steps, the ? beside Find's title, Show me how) | When the owner runs the suites |
+| The pictures `kit-part-2.png` and Find's screens are to be renewed when the browser suites run again (the help's disc, how-to steps, the ? beside Find's title, Show me how; Find's first step, D85) | When the owner runs the suites |
 | Twelve findings of the help's writing (the shade-free line with a pitch entered, the PAN source of the coefficients, "fits" beside an exclamation mark, trees lost on Edit, …) | `plan/phase-14-in-app-help.md`, "As built"; for the owner to order |
 | On phone the help sheet's grip has a press area over its ×; both close the sheet | When the owner asks |
 | On Find's map at roof zoom the demo's obstacles are 8 to 17 px across, smaller than their handles' targets: they are picked and moved after zooming in; an obstacle's label can cover a roof corner (corner 1 of the demo) | When the owner asks |

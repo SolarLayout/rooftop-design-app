@@ -184,7 +184,7 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
 - `mockups/build_ui_fixes_find_first_step.py` writes the boards "UI fixes · Find's first step, a panel that says what to do": Find
   before a place is found, today and as proposed (the ways to start, what the search understands, the three steps, the ?), an
   example pressed, and without a map, caught in the browser at three sizes (`find_first_step/`) with a prototype on the local
-  branch `design/find-first-step`, never merged; for approval (session 20).
+  branch `design/find-first-step`, never merged; approved on 2026-10-07 (D85), built (#143 to #145).
 - `mockups/build_in_app_help.py` writes the boards "In-App Help · The ? and the help sheet" (desktop, tablet, phone; the
   canvas page "In-App Help"): the ? disc beside the section headings in its states, the tooltip, the help sheet by size
   (from the right edge, the whole height, dimmed, on desktop and tablet; from the bottom on phone), a topic followed and

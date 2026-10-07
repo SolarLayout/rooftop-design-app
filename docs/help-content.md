@@ -152,6 +152,8 @@ are taken again and the change is seen in the pull request.
   no imagery to license, nothing behind the roof); twice the screen's pixels; JPEG at quality 82, about 60 kB each; nothing
   leaves the machine. The callouts are never drawn into a picture: the topic places them over it.
 - **Before the commit:** look at every picture; commit them with the topic that shows them; put them in the pull request.
+  A picture taken again still shows old in the help sheet on the test stack while Next's image cache holds it: delete
+  `apps/web/.next-test/dev/cache/images` (the test stack's alone) and reload.
 - **A new how-to** that needs a state the acts cannot reach (an obstacle drawn, a tool chosen): add the act to `Act` in
   `tools/help/pictures.ts` with its test, and to `act()` in `e2e/help-pictures/help-pictures.ts`.
 

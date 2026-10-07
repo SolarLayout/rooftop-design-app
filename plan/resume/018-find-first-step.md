@@ -1,5 +1,5 @@
 # 018: Find's first step: a panel that tells the user what to do
-Written: 2026-10-07, by session 19. Status: open.
+Written: 2026-10-07, by session 19. Status: used by session 20, 2026-10-07.
 
 ## Paste this
 
