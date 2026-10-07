@@ -1,11 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { Children, cloneElement, isValidElement, useState, useSyncExternalStore, type ReactElement, type ReactNode } from "react";
+import { Children, cloneElement, isValidElement, useState, type ReactElement, type ReactNode } from "react";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
-import { measures } from "@/components/ui/measures";
+import { PictureClip } from "./PictureClip";
 import { PictureLarge } from "./PictureLarge";
+import { FRAME, MARK, MarksOver, MarkWords, useMatches, type MarkProps } from "./picture-parts";
 
 // A how-to in a help topic (D81; components.md, "How-to steps and pictures"): numbered steps, each with a picture of the
 // app and callouts over it; the words of the hand in use; a key in the chip of the tips. Written in a topic so:
@@ -18,12 +19,6 @@ import { PictureLarge } from "./PictureLarge";
 //   </Step>
 //   </Steps>
 // The gate (tools/help/pictures-in-topics.ts) holds each picture to its file and its callouts to three, in order, inside it.
-
-/**
- * A numbered mark of the accent, in the light of the ? disc. Its line is the digit's own height (leading-none): the label's
- * line of 20 is taller than a mark of 16 or 20, and set the digit low in it.
- */
-const MARK = "grid shrink-0 place-items-center rounded-full bg-accent font-semibold text-accent-ink tabular-nums shadow-primary type-label-s leading-none";
 
 type StepProps = { title: string; children?: ReactNode; n?: number; last?: boolean };
 
@@ -53,64 +48,40 @@ export function Step({ title, children, n, last }: StepProps) {
   );
 }
 
-type MarkProps = { n: number; x: number; y: number; ring?: boolean; children: ReactNode };
-
 /** A callout of a picture: read by Picture, which draws it over the picture and its words under it. Outside one, its words. */
 export function Mark({ children }: MarkProps) {
   return <>{children}</>;
 }
 
-type PictureProps = { src: string; alt: string; width: number; height: number; children?: ReactNode };
+/** A picture, and its clip when its step has one (Phase 15): the clip's file and its length as the step shows it ("0:06"). */
+type PictureProps = { src: string; alt: string; width: number; height: number; children?: ReactNode; clip?: string; length?: string };
 
-/** The callouts over a picture, at their places: they scale with it. */
-function MarksOver({ marks }: { marks: readonly MarkProps[] }) {
-  return marks.map(({ n, x, y, ring }) => (
-    // The place is the topic's, in per cent of the picture: data, not a size of the design.
-    <span key={n} aria-hidden="true" className="absolute left-at top-down" style={measures({ at: x / 100, down: y / 100 })}>
-      {ring ? <span className="absolute size-10 -translate-1/2 rounded-full border-help-ring border-accent shadow-help-ring" /> : null}
-      <span className={classNames(MARK, "absolute size-5", ring ? "translate-x-2 translate-y-2" : "-translate-1/2")}>{n}</span>
-    </span>
-  ));
-}
-
-/** The callouts' words, by their numbers. */
-function MarkWords({ marks }: { marks: readonly MarkProps[] }) {
-  return (
-    <ol className="flex flex-col gap-1">
-      {marks.map(({ n, children: words }) => (
-        <li key={n} className="flex items-start gap-2 type-small text-text-2">
-          <span aria-hidden="true" className={classNames(MARK, "mt-0.5 size-4")}>
-            {n}
-          </span>
-          <span>{words}</span>
-        </li>
-      ))}
-    </ol>
-  );
-}
-
-const FRAME = "relative block w-full overflow-hidden rounded-row border border-line bg-surface-2";
-
-// Whether the pointer is coarse (touch): read on the client, false where there is no window, and followed if it changes.
 const COARSE = "(pointer: coarse)";
-function onPointerChange(changed: () => void) {
-  const query = window.matchMedia(COARSE);
-  query.addEventListener("change", changed);
-  return () => query.removeEventListener("change", changed);
-}
-const useTouch = () => useSyncExternalStore(onPointerChange, () => window.matchMedia(COARSE).matches, () => false);
 
 /**
  * A picture of the app, its callouts drawn over it (crisp at every size) and their words under it. On touch it is pressed
- * to open it large, where it pinches (PictureLarge); a magnifier in its corner says so.
+ * to open it large, where it pinches (PictureLarge); a magnifier in its corner says so. A picture with a clip plays it in
+ * its frame (PictureClip).
  */
-export function Picture({ src, alt, width, height, children }: PictureProps) {
-  const touch = useTouch();
+export function Picture({ src, alt, width, height, children, clip, length }: PictureProps) {
+  const touch = useMatches(COARSE);
   const [large, setLarge] = useState(false);
   const marks = Children.toArray(children)
     .filter((child): child is ReactElement<MarkProps> => isValidElement(child) && child.type === Mark)
     .map(({ props }) => props);
   const image = <Image src={src} alt={alt} width={width} height={height} sizes="(min-width: 834px) 380px, 100vw" className="block h-auto w-full" />;
+  if (clip) {
+    return (
+      <figure className="flex flex-col gap-2">
+        <PictureClip clip={clip} length={length ?? ""} poster={src} alt={alt} width={width} height={height} marks={marks} />
+        {marks.length > 0 ? (
+          <figcaption>
+            <MarkWords marks={marks} />
+          </figcaption>
+        ) : null}
+      </figure>
+    );
+  }
   return (
     <figure className="flex flex-col gap-2">
       {touch ? (

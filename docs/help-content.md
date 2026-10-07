@@ -167,6 +167,9 @@ does, how to make one and how to add one.
 - **The rules it keeps:** made on the test stack on the plain ground, the pointer drawn as a dot (white, the accent while it
   presses); ends as it began, as it loops; 500 kB at most, 6 MB for all (D82); every step keeps its picture.
 - **Before the commit:** play it; its first and last frames match; the pointer shows at each press; the labels are sharp.
+- **Put it in the topic** on its step's picture, with its length as `bun help:clips` printed it:
+  `<Picture clip="/help/find/move-the-roof/4.mp4" length="0:07" src="/help/find/move-the-roof/4.jpg" …>`. The gate
+  holds the clip to its file (there, an MP4, of that length) and the budget (500 kB a clip, 6 MB for all, D82).
 
 ## Keys in the sheet
 
@@ -198,4 +201,7 @@ or an open dialog alone; otherwise Escape in the sheet, or an undo, reaches the 
 | `… is W × H, not … as written` | Write the file's own `width` and `height` |
 | `… has no alt` | Say what the picture shows |
 | `… has N callouts; three at most`, `… numbered …`, `… is outside it`, `… has no words` | Fix the `Mark`s: 1 to 3 in order, `x` and `y` from 0 to 100, words in each |
+| `… is not in apps/web/public; record it with bun help:clips` | Record the clip, or fix `clip` |
+| `… runs 0:06, not … as written`, `… has no length` | Write the clip's own length |
+| `… over 500 kB a clip`, `the clips are … in all` | Record it shorter or calmer; fewer clips (D82) |
 | `… draw it with SectionHeading and a topic` | Use `SectionHeading`, or name the heading in `WITHOUT_A_DISC` with why. |

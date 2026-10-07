@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { brokenLinks, clashingAliases, driftedOptions, typedNumbers } from "./checks";
 import { MANIFEST_PATH, manifestOf, readTopics } from "./generate";
 import { OPTIONS_OF } from "./options";
-import { badPictures } from "./pictures-in-topics";
+import { badClips, badPictures } from "./pictures-in-topics";
 
 // THE GATE of the in-app help (D80): the topics of apps/web/content/help as they are. A topic that leads nowhere, an
 // option the code no longer offers, a number typed that will drift, or a manifest not written again fails here.
@@ -31,6 +31,10 @@ describe("the topics of the help", () => {
 
   test("every picture is there, of the size written, with its words, its callouts three at most and in order", () => {
     expect(badPictures(topics, join(import.meta.dir, "../../apps/web/public"))).toEqual([]);
+  });
+
+  test("every clip is there, of the length written, within its budget and all of them within theirs (D82)", () => {
+    expect(badClips(topics, join(import.meta.dir, "../../apps/web/public"))).toEqual([]);
   });
 
   test("no number is typed with its unit", () => {

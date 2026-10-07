@@ -6,7 +6,7 @@ export function HowToSteps() {
   return (
     <Section title="How-to steps and pictures">
       <Row label="Numbered steps, a picture of the app with its callouts, the words of the hand in use; the width of the help sheet">
-        <Example name="how-to-steps" caption="Two steps; a ring round what to act on, a callout beside it">
+        <Example name="how-to-steps" caption="Two steps; a ring round what to act on, a callout beside it; the second plays a clip">
           <div className="w-95">
             <Steps>
               <Step title="It is picked">
@@ -22,7 +22,7 @@ export function HowToSteps() {
                   Drag inside the roof. The arrow keys nudge it, further with <Key>Shift</Key>.
                 </Pointer>
                 <Touch>Drag with one finger inside the roof.</Touch>
-                <Picture src="/help/find/move-the-roof/3.jpg" alt="The roof dragged to the right and down, a dashed outline where it was" width={1038} height={544}>
+                <Picture clip="/help/find/move-the-roof/3.mp4" length="0:06" src="/help/find/move-the-roof/3.jpg" alt="The roof dragged to the right and down, a dashed outline where it was" width={1038} height={544}>
                   <Mark n={1} x={33.7} y={52.8}>
                     How far it has moved
                   </Mark>
