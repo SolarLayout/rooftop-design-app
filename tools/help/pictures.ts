@@ -7,44 +7,117 @@ export type Box = { left: number; top: number; right: number; bottom: number };
 /** A part of the screen kept in a picture, as Playwright's screenshot takes it. */
 export type Clip = { x: number; y: number; width: number; height: number };
 export type Margin = { left: number; top: number; right: number; bottom: number };
+export type Size = { width: number; height: number };
 
 /** Where on the roof: fractions of its box, across from its left and down from its top. */
 export type Spot = { across: number; down: number };
+/** Where on the map: metres east and north of its middle, as the demo's place is when it is searched. */
+export type Metres = { east: number; north: number };
 
 /**
- * What the hand does before a picture: a click; a drag by so many pixels; a turn by the round handle, clockwise on the
- * screen. A drag or a turn that is held is caught before the button is let go, then taken back, so that the next picture
- * begins from the roof as it was.
+ * What the hand does before a picture:
+ * - `tool`: a tool of the toolbar chosen, by its name;
+ * - `corner`: a press on the map, a corner placed (or the first pressed again, to close);
+ * - `click`: a press inside the roof;
+ * - `drag`: from a spot of the roof by so many pixels; `draw`: from one place of the map to another (a rectangle);
+ * - `turn`: the handle of that name dragged round the roof's middle, clockwise on the screen;
+ * - `found`: Detect building pressed at a place until its footprint is proposed;
+ * - `press`: a button, by its name (Use this outline).
+ * A drag, a draw or a turn that is held is caught before the button is let go; a held drag or turn is then taken back, so
+ * the next picture begins from the roof as it was.
  */
 export type Act =
+  | { kind: "tool"; name: string }
+  | { kind: "corner"; at: Metres }
   | { kind: "click"; at: Spot }
   | { kind: "drag"; from: Spot; by: Point; held: boolean }
-  | { kind: "turn"; degrees: number; held: boolean };
+  | { kind: "draw"; from: Metres; to: Metres; held: boolean }
+  | { kind: "turn"; handle: string; degrees: number; held: boolean }
+  | { kind: "found"; at: Metres }
+  | { kind: "press"; name: string };
 
 /** A picture: its name in the folder (its step's number) and what the hand does after the picture before it. */
 export type Shot = { name: string; acts: readonly Act[] };
 
-/** A how-to's pictures: its folder under public/help, the window they are taken in, the margin kept round the roof. */
-export type HowTo = { dir: string; window: { width: number; height: number }; margin: Margin; shots: readonly Shot[] };
+/**
+ * A how-to's pictures: its folder under public/help, the window they are taken in, how it begins (the demo roof opened
+ * on Find by Edit, or the demo's place searched with nothing drawn), and what is kept: the roof with a margin round it,
+ * or a part of a size round the map's middle (or round a place in metres from it).
+ */
+export type HowTo = {
+  dir: string;
+  window: Size;
+  start: "edit" | "place";
+  /** Steps of the map's Zoom in after it begins, for a thing too small at the roof's scale (a building to detect). */
+  zoomIn?: number;
+  keep: { around: "roof"; margin: Margin } | { around: "middle"; size: Size; at?: Metres };
+  shots: readonly Shot[];
+};
 
 /** A clear spot inside the demo roof: away from its corners, its edges' labels and its obstacles. */
 const CLEAR = { across: 0.17, down: 0.22 };
 
 // Wide enough that the demo roof stands clear of Find's panel; the margin keeps the handle above the roof and the
 // labels at its right.
-const ROOF_WINDOW = { width: 1800, height: 900 };
+const WINDOW = { width: 1800, height: 900 };
 const ROOF_MARGIN = { left: 60, top: 72, right: 140, bottom: 56 };
+/** Round the demo's place: a roof of 90 by 40 m with its handle and labels, and the building west of it. */
+const MIDDLE = { width: 520, height: 300 };
+
+/** The demo's roof, 90 by 40 m about the place, its corners from the south-west. */
+const SW = { east: -45, north: -20 };
+const SE = { east: 45, north: -20 };
+const NE = { east: 45, north: 20 };
+const NW = { east: -45, north: 20 };
+/** A large building of the footprints' fixture south-west of the demo's place, large enough to show its edges' labels. */
+const A_BUILDING = { east: -10, north: -26.5 };
 
 export const HOW_TOS: readonly HowTo[] = [
   {
     dir: "find/move-the-roof",
-    window: ROOF_WINDOW,
-    margin: ROOF_MARGIN,
+    window: WINDOW,
+    start: "edit",
+    keep: { around: "roof", margin: ROOF_MARGIN },
     shots: [
       { name: "1", acts: [] },
       { name: "2", acts: [{ kind: "click", at: CLEAR }] },
       { name: "3", acts: [{ kind: "drag", from: CLEAR, by: { x: 30, y: 12 }, held: true }] },
-      { name: "4", acts: [{ kind: "turn", degrees: 16, held: true }] },
+      { name: "4", acts: [{ kind: "turn", handle: "Turn the roof", degrees: 16, held: true }] },
+    ],
+  },
+  {
+    dir: "find/corners",
+    window: WINDOW,
+    start: "place",
+    keep: { around: "middle", size: MIDDLE },
+    shots: [
+      { name: "1", acts: [{ kind: "corner", at: SW }, { kind: "corner", at: SE }, { kind: "corner", at: NE }] },
+      { name: "2", acts: [{ kind: "corner", at: NW }] },
+      { name: "3", acts: [{ kind: "corner", at: SW }] },
+    ],
+  },
+  {
+    dir: "find/rectangle",
+    window: WINDOW,
+    start: "place",
+    keep: { around: "middle", size: MIDDLE },
+    shots: [
+      { name: "1", acts: [{ kind: "tool", name: "Rectangle" }, { kind: "draw", from: NW, to: SE, held: true }] },
+      { name: "2", acts: [{ kind: "turn", handle: "Turn the rectangle", degrees: 12, held: false }] },
+    ],
+  },
+  {
+    dir: "find/detect",
+    // Taller: the building and its callout stand above the toolbar.
+    window: { width: 1800, height: 1100 },
+    start: "place",
+    zoomIn: 1,
+    // Round the building and the callout that opens below it and to its right.
+    keep: { around: "middle", size: { width: 560, height: 320 }, at: { east: 10.6, north: -32.5 } },
+    shots: [
+      { name: "1", acts: [{ kind: "tool", name: "Detect building" }] },
+      { name: "2", acts: [{ kind: "found", at: A_BUILDING }] },
+      { name: "3", acts: [{ kind: "press", name: "Use this outline" }] },
     ],
   },
 ];
@@ -59,10 +132,20 @@ export function pointOf(box: Box, spot: Spot): Point {
   return { x: box.left + (box.right - box.left) * spot.across, y: box.top + (box.bottom - box.top) * spot.down };
 }
 
+/** A place in metres on the screen: east is right, north is up, at so many pixels a metre. */
+export function screenOf(middle: Point, pixelsPerMetre: number, at: Metres): Point {
+  return { x: middle.x + at.east * pixelsPerMetre, y: middle.y - at.north * pixelsPerMetre };
+}
+
 export function clipAround(box: Box, margin: Margin): Clip {
   const x = Math.round(box.left - margin.left);
   const y = Math.round(box.top - margin.top);
   return { x, y, width: Math.round(box.right + margin.right) - x, height: Math.round(box.bottom + margin.bottom) - y };
+}
+
+/** A part of the screen of a size, round a point. */
+export function clipAt(middle: Point, size: Size): Clip {
+  return { x: Math.round(middle.x - size.width / 2), y: Math.round(middle.y - size.height / 2), width: size.width, height: size.height };
 }
 
 /** The points a turn passes through: round *centre* from *from*, by *degrees* clockwise on the screen, in *steps*. */
