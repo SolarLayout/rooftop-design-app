@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { arcFrom, boxOf, clipAround, HOW_TOS, pointOf } from "./pictures";
+import { arcFrom, boxOf, clipAround, clipAt, HOW_TOS, pointOf, screenOf } from "./pictures";
 
 // The pictures of the how-tos (D81): where the hand goes on the roof, and what of the screen is kept.
 
@@ -17,6 +17,16 @@ describe("the roof on the screen", () => {
   });
 });
 
+describe("a place in metres from the map's middle", () => {
+  test("is pixels east and up from it, at the map's scale", () => {
+    expect(screenOf({ x: 900, y: 450 }, 4, { east: 10, north: 5 })).toEqual({ x: 940, y: 430 });
+  });
+
+  test("a picture of a size, kept round the middle", () => {
+    expect(clipAt({ x: 900, y: 450 }, { width: 520, height: 280 })).toEqual({ x: 640, y: 310, width: 520, height: 280 });
+  });
+});
+
 describe("a turn by the handle", () => {
   test("goes round the middle from where the handle is, by the angle, in even steps, ending there", () => {
     const points = arcFrom({ x: 0, y: 0 }, { x: 0, y: -100 }, 90, 3);
@@ -30,6 +40,7 @@ describe("a turn by the handle", () => {
 
 describe("the how-tos", () => {
   test("each has its folder under public/help and its pictures numbered from 1", () => {
+    expect(HOW_TOS.map(({ dir }) => dir)).toEqual(["find/move-the-roof", "find/corners", "find/rectangle", "find/detect"]);
     for (const { dir, shots } of HOW_TOS) {
       expect(dir).toMatch(/^[a-z]+\/[a-z-]+$/);
       expect(shots.map(({ name }) => name)).toEqual(shots.map((_, index) => String(index + 1)));

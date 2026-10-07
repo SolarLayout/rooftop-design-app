@@ -1,0 +1,42 @@
+---
+title: Outline by its corners
+summary: Press each corner of the roof in turn, then the first again to close it. Drag a corner to adjust it, or add one on an edge.
+kind: tool
+related:
+  - find.tool.rectangle
+  - find.tool.detect
+  - find.section.edges
+---
+
+<Steps>
+<Step title="Press each corner">
+Go round the roof's edge, one corner after another. While `Square the corners` is on, a corner close to a right angle snaps to it.
+<Picture src="/help/find/corners/1.jpg" alt="Three corners of a roof placed on the map, joined by two edges with their lengths" width={1040} height={600}>
+  <Mark n={1} x={19} y={73.3}>The first corner</Mark>
+  <Mark n={2} x={80.6} y={26}>The last one placed</Mark>
+</Picture>
+</Step>
+<Step title="Close it on the first corner">
+<Pointer>Click the first corner again, or press <Key>Enter</Key>. A roof needs three corners at least.</Pointer>
+<Touch>Press the first corner again. A roof needs three corners at least.</Touch>
+<Picture src="/help/find/corners/2.jpg" alt="Four corners placed; the outline is still open between the last and the first" width={1040} height={600}>
+  <Mark n={1} x={19} y={73.3} ring>The first corner: press it to close the outline</Mark>
+</Picture>
+</Step>
+<Step title="Adjust it">
+Drag a corner where the roof's edge is. Press the dot in the middle of an edge to add a corner there.
+<Picture src="/help/find/corners/3.jpg" alt="The closed outline, with its four corners, a dot in the middle of each edge and each edge's length" width={1040} height={600}>
+  <Mark n={1} x={80.6} y={26} ring>A corner, to drag</Mark>
+  <Mark n={2} x={50} y={26}>A middle dot: press it to add a corner</Mark>
+  <Mark n={3} x={50} y={79.3}>The edge's length</Mark>
+</Picture>
+</Step>
+</Steps>
+
+## A step too far
+
+<Pointer>While you draw, <Key>Esc</Key> takes back the last corner. Select a corner and <Key>Delete</Key> removes it, keeping three at least; the arrow keys nudge it a tenth of a metre, a metre with <Key>Shift</Key>.</Pointer>
+<Touch>Undo, in the toolbar, takes back the last step.</Touch>
+To set an edge to a length you measured, type it in <HelpLink k="find.section.edges">Edges</HelpLink>.
+
+<ShowTheTips />

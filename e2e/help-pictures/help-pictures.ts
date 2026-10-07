@@ -1,75 +1,159 @@
 import path from "node:path";
 import type { Page } from "@playwright/test";
-import { arcFrom, boxOf, clipAround, HOW_TOS, pointOf, type Act, type Box } from "../../tools/help/pictures";
+import { arcFrom, boxOf, clipAround, clipAt, HOW_TOS, pointOf, screenOf, type Act, type Box, type HowTo, type Point } from "../../tools/help/pictures";
 import { expect, IMAGERY, test } from "../fixtures";
-import { A_MAP, roofMap } from "../find";
+import { A_MAP, atTheRoof, roofMap, withTheFootprints } from "../find";
 
-// Takes the pictures of the how-tos (D81) from the app as it is: the demo roof opened on Find by Edit in the Roof lens, the
-// hand's acts of each picture done on the map, the roof cut out with its margin. The imagery is a plain ground (ground.jpg):
-// no imagery to license, nothing behind the roof. Nothing leaves this machine (the fixtures' guard).
+// Takes the pictures of the how-tos (D81) from the app as it is: the demo roof opened on Find by Edit in the Roof lens, or
+// the demo's place searched with nothing drawn; the hand's acts of each picture done on the map; the roof cut out with its
+// margin, or a part round the map's middle. The imagery is a plain ground (ground.jpg): no imagery to license, nothing
+// behind the roof. The footprints of Detect building come from the tests' fixture. Nothing leaves this machine (the
+// fixtures' guard).
 
 const GROUND = path.resolve(__dirname, "ground.jpg");
 const PUBLIC_HELP = path.resolve(__dirname, "../../apps/web/public/help");
 const STEPS = 12;
 
+/** Where the map is: its middle, and its scale in pixels a metre, read off its scale bar. */
+type OnTheMap = { middle: Point; pixelsPerMetre: number };
+
+async function onTheMap(page: Page): Promise<OnTheMap> {
+  const box = await roofMap(page).boundingBox();
+  if (!box) throw new Error("The map is not on the screen.");
+  const bar = page.getByTestId("scale-bar");
+  const metres = Number((await bar.locator("code").textContent())?.replace(/\s*m$/, ""));
+  const width = (await bar.locator("div > div").boundingBox())?.width ?? 0;
+  if (!(metres > 0 && width > 0)) throw new Error("The scale bar could not be read: the map's scale is not known.");
+  return { middle: { x: box.x + box.width / 2, y: box.y + box.height / 2 }, pixelsPerMetre: width / metres };
+}
+
 async function roofBox(page: Page): Promise<Box> {
   const corners = await page.locator("[aria-label^='Corner ']").evaluateAll((all) =>
-    all.filter((corner) => /^Corner \d+$/.test(corner.getAttribute("aria-label") ?? "")).map((corner) => {
-      const { x, y, width, height } = corner.getBoundingClientRect();
-      return { x: x + width / 2, y: y + height / 2 };
-    }),
+    all
+      .filter((corner) => /^Corner \d+(, selected)?$/.test(corner.getAttribute("aria-label") ?? ""))
+      .map((corner) => {
+        const { x, y, width, height } = corner.getBoundingClientRect();
+        return { x: x + width / 2, y: y + height / 2 };
+      }),
   );
   expect(corners.length, "the roof's corners on the map").toBeGreaterThanOrEqual(3);
   return boxOf(corners);
 }
 
-async function centreOf(page: Page, name: string) {
+async function centreOf(page: Page, name: string): Promise<Point> {
   const box = await page.locator(`[aria-label="${name}"]`).boundingBox();
   if (!box) throw new Error(`"${name}" is not on the map: the act before this one did not show it.`);
   return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
 }
 
-/** Does the act; returns how to take it back once the picture is taken (a held drag or turn), or null. */
-async function act(page: Page, box: Box, done: Act): Promise<(() => Promise<void>) | null> {
-  if (done.kind === "click") {
-    const at = pointOf(box, done.at);
-    await page.mouse.click(at.x, at.y);
-    return null;
-  }
-  const from = done.kind === "drag" ? pointOf(box, done.from) : await centreOf(page, "Turn the roof");
-  const middle = pointOf(box, { across: 0.5, down: 0.5 });
-  const path = done.kind === "drag" ? [{ x: from.x + done.by.x, y: from.y + done.by.y }] : arcFrom(middle, from, done.degrees, STEPS);
+/** A press held from one point along a path; let go, or kept to be taken back after the picture. */
+async function held(page: Page, from: Point, path: readonly Point[], keep: boolean, steps: number): Promise<(() => Promise<void>) | null> {
   await page.mouse.move(from.x, from.y);
   await page.mouse.down();
-  for (const point of path) await page.mouse.move(point.x, point.y, { steps: done.kind === "drag" ? STEPS : 1 });
-  const back = async () => {
+  for (const point of path) await page.mouse.move(point.x, point.y, { steps });
+  if (!keep) {
+    await page.mouse.up();
+    return null;
+  }
+  return async () => {
     for (const point of [...path].reverse().slice(1)) await page.mouse.move(point.x, point.y);
     await page.mouse.move(from.x, from.y, { steps: STEPS });
     await page.mouse.up();
   };
-  if (done.held) return back;
-  await page.mouse.up();
-  return null;
 }
 
-for (const howTo of HOW_TOS) {
-  test(howTo.dir, async ({ page }) => {
-    await page.route(IMAGERY, (route) => route.fulfill({ path: GROUND, contentType: "image/jpeg" }));
-    await page.setViewportSize(howTo.window);
+/** Does the act; returns how to take it back once the picture is taken (a held drag or turn), or null. */
+async function act(page: Page, map: OnTheMap, done: Act): Promise<(() => Promise<void>) | null> {
+  const at = (metres: { east: number; north: number }) => screenOf(map.middle, map.pixelsPerMetre, metres);
+  switch (done.kind) {
+    case "tool":
+      await page.getByRole("button", { name: done.name, exact: true }).click();
+      return null;
+    case "corner": {
+      const point = at(done.at);
+      await page.mouse.click(point.x, point.y);
+      return null;
+    }
+    case "click": {
+      const point = pointOf(await roofBox(page), done.at);
+      await page.mouse.click(point.x, point.y);
+      return null;
+    }
+    case "drag": {
+      const from = pointOf(await roofBox(page), done.from);
+      return held(page, from, [{ x: from.x + done.by.x, y: from.y + done.by.y }], done.held, STEPS);
+    }
+    case "draw": {
+      const from = at(done.from);
+      const to = at(done.to);
+      await page.mouse.move(from.x, from.y);
+      await page.mouse.down();
+      await page.mouse.move(to.x, to.y, { steps: STEPS });
+      // A drawn box is kept: held, it is let go after the picture, and the next picture shows it drawn.
+      if (done.held) return () => page.mouse.up();
+      await page.mouse.up();
+      return null;
+    }
+    case "turn": {
+      const box = await roofBox(page);
+      const from = await centreOf(page, done.handle);
+      return held(page, from, arcFrom(pointOf(box, { across: 0.5, down: 0.5 }), from, done.degrees, STEPS), done.held, 1);
+    }
+    case "found": {
+      // The footprints are drawn once their tile is there: a press before that finds nothing and is pressed again.
+      const point = at(done.at);
+      const callout = page.getByTestId("detected");
+      await expect
+        .poll(
+          async () => {
+            await page.mouse.click(point.x, point.y);
+            return (await callout.textContent().catch(() => "")) ?? "";
+          },
+          { timeout: A_MAP, intervals: [500, 1000] },
+        )
+        .toContain("Footprint found");
+      return null;
+    }
+    case "press":
+      await page.getByRole("button", { name: done.name, exact: true }).click();
+      return null;
+  }
+}
+
+async function begun(page: Page, howTo: HowTo): Promise<void> {
+  if (howTo.start === "edit") {
     await page.goto("/studio/roof");
     await page.getByRole("link", { name: /Edit/ }).filter({ visible: true }).first().click();
     await expect(roofMap(page)).toHaveAttribute("aria-busy", "false", { timeout: A_MAP });
     await expect(page.locator('[aria-label="Corner 1"]')).toBeVisible();
+  } else {
+    expect((await page.goto("/find"))?.status()).toBe(200);
+    await expect(roofMap(page)).toHaveAttribute("data-state", "ready", { timeout: A_MAP });
+    await atTheRoof(page);
+  }
+}
+
+for (const howTo of HOW_TOS) {
+  test(howTo.dir, async ({ page }) => {
+    await withTheFootprints(page);
+    await page.route(IMAGERY, (route) => route.fulfill({ path: GROUND, contentType: "image/jpeg" }));
+    await page.setViewportSize(howTo.window);
+    await begun(page, howTo);
+    for (let step = 0; step < (howTo.zoomIn ?? 0); step++) {
+      await page.getByRole("button", { name: "Zoom in" }).click();
+      await expect(roofMap(page)).toHaveAttribute("aria-busy", "false", { timeout: A_MAP });
+    }
     // The tip of the roof comes up once the roof is shown, on a device that has not seen it: put away, as it covers the map.
     const gotIt = page.getByRole("button", { name: "Got it" });
     if (await gotIt.isVisible()) await gotIt.click();
     await page.waitForTimeout(800);
-    const box = await roofBox(page);
-    const clip = clipAround(box, howTo.margin);
+    const map = await onTheMap(page);
+    const { keep } = howTo;
+    const clip = keep.around === "roof" ? clipAround(await roofBox(page), keep.margin) : clipAt(screenOf(map.middle, map.pixelsPerMetre, keep.at ?? { east: 0, north: 0 }), keep.size);
     for (const shot of howTo.shots) {
       const takeBack: (() => Promise<void>)[] = [];
       for (const done of shot.acts) {
-        const back = await act(page, box, done);
+        const back = await act(page, map, done);
         if (back) takeBack.push(back);
       }
       await page.waitForTimeout(600);

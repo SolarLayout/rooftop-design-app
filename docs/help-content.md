@@ -133,11 +133,15 @@ A tool, a gesture, anything done in steps is written as a how-to (D81; `componen
 A how-to's pictures (D81) are taken from the app by a script, never drawn, never edited after: when a screen changes, they
 are taken again and the change is seen in the pull request.
 
-- **What each picture shows** is written in `tools/help/pictures.ts`, in `HOW_TOS`: the how-to's folder (`find/move-the-roof`),
-  the window it is taken in, the margin kept round the roof, and per picture the acts of the hand after the picture before
-  it: a `click` at a spot of the roof, a `drag` by so many pixels, a `turn` by the round handle. A spot is a fraction of the
-  roof's box, across and down, so that it does not depend on the window. A drag or a turn that is `held` is caught before the
-  button is let go, then taken back, so the next picture begins from the roof as it was.
+- **What each picture shows** is written in `tools/help/pictures.ts`, in `HOW_TOS`: the how-to's folder (`find/corners`),
+  the window it is taken in, how it begins (`edit`: the demo roof opened by Edit; `place`: the demo's place searched with
+  nothing drawn), steps of `zoomIn` for something small, what is kept (the roof with a margin, or a part of a size round the
+  map's middle or round a place in metres from it), and per picture the acts of the hand after the picture before it:
+  `tool` (a tool chosen), `corner` (a press on the map), `click` (inside the roof), `drag` (from a spot of the roof),
+  `draw` (from one place of the map to another), `turn` (a handle, by its name, round the roof's middle), `found` (Detect
+  building pressed until a footprint is proposed), `press` (a button, by its name). A spot is a fraction of the roof's
+  box; a place is metres east and north of the map's middle, turned into pixels with the scale bar. A drag, a draw or a
+  turn that is `held` is caught before the button is let go.
 - **Take them:** `bun help:pictures` (every how-to) or `bun help:pictures -g <folder>` (one). It runs Playwright on the test
   stack (`e2e/help-pictures`, its README says what each file does) and writes `apps/web/public/help/<folder>/<n>.jpg`, the
   number being the step's.
