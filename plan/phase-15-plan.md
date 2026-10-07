@@ -24,6 +24,34 @@ Chrome, Firefox and Safari on this Mac, and in iOS Safari (the owner's phone, or
 (desktop) and a finger's dot (touch) are drawn into the page by the script while recording, as the clip's only additions.
 The result is a table in this file, "What the spike found", and a recommendation of format, encoder and budget.
 
+### What the spike found (session 19, 2026-10-07; the local branch `spike/help-clips`, never merged)
+"Move or turn the roof" as one clip: the pointer glides in, picks the roof, drags it and back, turns it by its handle; 8.8 s at
+30 frames a second, 1038 × 544 (the cut of the step's picture at twice the pixels).
+
+| Encode | Size | SSIM against the frames | Plays in |
+|---|---|---|---|
+| VP8 WebM, CRF 20 (Playwright's own ffmpeg, no new dependency) | 961 kB | 0.987 | Chrome, Playwright's Chromium, WebKit 18.4 |
+| H.264 MP4, CRF 18 | 664 kB | 0.996 | Chrome, WebKit 18.4; not Playwright's Chromium (no H.264 in it) |
+| H.264 MP4, CRF 23 | 338 kB | 0.993 | the same |
+| H.264 MP4, CRF 28 | 182 kB | 0.988 | the same |
+| VP9 WebM, CRF 30 | 323 kB | 0.985 | Chrome, Playwright's Chromium, WebKit 18.4 |
+| VP9 WebM, CRF 36 | 207 kB | 0.982 | the same |
+
+- **Capture:** frame by frame (the hand moved one frame's step, then a screenshot of the cut at twice the pixels) gives a
+  steady 30 frames a second and the same clip on every run; about 0.3 s a frame to make (80 s for this clip). Chrome's
+  screencast sends frames only when the page changes, at irregular times and at CSS pixels: not used.
+- **The pointer:** a dot drawn into the page by the script (white, the accent while pressed); headless shows none.
+- **Looks:** at full size the edges' labels are crisp in every encode, H.264 at CRF 28 included.
+- **Not yet checked:** iOS and iPadOS Safari. WebKit 18.4 on macOS plays all three; H.264 plays on every iOS, WebM's support
+  there is to be seen on a device. Firefox is not installed here.
+- **The encoder:** `@ffmpeg-installer/ffmpeg` 1.1.0 (ffmpeg 4.4 of 2021, unchanged since 2022; a binary per platform,
+  executable as packed, no install script for bun to trust; LGPL wrapper, ffmpeg's own licence for the binary), or
+  `ffmpeg-static` 5.3.0 (a newer ffmpeg; GPL; its binary is fetched by an install script bun must be told to trust). Dev
+  only either way, never shipped; or no encoder at all (VP8, three to five times larger).
+- **Recommendations:** one format, H.264 MP4 at about CRF 26 (some 250 kB for a 9 s clip); clips in the repository beside
+  the pictures under a gate (500 kB a clip, 6 MB in all, some twenty clips), served by Vercel's CDN with the app; object
+  storage only if they outgrow it. The player's checks on the test stack use the Chrome channel.
+
 ### 2. Decisions with the owner (one at a time, after the spike)
 - **D82, where clips live** (recommended from the spike's sizes): in the repository beside the pictures under a budget held
   by the gate, if the total stays small (proposed: 1 MB a clip, 15 MB in all); else in object storage with a manifest in the
