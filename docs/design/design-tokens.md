@@ -326,6 +326,7 @@ A line is 1 px wide. Those that are wider have a token.
 |---|---|---|
 | `--border-tab` | `2px` | The line under a tab |
 | `--border-dot` | `1.5px` | The line of the hollow dot of a design that is not kept |
+| `--border-help-ring` | `2px` | The ring round what to act on, on a how-to's picture (D81) |
 | `--border-handle` | `3px` | The accent line around the handle of a slider, on desktop |
 | `--border-handle-touch` | `4px` | The same on phone and tablet |
 | `--border-outline` | `2px` | The line of the outline on the map |
@@ -345,6 +346,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--shadow-pressed` | `inset 0 2px 4px rgba(0,0,0,.5)` | Pressed |
 | `--shadow-primary` | `inset 0 1px 0 rgba(255,255,255,.45), inset 0 -1px 0 rgba(0,0,0,.18), 0 1px 2px rgba(0,0,0,.5), 0 8px 22px rgba(255,176,32,.24)` | Primary button |
 | `--shadow-primary-pressed` | `inset 0 2px 4px rgba(0,0,0,.3), 0 1px 1px rgba(0,0,0,.5)` | Primary, pressed |
+| `--shadow-help-ring` | `0 0 0 3px rgba(14,18,24,.55), 0 0 14px rgba(255,176,32,.6)` | A how-to's picture: the ring round what to act on (D81), set apart from the picture by a dark rim and glowing in the accent |
 | `--shadow-help-held` | `inset 0 2px 4px rgba(0,0,0,.3), 0 0 0 2px #0E1218, 0 0 0 4px rgba(255,176,32,.45)` | The help's disc held in while its topic is shown (D80): pressed, ringed two away in the accent at 45 % |
 | `--shadow-primary-hover` | `inset 0 1px 0 rgba(255,255,255,.5), inset 0 -1px 0 rgba(0,0,0,.18), 0 2px 4px rgba(0,0,0,.5), 0 12px 30px rgba(255,176,32,.36)` | Primary, hover |
 | `--shadow-segment` | `inset 0 1px 0 rgba(255,255,255,.10), 0 1px 3px rgba(0,0,0,.55)` | Active segment |

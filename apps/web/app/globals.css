@@ -246,6 +246,7 @@
 
   --border-tab: 2px;
   --border-dot: 1.5px;
+  --border-help-ring: 2px;
   --border-handle: 3px;
   --border-handle-touch: 4px;
   --border-outline: 2px;
@@ -381,6 +382,7 @@
     0 8px 22px rgba(255,176,32,.24);
   --shadow-primary-pressed: inset 0 2px 4px rgba(0,0,0,.3), 0 1px 1px rgba(0,0,0,.5);
   --shadow-help-held: inset 0 2px 4px rgba(0,0,0,.3), 0 0 0 2px #0E1218, 0 0 0 4px rgba(255,176,32,.45);
+  --shadow-help-ring: 0 0 0 3px rgba(14,18,24,.55), 0 0 14px rgba(255,176,32,.6);
   --shadow-primary-hover:
     inset 0 1px 0 rgba(255,255,255,.5), inset 0 -1px 0 rgba(0,0,0,.18), 0 2px 4px rgba(0,0,0,.5),
     0 12px 30px rgba(255,176,32,.36);
@@ -556,6 +558,7 @@
   --shadow-primary: var(--shadow-primary);
   --shadow-primary-pressed: var(--shadow-primary-pressed);
   --shadow-help-held: var(--shadow-help-held);
+  --shadow-help-ring: var(--shadow-help-ring);
   --shadow-primary-hover: var(--shadow-primary-hover);
   --shadow-segment: var(--shadow-segment);
   --shadow-well: var(--shadow-well);
@@ -1010,6 +1013,9 @@
 @utility border-handle-touch {
   border-width: var(--border-handle-touch);
 }
+@utility border-help-ring {
+  border-width: var(--border-help-ring);
+}
 @utility border-dot {
   border-width: var(--border-dot);
 }
@@ -1037,6 +1043,10 @@
 }
 @utility left-at {
   left: calc(var(--at) * 100%);
+}
+/* A place down a box, a share of its height: a callout on a help picture (D81). */
+@utility top-down {
+  top: calc(var(--down) * 100%);
 }
 @utility w-span {
   width: calc(var(--span) * 100%);

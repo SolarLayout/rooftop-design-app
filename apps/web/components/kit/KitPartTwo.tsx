@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Dialogs } from "./Dialogs";
 import { FileDrops } from "./FileDrops";
 import { HelpDiscs } from "./HelpDiscs";
+import { HowToSteps } from "./HowToSteps";
 import { KitPage } from "./Pages";
 import { Selects } from "./Selects";
 import { Sheets } from "./Sheets";
@@ -31,6 +32,7 @@ export function KitPartTwo() {
           <TooltipsAndToasts onPress={setLastPressed} />
           <Tips onPress={setLastPressed} />
           <HelpDiscs />
+          <HowToSteps />
         </div>
       </div>
     </KitPage>

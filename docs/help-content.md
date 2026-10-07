@@ -103,6 +103,31 @@ bare `<h2 className={SECTION}>`:
 mounted by the shell and by Find. A heading that rightly has no disc is named in `WITHOUT_A_DISC` in
 `tools/help/coverage.ts`, with the reason.
 
+## A how-to
+
+A tool, a gesture, anything done in steps is written as a how-to (D81; `components.md`, "How-to steps and pictures"):
+
+```mdx
+<Steps>
+<Step title="Pick the roof up">
+<Pointer>Click inside the roof, away from a corner and from an obstacle.</Pointer>
+<Touch>Press inside the roof, away from a corner and from an obstacle.</Touch>
+<Picture src="/help/find/move-the-roof/1.jpg" alt="The closed roof on the map, its corners and the lengths of its edges shown" width={1038} height={544}>
+  <Mark n={1} x={22} y={38.1} ring>Inside the roof, on a clear spot</Mark>
+</Picture>
+</Step>
+</Steps>
+```
+
+- **Steps** are numbered in their order; a step's `title` says what to do, in a few words.
+- **Pointer** and **Touch** hold the words of a mouse and of touch; a step that is the same for both needs neither.
+  **Key** puts a key or a gesture in the chip of the tips: `<Key>Shift</Key>`.
+- **Picture:** `src` under `/help/`, taken by `bun help:pictures` (below); `alt` says what it shows, for a screen reader;
+  `width` and `height` are the file's own (the gate reads them from it).
+- **Mark:** at most three a picture, numbered 1, 2, 3 in order; `x` and `y` are where it points, in per cent of the picture
+  from its top left; `ring` circles what to act on (one a picture, as a rule); its words are read under the picture.
+  To place one, open the picture, read the pixel and divide by its width or height.
+
 ## Pictures
 
 A how-to's pictures (D81) are taken from the app by a script, never drawn, never edited after: when a screen changes, they
@@ -149,4 +174,8 @@ or an open dialog alone; otherwise Escape in the sheet, or an undo, reaches the 
 | `the section offers …; say what each means in values` | Add `values`. |
 | `"…" is a number typed with its unit` | Say it in words, or quote the on-screen words in a code span. |
 | the manifest test fails | Run `bun help:gen` and commit the manifest. |
+| `… is not in apps/web/public; take it with bun help:pictures` | Take the picture, or fix `src` |
+| `… is W × H, not … as written` | Write the file's own `width` and `height` |
+| `… has no alt` | Say what the picture shows |
+| `… has N callouts; three at most`, `… numbered …`, `… is outside it`, `… has no words` | Fix the `Mark`s: 1 to 3 in order, `x` and `y` from 0 to 100, words in each |
 | `… draw it with SectionHeading and a topic` | Use `SectionHeading`, or name the heading in `WITHOUT_A_DISC` with why. |

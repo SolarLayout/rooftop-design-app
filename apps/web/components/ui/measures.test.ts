@@ -7,6 +7,7 @@ const variables = (values: Parameters<typeof measures>[0]): Record<string, unkno
 describe("measures", () => {
   test("numbers of the data become variables that a utility reads", () => {
     expect(variables({ at: 0.286, span: 0.5 })).toEqual({ "--at": "0.286", "--span": "0.5" });
+    expect(variables({ at: 0.22, down: 0.381 })).toEqual({ "--at": "0.22", "--down": "0.381" });
   });
 
   test("a number is written without the noise of the arithmetic", () => {
