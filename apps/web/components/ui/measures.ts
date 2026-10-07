@@ -1,13 +1,13 @@
 import type { CSSProperties } from "react";
 
 /**
- * What a utility can read (app/globals.css). A share, from 0 to 1: `left-at` reads `at`, `w-span` and
- * `h-span` read `span`. A place on the screen, in pixels: `placed` reads `x` and `y`. A turn in degrees,
+ * What a utility can read (app/globals.css). A share, from 0 to 1: `left-at` reads `at`, `top-down` reads `down`,
+ * `w-span` and `h-span` read `span`. A place on the screen, in pixels: `placed` reads `x` and `y`. A turn in degrees,
  * clockwise: `turned` reads `turn`.
  */
-export type Measure = "at" | "span" | "x" | "y" | "turn";
+export type Measure = "at" | "down" | "span" | "x" | "y" | "turn";
 
-const UNIT: Record<Measure, string> = { at: "", span: "", x: "px", y: "px", turn: "deg" };
+const UNIT: Record<Measure, string> = { at: "", down: "", span: "", x: "px", y: "px", turn: "deg" };
 
 /**
  * Numbers of the data as a style: where the handle of a slider is, how wide the filled part, where a

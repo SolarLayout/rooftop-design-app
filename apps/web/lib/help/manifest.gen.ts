@@ -7,6 +7,7 @@ export const HELP_KEYS = [
   "find.section.edges",
   "find.section.place",
   "find.section.shape",
+  "find.tool.move-the-roof",
   "studio.section.day",
   "studio.section.edges-and-access",
   "studio.section.inverter",
@@ -69,6 +70,14 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     related: ["find.section.place","find.section.edges"],
     aliases: [],
     load: () => import("../../content/help/find/section/shape.mdx"),
+  },
+  "find.tool.move-the-roof": {
+    title: "Move or turn the roof",
+    summary: "Pick the closed roof up, then drag it into place or turn it by its round handle. Its obstacles go with it.",
+    kind: "tool",
+    related: ["find.section.edges","app.section.obstacles"],
+    aliases: [],
+    load: () => import("../../content/help/find/tool/move-the-roof.mdx"),
   },
   "studio.section.day": {
     title: "Day",

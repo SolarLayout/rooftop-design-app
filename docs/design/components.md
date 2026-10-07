@@ -493,6 +493,25 @@ In code: the topics in `apps/web/content/help` (one `.mdx` each, its key its pat
 `lib/help/manifest.gen.ts`, the gate is `tools/help/content.test.ts`; `components/shell/help`: `HelpProvider` (once per screen:
 the shell and Find), `HelpDisc`, `HelpSheet`, `HelpBody` and the components a body is drawn with (`help-kit.tsx`).
 
+## How-to steps and pictures (in a help topic, D81)
+
+A how-to in the help sheet: numbered steps, each with a picture of the app and callouts on it (the boards "In-App Help ·
+How-tos with pictures").
+
+- **Steps:** an ordered list. Each step: its number in a mark of the accent, 24 (`accent` on `accent-ink`, `type-label-s`
+  at 600, `shadow-primary`), a line of `line` 1 wide down from it to the next step; beside it, 12 apart, the step's title
+  (600, `text`) and, 8 under it, its words (`text-2`) and its picture. 24 between steps.
+- **Picture:** the app as it is (`docs/help-content.md`, "Pictures"), the width of the step's column, its height by its
+  own proportions; `radius-row`, a border of `line`, on `surface-2`. Over it, at most three callouts: a mark of the accent,
+  20, at the place, its number in it; where it marks what to act on, a ring of 40 round the place (2 of `accent`,
+  `shadow-help-ring`) with the mark at its lower right. Under the picture, 8 apart, the callouts' words, each after a mark
+  of 16 with its number (`type-small`, `text-2`). The picture has its words for a screen reader; the marks are not read,
+  their words are.
+- **Pointer and touch:** a step says what the hand in use does, the words of a mouse where the pointer is fine, of touch
+  where it is coarse; a key or a gesture in the chip of the tips (`radius-xs`, a border of `line-strong`,
+  `type-label-s` at 600).
+- Later (not built): a short clip in the same frame as a picture, its first frame with a play button and its length.
+
 ## Tip (a card of help over the map, D79)
 A small card that shows how to do a move the screen has just made possible (the boards "UI fixes · Move and turn the roof
 and its obstacles"). `surface-1`, border `line-strong`, radius `card-s` (14), `shadow-float`, padding 14 (12 under), rows 10

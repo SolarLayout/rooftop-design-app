@@ -3,10 +3,11 @@ import type { ReactNode } from "react";
 import { classNames } from "@/components/ui/class-names";
 import { HEADING_LIGHT } from "@/components/ui/section-look";
 import { StatusMark } from "@/components/ui/StatusMark";
+import { Key, Mark, Picture, Pointer, Step, Steps, Touch } from "./help-steps";
 import { useHelp } from "./HelpProvider";
 
 // What a help topic's body is drawn with (D80): short headings, plain words, the user's own on-screen words in mono, a note
-// in the note's colours. Only these; a topic imports nothing.
+// in the note's colours; a how-to's steps and pictures (D81, ./help-steps). Only these; a topic imports nothing.
 
 function Callout({ children }: { children: ReactNode }) {
   return (
@@ -36,4 +37,11 @@ export const HELP_KIT: MDXComponents = {
   code: ({ children }) => <code className="rounded-xs bg-surface-2 px-1.5 py-px type-value-small text-text">{children}</code>,
   Callout,
   HelpLink,
+  Steps,
+  Step,
+  Picture,
+  Mark,
+  Key,
+  Pointer,
+  Touch,
 };
