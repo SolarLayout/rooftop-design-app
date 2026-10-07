@@ -1044,6 +1044,11 @@
 @utility left-at {
   left: calc(var(--at) * 100%);
 }
+/* A picture scaled from its top left and moved, in pixels: a how-to's picture opened large and pinched (D81). */
+@utility zoomed {
+  transform-origin: 0 0;
+  transform: translate(var(--x), var(--y)) scale(var(--zoom));
+}
 /* A place down a box, a share of its height: a callout on a help picture (D81). */
 @utility top-down {
   top: calc(var(--down) * 100%);

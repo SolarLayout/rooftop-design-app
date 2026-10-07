@@ -59,6 +59,8 @@ export function HelpSheet() {
       ref={dialog}
       aria-labelledby={titleId}
       onCancel={(event) => {
+        // React passes a dialog's cancel up through its parents: a picture opened large inside the sheet closes alone.
+        if (event.target !== event.currentTarget) return;
         event.preventDefault();
         close();
       }}
