@@ -337,6 +337,83 @@ def steps_board(file: str, title: str, width: int, pad: str, sections: str, heig
     print(file, height)
 
 
+# The clips of the how-tos (Phase 15; D82 to D84): a short clip in a step's frame, drawn by a prototype on the branch
+# design/help-clips, never merged, from the spike's clip of "Move or turn the roof".
+
+def clip_entry(size: str, canvas: bool, shown: int) -> str:
+    frames = {
+        "desktop": ("clips-desktop-1-poster.jpg", 1440, 900, callout(1, 1198, 456, 960, 456) + callout(2, 1380, 548, 1380, 610) + callout(3, 1236, 408, 960, 380)),
+        "tablet": ("clips-tablet-1-poster.jpg", 834, 1194, ""),
+        "phone": ("clips-phone-1-poster.jpg", 390, 844, ""),
+    }
+    image, w, h, overlay = frames[size]
+    words = [
+        "A step that shows a gesture holds a clip in its picture's frame. At rest it is the step's picture, as before, with a play button "
+        "of the accent in its middle; nothing of the clip is loaded until it is pressed.",
+        "The clip's length, in its lower right.",
+        "The picture's callouts and their words stay as they are while it rests; they step aside while the clip plays, and their words stay under it.",
+    ]
+    return explained("1 · A clip in a step", frame(image, w, h, shown, overlay, canvas), words if size == "desktop" else [words[0]], side=size == "desktop")
+
+
+def clip_states(canvas: bool, shown: int, columns: int) -> str:
+    states = [
+        ("clips-state-1-poster.jpg", "At rest: the picture, play, its length"),
+        ("clips-state-2-loading.jpg", "Pressed: a ring in the button while the clip comes"),
+        ("clips-state-3-playing.jpg", "Playing: muted, looping; a line of the accent at the foot shows how far; a press pauses it"),
+        ("clips-state-4-paused.jpg", "Paused: where it stopped, play again"),
+        ("clips-state-5-failed.jpg", "Failed: the picture, its callouts, and \"The clip did not load. The picture shows the step.\""),
+        ("clips-pointer-press.jpg", "Inside a clip: the hand as a dot, white, the accent while it presses"),
+    ]
+    width = (shown - 16 * (columns - 1)) // columns
+    cells = "".join(
+        f'<figure style="margin: 0; display: flex; flex-direction: column; gap: 8px; width: {width}px">'
+        f'<img src="{src(name, canvas)}" alt="" style="display: block; width: {width}px; border: 1px solid {LINE}; border-radius: 12px">'
+        f'<figcaption style="font-size: 13px; color: {TEXT_2}">{words}</figcaption></figure>'
+        for name, words in states
+    )
+    return (f'<section style="display: flex; flex-direction: column; gap: 12px"><h2 style="margin: 0; {DISPLAY}; font-size: 20px; line-height: 26px">'
+            f'2 · Its states</h2><div style="display: flex; flex-wrap: wrap; gap: 20px 16px; width: {shown}px">{cells}</div></section>')
+
+
+def clip_sizes(size: str, canvas: bool, shown: int) -> str:
+    if size == "desktop":
+        return ""
+    image = f"clips-{size}-3-playing.jpg"
+    w, h = (834, 1194) if size == "tablet" else (390, 844)
+    return explained("3 · Playing, on " + size, frame(image, w, h, shown, "", canvas),
+                     ["The same frame in the sheet. On touch a press plays and pauses; the magnifier in its corner opens it at the width of the screen, "
+                      "where it plays as the picture opens large, pinched to look closer."], side=False)
+
+
+def clip_rules() -> str:
+    return text_block("4 · How a clip behaves, and how it is made", [
+        "Never by itself: it plays when pressed, muted (there is no sound), and loops until pressed again or the sheet closes. Under "
+        "<code>prefers-reduced-motion</code> it plays once and stops on its last frame.",
+        "Every step keeps its picture: a clip is added to a step whose gesture a still shows least (D84: moving and turning the roof, a "
+        "rectangle, corners, an obstacle). Where a clip cannot play, the picture shows the step.",
+        "Made by a script from the app, as the pictures are (<code>bun help:clips</code>): the hand's acts at a readable pace, a frame at a "
+        "time, 30 a second, at twice the pixels; H.264 in MP4 (D83), about 250 kB for 9 s, 500 kB at most a clip and 6 MB in all, beside "
+        "the pictures (D82). A README beside the run, the guide's \"Clips\" and a row in CLAUDE.md say how.",
+        "A screen reader hears a button, \"Play the clip: \" and the picture's words, then \"Pause the clip\"; the step's words say what it shows.",
+    ])
+
+
+CLIPS_INTRO = ("Phase 15: a step that shows a gesture can play a short clip in its picture's frame, made from the app by a script. "
+               "Drawn by a prototype in the app with the spike's clip of \"Move or turn the roof\".")
+
+
+def clips_board(file: str, title: str, width: int, pad: str, sections: str, height: int) -> None:
+    root = (
+        f'<div style="width: {width}px; height: {height}px; box-sizing: border-box; display: flex; flex-direction: column; gap: 40px; padding: {pad}; '
+        f'background: {GROUND}; color: {TEXT}; overflow: hidden; font-size: 14px; line-height: 20px">'
+        f'<div style="display: flex; flex-direction: column; gap: 10px"><h1 style="margin: 0; {DISPLAY}; font-size: 30px; line-height: 36px; letter-spacing: -0.02em">'
+        f'Clips in the help</h1><p style="margin: 0; max-width: 1000px; color: {TEXT_2}">{CLIPS_INTRO}</p></div>{sections}</div>\n'
+    )
+    (HERE / file).write_text(HEAD.format(title=title) + root + TAIL.format(w=width, h=height), encoding="utf-8")
+    print(file, height)
+
+
 if __name__ == "__main__":
     canvas = "--canvas" in sys.argv
     board("InAppHelp.dc.html", "In-App Help · The ? and the help sheet · desktop 1440", 1552, "40px 56px",
@@ -354,3 +431,9 @@ if __name__ == "__main__":
                 entry("tablet", canvas, 786) + how_to("tablet", canvas, 786) + pictures() + clip(canvas, 786) + find_how_tos(), 4940)
     steps_board("InAppHelpStepsPhone.dc.html", "In-App Help · How-tos with pictures · phone 390", 390, "40px 16px",
                 entry("phone", canvas, 358) + how_to("phone", canvas, 358) + further("phone", canvas, 358) + pictures() + clip(canvas, 358) + find_how_tos(), 5300)
+    clips_board("InAppHelpClips.dc.html", "In-App Help · Clips · desktop 1440", 1552, "40px 56px",
+                clip_entry("desktop", canvas, 980) + clip_states(canvas, 1440, 3) + clip_rules(), 1840)
+    clips_board("InAppHelpClipsTablet.dc.html", "In-App Help · Clips · tablet 834", 834, "40px 24px",
+                clip_entry("tablet", canvas, 786) + clip_states(canvas, 786, 2) + clip_sizes("tablet", canvas, 786) + clip_rules(), 4020)
+    clips_board("InAppHelpClipsPhone.dc.html", "In-App Help · Clips · phone 390", 390, "40px 16px",
+                clip_entry("phone", canvas, 358) + clip_states(canvas, 358, 1) + clip_sizes("phone", canvas, 358) + clip_rules(), 4340)

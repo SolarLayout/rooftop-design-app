@@ -110,8 +110,9 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 ## Next, in order
 
 1. Phase 15, video clips in the help (`plan/phase-15-help-clips.md`, `plan/phase-15-plan.md`): the spike done, D82 to D84
-   taken (in the repo; H.264 MP4 by `@ffmpeg-installer/ffmpeg`; the first four clips); next the boards of the player for
-   approval, in three sizes, then the pull requests, the first with its README, guide and CLAUDE.md rows.
+   taken (in the repo; H.264 MP4 by `@ffmpeg-installer/ffmpeg`; the first four clips); the boards "In-App Help · Clips" on
+   the canvas (version 39) for the owner's approval; then the pull requests, the first with its README, guide and CLAUDE.md
+   rows. Prototype: the local branch `design/help-clips`; spike: `spike/help-clips`; neither merged.
 2. Issue #114: the Strings legend with many MPPT (design first).
 3. #99 and #100 when the owner needs them (advised: the budget alarm soon, the rate limit before the site is promoted).
 4. When browser tests come back: update the suites that use the old words (Replace and its dialogs, the top bar's words,
