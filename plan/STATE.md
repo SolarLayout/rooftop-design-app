@@ -5,8 +5,8 @@ Keep it short and true. History belongs in git and in the phase files, not here.
 
 **Last updated:** 2026-10-07, session 19. **D79 built**: the roof picked up whole on Find's map, moved and turned with its
 obstacles (#117); a dragged corner moves finely, a snap reaching 4 px (#118); the obstacle picked moved and turned (#120, after
-#119 merged into a stale branch); the cursor and the tips (#121, open, for the owner to merge). Session 18 before it: #107 to
-#116, D68 to D78. **Next:** the owner merges #121 and says whether the phone's tip should move into the sheet.
+#119 merged into a stale branch); the cursor and the tips (#121); on phone the tip at the top of the sheet, not over the map
+(#122, open). Session 18 before it: #107 to #116, D68 to D78. **Next:** the owner merges #122; then more UI polish as he brings it.
 
 ## Where we are
 
@@ -31,9 +31,8 @@ obstacles (#117); a dragged corner moves finely, a snap reaching 4 px (#118); th
 
 ## In flight
 
-Open: #121 (the cursor and the tips, the last part of D79), for the owner to review and merge; it asks one thing: on phone the
-tip card covers about half of the 460 px of map above the sheet, as the board places it; the alternative is the top of the
-sheet. Stacked pull requests are avoided from now on: #119 was merged into its base branch after that branch had merged, and
+Open: #122 (on phone the tip stands at the top of the sheet: the map above the sheet is about 460 px and a card of four rows
+covered half of it, the roof with it; the owner left the choice to the best sense). Stacked pull requests are avoided from now on: #119 was merged into its base branch after that branch had merged, and
 never reached `main` (#120 brought it). Both environments ran `6f7be3c` (#116) when session 19 began; `main` has moved since
 (#117, #118, #120), deployed by the workflows as usual. Standing instructions of the owner (session 18): no browser test suites are run and no new UI
 tests are written; each change is checked by hand in the browser with Playwright and its screenshots go in the pull request
@@ -109,7 +108,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 ## Next, in order
 
-1. #121 merged, and the owner's word on the phone's tip. Then more UI polish as the owner brings it.
+1. #122 merged. Then more UI polish as the owner brings it.
 2. Issue #114: the Strings legend with many MPPT (design first).
 3. #99 and #100 when the owner needs them (advised: the budget alarm soon, the rate limit before the site is promoted).
 4. When browser tests come back: update the suites that use the old words (Replace and its dialogs, the top bar's words,
