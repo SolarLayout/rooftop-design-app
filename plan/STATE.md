@@ -29,6 +29,7 @@ title, Show me how on a tip) (D81); 30 topics, the gates in `tools/help`, the gu
 | 11 Hardening for the tradeshow | Done (session 14: #78 to #86; session 15: D56's run of the whole browser suite and the renewed pictures, #89) | What exists, what deviated, what was found: `phase-11-hardening.md`, "As built". How: `phase-11-plan.md`, scoped with the owner; issues #73 to #77 hold what was deferred |
 | 12 Deployment: staging and production | In progress; both environments live (session 16: #90 to #95, #97); left: #99, #100 | `phase-12-plan.md`: what was found, 14 decisions, the owner's steps in order (1 to 4 done), the pull requests; `infra/aws/README.md`: what exists on AWS and how it was made |
 | 13 Optimization | Done (session 17: #102 to #106) | What was found, the numbers before and after, what exists: `phase-13-optimization.md`, "As built". How: `phase-13-plan.md`, after the owner's interview (`reference/phase-13-interview.md`) |
+| 15 Help clips | Started (session 19): `phase-15-help-clips.md`, `phase-15-plan.md`; the spike next | The spike's findings, then D82 to D84 with the owner, then the boards |
 | 14 In-app help | Done (session 19: #123 to #137; D80, D81) | `phase-14-in-app-help.md`, "As built"; how to write a topic: `docs/help-content.md`; screenshots: `docs/screenshots.md` |
 
 ## In flight
@@ -108,10 +109,10 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 ## Next, in order
 
-1. Phase 15, video clips in the help (the owner, session 19: "after this work is done, we will work on the video clips work,
-   the setup/infra/mechanics around it. That will be the next phase"; he likes the board's "Later: a short clip in the
-   same frame"). Analyse (how clips are made from the app, kept, served, captioned, checked), design on the canvas in
-   three sizes, get his approval, then plan and build.
+1. Phase 15, video clips in the help (`plan/phase-15-help-clips.md`, `plan/phase-15-plan.md`): the spike (a clip of "Move
+   or turn the roof" made three ways, measured, played in Chrome, Firefox and Safari on macOS and iOS), then D82 (where
+   clips live), D83 (format and encoder) and D84 (which steps) with the owner one at a time, then the boards for approval,
+   then the pull requests.
 2. Issue #114: the Strings legend with many MPPT (design first).
 3. #99 and #100 when the owner needs them (advised: the budget alarm soon, the rate limit before the site is promoted).
 4. When browser tests come back: update the suites that use the old words (Replace and its dialogs, the top bar's words,

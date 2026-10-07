@@ -34,6 +34,7 @@ Always:
 | 12 | Deployment: staging and production (Vercel, AWS Lambda; the two sharing nothing); the stand demos from production | `phase-12-deployment.md` | in progress: both environments live (session 16: #90 to #95, #97); how: `phase-12-plan.md`; the path: `docs/deployment.md` |
 | 13 | Optimization: the engine lean in time and memory for Lambda, and the hosted app's limits | `phase-13-optimization.md` | done (session 17: #102 to #106); how: `phase-13-plan.md` |
 | 14 | In-app help: a ? on the section headings of the input panels, a help sheet, topics in MDX on solarlayout's core; how-tos with pictures for Find's tools | `phase-14-in-app-help.md` | done (session 19: #123 to #137, 30 topics; D80, D81) |
+| 15 | Short video clips in the help: made from the app by a script, kept, served and played in a step's frame | `phase-15-help-clips.md` | started (session 19): the phase and its plan (`phase-15-plan.md`); the spike next |
 
 ## Decisions taken (change here if overruled)
 
