@@ -127,8 +127,25 @@ Each topic's words are checked against the code before they are written, its `fi
 | #126 | The topics of the Roof and Sun lenses and of Find (21 topics in all); the coverage gate (`tools/help/coverage.ts`); a section's options listed in the code's order |
 | #127 | Keys pressed in an open dialog stay there (`components/shell/keys-held.ts`): Escape in the sheet no longer took back a corner on Find, nor Cmd+Z undid the design behind it |
 | #128 | The sheet's title, headings and Related in the light of a section heading (the owner, session 19) |
+| #129 | D81, 1: the pictures of the how-tos taken from the app (`bun help:pictures`, `tools/help/pictures.ts`, `e2e/help-pictures`) |
+| #130, #134 | The screenshots of a pull request: `docs/screenshots.md` and `bun tools/pr-shots.ts`; links GitHub shows in a private repository (the owner: no UI pull request without them) |
+| #131 | D81, 2: how-to steps and pictures in the help kit (Steps, Step, Picture and Mark, Key, Pointer, Touch); the picture gate; the first how-to |
+| #132 | D81, 3: the ways in: the ? beside Find's title (`lib/outline/how-to.ts`), Show me how on a tip, Show the tips on the map again |
+| #133 | D81, 4: a picture opened large on touch, pinched (`lib/help/zoom.ts`) |
+| #135 | The number of a mark in the middle of its circle (the owner) |
+| #136 | D81, 5: the how-tos of outlining: Corners, Rectangle, Detect building |
+| #137 | D81, 6: the how-tos of obstacles: Box, Tank, Wall, Building, moving one |
 
-**How to write a topic:** `docs/help-content.md`, linked from both `CLAUDE.md` files.
+**How to write a topic:** `docs/help-content.md`, linked from both `CLAUDE.md` files. **How screenshots are taken and
+linked:** `docs/screenshots.md`.
+
+**Found while building D81 (fixed in its pull request):** React passes a dialog's cancel up through its component parents,
+so Escape in a picture opened large closed the help sheet too (#133); two fingers' moves before a render read a stale view
+(#133); pull requests' screenshots linked to raw.githubusercontent.com never showed in the private repository (#134).
+
+**Left for later:** when the browser suites run again, the pictures `kit-part-2.png` (the help disc and the how-to steps) and
+Find's screens (the ? beside the title, Show me how) are renewed; on phone the help sheet's grip has a press area over its ×
+(both close it).
 
 **What changed from the plan:**
 - No `<Value of="…"/>`: a number that lives in the code is said in words or quoted as the screen shows it in a code span;

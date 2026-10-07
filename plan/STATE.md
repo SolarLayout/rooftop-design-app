@@ -3,10 +3,11 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-07, session 19. **D79 built** (#117, #118, #120 to #122). **Phase 14, in-app help: the section
-headings done** (#123 to #128): a ? beside every section heading of the input panels, 21 topics, the sheet at the edge (D80),
-the gate and the coverage gate in `tools/help`, the guide `docs/help-content.md`. **Next:** help for Find's tools with numbered
-steps and pictures, designed for the owner's approval first (the owner, session 19).
+**Last updated:** 2026-10-07, session 19. **D79 built** (#117, #118, #120 to #122). **Phase 14, in-app help, done** (#123 to
+#137): a ? beside every section heading of the input panels, a help sheet at the edge (D80); how-tos with numbered steps and
+pictures with callouts for every tool of Find, a picture opened large and pinched on touch, the ways in (the ? beside Find's
+title, Show me how on a tip) (D81); 30 topics, the gates in `tools/help`, the guides `docs/help-content.md` and
+`docs/screenshots.md`. **Next:** Phase 15, short video clips in the help (the owner, session 19), analysed and designed first.
 
 ## Where we are
 
@@ -28,7 +29,7 @@ steps and pictures, designed for the owner's approval first (the owner, session 
 | 11 Hardening for the tradeshow | Done (session 14: #78 to #86; session 15: D56's run of the whole browser suite and the renewed pictures, #89) | What exists, what deviated, what was found: `phase-11-hardening.md`, "As built". How: `phase-11-plan.md`, scoped with the owner; issues #73 to #77 hold what was deferred |
 | 12 Deployment: staging and production | In progress; both environments live (session 16: #90 to #95, #97); left: #99, #100 | `phase-12-plan.md`: what was found, 14 decisions, the owner's steps in order (1 to 4 done), the pull requests; `infra/aws/README.md`: what exists on AWS and how it was made |
 | 13 Optimization | Done (session 17: #102 to #106) | What was found, the numbers before and after, what exists: `phase-13-optimization.md`, "As built". How: `phase-13-plan.md`, after the owner's interview (`reference/phase-13-interview.md`) |
-| 14 In-app help | The section headings done (session 19: #123 to #128); next, Find's tools with steps and pictures, design first | `phase-14-in-app-help.md`, "As built"; how to write a topic: `docs/help-content.md` |
+| 14 In-app help | Done (session 19: #123 to #137; D80, D81) | `phase-14-in-app-help.md`, "As built"; how to write a topic: `docs/help-content.md`; screenshots: `docs/screenshots.md` |
 
 ## In flight
 
@@ -107,9 +108,10 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 ## Next, in order
 
-1. Phase 14, D81 (approved 2026-10-07): help for Find's tools with numbered steps and pictures with callouts, its six
-   pull requests in `plan/phase-14-in-app-help.md`, built in order and merged on a green check. Prototype: the local
-   branch `design/find-tools-help`, never merged.
+1. Phase 15, video clips in the help (the owner, session 19: "after this work is done, we will work on the video clips work,
+   the setup/infra/mechanics around it. That will be the next phase"; he likes the board's "Later: a short clip in the
+   same frame"). Analyse (how clips are made from the app, kept, served, captioned, checked), design on the canvas in
+   three sizes, get his approval, then plan and build.
 2. Issue #114: the Strings legend with many MPPT (design first).
 3. #99 and #100 when the owner needs them (advised: the budget alarm soon, the rate limit before the site is promoted).
 4. When browser tests come back: update the suites that use the old words (Replace and its dialogs, the top bar's words,
@@ -143,6 +145,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 | Item | Where it belongs |
 |---|---|
+| The pictures `kit-part-2.png` and Find's screens are to be renewed when the browser suites run again (the help's disc, how-to steps, the ? beside Find's title, Show me how) | When the owner runs the suites |
 | Twelve findings of the help's writing (the shade-free line with a pitch entered, the PAN source of the coefficients, "fits" beside an exclamation mark, trees lost on Edit, …) | `plan/phase-14-in-app-help.md`, "As built"; for the owner to order |
 | On phone the help sheet's grip has a press area over its ×; both close the sheet | When the owner asks |
 | On Find's map at roof zoom the demo's obstacles are 8 to 17 px across, smaller than their handles' targets: they are picked and moved after zooming in; an obstacle's label can cover a roof corner (corner 1 of the demo) | When the owner asks |
