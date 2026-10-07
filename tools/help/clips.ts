@@ -14,14 +14,17 @@ export const PACE = { glide: 0.7, settle: 0.25, press: 0.15, drag: 0.9, hold: 0.
  * - `rest`: nothing, for so many seconds;
  * - `click`: the pointer glides to a place, presses and lets go;
  * - `drag`: glides to a place, presses, drags by so many pixels, holds, and (`back`) drags back before letting go;
+ * - `draw`: glides to a place, presses, drags to another and lets go (a rectangle drawn);
  * - `turn`: glides to a handle, by its name, presses, turns round the roof's middle or the obstacle picked, holds, and
  *   (`back`) turns back before letting go.
- * Going back makes the clip's loop seamless: it ends as it began.
+ * Going back makes the clip's loop seamless: it ends as it began. A clip that draws something ends with it drawn, and its
+ * loop begins again from the map as it was.
  */
 export type ClipAct =
   | { kind: "rest"; seconds: number }
   | { kind: "click"; at: Place }
   | { kind: "drag"; from: Place; by: Point; back: boolean }
+  | { kind: "draw"; from: Place; to: Place }
   | { kind: "turn"; handle: string; degrees: number; back: boolean; around?: "roof" | "obstacle" };
 
 /**
