@@ -85,6 +85,7 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | UI fixes · The state of saving, a mark before the name | `SaveStateMark.dc.html`, `SaveStateMarkTablet.dc.html`, `SaveStateMarkPhone.dc.html` | `ui-fixes-save-state-desktop.png`, `ui-fixes-save-state-tablet.png`, `ui-fixes-save-state-phone.png` | desktop, tablet, phone |
 | UI fixes · Present, the figures of each scene | `PresentStats.dc.html`, `PresentStatsTablet.dc.html` (the scenes in `present_scenes/`) | `ui-fixes-present-stats-desktop.jpg`, `ui-fixes-present-stats-tablet.jpg` | desktop, tablet (Present has no phone) |
 | UI fixes · Coordinates in the search | `SearchCoordinates.dc.html`, `SearchCoordinatesTablet.dc.html`, `SearchCoordinatesPhone.dc.html` | `ui-fixes-search-coordinates-desktop.png`, `ui-fixes-search-coordinates-tablet.png`, `ui-fixes-search-coordinates-phone.png` | desktop, tablet, phone |
+| UI fixes · Find's first step, a panel that says what to do | `FindFirstStep.dc.html`, `FindFirstStepTablet.dc.html`, `FindFirstStepPhone.dc.html` (the shots in `find_first_step/`) | none: the boards are the shots | desktop, tablet, phone |
 
 Screens still to draw are listed in `plan/phase-00-design.md`.
 
@@ -180,6 +181,10 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   with the demo roof, caught in the browser (`move_turn/`), with what is proposed drawn over it and numbered callouts
   explained beside each frame: the roof picked up and moved, turned, an obstacle moved and turned (a close-up), the cursor,
   and the tips; approved on 2026-10-07 (D79), not built yet.
+- `mockups/build_ui_fixes_find_first_step.py` writes the boards "UI fixes · Find's first step, a panel that says what to do": Find
+  before a place is found, today and as proposed (the ways to start, what the search understands, the three steps, the ?), an
+  example pressed, and without a map, caught in the browser at three sizes (`find_first_step/`) with a prototype on the local
+  branch `design/find-first-step`, never merged; for approval (session 20).
 - `mockups/build_in_app_help.py` writes the boards "In-App Help · The ? and the help sheet" (desktop, tablet, phone; the
   canvas page "In-App Help"): the ? disc beside the section headings in its states, the tooltip, the help sheet by size
   (from the right edge, the whole height, dimmed, on desktop and tablet; from the bottom on phone), a topic followed and
@@ -196,8 +201,8 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
 - A preview is the board rendered at its `$preview` size (the tail of each `.dc.html`) by a scratch Playwright script outside the
   repo: Chromium from `e2e/node_modules/@playwright/test`, the fonts served from `apps/web/app/fonts` and `apps/web/node_modules/geist`
   in place of the Google link in the board's `helmet`, `support.js` stubbed, everything else off the machine refused.
-- `mockups/canvas.json` is the layout of the boards on the canvas: 79 boards on two pages since 2026-10-06 ("Approved design", the
-  first, holds every board without a `page`; "UI fixes" the boards of session 18 on); the 53 of the first page in sync with the canvas at claude.ai since
+- `mockups/canvas.json` is the layout of the boards on the canvas: 91 boards on three pages since 2026-10-07 ("Approved design", the
+  first, holds every board without a `page`; "UI fixes" the boards of session 18 on; "In-App Help" those of Phases 14 and 15); the 53 of the first page in sync with the canvas at claude.ai since
   2026-10-04 (session 15 published the 26 boards of Phases 6 to 11 and the five boards changed since 2026-09-30; the report's
   pages of `mockups/handover_pages/` travel with the Handover boards). A session on Bedrock has no Artifact tool: it adds its
   boards to `canvas.json` (frame, `order`, a row title in `notes`) and the next session with the tool publishes them.
