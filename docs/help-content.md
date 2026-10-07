@@ -135,11 +135,14 @@ are taken again and the change is seen in the pull request.
 
 - **What each picture shows** is written in `tools/help/pictures.ts`, in `HOW_TOS`: the how-to's folder (`find/corners`),
   the window it is taken in, how it begins (`edit`: the demo roof opened by Edit; `place`: the demo's place searched with
-  nothing drawn), steps of `zoomIn` for something small, what is kept (the roof with a margin, or a part of a size round the
-  map's middle or round a place in metres from it), and per picture the acts of the hand after the picture before it:
+  nothing drawn; `fresh`: Find opened with nothing found, its first step), steps of `zoomIn` for something small, what is
+  kept (the roof with a margin, a part of a size round the map's middle or round a place in metres from it, or a part of a
+  size at the top left: the search and what floats under it; a picture may keep a dialog, or a region of the page by its
+  name, such as a section of Find's panel), and per picture the acts of the hand after the picture before it:
   `tool` (a tool chosen), `corner` (a press on the map), `click` (inside the roof), `drag` (from a spot of the roof),
   `draw` (from one place of the map to another), `turn` (a handle, by its name, round the roof's middle), `found` (Detect
-  building pressed until a footprint is proposed), `press` (a button, by its name). A spot is a fraction of the roof's
+  building pressed until a footprint is proposed), `press` (a button, by its name), `search` (words searched, until the
+  places found are listed; the geocoder answers from the tests' fixture). A spot is a fraction of the roof's
   box; a place is metres east and north of the map's middle, turned into pixels with the scale bar. A drag, a draw or a
   turn that is `held` is caught before the button is let go.
 - **Take them:** `bun help:pictures` (every how-to) or `bun help:pictures -g <folder>` (one). It runs Playwright on the test

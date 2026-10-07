@@ -11,6 +11,7 @@ export const HELP_KEYS = [
   "find.tool.building",
   "find.tool.corners",
   "find.tool.detect",
+  "find.tool.find-the-roof",
   "find.tool.move-an-obstacle",
   "find.tool.move-the-roof",
   "find.tool.rectangle",
@@ -110,6 +111,14 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     related: ["find.tool.corners","find.tool.rectangle","find.section.edges"],
     aliases: [],
     load: () => import("../../content/help/find/tool/detect.mdx"),
+  },
+  "find.tool.find-the-roof": {
+    title: "Find the roof",
+    summary: "Search the building's address, or paste coordinates or a maps link, and choose the place. Or use your location, or enter the roof by hand.",
+    kind: "tool",
+    related: ["find.tool.corners","find.tool.rectangle","find.section.place"],
+    aliases: [],
+    load: () => import("../../content/help/find/tool/find-the-roof.mdx"),
   },
   "find.tool.move-an-obstacle": {
     title: "Move, turn or remove an obstacle",
