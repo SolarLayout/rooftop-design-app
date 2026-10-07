@@ -6,7 +6,7 @@ import { Icon, type IconName } from "@/components/ui/Icon";
 import { IconButton } from "@/components/ui/IconButton";
 import { canRedo, canUndo } from "@/lib/outline/history";
 import { isClosedAndSettled, type OutlineEvent, type OutlineState } from "@/lib/outline/outline-state";
-import type { Tool } from "./OutlineLayer";
+import type { Tool } from "@/lib/outline/how-to";
 
 type Props = {
   state: OutlineState;

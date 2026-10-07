@@ -510,6 +510,10 @@ How-tos with pictures").
 - **Pointer and touch:** a step says what the hand in use does, the words of a mouse where the pointer is fine, of touch
   where it is coarse; a key or a gesture in the chip of the tips (`radius-xs`, a border of `line-strong`,
   `type-label-s` at 600).
+- **The ways in (Find):** a ? disc beside the panel's title (6 after its words) opens the how-to of what the hand can do
+  now: with the roof open, the outline tool in hand; closed, the obstacle tool in hand; the roof picked, moving it; an
+  obstacle picked, moving it (`lib/outline/how-to.ts`; the first that has a topic, none while none has). A tip's Show me how
+  opens its move's. A how-to of Find ends with "Show the tips on the map again".
 - Later (not built): a short clip in the same frame as a picture, its first frame with a play button and its length.
 
 ## Tip (a card of help over the map, D79)
@@ -518,7 +522,8 @@ and its obstacles"). `surface-1`, border `line-strong`, radius `card-s` (14), `s
 apart; 300 wide on desktop and tablet, the width of the sheet on phone. The head: an accent dot of 8, the title
 in 14 at 600, and a quiet close (×) at the right, a press of 44 on touch. Two to four rows, each a key or a gesture in a
 bordered chip (`line-strong`, radius 6, 11 at 600, at least 62 wide, centred) and what it does in 13, `text-2`. The foot:
-Got it, a secondary button, small, at the right.
+Show me how at the left where the move has a how-to (D81: a link in the accent, `type-small` at 500), Got it, a secondary
+button, small, at the right.
 
 - One tip at a time. It shows when its move becomes possible, and never over what is moved: on desktop and tablet at the
   map's edge, top left under the search (20 in, 88 down); on phone at the top of the sheet, under the lead, the width of the
@@ -528,7 +533,9 @@ Got it, a secondary button, small, at the right.
   shows again). It also goes for good by itself once its move is done. The × hides the tips, this one and those after it, until the screen is opened again
   or the ? is pressed.
 - The toolbar's **?** ("Show the tips") shows them again, from the first. On phone, where the toolbar has room for Undo
-  alone, the ? stands in the sheet's head beside "Step 2 of 3".
+  alone, the ? disc beside the panel's title opens the how-to of what the hand can do now (D81), and each how-to of Find
+  ends with "Show the tips on the map again", which closes the help and shows them.
+- **Show me how** opens the how-to of the tip's move in the help sheet (D81).
 - It is a `role="note"` with its title as its name; Got it and × are buttons; it takes no focus when it appears.
 
 Find's two tips, the words by device (a press on touch, a click with a pointer):
