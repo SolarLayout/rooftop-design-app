@@ -107,10 +107,9 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 ## Next, in order
 
-1. Phase 14, next: help for Find's tools with numbered steps and pictures with callouts, ready for clips later. The boards
-   "In-App Help · How-tos with pictures" are on the canvas (version 37) for the owner's approval, with one question (on
-   phone, the disc in place of the toolbar's "Show the tips" ?). Once approved: its pull requests into
-   `plan/phase-14-in-app-help.md`, then built. Prototype: the local branch `design/find-tools-help`, never merged.
+1. Phase 14, D81 (approved 2026-10-07): help for Find's tools with numbered steps and pictures with callouts, its six
+   pull requests in `plan/phase-14-in-app-help.md`, built in order and merged on a green check. Prototype: the local
+   branch `design/find-tools-help`, never merged.
 2. Issue #114: the Strings legend with many MPPT (design first).
 3. #99 and #100 when the owner needs them (advised: the budget alarm soon, the rate limit before the site is promoted).
 4. When browser tests come back: update the suites that use the old words (Replace and its dialogs, the top bar's words,

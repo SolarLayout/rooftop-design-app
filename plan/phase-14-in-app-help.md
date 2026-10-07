@@ -99,10 +99,23 @@ Each topic's words are checked against the code before they are written, its `fi
 
 - The design: approved with the sheet at the edge (D80). New dependencies: approved.
 - The order of the later places: the owner says when.
-- **Next, asked by the owner (session 19), to be designed and approved before it is planned:** help for Find's tools
-  (outlining, adding obstacles, moving, turning, deleting), with numbered steps ("1, 2, 3") and pictures with callouts in
-  the sheet itself, built so that videos can come later (the next major work). The design goes on the canvas page
-  "In-App Help" in three sizes; once approved, its pull requests are written here.
+- **How-tos with pictures (D81):** help for Find's tools as numbered steps with pictures and callouts; the boards
+  "In-App Help · How-tos with pictures", approved 2026-10-07 with the phone's single ?. Its pull requests, in order:
+  1. **The pictures:** `bun help:pictures`, a Playwright run of its own on the test stack (as the soak of Present: a
+     configuration of its own under `e2e/`, never run by the check), the imagery replaced by a plain ground and every
+     other request leaving the machine refused; the shots of each how-to in a pure module, the crop computed from the
+     roof's corners (tested with `bun test`); JPEG at twice the pixels into `apps/web/public/help/<place>/<name>/`.
+  2. **Steps and pictures in the help kit:** `components.md` first ("How-to steps and pictures"), the token
+     `shadow-help-ring`, the kit page; `Steps`, `Step`, `Picture` (callouts and rings over it, their words under it),
+     `Key`, `Pointer` and `Touch`; the gate: each picture is there, has its words for a screen reader, at most three
+     callouts numbered from 1, each inside it. The first how-to, "Move or turn the roof".
+  3. **The ways in:** the ? beside Find's panel title opens the how-to of what the hand can do now (a pure function of
+     the outline's state and the tool, tested; no ? while there is no how-to for it); Show me how on a tip; on phone the
+     disc in place of the toolbar's "Show the tips" ?, and each how-to of Find ending with "Show the tips on the map
+     again".
+  4. **A picture pressed opens at the screen's width** on touch, and pinches; Back or × returns to the step.
+  5. **The how-tos of outlining:** Corners, Rectangle, Detect building.
+  6. **The how-tos of obstacles:** Box, Tank, Wall, Building; move, turn or delete an obstacle; undo, redo and clear.
 
 ## As built (session 19)
 
