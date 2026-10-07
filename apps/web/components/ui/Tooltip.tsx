@@ -23,6 +23,11 @@ const BUBBLE = classNames(
   "flex h-7 w-max items-center gap-2 rounded-item border border-line-strong bg-control-active px-2.5",
   "type-caption whitespace-nowrap text-text shadow-tooltip",
 );
+// With a summary (the help's disc, D80): its words wrapping in 264, and under them what a press gives.
+const BUBBLE_WITH_MORE = classNames(
+  "flex w-66 flex-col items-start gap-0.5 rounded-item border border-line-strong bg-control-active px-3 py-2",
+  "type-small text-text shadow-tooltip",
+);
 
 /** The look of a tooltip: its words, and the key that may follow them. */
 export function TooltipBubble({ shortcut, shortcuts, children }: BubbleProps) {
@@ -47,6 +52,8 @@ export function TooltipBubble({ shortcut, shortcuts, children }: BubbleProps) {
 type Props = {
   /** What the control does, in a few words. It is never the only place where that is said. */
   words: string;
+  /** What a press gives, under the words, which then wrap: "Click for more" under a help topic's summary. */
+  more?: string;
   shortcut?: string;
   shortcuts?: Shortcuts;
   /** How the control's wrapper stands in its row: `grow` where the control is a track that takes the room. */
@@ -59,7 +66,7 @@ type Props = {
  * The name of a control that shows an icon or one word. It comes a moment after the pointer came and at
  * once with the keyboard focus, never on touch; it is over its control, in the top layer of the browser.
  */
-export function Tooltip({ words, shortcut, shortcuts, className, children }: Props) {
+export function Tooltip({ words, more, shortcut, shortcuts, className, children }: Props) {
   const id = useId();
   const control = useRef<HTMLSpanElement>(null);
   const bubble = useRef<HTMLDivElement>(null);
@@ -122,12 +129,19 @@ export function Tooltip({ words, shortcut, shortcuts, className, children }: Pro
         role="tooltip"
         popover="manual"
         // It is measured where it is not seen, then shown at its place.
-        className={classNames(BUBBLE, "pointer-events-none placed", place === null && "invisible")}
+        className={classNames(more ? BUBBLE_WITH_MORE : BUBBLE, "pointer-events-none placed", place === null && "invisible")}
         style={measures(place === null ? {} : { x: place.x, y: place.y })}
       >
-        <TooltipBubble shortcut={shortcut} shortcuts={shortcuts}>
-          {words}
-        </TooltipBubble>
+        {more ? (
+          <>
+            <span>{words}</span>
+            <span className="type-caption text-text-3">{more}</span>
+          </>
+        ) : (
+          <TooltipBubble shortcut={shortcut} shortcuts={shortcuts}>
+            {words}
+          </TooltipBubble>
+        )}
       </span>
     </span>
   );

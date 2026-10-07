@@ -458,6 +458,40 @@ dragged; the crosshair while a drawing tool is in hand; over an obstacle or a ha
 or gesture in a bordered chip and what it does, Got it; one at a time, when a move becomes possible, never over what is
 moved; Got it closes it for good on the device, it goes by itself once its move is done; the toolbar's ? shows them again.
 
+## Help disc and help sheet (the in-app help, D80)
+The boards "In-App Help · The ? and the help sheet" (the canvas page "In-App Help"). Help on what a section of an input panel
+is, its choices and what they do, in the app's own words; the core is solarlayout's `packages/help` (topics in MDX keyed by
+their path, a typed manifest, a gate of tests), the look and the places ours.
+
+**The disc.** Beside a section heading, 6 after its words, vertically on their middle: a disc of the primary action, its
+`accent`, its light and its shadow (`shadow-primary`), a ? in `accent-ink` drawn as a stroke of 3. 16 on desktop in a press
+of 24; 20 on touch in a press of 44. Hover lifts it as the primary buttons lift (`accent-hover`, `shadow-primary-hover`);
+pressed it sinks (`accent-pressed`, `shadow-primary-pressed`); the focus ring is the app's. While its topic is shown it stays
+held in, with a ring of the accent at 45 % two away (`shadow-help-held`). A disc is drawn only where its topic exists (its key is a type). A real
+button: "Help: <title>", `aria-haspopup="dialog"`, `aria-expanded` while its topic is shown. On a pointer device the Tooltip
+"with a summary" says the topic's summary and "Click for more"; touch has none, a press opens the sheet.
+
+**The sheet.** Desktop and tablet: from the right edge, the whole height of the window over the top bar, 420 wide,
+`chrome`, a line of `line` on its left, `shadow-drawer`; the screen under it dimmed (`dim`) and waiting. Phone: from the
+bottom, the whole height but 48, `rounded-t-panel`, with the grip. It comes and goes as the drawers do (`drawer-motion`); it
+holds the focus; Escape, the ×, a press beside it close it, and the focus goes back to the disc.
+- The head, 48 high, a line of `line-subtle` under it: Back (‹, quiet, only once a link was followed), where it was opened in
+  `type-section` `text-3` ("Section · Strings lens"), Close (×).
+- Then, 20 in, 18 down, with 16 between: the title (`type-lens`, `type-lens-touch` on touch), the summary (`text-2`); for a
+  one-choice section its options in a bordered list (`radius-row`), each its label (500) and what it means (`type-small`,
+  `text-2`), the user's own on `note-surface` with "Your choice" (`accent` on `accent-ink`, 11 at 600); the body: headings
+  (`type-title`), words (`text-2`), the user's own on-screen words in mono on `surface-2`, a note (`note-surface`, the note
+  mark), a link to another topic in the accent, underlined; while the body loads, three lines of skeleton; when it cannot
+  load, "This part of the help did not load. Check the connection and try again." and Try again. Then "Related" (`type-section`,
+  `text-3`) and a row per topic: its title (500), its summary in two lines at most (`type-small`, `text-2`), a chevron.
+- A related topic or a link opens in the sheet; Back returns, as many steps as were taken; a disc pressed starts afresh.
+- The topic shown is in the address (`?help=<key>`), read when the page opens, so a shared link opens it; nothing else of the
+  address is touched.
+
+In code: the topics in `apps/web/content/help` (one `.mdx` each, its key its path: place.kind.name), `bun help:gen` writes
+`lib/help/manifest.gen.ts`, the gate is `tools/help/content.test.ts`; `components/shell/help`: `HelpProvider` (once per screen:
+the shell and Find), `HelpDisc`, `HelpSheet`, `HelpBody` and the components a body is drawn with (`help-kit.tsx`).
+
 ## Tip (a card of help over the map, D79)
 A small card that shows how to do a move the screen has just made possible (the boards "UI fixes · Move and turn the roof
 and its obstacles"). `surface-1`, border `line-strong`, radius `card-s` (14), `shadow-float`, padding 14 (12 under), rows 10
@@ -850,6 +884,8 @@ In code: `Tooltip`, around its control. Radius `radius-item`, the key in `radius
   over it. It never leaves the screen (`place-floating.ts`).
 - It goes when the pointer leaves, when the focus leaves, when the control is pressed, and with Escape.
 - The control is described by it (`aria-describedby`); its name is its own.
+- **With a summary** (the help's disc, D80): two lines at most of the topic's summary, 264 wide, the words wrapping,
+  padding 8 12, and under them "Click for more" in 12, `text-3`. Same colours, radius, shadow, times and place.
 
 The value of a chart under the pointer, the finger or the keyboard focus (the board "Charts, tooltip and table"; plan
 phase 8, decision 18) is a tooltip of two lines, padding 4 10: the value first, in mono 12 Geist Mono 500 in text

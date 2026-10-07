@@ -1,5 +1,6 @@
 "use client";
 
+import { HelpProvider } from "./help/HelpProvider";
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { shouldWarnBeforeLeaving } from "@/lib/device/leaving";
@@ -95,7 +96,9 @@ function Frame({ children }: { children: ReactNode }) {
           designs={designs}
           onOpenDesign={(id) => void openFromTheSwitcher(id, { openFromDevice: (one) => saving.getState().openFromDevice(one), say })}
         />
-        <div data-workspace-frame className="relative flex min-h-0 grow flex-col overflow-y-auto">{children}</div>
+        <div data-workspace-frame className="relative flex min-h-0 grow flex-col overflow-y-auto">
+          <HelpProvider>{children}</HelpProvider>
+        </div>
         <TabBar current={workspace} lens={lens} />
       </div>
       {/* Try again asks again for what failed, whichever it was: a call of the API, or the write to the device. Each does nothing when nothing of its failed. */}

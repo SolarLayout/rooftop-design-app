@@ -345,6 +345,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--shadow-pressed` | `inset 0 2px 4px rgba(0,0,0,.5)` | Pressed |
 | `--shadow-primary` | `inset 0 1px 0 rgba(255,255,255,.45), inset 0 -1px 0 rgba(0,0,0,.18), 0 1px 2px rgba(0,0,0,.5), 0 8px 22px rgba(255,176,32,.24)` | Primary button |
 | `--shadow-primary-pressed` | `inset 0 2px 4px rgba(0,0,0,.3), 0 1px 1px rgba(0,0,0,.5)` | Primary, pressed |
+| `--shadow-help-held` | `inset 0 2px 4px rgba(0,0,0,.3), 0 0 0 2px #0E1218, 0 0 0 4px rgba(255,176,32,.45)` | The help's disc held in while its topic is shown (D80): pressed, ringed two away in the accent at 45 % |
 | `--shadow-primary-hover` | `inset 0 1px 0 rgba(255,255,255,.5), inset 0 -1px 0 rgba(0,0,0,.18), 0 2px 4px rgba(0,0,0,.5), 0 12px 30px rgba(255,176,32,.36)` | Primary, hover |
 | `--shadow-segment` | `inset 0 1px 0 rgba(255,255,255,.10), 0 1px 3px rgba(0,0,0,.55)` | Active segment |
 | `--shadow-well` | `inset 0 1px 3px rgba(0,0,0,.65), 0 1px 0 rgba(255,255,255,.04)` | Fields, segmented track |
