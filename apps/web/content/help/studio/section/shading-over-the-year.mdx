@@ -1,0 +1,19 @@
+---
+title: Shading over the year
+summary: What shading costs over a year of the weather, as near, electrical and far losses, and the roof area kept clear.
+kind: section
+related:
+  - studio.section.shade-map
+  - app.section.obstacles
+---
+
+## The four tiles
+
+- `Near, linear`: the light lost to shadows on the roof, from the rows in front and from the parapet and the obstacles. It counts the shaded part of the direct light and the part of the sky hidden from each module, as a share of the light that gets past the horizon.
+- `Electrical, beyond linear`: the energy lost on top of that because a module's bypass diodes and cell layout turn a partial shadow into a larger loss, and a string runs at its weakest module. It needs strings, so it waits, and says why, until there is an option.
+- `Far, horizon`: the direct light lost while the sun is behind the distant horizon, as a share of the light with no horizon at all.
+- `Kept clear`: the area inside the setback that the shadows of the parapet and the obstacles cover through the shade-free window of the design day. The layout leaves it empty unless shaded positions are allowed.
+
+## What the figures count
+
+The line under the tiles says which modules are counted. With a chosen option, the figures are its own, from its energy losses, for the modules it uses. Before there is an option, near and far shading count every position of the layout. A second line says whether the weather source gave a horizon profile; without one, far shading is nothing.

@@ -1,5 +1,6 @@
 "use client";
 
+import { SectionHeading } from "@/components/shell/help/SectionHeading";
 import { useId } from "react";
 import { useResults } from "@/components/shell/stores";
 import { useShadeMapOfTheRun } from "@/components/scene/use-shade-map";
@@ -10,7 +11,6 @@ import { shown } from "@/components/ui/number-entry";
 import { legendOf } from "@/lib/scene/shade-map";
 import { designOf, layoutOf, readoutsOf } from "@/lib/stores/results-store";
 import { figuresOf, type Figure } from "@/lib/studio/sun-figures";
-import { SECTION } from "./inspector-look";
 import type { Size } from "./use-size";
 
 /** A figure as a tile: its value in percent, what it waits for in words, or a skeleton before any run. */
@@ -36,9 +36,9 @@ export function ShadingSection() {
   const heading = useId();
   return (
     <section aria-labelledby={heading} className="flex flex-col gap-3">
-      <h2 id={heading} className={SECTION}>
+      <SectionHeading id={heading} help="studio.section.shading-over-the-year">
         Shading over the year
-      </h2>
+      </SectionHeading>
       <dl className="grid grid-cols-2 gap-2">
         <FigureTile label="Near, linear" figure={figures.near} />
         <FigureTile label="Electrical, beyond linear" figure={figures.electrical} />
@@ -69,9 +69,9 @@ export function ShadeMapSection({ size }: { size: Size }) {
   const heading = useId();
   return (
     <section aria-labelledby={heading} className="flex flex-col gap-3">
-      <h2 id={heading} className={SECTION}>
+      <SectionHeading id={heading} help="studio.section.shade-map">
         Shade map
-      </h2>
+      </SectionHeading>
       <p className="type-caption text-text-2">
         {map
           ? `Each module is coloured by its near shading over the year, of all ${shown(positions, 0)} positions. ${size === "desktop" ? "Select" : "Tap"} a module for its value.`

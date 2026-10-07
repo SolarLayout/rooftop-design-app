@@ -3,6 +3,7 @@
 import { shown } from "../../components/ui/number-entry";
 import type { Sun } from "../scene/camera";
 import { hourOf, type Callout } from "../geometry/keepout";
+import { DAY_CHOICES } from "./day-choices";
 import { hoursOf, QUARTER_HOUR, type DayHours } from "./sun-day";
 import type { SunDay } from "../stores/results-store";
 import type { SunTime } from "../stores/view-store";
@@ -80,12 +81,11 @@ export const designDayOfYear = (designDoy: number | null, lat: number) => design
 /** A day to choose in the Sun lens, and whether it is the design day. */
 export type DayChoice = { label: string; dayOfYear: number; isDesignDay: boolean };
 
-const CHOICES = [355, 80, 172];
 
 /** The days of the Day control (decision 2): the solstices and the equinox, the design day marked. */
 export function daysOf(designDoy: number | null, lat: number): DayChoice[] {
   const design = designDayOfYear(designDoy, lat);
-  return CHOICES.map((dayOfYear) => ({ label: dateOf(dayOfYear).short, dayOfYear, isDesignDay: dayOfYear === design }));
+  return DAY_CHOICES.map(({ dayOfYear, label }) => ({ label, dayOfYear, isDesignDay: dayOfYear === design }));
 }
 
 /** The line under the Day control: which day is the design day, and why. */

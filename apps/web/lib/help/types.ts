@@ -15,8 +15,8 @@ export type HelpMeta = {
   title: string;
   summary: string;
   kind: HelpKind;
-  /** A one-choice section's options: the option as the code keys it → its label and what it means. */
-  values?: Readonly<Record<string, { label: string; meaning: string }>>;
+  /** A one-choice section's options, in the order the code offers them: the option as the code keys it, its label, what it means. */
+  values?: readonly { id: string; label: string; meaning: string }[];
   related: readonly string[];
   aliases: readonly string[];
 };

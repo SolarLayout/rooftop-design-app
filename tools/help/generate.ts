@@ -49,12 +49,18 @@ export function readTopics(dir: string = CONTENT_DIR): Topic[] {
 
 const json = (value: unknown) => JSON.stringify(value);
 
+/** A topic's options as the sheet lists them: in the order the code offers them, labelled as it labels them; any other after. */
+function optionsInOrder(values: Readonly<Record<string, string>>, options: readonly Option[]): { id: string; label: string; meaning: string }[] {
+  const offered = options.flatMap(({ id, label }) => (id in values ? [{ id, label, meaning: values[id] ?? "" }] : []));
+  const others = Object.entries(values).flatMap(([id, meaning]) => (options.some((option) => option.id === id) ? [] : [{ id, label: id, meaning }]));
+  return [...offered, ...others];
+}
+
 /** The manifest: every key a type, each topic's metadata, its options labelled as the code labels them, its body loaded when opened. */
 export function manifestOf(topics: readonly Topic[], optionsOf: (key: string) => readonly Option[] | undefined): string {
   const entries = topics.map(({ key, path, frontmatter }) => {
     const { title, summary, kind, values, related, aliases } = frontmatter;
-    const labels = new Map((optionsOf(key) ?? []).map((option) => [option.id, option.label]));
-    const labelled = values && Object.fromEntries(Object.entries(values).map(([id, meaning]) => [id, { label: labels.get(id) ?? id, meaning }]));
+    const labelled = values && optionsInOrder(values, optionsOf(key) ?? []);
     return [
       `  ${json(key)}: {`,
       `    title: ${json(title)},`,

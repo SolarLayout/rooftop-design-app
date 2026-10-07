@@ -1,0 +1,25 @@
+---
+title: Shape
+summary: The outline of a roof entered by hand, as a rectangle by its sides or as a table of corners in metres.
+kind: section
+values:
+  "rectangle": A rectangle, by its length, its width and the direction its long side faces.
+  "corners": Any outline, by its corners in metres east and north of the place, in order around the roof.
+related:
+  - find.section.place
+  - find.section.edges
+---
+
+## Rectangle
+
+`Length` and `Width` are in metres. The longer of the two is the long side, whichever field it is typed in. `Long side faces` is the direction of the long side, in whole degrees clockwise from north.
+
+A rectangle is the same either way round, so a direction and its opposite give the same roof. `Faces`, under the section, names the side that looks toward the equator.
+
+## Corners
+
+Each row is one corner: metres `East` and `North` of the place given under `Place`, which is taken as the middle of the roof. Enter the corners in order around the roof. `Add a corner` adds a row; the bin removes one. A row that is not complete is left out, and the roof needs three corners at least.
+
+## How it behaves
+
+The roof is drawn as you type, once the place and the shape are complete, and `Area`, `Faces` and `Corners` follow it. The built roof is marked `Entered by hand`.

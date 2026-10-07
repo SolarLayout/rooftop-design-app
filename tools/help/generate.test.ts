@@ -27,9 +27,15 @@ describe("the manifest", () => {
     const topic = topicOf("studio/section/volts.mdx", '---\ntitle: Volts\nsummary: S\nkind: section\nvalues:\n  "600": At most 600.\naliases: [studio.section.old]\n---\n');
     const manifest = manifestOf([topic], () => [{ id: "600", label: "600 V" }]);
     expect(manifest).toContain('export const HELP_KEYS = [\n  "studio.section.volts",\n] as const;');
-    expect(manifest).toContain('values: {"600":{"label":"600 V","meaning":"At most 600."}},');
+    expect(manifest).toContain('values: [{"id":"600","label":"600 V","meaning":"At most 600."}],');
     expect(manifest).toContain('load: () => import("../../content/help/studio/section/volts.mdx"),');
     expect(manifest).toContain('export const ALIASES: Record<string, HelpKey> = {\n  "studio.section.old": "studio.section.volts",\n};');
+  });
+
+  test("the options in the order the code offers them, not the order of the file or of a number's keys", () => {
+    const topic = topicOf("studio/section/day.mdx", '---\ntitle: Day\nsummary: S\nkind: section\nvalues:\n  "80": March.\n  "any": Any.\n  "355": December.\n---\n');
+    const manifest = manifestOf([topic], () => [{ id: "355", label: "21 Dec" }, { id: "80", label: "21 Mar" }, { id: "any", label: "Any date" }]);
+    expect(manifest).toContain('values: [{"id":"355","label":"21 Dec","meaning":"December."},{"id":"80","label":"21 Mar","meaning":"March."},{"id":"any","label":"Any date","meaning":"Any."}],');
   });
 
   test("no topics, an empty manifest that still types", () => {

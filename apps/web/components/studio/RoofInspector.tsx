@@ -1,5 +1,6 @@
 "use client";
 
+import { SectionHeading } from "@/components/shell/help/SectionHeading";
 import Link from "next/link";
 import { ROOF_TYPES } from "@/lib/geometry/roof-types";
 import { useProject, useStores, useView } from "@/components/shell/stores";
@@ -18,7 +19,7 @@ import { HEIGHTS_SET, indexToReview, namesToReview, toReviewWordsOf } from "@/li
 import { withRoofType } from "@/lib/studio/roof-type";
 import { projectOf } from "@/lib/stores/project-store";
 import { toReviewOf } from "@/lib/stores/view-store";
-import { fieldsLayoutOf, SECTION } from "./inspector-look";
+import { fieldsLayoutOf } from "./inspector-look";
 import { ObstaclePanel } from "./ObstaclePanel";
 import type { Size } from "./use-size";
 
@@ -145,13 +146,15 @@ export function RoofInspector({ size }: Props) {
     <div data-size={size} className="flex flex-col gap-4 tablet:grid tablet:grid-cols-2 tablet:gap-8 desktop:flex desktop:gap-4">
       <div className="flex flex-col gap-4 tablet:gap-5 desktop:contents">
         <section aria-label="Location" className="flex flex-col gap-2.5">
-          <h2 className={SECTION}>Location</h2>
+          <SectionHeading help="studio.section.location">Location</SectionHeading>
           <LocationCard card={card} size={size} />
         </section>
         {reviewing.length > 0 ? <ReviewNote count={reviewing.length} onReview={review} /> : null}
 
         <section aria-label="Roof type" className="flex flex-col gap-2.5">
-          <h2 className={SECTION}>Roof type</h2>
+          <SectionHeading help="app.section.roof-type" {...(project ? { value: project.roof.roof_type } : {})}>
+            Roof type
+          </SectionHeading>
           {project ? (
             <Segmented
               label="Roof type"
@@ -166,7 +169,7 @@ export function RoofInspector({ size }: Props) {
         </section>
 
         <section aria-label="Edges and access" className="flex flex-col gap-2.5">
-          <h2 className={SECTION}>Edges and access</h2>
+          <SectionHeading help="studio.section.edges-and-access">Edges and access</SectionHeading>
           {project ? (
             <div className={fieldsLayoutOf(size)}>
               {roofFieldsOf(project.roof).map((field) => (

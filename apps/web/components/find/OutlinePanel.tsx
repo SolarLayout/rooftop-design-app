@@ -1,11 +1,11 @@
 "use client";
 
+import { SectionHeading } from "@/components/shell/help/SectionHeading";
 import { classNames } from "@/components/ui/class-names";
 import { NumberField } from "@/components/ui/NumberField";
 import { shown } from "@/components/ui/number-entry";
 import { Switch } from "@/components/ui/Switch";
 import { edgeNamesOf, measurementsOf, type OutlineEvent, type OutlineState } from "@/lib/outline/outline-state";
-import { SECTION } from "@/components/ui/section-look";
 
 type Props = {
   state: OutlineState;
@@ -53,7 +53,7 @@ export function OutlinePanel({ state, on, className }: Props) {
   return (
     <div className={classNames("flex flex-col gap-4 desktop:gap-5", className)}>
       <section className="flex flex-col gap-2.5" aria-label="Edges">
-        <h2 className={SECTION}>Edges</h2>
+        <SectionHeading help="find.section.edges">Edges</SectionHeading>
         {state.closed ? (
           <div className="grid grid-cols-2 gap-field">
             {measured.edges.map((length, edge) => (

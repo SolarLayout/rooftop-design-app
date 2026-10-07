@@ -5,8 +5,7 @@
 import type { LonLat } from "./frame";
 import type { XY } from "../geometry/measure";
 import { turnedAbout } from "./rectangle";
-
-export type Shape = "rectangle" | "corners";
+import type { Shape } from "./shapes";
 
 /** A row of the corner table: metres east and north of the middle of the roof; null until typed. */
 export type Row = { east: number | null; north: number | null };
