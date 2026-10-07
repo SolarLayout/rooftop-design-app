@@ -3,18 +3,18 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-05, end of session 17. **Phase 13 (optimization) done**: the engine lean (the roof at the limit 117 s
-and 5,652 MB on Lambda before; about 7.5 s and 921 MB now; the demo 15 s to about 3 s), parity with the desktop app's outputs
-shown against a snapshot (D64), both functions fitted to 1,769 MB (D67), a sub-hourly CSV averaged into hours, a file over 6 MiB
-refused in the Open dialog's words (#98). Pull requests #102 to #106; decisions D64 to D67. Both environments on `beb889e`,
-deployed and smoked (5 of 5 steps each). **Next: a session of UI polish driven by the owner**: usability issues and screens broken on
-a real iPhone. #99 and #100 stay open until the owner needs them.
+**Last updated:** 2026-10-07, end of session 18. **UI polish driven by the owner**: pull requests #107 to #116 merged (search
+and coordinates, Present's panels, the state of saving, the equipment library and its picker, section headings, a stringing
+choice an edit took away, my location and Search on every size); decisions D68 to D78. **D79 approved, not built**: move and
+turn the roof and its obstacles on Find's map, the grab cursor, the tips. Both environments on `6f7be3c` (#116), deployed.
+**Next: build D79** (`plan/resume/017-move-and-turn.md`).
 
 ## Where we are
 
 | Phase | Status | Notes |
 |---|---|---|
-| 0 Design | Direction approved. 52 boards in the repo, all approved | More screens to draw, listed in `phase-00-design.md`. The canvas at claude.ai holds 27 of them (`docs/design/README.md`) |
+| 0 Design | Direction approved. 79 boards on the canvas: the approved design, and the page "UI fixes" of session 18 on (D68 to D79) | More screens to draw, listed in `phase-00-design.md`; the canvas and the repo in sync (`docs/design/README.md`, `mockups/canvas.json`) |
+| UI polish | Session 18: #107 to #116 merged; D79 approved, not built | Driven by the owner, issue by issue; the record: `plan/sessions/018/record.md` |
 | 1 Foundation | Done, merged (PR #1) | |
 | 2 Engine and API | Done (PR #7, PRs #11 to #23) | What exists, what was decided, what was found: `phase-02-engine-api.md`, "As built" |
 | 3 Design system and shell | Done (PRs #24 to #33) | What exists, what was decided, what was found: `phase-03-design-system-shell.md`, "As built". How its second half was built: `phase-03-rest-plan.md` |
@@ -32,15 +32,13 @@ a real iPhone. #99 and #100 stay open until the owner needs them.
 
 ## In flight
 
-Nothing. Both environments on `beb889e` (the last commit of Phase 13), smoked, 1,769 MB each, one simulation thread, reserved concurrency 100
-(production) and 50 (staging). Left of Phase 12, each in an issue:
-1. #99: the operator's guide for the stand, and the dry run on its hardware against production (closes Phase 12).
-2. #100: the production guards: an AWS budget alarm (the owner's), a rate limit per IP on `/api/*` at Vercel's firewall,
-   CloudWatch alarms on throttles, concurrency and errors.
-Watch items: ECR's scan finds 8 high CVEs in Debian's base packages (refresh the pinned base when Debian publishes fixes); no
-lifecycle rule on ECR (about 244 MB per deployed commit); the Esri keys expire about 2027-10 (local 2027-09-28); GitHub dropped
-events twice on 2026-10-05 (a deploy waited 17 minutes for a runner; two pull requests started no check until reopened).
-Nothing runs on ports 4700 to 4719.
+Nothing merged waits. Both environments run `6f7be3c` (#116), deployed 2026-10-06 (a Production deploy waited about ten minutes
+in GitHub's "waiting" with no rule asking for it, then ran). Approved and not built: D79 (the boards "UI fixes · Move and turn
+the roof and its obstacles"). Standing instructions of the owner (session 18): no browser test suites are run and no new UI
+tests are written; each change is checked by hand in the browser with Playwright and its screenshots go in the pull request
+(the orphan branch `pr-shots`); every board for approval comes in three sizes on the canvas; the owner merges the pull
+requests himself. Left of Phase 12: #99 and #100. Watch items: ECR's 8 high CVEs in Debian's base; no lifecycle rule on ECR;
+the Esri keys expire about 2027-10; GitHub delays events now and then.
 
 ## What the web app has today
 
@@ -110,15 +108,13 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 ## Next, in order
 
-1. **The next session: UI polish, driven by the owner** (2026-10-05: "There are tons of usability issues and many broken screens
-   on real mobile (iPhone) - next session will be driven by me"). He brings the issues; the session follows his lead.
-2. #99 (the operator's guide and the dry run on the stand's hardware; it closes Phase 12) and #100 (the production guards: the
-   budget alarm, a rate limit per IP at Vercel, CloudWatch alarms): kept open, taken up when the owner needs them. Advised: the
-   budget alarm soon (a flood now costs about $8 an hour at 1,769 MB, capped by the 100 instances, and nothing tells the
-   owner); the rate limit before the site is promoted; #99 timed to the stand.
-3. Issues #87 and #88 from D56's run, and #73 to #77 as the owner decides (#76 is done by Phase 13 but for its cold start).
-4. In parallel with any phase: the screens still to draw (Phase 0).
-5. Possible later: the report drawn from the web app's own components instead of matplotlib; not filed.
+1. **Build D79**: move and turn the roof and its obstacles on Find's map, the grab cursor, the tips
+   (`plan/resume/017-move-and-turn.md`). Then more UI polish as the owner brings it.
+2. Issue #114: the Strings legend with many MPPT (design first).
+3. #99 and #100 when the owner needs them (advised: the budget alarm soon, the rate limit before the site is promoted).
+4. When browser tests come back: update the suites that use the old words (Replace and its dialogs, the top bar's words,
+   the geocoder's words, the Layers default, `present-energy`), and #74.
+5. Issues #87, #88, #96 and #73 to #77 as the owner decides.
 
 ## Facts about this machine and setup
 
@@ -210,6 +206,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 | 15 | 2026-10-05 | `plan/sessions/015/record.md`, `plan/sessions/015/owner-messages.md` |
 | 16 | 2026-10-05 | `plan/sessions/016/record.md`, `plan/sessions/016/owner-messages.md` |
 | 17 | 2026-10-05 | `plan/sessions/017/record.md`, `plan/sessions/017/owner-messages.md` |
+| 18 | 2026-10-06 to 2026-10-07 | `plan/sessions/018/record.md`, `plan/sessions/018/owner-messages.md` |
 
 ## Closed, do not reopen
 
