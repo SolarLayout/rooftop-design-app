@@ -1,0 +1,24 @@
+---
+title: MPPT loading
+summary: The current and the power on each MPPT of the chosen option, set against the inverter's current limits per MPPT.
+kind: section
+related:
+  - studio.section.options
+  - studio.section.inverter
+---
+
+## The table
+
+A row for each MPPT that has strings, named with its inverter: the strings on it, its Imp and its Isc each against its limit, its kWp, and a mark: `Fits`, `Over the limit` or `Limit not known`. Beside the heading, the option it belongs to. On a phone the rows are cards.
+
+## How the numbers are worked out
+
+The option's strings are shared among its inverters in layout order, then spread over each inverter's MPPTs as evenly as they go. An MPPT's Imp is its strings times the module's Imp, its Isc its strings times the module's Isc, and its kWp its strings times the modules in series times the module's rated power.
+
+## Where the limits come from
+
+Imp is held to the inverter's current per MPPT: the OND's, or else the inverter's DC input current shared equally among its MPPTs. Isc is held to the OND's short-circuit current per MPPT, or else to the same current. When a limit is not known, the note under the table says why and offers `Enter the current per MPPT`, which opens `Inverter limits and cabling` with the field ready. A value entered there replaces both limits.
+
+## How the options use it
+
+The run's options put no more strings on an MPPT than both limits allow, one at the least; with no limit known they follow the inverter's inputs. Your own option is not held to this. An MPPT over its limit, or with its limit not known, gives the option an exclamation mark instead of a tick.

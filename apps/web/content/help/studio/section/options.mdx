@@ -1,0 +1,24 @@
+---
+title: Options
+summary: The ways to string the roof that the run simulated, each for a full year. Choose one, or add your own.
+kind: section
+related:
+  - studio.section.modules-in-series
+  - studio.section.mppt-loading
+---
+
+## What a card shows
+
+Its letter and a caption, then modules in series × strings, kWp and DC/AC, then the energy of the first year in MWh. The caption says what sets it apart: `Recommended`, `Your own`, a miss of the DC/AC target such as `Below target`, `Fills the inverter`, `Lower clipping`, or else `Option` and its letter. A tick means it is in its DC/AC target and every MPPT is within its current limit; an exclamation mark means one of those is not so.
+
+## How the run builds them
+
+The engine tries up to three lengths from the series range: the one nearest the inverter's nominal MPP voltage, the longest, and one shorter than the longest. For each it forms strings along the rows and ranks them least shaded first. It then makes up to three combinations of strings and inverters: the most strings that keep DC/AC in target, the strings that fill the inverters, and every string the roof holds. Each is simulated for a year. Options in target come first, then by energy; at most five are kept, and the first is `Recommended` only when it is in target. The note under the cards states the target and how many strings one inverter takes.
+
+## Choosing one
+
+A press on a card, or an arrow key, chooses it at once: every option is in the run's answer already, so nothing runs again. The chosen option sets the marker on the <HelpLink k="studio.section.modules-in-series">Modules in series</HelpLink> bar and the <HelpLink k="studio.section.mppt-loading">MPPT loading</HelpLink>.
+
+## Your own
+
+`Add your own` opens `Series`, `Strings` and `Inverters`, each held to what fits: a length in the range, as many strings of it as the roof holds, and no more inverters than strings. `Add` saves it and chooses it, and the design runs again; `Change` and `Remove` edit it later. When the engine cannot build it, its card says why. When no length fits, or the roof holds too few positions for a string, this section says so instead of showing cards.

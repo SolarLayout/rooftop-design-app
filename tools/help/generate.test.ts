@@ -16,6 +16,9 @@ describe("a topic read", () => {
     expect(() => topicOf("find/section/edges.mdx", "## Edges")).toThrow("find/section/edges.mdx: no frontmatter (--- … ---) at the top");
     expect(() => topicOf("find/section/edges.mdx", "---\ntitle: Edges\nkind: section\n---\n")).toThrow("find/section/edges.mdx: summary: words, 140 characters at most");
     expect(() => topicOf("find/section/edges.mdx", "---\ntitle: Edges\nsummary: S\nkind: tool\n---\n")).toThrow('find/section/edges.mdx: kind "tool" is not the key\'s, "section"');
+    expect(() => topicOf("find/section/edges.mdx", "---\ntitle: Edges\nsummary: The edges: their lengths\nkind: section\n---\n")).toThrow(
+      "find/section/edges.mdx: the frontmatter is not YAML (quote a line with a colon in it): ",
+    );
   });
 });
 

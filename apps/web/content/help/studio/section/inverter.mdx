@@ -1,0 +1,25 @@
+---
+title: Inverter
+summary: The inverter the strings are sized for, read from its OND file. Change picks another from the library or a file of your own.
+kind: section
+related:
+  - studio.section.modules-in-series
+  - studio.section.options
+  - studio.section.mppt-loading
+---
+
+## What the card shows
+
+The model, the maker, the rated AC power and the number of MPPTs; then the current per MPPT and the number of inputs. The name of the OND file stands under the card. A current per MPPT you entered is marked `entered`. Where the OND gives no current per MPPT, nor a DC input current to share among the MPPTs, and you entered none, the card says `Current per MPPT not in the OND` with an exclamation mark.
+
+## Change
+
+`Change` opens `Choose an inverter`: the app's library of OND files, with a search over the maker, the model and the file's name, and filters by `AC power`, `MPPT` and `Max DC`. The design's own inverter is tagged `In this design`, and a file its maker calls preliminary is tagged `Preliminary`. `Use this inverter` reads the one chosen; an OND file of your own can be chosen or dropped instead. A file that cannot be read leaves the inverter as it was and says why. A new inverter clears any current per MPPT you entered, and the design runs again.
+
+## How it shapes the strings
+
+Its MPPT voltage window sets the shortest string that fits, and can set the longest. Its highest DC voltage is one of the limits on a string's open-circuit voltage. Its nominal MPP voltage gives one of the lengths the options try. Its rated AC power sets the DC/AC ratio of each option. Its MPPT count, its inputs and its current per MPPT set how many strings one inverter takes. See <HelpLink k="studio.section.modules-in-series">Modules in series</HelpLink> and <HelpLink k="studio.section.mppt-loading">MPPT loading</HelpLink>.
+
+## The current per MPPT
+
+When the OND lacks it, or the datasheet gives another value, enter it under `Inverter limits and cabling`, further down the inspector.

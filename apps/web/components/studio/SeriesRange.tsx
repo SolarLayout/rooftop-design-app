@@ -1,5 +1,6 @@
 "use client";
 
+import { SectionHeading } from "@/components/shell/help/SectionHeading";
 import { useId } from "react";
 import { withTrueMinus } from "@/components/shell/notes-view";
 import { classNames } from "@/components/ui/class-names";
@@ -9,7 +10,6 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { StatusMark } from "@/components/ui/StatusMark";
 import { seriesBarOf } from "@/lib/studio/series-bar";
 import type { Sized } from "@/lib/studio/strings-view";
-import { SECTION } from "./inspector-look";
 
 /**
  * Modules in series (docs/design/components.md, "Series range bar"; the boards "Studio, Strings lens" and
@@ -25,9 +25,9 @@ export function SeriesRange({ view, isUpdating = false }: { view: Sized; isUpdat
   return (
     <section aria-labelledby={heading} data-testid="series-range" data-state={isUpdating && bar ? "updating" : "settled"} className="flex flex-col gap-2">
       <div className="flex items-center gap-3">
-        <h2 id={heading} className={SECTION}>
+        <SectionHeading id={heading} help="studio.section.modules-in-series">
           Modules in series
-        </h2>
+        </SectionHeading>
         {isUpdating && bar ? (
           <span data-testid="series-ring" className="flex">
             <ProgressRing size={16} />

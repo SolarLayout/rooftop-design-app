@@ -1,11 +1,11 @@
 "use client";
 
+import { SectionHeading } from "@/components/shell/help/SectionHeading";
 import { useId } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { Table } from "@/components/ui/Table";
 import type { Column } from "@/components/ui/table-cells";
 import type { MpptRow, MpptTable as MpptTableView } from "@/lib/studio/mppt-table";
-import { SECTION } from "./inspector-look";
 
 const COLUMNS: ReadonlyArray<Column<MpptRow>> = [
   { key: "mppt", head: "MPPT", kind: "name", value: (row) => row.mppt, below: (row) => row.inverter, onCard: (row) => row.title },
@@ -42,10 +42,10 @@ export function MpptTable({ table, onEnterCurrent }: Props) {
   const heading = useId();
   return (
     <section aria-labelledby={heading} data-testid="mppt-table" className="flex flex-col gap-2">
-      <div className="flex items-baseline gap-3">
-        <h2 id={heading} className={SECTION}>
+      <div className="flex items-center gap-3">
+        <SectionHeading id={heading} help="studio.section.mppt-loading">
           MPPT loading
-        </h2>
+        </SectionHeading>
         <span className="ml-auto type-caption whitespace-nowrap text-text-3">{table.of}</span>
       </div>
       <Table caption={table.caption} columns={COLUMNS} rows={table.rows} keyOf={(row) => row.key} dense cardColumns={2} />

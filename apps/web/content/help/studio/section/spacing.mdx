@@ -1,0 +1,24 @@
+---
+title: Spacing
+summary: How far apart the rows stand and which way they face. The engine decides both unless you switch it off and enter your own.
+kind: section
+related:
+  - studio.section.shade-free-window
+  - studio.section.mounting
+---
+
+## The fields
+
+On `Flat, tilted rows`: `Row pitch` and `Azimuth`. On `Flat, east-west`: `Azimuth` only. A `Sloped, flush` roof has no spacing: its rows follow one another up the roof and face the way the roof slopes.
+
+## Row pitch
+
+The distance on plan from the front edge of one row to the front edge of the next. With `Shade-free row pitch` on, the engine works it out from the <HelpLink k="studio.section.shade-free-window">shade-free window</HelpLink> and rounds it up slightly; the line under it gives the GCR and the sun's profile angle that sets it. Switched off, the field starts at the last pitch and takes your own. The engine never lets the pitch fall below the depth of a table on plan plus a fixed allowance.
+
+## Azimuth
+
+The direction the rows face, in degrees clockwise from north. With `Follow the roof edge` on, the rows face square off the roof edge closest to the equator; on an east-west roof the ridge runs along that edge. Switched off, the field starts at the azimuth the layout used, and the line under it says where that edge faces.
+
+## How it behaves
+
+Switching back on hands the value back to the engine. Each change lays the roof out again, and the design runs again.

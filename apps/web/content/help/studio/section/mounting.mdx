@@ -1,0 +1,28 @@
+---
+title: Mounting
+summary: "How the modules stand on the roof: their tilt, their orientation, how many up a table, and their height. The fields follow the roof type."
+kind: section
+related:
+  - studio.section.module
+  - studio.section.spacing
+  - studio.section.shade-free-window
+---
+
+## The fields by roof type
+
+- `Flat, tilted rows`: `Tilt`, `Orientation`, `Modules in tilt` and `Lower-edge clearance`.
+- `Flat, east-west`: `East-west tilt`, `Ridge gap` and `Lower-edge clearance`.
+- `Sloped, flush`: `Orientation` and `Modules in tilt`. The tilt is the roof's own pitch, set in the Roof lens, and the modules lie a small fixed height above the roof.
+
+## What each field does
+
+- `Tilt`: the angle of the tables. The hint under it suggests a tilt from the site's latitude, kept within a narrow band of low tilts.
+- `Orientation`: `Portrait` puts the module's length up the slope, `Landscape` its width.
+- `Modules in tilt`: how many modules stand one above another on a table. A taller table casts a longer shadow, so a shade-free row pitch grows with it.
+- `Lower-edge clearance`: the height of the table's lower edge above the roof. The shadows of obstacles and parapets that keep positions empty are worked out at this height.
+- `East-west tilt`: the tilt of each side, away from the ridge. Each side holds one module with its width up the slope, so there is no orientation to choose.
+- `Ridge gap`: the gap between the two sides at the ridge.
+
+## How it behaves
+
+A slider commits when you let go, a choice or a stepper at once, a number on Enter or when you leave the field. Each change lays the roof out again, and the design runs again.

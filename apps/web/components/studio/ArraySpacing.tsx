@@ -1,5 +1,6 @@
 "use client";
 
+import { SectionHeading } from "@/components/shell/help/SectionHeading";
 import type { ReactNode } from "react";
 import { NumberField } from "@/components/ui/NumberField";
 import { RangeSlider } from "@/components/ui/RangeSlider";
@@ -10,7 +11,7 @@ import { hourOf } from "@/lib/geometry/keepout";
 import { ARRAY_RANGES, designDayOf, pitchLineOf, spacingOf, withAzimuthDecided, withDesignDay, withPitchDecided, type Decided, type DesignDay, type SpacingId } from "@/lib/studio/array-fields";
 import { azimuthLineOf, shadedLineOf, WINDOW_SCALE, WINDOW_TICKS, windowCommitted } from "@/lib/studio/array-view";
 import type { ArrayChange } from "./ArrayMounting";
-import { ReadOut, ROW, SECTION } from "./inspector-look";
+import { ReadOut, ROW } from "./inspector-look";
 
 type Props = {
   array: ArraySpec;
@@ -103,12 +104,12 @@ export function ArraySpacing({ array, roofType, layout, onChange }: Props) {
     <>
       {spacing.length > 0 ? (
         <section aria-label="Spacing" className="flex flex-col gap-row">
-          <h2 className={SECTION}>Spacing</h2>
+          <SectionHeading help="studio.section.spacing">Spacing</SectionHeading>
           {spacing.map(field)}
         </section>
       ) : null}
       <section aria-label="Shade-free window" className="flex flex-col gap-row">
-        <h2 className={SECTION}>Shade-free window</h2>
+        <SectionHeading help="studio.section.shade-free-window">Shade-free window</SectionHeading>
         <RangeSlider
           label="Shade-free window"
           value={[array.window_start_h, array.window_end_h]}

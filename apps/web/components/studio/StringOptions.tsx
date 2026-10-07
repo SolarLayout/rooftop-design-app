@@ -1,5 +1,6 @@
 "use client";
 
+import { SectionHeading } from "@/components/shell/help/SectionHeading";
 import { useId, useRef, useState, type KeyboardEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { classNames } from "@/components/ui/class-names";
@@ -11,7 +12,6 @@ import type { DesignResult, Project } from "@/lib/api";
 import { customBoundsOf, customOf, refusedCardOf, type Custom } from "@/lib/studio/custom-fields";
 import type { OptionCard } from "@/lib/studio/option-cards";
 import type { Sized } from "@/lib/studio/strings-view";
-import { SECTION } from "./inspector-look";
 
 const CARD = "flex h-13 w-full shrink-0 cursor-pointer items-center gap-3 rounded-row border px-3 text-left focus-ring press-motion";
 const CHOSEN = "border-accent bg-note-surface shadow-halo-selected";
@@ -65,9 +65,9 @@ export function OptionCards({ cards, onChoose }: { cards: readonly OptionCard[];
   return (
     <section aria-labelledby={heading} className="flex flex-col gap-1.5">
       <div className="flex items-center gap-3">
-        <h2 id={heading} className={SECTION}>
+        <SectionHeading id={heading} help="studio.section.options">
           Options
-        </h2>
+        </SectionHeading>
         <span className="ml-auto type-caption whitespace-nowrap text-text-3">series × strings · kWp · DC/AC · MWh</span>
       </div>
       <div ref={group} role="radiogroup" aria-labelledby={heading} className="flex flex-col gap-1.5">
@@ -90,9 +90,9 @@ export function NothingFits({ view }: { view: Sized }) {
   const { title, message, change } = view.noOptions;
   return (
     <section aria-labelledby={heading} className="flex flex-col gap-2">
-      <h2 id={heading} className={SECTION}>
+      <SectionHeading id={heading} help="studio.section.options">
         Options
-      </h2>
+      </SectionHeading>
       {change ? (
         <p data-testid="nothing-fits" className="rounded-row border border-line bg-surface-1 px-4 py-3 text-center type-small text-text-2">
           {change}
