@@ -70,19 +70,19 @@ and words); `prefers-reduced-motion` (the poster, play on request only); its tim
 the pointer and the finger as they show inside the clip. Drawn by a prototype in the app (a local branch, never merged), as
 the boards of D80 and D81 were.
 
-### 4. The pull requests (written here once the boards are approved; proposed)
+### 4. The pull requests (the boards approved by the owner, 2026-10-07: "approved")
 1. **The clips' making:** `bun help:clips`, the acts of `tools/help/pictures.ts` given a pace (pure, tested: each act's
    frames, the pointer's path), recorded frame by frame on the test stack as the pictures are, the pointer drawn in, encoded
    as D83 says, a poster from the first frame; written where D82 says. **With it, as a process aid for whoever makes clips
    next (the owner, session 19):** a README beside the run (`e2e/help-clips/README.md`: what each file does, how to run
    one clip, how to add one, what to look at before a commit), `docs/help-content.md` "Clips", a `bun help:clips` row in
    both `CLAUDE.md` files, and the encoder pinned in the lockfile.
-2. **The player in the help kit:** `components.md` first; a `Clip` in a step's frame (or a picture's `clip` prop), its
-   states, timed marks, reduced motion, failure to the picture; the gate (each clip and poster there, length and size within
-   the budget, marks inside the length); the kit page.
+2. **The player in the help kit:** `components.md` first; a picture's `clip` and `length`, played in its frame as the boards
+   show (at rest, loading, playing, paused, failed; the callouts aside while it plays; once only under reduced motion); the
+   gate (each clip there, of the length written, within 500 kB, all within 6 MB); the kit page; the first clip shown.
 3. **The clips of the chosen steps** (D84), each looked at, in Chrome and Safari.
 4. **Full screen on touch**, as a picture opens large.
-5. **The guide:** `docs/help-content.md`, "Clips"; `docs/screenshots.md`; both `CLAUDE.md` files.
+5. Nothing left for a pull request of its own: the guide and the README go with the first (the owner, session 19).
 
 ## Risks
 - iOS Safari and a format: the spike plays each candidate there before anything is decided.
