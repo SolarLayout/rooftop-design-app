@@ -152,6 +152,22 @@ are taken again and the change is seen in the pull request.
 - **A new how-to** that needs a state the acts cannot reach (an obstacle drawn, a tool chosen): add the act to `Act` in
   `tools/help/pictures.ts` with its test, and to `act()` in `e2e/help-pictures/help-pictures.ts`.
 
+## Clips
+
+A step whose gesture a still shows least can also play a short clip in its picture's frame (Phase 15; D82 to D84). Like the
+pictures, clips are made from the app by a script, never filmed or edited: `e2e/help-clips/README.md` says what each file
+does, how to make one and how to add one.
+
+- **What each clip shows** is written beside the how-to's pictures, in `tools/help/pictures.ts`, as `clips`: named for the
+  step it plays in (its picture is its poster), `before` (the pictures' acts that put the map where the step begins, done
+  unseen) and `acts` (recorded at the pace of `tools/help/clips.ts`: `rest`, `click`, `drag`, `turn`).
+- **Make it:** `bun help:clips` (every clip) or `bun help:clips -g <dir>/<step>`; it writes
+  `apps/web/public/help/<dir>/<step>.mp4`, H.264 at 30 frames a second (D83), encoded by the pinned
+  `@ffmpeg-installer/ffmpeg` that `bun install` brings.
+- **The rules it keeps:** made on the test stack on the plain ground, the pointer drawn as a dot (white, the accent while it
+  presses); ends as it began, as it loops; 500 kB at most, 6 MB for all (D82); every step keeps its picture.
+- **Before the commit:** play it; its first and last frames match; the pointer shows at each press; the labels are sharp.
+
 ## Keys in the sheet
 
 The sheet is a modal `<dialog>`: its keys are its own. A new handler of keys on the page (`window.addEventListener("keydown",

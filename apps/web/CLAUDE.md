@@ -14,7 +14,7 @@ The browser app. Read the root `CLAUDE.md` first; its rules apply here.
 | UX and visual guidelines, copy, numbers, states, accessibility | `docs/design/guidelines.md` |
 | Mockup sources with every exact value | `docs/design/mockups/*.dc.html` |
 | Previews | `docs/design/previews/*.png` |
-| In-app help: topics, the ? on a heading, the gate | `docs/help-content.md` |
+| In-app help: topics, the ? on a heading, the gate, a how-to's pictures and clips | `docs/help-content.md` |
 
 The canvas is open to anyone with the link. The mockup sources and previews in the repo show the same
 screens, and hold the exact values.

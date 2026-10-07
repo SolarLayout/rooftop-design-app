@@ -1,5 +1,7 @@
 // The pictures of the how-tos (D81): what each picture shows, as what the hand does on Find's map before it is taken, and
 // what of the screen is kept. Pure; e2e/help-pictures takes them (`bun help:pictures`) into apps/web/public/help/<dir>/.
+// A how-to's clips (Phase 15) are written here too, beside its pictures, and recorded by e2e/help-clips (`bun help:clips`).
+import type { ClipSpec } from "./clips";
 
 export type Point = { x: number; y: number };
 /** The extent of the roof on the screen, in CSS pixels. */
@@ -62,6 +64,8 @@ export type HowTo = {
   zoomIn?: number;
   keep: { around: "roof"; margin: Margin } | { around: "middle"; size: Size; at?: Metres };
   shots: readonly Shot[];
+  /** Its clips, each named for the step it plays in (tools/help/clips.ts). */
+  clips?: readonly ClipSpec[];
 };
 
 /** A clear spot inside the demo roof: away from its corners, its edges' labels and its obstacles. */
@@ -93,6 +97,19 @@ export const HOW_TOS: readonly HowTo[] = [
       { name: "2", acts: [{ kind: "click", at: CLEAR }] },
       { name: "3", acts: [{ kind: "drag", from: CLEAR, by: { x: 30, y: 12 }, held: true }] },
       { name: "4", acts: [{ kind: "turn", handle: "Turn the roof", degrees: 16, held: true }] },
+    ],
+    clips: [
+      {
+        name: "3",
+        before: [{ kind: "click", at: CLEAR }],
+        acts: [{ kind: "rest", seconds: 0.4 }, { kind: "drag", from: CLEAR, by: { x: 30, y: 12 }, back: true }, { kind: "rest", seconds: 0.6 }],
+      },
+      {
+        // It picks the roof itself: a turn taken back to nothing lets the roof go, so the clip ends as it began.
+        name: "4",
+        before: [],
+        acts: [{ kind: "rest", seconds: 0.4 }, { kind: "click", at: CLEAR }, { kind: "turn", handle: "Turn the roof", degrees: 16, back: true }, { kind: "rest", seconds: 0.6 }],
+      },
     ],
   },
   {
