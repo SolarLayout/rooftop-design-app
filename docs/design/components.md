@@ -527,7 +527,10 @@ How-tos with pictures").
   under it. Paused: the play button again. Failed: the picture and its callouts, an exclamation mark in the button, and
   "The clip did not load. The picture shows the step." (`type-small`, `text-3`). Under `prefers-reduced-motion` it plays
   once and stops on its last frame, play again. The whole frame is one button: "Play the clip: " or "Pause the clip: " and
-  the picture's words.
+  the picture's words. On touch, a magnifier in a round chip of `surface-1` at its upper right (28 in a press of
+  44, `shadow-float`; "Open the clip larger: " and the picture's words) opens the clip over the sheet at the width of the
+  screen, as a picture opens large: playing from its start, pinched to look closer, its callouts' words under it; × or
+  Escape returns to the step.
 
 ## Tip (a card of help over the map, D79)
 A small card that shows how to do a move the screen has just made possible (the boards "UI fixes · Move and turn the roof

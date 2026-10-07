@@ -13,6 +13,9 @@ type Props = {
   height: number;
   /** The callouts as drawn over the picture: they scale with it. */
   marks: ReactNode;
+  /** A clip to play in the picture's place (Phase 15): from the start, muted, looping unless `once`. */
+  clip?: string;
+  once?: boolean;
   /** Their words, under it. */
   words: ReactNode;
   onClose: () => void;
@@ -21,9 +24,9 @@ type Props = {
 /**
  * A how-to's picture opened large on touch (D81; components.md, "How-to steps and pictures"): over the help sheet, the
  * whole screen, the picture the screen's width, pinched to look closer and moved with a finger; × or Escape returns to the
- * step. Opened by its picture; closed, it is gone.
+ * step. Opened by its picture, or by a clip's magnifier, when it plays the clip there (Phase 15); closed, it is gone.
  */
-export function PictureLarge({ src, alt, width, height, marks, words, onClose }: Props) {
+export function PictureLarge({ src, alt, width, height, marks, words, clip, once, onClose }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const picture: Size = { width, height };
@@ -88,8 +91,15 @@ export function PictureLarge({ src, alt, width, height, marks, words, onClose }:
       >
         {view ? (
           <div className="absolute top-0 left-0 w-full zoomed" style={measures({ zoom: view.scale, x: view.x, y: view.y })}>
-            <Image src={src} alt={alt} width={width} height={height} sizes={`${width}px`} className="block h-auto w-full" draggable={false} />
-            {marks}
+            {clip ? (
+              // Opened by a press, so it plays at once; the callouts step aside while a clip plays.
+              <video src={clip} poster={src} width={width} height={height} aria-label={alt} autoPlay muted playsInline loop={!once} className="block h-auto w-full" />
+            ) : (
+              <>
+                <Image src={src} alt={alt} width={width} height={height} sizes={`${width}px`} className="block h-auto w-full" draggable={false} />
+                {marks}
+              </>
+            )}
           </div>
         ) : null}
       </div>

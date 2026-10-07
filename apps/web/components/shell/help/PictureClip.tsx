@@ -5,7 +5,8 @@ import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
 import { measures } from "@/components/ui/measures";
 import { ProgressRing } from "@/components/ui/ProgressRing";
-import { FRAME, MarksOver, useMatches, type MarkProps } from "./picture-parts";
+import { PictureLarge } from "./PictureLarge";
+import { FRAME, MarksOver, MarkWords, useMatches, type MarkProps } from "./picture-parts";
 
 type Props = {
   clip: string;
@@ -34,6 +35,8 @@ export function PictureClip({ clip, length, poster, alt, width, height, marks }:
   const [state, setState] = useState<State>("rest");
   const [share, setShare] = useState(0);
   const still = useMatches("(prefers-reduced-motion: reduce)");
+  const touch = useMatches("(pointer: coarse)");
+  const [large, setLarge] = useState(false);
   // A failure stays: the events a failed clip still sends (pause) do not bring the button back.
   const unlessFailed = (next: State) => setState((now) => (now === "failed" ? now : next));
 
@@ -45,52 +48,75 @@ export function PictureClip({ clip, length, poster, alt, width, height, marks }:
     element.play().catch(() => setState("failed"));
   }
 
+  function opened() {
+    video.current?.pause();
+    setLarge(true);
+  }
+
   const playing = state === "playing";
   const moving = playing || state === "paused";
   return (
     <>
-      <button
-        type="button"
-        aria-label={`${playing ? "Pause" : "Play"} the clip: ${alt}`}
-        aria-disabled={state === "failed" || undefined}
-        onClick={pressed}
-        className={classNames(FRAME, state === "failed" ? "cursor-default" : "cursor-pointer", "focus-ring")}
-      >
-        <video
-          ref={video}
-          src={clip}
-          poster={poster}
-          width={width}
-          height={height}
-          muted
-          playsInline
-          loop={!still}
-          preload="none"
-          onPlaying={() => unlessFailed("playing")}
-          onPause={() => unlessFailed("paused")}
-          onEnded={() => unlessFailed("paused")}
-          onError={() => setState("failed")}
-          onTimeUpdate={(event) => setShare(event.currentTarget.currentTime / (event.currentTarget.duration || 1))}
-          className="block h-auto w-full"
-        />
-        {moving ? null : <MarksOver marks={marks} />}
-        {playing ? null : (
-          <span aria-hidden="true" className={BUTTON}>
-            {state === "loading" ? <ProgressRing size={20} /> : <Icon name={state === "failed" ? "note" : "play"} size={20} />}
-          </span>
-        )}
-        {state === "rest" || state === "loading" ? (
-          <span aria-hidden="true" className="absolute right-2 bottom-2 rounded-xs bg-ground/80 px-2 type-value-xs text-text">
-            {length}
-          </span>
+      <div className="relative">
+        <button
+          type="button"
+          aria-label={`${playing ? "Pause" : "Play"} the clip: ${alt}`}
+          aria-disabled={state === "failed" || undefined}
+          onClick={pressed}
+          className={classNames(FRAME, state === "failed" ? "cursor-default" : "cursor-pointer", "focus-ring")}
+        >
+          <video
+            ref={video}
+            src={clip}
+            poster={poster}
+            width={width}
+            height={height}
+            muted
+            playsInline
+            loop={!still}
+            preload="none"
+            onPlaying={() => unlessFailed("playing")}
+            onPause={() => unlessFailed("paused")}
+            onEnded={() => unlessFailed("paused")}
+            onError={() => setState("failed")}
+            onTimeUpdate={(event) => setShare(event.currentTarget.currentTime / (event.currentTarget.duration || 1))}
+            className="block h-auto w-full"
+          />
+          {moving ? null : <MarksOver marks={marks} />}
+          {playing ? null : (
+            <span aria-hidden="true" className={BUTTON}>
+              {state === "loading" ? <ProgressRing size={20} /> : <Icon name={state === "failed" ? "note" : "play"} size={20} />}
+            </span>
+          )}
+          {state === "rest" || state === "loading" ? (
+            <span aria-hidden="true" className="absolute right-2 bottom-2 rounded-xs bg-ground/80 px-2 type-value-xs text-text">
+              {length}
+            </span>
+          ) : null}
+          {moving ? (
+            <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1 bg-ground/60">
+              <span className="block h-full w-span bg-accent" style={measures({ span: share })} />
+            </span>
+          ) : null}
+        </button>
+        {/* On touch, beside the press that plays it: the clip at the width of the screen, as a picture opens large. */}
+        {touch && state !== "failed" ? (
+          <button
+            type="button"
+            aria-label={`Open the clip larger: ${alt}`}
+            onClick={opened}
+            className="absolute top-2 right-2 grid size-touch place-items-center focus-ring"
+          >
+            <span aria-hidden="true" className="grid size-7 place-items-center rounded-full bg-surface-1 text-text-2 shadow-float">
+              <Icon name="search" size={14} />
+            </span>
+          </button>
         ) : null}
-        {moving ? (
-          <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1 bg-ground/60">
-            <span className="block h-full w-span bg-accent" style={measures({ span: share })} />
-          </span>
-        ) : null}
-      </button>
+      </div>
       {state === "failed" ? <p className="type-small text-text-3">The clip did not load. The picture shows the step.</p> : null}
+      {large ? (
+        <PictureLarge src={poster} alt={alt} width={width} height={height} marks={null} words={<MarkWords marks={marks} />} clip={clip} once={still} onClose={() => setLarge(false)} />
+      ) : null}
     </>
   );
 }
