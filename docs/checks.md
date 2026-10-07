@@ -53,12 +53,13 @@ whole suite took 180 s before and 179 s after here, since each file drew them on
 The 1,750 browser tests are eight turbo tasks, run one after the other by the check (eight Playwright runs at once would
 overload the machine), the test stack started once by the check when a group is going to run and stopped after. The
 groups are data, `tools/check/e2e-groups.ts`; `turbo.json` and the root scripts `e2e:<group>` are held equal to it by
-`tools/check/e2e-groups.test.ts`.
+`tools/check/e2e-groups.test.ts`. After a group's folders change, `bun tools/check/write-e2e-inputs.ts` writes the tasks'
+inputs into `turbo.json` from the groups.
 
 | Group | Suites, by file name in `e2e/tests` | Own inputs, beside the base |
 |---|---|---|
 | kit | `kit.e2e.ts`, `kit-*.e2e.ts` | `components/kit`, the pictures `kit*.png` |
-| find | `find`, `find-screens`, `outline`, `by-hand`, `obstacles` | `components/find`, `lib/map`, `lib/outline`, the help's picture run `e2e/help-pictures` (run by hand, never by the check), the pictures `find*.png` |
+| find | `find`, `find-screens`, `outline`, `by-hand`, `obstacles` | `components/find`, `lib/map`, `lib/outline`, the help's picture and clip runs `e2e/help-pictures` and `e2e/help-clips` (run by hand, never by the check), the pictures `find*.png` |
 | studio | `array-lens`, `build`, `history`, `lens-switches`, `manipulation`, `modules`, `roof-lens`, `selection`, `shade-map`, `shadow-outlines`, `shell-vitals`, `stage`, `strings-*`, `studio-screens`, `sun-*`, `time` | `components/studio`, `components/scene`, `lib/scene`, `lib/studio`, find's folders (Build and the Roof lens's Edit cross into Find), the pictures `studio*.png` |
 | performance | `performance*` (`performance-screens` among them) | `components/performance`, `lib/performance`, studio's and find's folders (a voltage is chosen in the Strings lens; a roof is built on the map), the pictures `performance*.png` |
 | handover | `handover*` (`handover-screens` among them) | `components/handover`, `lib/handover`, the pictures `handover*.png` |

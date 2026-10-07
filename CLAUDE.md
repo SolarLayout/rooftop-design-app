@@ -55,7 +55,7 @@ work, and `apps/web/CLAUDE.md` for the rules of the web app.
 
 ## In-app help
 Read `docs/help-content.md` before writing or changing a help topic (`apps/web/content/help`), wiring a ? to a heading,
-changing the options of a section that has a topic, or taking a how-to's pictures. After a topic changes: `bun help:gen`, and commit the manifest with it.
+changing the options of a section that has a topic, or taking a how-to's pictures or recording its clips. After a topic changes: `bun help:gen`, and commit the manifest with it.
 
 ## Engineering standard
 This is production software, not a prototype. The owner's words: "this is not throwaway code".
@@ -118,3 +118,4 @@ This is production software, not a prototype. The owner's words: "this is not th
 | `bun tools/pr-shots.ts <folder> <file>...` | Keep a pull request's screenshots on the branch `pr-shots` and print their links (`docs/screenshots.md`) |
 | `bun help:gen` | Write the in-app help's typed manifest from `apps/web/content/help` (commit both; the gate in `tools/help` fails while it is stale) |
 | `bun help:pictures` | Take the pictures of the help's how-tos from the app on the test stack (`docs/help-content.md`, "Pictures"; `e2e/help-pictures/README.md`) |
+| `bun help:clips` | Record the clips of the help's how-tos from the app on the test stack (`docs/help-content.md`, "Clips"; `e2e/help-clips/README.md`) |

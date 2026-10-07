@@ -22,6 +22,7 @@
     "equipment:catalog": "bun tools/equipment-catalog.ts",
     "help:gen": "bun tools/help-gen.ts",
     "help:pictures": "bun tools/help-pictures.ts",
+    "help:clips": "bun tools/help-clips.ts",
     "build": "bun tools/with-node.ts turbo run build",
     "typecheck": "bun tools/with-node.ts turbo run typecheck",
     "lint": "bun tools/with-node.ts turbo run lint",

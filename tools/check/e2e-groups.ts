@@ -74,9 +74,9 @@ export const isBaselines = (pattern: string): boolean => pattern.startsWith("e2e
 // decision 1). The folders are composed apart from the pictures, so that a change to find.png runs find, not every
 // group that sees Find's folders.
 const KIT_FOLDERS = ["apps/web/components/kit/**"];
-// The pictures of the help's how-tos (e2e/help-pictures, D81) are taken on Find by hand, never by the check: placed here so
-// that every file of e2e is seen.
-const FIND_FOLDERS = ["apps/web/components/find/**", "apps/web/lib/map/**", "apps/web/lib/outline/**", "e2e/help-pictures/**"];
+// The pictures and the clips of the help's how-tos (e2e/help-pictures, D81; e2e/help-clips, Phase 15) are made on Find by
+// hand, never by the check: placed here so that every file of e2e is seen.
+const FIND_FOLDERS = ["apps/web/components/find/**", "apps/web/lib/map/**", "apps/web/lib/outline/**", "e2e/help-pictures/**", "e2e/help-clips/**"];
 // Build and the Roof lens's Edit cross into Find; strings-lens and build import e2e/find.ts.
 const STUDIO_FOLDERS = [
   "apps/web/components/studio/**",
