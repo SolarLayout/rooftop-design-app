@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Button } from "./Button";
 import { classNames } from "./class-names";
 import { IconButton } from "./IconButton";
@@ -12,6 +13,8 @@ type Props = {
   onGotIt: () => void;
   /** The ×: the tips are hidden for now. */
   onClose: () => void;
+  /** The way into the how-to of the move (D81): Show me how, beside Got it. */
+  howTo?: ReactNode;
   className?: string;
 };
 
@@ -20,9 +23,10 @@ const CHIP = "min-w-15.5 shrink-0 rounded-xs border border-line-strong px-1.5 te
 
 /**
  * A small card that shows how to do a move the screen has just made possible (components.md, "Tip"; D79): the title
- * with an accent dot, two to four rows of a key or a gesture and what it does, Got it. It takes no focus.
+ * with an accent dot, two to four rows of a key or a gesture and what it does, Show me how where its move has a how-to,
+ * Got it. It takes no focus.
  */
-export function Tip({ title, rows, onGotIt, onClose, className }: Props) {
+export function Tip({ title, rows, onGotIt, onClose, howTo, className }: Props) {
   return (
     <section role="note" aria-label={title} className={classNames(CARD, className)}>
       <div className="flex items-center gap-2">
@@ -38,7 +42,8 @@ export function Tip({ title, rows, onGotIt, onClose, className }: Props) {
           </li>
         ))}
       </ul>
-      <div className="flex justify-end">
+      <div className={classNames("flex items-center", howTo ? "justify-between" : "justify-end")}>
+        {howTo}
         <Button kind="secondary" size="xs" onClick={onGotIt}>
           Got it
         </Button>

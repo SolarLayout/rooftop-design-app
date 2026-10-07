@@ -14,3 +14,12 @@ export function keyFromPath(path: string): string {
 }
 
 export const placeOf = (key: string): HelpPlace => key.split(".")[0] as HelpPlace;
+
+/** The first of the candidates that has a topic, in the candidates' order; null when none has. */
+export function firstKnownOf<K extends string>(candidates: readonly string[], known: readonly K[]): K | null {
+  for (const candidate of candidates) {
+    const found = known.find((key) => key === candidate);
+    if (found) return found;
+  }
+  return null;
+}

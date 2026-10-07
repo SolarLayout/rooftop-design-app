@@ -8,6 +8,7 @@ import { shown } from "@/components/ui/number-entry";
 import { footprintOutline, FOOTPRINTS_LAYER, FOOTPRINTS_URL, FOOTPRINTS_ZOOM } from "@/lib/map/overture";
 import { metresPerPixel } from "@/lib/map/scale-bar";
 import { frameAt, toLonLat, toMetres, type Frame, type LonLat } from "@/lib/outline/frame";
+import type { Tool } from "@/lib/outline/how-to";
 import { areaOf, centroidOf, midpointsOf, type XY } from "@/lib/geometry/measure";
 import { foldOf, labelOf, type Obstacle, type ObstacleKind, type Shape } from "@/lib/outline/obstacles";
 import { turnedAbout } from "@/lib/outline/rectangle";
@@ -15,9 +16,6 @@ import { ghostOf, liftLabelPlaceOf, turnHandleOfPicked } from "@/lib/outline/lif
 import { mapCursorOf } from "@/lib/outline/map-cursor";
 import { isInside, type Lift } from "@/lib/outline/roof-move";
 import { isClosedAndSettled, type Lifted, type OutlineEvent, type OutlineState } from "@/lib/outline/outline-state";
-
-/** The ways to outline while the roof is open; the obstacles to draw once it is closed. */
-export type Tool = "corners" | "rectangle" | "detect" | "box" | "tank" | "wall" | "building";
 
 /** The kind of obstacle a tool draws; null for a tool of the outline. */
 export function kindOfTool(tool: Tool | null): ObstacleKind | null {

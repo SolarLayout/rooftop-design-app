@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { isHelpKey, keyFromPath, placeOf } from "./keys";
+import { firstKnownOf, isHelpKey, keyFromPath, placeOf } from "./keys";
 
 // A topic's key is its path under content/help (D80, after solarlayout's packages/help): place.kind.name, lowercase.
 
@@ -26,5 +26,16 @@ describe("the key of a topic", () => {
 
   test("the place of a key", () => {
     expect(placeOf("find.section.edges")).toBe("find");
+  });
+});
+
+describe("the first topic of a list", () => {
+  test("is the first of the candidates there is a topic for, in the candidates' order", () => {
+    const known = ["find.tool.move-the-roof", "find.tool.box"] as const;
+    expect(firstKnownOf(["find.tool.wall", "find.tool.move-the-roof", "find.tool.box"], known)).toBe("find.tool.move-the-roof");
+  });
+
+  test("is none when there is a topic for none of them", () => {
+    expect(firstKnownOf(["find.tool.wall"], ["find.tool.box"] as const)).toBeNull();
   });
 });
