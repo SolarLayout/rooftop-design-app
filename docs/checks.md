@@ -58,7 +58,7 @@ groups are data, `tools/check/e2e-groups.ts`; `turbo.json` and the root scripts 
 | Group | Suites, by file name in `e2e/tests` | Own inputs, beside the base |
 |---|---|---|
 | kit | `kit.e2e.ts`, `kit-*.e2e.ts` | `components/kit`, the pictures `kit*.png` |
-| find | `find`, `find-screens`, `outline`, `by-hand`, `obstacles` | `components/find`, `lib/map`, `lib/outline`, the pictures `find*.png` |
+| find | `find`, `find-screens`, `outline`, `by-hand`, `obstacles` | `components/find`, `lib/map`, `lib/outline`, the help's picture run `e2e/help-pictures` (run by hand, never by the check), the pictures `find*.png` |
 | studio | `array-lens`, `build`, `history`, `lens-switches`, `manipulation`, `modules`, `roof-lens`, `selection`, `shade-map`, `shadow-outlines`, `shell-vitals`, `stage`, `strings-*`, `studio-screens`, `sun-*`, `time` | `components/studio`, `components/scene`, `lib/scene`, `lib/studio`, find's folders (Build and the Roof lens's Edit cross into Find), the pictures `studio*.png` |
 | performance | `performance*` (`performance-screens` among them) | `components/performance`, `lib/performance`, studio's and find's folders (a voltage is chosen in the Strings lens; a roof is built on the map), the pictures `performance*.png` |
 | handover | `handover*` (`handover-screens` among them) | `components/handover`, `lib/handover`, the pictures `handover*.png` |

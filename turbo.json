@@ -169,6 +169,7 @@
         "apps/web/components/find/**",
         "apps/web/lib/map/**",
         "apps/web/lib/outline/**",
+        "e2e/help-pictures/**",
         "e2e/baselines/*/*/find*.png"
       ],
       "outputs": []
@@ -240,6 +241,7 @@
         "apps/web/components/find/**",
         "apps/web/lib/map/**",
         "apps/web/lib/outline/**",
+        "e2e/help-pictures/**",
         "e2e/baselines/*/*/studio*.png"
       ],
       "outputs": []
@@ -297,6 +299,7 @@
         "apps/web/components/find/**",
         "apps/web/lib/map/**",
         "apps/web/lib/outline/**",
+        "e2e/help-pictures/**",
         "e2e/baselines/*/*/performance*.png"
       ],
       "outputs": []
@@ -398,6 +401,7 @@
         "apps/web/components/find/**",
         "apps/web/lib/map/**",
         "apps/web/lib/outline/**",
+        "e2e/help-pictures/**",
         "e2e/baselines/*/*/home*.png"
       ],
       "outputs": []
@@ -456,6 +460,7 @@
         "apps/web/components/find/**",
         "apps/web/lib/map/**",
         "apps/web/lib/outline/**",
+        "e2e/help-pictures/**",
         "e2e/baselines/*/*/present*.png"
       ],
       "outputs": []
@@ -514,6 +519,7 @@
         "apps/web/components/find/**",
         "apps/web/lib/map/**",
         "apps/web/lib/outline/**",
+        "e2e/help-pictures/**",
         "apps/web/components/studio/**",
         "apps/web/components/scene/**",
         "apps/web/lib/scene/**",

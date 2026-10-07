@@ -103,6 +103,26 @@ bare `<h2 className={SECTION}>`:
 mounted by the shell and by Find. A heading that rightly has no disc is named in `WITHOUT_A_DISC` in
 `tools/help/coverage.ts`, with the reason.
 
+## Pictures
+
+A how-to's pictures (D81) are taken from the app by a script, never drawn, never edited after: when a screen changes, they
+are taken again and the change is seen in the pull request.
+
+- **What each picture shows** is written in `tools/help/pictures.ts`, in `HOW_TOS`: the how-to's folder (`find/move-the-roof`),
+  the window it is taken in, the margin kept round the roof, and per picture the acts of the hand after the picture before
+  it: a `click` at a spot of the roof, a `drag` by so many pixels, a `turn` by the round handle. A spot is a fraction of the
+  roof's box, across and down, so that it does not depend on the window. A drag or a turn that is `held` is caught before the
+  button is let go, then taken back, so the next picture begins from the roof as it was.
+- **Take them:** `bun help:pictures` (every how-to) or `bun help:pictures -g <folder>` (one). It runs Playwright on the test
+  stack (`e2e/help-pictures`, its README says what each file does) and writes `apps/web/public/help/<folder>/<n>.jpg`, the
+  number being the step's.
+- **The rules they keep:** the demo roof; the plain ground in place of the satellite imagery (`e2e/help-pictures/ground.jpg`:
+  no imagery to license, nothing behind the roof); twice the screen's pixels; JPEG at quality 82, about 60 kB each; nothing
+  leaves the machine. The callouts are never drawn into a picture: the topic places them over it.
+- **Before the commit:** look at every picture; commit them with the topic that shows them; put them in the pull request.
+- **A new how-to** that needs a state the acts cannot reach (an obstacle drawn, a tool chosen): add the act to `Act` in
+  `tools/help/pictures.ts` with its test, and to `act()` in `e2e/help-pictures/help-pictures.ts`.
+
 ## Keys in the sheet
 
 The sheet is a modal `<dialog>`: its keys are its own. A new handler of keys on the page (`window.addEventListener("keydown",

@@ -49,8 +49,8 @@ work, and `apps/web/CLAUDE.md` for the rules of the web app.
 - A screen or state without a mockup is designed and approved first, then built.
 
 ## In-app help
-Read `docs/help-content.md` before writing or changing a help topic (`apps/web/content/help`), wiring a ? to a heading, or
-changing the options of a section that has a topic. After a topic changes: `bun help:gen`, and commit the manifest with it.
+Read `docs/help-content.md` before writing or changing a help topic (`apps/web/content/help`), wiring a ? to a heading,
+changing the options of a section that has a topic, or taking a how-to's pictures. After a topic changes: `bun help:gen`, and commit the manifest with it.
 
 ## Engineering standard
 This is production software, not a prototype. The owner's words: "this is not throwaway code".
@@ -111,3 +111,4 @@ This is production software, not a prototype. The owner's words: "this is not th
 | `bun check --fresh` | Every check, ignoring the caches and rebuilding them |
 | `bun gen:api` | Regenerate `packages/api-types` from the API |
 | `bun help:gen` | Write the in-app help's typed manifest from `apps/web/content/help` (commit both; the gate in `tools/help` fails while it is stale) |
+| `bun help:pictures` | Take the pictures of the help's how-tos from the app on the test stack (`docs/help-content.md`, "Pictures"; `e2e/help-pictures/README.md`) |

@@ -21,6 +21,7 @@
     "gen:api": "bun tools/gen-api.ts",
     "equipment:catalog": "bun tools/equipment-catalog.ts",
     "help:gen": "bun tools/help-gen.ts",
+    "help:pictures": "bun tools/help-pictures.ts",
     "build": "bun tools/with-node.ts turbo run build",
     "typecheck": "bun tools/with-node.ts turbo run typecheck",
     "lint": "bun tools/with-node.ts turbo run lint",
