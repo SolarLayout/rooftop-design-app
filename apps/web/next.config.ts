@@ -1,3 +1,4 @@
+import createMDX from "@next/mdx";
 import type { NextConfig } from "next";
 
 import { apiOrigin } from "./api-origin";
@@ -40,4 +41,13 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// The in-app help's topics (D80, content/help) are .mdx files imported, never routed, compiled by @next/mdx; their YAML
+// frontmatter is read by bun help:gen and ignored here by remark-frontmatter. Turbopack takes the plugin as a path, and
+// under bun's isolated installs the loader cannot find it by its bare name: it is given resolved (solarlayout's spike,
+// 2026-09-26).
+const withMDX = createMDX({
+  extension: /\.mdx$/,
+  options: { remarkPlugins: [[require.resolve("remark-frontmatter")]] },
+});
+
+export default withMDX(nextConfig);

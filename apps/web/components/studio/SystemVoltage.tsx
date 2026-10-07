@@ -3,7 +3,8 @@
 import { useId } from "react";
 import { Segmented } from "@/components/ui/Segmented";
 import { StatusMark } from "@/components/ui/StatusMark";
-import { VOLTAGES, type BeforeAVoltage, type Volts } from "@/lib/studio/strings-view";
+import type { BeforeAVoltage } from "@/lib/studio/strings-view";
+import { VOLTAGES, type Volts } from "@/lib/studio/voltages";
 import { SECTION } from "./inspector-look";
 
 const VOLTAGE_OPTIONS = VOLTAGES.map((volts) => ({ value: String(volts) as `${Volts}`, label: `${volts} V` }));

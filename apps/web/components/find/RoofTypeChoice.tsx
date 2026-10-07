@@ -2,16 +2,7 @@
 
 import { classNames } from "@/components/ui/class-names";
 import { Segmented } from "@/components/ui/Segmented";
-import type { Roof } from "@/lib/api";
-
-export type RoofType = Roof["roof_type"];
-
-/** The three roof types of the engine, in the words of the boards. */
-export const ROOF_TYPES: { id: RoofType; name: string; short: string; caption: string }[] = [
-  { id: "flat_tilted", name: "Flat, tilted rows", short: "Tilted rows", caption: "Rows facing the equator" },
-  { id: "flat_ew", name: "Flat, east-west", short: "East-west", caption: "Back-to-back, low tilt" },
-  { id: "sloped_flush", name: "Sloped, flush", short: "Sloped", caption: "Modules follow the roof pitch" },
-];
+import { ROOF_TYPES, type RoofType } from "@/lib/geometry/roof-types";
 
 type Props = { value: RoofType; onChange: (value: RoofType) => void; className?: string };
 

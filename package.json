@@ -20,6 +20,7 @@
     "check": "bun tools/check.ts",
     "gen:api": "bun tools/gen-api.ts",
     "equipment:catalog": "bun tools/equipment-catalog.ts",
+    "help:gen": "bun tools/help-gen.ts",
     "build": "bun tools/with-node.ts turbo run build",
     "typecheck": "bun tools/with-node.ts turbo run typecheck",
     "lint": "bun tools/with-node.ts turbo run lint",
@@ -42,6 +43,7 @@
     "openapi-typescript": "7.13.0",
     "pmtiles": "4.5.0",
     "turbo": "2.11.5",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "yaml": "2.8.1"
   }
 }

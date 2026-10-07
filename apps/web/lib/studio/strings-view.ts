@@ -6,8 +6,7 @@ import { shown } from "../../components/ui/number-entry";
 import type { DesignOption, DesignResult, LayoutReadouts, SeriesRange } from "../api";
 import type { Verdict } from "../api";
 
-export type Volts = 600 | 1000 | 1500;
-export const VOLTAGES: readonly Volts[] = [600, 1000, 1500];
+import type { Volts } from "./voltages";
 
 /** What waits for the choice of a voltage (the board "Studio, Strings lens, no system voltage yet"). */
 export const WAITING = ["Modules in series", "Stringing options and the recommendation", "Energy, PR and yield", "Single-line diagram, BOM and exports"] as const;

@@ -11,7 +11,8 @@ import { inverterShownOf, withInverterRead, type ReplacedInverter } from "@/lib/
 import { withAcCable, withCurrentPerMppt } from "@/lib/studio/inverter-fields";
 import { mpptTableOf } from "@/lib/studio/mppt-table";
 import { optionCardsOf } from "@/lib/studio/option-cards";
-import { stringsViewOf, type Volts } from "@/lib/studio/strings-view";
+import { stringsViewOf } from "@/lib/studio/strings-view";
+import type { Volts } from "@/lib/studio/voltages";
 import { SECTION } from "./inspector-look";
 import { InverterCard } from "./InverterCard";
 import { InverterLimits } from "./InverterLimits";
