@@ -145,7 +145,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 | Item | Where it belongs |
 |---|---|
-| On Find, an obstacle turned back to exactly nothing and let go is taken for a press inside the roof, which picks the roof | When the owner asks |
+| On Find, an obstacle turned back to exactly nothing and let go is taken for a press inside the roof, which picks the roof | Issue #142 |
 | The pictures `kit-part-2.png` and Find's screens are to be renewed when the browser suites run again (the help's disc, how-to steps, the ? beside Find's title, Show me how) | When the owner runs the suites |
 | Twelve findings of the help's writing (the shade-free line with a pitch entered, the PAN source of the coefficients, "fits" beside an exclamation mark, trees lost on Edit, …) | `plan/phase-14-in-app-help.md`, "As built"; for the owner to order |
 | On phone the help sheet's grip has a press area over its ×; both close the sheet | When the owner asks |
