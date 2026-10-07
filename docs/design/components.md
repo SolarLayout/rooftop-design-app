@@ -407,6 +407,17 @@ desktop. Desktop at the bottom left over the vitals, tablet at the bottom left o
 play button alone, at the top left of the stage, `control`: a press plays and pauses; the time is moved on the
 timeline of the Sun lens. In the Sun lens the timeline stands instead, on tablet and desktop.
 
+## Find's first step (D85)
+The panel of Find before a place is found (`components/find/FirstStep.tsx`, the words in `lib/outline/first-step.ts`).
+Under the title and lead, three sections in the section headings' look, no ? on them (the ? stands beside the title):
+**Start here**, the ways to start as cards 52 high in the roof type's look (`bg-control`, raised, the icon 18 in the accent,
+a chevron at the right): Search for the building focuses the search over the map, Use my location does what the button
+beside the search does, Enter dimensions by hand opens the entry by hand; **The search understands**, four rows (44 on
+touch, 36 on desktop) of a name in `type-small` and its example in the figures' mono, a press puts the example into the
+search, which reads it back under the field; **Three steps**, the help's step marks (24), the first lit in the accent, the
+others `surface-2`. Without a map only the card by hand and the steps in its words. The floating search takes
+`border-accent` while it holds the focus.
+
 ## Map outline tools (Find and outline)
 Corner handle 18 (22 on touch), white with accent border; the corner being edited pulses. Midpoint handle 10,
 accent. Edge label: mono 13 on `color-ground`, radius 7. Outline: 2 px accent, fill accent at 9 %.

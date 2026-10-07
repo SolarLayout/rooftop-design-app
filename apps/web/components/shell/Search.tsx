@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useReducer, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useId, useImperativeHandle, useReducer, useRef, useState, type KeyboardEvent, type ReactNode, type Ref } from "react";
 import { Button } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { classNames } from "@/components/ui/class-names";
@@ -18,6 +18,9 @@ import { SearchError } from "@/lib/places/esri";
 import { isAPlace, placeInputOf, type LatLon } from "@/lib/places/place-input";
 import type { MapProvider } from "@/lib/places/provider";
 import { afterKey, IDLE, searchStateAfter } from "@/lib/places/search-state";
+
+/** What a screen around the search can ask of it (Find's first step, D85): the field focused, words put into it, my location. */
+export type SearchHandle = { focus: () => void; put: (text: string) => void; locate: () => void };
 
 /** A place the user chose: found by words, typed as coordinates, taken from a link, or the device's own. */
 export type FoundPlace = { lon: number; lat: number; label: string; byWords: boolean };
@@ -38,6 +41,7 @@ type Props = {
    * the well, as wide as it.
    */
   hero?: { label: string; href: string };
+  ref?: Ref<SearchHandle>;
   className?: string;
 };
 
@@ -46,7 +50,8 @@ const NO_KEY = "Words cannot be searched for without a map key. Paste coordinate
 const NO_LOCATION = "Your location is not available. Allow it in the browser, or search for the address.";
 const MY_LOCATION = "Use my location";
 
-const BOX = "flex h-12 min-w-0 items-center gap-3 rounded-card-s border border-line bg-surface-1 px-4 shadow-float";
+// The floating field takes the accent line while it holds the focus, as every well does (D85).
+const BOX = "flex h-12 min-w-0 items-center gap-3 rounded-card-s border border-line bg-surface-1 px-4 shadow-float focused:border-accent";
 const FIELD = "flex h-10 min-w-0 items-center gap-2.5 rounded-control border border-line bg-well px-3 shadow-well";
 // A note may run to two lines (the board "Coordinates in the search"): its mark stays by the first.
 const NOTE = "flex min-h-11 items-start gap-2.5 px-2.5 py-3 text-text-2";
@@ -68,8 +73,9 @@ const HERO_ANCHOR = "pointer-events-none absolute inset-x-0 bottom-0";
 const HERO_ACTION = "w-full max-tablet:h-12 max-tablet:rounded-row tablet:w-auto";
 
 /** The field of the search: words for the geocoder, coordinates, or a maps link; the places found under it. */
-export function Search({ provider, near, onPlace, found, look = "floating", hero, className }: Props) {
+export function Search({ provider, near, onPlace, found, look = "floating", hero, ref, className }: Props) {
   const id = useId();
+  const field = useRef<HTMLInputElement>(null);
   const [typed, setTyped] = useState("");
   const [state, dispatch] = useReducer(searchStateAfter, IDLE);
   const [floating, anchor] = useFloating({ side: "below", align: "start", gap: LIST_GAP });
@@ -185,6 +191,15 @@ export function Search({ provider, near, onPlace, found, look = "floating", hero
     );
   }
 
+  useImperativeHandle(ref, () => ({
+    focus: () => field.current?.focus(),
+    put: (text: string) => {
+      onType(text);
+      field.current?.focus();
+    },
+    locate: useMyLocation,
+  }));
+
   const listId = `${id}-places`;
   const formId = `${id}-search`;
   const reading = placeInputOf(typed);
@@ -212,6 +227,7 @@ export function Search({ provider, near, onPlace, found, look = "floating", hero
         {isHero ? <span ref={anchor} aria-hidden className={HERO_ANCHOR} /> : null}
         <Icon name="search" size={isHero ? 22 : 18} className="text-text-2" />
         <input
+          ref={field}
           type="text"
           role="combobox"
           aria-label={SEARCH_LABEL}
