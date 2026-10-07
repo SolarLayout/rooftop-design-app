@@ -477,13 +477,14 @@ bottom, the whole height but 48, `rounded-t-panel`, with the grip. It comes and 
 holds the focus; Escape, the ×, a press beside it close it, and the focus goes back to the disc.
 - The head, 48 high, a line of `line-subtle` under it: Back (‹, quiet, only once a link was followed), where it was opened in
   `type-section` `text-3` ("Section · Strings lens"), Close (×).
-- Then, 20 in, 18 down, with 16 between: the title (`type-lens`, `type-lens-touch` on touch), the summary (`text-2`); for a
+- Then, 20 in, 18 down, with 16 between: the title (`type-lens`, `type-lens-touch` on touch, in the light of a section
+  heading: `color-heading` with `heading-glow`; the owner, session 19), the summary (`text-2`); for a
   one-choice section its options in a bordered list (`radius-row`), each its label (500) and what it means (`type-small`,
   `text-2`), the user's own on `note-surface` with "Your choice" (`accent` on `accent-ink`, 11 at 600); the body: headings
-  (`type-title`), words (`text-2`), the user's own on-screen words in mono on `surface-2`, a note (`note-surface`, the note
+  (`type-title`, in the same light), words (`text-2`), the user's own on-screen words in mono on `surface-2`, a note (`note-surface`, the note
   mark), a link to another topic in the accent, underlined; while the body loads, three lines of skeleton; when it cannot
-  load, "This part of the help did not load. Check the connection and try again." and Try again. Then "Related" (`type-section`,
-  `text-3`) and a row per topic: its title (500), its summary in two lines at most (`type-small`, `text-2`), a chevron.
+  load, "This part of the help did not load. Check the connection and try again." and Try again. Then "Related" (a section heading:
+  `type-section`, 600, uppercase, in the same light) and a row per topic: its title (500), its summary in two lines at most (`type-small`, `text-2`), a chevron.
 - A related topic or a link opens in the sheet; Back returns, as many steps as were taken; a disc pressed starts afresh.
 - The topic shown is in the address (`?help=<key>`), read when the page opens, so a shared link opens it; nothing else of the
   address is touched.

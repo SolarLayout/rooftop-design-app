@@ -48,6 +48,10 @@ work, and `apps/web/CLAUDE.md` for the rules of the web app.
   visual guidelines, the mockup sources and their previews.
 - A screen or state without a mockup is designed and approved first, then built.
 
+## In-app help
+Read `docs/help-content.md` before writing or changing a help topic (`apps/web/content/help`), wiring a ? to a heading, or
+changing the options of a section that has a topic. After a topic changes: `bun help:gen`, and commit the manifest with it.
+
 ## Engineering standard
 This is production software, not a prototype. The owner's words: "this is not throwaway code".
 - Test-driven: write the failing test first, make it pass, then tidy. No behaviour lands without a test

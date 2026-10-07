@@ -3,11 +3,10 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-07, session 19. **D79 built**: the roof picked up whole on Find's map, moved and turned with its
-obstacles (#117); a dragged corner moves finely, a snap reaching 4 px (#118); the obstacle picked moved and turned (#120, after
-#119 merged into a stale branch); the cursor and the tips (#121); on phone the tip at the top of the sheet, not over the map
-(#122, merged). Session 18 before it: #107 to #116, D68 to D78. **Now: in-app help** (Phase 14): the boards approved
-(D80), being built (`plan/phase-14-in-app-help.md`); the owner: run solo, merge on a green check, go on to the end of the phase.
+**Last updated:** 2026-10-07, session 19. **D79 built** (#117, #118, #120 to #122). **Phase 14, in-app help: the section
+headings done** (#123 to #128): a ? beside every section heading of the input panels, 21 topics, the sheet at the edge (D80),
+the gate and the coverage gate in `tools/help`, the guide `docs/help-content.md`. **Next:** help for Find's tools with numbered
+steps and pictures, designed for the owner's approval first (the owner, session 19).
 
 ## Where we are
 
@@ -29,18 +28,16 @@ obstacles (#117); a dragged corner moves finely, a snap reaching 4 px (#118); th
 | 11 Hardening for the tradeshow | Done (session 14: #78 to #86; session 15: D56's run of the whole browser suite and the renewed pictures, #89) | What exists, what deviated, what was found: `phase-11-hardening.md`, "As built". How: `phase-11-plan.md`, scoped with the owner; issues #73 to #77 hold what was deferred |
 | 12 Deployment: staging and production | In progress; both environments live (session 16: #90 to #95, #97); left: #99, #100 | `phase-12-plan.md`: what was found, 14 decisions, the owner's steps in order (1 to 4 done), the pull requests; `infra/aws/README.md`: what exists on AWS and how it was made |
 | 13 Optimization | Done (session 17: #102 to #106) | What was found, the numbers before and after, what exists: `phase-13-optimization.md`, "As built". How: `phase-13-plan.md`, after the owner's interview (`reference/phase-13-interview.md`) |
-| 14 In-app help | In progress (session 19): the boards approved (D80) | `phase-14-in-app-help.md`: the core taken from solarlayout's `packages/help`, what is ours, where help goes, the pull requests |
+| 14 In-app help | The section headings done (session 19: #123 to #128); next, Find's tools with steps and pictures, design first | `phase-14-in-app-help.md`, "As built"; how to write a topic: `docs/help-content.md` |
 
 ## In flight
 
-Phase 14 is being built, pull request by pull request, merged on a green check by the session (the owner, session 19). Its
-prototype is the local branch `design/in-app-help`, never to be merged. Stacked pull requests are avoided from now on: #119 was merged into its base branch after that branch had merged, and
-never reached `main` (#120 brought it). Both environments ran `6f7be3c` (#116) when session 19 began; `main` has moved since
-(#117, #118, #120), deployed by the workflows as usual. Standing instructions of the owner (session 18): no browser test suites are run and no new UI
-tests are written; each change is checked by hand in the browser with Playwright and its screenshots go in the pull request
-(the orphan branch `pr-shots`); every board for approval comes in three sizes on the canvas; the owner merges the pull
-requests himself. Left of Phase 12: #99 and #100. Watch items: ECR's 8 high CVEs in Debian's base; no lifecycle rule on ECR;
-the Esri keys expire about 2027-10; GitHub delays events now and then.
+Nothing open. The owner's standing instructions (sessions 18 and 19): run solo, open the pull requests and merge them on a
+green check, one after the other; no stacked pull requests (#119 once merged into a branch already merged); no browser test
+suites run and no new UI tests; each change checked by hand in the browser with Playwright at three sizes, its screenshots in
+the pull request (the orphan branch `pr-shots`); every board for approval in three sizes on the canvas. The prototype of the
+help is the local branch `design/in-app-help`, never to be merged. Left of Phase 12: #99 and #100. Watch items: ECR's 8 high
+CVEs in Debian's base; no lifecycle rule on ECR; the Esri keys expire about 2027-10; GitHub delays events now and then.
 
 ## What the web app has today
 
@@ -110,8 +107,9 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 ## Next, in order
 
-1. Phase 14, in-app help: the owner's approval of the boards and the plan, then its pull requests in order
-   (`plan/phase-14-in-app-help.md`: the MDX spike and the registry, the disc and the drawer, the topics).
+1. Phase 14, next: help for Find's tools (outlining, adding obstacles, moving, turning, deleting) with numbered steps and
+   pictures with callouts in the sheet, ready for videos later. Analyse, design on the canvas page "In-App Help" in three
+   sizes, get the owner's approval, then write its pull requests into `plan/phase-14-in-app-help.md` and build.
 2. Issue #114: the Strings legend with many MPPT (design first).
 3. #99 and #100 when the owner needs them (advised: the budget alarm soon, the rate limit before the site is promoted).
 4. When browser tests come back: update the suites that use the old words (Replace and its dialogs, the top bar's words,
@@ -145,6 +143,8 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 | Item | Where it belongs |
 |---|---|
+| Twelve findings of the help's writing (the shade-free line with a pitch entered, the PAN source of the coefficients, "fits" beside an exclamation mark, trees lost on Edit, …) | `plan/phase-14-in-app-help.md`, "As built"; for the owner to order |
+| On phone the help sheet's grip has a press area over its ×; both close the sheet | When the owner asks |
 | On Find's map at roof zoom the demo's obstacles are 8 to 17 px across, smaller than their handles' targets: they are picked and moved after zooming in; an obstacle's label can cover a roof corner (corner 1 of the demo) | When the owner asks |
 | A very slow touch drag (about 1 px an event, emulated by Playwright) starts no marker drag on the map, MapLibre's corners included; real fingers move more per event | Watch |
 | The obstacle list of Find shows each height and does not edit it (the Roof lens does); trees are not drawn on the map; the by-hand roof's corners are not dragged on the map | Phase 11, or when the owner asks |

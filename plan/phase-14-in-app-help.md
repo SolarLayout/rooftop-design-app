@@ -99,3 +99,44 @@ Each topic's words are checked against the code before they are written, its `fi
 
 - The design: approved with the sheet at the edge (D80). New dependencies: approved.
 - The order of the later places: the owner says when.
+- **Next, asked by the owner (session 19), to be designed and approved before it is planned:** help for Find's tools
+  (outlining, adding obstacles, moving, turning, deleting), with numbered steps ("1, 2, 3") and pictures with callouts in
+  the sheet itself, built so that videos can come later (the next major work). The design goes on the canvas page
+  "In-App Help" in three sizes; once approved, its pull requests are written here.
+
+## As built (session 19)
+
+| Pull request | What |
+|---|---|
+| #123 | The registry, the keys, the state, the address; the generator (`bun help:gen`) and the gate (`tools/help`); `@next/mdx` with `remark-frontmatter` by absolute path; the first topic |
+| #124 | The ? disc and the help sheet (kit components, `components.md` first), the Tooltip "with a summary"; mounted in the shell and on Find |
+| #125 | The topics of the Strings and Array lenses' sections; `SectionHeading` |
+| #126 | The topics of the Roof and Sun lenses and of Find (21 topics in all); the coverage gate (`tools/help/coverage.ts`); a section's options listed in the code's order |
+| #127 | Keys pressed in an open dialog stay there (`components/shell/keys-held.ts`): Escape in the sheet no longer took back a corner on Find, nor Cmd+Z undid the design behind it |
+| #128 | The sheet's title, headings and Related in the light of a section heading (the owner, session 19) |
+
+**How to write a topic:** `docs/help-content.md`, linked from both `CLAUDE.md` files.
+
+**What changed from the plan:**
+- No `<Value of="…"/>`: a number that lives in the code is said in words or quoted as the screen shows it in a code span;
+  the gate refuses a number typed with its unit.
+- The frontmatter is read by a small reader of our own (`tools/help/frontmatter.ts`), not `zod`.
+- The components are in `apps/web/components/shell/help`, a part both Find and the workspaces use.
+- The option lists the gate reads moved into small pure modules (`lib/geometry/roof-types.ts`, `lib/studio/voltages.ts`,
+  `lib/outline/shapes.ts`, `lib/flow/day-choices.ts`), as the tools' typecheck has no DOM and no JSX.
+- Below desktop, Find's roof type is a segmented control without a heading (the boards), so it has no ? there.
+
+**Found while writing the topics (each read in the code; not fixed, for the owner to order):**
+- With a row pitch entered, the line "Shade-free would be …" shows the pitch used, not the shade-free one.
+- The module card's source "Coefficients (PAN file)" holds for the Voc coefficient only.
+- The verdict says "fits" beside an exclamation mark.
+- A new module keeps a Voc coefficient that was entered for the one before.
+- Sloped chosen on Find gives another roof than Sloped chosen in the Roof lens (the parapet and the pitch).
+- Trees are lost when a roof is edited and built again (`obstaclesOfMap` leaves them out).
+- `Long side faces` 0 and 180 give the same roof.
+- The places in the corner table are centred again on Build.
+- "Kept clear" counts area even when shaded positions are allowed.
+- The functional inventory says walkway "rows" where the code counts units, and a latitude of ±90 where the inventory says ±80.
+- Near shading counts sky hidden by the horizon.
+- The text of the sloped roof's azimuth line.
+- On phone the grip's press area lies over the sheet's ×; both close it.

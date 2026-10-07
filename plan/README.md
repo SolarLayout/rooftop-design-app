@@ -33,7 +33,7 @@ Always:
 | 11 | Hardening for the tradeshow | `phase-11-hardening.md` | done (session 14: #78 to #86; session 15: D56's run of the whole browser suite and the renewed pictures, #89); how: `phase-11-plan.md`, scoped with the owner; the deferred parts in issues #73 to #77 |
 | 12 | Deployment: staging and production (Vercel, AWS Lambda; the two sharing nothing); the stand demos from production | `phase-12-deployment.md` | in progress: both environments live (session 16: #90 to #95, #97); how: `phase-12-plan.md`; the path: `docs/deployment.md` |
 | 13 | Optimization: the engine lean in time and memory for Lambda, and the hosted app's limits | `phase-13-optimization.md` | done (session 17: #102 to #106); how: `phase-13-plan.md` |
-| 14 | In-app help: a ? on the section headings of the input panels, a help drawer, topics in MDX on solarlayout's core | `phase-14-in-app-help.md` | in progress (session 19): the boards approved (D80); `phase-14-in-app-help.md` |
+| 14 | In-app help: a ? on the section headings of the input panels, a help drawer, topics in MDX on solarlayout's core | `phase-14-in-app-help.md` | the section headings done (session 19: #123 to #128, 21 topics); next: help for Find's tools with steps and pictures, its design for the owner's approval |
 
 ## Decisions taken (change here if overruled)
 
