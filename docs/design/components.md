@@ -443,7 +443,7 @@ touch), `DetectedCallout` the callout of Detect building. Every rule of drawing 
   on a row selects it, Remove takes it. The card of the Roof lens counts them. In code: `ObstacleList`,
   `HeightDialog`, the obstacles in `lib/outline/obstacles.ts` and the reducer.
 
-## Move and turn the roof and its obstacles (Find's map) — approved, not built
+## Move and turn the roof and its obstacles (Find's map) — approved; the roof built, the obstacles, the cursor and the tips not yet
 The boards "UI fixes · Move and turn the roof and its obstacles" (D79). Once the outline is closed, a press inside the roof
 (not on a corner) picks it up whole: the line 3 px with a glow, the fill a shade stronger; where it was stays dashed until it
 is let go. A drag moves it and its obstacles, the label saying how far ("1.6 m E · 0.6 m S"); the arrow keys nudge 0.1 m, 1 m

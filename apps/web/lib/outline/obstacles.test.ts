@@ -8,7 +8,9 @@ import {
   labelOf,
   mapShapesOf,
   nameOf,
+  obstacleMovedBy,
   obstaclesOfMap,
+  obstacleTurnedAbout,
   tankOf,
   type Obstacle,
 } from "./obstacles";
@@ -189,5 +191,23 @@ describe("to the API and back", () => {
     ]);
     expect(loaded[0].points[2].x).toBeCloseTo(15, 3);
     expect(loaded[0].points[2].y).toBeCloseTo(9, 3);
+  });
+});
+
+describe("an obstacle moved or turned", () => {
+  const box: Obstacle = { id: 1, kind: "box", name: "Box 1", height: 1.2, diameter: null, points: [{ x: 0, y: 0 }, { x: 2, y: 0 }, { x: 2, y: 1 }, { x: 0, y: 1 }] };
+  const tank: Obstacle = { id: 2, kind: "cylinder", name: "Tank 1", height: 2, diameter: 3, points: [{ x: 4, y: 4 }] };
+
+  test("moved, every point moves by the metres given; the rest stays", () => {
+    expect(obstacleMovedBy(box, { x: 1, y: -2 })).toEqual({ ...box, points: [{ x: 1, y: -2 }, { x: 3, y: -2 }, { x: 3, y: -1 }, { x: 1, y: -1 }] });
+    expect(obstacleMovedBy(tank, { x: 1, y: -2 })).toEqual({ ...tank, points: [{ x: 5, y: 2 }] });
+  });
+
+  test("turned about a point, counter-clockwise; a tank keeps its diameter", () => {
+    const turned = obstacleTurnedAbout(tank, { x: 0, y: 0 }, 90);
+    expect(turned.points[0].x).toBeCloseTo(-4, 9);
+    expect(turned.points[0].y).toBeCloseTo(4, 9);
+    expect(turned.diameter).toBe(3);
+    expect(obstacleTurnedAbout(box, { x: 1, y: 0.5 }, 180).points[0].x).toBeCloseTo(2, 9);
   });
 });

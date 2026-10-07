@@ -6,7 +6,7 @@ import { shown } from "../../components/ui/number-entry";
 import type { MapShapeRequest } from "../api";
 import { toLonLat, toMetres, type Frame } from "./frame";
 import { areaOf, edgesOf, type XY } from "../geometry/measure";
-import { rectangleOf } from "./rectangle";
+import { rectangleOf, turnedAbout } from "./rectangle";
 
 export type ObstacleKind = "box" | "cylinder" | "wall" | "building";
 
@@ -58,6 +58,16 @@ export function boxWithCorner(points: readonly XY[], index: number, at: XY): rea
 function unit(v: XY): XY | null {
   const length = Math.hypot(v.x, v.y);
   return length === 0 ? null : { x: v.x / length, y: v.y / length };
+}
+
+/** The obstacle moved by `by`, in metres: every point, or the middle of a tank. */
+export function obstacleMovedBy(obstacle: Obstacle, by: XY): Obstacle {
+  return { ...obstacle, points: obstacle.points.map(({ x, y }) => ({ x: x + by.x, y: y + by.y })) };
+}
+
+/** The obstacle turned about `centre` by `degrees`, counter-clockwise; a tank keeps its diameter. */
+export function obstacleTurnedAbout(obstacle: Obstacle, centre: XY, degrees: number): Obstacle {
+  return { ...obstacle, points: turnedAbout(obstacle.points, centre, degrees) };
 }
 
 /** The tank dragged from its middle to its edge; null while there is no size. */
