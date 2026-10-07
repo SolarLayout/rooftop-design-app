@@ -15,6 +15,11 @@ export type Snapping = {
   edges: readonly (readonly [XY, XY])[];
   /** Degrees within which an angle snaps. */
   within: number;
+  /**
+   * Metres within which a snap may carry the corner from the pointer: a few pixels of the map. Far from the
+   * corner before, 3° is metres wide; without it the corner would stick to the line, then jump.
+   */
+  reach: number;
   /** Whether right angles are snapped to ("Square the corners"). */
   squared: boolean;
 };
@@ -39,20 +44,28 @@ function atBearing(pivot: XY, candidate: XY, degrees: number): XY {
 }
 
 /** The corner as it is placed: snapped to a right angle, else to a parallel, else where it is. */
-export function snappedCorner({ candidate, previous, before, edges, within, squared }: Snapping): { corner: XY; snappedTo: SnappedTo } {
+export function snappedCorner({ candidate, previous, before, edges, within, reach, squared }: Snapping): { corner: XY; snappedTo: SnappedTo } {
   if (!previous) return { corner: candidate, snappedTo: null };
   const bearing = bearingOf(candidate.x - previous.x, candidate.y - previous.y);
+  /** The corner on the line at `degrees`, when the line is within the angle and the reach of the pointer. */
+  const onto = (degrees: number): XY | null => {
+    if (Math.abs(turn(bearing, degrees)) > within) return null;
+    const corner = atBearing(previous, candidate, degrees);
+    return Math.hypot(corner.x - candidate.x, corner.y - candidate.y) <= reach ? corner : null;
+  };
 
   if (squared && before) {
     const ofEdgeBefore = bearingOf(previous.x - before.x, previous.y - before.y);
     for (const right of [ofEdgeBefore + 90, ofEdgeBefore - 90]) {
-      if (Math.abs(turn(bearing, right)) <= within) return { corner: atBearing(previous, candidate, right), snappedTo: "right-angle" };
+      const corner = onto(right);
+      if (corner) return { corner, snappedTo: "right-angle" };
     }
   }
   for (const [a, b] of edges) {
     const ofEdge = bearingOf(b.x - a.x, b.y - a.y);
     for (const parallel of [ofEdge, ofEdge + 180]) {
-      if (Math.abs(turn(bearing, parallel)) <= within) return { corner: atBearing(previous, candidate, parallel), snappedTo: "parallel" };
+      const corner = onto(parallel);
+      if (corner) return { corner, snappedTo: "parallel" };
     }
   }
   return { corner: candidate, snappedTo: null };

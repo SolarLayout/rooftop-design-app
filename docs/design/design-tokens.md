@@ -426,6 +426,7 @@ and the file equal.
 | `ROOF_ZOOM` | `18` | The zoom of the map at a roof that was found, as MapLibre counts zoom (on tiles of 512): the native zoom 19 of the imagery's tiles of 256, about 0.3 m per pixel |
 | `SCALE_BAR_MAX` | `124` | Pixels that the scale bar of the map may be wide at most; it shows the largest round length that fits |
 | `SNAP_DEGREES` | `3` | Degrees within which a corner snaps to a right angle or to a parallel, and the rectangle's turn to north |
+| `SNAP_REACH` | `4` | Pixels of the map within which such a snap may carry a corner from the pointer: far from the corner before, 3° is metres wide, and a drag would stick, then jump |
 | `CLOSE_WITHIN` | `12` | Pixels within which a press on the first corner closes the outline |
 | `CLOSE_WITHIN_TOUCH` | `20` | The same on phone and tablet |
 | `NUDGE_MM` | `100` | Millimetres a selected corner moves by an arrow key |

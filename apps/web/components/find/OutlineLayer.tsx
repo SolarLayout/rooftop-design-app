@@ -732,7 +732,7 @@ function cornerMarker(map: MapLibre, index: number, latest: Latest, isDragging: 
   });
   marker.on("drag", () => {
     const { state, on } = latest.current;
-    if (state.frame) on({ type: "cornerMoved", index, at: metresOf(marker, state.frame) });
+    if (state.frame) on({ type: "cornerMoved", index, at: metresOf(marker, state.frame), metresPerPx: metresPerPixel(map.getCenter().lat, map.getZoom()) });
     if (loupe) {
       loupe.setLngLat(marker.getLngLat());
       drawLoupe(map, loupe, marker.getLngLat());
@@ -770,7 +770,7 @@ function midpointMarker(map: MapLibre, edge: number, latest: Latest, isDragging:
   });
   marker.on("drag", () => {
     const { state, on } = latest.current;
-    if (state.frame) on({ type: "cornerMoved", index: edge + 1, at: metresOf(marker, state.frame) });
+    if (state.frame) on({ type: "cornerMoved", index: edge + 1, at: metresOf(marker, state.frame), metresPerPx: metresPerPixel(map.getCenter().lat, map.getZoom()) });
   });
   marker.on("dragend", () => {
     isDragging.current = false;

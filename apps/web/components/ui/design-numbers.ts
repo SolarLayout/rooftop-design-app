@@ -29,6 +29,9 @@ export const SCALE_BAR_MAX = 124;
 /** Degrees within which a corner snaps to a right angle or to a parallel, and the rectangle's turn to north. */
 export const SNAP_DEGREES = 3;
 
+/** Pixels of the map within which such a snap may carry a corner from the pointer: a drag moves finely, never by metres. */
+export const SNAP_REACH = 4;
+
 /** Pixels within which a press on the first corner closes the outline. */
 export const CLOSE_WITHIN = 12;
 
