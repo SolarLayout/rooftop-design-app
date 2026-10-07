@@ -6,11 +6,15 @@ import { frameAt, type Frame, type LonLat } from "./frame";
 import { canRedo, canUndo, historyOf, redone, undone, withNext, type History } from "./history";
 import { areaOf, bearingOf, centroidOf, compassOf, edgesOf, facingOf, isClockwise, type Facing, type XY } from "../geometry/measure";
 import { nudged, nudgeOfKey } from "./nudge";
-import { boxOf as obstacleBoxOf, boxWithCorner, FEWEST_POINTS, nameOf, tankOf, type Obstacle, type ObstacleKind, type Shape } from "./obstacles";
+import { boxOf as obstacleBoxOf, boxWithCorner, FEWEST_POINTS, nameOf, obstacleMovedBy, obstacleTurnedAbout, tankOf, type Obstacle, type ObstacleKind, type Shape } from "./obstacles";
 import { rectangleOf, turnedAbout, turnOfHandle } from "./rectangle";
+import { canTurn, movedOnRoof } from "./obstacle-move";
 import { movedBy, turnedBy, turnOfDrag, type Carried, type Lift } from "./roof-move";
 import { closesOnFirst, snappedCorner } from "./snap";
 import { isRectangle, withEdgeLength } from "../geometry/typed-length";
+
+/** What is lifted: the roof picked up whole, or the obstacle of this id. */
+export type Lifted = "roof" | number;
 
 /** A box drawn with the rectangle tool: its four corners before the turn, and the turn. */
 export type Box = { base: readonly XY[]; turn: number };
@@ -39,8 +43,8 @@ export type OutlineState = {
   selectedObstacle: number | null;
   /** The closed roof picked up whole (D79): a drag inside it moves it, its handle turns it, the arrows nudge it. */
   picked: boolean;
-  /** The move or the turn of the picked roof under way, from where it stands in the history; null at rest. */
-  lift: Lift | null;
+  /** The move or the turn under way of the picked roof or obstacle, from where it stands in the history; null at rest. */
+  lift: (Lift & { of: Lifted }) | null;
   /** The id the next obstacle gets. */
   nextId: number;
   history: History<Drawn>;
@@ -81,7 +85,9 @@ export type OutlineEvent =
   | { type: "roofPicked"; picked: boolean }
   | { type: "roofMoved"; by: XY }
   | { type: "roofTurned"; from: XY; to: XY }
-  | { type: "roofDropped" };
+  | { type: "obstacleMoved"; id: number; by: XY }
+  | { type: "obstacleTurned"; id: number; from: XY; to: XY }
+  | { type: "liftDropped" };
 
 export type Measurements = {
   edges: number[];
@@ -181,7 +187,19 @@ function boxOf(corners: readonly XY[], rectangle: Box | null): Box | null {
 function lifted(state: OutlineState, carried: Carried, lift: Lift): OutlineState {
   const { rectangle } = state.history.present;
   const turn = lift.kind === "turn" ? lift.degrees : 0;
-  return { ...state, ...carried, rectangle: rectangle ? boxOf(carried.corners, { ...rectangle, turn: rectangle.turn + turn }) : null, lift };
+  return { ...state, ...carried, rectangle: rectangle ? boxOf(carried.corners, { ...rectangle, turn: rectangle.turn + turn }) : null, lift: { ...lift, of: "roof" } };
+}
+
+/** The obstacle picked, as it stands in the history; null when it is not the one of `id`. */
+function obstacleAtRest(state: OutlineState, id: number): Obstacle | null {
+  if (state.selectedObstacle !== id) return null;
+  return state.history.present.obstacles.find((obstacle) => obstacle.id === id) ?? null;
+}
+
+/** The obstacle of `id` lifted to `moved`: not a step until it is dropped. */
+function obstacleLifted(state: OutlineState, moved: Obstacle, lift: Lift): OutlineState {
+  const obstacles = state.history.present.obstacles.map((obstacle) => (obstacle.id === moved.id ? moved : obstacle));
+  return { ...state, obstacles, lift: { ...lift, of: moved.id } };
 }
 
 function edgesDrawn(corners: readonly XY[], closed: boolean): [XY, XY][] {
@@ -253,6 +271,11 @@ export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineS
         const carried = movedBy(state, { x: nudge.dx, y: nudge.dy });
         const rectangle = boxOf(carried.corners, state.rectangle);
         return stepped(state, { ...carried, closed: state.closed, rectangle }, null);
+      }
+      const obstacle = state.obstacles.find(({ id }) => id === state.selectedObstacle);
+      if (nudge && obstacle && state.selected === null) {
+        const by = movedOnRoof(obstacle, { x: nudge.dx, y: nudge.dy }, state.corners);
+        return withObstacles(state, state.obstacles.map((each) => (each === obstacle ? obstacleMovedBy(each, by) : each)), obstacle.id);
       }
       if (!nudge || state.selected === null) return state;
       return stepped(state, { corners: nudged(state.corners, state.selected, nudge), closed: state.closed, rectangle: null }, state.selected);
@@ -401,7 +424,21 @@ export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineS
       return lifted(state, turnedBy(from, degrees), { kind: "turn", degrees });
     }
 
-    case "roofDropped": {
+    case "obstacleMoved": {
+      const obstacle = obstacleAtRest(state, event.id);
+      if (!obstacle) return state;
+      const by = movedOnRoof(obstacle, event.by, state.history.present.corners);
+      return obstacleLifted(state, obstacleMovedBy(obstacle, by), { kind: "move", by });
+    }
+
+    case "obstacleTurned": {
+      const obstacle = obstacleAtRest(state, event.id);
+      if (!obstacle || !canTurn(obstacle.kind)) return state;
+      const degrees = turnOfDrag(obstacle.points, event.from, event.to, SNAP_DEGREES);
+      return obstacleLifted(state, obstacleTurnedAbout(obstacle, centroidOf(obstacle.points), degrees), { kind: "turn", degrees });
+    }
+
+    case "liftDropped": {
       const { lift } = state;
       if (!lift) return state;
       const still = lift.kind === "move" ? lift.by.x === 0 && lift.by.y === 0 : lift.degrees === 0;

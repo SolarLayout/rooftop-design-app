@@ -84,14 +84,14 @@ describe("moving the picked roof", () => {
 
     expect(rounded(dragging.corners)).toEqual(rounded(RECTANGLE.map(({ x, y }) => ({ x: x + 1.6, y: y - 0.6 }))));
     expect(rounded(dragging.obstacles[0].points)).toEqual([{ x: 21.6, y: 9.4 }]);
-    expect(dragging.lift).toEqual({ kind: "move", by: { x: 1.6, y: -0.6 } });
+    expect(dragging.lift).toEqual({ kind: "move", by: { x: 1.6, y: -0.6 }, of: "roof" });
     expect(dragging.history).toBe(state.history);
     expect(measurementsOf(dragging).edges.map((edge) => Math.round(edge * 1e6) / 1e6)).toEqual([90, 40, 90, 40]);
     expect(liftLabelOf(dragging.lift!, dragging.corners, "north")).toBe("1.6 m E · 0.6 m S");
   });
 
   test("dropped, the move is one step of Undo, and the roof stays picked", () => {
-    const dropped = after(picked(), { type: "roofMoved", by: { x: 1.6, y: -0.6 } }, { type: "roofDropped" });
+    const dropped = after(picked(), { type: "roofMoved", by: { x: 1.6, y: -0.6 } }, { type: "liftDropped" });
 
     expect(dropped.lift).toBeNull();
     expect(dropped.picked).toBe(true);
@@ -104,7 +104,7 @@ describe("moving the picked roof", () => {
   test("a drag that ends where it began is no step", () => {
     const state = picked();
 
-    const dropped = after(state, { type: "roofMoved", by: { x: 0, y: 0 } }, { type: "roofDropped" });
+    const dropped = after(state, { type: "roofMoved", by: { x: 0, y: 0 } }, { type: "liftDropped" });
 
     expect(dropped.history).toBe(state.history);
   });
@@ -157,7 +157,7 @@ describe("turning the picked roof", () => {
       { type: "boxDropped" },
       { type: "roofPicked", picked: true },
       { type: "roofTurned", from, to: clockwise(30) },
-      { type: "roofDropped" },
+      { type: "liftDropped" },
     );
 
     expect(box.rectangle?.turn).toBeCloseTo(-30, 6);
@@ -165,7 +165,7 @@ describe("turning the picked roof", () => {
   });
 
   test("dropped, the turn is one step of Undo", () => {
-    const dropped = after(picked(), { type: "roofTurned", from, to: clockwise(6) }, { type: "roofDropped" });
+    const dropped = after(picked(), { type: "roofTurned", from, to: clockwise(6) }, { type: "liftDropped" });
 
     expect(dropped.history.past).toHaveLength(picked().history.past.length + 1);
     expect(outlineAfter(dropped, { type: "undone" }).corners).toEqual(RECTANGLE);
