@@ -157,12 +157,12 @@ export function Scene({ onContextLost, stage }: Props) {
 
   return (
     <SceneCanvas onContextLost={onContextLost} onPressNothing={() => pressed({ what: "ground" })}>
-      <CameraRig radius={frame.radius} />
+      <CameraRig radius={frame.radius} onDrag={(isDragged) => stage.getState().setOver("view", isDragged ? "grabbing" : null)} />
       <Projector anchors={anchors} stage={stage} />
       <SunLight radius={frame.radius} />
       {showsSunPath ? <SunPath centre={frame.centroid} radius={frame.radius} stage={stage} /> : null}
       <group position={[ox, oy, oz]}>
-        <Building roof={roof} reveal={reveal.building} onPressRoof={(event) => pressed({ what: "roof" }, event)} onOverRoof={over("roof", "pointer")} />
+        <Building roof={roof} reveal={reveal.building} onPressRoof={(event) => pressed({ what: "roof" }, event)} />
         <Obstacles
           obstacles={roof.obstacles}
           reveal={reveal.obstacles}
@@ -188,7 +188,6 @@ export function Scene({ onContextLost, stage }: Props) {
             reveal={reveal.modules}
             selected={shown?.kind === "module" ? shown.index : null}
             onPressModule={(instanceId, event) => pressed({ what: "module", instanceId }, event)}
-            onOverModules={over("modules", "pointer")}
             onWrite={COUNTS_MODULE_WRITES ? stage.getState().countModuleWrite : undefined}
             glassColours={glass}
             onTraceModule={strings && hovers ? trace : undefined}

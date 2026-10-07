@@ -19,8 +19,6 @@ type Props = {
   roof: RoofOfTheScene;
   /** A press on the roof surface, with where it hit (plan step 17). */
   onPressRoof?: (event: ThreeEvent<MouseEvent>) => void;
-  /** The pointer came over the roof surface, or left it. */
-  onOverRoof?: (isOver: boolean) => void;
   /** How far the building has risen from the ground, 0 to 1 (Present's tour, plan/phase-10-plan.md, step 17); whole unless said. */
   reveal?: number;
 };
@@ -64,7 +62,7 @@ function edgeOf(roof: RoofOfTheScene): BufferGeometry {
  * "Obstacles on the roof"). While Present reveals it, its height is scaled from the ground up to its own,
  * the roof plane rising with it: a transform of the group, never new geometry.
  */
-export function Building({ roof, onPressRoof, onOverRoof, reveal = 1 }: Props) {
+export function Building({ roof, onPressRoof, reveal = 1 }: Props) {
   const surface = useMemo(() => roofGeometryOf(roof), [roof]);
   const walls = useMemo(() => wallsGeometryOf(roof), [roof]);
   const edge = useMemo(() => edgeOf(roof), [roof]);
@@ -77,8 +75,6 @@ export function Building({ roof, onPressRoof, onOverRoof, reveal = 1 }: Props) {
         rotation={FLAT}
         receiveShadow
         onClick={(event) => onPress(event, () => onPressRoof?.(event))}
-        onPointerOver={() => onOverRoof?.(true)}
-        onPointerOut={() => onOverRoof?.(false)}
       >
         <meshStandardMaterial color={PALETTE.roof} roughness={0.95} side={DoubleSide} />
       </mesh>

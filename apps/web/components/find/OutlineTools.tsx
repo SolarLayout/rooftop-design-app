@@ -13,6 +13,8 @@ type Props = {
   tool: Tool;
   onTool: (tool: Tool) => void;
   on: (event: OutlineEvent) => void;
+  /** The ?: the tips are shown again, from the first; none while there are none to show. */
+  onShowTips?: () => void;
   className?: string;
 };
 
@@ -46,7 +48,7 @@ const TOOL = "px-3 tablet:px-4";
  * The toolbar follows the state of the roof: open, the three ways to outline; closed, the four obstacles
  * to draw on it. Undo, redo and clear stay (docs/design/components.md, "Map outline tools").
  */
-export function OutlineTools({ state, tool, onTool, on, className }: Props) {
+export function OutlineTools({ state, tool, onTool, on, onShowTips, className }: Props) {
   const tools = isClosedAndSettled(state) ? OBSTACLE_TOOLS : OUTLINE_TOOLS;
   return (
     <div role="toolbar" aria-label="Outline tools" className={classNames(BAR, className)}>
@@ -80,6 +82,7 @@ export function OutlineTools({ state, tool, onTool, on, className }: Props) {
           disabled={state.corners.length === 0 && state.obstacles.length === 0}
           onClick={() => on({ type: "cleared" })}
         />
+        {onShowTips && isClosedAndSettled(state) ? <IconButton label="Show the tips" icon="help" iconSize={18} kind="quiet" size="l" onClick={onShowTips} /> : null}
       </span>
     </div>
   );

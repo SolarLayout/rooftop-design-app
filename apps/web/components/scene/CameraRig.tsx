@@ -14,6 +14,8 @@ import { useSun } from "./use-sun";
 type Props = {
   /** The roof's radius about the origin of the scene. */
   radius: number;
+  /** The view is dragged by the pointer (turned, panned or zoomed), or let go: the stage's cursor closes its hand (D79). */
+  onDrag?: (isDragged: boolean) => void;
 };
 
 /** A move between two stands under way (plan/phase-10-plan.md, decision 10): its ends, its length and how far it has gone, in seconds. */
@@ -44,7 +46,7 @@ function fitPlan(camera: Orthographic, zoom: number): void {
  * so that the sun's marker stays on the canvas through the day (plan/phase-11-plan.md, step 33), and the
  * camera frames again, as a cut, when the path comes or goes.
  */
-export function CameraRig({ radius }: Props) {
+export function CameraRig({ radius, onDrag }: Props) {
   const sun = useSun();
   const framed = framedRadiusOf(radius, useView(framesTheDomeOf));
   const camera = useThree((state) => state.camera);
@@ -133,6 +135,8 @@ export function CameraRig({ radius }: Props) {
         minZoom={zoom.min}
         maxZoom={zoom.max}
         target={[0, 0, 0]}
+        onStart={() => onDrag?.(true)}
+        onEnd={() => onDrag?.(false)}
       />
     </>
   );

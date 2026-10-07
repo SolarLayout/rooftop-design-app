@@ -2,7 +2,7 @@
 
 import type { FeatureCollection, Geometry } from "geojson";
 import { Marker, type Map as MapLibre, type MapMouseEvent, type MapTouchEvent, type MarkerOptions } from "maplibre-gl";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { classNames } from "@/components/ui/class-names";
 import { shown } from "@/components/ui/number-entry";
 import { footprintOutline, FOOTPRINTS_LAYER, FOOTPRINTS_URL, FOOTPRINTS_ZOOM } from "@/lib/map/overture";
@@ -12,6 +12,7 @@ import { areaOf, centroidOf, midpointsOf, type XY } from "@/lib/geometry/measure
 import { foldOf, labelOf, type Obstacle, type ObstacleKind, type Shape } from "@/lib/outline/obstacles";
 import { turnedAbout } from "@/lib/outline/rectangle";
 import { ghostOf, liftLabelPlaceOf, turnHandleOfPicked } from "@/lib/outline/lifted";
+import { mapCursorOf } from "@/lib/outline/map-cursor";
 import { isInside, type Lift } from "@/lib/outline/roof-move";
 import { isClosedAndSettled, type Lifted, type OutlineEvent, type OutlineState } from "@/lib/outline/outline-state";
 
@@ -534,10 +535,37 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
     else map.dragPan.enable();
   }, [map, drawsByDrag]);
 
-  // The cursor says what a press does.
+  // The cursor says what a drag does (D79): over what is picked, while the map pans, while a tool draws.
+  const [overPicked, setOverPicked] = useState(false);
+  const [panning, setPanning] = useState(false);
   useEffect(() => {
-    map.getCanvas().style.cursor = drawsByDrag || drawsByPress ? "crosshair" : "";
-  }, [map, drawsByDrag, drawsByPress]);
+    function onMove(event: MapMouseEvent) {
+      const { state: now } = latest.current;
+      if (!now.frame || now.lift) return;
+      const onObstacle = now.selectedObstacle !== null && obstacleUnder(map, event.point) === now.selectedObstacle;
+      const inRoof = now.picked && isInside(now.corners, toMetres(now.frame, { lon: event.lngLat.lng, lat: event.lngLat.lat }));
+      setOverPicked(onObstacle || inRoof);
+    }
+    const panned = (isPanning: boolean) => () => setPanning(isPanning);
+    const out = () => setOverPicked(false);
+    const started = panned(true);
+    const ended = panned(false);
+    map.on("mousemove", onMove);
+    map.on("mouseout", out);
+    map.on("dragstart", started);
+    map.on("dragend", ended);
+    return () => {
+      map.off("mousemove", onMove);
+      map.off("mouseout", out);
+      map.off("dragstart", started);
+      map.off("dragend", ended);
+    };
+  }, [map]);
+  const isPicking = state.picked || state.selectedObstacle !== null;
+  const cursor = mapCursorOf({ draws: drawsByDrag || drawsByPress, overPicked: isPicking && overPicked, dragged: panning || state.lift !== null });
+  useEffect(() => {
+    map.getCanvas().style.cursor = cursor;
+  }, [map, cursor]);
 
   // Without a tool in hand (the roof typed by hand) the corners are shown, not dragged.
   useEffect(() => {

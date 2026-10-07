@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { Tip } from "@/components/ui/Tip";
 import { useProject, useStores } from "@/components/shell/stores";
 import { Button } from "@/components/ui/Button";
 import { ProgressRing } from "@/components/ui/ProgressRing";
@@ -13,6 +14,7 @@ import { iconButtonLook } from "@/components/ui/button-look";
 import { classNames } from "@/components/ui/class-names";
 import { ROOF_ZOOM } from "@/components/ui/design-numbers";
 import { Icon } from "@/components/ui/Icon";
+import { IconButton } from "@/components/ui/IconButton";
 import { api, ApiError, type Project } from "@/lib/api";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/places/esri";
 import { FOOTPRINTS_ATTRIBUTION } from "@/lib/map/overture";
@@ -22,6 +24,8 @@ import { isEntered, NOTHING_ENTERED, type ByHand } from "@/lib/outline/by-hand";
 import { frameAt, toMetres } from "@/lib/outline/frame";
 import { nameOf, obstaclesOfMap } from "@/lib/outline/obstacles";
 import { isClosedAndSettled, outlineAfter, START } from "@/lib/outline/outline-state";
+import { TIPS, tipDoneBy, tipShownOf, type TipId } from "@/lib/outline/tips";
+import { rememberTipsGone, tipsGoneOf } from "@/lib/device/tips-seen";
 import { pathOfLens, placeOfFindAddress } from "@/lib/routes";
 import { latitudeOf, longitudeOf, projectOf } from "@/lib/stores/project-store";
 import { MapButtons } from "./MapButtons";
@@ -70,6 +74,19 @@ const FLOATING_BUTTON = classNames(iconButtonLook("secondary", "l", "square"), "
 
 type Building = { kind: "idle" } | { kind: "building" } | { kind: "failed"; message: string };
 
+/** The device's storage, or null where reaching it is refused (a private window, blocked site data). */
+function deviceStorage(): Storage | null {
+  try {
+    return typeof window === "undefined" ? null : window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
+// The tip stands at the map's edge, never over what is moved: under the search on tablet and desktop, above the
+// toolbar across the map on phone (components.md, "Tip").
+const TIP_PLACE = "pointer-events-auto absolute inset-x-3 bottom-32 tablet:inset-x-auto tablet:bottom-auto tablet:top-22 tablet:left-5 tablet:w-75";
+
 /** How the roof is entered: drawn on the map, or typed by its measurements. */
 type Entry = "map" | "hand";
 
@@ -100,6 +117,14 @@ export function Find() {
   const [entry, setEntry] = useState<Entry>("map");
   const [hand, setHand] = useState<ByHand>(placeAsked ? { ...NOTHING_ENTERED, lat: placeAsked.lat, lon: placeAsked.lon } : NOTHING_ENTERED);
   const loaded = useRef(false);
+  // The tips (D79): gone for good on this device once Got it is pressed or their move is done; all hidden for this visit by the ×.
+  const [tipsGone, setTipsGone] = useState<ReadonlySet<TipId>>(() => {
+    const storage = deviceStorage();
+    return storage ? tipsGoneOf(storage) : new Set();
+  });
+  const [tipsHidden, setTipsHidden] = useState(false);
+  const [touch] = useState(() => typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches);
+  const outlineBefore = useRef(outline);
   // The map begins at the place asked for in the address, else at the roof of the design that is open; without either, from far.
   const [view, setView] = useState<MapView>(() => {
     if (placeAsked) return { lon: placeAsked.lon, lat: placeAsked.lat, zoom: ROOF_ZOOM };
@@ -113,6 +138,30 @@ export function Find() {
   const words = WORDS[step === "outline" ? (entry === "hand" ? "hand" : tool !== "corners" ? tool : step) : step];
   const hasMap = state.kind === "ready" && PROVIDER !== null && Boolean(webGL);
   useOutlineKeys(step === "outline" && entry === "map" && outline.pending === null, on);
+
+  /** A tip gone for good, on this device. */
+  function tipGone(id: TipId) {
+    const gone = new Set([...tipsGone, id]);
+    setTipsGone(gone);
+    const storage = deviceStorage();
+    if (storage) rememberTipsGone(storage, gone);
+  }
+
+  /** The ?: every tip shows again, from the first. */
+  function showTips() {
+    setTipsGone(new Set());
+    setTipsHidden(false);
+    const storage = deviceStorage();
+    if (storage) rememberTipsGone(storage, new Set());
+  }
+
+  // A tip goes by itself once its move is done.
+  useEffect(() => {
+    const done = tipDoneBy(outlineBefore.current, outline);
+    outlineBefore.current = outline;
+    if (done && !tipsGone.has(done)) tipGone(done);
+  });
+  const tip = step === "outline" && entry === "map" && hasMap && !tipsHidden ? tipShownOf(outline, tipsGone) : null;
 
   /** What is entered by hand changes: the roof follows it, at the place, once enough is there. */
   function changeHand(change: Partial<ByHand>, mode: Entry = entry) {
@@ -228,7 +277,18 @@ export function Find() {
               on({ type: "roofPicked", picked: false });
             }}
             on={on}
+            onShowTips={showTips}
             className="pointer-events-auto absolute bottom-16 left-1/2 -translate-x-1/2 tablet:bottom-22 desktop:bottom-7"
+          />
+        ) : null}
+        {tip ? (
+          <Tip
+            key={tip}
+            title={TIPS[tip].title}
+            rows={touch ? TIPS[tip].touch : TIPS[tip].pointer}
+            onGotIt={() => tipGone(tip)}
+            onClose={() => setTipsHidden(true)}
+            className={TIP_PLACE}
           />
         ) : null}
         {detected ? (
@@ -262,9 +322,13 @@ export function Find() {
           <span className="h-1 w-10 rounded-full bg-line-strong" />
         </span>
         <div className="flex flex-col gap-1.5">
-          <div className="flex items-baseline gap-3">
+          <div className="flex items-center gap-3">
             <h1 className="type-lens-touch desktop:type-lens">{words.title}</h1>
             <span className="ml-auto type-small text-text-2 desktop:hidden">Step {["find", "outline", "build"].indexOf(step) + 1} of 3</span>
+            {/* The phone's toolbar has room for Undo alone: its ? stands here (components.md, "Tip"). */}
+            {step === "outline" && entry === "map" && roofClosed ? (
+              <IconButton label="Show the tips" icon="help" iconSize={18} kind="quiet" size="l" onClick={showTips} className="-my-2 -mr-2 tablet:hidden" />
+            ) : null}
           </div>
           <p className="text-text-2">{words.lead}</p>
         </div>

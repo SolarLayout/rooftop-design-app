@@ -443,7 +443,7 @@ touch), `DetectedCallout` the callout of Detect building. Every rule of drawing 
   on a row selects it, Remove takes it. The card of the Roof lens counts them. In code: `ObstacleList`,
   `HeightDialog`, the obstacles in `lib/outline/obstacles.ts` and the reducer.
 
-## Move and turn the roof and its obstacles (Find's map) — approved; the roof and the obstacles built, the cursor and the tips not yet
+## Move and turn the roof and its obstacles (Find's map) — approved, built
 The boards "UI fixes · Move and turn the roof and its obstacles" (D79). Once the outline is closed, a press inside the roof
 (not on a corner) picks it up whole: the line 3 px with a glow, the fill a shade stronger; where it was stays dashed until it
 is let go. A drag moves it and its obstacles, the label saying how far ("1.6 m E · 0.6 m S"); the arrow keys nudge 0.1 m, 1 m
@@ -457,6 +457,33 @@ dragged; the crosshair while a drawing tool is in hand; over an obstacle or a ha
 (`surface-1`, border `line-strong`, radius 14, `shadow-float`), its title with an accent dot, two to four rows of a key
 or gesture in a bordered chip and what it does, Got it; one at a time, when a move becomes possible, never over what is
 moved; Got it closes it for good on the device, it goes by itself once its move is done; the toolbar's ? shows them again.
+
+## Tip (a card of help over the map, D79)
+A small card that shows how to do a move the screen has just made possible (the boards "UI fixes · Move and turn the roof
+and its obstacles"). `surface-1`, border `line-strong`, radius `card-s` (14), `shadow-float`, padding 14 (12 under), rows 10
+apart; 300 wide on desktop and tablet, the width of the map less 12 a side on phone. The head: an accent dot of 8, the title
+in 14 at 600, and a quiet close (×) at the right, a press of 44 on touch. Two to four rows, each a key or a gesture in a
+bordered chip (`line-strong`, radius 6, 11 at 600, at least 62 wide, centred) and what it does in 13, `text-2`. The foot:
+Got it, a secondary button, small, at the right.
+
+- One tip at a time. It shows when its move becomes possible, at the map's edge and never over what is moved: on desktop and
+  tablet at the top left under the search (20 in, 88 down); on phone across the map, above the toolbar.
+- **Got it** closes it for good on the device (localStorage, a per-viewer convenience; a storage that refuses only means it
+  shows again). It also goes for good by itself once its move is done. The × hides the tips, this one and those after it, until the screen is opened again
+  or the ? is pressed.
+- The toolbar's **?** ("Show the tips") shows them again, from the first. On phone, where the toolbar has room for Undo
+  alone, the ? stands in the sheet's head beside "Step 2 of 3".
+- It is a `role="note"` with its title as its name; Got it and × are buttons; it takes no focus when it appears.
+
+Find's two tips, the words by device (a press on touch, a click with a pointer):
+
+| Tip | Shows when | Rows (desktop) | Rows (touch) | Done when |
+|---|---|---|---|---|
+| Move or turn the roof | the roof is closed | Click · inside the roof to pick it up; Drag · inside it to move it; ◯ · drag the round handle to turn it; ← ↑ → ↓ · nudge 0.1 m, with Shift 1 m | Press · inside the roof to pick it up; Drag · with one finger inside it to move it; ◯ · drag the round handle to turn it; 2 fingers · move the map, as always | the roof is moved or turned |
+| Move or turn an obstacle | the roof's tip is gone and there is an obstacle | Click · an obstacle to pick it; Drag · it to move it; ◯ · turns a box or a building; Delete · removes it | Press · an obstacle to pick it; Drag · it to move it; ◯ · turns a box or a building | an obstacle is moved or turned |
+
+In code: `components/ui/Tip.tsx` (the card); which tip shows and when one is done in `lib/outline/tips.ts`; what the device
+remembers in `lib/device/tips-seen.ts`.
 
 ## Obstacles on the roof (Studio, Roof lens)
 The board "Obstacle edited on the roof". The obstacles of the document are edited on the 3D roof and in the list of

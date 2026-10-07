@@ -21,8 +21,6 @@ type Props = {
   selected: number | null;
   /** A press on a position: the instance of the instanced mesh is the position's index (plan step 17). */
   onPressModule?: (instanceId: number | undefined, event: ThreeEvent<MouseEvent>) => void;
-  /** The pointer came over the modules, or left them. Not per module: there are too many. */
-  onOverModules?: (isOver: boolean) => void;
   /** Told each time the matrices are written: the counter of development (plan/phase-06-plan.md, decision 6). */
   onWrite?: () => void;
   /**
@@ -52,7 +50,7 @@ const NO_TRACES: readonly (readonly number[])[] = [];
 /** The edges of a unit box: placed by the matrix of the selected module, they are its outline. */
 const UNIT_EDGES = new EdgesGeometry(UNIT_BOX);
 
-type Press = Pick<Props, "onPressModule" | "onOverModules" | "onWrite" | "onTraceModule">;
+type Press = Pick<Props, "onPressModule" | "onWrite" | "onTraceModule">;
 
 /** The names of the two instanced meshes: the pointer is over a position when the nearest thing it meets is one of them. */
 const FRAME_MESH = "modules-frame";
@@ -79,7 +77,7 @@ type SetProps = Press & {
 };
 
 /** One instanced mesh for all the positions: the matrices written when the placements change, never per frame (fixes 11 and 12). */
-function InstancedSet({ placements, shown, thickness, material, name, castShadow, receiveShadow, colours, onPressModule, onOverModules, onWrite, onTraceModule }: SetProps) {
+function InstancedSet({ placements, shown, thickness, material, name, castShadow, receiveShadow, colours, onPressModule, onWrite, onTraceModule }: SetProps) {
   const mesh = useRef<InstancedMesh>(null);
   const capacity = Math.max(1, placements.length);
   const invalidate = useThree((state) => state.invalidate);
@@ -124,11 +122,7 @@ function InstancedSet({ placements, shown, thickness, material, name, castShadow
       receiveShadow={receiveShadow}
       frustumCulled={false}
       onClick={(event) => onPress(event, () => onPressModule?.(event.instanceId, event))}
-      onPointerOver={() => onOverModules?.(true)}
-      onPointerOut={() => {
-        onOverModules?.(false);
-        onTraceModule?.(null);
-      }}
+      onPointerOut={() => onTraceModule?.(null)}
       // Both meshes hear the move; each tells the position nearest under the pointer, or none when something else is nearer.
       onPointerMove={
         onTraceModule
@@ -169,7 +163,7 @@ function TraceLine({ points }: { points: ReturnType<typeof traceLineOf> }) {
  * answered, the frame casting the shadow and the glass taking it. A press on one selects its position;
  * the selected one is outlined (plan step 17).
  */
-export function Modules({ layout, heightAt, flushClearance, selected, onPressModule, onOverModules, onWrite, glassColours = null, onTraceModule, traces = NO_TRACES, reveal = 1 }: Props) {
+export function Modules({ layout, heightAt, flushClearance, selected, onPressModule, onWrite, glassColours = null, onTraceModule, traces = NO_TRACES, reveal = 1 }: Props) {
   const placements = useMemo(
     () => layout.modules.map((module) => placementOf(module, layout.kind, heightAt, flushClearance)),
     [layout, heightAt, flushClearance],
@@ -187,8 +181,8 @@ export function Modules({ layout, heightAt, flushClearance, selected, onPressMod
 
   return (
     <group>
-      <InstancedSet placements={placements} shown={shown} thickness={FRAME} material={frame} name={FRAME_MESH} castShadow receiveShadow={false} onPressModule={onPressModule} onOverModules={onOverModules} onWrite={onWrite} onTraceModule={onTraceModule} />
-      <InstancedSet placements={placements} shown={shown} thickness={GLASS} material={glass} name={GLASS_MESH} castShadow={false} receiveShadow colours={colours} onPressModule={onPressModule} onOverModules={onOverModules} onWrite={onWrite} onTraceModule={onTraceModule} />
+      <InstancedSet placements={placements} shown={shown} thickness={FRAME} material={frame} name={FRAME_MESH} castShadow receiveShadow={false} onPressModule={onPressModule} onWrite={onWrite} onTraceModule={onTraceModule} />
+      <InstancedSet placements={placements} shown={shown} thickness={GLASS} material={glass} name={GLASS_MESH} castShadow={false} receiveShadow colours={colours} onPressModule={onPressModule} onWrite={onWrite} onTraceModule={onTraceModule} />
       {chosen ? <SelectedOutline placement={chosen} /> : null}
       {lines.map((points, index) => (
         <TraceLine key={index} points={points} />

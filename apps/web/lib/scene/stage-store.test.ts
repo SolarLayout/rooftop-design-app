@@ -59,11 +59,21 @@ describe("the ground", () => {
   });
 });
 
-// The cursor over the stage (plan step 17): each thing under the pointer says what it wants, by name; the
-// strongest wins, so that a module over the roof and the roof under it never fight.
+// The cursor over the stage (plan step 17, D79): each thing under the pointer says what it wants, by name; the
+// strongest wins, so that a module over the roof and the roof under it never fight. Where nothing asks, an
+// open hand: a drag there moves the view.
 describe("the cursor", () => {
-  test("is the default until something is under the pointer", () => {
-    expect(cursorOf(createStageStore().getState())).toBe("default");
+  test("is an open hand until something under the pointer asks for another", () => {
+    expect(cursorOf(createStageStore().getState())).toBe("grab");
+  });
+
+  test("a closed hand while the view is dragged", () => {
+    const store = createStageStore();
+
+    store.getState().setOver("view", "grabbing");
+    expect(cursorOf(store.getState())).toBe("grabbing");
+    store.getState().setOver("view", null);
+    expect(cursorOf(store.getState())).toBe("grab");
   });
 
   test("a thing under the pointer asks for a cursor; when it is left the cursor goes back", () => {
@@ -73,7 +83,7 @@ describe("the cursor", () => {
     expect(cursorOf(store.getState())).toBe("pointer");
 
     store.getState().setOver("roof", null);
-    expect(cursorOf(store.getState())).toBe("default");
+    expect(cursorOf(store.getState())).toBe("grab");
   });
 
   test("of several the strongest wins: grabbing over grab over pointer; one left leaves the others", () => {

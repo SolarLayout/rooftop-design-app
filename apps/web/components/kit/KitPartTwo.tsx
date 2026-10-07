@@ -7,6 +7,7 @@ import { KitPage } from "./Pages";
 import { Selects } from "./Selects";
 import { Sheets } from "./Sheets";
 import { Tables } from "./Tables";
+import { Tips } from "./Tips";
 import { TooltipsAndToasts } from "./TooltipsAndToasts";
 import { Waiting } from "./Waiting";
 
@@ -27,6 +28,7 @@ export function KitPartTwo() {
           <Tables />
           <Waiting />
           <TooltipsAndToasts onPress={setLastPressed} />
+          <Tips onPress={setLastPressed} />
         </div>
       </div>
     </KitPage>
