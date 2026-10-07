@@ -249,6 +249,8 @@
   --border-handle: 3px;
   --border-handle-touch: 4px;
   --border-outline: 2px;
+  --border-outline-picked: 3px;
+  --border-outline-glow: 7px;
   --border-corner: 4px;
   --border-corner-touch: 5px;
 
@@ -274,6 +276,8 @@
   --opacity-hint: 0.35;
   --opacity-band: 0.55;
   --opacity-wash: 0.14;
+  --opacity-outline-glow: 0.25;
+  --opacity-ghost: 0.7;
   --opacity-gone: 0;
   --brightness-lift: 1.14;
 
@@ -328,6 +332,7 @@
   --color-ok: #3DD6A0;
   --color-sun-core: #FFD36B;
   --color-outline-fill: rgba(255,176,32,.09);
+  --color-outline-fill-picked: rgba(255,176,32,.16);
   --color-obstacle-line: #FFFFFF;
   --color-obstacle-fill: rgba(11,14,19,.55);
   --color-module-glass: #16294D;
@@ -505,6 +510,7 @@
   --color-ok: var(--color-ok);
   --color-sun-core: var(--color-sun-core);
   --color-outline-fill: var(--color-outline-fill);
+  --color-outline-fill-picked: var(--color-outline-fill-picked);
   --color-obstacle-line: var(--color-obstacle-line);
   --color-obstacle-fill: var(--color-obstacle-fill);
   --color-module-glass: var(--color-module-glass);

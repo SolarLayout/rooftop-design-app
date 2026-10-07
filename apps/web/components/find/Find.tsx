@@ -224,6 +224,8 @@ export function Find() {
             onTool={(taken) => {
               setTool(taken);
               setDetected(null);
+              // Another tool is taken to draw: the roof picked up is let go.
+              on({ type: "roofPicked", picked: false });
             }}
             on={on}
             className="pointer-events-auto absolute bottom-16 left-1/2 -translate-x-1/2 tablet:bottom-22 desktop:bottom-7"

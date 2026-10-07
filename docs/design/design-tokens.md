@@ -63,6 +63,7 @@ theme (`:root`).
 | `--color-ok` | `#3DD6A0` | Tick, saved dot, feasible band |
 | `--color-sun-core` | `#FFD36B` | The middle of the sun's marker over the stage: the 3D palette's `sunCore`, round the accent's disc |
 | `--color-outline-fill` | `rgba(255,176,32,.09)` | The fill of the outline on the map: accent at 9 % |
+| `--color-outline-fill-picked` | `rgba(255,176,32,.16)` | The fill of the roof picked up on the map, a shade stronger (D79) |
 | `--color-obstacle-line` | `#FFFFFF` | The line of an obstacle drawn on the map: light over dark, so that the roof stays the amber thing on the screen; the selected one is accent |
 | `--color-obstacle-fill` | `rgba(11,14,19,.55)` | The fill of an obstacle drawn on the map: the ground at 55 % |
 | `--color-module-glass` | `#16294D` | The glass of the module glyph on the equipment card: the module's blue of the 3D palette |
@@ -328,6 +329,8 @@ A line is 1 px wide. Those that are wider have a token.
 | `--border-handle` | `3px` | The accent line around the handle of a slider, on desktop |
 | `--border-handle-touch` | `4px` | The same on phone and tablet |
 | `--border-outline` | `2px` | The line of the outline on the map |
+| `--border-outline-picked` | `3px` | The line of the roof picked up on the map (D79) |
+| `--border-outline-glow` | `7px` | The glow under the line of the roof picked up, at `--opacity-outline-glow` |
 | `--border-corner` | `4px` | The accent line of a corner handle on the map (5 on touch: `--border-corner-touch`) |
 | `--border-corner-touch` | `5px` | The same on phone and tablet |
 
@@ -375,6 +378,8 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--opacity-updating` | `0.55` | A value of before while the new one is on its way; a skeleton at the low point of its breath |
 | `--opacity-hint` | `0.35` | A hint on the map: the footprints that are known, while Detect building is the tool |
 | `--opacity-band` | `0.55` | The band of the series lengths that fit, in `color-ok` (components.md, "Series range bar") |
+| `--opacity-outline-glow` | `0.25` | The glow under the line of the roof picked up on the map |
+| `--opacity-ghost` | `0.7` | Where the roof stood while it is moved or turned: its line dashed at this opacity |
 | `--opacity-wash` | `0.14` | The wash under the line of a chart: the series colour at this opacity |
 | `--opacity-gone` | `0` | What has faded away and stays in the page: the hint of Present after the first loop |
 | `--brightness-lift` | `1.14` | A bar of a chart under the pointer or with the keyboard focus: lifted |

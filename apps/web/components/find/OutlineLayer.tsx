@@ -1,7 +1,7 @@
 "use client";
 
 import type { FeatureCollection, Geometry } from "geojson";
-import { Marker, type Map as MapLibre, type MapMouseEvent, type MapTouchEvent } from "maplibre-gl";
+import { Marker, type Map as MapLibre, type MapMouseEvent, type MapTouchEvent, type MarkerOptions } from "maplibre-gl";
 import { useEffect, useRef } from "react";
 import { classNames } from "@/components/ui/class-names";
 import { shown } from "@/components/ui/number-entry";
@@ -11,7 +11,8 @@ import { frameAt, toLonLat, toMetres, type Frame, type LonLat } from "@/lib/outl
 import { areaOf, centroidOf, midpointsOf, type XY } from "@/lib/geometry/measure";
 import { foldOf, labelOf, type Obstacle, type ObstacleKind, type Shape } from "@/lib/outline/obstacles";
 import { turnedAbout } from "@/lib/outline/rectangle";
-import type { OutlineEvent, OutlineState } from "@/lib/outline/outline-state";
+import { isInside, liftLabelOf, turnHandleOf as roofTurnHandleOf, type Lift } from "@/lib/outline/roof-move";
+import { isClosedAndSettled, type OutlineEvent, type OutlineState } from "@/lib/outline/outline-state";
 
 /** The ways to outline while the roof is open; the obstacles to draw once it is closed. */
 export type Tool = "corners" | "rectangle" | "detect" | "box" | "tank" | "wall" | "building";
@@ -48,6 +49,9 @@ type Props = OutlineProps & { map: MapLibre };
 const SOURCE = "outline";
 const FILL = "outline-fill";
 const LINE = "outline-line";
+// The roof picked up glows under its line; where it stood stays dashed while it is moved or turned.
+const GLOW = "outline-glow";
+const GHOST = "outline-ghost";
 const FOOTPRINTS = "footprints";
 const FOOTPRINTS_FILL = "footprints-fill";
 const FOOTPRINTS_LINE = "footprints-line";
@@ -58,6 +62,10 @@ const OBSTACLES_LINE = "obstacles-line";
 const TANK_SIDES = 36;
 // The dashes of a footprint's line, in widths of the line.
 const FOOTPRINT_DASHES = [3, 2];
+// The dashes of where the roof stood: 6 px on, 5 off, for a line of 2.
+const GHOST_DASHES = [3, 2.5];
+// A press that moves less than this many pixels is a click, not a drag (MapLibre's own tolerance is 3).
+const DRAG_FROM_PX = 4;
 
 // The handle of a corner: 18 (22 on touch) inside a target of 44, white with an accent line.
 const TARGET = "flex size-touch cursor-grab items-center justify-center rounded-full focus-ring";
@@ -75,6 +83,12 @@ const TURN = classNames(
   "focus-ring",
 );
 const TURN_HANDLE_UP_PX = 44;
+// The label of a turn stands this far right of the handle's middle, clear of its target of 44.
+const TURN_LABEL_ASIDE_PX = 30;
+// The handle that turns the roof picked up: 32 round (44 on touch) inside a target of 44, its ring thicker while held.
+const ROOF_TURN_TARGET = "flex size-touch cursor-grab items-center justify-center rounded-full focus-ring";
+const ROOF_TURN = "flex size-touch items-center justify-center rounded-full border border-accent bg-surface-1 text-accent shadow-float desktop:size-8";
+const ROOF_TURN_HELD = "border-outline";
 const TURN_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="18" height="18"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v4.5h-4.5"/></svg>';
 
 const isCoarse = () => window.matchMedia("(pointer: coarse)").matches;
@@ -91,27 +105,49 @@ function onTheCanvas(map: MapLibre, event: MapMouseEvent | MapTouchEvent): boole
   return event.originalEvent.target === map.getCanvas();
 }
 
+/** The fingers on the screen in a touch event; a mouse is one. */
+function fingersOf(event: MapMouseEvent | MapTouchEvent): number {
+  return "touches" in event.originalEvent ? event.originalEvent.touches.length : 1;
+}
+
 /** A token of the container's stylesheet, for what MapLibre paints itself. */
 function tokenOf(map: MapLibre, name: string): string {
   return getComputedStyle(map.getContainer()).getPropertyValue(name).trim();
 }
 
-function geoJsonOf(frame: Frame | null, corners: readonly XY[], closed: boolean, stem: [XY, XY] | null): FeatureCollection {
+type Drawing = { corners: readonly XY[]; closed: boolean; picked: boolean; stem: [XY, XY] | null; ghost: readonly XY[] | null };
+
+/** The roof, the stem of a turn handle, and where the roof stood while it is lifted: each a feature with its role. */
+function geoJsonOf(frame: Frame | null, { corners, closed, picked, stem, ghost }: Drawing): FeatureCollection {
   if (!frame || corners.length < 2) return { type: "FeatureCollection", features: [] };
-  const ring = corners.map((corner) => {
-    const { lon, lat } = toLonLat(frame, corner);
-    return [lon, lat];
-  });
+  const ring = corners.map((corner) => lonLatOf(frame, corner));
   const geometry: Geometry =
     closed && corners.length >= 3 ? { type: "Polygon", coordinates: [[...ring, ring[0]]] } : { type: "LineString", coordinates: ring };
-  const features: FeatureCollection["features"] = [{ type: "Feature", geometry, properties: {} }];
-  if (stem) features.push({ type: "Feature", geometry: { type: "LineString", coordinates: stem.map((point) => lonLatOf(frame, point)) }, properties: {} });
+  const features: FeatureCollection["features"] = [{ type: "Feature", geometry, properties: { role: "roof", picked } }];
+  if (stem) features.push({ type: "Feature", geometry: { type: "LineString", coordinates: stem.map((point) => lonLatOf(frame, point)) }, properties: { role: "stem", picked: false } });
+  if (ghost) {
+    const was = ghost.map((point) => lonLatOf(frame, point));
+    features.push({ type: "Feature", geometry: { type: "LineString", coordinates: [...was, was[0]] }, properties: { role: "ghost", picked: false } });
+  }
   return { type: "FeatureCollection", features };
+}
+
+/** What the outline draws of the state: the picked roof's stem and ghost besides the box's stem. */
+function drawingOf(state: OutlineState, metresPerPx: number): Drawing {
+  const stem = state.picked ? roofHandleOf(state, metresPerPx)?.stem ?? null : (turnHandleOf(state, metresPerPx)?.stem ?? null);
+  return { corners: state.corners, closed: state.closed, picked: state.picked, stem, ghost: state.lift ? state.history.present.corners : null };
+}
+
+/** Where the handle that turns the picked roof stands: off the middle of its north edge. */
+function roofHandleOf(state: OutlineState, metresPerPx: number): { handle: XY; stem: [XY, XY] } | null {
+  if (!state.picked || state.corners.length < 3) return null;
+  const { foot, handle } = roofTurnHandleOf(state.history.present.corners, state.corners, metresPerPx);
+  return { handle, stem: [foot, handle] };
 }
 
 /** Where the handle that turns a box stands: above the middle of its top edge, turned with it. */
 function turnHandleOf(state: OutlineState, metresPerPx: number): { handle: XY; stem: [XY, XY] } | null {
-  if (!state.rectangle || !state.closed) return null;
+  if (!state.rectangle || !state.closed || state.picked) return null;
   const { base, turn } = state.rectangle;
   const centre = centroidOf(base);
   const top = Math.max(...base.map((corner) => corner.y));
@@ -170,6 +206,10 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
   const midpoints = useRef<Marker[]>([]);
   const labels = useRef<Marker[]>([]);
   const turn = useRef<Marker | null>(null);
+  const roofTurn = useRef<Marker | null>(null);
+  const liftLabel = useRef<Marker | null>(null);
+  // While the roof's handle is held it follows the pointer; the rest of the outline follows the state.
+  const isTurningRoof = useRef(false);
   const obstacleLabels = useRef<Marker[]>([]);
   const obstacleHandles = useRef<Marker[]>([]);
   const liveHandles = useRef<Marker[]>([]);
@@ -181,13 +221,43 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
 
   // The layers, once.
   useEffect(() => {
-    map.addSource(SOURCE, { type: "geojson", data: geoJsonOf(null, [], false, null) });
-    map.addLayer({ id: FILL, type: "fill", source: SOURCE, filter: ["==", "$type", "Polygon"], paint: { "fill-color": tokenOf(map, "--color-outline-fill") } });
+    map.addSource(SOURCE, { type: "geojson", data: geoJsonOf(null, { corners: [], closed: false, picked: false, stem: null, ghost: null }) });
+    const isPicked: ["==", ["get", string], boolean] = ["==", ["get", "picked"], true];
+    map.addLayer({
+      id: FILL,
+      type: "fill",
+      source: SOURCE,
+      filter: ["==", "$type", "Polygon"],
+      paint: { "fill-color": ["case", isPicked, tokenOf(map, "--color-outline-fill-picked"), tokenOf(map, "--color-outline-fill")] },
+    });
+    map.addLayer({
+      id: GLOW,
+      type: "line",
+      source: SOURCE,
+      filter: isPicked,
+      paint: { "line-color": tokenOf(map, "--color-accent"), "line-width": parseFloat(tokenOf(map, "--border-outline-glow")), "line-opacity": parseFloat(tokenOf(map, "--opacity-outline-glow")) },
+    });
+    map.addLayer({
+      id: GHOST,
+      type: "line",
+      source: SOURCE,
+      filter: ["==", ["get", "role"], "ghost"],
+      paint: {
+        "line-color": tokenOf(map, "--color-accent"),
+        "line-width": parseFloat(tokenOf(map, "--border-outline")),
+        "line-opacity": parseFloat(tokenOf(map, "--opacity-ghost")),
+        "line-dasharray": GHOST_DASHES,
+      },
+    });
     map.addLayer({
       id: LINE,
       type: "line",
       source: SOURCE,
-      paint: { "line-color": tokenOf(map, "--color-accent"), "line-width": parseFloat(tokenOf(map, "--border-outline")) },
+      filter: ["!=", ["get", "role"], "ghost"],
+      paint: {
+        "line-color": tokenOf(map, "--color-accent"),
+        "line-width": ["case", isPicked, parseFloat(tokenOf(map, "--border-outline-picked")), parseFloat(tokenOf(map, "--border-outline"))],
+      },
     });
     // The obstacles: light over dark, the selected one and the one being drawn in the accent.
     const accent = tokenOf(map, "--color-accent");
@@ -209,7 +279,7 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
       },
     });
     return () => {
-      [OBSTACLES_LINE, OBSTACLES_FILL, LINE, FILL].forEach((layer) => map.getLayer(layer) && map.removeLayer(layer));
+      [OBSTACLES_LINE, OBSTACLES_FILL, LINE, GHOST, GLOW, FILL].forEach((layer) => map.getLayer(layer) && map.removeLayer(layer));
       [OBSTACLES, SOURCE].forEach((source) => map.getSource(source) && map.removeSource(source));
     };
   }, [map]);
@@ -222,11 +292,11 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
     }
   }, [map, state]);
 
-  // The fill and the line follow the corners; the stem of the turn handle too.
+  // The fill and the line follow the corners; the stem of the turn handle and where the roof stood too.
   useEffect(() => {
     const source = map.getSource(SOURCE);
-    const stem = turnHandleOf(state, metresPerPixel(map.getCenter().lat, map.getZoom()))?.stem ?? null;
-    if (source && "setData" in source) (source as { setData: (data: FeatureCollection) => void }).setData(geoJsonOf(state.frame, state.corners, state.closed, stem));
+    const drawing = drawingOf(state, metresPerPixel(map.getCenter().lat, map.getZoom()));
+    if (source && "setData" in source) (source as { setData: (data: FeatureCollection) => void }).setData(geoJsonOf(state.frame, drawing));
   }, [map, state]);
 
   // While Detect building is the tool, the footprints that are known show faintly.
@@ -284,10 +354,17 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
           tell({ type: "shapePlaced", kind, at: toMetres(now.frame, at), metresPerPx, touch: isCoarse() });
           return;
         }
-        // A press with the box or the tank in hand selects the obstacle under it, or lets the selected one go.
+        // A press with the box or the tank in hand picks the obstacle under it, else the roof when it is
+        // inside it (D79), else lets go of what was picked.
         const [under] = map.getLayer(OBSTACLES_FILL) ? map.queryRenderedFeatures(event.point, { layers: [OBSTACLES_FILL] }) : [];
         const id = under?.properties?.id;
-        tell({ type: "obstacleSelected", id: typeof id === "number" ? id : null });
+        if (typeof id === "number") {
+          tell({ type: "obstacleSelected", id });
+          return;
+        }
+        const inside = isClosedAndSettled(now) && isInside(now.corners, toMetres(now.frame, at));
+        tell({ type: "obstacleSelected", id: null });
+        tell({ type: "roofPicked", picked: inside });
         return;
       }
       if (inHand !== "corners" || now.closed) return;
@@ -348,22 +425,33 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
   useEffect(() => {
     const kind = kindOfTool(tool);
     if (kind !== "box" && kind !== "cylinder") return;
-    let from: LonLat | null = null;
+    let from: { at: LonLat; point: { x: number; y: number } } | null = null;
+    let drawing = false;
     function lonLatOfEvent(event: MapMouseEvent | MapTouchEvent): LonLat {
       return { lon: event.lngLat.lng, lat: event.lngLat.lat };
     }
     function onDown(event: MapMouseEvent | MapTouchEvent) {
       const { state: now } = latest.current;
-      if (!now.frame || !now.closed || now.pending || !onTheCanvas(map, event)) return;
+      // Two fingers move the map: a box not yet begun is given up to them.
+      if (fingersOf(event) > 1) {
+        if (!drawing) from = null;
+        return;
+      }
+      // While the roof is picked up a drag inside it moves it and one outside pans the map: nothing is drawn.
+      if (!now.frame || !now.closed || now.pending || now.picked || !onTheCanvas(map, event)) return;
       if ("originalEvent" in event && event.originalEvent instanceof MouseEvent && event.originalEvent.button !== 0) return;
-      from = lonLatOfEvent(event);
+      from = { at: lonLatOfEvent(event), point: { x: event.point.x, y: event.point.y } };
+      drawing = false;
       event.preventDefault();
     }
     function onMove(event: MapMouseEvent | MapTouchEvent) {
       const { state: now, on: tell } = latest.current;
       if (!from || !now.frame) return;
       event.preventDefault();
-      tell({ type: "shapeDragged", kind: kind as "box" | "cylinder", from: toMetres(now.frame, from), to: toMetres(now.frame, lonLatOfEvent(event)) });
+      // A press that has not yet moved is a click: it picks, it draws nothing.
+      if (!drawing && Math.hypot(event.point.x - from.point.x, event.point.y - from.point.y) < DRAG_FROM_PX) return;
+      drawing = true;
+      tell({ type: "shapeDragged", kind: kind as "box" | "cylinder", from: toMetres(now.frame, from.at), to: toMetres(now.frame, lonLatOfEvent(event)) });
     }
     function onUp() {
       if (!from) return;
@@ -386,7 +474,50 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
     };
   }, [map, tool]);
 
-  const drawsByDrag = (tool === "rectangle" && state.corners.length === 0) || ((tool === "box" || tool === "tank") && state.closed && !state.pending);
+  // A drag of the roof picked up, with one finger or the mouse, from inside it: it moves it and its obstacles.
+  useEffect(() => {
+    if (tool === null) return;
+    let from: XY | null = null;
+    function onDown(event: MapMouseEvent | MapTouchEvent) {
+      const { state: now } = latest.current;
+      if (!now.picked || !now.frame || !onTheCanvas(map, event) || fingersOf(event) > 1) return;
+      if (event.originalEvent instanceof MouseEvent && event.originalEvent.button !== 0) return;
+      const at = toMetres(now.frame, { lon: event.lngLat.lng, lat: event.lngLat.lat });
+      if (!isInside(now.corners, at)) return;
+      from = at;
+      event.preventDefault();
+    }
+    function onMove(event: MapMouseEvent | MapTouchEvent) {
+      const { state: now, on: tell } = latest.current;
+      if (!from || !now.frame) return;
+      // A second finger is the map's: the move ends where it is.
+      if (fingersOf(event) > 1) return onUp();
+      event.preventDefault();
+      const to = toMetres(now.frame, { lon: event.lngLat.lng, lat: event.lngLat.lat });
+      tell({ type: "roofMoved", by: { x: to.x - from.x, y: to.y - from.y } });
+    }
+    function onUp() {
+      if (!from) return;
+      from = null;
+      latest.current.on({ type: "roofDropped" });
+    }
+    map.on("mousedown", onDown);
+    map.on("mousemove", onMove);
+    map.on("mouseup", onUp);
+    map.on("touchstart", onDown);
+    map.on("touchmove", onMove);
+    map.on("touchend", onUp);
+    return () => {
+      map.off("mousedown", onDown);
+      map.off("mousemove", onMove);
+      map.off("mouseup", onUp);
+      map.off("touchstart", onDown);
+      map.off("touchmove", onMove);
+      map.off("touchend", onUp);
+    };
+  }, [map, tool]);
+
+  const drawsByDrag = (tool === "rectangle" && state.corners.length === 0) || ((tool === "box" || tool === "tank") && state.closed && !state.pending && !state.picked);
   const drawsByPress = (tool === "corners" && !state.closed) || tool === "detect" || ((tool === "wall" || tool === "building") && state.closed && !state.pending);
 
   // While a box can be drawn, a drag is the box's, not the map's.
@@ -417,6 +548,10 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
       remove(labels.current);
       turn.current?.remove();
       turn.current = null;
+      roofTurn.current?.remove();
+      roofTurn.current = null;
+      liftLabel.current?.remove();
+      liftLabel.current = null;
       return;
     }
     const drawnEdges = state.closed ? state.corners.length : Math.max(0, state.corners.length - 1);
@@ -450,13 +585,39 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
       labels.current[edge].getElement().textContent = `${shown(lengths[edge], 1)} m`;
     });
 
-    const turning = turnHandleOf(state, metresPerPixel(map.getCenter().lat, map.getZoom()));
+    const metresPerPx = metresPerPixel(map.getCenter().lat, map.getZoom());
+    const turning = turnHandleOf(state, metresPerPx);
     if (!turning) {
       turn.current?.remove();
       turn.current = null;
     } else {
       turn.current ??= turnMarker(map, latest, isDragging);
       turn.current.setLngLat(lonLatOf(frame, turning.handle));
+    }
+
+    const roofHandle = roofHandleOf(state, metresPerPx);
+    if (!roofHandle) {
+      roofTurn.current?.remove();
+      roofTurn.current = null;
+    } else {
+      roofTurn.current ??= roofTurnMarker(map, latest, isTurningRoof);
+      if (!isTurningRoof.current) roofTurn.current.setLngLat(lonLatOf(frame, roofHandle.handle));
+    }
+
+    // The label of a move stands at the middle of the roof; that of a turn beside the handle.
+    const { lift } = state;
+    if (!lift) {
+      liftLabel.current?.remove();
+      liftLabel.current = null;
+    } else {
+      if (liftLabel.current?.getElement().dataset.kind !== lift.kind) {
+        liftLabel.current?.remove();
+        liftLabel.current = liftLabelMarker(map, lift.kind);
+      }
+      const hemisphere = frame.centre.lat >= 0 ? "north" : "south";
+      const at = lift.kind === "turn" && roofHandle ? roofHandle.handle : centroidOf(state.corners);
+      liftLabel.current.setLngLat(lonLatOf(frame, at));
+      liftLabel.current.getElement().textContent = liftLabelOf(lift, state.corners, hemisphere);
     }
   }, [map, state]);
 
@@ -501,6 +662,8 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
     () => () => {
       [corners, midpoints, labels, obstacleLabels, obstacleHandles, liveHandles].forEach((markers) => markers.current.splice(0).forEach((marker) => marker.remove()));
       turn.current?.remove();
+      roofTurn.current?.remove();
+      liftLabel.current?.remove();
     },
     [],
   );
@@ -669,6 +832,57 @@ function liveHandleMarker(map: MapLibre): Marker {
   dot.className = CORNER;
   element.appendChild(dot);
   return new Marker({ element }).setLngLat([0, 0]).addTo(map);
+}
+
+/** The label of the roof while it is moved or turned: how far, or the turn and where it faces. */
+function liftLabelMarker(map: MapLibre, kind: Lift["kind"]): Marker {
+  const element = document.createElement("code");
+  element.className = LABEL;
+  element.dataset.testid = "lift-label";
+  element.dataset.kind = kind;
+  element.setAttribute("role", "status");
+  // A move's label at the middle of the roof; a turn's to the right of the handle.
+  const placed: MarkerOptions = kind === "turn" ? { anchor: "left", offset: [TURN_LABEL_ASIDE_PX, 0] } : { anchor: "center" };
+  return new Marker({ element, ...placed }).setLngLat([0, 0]).addTo(map);
+}
+
+/** The handle that turns the roof picked up about its middle, its obstacles with it (D79). */
+function roofTurnMarker(map: MapLibre, latest: Latest, isTurning: React.RefObject<boolean>): Marker {
+  const element = document.createElement("button");
+  element.type = "button";
+  element.className = ROOF_TURN_TARGET;
+  element.dataset.testid = "roof-turn-handle";
+  element.setAttribute("aria-label", "Turn the roof");
+  const ring = document.createElement("span");
+  ring.className = ROOF_TURN;
+  ring.innerHTML = TURN_ICON;
+  element.appendChild(ring);
+  element.addEventListener("click", (event) => event.stopPropagation());
+  const marker = new Marker({ element, draggable: true }).setLngLat([0, 0]).addTo(map);
+  // The turn is swept from where the handle stood when it was pressed: a drag begins only once the pointer has moved.
+  let pressedAt: XY | null = null;
+  let from: XY | null = null;
+  element.addEventListener("pointerdown", () => {
+    const { state } = latest.current;
+    pressedAt = state.frame ? metresOf(marker, state.frame) : null;
+  });
+  marker.on("dragstart", () => {
+    if (!pressedAt) return;
+    isTurning.current = true;
+    from = pressedAt;
+    ring.classList.add(ROOF_TURN_HELD);
+  });
+  marker.on("drag", () => {
+    const { state, on } = latest.current;
+    if (state.frame && from) on({ type: "roofTurned", from, to: metresOf(marker, state.frame) });
+  });
+  marker.on("dragend", () => {
+    isTurning.current = false;
+    from = null;
+    ring.classList.remove(ROOF_TURN_HELD);
+    latest.current.on({ type: "roofDropped" });
+  });
+  return marker;
 }
 
 function turnMarker(map: MapLibre, latest: Latest, isDragging: React.RefObject<boolean>): Marker {
