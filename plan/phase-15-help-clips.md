@@ -1,6 +1,6 @@
 # Phase 15: short video clips in the help
 
-**Status:** started (session 19, 2026-10-07): this file and `phase-15-plan.md`; the spike next, then the boards for approval.
+**Status:** built (session 19, 2026-10-07): #138 to #141; one check left to the owner, the clips in Safari on an iPhone or iPad.
 **Depends on:** Phase 14 (the help, its how-tos and their pictures: D80, D81).
 
 ## What the owner asked (session 19)
@@ -48,3 +48,22 @@ the step's picture on every size, and checked by the gate as the pictures are.
 
 ## Not in this phase
 Sound and narration; clips anywhere but the help; clips made by hand or edited after.
+
+## As built (session 19)
+
+| Pull request | What |
+|---|---|
+| #138 | `bun help:clips`: each clip recorded a frame at a time on the test stack, the pointer drawn in, encoded to H.264 MP4 by the pinned `@ffmpeg-installer/ffmpeg` (D83) beside the pictures (D82); `tools/help/clips.ts` (pure, tested); the README, the guide's "Clips", the CLAUDE.md rows; `tools/check/write-e2e-inputs.ts`; the first two clips |
+| #139 | The player in a step's picture frame (`PictureClip`): at rest, loading, playing, paused, failed; once under reduced motion; the gate (an MP4 of the length written, read from its header; 500 kB a clip, 6 MB in all) |
+| #140 | The clips of D84: a rectangle drawn and turned, corners closed, an obstacle dragged and turned (seven clips, 681 kB in all) |
+| #141 | A clip opened large on touch by its magnifier |
+
+**Decisions:** D82 (in the repository, under the gate's budget), D83 (H.264 MP4, the pinned encoder), D84 (the first clips);
+the boards "In-App Help · Clips", approved 2026-10-07.
+
+**Found while building:** the corners' pictures could not be retaken since #137 (a place in metres asked for a roof; fixed in
+#138); an obstacle turned back to exactly nothing and let go is taken for a press where its handle is, inside the roof, which
+picks the roof (the app's behaviour, unchanged; that clip leaves the obstacle turned).
+
+**Left:** the clips played in Safari on an iPhone or iPad (the owner's devices; H.264 played in WebKit 18.4 on macOS in the
+spike), and in Firefox (not installed here).

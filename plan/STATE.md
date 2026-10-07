@@ -3,11 +3,12 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-07, session 19. **D79 built** (#117, #118, #120 to #122). **Phase 14, in-app help, done** (#123 to
-#137): a ? beside every section heading of the input panels, a help sheet at the edge (D80); how-tos with numbered steps and
-pictures with callouts for every tool of Find, a picture opened large and pinched on touch, the ways in (the ? beside Find's
-title, Show me how on a tip) (D81); 30 topics, the gates in `tools/help`, the guides `docs/help-content.md` and
-`docs/screenshots.md`. **Next:** Phase 15, short video clips in the help (the owner, session 19), analysed and designed first.
+**Last updated:** 2026-10-07, session 19. **D79 built** (#117 to #122). **Phase 14, in-app help, done** (#123 to #137; D80,
+D81): a ? beside every section heading, a help sheet at the edge, how-tos with steps and pictures for every tool of Find.
+**Phase 15, clips in the help, built** (#138 to #141; D82 to D84): seven short clips recorded from the app by `bun help:clips`,
+played in a step's picture frame, opened large on touch; the guides `docs/help-content.md` ("Pictures", "Clips") and
+`docs/screenshots.md`, the READMEs beside the runs. **Left of Phase 15:** the owner plays the clips in Safari on an iPhone or
+iPad.
 
 ## Where we are
 
@@ -30,7 +31,7 @@ title, Show me how on a tip) (D81); 30 topics, the gates in `tools/help`, the gu
 | 12 Deployment: staging and production | In progress; both environments live (session 16: #90 to #95, #97); left: #99, #100 | `phase-12-plan.md`: what was found, 14 decisions, the owner's steps in order (1 to 4 done), the pull requests; `infra/aws/README.md`: what exists on AWS and how it was made |
 | 13 Optimization | Done (session 17: #102 to #106) | What was found, the numbers before and after, what exists: `phase-13-optimization.md`, "As built". How: `phase-13-plan.md`, after the owner's interview (`reference/phase-13-interview.md`) |
 | 14 In-app help | Done (session 19: #123 to #137; D80, D81) | `phase-14-in-app-help.md`, "As built"; how to write a topic: `docs/help-content.md`; screenshots: `docs/screenshots.md` |
-| 15 Help clips | Started (session 19): `phase-15-help-clips.md`, `phase-15-plan.md`; the spike next | The spike's findings, then D82 to D84 with the owner, then the boards |
+| 15 Help clips | Built (session 19: #138 to #141; D82 to D84); the owner's iOS check left | `phase-15-help-clips.md`, "As built"; `e2e/help-clips/README.md` |
 
 ## In flight
 
@@ -109,10 +110,8 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 ## Next, in order
 
-1. Phase 15, video clips in the help (`plan/phase-15-help-clips.md`, `plan/phase-15-plan.md`): the spike done, D82 to D84
-   taken (in the repo; H.264 MP4 by `@ffmpeg-installer/ffmpeg`; the first four clips); the boards "In-App Help · Clips" on
-   the canvas, approved 2026-10-07; now the pull requests, the first with its README, guide and CLAUDE.md
-   rows. Prototype: the local branch `design/help-clips`; spike: `spike/help-clips`; neither merged.
+1. The owner: play the help's clips in Safari on an iPhone or iPad (Find, any tool's ?, a step with a play button); then
+   Phase 15 is done. Next phase as the owner says.
 2. Issue #114: the Strings legend with many MPPT (design first).
 3. #99 and #100 when the owner needs them (advised: the budget alarm soon, the rate limit before the site is promoted).
 4. When browser tests come back: update the suites that use the old words (Replace and its dialogs, the top bar's words,
@@ -146,6 +145,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 | Item | Where it belongs |
 |---|---|
+| On Find, an obstacle turned back to exactly nothing and let go is taken for a press inside the roof, which picks the roof | When the owner asks |
 | The pictures `kit-part-2.png` and Find's screens are to be renewed when the browser suites run again (the help's disc, how-to steps, the ? beside Find's title, Show me how) | When the owner runs the suites |
 | Twelve findings of the help's writing (the shade-free line with a pitch entered, the PAN source of the coefficients, "fits" beside an exclamation mark, trees lost on Edit, …) | `plan/phase-14-in-app-help.md`, "As built"; for the owner to order |
 | On phone the help sheet's grip has a press area over its ×; both close the sheet | When the owner asks |
