@@ -1,0 +1,29 @@
+---
+title: Draw a wall
+summary: Press each point of a wall in turn and end it on its last point, then give its height. A wall shades what is behind it.
+kind: tool
+related:
+  - find.tool.move-an-obstacle
+  - find.tool.building
+  - app.section.obstacles
+---
+
+<Steps>
+<Step title="Press each point of the wall">
+With `Wall` in hand, press where it begins, then at each turn of it.
+<Picture src="/help/find/wall/1.jpg" alt="A wall of two points being drawn along the roof" width={1038} height={544}>
+  <Mark n={1} x={23.8} y={75.2}>Where it begins</Mark>
+  <Mark n={2} x={48.3} y={75.2} ring>The last point</Mark>
+</Picture>
+</Step>
+<Step title="End it, and give its height">
+<Pointer>Press the last point again, or <Key>Enter</Key>. A wall needs two points at least.</Pointer>
+<Touch>Press the last point again. A wall needs two points at least.</Touch>
+Its height is asked, as for a <HelpLink k="find.tool.box">box</HelpLink>.
+<Picture src="/help/find/wall/2.jpg" alt="The new wall on the roof, its name and height under it" width={1038} height={544}>
+  <Mark n={1} x={48.3} y={75.2} ring>The wall</Mark>
+</Picture>
+</Step>
+</Steps>
+
+<ShowTheTips />

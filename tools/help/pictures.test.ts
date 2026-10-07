@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { arcFrom, boxOf, clipAround, clipAt, HOW_TOS, pointOf, screenOf } from "./pictures";
+import { arcFrom, boxOf, clipAround, clipAt, HOW_TOS, placeOnScreen, pointOf, screenOf } from "./pictures";
 
 // The pictures of the how-tos (D81): where the hand goes on the roof, and what of the screen is kept.
 
@@ -27,6 +27,15 @@ describe("a place in metres from the map's middle", () => {
   });
 });
 
+describe("a place written either way", () => {
+  test("a spot is on the roof's box, metres are from the map's middle", () => {
+    const box = { left: 100, top: 50, right: 400, bottom: 250 };
+    const map = { middle: { x: 900, y: 450 }, pixelsPerMetre: 4 };
+    expect(placeOnScreen({ across: 0.5, down: 0.5 }, box, map)).toEqual({ x: 250, y: 150 });
+    expect(placeOnScreen({ east: 10, north: 5 }, box, map)).toEqual({ x: 940, y: 430 });
+  });
+});
+
 describe("a turn by the handle", () => {
   test("goes round the middle from where the handle is, by the angle, in even steps, ending there", () => {
     const points = arcFrom({ x: 0, y: 0 }, { x: 0, y: -100 }, 90, 3);
@@ -40,7 +49,7 @@ describe("a turn by the handle", () => {
 
 describe("the how-tos", () => {
   test("each has its folder under public/help and its pictures numbered from 1", () => {
-    expect(HOW_TOS.map(({ dir }) => dir)).toEqual(["find/move-the-roof", "find/corners", "find/rectangle", "find/detect"]);
+    expect(HOW_TOS.map(({ dir }) => dir)).toEqual(["find/move-the-roof", "find/corners", "find/rectangle", "find/detect", "find/box", "find/tank", "find/wall", "find/building", "find/move-an-obstacle"]);
     for (const { dir, shots } of HOW_TOS) {
       expect(dir).toMatch(/^[a-z]+\/[a-z-]+$/);
       expect(shots.map(({ name }) => name)).toEqual(shots.map((_, index) => String(index + 1)));
