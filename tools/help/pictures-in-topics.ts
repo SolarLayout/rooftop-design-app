@@ -6,10 +6,12 @@
 //   </Picture>
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { FPS, lengthOf } from "./clips";
 import type { Topic } from "./generate";
 
 export type Mark = { n: number; x: number; y: number; ring: boolean; words: string };
-export type PictureIn = { src: string; alt: string; width: number; height: number; marks: Mark[] };
+/** A picture as written, with its clip (Phase 15) when it has one: the clip's file and its length as the step shows it. */
+export type PictureIn = { src: string; alt: string; width: number; height: number; marks: Mark[]; clip?: string; length?: string };
 
 const MOST_MARKS = 3;
 const PICTURE = /<Picture\b([^>]*?)(?:\/>|>([\s\S]*?)<\/Picture>)/g;
@@ -25,6 +27,8 @@ export function picturesOf(body: string): PictureIn[] {
     alt: text(attributes, "alt"),
     width: number(attributes, "width"),
     height: number(attributes, "height"),
+    ...(text(attributes, "clip") ? { clip: text(attributes, "clip") } : {}),
+    ...(text(attributes, "length") ? { length: text(attributes, "length") } : {}),
     marks: [...inside.matchAll(MARK)].map(([, markAttributes = "", words = ""]) => ({
       n: number(markAttributes, "n"),
       x: number(markAttributes, "x"),
@@ -72,4 +76,46 @@ function problemsOf(path: string, picture: PictureIn, publicDir: string): string
 /** Every picture of the topics that is not as it should be, in words. */
 export function badPictures(topics: readonly Topic[], publicDir: string): string[] {
   return topics.flatMap(({ path, body }) => picturesOf(body).flatMap((picture) => problemsOf(path, picture, publicDir)));
+}
+
+/** An MP4's length in seconds, from its movie header (mvhd: its time scale and duration); null for what is not an MP4. */
+export function mp4SecondsOf(bytes: Uint8Array): number | null {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  for (let at = 4; at + 32 <= bytes.length; at++) {
+    if (bytes[at] !== 0x6d || bytes[at + 1] !== 0x76 || bytes[at + 2] !== 0x68 || bytes[at + 3] !== 0x64) continue;
+    const version = bytes[at + 4];
+    const scale = view.getUint32(at + (version === 1 ? 24 : 16));
+    const duration = version === 1 ? Number(view.getBigUint64(at + 28)) : view.getUint32(at + 20);
+    return scale > 0 ? duration / scale : null;
+  }
+  return null;
+}
+
+/** What the clips may weigh (D82): each, and all of them. */
+export type ClipBudget = { each: number; all: number };
+export const CLIP_BUDGET: ClipBudget = { each: 500 * 1024, all: 6 * 1024 * 1024 };
+
+const kB = (bytes: number) => `${Math.round(bytes / 1024)} kB`;
+
+/** Every clip of the topics that is not as it should be: there, of the length written, within the budget, in words. */
+export function badClips(topics: readonly Topic[], publicDir: string, budget: ClipBudget = CLIP_BUDGET): string[] {
+  let all = 0;
+  const problems = topics.flatMap(({ path, body }) =>
+    picturesOf(body).flatMap(({ src, clip, length }): string[] => {
+      if (!clip) return length ? [`${path}: ${src} has a length but no clip`] : [];
+      const file = join(publicDir, clip);
+      if (!clip.startsWith("/help/") || !clip.endsWith(".mp4") || !existsSync(file)) return [`${path}: ${clip} is not in apps/web/public; record it with bun help:clips`];
+      const bytes = readFileSync(file);
+      all += bytes.length;
+      const seconds = mp4SecondsOf(bytes);
+      if (seconds === null) return [`${path}: ${clip} is not an MP4`];
+      const runs = lengthOf(Math.round(seconds * FPS));
+      const found: string[] = [];
+      if (!length) found.push(`${path}: ${clip} has no length: write it as the step shows it, ${runs}`);
+      else if (length !== runs) found.push(`${path}: ${clip} runs ${runs}, not ${length} as written`);
+      if (bytes.length > budget.each) found.push(`${path}: ${clip} is ${kB(bytes.length)}, over ${kB(budget.each)} a clip (D82): record it shorter or calmer`);
+      return found;
+    }),
+  );
+  return all > budget.all ? [...problems, `the clips are ${kB(all)} in all, over ${kB(budget.all)} (D82): fewer or shorter clips, or a place of their own`] : problems;
 }

@@ -519,7 +519,15 @@ How-tos with pictures").
   now: with the roof open, the outline tool in hand; closed, the obstacle tool in hand; the roof picked, moving it; an
   obstacle picked, moving it (`lib/outline/how-to.ts`; the first that has a topic, none while none has). A tip's Show me how
   opens its move's. A how-to of Find ends with "Show the tips on the map again".
-- Later (not built): a short clip in the same frame as a picture, its first frame with a play button and its length.
+- **A clip (Phase 15; the boards "In-App Help · Clips"):** a picture may play a short clip of its step in its frame. At rest
+  it is the picture, its callouts and their words, with a play button of the accent in its middle (48, `shadow-primary`, the
+  play icon in `accent-ink`) and the clip's length in its lower right (`type-value-xs` on `ground` at 80 %); nothing of
+  the clip loads until it is pressed. Pressed: a ring in the button while it comes; playing, muted and looping, a line of
+  the accent along its foot shows how far, and a press pauses it; the callouts step aside while it plays, their words stay
+  under it. Paused: the play button again. Failed: the picture and its callouts, an exclamation mark in the button, and
+  "The clip did not load. The picture shows the step." (`type-small`, `text-3`). Under `prefers-reduced-motion` it plays
+  once and stops on its last frame, play again. The whole frame is one button: "Play the clip: " or "Pause the clip: " and
+  the picture's words.
 
 ## Tip (a card of help over the map, D79)
 A small card that shows how to do a move the screen has just made possible (the boards "UI fixes · Move and turn the roof
