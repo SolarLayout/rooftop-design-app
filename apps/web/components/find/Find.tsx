@@ -28,7 +28,7 @@ import { frameAt, toMetres } from "@/lib/outline/frame";
 import { nameOf, obstaclesOfMap } from "@/lib/outline/obstacles";
 import { firstKnownOf } from "@/lib/help/keys";
 import { HELP_KEYS } from "@/lib/help/manifest.gen";
-import { firstStepOf } from "@/lib/outline/first-step";
+import { entryAfterPlace, firstStepOf, type Entry } from "@/lib/outline/first-step";
 import { howTosOf, type HowTo, type Tool } from "@/lib/outline/how-to";
 import { isClosedAndSettled, outlineAfter, START } from "@/lib/outline/outline-state";
 import { TIPS, tipDoneBy, tipShownOf, type TipId } from "@/lib/outline/tips";
@@ -98,9 +98,6 @@ function deviceStorage(): Storage | null {
 // on phone, whose map above the sheet is too short to give a card room, at the top of the sheet, under the lead.
 const TIP_OVER_THE_MAP = "pointer-events-auto absolute top-22 left-5 hidden w-75 tablet:block";
 const TIP_IN_THE_SHEET = "tablet:hidden";
-
-/** How the roof is entered: drawn on the map, or typed by its measurements. */
-type Entry = "map" | "hand";
 
 /** Find the roof on the map and outline it: the flagship (plan/phase-04-find-and-outline.md). */
 export function Find() {
@@ -259,12 +256,14 @@ export function Find() {
     }
   }
 
-  /** A place was found: the map flies to it at roof zoom, and the outline can begin. */
+  /** A place was found: the map flies to it at roof zoom and the outline can begin; without a map the roof is entered by hand there. */
   function onPlace(place: FoundPlace) {
+    const next = entry === "hand" ? "hand" : entryAfterPlace(hasMap);
     setFoundAt(place);
     setView({ lon: place.lon, lat: place.lat, zoom: ROOF_ZOOM });
+    setEntry(next);
     setStep("outline");
-    changeHand({ lat: place.lat, lon: place.lon });
+    changeHand({ lat: place.lat, lon: place.lon }, next);
   }
 
   function near() {

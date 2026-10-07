@@ -51,3 +51,9 @@ const WITHOUT_A_MAP: FirstStep = {
 
 /** The first step's panel, with a map or without one. */
 export const firstStepOf = (hasMap: boolean): FirstStep => (hasMap ? WITH_A_MAP : WITHOUT_A_MAP);
+
+/** How the roof is entered: drawn on the map, or typed by its measurements. */
+export type Entry = "map" | "hand";
+
+/** Where a place found leads (D85): to the outline on the map, or without a map to the entry by hand at that place. */
+export const entryAfterPlace = (hasMap: boolean): Entry => (hasMap ? "map" : "hand");
