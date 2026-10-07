@@ -186,6 +186,10 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   Back, Find, and where help goes; approved on 2026-10-07 (D80). The app caught in the browser (`in_app_help/`) with a prototype of the disc and the drawer drawn
   by the app itself (the local branch `design/in-app-help`, never merged); the sample topics' words checked against the
   engine. Session 19 (`plan/phase-14-in-app-help.md`).
+  The same script writes the boards "In-App Help · How-tos with pictures" (desktop, tablet, phone; under the first three):
+  help for Find's tools as numbered steps, each with a picture of the app and callouts on it, its two ways in (a ? beside
+  the panel's title, Show me how on a tip), how the pictures are made, a clip later in the same frame, the list of Find's
+  how-tos; for the owner's approval. Drawn by a prototype on the local branch `design/find-tools-help`, never merged.
 - A preview is the board rendered at its `$preview` size (the tail of each `.dc.html`) by a scratch Playwright script outside the
   repo: Chromium from `e2e/node_modules/@playwright/test`, the fonts served from `apps/web/app/fonts` and `apps/web/node_modules/geist`
   in place of the Google link in the board's `helmet`, `support.js` stubbed, everything else off the machine refused.

@@ -217,6 +217,126 @@ def board(file: str, title: str, width: int, pad: str, sections: str, height: in
     print(file, height)
 
 
+# The how-tos of Find's tools (the owner, session 19: numbered steps with pictures and callouts in the sheet, videos later),
+# drawn by the prototype on the branch design/find-tools-help, never merged.
+
+def entry(size: str, canvas: bool, shown: int) -> str:
+    frames = {
+        "desktop": ("steps-desktop-1-entry.jpg", 1440, 900, callout(1, 1273, 60, 1340, 60) + callout(2, 77, 274, 200, 300)),
+        "tablet": ("steps-tablet-1-entry.jpg", 834, 1194, callout(1, 199, 848, 300, 800) + callout(2, 78, 309, 230, 330)),
+        "phone": ("steps-phone-1-entry.jpg", 390, 844, callout(1, 195, 499, 250, 455) + callout(2, 74, 774, 210, 745) + callout(3, 360, 499, 340, 440)),
+    }
+    image, w, h, overlay = frames[size]
+    words = [
+        "Beside the panel's title, a ? opens the how-to of what the hand can do now: with the roof open, the outline tool chosen (Corners, Rectangle, Detect "
+        "building); once it is closed, the obstacle tool chosen (Box, Tank, Wall, Building); with the roof or an obstacle picked, how to move, turn or delete it.",
+        "A tip gets Show me how: the same how-to, at the moment its move becomes possible. Got it stays as it is.",
+    ]
+    if size == "phone":
+        words.append("For you to decide: the title has room for one ?. Proposed: the disc takes the place of the toolbar's \"Show the tips\" ?, "
+                     "and each how-to ends with \"Show the tips on the map again\".")
+    return explained("1 · Where a how-to opens", frame(image, w, h, shown, overlay, canvas), words, side=size == "desktop")
+
+
+def how_to(size: str, canvas: bool, shown: int) -> str:
+    frames = {
+        "desktop": ("steps-desktop-2-sheet.jpg", 1440, 900, callout(1, 1166, 81, 960, 81) + callout(2, 1053, 172, 960, 172) + callout(3, 1150, 305, 960, 305) + callout(4, 1181, 431, 960, 431)),
+        "tablet": ("steps-tablet-2-sheet.jpg", 834, 1194, callout(1, 537, 79, 380, 79) + callout(2, 447, 168, 380, 168) + callout(3, 546, 303, 380, 303) + callout(4, 585, 433, 380, 433)),
+        "phone": ("steps-phone-2-sheet.jpg", 390, 844, callout(1, 128, 145, 300, 110) + callout(2, 33, 233, 20, 190) + callout(3, 126, 361, 40, 300) + callout(4, 170, 482, 330, 520)),
+    }
+    image, w, h, overlay = frames[size]
+    words = [
+        "The sheet as for every topic: where it was opened (Tool · Find), the title and the summary.",
+        "The steps, numbered in the disc's orange, a line joining them; each a short title, what to do, and a sentence or two in the words of the hand in use.",
+        "A picture of the app itself, cut to the part that matters. What to act on is ringed in the accent and glows; numbered callouts sit on it.",
+        "The callouts' words under the picture, by their numbers: they are read without zooming into it.",
+    ]
+    return explained("2 · A how-to: numbered steps, each with its picture", frame(image, w, h, shown, overlay, canvas), words, side=size == "desktop")
+
+
+def further(size: str, canvas: bool, shown: int) -> str:
+    if size == "desktop":
+        image, w, h = "steps-desktop-3-sheet.jpg", 1440, 900
+        overlay = callout(1, 1251, 149, 960, 149) + callout(2, 1116, 215, 960, 230) + callout(3, 1370, 508, 960, 508) + callout(4, 1059, 755, 960, 755)
+    else:
+        image, w, h = "steps-phone-4-sheet.jpg", 390, 844
+        overlay = callout(1, 260, 583, 350, 640) + callout(2, 160, 230, 330, 200) + callout(3, 332, 295, 360, 360) + callout(4, 39, 533, 200, 525)
+    words = [
+        "Words for the hand in use: click, drag and keys with a mouse; press, one finger and two on touch. A key or a gesture in the chip of the tips.",
+        "Up to three callouts on a picture; a ring only round the thing to act on.",
+        "The picture holds the moment: caught mid-drag or mid-turn, with how far or how much as the app writes it beside the roof.",
+        "Then: what follows (nothing changes in the Studio until Build this roof), how to take a step back, and the related topics.",
+    ]
+    return explained("3 · The hand in use, the moment caught, what follows", frame(image, w, h, shown, overlay, canvas), words, side=size == "desktop")
+
+
+def text_block(title: str, items: list[str]) -> str:
+    return (f'<section style="display: flex; flex-direction: column; gap: 12px"><h2 style="margin: 0; {DISPLAY}; font-size: 20px; line-height: 26px">{title}</h2>'
+            f'<ul style="margin: 0; padding: 20px 24px 20px 40px; display: flex; flex-direction: column; gap: 8px; color: {TEXT_2}; background: {SURFACE_1}; '
+            f'border: 1px solid {LINE_STRONG}; border-radius: 14px">' + "".join(f"<li>{item}</li>" for item in items) + "</ul></section>")
+
+
+def pictures() -> str:
+    return text_block("4 · The pictures", [
+        "Taken from the app by a script, on the demo roof at twice the screen's pixels, so that they show the screen as it is; taken again when it changes "
+        "(<code>bun help:pictures</code>), and the change is seen in the pull request.",
+        "On a plain ground in place of the satellite imagery: no licence to clear for the imagery, nothing behind the roof to distract, a small file "
+        "(60 kB a picture).",
+        "The callouts are drawn by the sheet over the picture, not into it: crisp at every size, and kept as numbers in the topic. The gate checks that every "
+        "picture is there, has words for a screen reader, and its callouts fall inside it.",
+        "On phone and tablet a picture pressed opens at the width of the screen, and pinches; Back or × returns to the step.",
+    ])
+
+
+def clip(canvas: bool, shown: int) -> str:
+    w, h = 1038, 544
+    scale = shown / w
+    play = (
+        f'<div style="position: relative; width: {shown}px; height: {round(h * scale)}px; flex-shrink: 0; overflow: hidden; border: 1px solid {LINE}; border-radius: 12px">'
+        f'<img src="{src("steps-video-frame.jpg", canvas)}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; filter: brightness(.7)">'
+        f'<div style="position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; background: {ACCENT}; '
+        f'box-shadow: 0 6px 18px rgba(255,176,32,.45); display: flex; align-items: center; justify-content: center">'
+        f'<svg width="24" height="24" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="{ACCENT_INK}"/></svg></div>'
+        f'<span style="position: absolute; right: 12px; bottom: 12px; padding: 2px 8px; border-radius: 6px; background: rgba(5,7,10,.8); color: {TEXT}; '
+        f'font-family: \'Geist Mono\', monospace; font-size: 12px">0:09</span></div>'
+    )
+    words = [
+        "Later, a step may show a short clip in the same frame: its first frame with a play button and its length; it plays in place, muted, never by itself, "
+        "and loops. The step's words stay as its caption, the callouts as the clip's marks.",
+        "A picture first, always; a clip only where a gesture is hard to see still (turning, a drag that snaps). Nothing in this work waits for clips.",
+    ]
+    return explained("5 · Later: a short clip in the same frame", play, words, side=shown > 500)
+
+
+def find_how_tos() -> str:
+    return text_block("6 · The how-tos of Find (about ten topics, find.tool.…)", [
+        "Outline by its corners (Corners): click each corner, close on the first or with Enter; drag a corner, add one on an edge, remove one; Square the corners.",
+        "Draw a rectangle (Rectangle): drag across the roof, then turn it by its handle.",
+        "Detect the building (Detect building): click inside it, then accept the outline proposed or adjust it.",
+        "Move or turn the roof: the sample on this board.",
+        "A box, a tank, a wall, a building beside the roof: how each is drawn, and its height asked right after.",
+        "Move, turn or delete an obstacle; its height in the list.",
+        "Undo, redo and clear, and what Build this roof keeps.",
+        "Each is written as these: numbered steps, a picture for each, pointer and touch in their own words; the sentences checked against the code.",
+    ])
+
+
+STEPS_INTRO = ("Help for Find's tools, as you asked: numbered steps, each with a picture of the app and callouts on it, in the same help sheet; "
+               "built so that a short clip can take a picture's place later. Drawn by a prototype in the app (one topic, \"Move or turn the roof\", "
+               "and its two ways in).")
+
+
+def steps_board(file: str, title: str, width: int, pad: str, sections: str, height: int) -> None:
+    root = (
+        f'<div style="width: {width}px; height: {height}px; box-sizing: border-box; display: flex; flex-direction: column; gap: 40px; padding: {pad}; '
+        f'background: {GROUND}; color: {TEXT}; overflow: hidden; font-size: 14px; line-height: 20px">'
+        f'<div style="display: flex; flex-direction: column; gap: 10px"><h1 style="margin: 0; {DISPLAY}; font-size: 30px; line-height: 36px; letter-spacing: -0.02em">'
+        f'How-tos with pictures</h1><p style="margin: 0; max-width: 1000px; color: {TEXT_2}">{STEPS_INTRO}</p></div>{sections}</div>\n'
+    )
+    (HERE / file).write_text(HEAD.format(title=title) + root + TAIL.format(w=width, h=height), encoding="utf-8")
+    print(file, height)
+
+
 if __name__ == "__main__":
     canvas = "--canvas" in sys.argv
     board("InAppHelp.dc.html", "In-App Help · The ? and the help sheet · desktop 1440", 1552, "40px 56px",
@@ -228,3 +348,9 @@ if __name__ == "__main__":
     board("InAppHelpPhone.dc.html", "In-App Help · The ? and the help sheet · phone 390", 390, "40px 16px",
           states(canvas, 358) + touch_frames("phone", canvas, 358), 4620,
           "Phone: a sheet from the bottom, the whole height but 48, with the grip.")
+    steps_board("InAppHelpSteps.dc.html", "In-App Help · How-tos with pictures · desktop 1440", 1552, "40px 56px",
+                entry("desktop", canvas, 980) + how_to("desktop", canvas, 980) + further("desktop", canvas, 980) + pictures() + clip(canvas, 700) + find_how_tos(), 3300)
+    steps_board("InAppHelpStepsTablet.dc.html", "In-App Help · How-tos with pictures · tablet 834", 834, "40px 24px",
+                entry("tablet", canvas, 786) + how_to("tablet", canvas, 786) + pictures() + clip(canvas, 786) + find_how_tos(), 4940)
+    steps_board("InAppHelpStepsPhone.dc.html", "In-App Help · How-tos with pictures · phone 390", 390, "40px 16px",
+                entry("phone", canvas, 358) + how_to("phone", canvas, 358) + further("phone", canvas, 358) + pictures() + clip(canvas, 358) + find_how_tos(), 5300)
