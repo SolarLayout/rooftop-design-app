@@ -1,13 +1,14 @@
 import path from "node:path";
 import type { Page } from "@playwright/test";
-import { arcFrom, boxOf, clipAround, clipAt, placeOnScreen, pointOf, screenOf, type Act, type Box, type Clip, type HowTo, type Place, type Point } from "../../tools/help/pictures";
+import { arcFrom, boxOf, clipAround, clipAt, clipTopLeft, placeOnScreen, pointOf, screenOf, type Act, type Box, type Clip, type HowTo, type Place, type Point } from "../../tools/help/pictures";
 import { expect, IMAGERY } from "../fixtures";
-import { A_MAP, atTheRoof, roofMap, withTheFootprints } from "../find";
+import { A_MAP, atTheRoof, roofMap, searchField, withTheFootprints, withTheGeocoder } from "../find";
 
-// The hand on Find, for the help's pictures and clips (D81, Phase 15): how a how-to begins (the demo roof opened by Edit, or
-// the demo's place searched), where things are on the screen, each act done on the map, and the part of the screen kept.
-// The imagery is a plain ground (ground.jpg): no imagery to license, nothing behind the roof. The footprints of Detect
-// building come from the tests' fixture. Nothing leaves this machine (the fixtures' guard, e2e/fixtures.ts).
+// The hand on Find, for the help's pictures and clips (D81, Phase 15): how a how-to begins (the demo roof opened by Edit, the
+// demo's place searched, or Find fresh), where things are on the screen, each act done on the map, and the part of the
+// screen kept. The imagery is a plain ground (ground.jpg): no imagery to license, nothing behind the roof. The footprints of
+// Detect building and the geocoder's places come from the tests' fixtures. Nothing leaves this machine (the fixtures' guard,
+// e2e/fixtures.ts).
 
 export const GROUND = path.resolve(__dirname, "ground.jpg");
 export const PUBLIC_HELP = path.resolve(__dirname, "../../apps/web/public/help");
@@ -20,7 +21,9 @@ export async function onTheMap(page: Page): Promise<OnTheMap> {
   const box = await roofMap(page).boundingBox();
   if (!box) throw new Error("The map is not on the screen.");
   const bar = page.getByTestId("scale-bar");
-  const metres = Number((await bar.locator("code").textContent())?.replace(/\s*m$/, ""));
+  // From far (Find fresh) the bar is in kilometres; at a roof, in metres.
+  const [, value, unit] = /^([\d.]+)\s*(km|m)$/.exec((await bar.locator("code").textContent())?.trim() ?? "") ?? [];
+  const metres = Number(value) * (unit === "km" ? 1000 : 1);
   const width = (await bar.locator("div > div").boundingBox())?.width ?? 0;
   if (!(metres > 0 && width > 0)) throw new Error("The scale bar could not be read: the map's scale is not known.");
   return { middle: { x: box.x + box.width / 2, y: box.y + box.height / 2 }, pixelsPerMetre: width / metres };
@@ -78,6 +81,13 @@ export async function dialogClip(page: Page): Promise<Clip> {
   const box = await page.getByTestId("dialog-panel").filter({ visible: true }).first().boundingBox();
   if (!box) throw new Error("No dialog is open: the act before this picture did not ask anything.");
   return clipAround({ left: box.x, top: box.y, right: box.x + box.width, bottom: box.y + box.height }, { left: 24, top: 24, right: 24, bottom: 24 });
+}
+
+/** A region of the page by its name (a section of Find's panel), with a margin round it. */
+export async function regionClip(page: Page, name: string): Promise<Clip> {
+  const box = await page.getByRole("region", { name, exact: true }).boundingBox();
+  if (!box) throw new Error(`No region "${name}" is on the screen: the how-to does not begin where its picture is.`);
+  return clipAround({ left: box.x, top: box.y, right: box.x + box.width, bottom: box.y + box.height }, { left: 16, top: 16, right: 16, bottom: 16 });
 }
 
 /** Does the act; returns how to take it back once the picture is taken (a held drag or turn), or null. */
@@ -145,6 +155,11 @@ export async function act(page: Page, map: OnTheMap, done: Act): Promise<(() => 
     case "key":
       await page.keyboard.press(done.key);
       return null;
+    case "search":
+      await searchField(page).fill(done.text);
+      await searchField(page).press("Enter");
+      await expect(page.getByRole("listbox", { name: "Places found" })).toBeVisible();
+      return null;
   }
 }
 
@@ -157,7 +172,8 @@ export async function begun(page: Page, howTo: HowTo): Promise<void> {
   } else {
     expect((await page.goto("/find"))?.status()).toBe(200);
     await expect(roofMap(page)).toHaveAttribute("data-state", "ready", { timeout: A_MAP });
-    await atTheRoof(page);
+    if (howTo.start === "place") await atTheRoof(page);
+    else await expect(roofMap(page)).toHaveAttribute("aria-busy", "false", { timeout: A_MAP });
   }
 }
 
@@ -166,6 +182,7 @@ export async function begun(page: Page, howTo: HowTo): Promise<void> {
  * the map is, and the part of the screen kept. */
 export async function readied(page: Page, howTo: HowTo): Promise<{ map: OnTheMap; clip: Clip }> {
   await withTheFootprints(page);
+  await withTheGeocoder(page);
   await page.route(IMAGERY, (route) => route.fulfill({ path: GROUND, contentType: "image/jpeg" }));
   await page.setViewportSize(howTo.window);
   await begun(page, howTo);
@@ -179,6 +196,11 @@ export async function readied(page: Page, howTo: HowTo): Promise<{ map: OnTheMap
   await page.waitForTimeout(800);
   const map = await onTheMap(page);
   const { keep } = howTo;
-  const clip = keep.around === "roof" ? clipAround(await roofBox(page), keep.margin) : clipAt(screenOf(map.middle, map.pixelsPerMetre, keep.at ?? { east: 0, north: 0 }), keep.size);
+  const clip =
+    keep.around === "roof"
+      ? clipAround(await roofBox(page), keep.margin)
+      : keep.around === "top-left"
+        ? clipTopLeft(keep.size)
+        : clipAt(screenOf(map.middle, map.pixelsPerMetre, keep.at ?? { east: 0, north: 0 }), keep.size);
   return { map, clip };
 }
