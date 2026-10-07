@@ -1,6 +1,6 @@
 import path from "node:path";
 import type { Page } from "@playwright/test";
-import { arcFrom, boxOf, clipAround, clipAt, HOW_TOS, pointOf, screenOf, type Act, type Box, type HowTo, type Point } from "../../tools/help/pictures";
+import { arcFrom, boxOf, clipAround, clipAt, HOW_TOS, placeOnScreen, pointOf, screenOf, type Act, type Box, type Clip, type HowTo, type Place, type Point } from "../../tools/help/pictures";
 import { expect, IMAGERY, test } from "../fixtures";
 import { A_MAP, atTheRoof, roofMap, withTheFootprints } from "../find";
 
@@ -40,6 +40,23 @@ async function roofBox(page: Page): Promise<Box> {
   return boxOf(corners);
 }
 
+/** Whether the roof is on the map: a how-to that begins at the place has none until its corners are pressed. */
+async function roofBoxIfAny(page: Page): Promise<Box | null> {
+  return (await page.locator("[aria-label='Corner 1'], [aria-label='Corner 1, selected']").count()) > 0 ? roofBox(page) : null;
+}
+
+/** The middle of the obstacle picked: of its corners' handles. */
+async function obstacleMiddle(page: Page): Promise<Point> {
+  const corners = await page.locator("[aria-label$=' of the obstacle']").evaluateAll((all) =>
+    all.map((corner) => {
+      const { x, y, width, height } = corner.getBoundingClientRect();
+      return { x: x + width / 2, y: y + height / 2 };
+    }),
+  );
+  if (corners.length === 0) throw new Error("No obstacle is picked: its corners are not on the map.");
+  return pointOf(boxOf(corners), { across: 0.5, down: 0.5 });
+}
+
 async function centreOf(page: Page, name: string): Promise<Point> {
   const box = await page.locator(`[aria-label="${name}"]`).boundingBox();
   if (!box) throw new Error(`"${name}" is not on the map: the act before this one did not show it.`);
@@ -62,15 +79,22 @@ async function held(page: Page, from: Point, path: readonly Point[], keep: boole
   };
 }
 
+/** The dialog's card, with a margin round it: for a height asked in the middle of the screen. */
+async function dialogClip(page: Page): Promise<Clip> {
+  const box = await page.getByTestId("dialog-panel").filter({ visible: true }).first().boundingBox();
+  if (!box) throw new Error("No dialog is open: the act before this picture did not ask anything.");
+  return clipAround({ left: box.x, top: box.y, right: box.x + box.width, bottom: box.y + box.height }, { left: 24, top: 24, right: 24, bottom: 24 });
+}
+
 /** Does the act; returns how to take it back once the picture is taken (a held drag or turn), or null. */
 async function act(page: Page, map: OnTheMap, done: Act): Promise<(() => Promise<void>) | null> {
-  const at = (metres: { east: number; north: number }) => screenOf(map.middle, map.pixelsPerMetre, metres);
+  const at = async (place: Place) => placeOnScreen(place, "across" in place ? await roofBox(page) : await roofBoxIfAny(page), map);
   switch (done.kind) {
     case "tool":
       await page.getByRole("button", { name: done.name, exact: true }).click();
       return null;
     case "corner": {
-      const point = at(done.at);
+      const point = await at(done.at);
       await page.mouse.click(point.x, point.y);
       return null;
     }
@@ -84,8 +108,8 @@ async function act(page: Page, map: OnTheMap, done: Act): Promise<(() => Promise
       return held(page, from, [{ x: from.x + done.by.x, y: from.y + done.by.y }], done.held, STEPS);
     }
     case "draw": {
-      const from = at(done.from);
-      const to = at(done.to);
+      const from = await at(done.from);
+      const to = await at(done.to);
       await page.mouse.move(from.x, from.y);
       await page.mouse.down();
       await page.mouse.move(to.x, to.y, { steps: STEPS });
@@ -95,13 +119,13 @@ async function act(page: Page, map: OnTheMap, done: Act): Promise<(() => Promise
       return null;
     }
     case "turn": {
-      const box = await roofBox(page);
+      const middle = done.around === "obstacle" ? await obstacleMiddle(page) : pointOf(await roofBox(page), { across: 0.5, down: 0.5 });
       const from = await centreOf(page, done.handle);
-      return held(page, from, arcFrom(pointOf(box, { across: 0.5, down: 0.5 }), from, done.degrees, STEPS), done.held, 1);
+      return held(page, from, arcFrom(middle, from, done.degrees, STEPS), done.held, 1);
     }
     case "found": {
       // The footprints are drawn once their tile is there: a press before that finds nothing and is pressed again.
-      const point = at(done.at);
+      const point = screenOf(map.middle, map.pixelsPerMetre, done.at);
       const callout = page.getByTestId("detected");
       await expect
         .poll(
@@ -116,6 +140,15 @@ async function act(page: Page, map: OnTheMap, done: Act): Promise<(() => Promise
     }
     case "press":
       await page.getByRole("button", { name: done.name, exact: true }).click();
+      return null;
+    case "fill": {
+      const field = page.getByRole("textbox", { name: done.label, exact: true });
+      await field.fill(done.text);
+      await field.press("Tab");
+      return null;
+    }
+    case "key":
+      await page.keyboard.press(done.key);
       return null;
   }
 }
@@ -157,7 +190,7 @@ for (const howTo of HOW_TOS) {
         if (back) takeBack.push(back);
       }
       await page.waitForTimeout(600);
-      await page.screenshot({ path: path.join(PUBLIC_HELP, howTo.dir, `${shot.name}.jpg`), clip, type: "jpeg", quality: 82 });
+      await page.screenshot({ path: path.join(PUBLIC_HELP, howTo.dir, `${shot.name}.jpg`), clip: shot.keep === "dialog" ? await dialogClip(page) : clip, type: "jpeg", quality: 82 });
       for (const back of takeBack.reverse()) await back();
     }
   });

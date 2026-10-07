@@ -13,6 +13,8 @@ export type Size = { width: number; height: number };
 export type Spot = { across: number; down: number };
 /** Where on the map: metres east and north of its middle, as the demo's place is when it is searched. */
 export type Metres = { east: number; north: number };
+/** A place written either way: a spot on the roof (the demo roof, opened by Edit), or metres from the map's middle. */
+export type Place = Spot | Metres;
 
 /**
  * What the hand does before a picture:
@@ -22,22 +24,30 @@ export type Metres = { east: number; north: number };
  * - `drag`: from a spot of the roof by so many pixels; `draw`: from one place of the map to another (a rectangle);
  * - `turn`: the handle of that name dragged round the roof's middle, clockwise on the screen;
  * - `found`: Detect building pressed at a place until its footprint is proposed;
- * - `press`: a button, by its name (Use this outline).
+ * - `press`: a button, by its name (Use this outline);
+ * - `fill`: a field, by its label, given words (an obstacle's height), then left so that it takes them;
+ * - `key`: a key pressed (Enter, to end a wall).
+ * A turn goes round the roof's middle, or round the obstacle picked.
  * A drag, a draw or a turn that is held is caught before the button is let go; a held drag or turn is then taken back, so
  * the next picture begins from the roof as it was.
  */
 export type Act =
   | { kind: "tool"; name: string }
-  | { kind: "corner"; at: Metres }
+  | { kind: "corner"; at: Place }
   | { kind: "click"; at: Spot }
   | { kind: "drag"; from: Spot; by: Point; held: boolean }
-  | { kind: "draw"; from: Metres; to: Metres; held: boolean }
-  | { kind: "turn"; handle: string; degrees: number; held: boolean }
+  | { kind: "draw"; from: Place; to: Place; held: boolean }
+  | { kind: "turn"; handle: string; degrees: number; held: boolean; around?: "roof" | "obstacle" }
   | { kind: "found"; at: Metres }
-  | { kind: "press"; name: string };
+  | { kind: "press"; name: string }
+  | { kind: "fill"; label: string; text: string }
+  | { kind: "key"; key: string };
 
-/** A picture: its name in the folder (its step's number) and what the hand does after the picture before it. */
-export type Shot = { name: string; acts: readonly Act[] };
+/**
+ * A picture: its name in the folder (its step's number), what the hand does after the picture before it, and, for a
+ * dialog that opens in the middle of the screen, the dialog kept in place of the how-to's part.
+ */
+export type Shot = { name: string; acts: readonly Act[]; keep?: "dialog" };
 
 /**
  * A how-to's pictures: its folder under public/help, the window they are taken in, how it begins (the demo roof opened
@@ -120,6 +130,75 @@ export const HOW_TOS: readonly HowTo[] = [
       { name: "3", acts: [{ kind: "press", name: "Use this outline" }] },
     ],
   },
+  {
+    dir: "find/box",
+    window: WINDOW,
+    start: "edit",
+    keep: { around: "roof", margin: ROOF_MARGIN },
+    shots: [
+      { name: "1", acts: [{ kind: "tool", name: "Box" }, { kind: "draw", from: { across: 0.06, down: 0.12 }, to: { across: 0.18, down: 0.36 }, held: true }] },
+      { name: "2", acts: [], keep: "dialog" },
+      { name: "3", acts: [{ kind: "fill", label: "Height", text: "2.5" }, { kind: "press", name: "Add the box" }] },
+    ],
+  },
+  {
+    dir: "find/tank",
+    window: WINDOW,
+    start: "edit",
+    keep: { around: "roof", margin: ROOF_MARGIN },
+    shots: [
+      { name: "1", acts: [{ kind: "tool", name: "Tank" }, { kind: "draw", from: { across: 0.12, down: 0.24 }, to: { across: 0.15, down: 0.24 }, held: true }] },
+      { name: "2", acts: [{ kind: "fill", label: "Height", text: "2" }, { kind: "press", name: "Add the tank" }] },
+    ],
+  },
+  {
+    dir: "find/wall",
+    window: WINDOW,
+    start: "edit",
+    keep: { around: "roof", margin: ROOF_MARGIN },
+    shots: [
+      {
+        name: "1",
+        acts: [
+          { kind: "tool", name: "Wall" },
+          { kind: "corner", at: { across: 0.2, down: 0.92 } },
+          { kind: "corner", at: { across: 0.6, down: 0.92 } },
+        ],
+      },
+      { name: "2", acts: [{ kind: "key", key: "Enter" }, { kind: "fill", label: "Height", text: "1.2" }, { kind: "press", name: "Add the wall" }] },
+    ],
+  },
+  {
+    dir: "find/building",
+    window: WINDOW,
+    start: "edit",
+    // West of the roof, in the open: its label runs east, toward the roof, clear of Find's panel.
+    keep: { around: "roof", margin: { left: 130, top: 72, right: 140, bottom: 56 } },
+    shots: [
+      {
+        name: "1",
+        acts: [
+          { kind: "tool", name: "Building" },
+          { kind: "corner", at: { across: -0.26, down: 0.15 } },
+          { kind: "corner", at: { across: -0.08, down: 0.15 } },
+          { kind: "corner", at: { across: -0.08, down: 0.8 } },
+          { kind: "corner", at: { across: -0.26, down: 0.8 } },
+        ],
+      },
+      { name: "2", acts: [{ kind: "corner", at: { across: -0.26, down: 0.15 } }, { kind: "fill", label: "Height", text: "9" }, { kind: "press", name: "Add the building" }] },
+    ],
+  },
+  {
+    dir: "find/move-an-obstacle",
+    window: WINDOW,
+    start: "edit",
+    keep: { around: "roof", margin: ROOF_MARGIN },
+    shots: [
+      { name: "1", acts: [{ kind: "click", at: { across: 0.23, down: 0.5 } }] },
+      { name: "2", acts: [{ kind: "drag", from: { across: 0.23, down: 0.5 }, by: { x: 24, y: -12 }, held: true }] },
+      { name: "3", acts: [{ kind: "turn", handle: "Turn the obstacle", degrees: 25, held: true, around: "obstacle" }] },
+    ],
+  },
 ];
 
 export function boxOf(points: readonly Point[]): Box {
@@ -130,6 +209,15 @@ export function boxOf(points: readonly Point[]): Box {
 
 export function pointOf(box: Box, spot: Spot): Point {
   return { x: box.left + (box.right - box.left) * spot.across, y: box.top + (box.bottom - box.top) * spot.down };
+}
+
+/** A place written either way, on the screen: a spot on the roof's box, or metres from the map's middle. */
+export function placeOnScreen(place: Place, box: Box | null, map: { middle: Point; pixelsPerMetre: number }): Point {
+  if ("across" in place) {
+    if (!box) throw new Error("A spot on the roof was asked for, and there is no roof on the map.");
+    return pointOf(box, place);
+  }
+  return screenOf(map.middle, map.pixelsPerMetre, place);
 }
 
 /** A place in metres on the screen: east is right, north is up, at so many pixels a metre. */
