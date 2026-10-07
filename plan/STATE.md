@@ -3,18 +3,17 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-07, end of session 18. **UI polish driven by the owner**: pull requests #107 to #116 merged (search
-and coordinates, Present's panels, the state of saving, the equipment library and its picker, section headings, a stringing
-choice an edit took away, my location and Search on every size); decisions D68 to D78. **D79 approved, not built**: move and
-turn the roof and its obstacles on Find's map, the grab cursor, the tips. Both environments on `6f7be3c` (#116), deployed.
-**Next: build D79** (`plan/resume/017-move-and-turn.md`).
+**Last updated:** 2026-10-07, session 19. **D79 built**: the roof picked up whole on Find's map, moved and turned with its
+obstacles (#117); a dragged corner moves finely, a snap reaching 4 px (#118); the obstacle picked moved and turned (#120, after
+#119 merged into a stale branch); the cursor and the tips (#121, open, for the owner to merge). Session 18 before it: #107 to
+#116, D68 to D78. **Next:** the owner merges #121 and says whether the phone's tip should move into the sheet.
 
 ## Where we are
 
 | Phase | Status | Notes |
 |---|---|---|
 | 0 Design | Direction approved. 79 boards on the canvas: the approved design, and the page "UI fixes" of session 18 on (D68 to D79) | More screens to draw, listed in `phase-00-design.md`; the canvas and the repo in sync (`docs/design/README.md`, `mockups/canvas.json`) |
-| UI polish | Session 18: #107 to #116 merged; D79 approved, not built | Driven by the owner, issue by issue; the record: `plan/sessions/018/record.md` |
+| UI polish | Session 18: #107 to #116 merged; session 19: D79 built (#117, #118, #120 merged; #121 open) | Driven by the owner, issue by issue; the record: `plan/sessions/018/record.md` |
 | 1 Foundation | Done, merged (PR #1) | |
 | 2 Engine and API | Done (PR #7, PRs #11 to #23) | What exists, what was decided, what was found: `phase-02-engine-api.md`, "As built" |
 | 3 Design system and shell | Done (PRs #24 to #33) | What exists, what was decided, what was found: `phase-03-design-system-shell.md`, "As built". How its second half was built: `phase-03-rest-plan.md` |
@@ -32,9 +31,11 @@ turn the roof and its obstacles on Find's map, the grab cursor, the tips. Both e
 
 ## In flight
 
-Nothing merged waits. Both environments run `6f7be3c` (#116), deployed 2026-10-06 (a Production deploy waited about ten minutes
-in GitHub's "waiting" with no rule asking for it, then ran). Approved and not built: D79 (the boards "UI fixes · Move and turn
-the roof and its obstacles"). Standing instructions of the owner (session 18): no browser test suites are run and no new UI
+Open: #121 (the cursor and the tips, the last part of D79), for the owner to review and merge; it asks one thing: on phone the
+tip card covers about half of the 460 px of map above the sheet, as the board places it; the alternative is the top of the
+sheet. Stacked pull requests are avoided from now on: #119 was merged into its base branch after that branch had merged, and
+never reached `main` (#120 brought it). Both environments ran `6f7be3c` (#116) when session 19 began; `main` has moved since
+(#117, #118, #120), deployed by the workflows as usual. Standing instructions of the owner (session 18): no browser test suites are run and no new UI
 tests are written; each change is checked by hand in the browser with Playwright and its screenshots go in the pull request
 (the orphan branch `pr-shots`); every board for approval comes in three sizes on the canvas; the owner merges the pull
 requests himself. Left of Phase 12: #99 and #100. Watch items: ECR's 8 high CVEs in Debian's base; no lifecycle rule on ECR;
@@ -108,8 +109,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 ## Next, in order
 
-1. **Build D79**: move and turn the roof and its obstacles on Find's map, the grab cursor, the tips
-   (`plan/resume/017-move-and-turn.md`). Then more UI polish as the owner brings it.
+1. #121 merged, and the owner's word on the phone's tip. Then more UI polish as the owner brings it.
 2. Issue #114: the Strings legend with many MPPT (design first).
 3. #99 and #100 when the owner needs them (advised: the budget alarm soon, the rate limit before the site is promoted).
 4. When browser tests come back: update the suites that use the old words (Replace and its dialogs, the top bar's words,
@@ -143,6 +143,8 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 | Item | Where it belongs |
 |---|---|
+| On Find's map at roof zoom the demo's obstacles are 8 to 17 px across, smaller than their handles' targets: they are picked and moved after zooming in; an obstacle's label can cover a roof corner (corner 1 of the demo) | When the owner asks |
+| A very slow touch drag (about 1 px an event, emulated by Playwright) starts no marker drag on the map, MapLibre's corners included; real fingers move more per event | Watch |
 | The obstacle list of Find shows each height and does not edit it (the Roof lens does); trees are not drawn on the map; the by-hand roof's corners are not dragged on the map | Phase 11, or when the owner asks |
 | The Esri key is baked into the page at build time: the "no key" state is seen only on a build without it, and the tests reach the no-map states through "no WebGL" | Phase 11 |
 | The frame rate with 1,068 modules on this machine's GPU: 56 fps while orbiting (the mark was 60), 60.1 while the timeline is dragged, 58.3 while the day plays; a mid laptop has not been measured | When the owner has one at hand |
