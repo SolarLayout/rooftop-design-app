@@ -11,6 +11,7 @@ export const WITHOUT_A_DISC: Readonly<Record<string, string>> = {
   "studio/SystemVoltage.tsx · done": "\"Already done\" is in the System voltage decision card, whose disc is on \"Waiting for your choice\"",
   "kit/HelpDiscs.tsx": "the kit's example of a heading beside the disc",
   "shell/help/HelpSheet.tsx": "Related, in the help sheet itself: no input panel's section",
+  "find/FirstStep.tsx": "Find's first step is itself the guide, with no input to explain; its ? stands beside the panel's title (D85)",
 };
 
 /** Lines drawing a heading in the SECTION look, from one file's text: the line's number and words. */

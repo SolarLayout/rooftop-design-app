@@ -28,6 +28,7 @@ import { frameAt, toMetres } from "@/lib/outline/frame";
 import { nameOf, obstaclesOfMap } from "@/lib/outline/obstacles";
 import { firstKnownOf } from "@/lib/help/keys";
 import { HELP_KEYS } from "@/lib/help/manifest.gen";
+import { firstStepOf } from "@/lib/outline/first-step";
 import { howTosOf, type HowTo, type Tool } from "@/lib/outline/how-to";
 import { isClosedAndSettled, outlineAfter, START } from "@/lib/outline/outline-state";
 import { TIPS, tipDoneBy, tipShownOf, type TipId } from "@/lib/outline/tips";
@@ -38,6 +39,7 @@ import { MapButtons } from "./MapButtons";
 import { ByHandPanel } from "./ByHandPanel";
 import { DetectedCallout } from "./DetectedCallout";
 import { HeightDialog } from "./HeightDialog";
+import { FirstStep } from "./FirstStep";
 import { NoMap } from "./NoMap";
 import { ObstacleList } from "./ObstacleList";
 import type { Detected } from "./OutlineLayer";
@@ -47,7 +49,7 @@ import { PlanView } from "./PlanView";
 import { RoofTypeChoice } from "./RoofTypeChoice";
 import type { RoofType } from "@/lib/geometry/roof-types";
 import type { MapView } from "./RoofMap";
-import { Search, type FoundPlace } from "@/components/shell/Search";
+import { Search, type FoundPlace, type SearchHandle } from "@/components/shell/Search";
 import { Steps, type Step } from "./Steps";
 import { useOutlineKeys } from "./use-outline-keys";
 import { useWebGL } from "./use-web-gl";
@@ -63,8 +65,8 @@ const FROM_FAR: MapView = { lon: 78.5, lat: 21.5, zoom: 4 };
 /** The how-to of a tip's move (D81): Show me how opens it, once it is written. */
 const HOW_TO_OF_TIP: Readonly<Record<TipId, HowTo>> = { roof: "move-the-roof", obstacle: "move-an-obstacle" };
 
-const WORDS: Record<Step | Exclude<Tool, "corners"> | "hand", { title: string; lead: string }> = {
-  find: { title: "Find the roof", lead: "Search an address or a place, or paste coordinates or a maps link. The map flies to it." },
+// The first step's words are its panel's (D85), with a map or without one.
+const WORDS: Record<Exclude<Step, "find"> | Exclude<Tool, "corners"> | "hand", { title: string; lead: string }> = {
   outline: { title: "Outline the roof", lead: "Click each corner. Drag a corner to adjust it, or type a length you have measured." },
   rectangle: { title: "Outline the roof", lead: "Drag a box across the roof, then turn it to the building by its handle. Drag a corner to adjust it." },
   detect: { title: "Outline the roof", lead: "Click inside the building. Where its footprint is known, it is proposed as the outline, to accept or adjust." },
@@ -135,6 +137,7 @@ export function Find() {
   const [tipsHidden, setTipsHidden] = useState(false);
   const [touch] = useState(() => typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches);
   const outlineBefore = useRef(outline);
+  const search = useRef<SearchHandle>(null);
   // The map begins at the place asked for in the address, else at the roof of the design that is open; without either, from far.
   const [view, setView] = useState<MapView>(() => {
     if (placeAsked) return { lon: placeAsked.lon, lat: placeAsked.lat, zoom: ROOF_ZOOM };
@@ -145,8 +148,10 @@ export function Find() {
     () => mapStateOf({ hasKey: PROVIDER !== null, hasWebGL: webGL ?? true, tilesFailed }),
     [webGL, tilesFailed],
   );
-  const words = WORDS[step === "outline" ? (entry === "hand" ? "hand" : tool !== "corners" ? tool : step) : step];
   const hasMap = state.kind === "ready" && PROVIDER !== null && Boolean(webGL);
+  const firstStep = firstStepOf(hasMap);
+  const words =
+    step === "find" ? { title: "Find the roof", lead: firstStep.lead } : WORDS[step === "outline" ? (entry === "hand" ? "hand" : tool !== "corners" ? tool : step) : step];
   useOutlineKeys(step === "outline" && entry === "map" && outline.pending === null, on);
 
   /** A tip gone for good, on this device. */
@@ -188,7 +193,12 @@ export function Find() {
   });
   const tip = step === "outline" && entry === "map" && hasMap && !tipsHidden ? tipShownOf(outline, tipsGone) : null;
   // The ? beside the title (D81): the how-to of what the hand can do now, the first that has a topic.
-  const howTo = step === "outline" && entry === "map" ? firstKnownOf(howTosOf(outline, tool).map((id) => `find.tool.${id}`), HELP_KEYS) : null;
+  const howTo =
+    step === "find"
+      ? firstKnownOf(["find.tool.find-the-roof"], HELP_KEYS)
+      : step === "outline" && entry === "map"
+        ? firstKnownOf(howTosOf(outline, tool).map((id) => `find.tool.${id}`), HELP_KEYS)
+        : null;
 
   /** What is entered by hand changes: the roof follows it, at the place, once enough is there. */
   function changeHand(change: Partial<ByHand>, mode: Entry = entry) {
@@ -290,7 +300,7 @@ export function Find() {
               <Link href="/" aria-label="Back to home" className={FLOATING_BUTTON}>
                 <Icon name="arrow-left" size={18} />
               </Link>
-              <Search provider={PROVIDER} near={near} onPlace={onPlace} found={foundAt?.label ?? null} className="min-w-0 grow desktop:w-100 desktop:grow-0" />
+              <Search ref={search} provider={PROVIDER} near={near} onPlace={onPlace} found={foundAt?.label ?? null} className="min-w-0 grow desktop:w-100 desktop:grow-0" />
               <Steps current={step} className="hidden tablet:flex" />
             </div>
             {/* The phone has no buttons: the map is pinched and turned by hand. Without a map there is nothing to turn or zoom. */}
@@ -353,6 +363,13 @@ export function Find() {
               <p className="text-text-2">{words.lead}</p>
             </div>
             {tip ? <div className={TIP_IN_THE_SHEET}>{tipCard(tip)}</div> : null}
+            {step === "find" ? (
+              <FirstStep
+                panel={firstStep}
+                onWay={(way) => (way === "search" ? search.current?.focus() : way === "locate" ? search.current?.locate() : enterByHand())}
+                onExample={(text) => search.current?.put(text)}
+              />
+            ) : null}
             {step === "outline" ? (
               <>
                 {entry === "hand" ? (
