@@ -5,6 +5,7 @@ import { useEffect, useId, useRef } from "react";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
 import { IconButton } from "@/components/ui/IconButton";
+import { HEADING_LIGHT, SECTION } from "@/components/ui/section-look";
 import { SheetGrip } from "@/components/ui/SheetGrip";
 import { ALIASES, MANIFEST } from "@/lib/help/manifest.gen";
 import { resolvedKey, whereOf } from "@/lib/help/where";
@@ -76,7 +77,7 @@ export function HelpSheet() {
           </div>
           <div ref={scroller} className="flex min-h-0 grow flex-col gap-4 overflow-y-auto px-5 pt-4.5 pb-6">
             <div className="flex flex-col gap-1.5">
-              <h2 id={titleId} className="type-lens-touch desktop:type-lens">
+              <h2 id={titleId} className={classNames("type-lens-touch desktop:type-lens", HEADING_LIGHT)}>
                 {shown.entry.title}
               </h2>
               <p className="text-text-2">{shown.entry.summary}</p>
@@ -100,7 +101,7 @@ export function HelpSheet() {
             <HelpBody key={shown.key} entry={shown.entry} />
             {shown.entry.related.length > 0 ? (
               <div className="flex shrink-0 flex-col gap-1.5">
-                <span id={relatedId} className="type-section text-text-3 uppercase">
+                <span id={relatedId} className={SECTION}>
                   Related
                 </span>
                 <ul aria-labelledby={relatedId} className="-mx-2 flex flex-col">

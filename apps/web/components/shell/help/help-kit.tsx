@@ -1,5 +1,7 @@
 import type { MDXComponents } from "mdx/types";
 import type { ReactNode } from "react";
+import { classNames } from "@/components/ui/class-names";
+import { HEADING_LIGHT } from "@/components/ui/section-look";
 import { StatusMark } from "@/components/ui/StatusMark";
 import { useHelp } from "./HelpProvider";
 
@@ -26,7 +28,7 @@ function HelpLink({ k, children }: { k: string; children: ReactNode }) {
 }
 
 export const HELP_KIT: MDXComponents = {
-  h2: ({ children }) => <h3 className="mt-2 type-title text-text first:mt-0">{children}</h3>,
+  h2: ({ children }) => <h3 className={classNames("mt-2 type-title first:mt-0", HEADING_LIGHT)}>{children}</h3>,
   p: ({ children }) => <p className="text-text-2">{children}</p>,
   ul: ({ children }) => <ul className="flex list-disc flex-col gap-1 pl-5 text-text-2">{children}</ul>,
   li: ({ children }) => <li>{children}</li>,
