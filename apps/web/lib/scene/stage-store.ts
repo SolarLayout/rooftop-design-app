@@ -8,7 +8,10 @@ import { sameLabels, type StageLabel } from "./projection";
 /** What the ground under the roof is: nothing yet, the plain colour with the grid, or the imagery. */
 export type Ground = "none" | "plain" | "imagery";
 
-/** The cursor over the stage: a pointer over what can be selected, a hand over what can be dragged, closed while it is. */
+/**
+ * The cursor over the stage: a pointer over what can be selected, a hand over what can be dragged, closed while it
+ * is. Where nothing asks for one, an open hand: a drag there moves the view (D79).
+ */
 export type Cursor = "default" | "pointer" | "grab" | "grabbing";
 
 /** The strength of each cursor: of several things under the pointer, the strongest shows. */
@@ -102,7 +105,8 @@ export const cameraOf = (state: StageState) => state.camera;
 export const canvasOf = (state: StageState) => state.canvas;
 export const moduleWritesOf = (state: StageState) => state.moduleWrites;
 
-/** The cursor to show over the stage: the strongest of what is under the pointer. */
+/** The cursor to show over the stage: the strongest of what is under the pointer; an open hand where nothing asks. */
 export function cursorOf(state: StageState): Cursor {
-  return Object.values(state.over).reduce<Cursor>((strongest, cursor) => (STRENGTH[cursor] > STRENGTH[strongest] ? cursor : strongest), "default");
+  const asked = Object.values(state.over).reduce<Cursor>((strongest, cursor) => (STRENGTH[cursor] > STRENGTH[strongest] ? cursor : strongest), "default");
+  return asked === "default" ? "grab" : asked;
 }
