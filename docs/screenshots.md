@@ -32,9 +32,13 @@ is checked by hand in the browser, and its screenshots go into the pull request.
 5. **Keep them on `pr-shots`:** `bun tools/pr-shots.ts <folder> <file>...`, one folder a pull request
    (`help-topics-roof`). The tool commits them to the orphan branch `pr-shots` with git's plumbing (the working tree and the
    branch checked out are not touched), pushes it, and prints a table of links by the commit, so a link never changes.
-   The repository is private: GitHub shows the links to those who can read it; fetched from outside (curl), they answer 404.
+   The links are `https://github.com/<repo>/blob/<commit>/<path>?raw=true`: the form GitHub shows in a private repository to
+   those who can read it. Never `raw.githubusercontent.com`, which answers 404 without a token: the pictures do not show.
 6. **The description:** "How it was checked" says what was run, pressed and read, and what was not; "Screenshots" holds the
-   table, each row named by size and state.
+   table, each row named by size and state. **Every pull request that changes what is seen** (a screen, a state, a design,
+   the way something is done) has its screenshots in its description, at each size it reaches; none is merged without.
+7. **Look at the description on GitHub** after it is opened (`gh pr view <n> --web`, or the page): the pictures show. A
+   picture that does not show is fixed before anything else.
 
 ```js
 // .playwright-mcp/<change>.js, run with browser_run_code_unsafe { filename }

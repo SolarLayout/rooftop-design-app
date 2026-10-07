@@ -6,7 +6,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { markdownOf, problemsOfFolder, publishedPathOf, rawUrlOf, repoOf } from "./lib/pr-shots.ts";
+import { linkOf, markdownOf, problemsOfFolder, publishedPathOf, repoOf } from "./lib/pr-shots.ts";
 
 const BRANCH = "pr-shots";
 
@@ -53,7 +53,7 @@ try {
   const commit = git(["commit-tree", tree, ...(parent ? ["-p", parent] : []), "-m", `Screenshots: ${folder}`]);
   git(["push", "-q", "origin", `${commit}:refs/heads/${BRANCH}`]);
   console.log(`pr-shots: ${published.length} file(s) in ${folder}/ at ${commit}\n`);
-  console.log(markdownOf(published.map((path) => rawUrlOf(repo, commit, path))));
+  console.log(markdownOf(published.map((path) => linkOf(repo, commit, path))));
 } finally {
   rmSync(scratch, { recursive: true, force: true });
 }

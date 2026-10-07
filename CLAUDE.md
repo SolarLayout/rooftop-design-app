@@ -32,6 +32,11 @@ session starts, works and ends. Update `plan/STATE.md` before you stop. Resume p
 - Build in logical parts and show each one. No long silent stretches.
 - Verify your own work before showing it: run it, test it, look at it. Report what you ran and what you
   did not. How a change is looked at in the browser and its screenshots kept and linked: `docs/screenshots.md`.
+- **Screenshots in every pull request that changes what is seen** (UI work, a new or changed design, a new or changed
+  way of doing something): each changed screen and state at each size it reaches (desktop 1440, tablet 834, phone 390),
+  embedded in the description with `bun tools/pr-shots.ts`, whose links are the form a private repository shows
+  (`github.com/<repo>/blob/<commit>/<path>?raw=true`, never `raw.githubusercontent.com`). Open the pull request's page and
+  see the pictures show before it is merged; a pull request without them is not merged.
 - You may commit, push and merge pull requests in this repo once the check is green. Code never goes to
   `main` directly.
 - A change to documents only (`plan/`, `docs/`, `README.md`, `CLAUDE.md`) is committed and pushed to `main`

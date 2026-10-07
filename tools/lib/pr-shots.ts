@@ -18,8 +18,13 @@ export function publishedPathOf(folder: string, file: string): string {
   return `${folder}/${file.split("/").pop() ?? file}`;
 }
 
-export function rawUrlOf(repo: string, commit: string, published: string): string {
-  return `https://raw.githubusercontent.com/${repo}/${commit}/${published}`;
+/**
+ * The link of a screenshot as GitHub shows it in a pull request of a private repository: the file at the commit, by
+ * github.com with ?raw=true, which GitHub serves to those who can read the repository. Never raw.githubusercontent.com:
+ * without a token it answers 404, and the picture does not show.
+ */
+export function linkOf(repo: string, commit: string, published: string): string {
+  return `https://github.com/${repo}/blob/${commit}/${published}?raw=true`;
 }
 
 /** A row of a table per screenshot, its name beside it: to paste into the description and fill in. */
