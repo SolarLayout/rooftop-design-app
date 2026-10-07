@@ -28,5 +28,6 @@ describe("where a screenshot goes", () => {
 
   test("the links ready for the pull request's description", () => {
     expect(markdownOf(["https://x/a/desktop-1.png"])).toBe("| desktop-1 | ![](https://x/a/desktop-1.png) |");
+    expect(markdownOf(["https://x/blob/c/a/phone-2.jpg?raw=true"])).toBe("| phone-2 | ![](https://x/blob/c/a/phone-2.jpg?raw=true) |");
   });
 });

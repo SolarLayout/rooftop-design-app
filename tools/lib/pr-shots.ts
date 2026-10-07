@@ -29,5 +29,5 @@ export function linkOf(repo: string, commit: string, published: string): string 
 
 /** A row of a table per screenshot, its name beside it: to paste into the description and fill in. */
 export function markdownOf(urls: readonly string[]): string {
-  return urls.map((url) => `| ${(url.split("/").pop() ?? url).replace(/\.[a-z]+$/, "")} | ![](${url}) |`).join("\n");
+  return urls.map((url) => `| ${(url.split("?")[0]?.split("/").pop() ?? url).replace(/\.[a-z]+$/, "")} | ![](${url}) |`).join("\n");
 }
