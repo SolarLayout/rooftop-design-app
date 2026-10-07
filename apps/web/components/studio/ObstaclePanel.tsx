@@ -1,5 +1,6 @@
 "use client";
 
+import { SectionHeading } from "@/components/shell/help/SectionHeading";
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { useStores, useView } from "@/components/shell/stores";
 import { Button } from "@/components/ui/Button";
@@ -37,7 +38,7 @@ import {
 } from "@/lib/geometry/obstacle-fields";
 import { indexToReview, REVIEW_HINT } from "@/lib/studio/review-heights";
 import { draftOf, draggingOf, selectionOf, toReviewOf } from "@/lib/stores/view-store";
-import { fieldsLayoutOf, SECTION } from "./inspector-look";
+import { fieldsLayoutOf } from "./inspector-look";
 import type { Size } from "./use-size";
 
 type Props = { roof: Roof; size: Size };
@@ -325,7 +326,7 @@ export function ObstaclePanel({ roof, size }: Props) {
   return (
     <section aria-label="Obstacles" className="flex flex-col gap-2.5">
       <div className="flex items-center">
-        <h2 className={SECTION}>Obstacles · {own.length}</h2>
+        <SectionHeading help="app.section.obstacles">Obstacles · {own.length}</SectionHeading>
         <AddMenu onAdd={add} />
       </div>
       {draft ? (

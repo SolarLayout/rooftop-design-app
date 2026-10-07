@@ -1,0 +1,30 @@
+---
+title: Roof type
+summary: How the modules sit on the roof. It decides how the engine lays out the rows, their tilt and their direction.
+kind: section
+values:
+  "flat_tilted": Rows of tables on a flat roof, tilted at the array's tilt and facing the equator side of the roof.
+  "flat_ew": Back-to-back units on a flat roof, one side facing east and one west, at a low tilt.
+  "sloped_flush": Modules laid on the surface of a pitched roof, at its pitch and facing where its slope faces.
+related:
+  - studio.section.edges-and-access
+  - app.section.obstacles
+---
+
+## The three types
+
+`Flat, tilted rows` (`Tilted rows` in the Roof lens and on smaller screens) lays rows of tables at the array's tilt. By default they face the edge of the roof closest to the equator, and the rows are spaced so that they do not shade each other through the shade-free window of the design day, unless you set the row pitch yourself.
+
+`Flat, east-west` (`East-west`) lays back-to-back units, one face turned east and the other west. The units stand together, with a gap between them only where the shade-free window needs one.
+
+`Sloped, flush` (`Sloped`) lays the modules on the roof surface, at the roof's pitch and facing the direction its slope faces. Rows follow each other with no spacing for shade.
+
+## What else it changes
+
+The walkway is counted every so many modules along a row for tilted rows, and every so many rows (or units) for the other two. A sloped roof adds `Pitch` and `Faces` to <HelpLink k="studio.section.edges-and-access">Edges and access</HelpLink>. Chosen in the Roof lens, `Sloped` sets the parapet to nothing and gives the roof a pitch if it had none.
+
+The roof type also gives two temperatures their defaults, until you enter your own. `Cell rise`, used to size strings, is larger for flush modules. `Thermal Uc`, how fast the modules shed heat in the energy simulation, is highest for tilted rows, lower for east-west units and lowest for flush modules. Bifacial rear gain is not counted on a sloped roof.
+
+## Where you choose it
+
+On Find before the roof is built, and in the Roof lens after. Both are the same setting.

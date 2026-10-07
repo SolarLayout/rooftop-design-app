@@ -1,14 +1,15 @@
 "use client";
 
+import { SectionHeading } from "@/components/shell/help/SectionHeading";
+import { SHAPES } from "@/lib/outline/shapes";
 import { Button } from "@/components/ui/Button";
 import { classNames } from "@/components/ui/class-names";
 import { IconButton } from "@/components/ui/IconButton";
 import { NumberField } from "@/components/ui/NumberField";
 import { Segmented } from "@/components/ui/Segmented";
-import type { ByHand, Row, Shape } from "@/lib/outline/by-hand";
+import type { ByHand, Row } from "@/lib/outline/by-hand";
 import type { OutlineState } from "@/lib/outline/outline-state";
 import { MeasurementTiles } from "./OutlinePanel";
-import { SECTION } from "@/components/ui/section-look";
 
 type Props = {
   hand: ByHand;
@@ -28,10 +29,6 @@ const FACES = { min: 0, max: 359, decimals: 0 };
 /** A corner: metres east and north of the middle of the roof. */
 const CORNER = { min: -5000, max: 5000, decimals: 2 };
 
-const SHAPES: { value: Shape; label: string }[] = [
-  { value: "rectangle", label: "Rectangle" },
-  { value: "corners", label: "Corners" },
-];
 
 /**
  * The roof entered by its measurements (the board "Enter dimensions by hand"): the place, then a
@@ -48,7 +45,7 @@ export function ByHandPanel({ hand, onChange, state, className }: Props) {
   return (
     <div className={classNames("flex flex-col gap-4 desktop:gap-5", className)}>
       <section className="flex flex-col gap-2.5" aria-label="Place">
-        <h2 className={SECTION}>Place</h2>
+        <SectionHeading help="find.section.place">Place</SectionHeading>
         {/* One under the other: a coordinate with five decimals and its label need the whole row. */}
         <div className="grid grid-cols-1 gap-field">
           <NumberField label="Latitude" value={hand.lat} unit="°" range={LATITUDE} labelInside wide onCommit={(lat) => onChange({ lat })} />
@@ -58,7 +55,9 @@ export function ByHandPanel({ hand, onChange, state, className }: Props) {
       </section>
 
       <section className="flex flex-col gap-2.5" aria-label="Shape">
-        <h2 className={SECTION}>Shape</h2>
+        <SectionHeading help="find.section.shape" value={hand.shape}>
+          Shape
+        </SectionHeading>
         <Segmented label="Shape" options={SHAPES} value={hand.shape} onChange={(shape) => onChange({ shape })} fill />
         {hand.shape === "rectangle" ? (
           <div className="flex flex-col gap-field">

@@ -1,0 +1,25 @@
+---
+title: Edges and access
+summary: The parapet, the setback from the edges, the walkways, the clearance around obstacles and the roof's albedo.
+kind: section
+related:
+  - app.section.roof-type
+  - app.section.obstacles
+---
+
+## The fields
+
+- `Parapet`: the height of a parapet wall along every edge of the roof. It casts shadows like an obstacle. Zero means no parapet.
+- `Setback`: the strip along every edge, measured inward, where no module is placed.
+- `Walkway`: the width of each walkway left between modules.
+- `Every`: how often a walkway comes. On tilted rows it is every so many modules along a row, as an aisle across the rows; on east-west units and sloped roofs, every so many rows or units. Zero means no walkway.
+- `Clearance`: the gap kept free of modules around every obstacle.
+- `Albedo`: the share of light the roof reflects, as a fraction; the field's hint says `0.20 concrete, 0.60 white membrane`. The energy simulation uses it for the light reflected onto the front of the modules, and onto the rear of bifacial ones. It moves no module and no shadow.
+
+## On a sloped roof
+
+`Pitch` and `Faces` appear when the roof type is `Sloped`. `Pitch` is the slope of the roof and the tilt the modules take; `Faces` is the direction the slope looks, clockwise from north, which the modules face unless the array has an azimuth of its own.
+
+## How it behaves
+
+What you type takes effect when you press Enter or leave the field. Every field but `Albedo` lays out the roof again before the design runs; `Albedo` runs the design alone. The parapet's shadow over the shade-free window of the design day is kept clear of modules like an obstacle's, unless shaded positions are allowed.

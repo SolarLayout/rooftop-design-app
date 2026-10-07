@@ -1,5 +1,7 @@
 "use client";
 
+import { SectionHeading } from "@/components/shell/help/SectionHeading";
+import { ANY_DATE } from "@/lib/flow/day-choices";
 import { useId, useState } from "react";
 import { useProject, useResults, useStores, useView } from "@/components/shell/stores";
 import { useSun } from "@/components/scene/use-sun";
@@ -14,7 +16,7 @@ import { projectOf } from "@/lib/stores/project-store";
 import { sunFailureOf } from "@/lib/stores/results-store";
 import { onTheRoofOf, sunTabOf, type OnTheRoof, type SunTab } from "@/lib/stores/view-store";
 import { dateOf, dayOfChoice, dayOfYearOf, daysOf, designDayLineOf, designDayOfYear, partsOf, sunAtOf } from "@/lib/flow/sun-time";
-import { ReadOut, SECTION } from "./inspector-look";
+import { ReadOut } from "./inspector-look";
 import { ShadeMapSection, ShadingSection } from "./SunShading";
 import { SunTimeline } from "./Time";
 import type { Size } from "./use-size";
@@ -24,7 +26,6 @@ const MONTHS = ["January", "February", "March", "April", "May", "June", "July", 
 const MONTH_OPTIONS = MONTHS.map((label, index) => ({ value: String(index + 1), label }));
 
 /** The choice of the Day control that is not one of the three days. */
-const ANY_DATE = "any";
 
 /**
  * The Day of the Sun lens (the boards "Studio, Sun lens" and "Time on the stage"; plan/phase-06-plan.md,
@@ -43,7 +44,7 @@ function DaySection({ size }: { size: Size }) {
   const days = daysOf(designDoy, lat);
   const shownDay = time.time.day === "design_day" ? designDayOfYear(designDoy, lat) : time.time.day;
   const isOneOfThem = days.some((day) => day.dayOfYear === shownDay);
-  const chosen = isAnyDate || !isOneOfThem ? ANY_DATE : String(shownDay);
+  const chosen = isAnyDate || !isOneOfThem ? ANY_DATE.id : String(shownDay);
   const parts = partsOf(shownDay);
 
   function setDay(dayOfYear: number) {
@@ -52,27 +53,27 @@ function DaySection({ size }: { size: Size }) {
 
   return (
     <section aria-labelledby={heading} className="flex flex-col gap-3">
-      <h2 id={heading} className={SECTION}>
+      <SectionHeading id={heading} help="studio.section.day" value={chosen}>
         Day
-      </h2>
+      </SectionHeading>
       <Segmented
         label="Day"
         fill
-        options={[...days.map((day) => ({ value: String(day.dayOfYear), label: day.label })), { value: ANY_DATE, label: "Any date" }]}
+        options={[...days.map((day) => ({ value: String(day.dayOfYear), label: day.label })), { value: ANY_DATE.id, label: ANY_DATE.label }]}
         value={chosen}
         onChange={(value) => {
-          setAnyDate(value === ANY_DATE);
-          if (value !== ANY_DATE) setDay(Number(value));
+          setAnyDate(value === ANY_DATE.id);
+          if (value !== ANY_DATE.id) setDay(Number(value));
         }}
       />
-      {chosen === ANY_DATE ? (
+      {chosen === ANY_DATE.id ? (
         <div className={classNames("flex gap-field", size === "phone" && "flex-col")}>
           <NumberField label="Day" labelInside value={parts.day} range={{ min: 1, max: 31, decimals: 0 }} onCommit={(day) => setDay(dayOfYearOf(day, parts.month))} className="shrink-0" />
           <Select label="Month" options={MONTH_OPTIONS} value={String(parts.month)} onChange={(month) => setDay(dayOfYearOf(parts.day, Number(month)))} className="grow" />
         </div>
       ) : null}
       <p className="type-caption text-text-3">
-        {chosen === ANY_DATE ? `Day ${shownDay} · the design day is ${dateOf(designDayOfYear(designDoy, lat)).long}` : designDayLineOf(designDoy, lat)}
+        {chosen === ANY_DATE.id ? `Day ${shownDay} · the design day is ${dateOf(designDayOfYear(designDoy, lat)).long}` : designDayLineOf(designDoy, lat)}
       </p>
     </section>
   );
@@ -87,9 +88,9 @@ function SunAtSection() {
   const heading = useId();
   return (
     <section aria-labelledby={heading} className="flex flex-col gap-3">
-      <h2 id={heading} className={SECTION}>
+      <SectionHeading id={heading} help="studio.section.sun-at-the-hour">
         Sun at {hourOf(time.time.hour)}
-      </h2>
+      </SectionHeading>
       {tiles ? (
         <dl className="grid grid-cols-2 gap-2">
           <Stat look="tile" label="Height" value={tiles.height.value} unit={tiles.height.unit} />
@@ -123,9 +124,9 @@ function OnTheRoofSection({ size }: { size: Size }) {
   const window = project ? `${hourOf(project.array.window_start_h)} to ${hourOf(project.array.window_end_h)}` : "";
   return (
     <section aria-labelledby={heading} className="flex flex-col gap-3">
-      <h2 id={heading} className={SECTION}>
+      <SectionHeading id={heading} help="studio.section.on-the-roof">
         On the roof
-      </h2>
+      </SectionHeading>
       <div className={classNames("flex flex-col", size === "phone" ? "divide-y divide-line-subtle" : "gap-3")}>
         {ON_THE_ROOF.map(({ what, label, line }) => {
           const isDim = what === "window" && !shown.sunPath;

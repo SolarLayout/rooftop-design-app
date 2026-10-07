@@ -83,7 +83,7 @@ export function HelpSheet() {
             </div>
             {shown.entry.values ? (
               <ul aria-label="Options" className="flex shrink-0 flex-col overflow-hidden rounded-row border border-line">
-                {Object.entries(shown.entry.values).map(([id, { label, meaning }], index) => {
+                {shown.entry.values.map(({ id, label, meaning }, index) => {
                   const isChosen = help.value === id;
                   return (
                     <li key={id} aria-current={isChosen || undefined} className={classNames("flex flex-col gap-0.5 px-3.5 py-2.5", index > 0 && "border-t border-line", isChosen && "bg-note-surface")}>
