@@ -6,7 +6,8 @@ Keep it short and true. History belongs in git and in the phase files, not here.
 **Last updated:** 2026-10-07, session 19. **D79 built**: the roof picked up whole on Find's map, moved and turned with its
 obstacles (#117); a dragged corner moves finely, a snap reaching 4 px (#118); the obstacle picked moved and turned (#120, after
 #119 merged into a stale branch); the cursor and the tips (#121); on phone the tip at the top of the sheet, not over the map
-(#122, open). Session 18 before it: #107 to #116, D68 to D78. **Next:** the owner merges #122; then more UI polish as he brings it.
+(#122, merged). Session 18 before it: #107 to #116, D68 to D78. **Now: in-app help** (Phase 14): planned
+(`plan/phase-14-in-app-help.md`), its boards on the canvas page "In-App Help" for the owner's approval; nothing built.
 
 ## Where we are
 
@@ -28,11 +29,13 @@ obstacles (#117); a dragged corner moves finely, a snap reaching 4 px (#118); th
 | 11 Hardening for the tradeshow | Done (session 14: #78 to #86; session 15: D56's run of the whole browser suite and the renewed pictures, #89) | What exists, what deviated, what was found: `phase-11-hardening.md`, "As built". How: `phase-11-plan.md`, scoped with the owner; issues #73 to #77 hold what was deferred |
 | 12 Deployment: staging and production | In progress; both environments live (session 16: #90 to #95, #97); left: #99, #100 | `phase-12-plan.md`: what was found, 14 decisions, the owner's steps in order (1 to 4 done), the pull requests; `infra/aws/README.md`: what exists on AWS and how it was made |
 | 13 Optimization | Done (session 17: #102 to #106) | What was found, the numbers before and after, what exists: `phase-13-optimization.md`, "As built". How: `phase-13-plan.md`, after the owner's interview (`reference/phase-13-interview.md`) |
+| 14 In-app help | Planned; the boards "In-App Help" await the owner's approval (session 19) | `phase-14-in-app-help.md`: the core taken from solarlayout's `packages/help`, what is ours, where help goes, the pull requests |
 
 ## In flight
 
-Open: #122 (on phone the tip stands at the top of the sheet: the map above the sheet is about 460 px and a card of four rows
-covered half of it, the roof with it; the owner left the choice to the best sense). Stacked pull requests are avoided from now on: #119 was merged into its base branch after that branch had merged, and
+Nothing open. Waiting for the owner: the boards "In-App Help" (the ? disc on the section headings, the help drawer by size,
+the inventory of where help goes) and the plan of Phase 14; its prototype is the local branch `design/in-app-help`, never to
+be merged. Stacked pull requests are avoided from now on: #119 was merged into its base branch after that branch had merged, and
 never reached `main` (#120 brought it). Both environments ran `6f7be3c` (#116) when session 19 began; `main` has moved since
 (#117, #118, #120), deployed by the workflows as usual. Standing instructions of the owner (session 18): no browser test suites are run and no new UI
 tests are written; each change is checked by hand in the browser with Playwright and its screenshots go in the pull request
@@ -108,7 +111,8 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 ## Next, in order
 
-1. #122 merged. Then more UI polish as the owner brings it.
+1. Phase 14, in-app help: the owner's approval of the boards and the plan, then its pull requests in order
+   (`plan/phase-14-in-app-help.md`: the MDX spike and the registry, the disc and the drawer, the topics).
 2. Issue #114: the Strings legend with many MPPT (design first).
 3. #99 and #100 when the owner needs them (advised: the budget alarm soon, the rate limit before the site is promoted).
 4. When browser tests come back: update the suites that use the old words (Replace and its dialogs, the top bar's words,
