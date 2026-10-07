@@ -10,6 +10,7 @@ export const WITHOUT_A_DISC: Readonly<Record<string, string>> = {
   "shell/help/SectionHeading.tsx": "the heading that carries the disc",
   "studio/SystemVoltage.tsx · done": "\"Already done\" is in the System voltage decision card, whose disc is on \"Waiting for your choice\"",
   "kit/HelpDiscs.tsx": "the kit's example of a heading beside the disc",
+  "shell/help/HelpSheet.tsx": "Related, in the help sheet itself: no input panel's section",
 };
 
 /** Lines drawing a heading in the SECTION look, from one file's text: the line's number and words. */
