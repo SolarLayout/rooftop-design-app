@@ -180,12 +180,12 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   with the demo roof, caught in the browser (`move_turn/`), with what is proposed drawn over it and numbered callouts
   explained beside each frame: the roof picked up and moved, turned, an obstacle moved and turned (a close-up), the cursor,
   and the tips; approved on 2026-10-07 (D79), not built yet.
-- `mockups/build_in_app_help.py` writes the boards "In-App Help · The ? and the help drawer" (desktop, tablet, phone; the
-  canvas page "In-App Help"): the ? disc beside the section headings in its states, the tooltip, the help drawer by size
-  (beside the panel on desktop, from the right and dimmed on tablet, from the bottom on phone), a topic followed and Back,
-  Find, and where help goes. The app caught in the browser (`in_app_help/`) with a prototype of the disc and the drawer drawn
+- `mockups/build_in_app_help.py` writes the boards "In-App Help · The ? and the help sheet" (desktop, tablet, phone; the
+  canvas page "In-App Help"): the ? disc beside the section headings in its states, the tooltip, the help sheet by size
+  (from the right edge, the whole height, dimmed, on desktop and tablet; from the bottom on phone), a topic followed and
+  Back, Find, and where help goes; approved on 2026-10-07 (D80). The app caught in the browser (`in_app_help/`) with a prototype of the disc and the drawer drawn
   by the app itself (the local branch `design/in-app-help`, never merged); the sample topics' words checked against the
-  engine. For approval, session 19 (`plan/phase-14-in-app-help.md`).
+  engine. Session 19 (`plan/phase-14-in-app-help.md`).
 - A preview is the board rendered at its `$preview` size (the tail of each `.dc.html`) by a scratch Playwright script outside the
   repo: Chromium from `e2e/node_modules/@playwright/test`, the fonts served from `apps/web/app/fonts` and `apps/web/node_modules/geist`
   in place of the Google link in the board's `helmet`, `support.js` stubbed, everything else off the machine refused.
