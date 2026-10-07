@@ -123,6 +123,13 @@ describe("the turn of a drag", () => {
     expect(turnOfDrag(off, from, to, 0)).toBeCloseTo(-8, 6);
   });
 
+  test("within 3° of east, south or west it snaps square too", () => {
+    const from = { x: 0, y: 31 };
+    const to = { x: -31 * Math.sin((88 * Math.PI) / 180), y: 31 * Math.cos((88 * Math.PI) / 180) };
+
+    expect(turnOfDrag(ROOF, from, to, 3)).toBeCloseTo(90, 6);
+  });
+
   test("a turn past half a circle is the shorter way round", () => {
     expect(turnOfDrag(ROOF, { x: -1, y: 0.01 }, { x: -1, y: -0.01 }, 0)).toBeCloseTo(1.15, 1);
   });

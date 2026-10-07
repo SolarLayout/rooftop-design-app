@@ -443,7 +443,7 @@ touch), `DetectedCallout` the callout of Detect building. Every rule of drawing 
   on a row selects it, Remove takes it. The card of the Roof lens counts them. In code: `ObstacleList`,
   `HeightDialog`, the obstacles in `lib/outline/obstacles.ts` and the reducer.
 
-## Move and turn the roof and its obstacles (Find's map) — approved; the roof built, the obstacles, the cursor and the tips not yet
+## Move and turn the roof and its obstacles (Find's map) — approved; the roof and the obstacles built, the cursor and the tips not yet
 The boards "UI fixes · Move and turn the roof and its obstacles" (D79). Once the outline is closed, a press inside the roof
 (not on a corner) picks it up whole: the line 3 px with a glow, the fill a shade stronger; where it was stays dashed until it
 is let go. A drag moves it and its obstacles, the label saying how far ("1.6 m E · 0.6 m S"); the arrow keys nudge 0.1 m, 1 m
@@ -451,7 +451,7 @@ with Shift. The turn handle (32 round, 44 on touch, the turn icon, on a stem of 
 about its middle, snapping to north within 3°, the label saying the turn and where it faces ("6.0° · faces 186° S"); the
 panel's Faces follows. Each move or turn is one step of Undo. An obstacle picked on the map moves by a drag inside it (0.1 m,
 kept on the roof), and a box or a building has the same turn handle north of it; a tank and a wall only move; its corners
-still size it. On touch one finger inside what is picked moves it, two fingers move the map; handles take a press of 44.
+still size it. On touch one finger inside what is picked moves it, two fingers move the map; handles take a press of 44. On desktop the handles of an obstacle picked take a press of 24, so that a press inside a small one (a tank of 2.5 m is about 30 px across, zoomed in twice) moves it rather than sizing it; a tank moves and is sized by its one edge handle, never turned.
 Cursor: an open hand over the Studio's stage and Find's map at rest with nothing in hand, a closed hand while either is
 dragged; the crosshair while a drawing tool is in hand; over an obstacle or a handle, theirs. Tips: a card at the map's edge
 (`surface-1`, border `line-strong`, radius 14, `shadow-float`), its title with an accent dot, two to four rows of a key
