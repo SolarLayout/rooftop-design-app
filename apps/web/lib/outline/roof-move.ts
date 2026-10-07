@@ -79,8 +79,8 @@ export function turnHandleOf(base: readonly XY[], corners: readonly XY[], metres
 
 /**
  * The turn a drag of the handle gives, in degrees counter-clockwise: the angle swept about the middle of
- * the roof from where the drag began. Where the north edge would then look within `snapWithin` degrees
- * of north, it is turned to look due north.
+ * the outline from where the drag began. Where the north edge would then look within `snapWithin` degrees
+ * of north, east, south or west, it is turned square to it, as the Studio's turn handle snaps.
  */
 export function turnOfDrag(corners: readonly XY[], from: XY, to: XY, snapWithin: number): number {
   const centre = centroidOf(corners);
@@ -89,15 +89,18 @@ export function turnOfDrag(corners: readonly XY[], from: XY, to: XY, snapWithin:
   const { x, y } = outwardOf(corners, northEdgeOf(corners));
   // A bearing runs clockwise, a turn counter-clockwise.
   const looks = wrapped(bearingOf(x, y) - turn);
-  return Math.abs(looks) <= snapWithin ? wrapped(turn + looks) : turn;
+  const off = looks - Math.round(looks / 90) * 90;
+  return Math.abs(off) <= snapWithin ? wrapped(turn + off) : turn;
+}
+
+/** How far a move went: east or west, then north or south. */
+export function moveLabelOf({ x, y }: XY): string {
+  return `${shown(Math.abs(x), 1)} m ${x < 0 ? "W" : "E"} · ${shown(Math.abs(y), 1)} m ${y < 0 ? "S" : "N"}`;
 }
 
 /** What the label beside the roof says while it is moved or turned: how far, or the turn and where it now faces. */
 export function liftLabelOf(lift: Lift, corners: readonly XY[], hemisphere: Hemisphere): string {
-  if (lift.kind === "move") {
-    const { x, y } = lift.by;
-    return `${shown(Math.abs(x), 1)} m ${x < 0 ? "W" : "E"} · ${shown(Math.abs(y), 1)} m ${y < 0 ? "S" : "N"}`;
-  }
+  if (lift.kind === "move") return moveLabelOf(lift.by);
   const facing = facingOf(corners, hemisphere);
   const turn = `${shown(-lift.degrees + 0, 1)}°`;
   return facing ? `${turn} · faces ${Math.round(facing.degrees)}° ${facing.compass}` : turn;
