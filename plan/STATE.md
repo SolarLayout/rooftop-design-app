@@ -8,7 +8,7 @@ D81): a ? beside every section heading, a help sheet at the edge, how-tos with s
 **Phase 15, clips in the help, built** (#138 to #141; D82 to D84): seven short clips recorded from the app by `bun help:clips`,
 played in a step's picture frame, opened large on touch; the guides `docs/help-content.md` ("Pictures", "Clips") and
 `docs/screenshots.md`, the READMEs beside the runs. **Left of Phase 15:** the owner plays the clips in Safari on an iPhone or
-iPad.
+iPad. **Deployed:** Staging and Production run `f13375c` (2026-10-07). **Next:** UX, CX and UI work on Find, in a new session.
 
 ## Where we are
 
@@ -110,8 +110,8 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 ## Next, in order
 
-1. The owner: play the help's clips in Safari on an iPhone or iPad (Find, any tool's ?, a step with a play button); then
-   Phase 15 is done. Next phase as the owner says.
+1. The owner's next work, in a new session: UX, CX and UI on Find (`/find`), as he brings it (session 19's last message).
+   Before it, or alongside: the owner plays the help's clips in Safari on an iPhone or iPad (Phase 15's last check).
 2. Issue #114: the Strings legend with many MPPT (design first).
 3. #99 and #100 when the owner needs them (advised: the budget alarm soon, the rate limit before the site is promoted).
 4. When browser tests come back: update the suites that use the old words (Replace and its dialogs, the top bar's words,
@@ -215,6 +215,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 | 16 | 2026-10-05 | `plan/sessions/016/record.md`, `plan/sessions/016/owner-messages.md` |
 | 17 | 2026-10-05 | `plan/sessions/017/record.md`, `plan/sessions/017/owner-messages.md` |
 | 18 | 2026-10-06 to 2026-10-07 | `plan/sessions/018/record.md`, `plan/sessions/018/owner-messages.md` |
+| 19 | 2026-10-07 | `plan/sessions/019/record.md`, `plan/sessions/019/owner-messages.md` |
 
 ## Closed, do not reopen
 
