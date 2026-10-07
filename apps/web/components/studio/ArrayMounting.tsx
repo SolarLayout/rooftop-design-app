@@ -1,5 +1,6 @@
 "use client";
 
+import { SectionHeading } from "@/components/shell/help/SectionHeading";
 import { NumberField } from "@/components/ui/NumberField";
 import { Segmented } from "@/components/ui/Segmented";
 import { Slider } from "@/components/ui/Slider";
@@ -7,7 +8,7 @@ import { Stepper } from "@/components/ui/Stepper";
 import type { ArraySpec, Roof } from "@/lib/api";
 import { ARRAY_RANGES, mountingOf, tiltHintOf, type MountingId } from "@/lib/studio/array-fields";
 import { slopedTiltLineOf } from "@/lib/studio/array-view";
-import { ReadOut, ROW, SECTION } from "./inspector-look";
+import { ReadOut, ROW } from "./inspector-look";
 
 /** What a field does to the array once it is committed. */
 export type ArrayChange = (array: ArraySpec) => ArraySpec;
@@ -60,7 +61,7 @@ export function ArrayMounting({ array, roof, onChange }: Props) {
 
   return (
     <section aria-label="Mounting" className="flex flex-col gap-row">
-      <h2 className={SECTION}>Mounting</h2>
+      <SectionHeading help="studio.section.mounting">Mounting</SectionHeading>
       {sloped ? <ReadOut label="Tilt" value={sloped.value} line={sloped.line} /> : null}
       {mountingOf(roof.roof_type).map(field)}
     </section>

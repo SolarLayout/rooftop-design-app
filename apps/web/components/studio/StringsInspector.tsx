@@ -1,5 +1,6 @@
 "use client";
 
+import { SectionHeading } from "@/components/shell/help/SectionHeading";
 import { useId, useState } from "react";
 import { useProject, useResults, useStores } from "@/components/shell/stores";
 import { classNames } from "@/components/ui/class-names";
@@ -13,7 +14,6 @@ import { mpptTableOf } from "@/lib/studio/mppt-table";
 import { optionCardsOf } from "@/lib/studio/option-cards";
 import { stringsViewOf } from "@/lib/studio/strings-view";
 import type { Volts } from "@/lib/studio/voltages";
-import { SECTION } from "./inspector-look";
 import { InverterCard } from "./InverterCard";
 import { InverterLimits } from "./InverterLimits";
 import { MpptTable } from "./MpptTable";
@@ -86,9 +86,9 @@ export function StringsInspector() {
         {/* On phone the colour switch of the strings is the sheet's first thing (the board "Studio, Strings lens, phone"). */}
         {size === "phone" && option ? <StringColourSwitch fill /> : null}
         <section aria-labelledby={heading} className="flex flex-col gap-2">
-          <h2 id={heading} className={SECTION}>
+          <SectionHeading id={heading} help="studio.section.inverter">
             Inverter
-          </h2>
+          </SectionHeading>
           <InverterCard
             inverter={inverter}
             entered={project.imax_mppt_override ?? null}

@@ -2,12 +2,84 @@
 import type { HelpEntry } from "./types";
 
 export const HELP_KEYS = [
+  "studio.section.inverter",
+  "studio.section.module",
+  "studio.section.modules-in-series",
+  "studio.section.mounting",
+  "studio.section.mppt-loading",
+  "studio.section.options",
+  "studio.section.shade-free-window",
+  "studio.section.spacing",
   "studio.section.system-voltage",
 ] as const;
 
 export type HelpKey = (typeof HELP_KEYS)[number];
 
 export const MANIFEST: Record<HelpKey, HelpEntry> = {
+  "studio.section.inverter": {
+    title: "Inverter",
+    summary: "The inverter the strings are sized for, read from its OND file. Change picks another from the library or a file of your own.",
+    kind: "section",
+    related: ["studio.section.modules-in-series","studio.section.options","studio.section.mppt-loading"],
+    aliases: [],
+    load: () => import("../../content/help/studio/section/inverter.mdx"),
+  },
+  "studio.section.module": {
+    title: "Module",
+    summary: "The PV module of the design, read from its PAN file. Its size sets the layout; its ratings set the strings and the energy.",
+    kind: "section",
+    related: ["studio.section.mounting","studio.section.modules-in-series"],
+    aliases: [],
+    load: () => import("../../content/help/studio/section/module.mdx"),
+  },
+  "studio.section.modules-in-series": {
+    title: "Modules in series",
+    summary: "How many modules one string can hold: the lengths that fit at your system voltage, what limits each end, and the chosen length.",
+    kind: "section",
+    related: ["studio.section.system-voltage","studio.section.inverter","studio.section.options"],
+    aliases: [],
+    load: () => import("../../content/help/studio/section/modules-in-series.mdx"),
+  },
+  "studio.section.mounting": {
+    title: "Mounting",
+    summary: "How the modules stand on the roof: their tilt, their orientation, how many up a table, and their height. The fields follow the roof type.",
+    kind: "section",
+    related: ["studio.section.module","studio.section.spacing","studio.section.shade-free-window"],
+    aliases: [],
+    load: () => import("../../content/help/studio/section/mounting.mdx"),
+  },
+  "studio.section.mppt-loading": {
+    title: "MPPT loading",
+    summary: "The current and the power on each MPPT of the chosen option, set against the inverter's current limits per MPPT.",
+    kind: "section",
+    related: ["studio.section.options","studio.section.inverter"],
+    aliases: [],
+    load: () => import("../../content/help/studio/section/mppt-loading.mdx"),
+  },
+  "studio.section.options": {
+    title: "Options",
+    summary: "The ways to string the roof that the run simulated, each for a full year. Choose one, or add your own.",
+    kind: "section",
+    related: ["studio.section.modules-in-series","studio.section.mppt-loading"],
+    aliases: [],
+    load: () => import("../../content/help/studio/section/options.mdx"),
+  },
+  "studio.section.shade-free-window": {
+    title: "Shade-free window",
+    summary: "The hours of the design day, in solar time, in which rows and obstacles must not shade the modules. It shapes the layout.",
+    kind: "section",
+    related: ["studio.section.spacing","studio.section.mounting"],
+    aliases: [],
+    load: () => import("../../content/help/studio/section/shade-free-window.mdx"),
+  },
+  "studio.section.spacing": {
+    title: "Spacing",
+    summary: "How far apart the rows stand and which way they face. The engine decides both unless you switch it off and enter your own.",
+    kind: "section",
+    related: ["studio.section.shade-free-window","studio.section.mounting"],
+    aliases: [],
+    load: () => import("../../content/help/studio/section/spacing.mdx"),
+  },
   "studio.section.system-voltage": {
     title: "System voltage",
     summary: "The highest DC voltage the system is built for. It caps how many modules can go in one string.",

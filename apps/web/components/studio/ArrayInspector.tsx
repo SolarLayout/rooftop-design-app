@@ -1,5 +1,6 @@
 "use client";
 
+import { SectionHeading } from "@/components/shell/help/SectionHeading";
 import { useId, useState } from "react";
 import { useProject, useResults, useStores } from "@/components/shell/stores";
 import type { ModuleResponse } from "@/lib/api";
@@ -8,7 +9,6 @@ import { editOf, openedAtOf, projectOf } from "@/lib/stores/project-store";
 import { designEditOf, designOf, layoutOf } from "@/lib/stores/results-store";
 import { ArrayMounting, type ArrayChange } from "./ArrayMounting";
 import { ArraySpacing } from "./ArraySpacing";
-import { SECTION } from "./inspector-look";
 import { ModuleCard } from "./ModuleCard";
 import { ModulePicker } from "./ModulePicker";
 
@@ -54,9 +54,9 @@ export function ArrayInspector() {
     <div className="flex flex-col gap-section tablet:grid tablet:grid-cols-2 tablet:gap-x-8 desktop:flex desktop:flex-col">
       <div className="flex flex-col gap-section">
         <section aria-labelledby={heading} className="flex flex-col gap-2">
-          <h2 id={heading} className={SECTION}>
+          <SectionHeading id={heading} help="studio.section.module">
             Module
-          </h2>
+          </SectionHeading>
           <ModuleCard
             shown={shown}
             onChange={() => {

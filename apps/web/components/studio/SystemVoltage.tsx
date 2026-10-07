@@ -1,6 +1,6 @@
 "use client";
 
-import { HelpDisc } from "@/components/shell/help/HelpDisc";
+import { SectionHeading } from "@/components/shell/help/SectionHeading";
 import { useId } from "react";
 import { Segmented } from "@/components/ui/Segmented";
 import { StatusMark } from "@/components/ui/StatusMark";
@@ -49,12 +49,9 @@ export function WaitingAndDone({ view }: { view: BeforeAVoltage }) {
   return (
     <>
       <section aria-labelledby={waiting} className="flex flex-col gap-2">
-        <div className="flex items-center gap-1.5">
-          <h2 id={waiting} className={SECTION}>
-            Waiting for your choice
-          </h2>
-          <HelpDisc topic="studio.section.system-voltage" />
-        </div>
+        <SectionHeading id={waiting} help="studio.section.system-voltage">
+          Waiting for your choice
+        </SectionHeading>
         <ul className="flex flex-col">
           {view.waiting.map((what) => (
             <li key={what} className="flex h-11 items-center gap-2.5 border-b border-line-subtle text-text-2 last:border-b-0">
@@ -89,12 +86,9 @@ export function SystemVoltage({ voltage, onChoose }: { voltage: Volts; onChoose:
   return (
     <section aria-labelledby={heading} className="flex flex-col gap-2">
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-1.5">
-          <h2 id={heading} className={SECTION}>
-            System voltage
-          </h2>
-          <HelpDisc topic="studio.section.system-voltage" value={String(voltage)} />
-        </div>
+        <SectionHeading id={heading} help="studio.section.system-voltage" value={String(voltage)}>
+          System voltage
+        </SectionHeading>
         <span className="ml-auto type-caption text-text-3">Your choice</span>
       </div>
       <Segmented label="System voltage" fill options={VOLTAGE_OPTIONS} value={String(voltage) as `${Volts}`} onChange={(value) => onChoose(Number(value) as Volts)} />

@@ -25,7 +25,13 @@ export function topicOf(path: string, text: string): Topic {
   const key = keyFromPath(path);
   const found = FRONTMATTER.exec(text);
   if (!found || found[1] === undefined) throw new Error(`${path}: no frontmatter (--- … ---) at the top`);
-  const read = frontmatterOf(parse(found[1]));
+  let fields: unknown;
+  try {
+    fields = parse(found[1]);
+  } catch (error) {
+    throw new Error(`${path}: the frontmatter is not YAML (quote a line with a colon in it): ${error instanceof Error ? error.message.split("\n")[0] : String(error)}`);
+  }
+  const read = frontmatterOf(fields);
   if (!read.ok) throw new Error(`${path}: ${read.problems.join("; ")}`);
   if (read.frontmatter.kind !== key.split(".")[1]) throw new Error(`${path}: kind "${read.frontmatter.kind}" is not the key's, "${key.split(".")[1]}"`);
   return { key, path, frontmatter: read.frontmatter, body: text.slice(found[0].length) };
