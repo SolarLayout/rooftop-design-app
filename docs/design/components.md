@@ -507,6 +507,11 @@ How-tos with pictures").
   `shadow-help-ring`) with the mark at its lower right. Under the picture, 8 apart, the callouts' words, each after a mark
   of 16 with its number (`type-small`, `text-2`). The picture has its words for a screen reader; the marks are not read,
   their words are.
+- **Opened large (touch):** on phone and tablet a picture is a button, a magnifier in a round chip of `surface-1` at its
+  lower right (28, `shadow-float`). Pressed, it opens over the sheet, the whole screen on `ground`: a head with "Pinch to
+  look closer" (`type-small`, `text-3`) and ×; the picture the screen's width, in the middle, pinched up to three times and
+  moved with a finger, its callouts scaling with it; their words under it. × or Escape returns to the step, the sheet as it
+  was.
 - **Pointer and touch:** a step says what the hand in use does, the words of a mouse where the pointer is fine, of touch
   where it is coarse; a key or a gesture in the chip of the tips (`radius-xs`, a border of `line-strong`,
   `type-label-s` at 600).

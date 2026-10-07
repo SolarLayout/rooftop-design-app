@@ -1,7 +1,11 @@
+"use client";
+
 import Image from "next/image";
-import { Children, cloneElement, isValidElement, type ReactElement, type ReactNode } from "react";
+import { Children, cloneElement, isValidElement, useState, useSyncExternalStore, type ReactElement, type ReactNode } from "react";
 import { classNames } from "@/components/ui/class-names";
+import { Icon } from "@/components/ui/Icon";
 import { measures } from "@/components/ui/measures";
+import { PictureLarge } from "./PictureLarge";
 
 // A how-to in a help topic (D81; components.md, "How-to steps and pictures"): numbered steps, each with a picture of the
 // app and callouts over it; the words of the hand in use; a key in the chip of the tips. Written in a topic so:
@@ -55,36 +59,78 @@ export function Mark({ children }: MarkProps) {
 
 type PictureProps = { src: string; alt: string; width: number; height: number; children?: ReactNode };
 
-/** A picture of the app, its callouts drawn over it (crisp at every size) and their words under it. */
+/** The callouts over a picture, at their places: they scale with it. */
+function MarksOver({ marks }: { marks: readonly MarkProps[] }) {
+  return marks.map(({ n, x, y, ring }) => (
+    // The place is the topic's, in per cent of the picture: data, not a size of the design.
+    <span key={n} aria-hidden="true" className="absolute left-at top-down" style={measures({ at: x / 100, down: y / 100 })}>
+      {ring ? <span className="absolute size-10 -translate-1/2 rounded-full border-help-ring border-accent shadow-help-ring" /> : null}
+      <span className={classNames(MARK, "absolute size-5", ring ? "translate-x-2 translate-y-2" : "-translate-1/2")}>{n}</span>
+    </span>
+  ));
+}
+
+/** The callouts' words, by their numbers. */
+function MarkWords({ marks }: { marks: readonly MarkProps[] }) {
+  return (
+    <ol className="flex flex-col gap-1">
+      {marks.map(({ n, children: words }) => (
+        <li key={n} className="flex items-start gap-2 type-small text-text-2">
+          <span aria-hidden="true" className={classNames(MARK, "mt-0.5 size-4")}>
+            {n}
+          </span>
+          <span>{words}</span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+const FRAME = "relative block w-full overflow-hidden rounded-row border border-line bg-surface-2";
+
+// Whether the pointer is coarse (touch): read on the client, false where there is no window, and followed if it changes.
+const COARSE = "(pointer: coarse)";
+function onPointerChange(changed: () => void) {
+  const query = window.matchMedia(COARSE);
+  query.addEventListener("change", changed);
+  return () => query.removeEventListener("change", changed);
+}
+const useTouch = () => useSyncExternalStore(onPointerChange, () => window.matchMedia(COARSE).matches, () => false);
+
+/**
+ * A picture of the app, its callouts drawn over it (crisp at every size) and their words under it. On touch it is pressed
+ * to open it large, where it pinches (PictureLarge); a magnifier in its corner says so.
+ */
 export function Picture({ src, alt, width, height, children }: PictureProps) {
+  const touch = useTouch();
+  const [large, setLarge] = useState(false);
   const marks = Children.toArray(children)
     .filter((child): child is ReactElement<MarkProps> => isValidElement(child) && child.type === Mark)
     .map(({ props }) => props);
+  const image = <Image src={src} alt={alt} width={width} height={height} sizes="(min-width: 834px) 380px, 100vw" className="block h-auto w-full" />;
   return (
     <figure className="flex flex-col gap-2">
-      <div className="relative overflow-hidden rounded-row border border-line bg-surface-2">
-        <Image src={src} alt={alt} width={width} height={height} sizes="(min-width: 834px) 380px, 100vw" className="block h-auto w-full" />
-        {marks.map(({ n, x, y, ring }) => (
-          // The place is the topic's, in per cent of the picture: data, not a size of the design.
-          <span key={n} aria-hidden="true" className="absolute left-at top-down" style={measures({ at: x / 100, down: y / 100 })}>
-            {ring ? <span className="absolute size-10 -translate-1/2 rounded-full border-help-ring border-accent shadow-help-ring" /> : null}
-            <span className={classNames(MARK, "absolute size-5", ring ? "translate-x-2 translate-y-2" : "-translate-1/2")}>{n}</span>
+      {touch ? (
+        <button type="button" aria-label={`Open the picture larger: ${alt}`} onClick={() => setLarge(true)} className={classNames(FRAME, "cursor-pointer focus-ring")}>
+          {image}
+          <MarksOver marks={marks} />
+          <span aria-hidden="true" className="absolute right-2 bottom-2 grid size-7 place-items-center rounded-full bg-surface-1 text-text-2 shadow-float">
+            <Icon name="search" size={14} />
           </span>
-        ))}
-      </div>
+        </button>
+      ) : (
+        <div className={FRAME}>
+          {image}
+          <MarksOver marks={marks} />
+        </div>
+      )}
       {marks.length > 0 ? (
         <figcaption>
-          <ol className="flex flex-col gap-1">
-            {marks.map(({ n, children: words }) => (
-              <li key={n} className="flex items-start gap-2 type-small text-text-2">
-                <span aria-hidden="true" className={classNames(MARK, "mt-0.5 size-4")}>
-                  {n}
-                </span>
-                <span>{words}</span>
-              </li>
-            ))}
-          </ol>
+          <MarkWords marks={marks} />
         </figcaption>
+      ) : null}
+      {large ? (
+        <PictureLarge src={src} alt={alt} width={width} height={height} marks={<MarksOver marks={marks} />} words={<MarkWords marks={marks} />} onClose={() => setLarge(false)} />
       ) : null}
     </figure>
   );
