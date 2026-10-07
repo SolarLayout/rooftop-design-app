@@ -15,7 +15,7 @@ describe("a right angle", () => {
     // 2° off the perpendicular, 40 m along it.
     const off = { x: 90 + 40 * Math.tan((2 * Math.PI) / 180), y: 40 };
 
-    const snapped = snappedCorner({ candidate: off, previous, before, edges: [], within: 3, squared: true });
+    const snapped = snappedCorner({ candidate: off, previous, before, edges: [], within: 3, reach: Infinity, squared: true });
 
     expect(near(snapped.corner, { x: 90, y: 40 })).toBe(true);
     expect(snapped.snappedTo).toBe("right-angle");
@@ -24,7 +24,7 @@ describe("a right angle", () => {
   test("a corner 5° off is left where it is", () => {
     const off = { x: 90 + 40 * Math.sin((5 * Math.PI) / 180), y: 40 * Math.cos((5 * Math.PI) / 180) };
 
-    const snapped = snappedCorner({ candidate: off, previous, before, edges: [], within: 3, squared: true });
+    const snapped = snappedCorner({ candidate: off, previous, before, edges: [], within: 3, reach: Infinity, squared: true });
 
     expect(snapped.corner).toEqual(off);
     expect(snapped.snappedTo).toBeNull();
@@ -33,7 +33,7 @@ describe("a right angle", () => {
   test("with the corners not squared, no right angle is snapped to", () => {
     const off = { x: 90 + 40 * Math.sin((2 * Math.PI) / 180), y: 40 * Math.cos((2 * Math.PI) / 180) };
 
-    const snapped = snappedCorner({ candidate: off, previous, before, edges: [], within: 3, squared: false });
+    const snapped = snappedCorner({ candidate: off, previous, before, edges: [], within: 3, reach: Infinity, squared: false });
 
     expect(snapped.corner).toEqual(off);
   });
@@ -41,9 +41,38 @@ describe("a right angle", () => {
   test("the right angle can turn either way", () => {
     const off = { x: 90 - 40 * Math.tan((2 * Math.PI) / 180), y: -40 };
 
-    const snapped = snappedCorner({ candidate: off, previous, before, edges: [], within: 3, squared: true });
+    const snapped = snappedCorner({ candidate: off, previous, before, edges: [], within: 3, reach: Infinity, squared: true });
 
     expect(near(snapped.corner, { x: 90, y: -40 })).toBe(true);
+  });
+});
+
+describe("a snap reaches a few pixels", () => {
+  const before: XY = { x: 0, y: 0 };
+  const previous: XY = { x: 90, y: 0 };
+  // 2° off the perpendicular, 90 m along it: 3.1 m beside the right angle.
+  const off = { x: 90 + 90 * Math.tan((2 * Math.PI) / 180), y: 90 };
+
+  test("far from its corner 3° is metres wide: a corner that the snap would carry farther than its reach is left where it is", () => {
+    const snapped = snappedCorner({ candidate: off, previous, before, edges: [], within: 3, reach: 0.6, squared: true });
+
+    expect(snapped.corner).toEqual(off);
+    expect(snapped.snappedTo).toBeNull();
+  });
+
+  test("within its reach it snaps", () => {
+    const snapped = snappedCorner({ candidate: off, previous, before, edges: [], within: 3, reach: 3.2, squared: true });
+
+    expect(near(snapped.corner, { x: 90, y: 90 })).toBe(true);
+    expect(snapped.snappedTo).toBe("right-angle");
+  });
+
+  test("a parallel too far is not snapped to", () => {
+    const edges: [XY, XY][] = [[{ x: 0, y: 40 }, { x: 90, y: 40 }]];
+    const along = { x: 90 * Math.cos((2 * Math.PI) / 180), y: 90 * Math.sin((2 * Math.PI) / 180) };
+
+    expect(snappedCorner({ candidate: along, previous: { x: 0, y: 0 }, before: null, edges, within: 3, reach: 0.6, squared: true }).snappedTo).toBeNull();
+    expect(snappedCorner({ candidate: along, previous: { x: 0, y: 0 }, before: null, edges, within: 3, reach: 4, squared: true }).snappedTo).toBe("parallel");
   });
 });
 
@@ -53,7 +82,7 @@ describe("parallel to an edge", () => {
     const previous = { x: 90, y: 40 };
     const off = { x: 0, y: 40 + 90 * Math.tan((2 * Math.PI) / 180) };
 
-    const snapped = snappedCorner({ candidate: off, previous, before: { x: 90, y: 0 }, edges, within: 3, squared: false });
+    const snapped = snappedCorner({ candidate: off, previous, before: { x: 90, y: 0 }, edges, within: 3, reach: Infinity, squared: false });
 
     expect(near(snapped.corner, { x: 0, y: 40 })).toBe(true);
     expect(snapped.snappedTo).toBe("parallel");
@@ -65,13 +94,13 @@ describe("parallel to an edge", () => {
     const previous = { x: 90, y: 0 };
     const off = { x: 90 + 40 * Math.sin((2 * Math.PI) / 180), y: 40 * Math.cos((2 * Math.PI) / 180) };
 
-    const snapped = snappedCorner({ candidate: off, previous, before, edges, within: 3, squared: true });
+    const snapped = snappedCorner({ candidate: off, previous, before, edges, within: 3, reach: Infinity, squared: true });
 
     expect(snapped.snappedTo).toBe("right-angle");
   });
 
   test("the first corner has nothing to snap to", () => {
-    const snapped = snappedCorner({ candidate: { x: 1, y: 2 }, previous: null, before: null, edges: [], within: 3, squared: true });
+    const snapped = snappedCorner({ candidate: { x: 1, y: 2 }, previous: null, before: null, edges: [], within: 3, reach: Infinity, squared: true });
 
     expect(snapped).toEqual({ corner: { x: 1, y: 2 }, snappedTo: null });
   });

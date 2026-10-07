@@ -1,7 +1,7 @@
 // The outline as it is drawn: corners in metres in a flat frame around the place of the first corner,
 // closed or not, one corner selected, and the history of it. A reducer: every rule of drawing is here
 // and tested without a browser; the map and the panel draw what it holds.
-import { CLOSE_WITHIN, CLOSE_WITHIN_TOUCH, SNAP_DEGREES } from "../../components/ui/design-numbers";
+import { CLOSE_WITHIN, CLOSE_WITHIN_TOUCH, SNAP_DEGREES, SNAP_REACH } from "../../components/ui/design-numbers";
 import { frameAt, type Frame, type LonLat } from "./frame";
 import { canRedo, canUndo, historyOf, redone, undone, withNext, type History } from "./history";
 import { areaOf, bearingOf, centroidOf, compassOf, edgesOf, facingOf, isClockwise, type Facing, type XY } from "../geometry/measure";
@@ -45,7 +45,7 @@ export type OutlineEvent =
   | { type: "began"; at: LonLat }
   | { type: "placed"; at: XY; metresPerPx: number; touch: boolean }
   | { type: "close" }
-  | { type: "cornerMoved"; index: number; at: XY }
+  | { type: "cornerMoved"; index: number; at: XY; metresPerPx: number }
   | { type: "cornerDropped" }
   | { type: "midpointTaken"; edge: number; at: XY }
   | { type: "selected"; index: number | null }
@@ -171,10 +171,10 @@ function edgesDrawn(corners: readonly XY[], closed: boolean): [XY, XY][] {
   return Array.from({ length: Math.max(0, count) }, (_, n) => [corners[n], corners[(n + 1) % corners.length]]);
 }
 
-/** A corner at `at`, snapped against its neighbours `before` and `after` and the other edges. */
-function snappedAgainst(state: OutlineState, at: XY, before: XY | null, beforeThat: XY | null, without: readonly number[]): XY {
+/** A corner at `at`, snapped against the corners before it and the other edges, within a few pixels of a map of `metresPerPx`. */
+function snappedAgainst(state: OutlineState, at: XY, before: XY | null, beforeThat: XY | null, without: readonly number[], metresPerPx: number): XY {
   const edges = edgesDrawn(state.corners, state.closed).filter((_, n) => !without.includes(n));
-  return snappedCorner({ candidate: at, previous: before, before: beforeThat, edges, within: SNAP_DEGREES, squared: state.squared }).corner;
+  return snappedCorner({ candidate: at, previous: before, before: beforeThat, edges, within: SNAP_DEGREES, reach: SNAP_REACH * metresPerPx, squared: state.squared }).corner;
 }
 
 export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineState {
@@ -191,7 +191,7 @@ export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineS
       }
       const previous = corners[corners.length - 1] ?? null;
       const beforeThat = corners[corners.length - 2] ?? null;
-      const corner = snappedAgainst(state, event.at, previous, beforeThat, []);
+      const corner = snappedAgainst(state, event.at, previous, beforeThat, [], event.metresPerPx);
       return stepped(state, { corners: [...corners, corner], closed: false, rectangle: null }, corners.length);
     }
 
@@ -211,7 +211,7 @@ export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineS
       const at = snappedAgainst(state, event.at, state.closed || event.index > 0 ? before : null, state.closed || event.index > 1 ? beforeThat : null, [
         (event.index + n - 1) % n,
         event.index,
-      ]);
+      ], event.metresPerPx);
       return moved(state, corners.map((corner, index) => (index === event.index ? at : corner)), event.index);
     }
 

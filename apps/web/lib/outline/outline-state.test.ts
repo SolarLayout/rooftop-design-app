@@ -36,8 +36,9 @@ describe("placing corners", () => {
     expect(state.selected).toBe(3);
   });
 
-  test("a corner within 3° of a right angle is squared, when the corners are squared", () => {
-    const off = { x: 90 + 40 * Math.tan((2 * Math.PI) / 180), y: 40 };
+  test("a corner within 3° of a right angle, and within 4 px of it, is squared, when the corners are squared", () => {
+    // 1° off, 40 m along: 0.7 m from the right angle, 2.5 px at 0.283 m a pixel.
+    const off = { x: 90 + 40 * Math.tan((1 * Math.PI) / 180), y: 40 };
 
     const state = placed({ x: 0, y: 0 }, { x: 90, y: 0 }, off);
 
@@ -119,16 +120,27 @@ describe("moving corners", () => {
   test("a corner dragged follows the pointer, squared to its neighbours when within 3°", () => {
     const state = outlineAfter(placed(...RECTANGLE), { type: "close" });
 
-    const dragged = outlineAfter(state, { type: "cornerMoved", index: 2, at: { x: 45 + 0.5, y: 25 } });
+    const dragged = outlineAfter(state, { type: "cornerMoved", index: 2, at: { x: 45 + 0.5, y: 25 }, metresPerPx: M_PER_PX });
 
     expect(dragged.corners[2].x).toBeCloseTo(45, 6);
     expect(dragged.corners[2].y).toBeCloseTo(25, 6);
   });
 
+  test("a corner dragged follows the pointer finely: it snaps only within a few pixels, never metres away", () => {
+    const state = outlineAfter(placed(...RECTANGLE), { type: "close" });
+    // 1 m east of the right angle, 40 m up the east edge: 1.4° off, 10 px at 0.1 m a pixel, beyond the reach.
+    const far = outlineAfter(state, { type: "cornerMoved", index: 2, at: { x: 46, y: 20 }, metresPerPx: 0.1 });
+    // 0.3 m east of it: 3 px, within the reach.
+    const near = outlineAfter(state, { type: "cornerMoved", index: 2, at: { x: 45.3, y: 20 }, metresPerPx: 0.1 });
+
+    expect(far.corners[2]).toEqual({ x: 46, y: 20 });
+    expect(near.corners[2].x).toBeCloseTo(45, 6);
+  });
+
   test("a drag is one step of the history: while it goes on, nothing is pushed; when it ends, the state before it can be undone to", () => {
     const state = outlineAfter(placed(...RECTANGLE), { type: "close" });
 
-    const dragging = after(state, { type: "cornerMoved", index: 2, at: { x: 50, y: 30 } }, { type: "cornerMoved", index: 2, at: { x: 55, y: 35 } });
+    const dragging = after(state, { type: "cornerMoved", index: 2, at: { x: 50, y: 30 }, metresPerPx: M_PER_PX }, { type: "cornerMoved", index: 2, at: { x: 55, y: 35 }, metresPerPx: M_PER_PX });
     expect(dragging.history.past).toHaveLength(state.history.past.length);
     const dropped = outlineAfter(dragging, { type: "cornerDropped" });
 
@@ -227,7 +239,7 @@ describe("the rectangle tool", () => {
   test("once a corner is dragged the box is a polygon like any other: no turn handle", () => {
     const box = outlineAfter(dragged(START, { x: -45, y: -20 }, { x: 45, y: 20 }), { type: "boxDropped" });
 
-    const moved = after(box, { type: "cornerMoved", index: 2, at: { x: 50, y: 30 } }, { type: "cornerDropped" });
+    const moved = after(box, { type: "cornerMoved", index: 2, at: { x: 50, y: 30 }, metresPerPx: M_PER_PX }, { type: "cornerDropped" });
 
     expect(moved.rectangle).toBeNull();
     expect(outlineAfter(moved, { type: "boxTurned", handle: { x: -30, y: 0 } })).toBe(moved);
