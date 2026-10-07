@@ -461,13 +461,15 @@ moved; Got it closes it for good on the device, it goes by itself once its move 
 ## Tip (a card of help over the map, D79)
 A small card that shows how to do a move the screen has just made possible (the boards "UI fixes · Move and turn the roof
 and its obstacles"). `surface-1`, border `line-strong`, radius `card-s` (14), `shadow-float`, padding 14 (12 under), rows 10
-apart; 300 wide on desktop and tablet, the width of the map less 12 a side on phone. The head: an accent dot of 8, the title
+apart; 300 wide on desktop and tablet, the width of the sheet on phone. The head: an accent dot of 8, the title
 in 14 at 600, and a quiet close (×) at the right, a press of 44 on touch. Two to four rows, each a key or a gesture in a
 bordered chip (`line-strong`, radius 6, 11 at 600, at least 62 wide, centred) and what it does in 13, `text-2`. The foot:
 Got it, a secondary button, small, at the right.
 
-- One tip at a time. It shows when its move becomes possible, at the map's edge and never over what is moved: on desktop and
-  tablet at the top left under the search (20 in, 88 down); on phone across the map, above the toolbar.
+- One tip at a time. It shows when its move becomes possible, and never over what is moved: on desktop and tablet at the
+  map's edge, top left under the search (20 in, 88 down); on phone at the top of the sheet, under the lead, the width of the
+  sheet. The phone's map above the sheet is about 460 high, and a card of four rows took half of it, the roof with it (the
+  owner left the phone to the best sense, session 19; the board drew the card floating above the sheet).
 - **Got it** closes it for good on the device (localStorage, a per-viewer convenience; a storage that refuses only means it
   shows again). It also goes for good by itself once its move is done. The × hides the tips, this one and those after it, until the screen is opened again
   or the ? is pressed.

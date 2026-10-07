@@ -83,9 +83,10 @@ function deviceStorage(): Storage | null {
   }
 }
 
-// The tip stands at the map's edge, never over what is moved: under the search on tablet and desktop, above the
-// toolbar across the map on phone (components.md, "Tip").
-const TIP_PLACE = "pointer-events-auto absolute inset-x-3 bottom-32 tablet:inset-x-auto tablet:bottom-auto tablet:top-22 tablet:left-5 tablet:w-75";
+// The tip is never over what is moved (components.md, "Tip"): on tablet and desktop at the map's edge, under the search;
+// on phone, whose map above the sheet is too short to give a card room, at the top of the sheet, under the lead.
+const TIP_OVER_THE_MAP = "pointer-events-auto absolute top-22 left-5 hidden w-75 tablet:block";
+const TIP_IN_THE_SHEET = "tablet:hidden";
 
 /** How the roof is entered: drawn on the map, or typed by its measurements. */
 type Entry = "map" | "hand";
@@ -153,6 +154,13 @@ export function Find() {
     setTipsHidden(false);
     const storage = deviceStorage();
     if (storage) rememberTipsGone(storage, new Set());
+  }
+
+  /** The card of a tip, in the words of the pointer or of touch. */
+  function tipCard(id: TipId) {
+    return (
+      <Tip key={id} title={TIPS[id].title} rows={touch ? TIPS[id].touch : TIPS[id].pointer} onGotIt={() => tipGone(id)} onClose={() => setTipsHidden(true)} />
+    );
   }
 
   // A tip goes by itself once its move is done.
@@ -281,16 +289,7 @@ export function Find() {
             className="pointer-events-auto absolute bottom-16 left-1/2 -translate-x-1/2 tablet:bottom-22 desktop:bottom-7"
           />
         ) : null}
-        {tip ? (
-          <Tip
-            key={tip}
-            title={TIPS[tip].title}
-            rows={touch ? TIPS[tip].touch : TIPS[tip].pointer}
-            onGotIt={() => tipGone(tip)}
-            onClose={() => setTipsHidden(true)}
-            className={TIP_PLACE}
-          />
-        ) : null}
+        {tip ? <div className={TIP_OVER_THE_MAP}>{tipCard(tip)}</div> : null}
         {detected ? (
           <div className="pointer-events-auto">
             <DetectedCallout
@@ -332,6 +331,7 @@ export function Find() {
           </div>
           <p className="text-text-2">{words.lead}</p>
         </div>
+        {tip ? <div className={TIP_IN_THE_SHEET}>{tipCard(tip)}</div> : null}
         {step === "outline" ? (
           <>
             {entry === "hand" ? (
