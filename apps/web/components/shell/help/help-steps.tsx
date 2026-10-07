@@ -19,8 +19,11 @@ import { PictureLarge } from "./PictureLarge";
 //   </Steps>
 // The gate (tools/help/pictures-in-topics.ts) holds each picture to its file and its callouts to three, in order, inside it.
 
-/** A numbered mark of the accent, in the light of the ? disc. */
-const MARK = "grid shrink-0 place-items-center rounded-full bg-accent font-semibold text-accent-ink tabular-nums shadow-primary type-label-s";
+/**
+ * A numbered mark of the accent, in the light of the ? disc. Its line is the digit's own height (leading-none): the label's
+ * line of 20 is taller than a mark of 16 or 20, and set the digit low in it.
+ */
+const MARK = "grid shrink-0 place-items-center rounded-full bg-accent font-semibold text-accent-ink tabular-nums shadow-primary type-label-s leading-none";
 
 type StepProps = { title: string; children?: ReactNode; n?: number; last?: boolean };
 
