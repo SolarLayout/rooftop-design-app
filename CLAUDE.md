@@ -31,7 +31,7 @@ session starts, works and ends. Update `plan/STATE.md` before you stop. Resume p
   question at a time.
 - Build in logical parts and show each one. No long silent stretches.
 - Verify your own work before showing it: run it, test it, look at it. Report what you ran and what you
-  did not.
+  did not. How a change is looked at in the browser and its screenshots kept and linked: `docs/screenshots.md`.
 - You may commit, push and merge pull requests in this repo once the check is green. Code never goes to
   `main` directly.
 - A change to documents only (`plan/`, `docs/`, `README.md`, `CLAUDE.md`) is committed and pushed to `main`
@@ -110,4 +110,5 @@ This is production software, not a prototype. The owner's words: "this is not th
 | `bun check` | Every check, in order, stopping at the first failure. A step whose inputs have not changed since it was last green is skipped, and the summary says so |
 | `bun check --fresh` | Every check, ignoring the caches and rebuilding them |
 | `bun gen:api` | Regenerate `packages/api-types` from the API |
+| `bun tools/pr-shots.ts <folder> <file>...` | Keep a pull request's screenshots on the branch `pr-shots` and print their links (`docs/screenshots.md`) |
 | `bun help:gen` | Write the in-app help's typed manifest from `apps/web/content/help` (commit both; the gate in `tools/help` fails while it is stale) |
