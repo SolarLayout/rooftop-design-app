@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { placeInputOf } from "../places/place-input";
-import { EXAMPLES, firstStepOf } from "./first-step";
+import { entryAfterPlace, EXAMPLES, firstStepOf } from "./first-step";
 
 // Find's first step (D85): the ways to start, what the search understands, the three steps; without a map, by hand alone.
 
@@ -49,5 +49,15 @@ describe("the panel of the first step", () => {
     expect(step.lead).toContain("cannot be shown");
     expect(step.steps.map(({ name }) => name)).toEqual(["Find", "Outline", "Build"]);
     expect(step.steps.some(({ words }) => words.includes("map"))).toBe(false);
+  });
+});
+
+describe("a place found", () => {
+  test("with a map, the roof is outlined on it", () => {
+    expect(entryAfterPlace(true)).toBe("map");
+  });
+
+  test("without a map, the roof is entered by hand at the place, never outlined on a map that is not there", () => {
+    expect(entryAfterPlace(false)).toBe("hand");
   });
 });
