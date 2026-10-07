@@ -70,6 +70,8 @@ export type HowTo = {
 
 /** A clear spot inside the demo roof: away from its corners, its edges' labels and its obstacles. */
 const CLEAR = { across: 0.17, down: 0.22 };
+/** The demo roof's stair room: a press there picks it. */
+const STAIR_ROOM = { across: 0.23, down: 0.5 };
 
 // Wide enough that the demo roof stands clear of Find's panel; the margin keeps the handle above the roof and the
 // labels at its right.
@@ -122,6 +124,21 @@ export const HOW_TOS: readonly HowTo[] = [
       { name: "2", acts: [{ kind: "corner", at: NW }] },
       { name: "3", acts: [{ kind: "corner", at: SW }] },
     ],
+    clips: [
+      {
+        name: "2",
+        before: [],
+        acts: [
+          { kind: "rest", seconds: 0.4 },
+          { kind: "click", at: SW },
+          { kind: "click", at: SE },
+          { kind: "click", at: NE },
+          { kind: "click", at: NW },
+          { kind: "click", at: SW },
+          { kind: "rest", seconds: 0.8 },
+        ],
+      },
+    ],
   },
   {
     dir: "find/rectangle",
@@ -131,6 +148,14 @@ export const HOW_TOS: readonly HowTo[] = [
     shots: [
       { name: "1", acts: [{ kind: "tool", name: "Rectangle" }, { kind: "draw", from: NW, to: SE, held: true }] },
       { name: "2", acts: [{ kind: "turn", handle: "Turn the rectangle", degrees: 12, held: false }] },
+    ],
+    clips: [
+      { name: "1", before: [{ kind: "tool", name: "Rectangle" }], acts: [{ kind: "rest", seconds: 0.4 }, { kind: "draw", from: NW, to: SE }, { kind: "rest", seconds: 0.8 }] },
+      {
+        name: "2",
+        before: [{ kind: "tool", name: "Rectangle" }, { kind: "draw", from: NW, to: SE, held: false }],
+        acts: [{ kind: "rest", seconds: 0.4 }, { kind: "turn", handle: "Turn the rectangle", degrees: 12, back: true }, { kind: "rest", seconds: 0.6 }],
+      },
     ],
   },
   {
@@ -211,9 +236,28 @@ export const HOW_TOS: readonly HowTo[] = [
     start: "edit",
     keep: { around: "roof", margin: ROOF_MARGIN },
     shots: [
-      { name: "1", acts: [{ kind: "click", at: { across: 0.23, down: 0.5 } }] },
-      { name: "2", acts: [{ kind: "drag", from: { across: 0.23, down: 0.5 }, by: { x: 24, y: -12 }, held: true }] },
+      { name: "1", acts: [{ kind: "click", at: STAIR_ROOM }] },
+      { name: "2", acts: [{ kind: "drag", from: STAIR_ROOM, by: { x: 24, y: -12 }, held: true }] },
       { name: "3", acts: [{ kind: "turn", handle: "Turn the obstacle", degrees: 25, held: true, around: "obstacle" }] },
+    ],
+    clips: [
+      {
+        name: "2",
+        before: [{ kind: "click", at: STAIR_ROOM }],
+        acts: [{ kind: "rest", seconds: 0.4 }, { kind: "drag", from: STAIR_ROOM, by: { x: 24, y: -12 }, back: true }, { kind: "rest", seconds: 0.6 }],
+      },
+      {
+        // It picks the obstacle itself and leaves it turned: a turn taken back to nothing is taken for a press where the
+        // handle is, inside the roof, which picks the roof.
+        name: "3",
+        before: [],
+        acts: [
+          { kind: "rest", seconds: 0.4 },
+          { kind: "click", at: STAIR_ROOM },
+          { kind: "turn", handle: "Turn the obstacle", degrees: 25, back: false, around: "obstacle" },
+          { kind: "rest", seconds: 0.8 },
+        ],
+      },
     ],
   },
 ];

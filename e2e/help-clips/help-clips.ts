@@ -66,6 +66,16 @@ async function recorded(r: Recording, map: OnTheMap, done: ClipAct) {
       await r.page.mouse.up();
       return hold(r, PACE.settle);
     }
+    case "draw": {
+      const from = await at(done.from);
+      const to = await at(done.to);
+      await glide(r, from, PACE.glide);
+      await hold(r, PACE.settle);
+      await r.page.mouse.down();
+      await glide(r, to, PACE.drag);
+      await r.page.mouse.up();
+      return hold(r, PACE.settle);
+    }
     case "turn": {
       const middle = done.around === "obstacle" ? await obstacleMiddle(r.page) : pointOf(await roofBox(r.page), { across: 0.5, down: 0.5 });
       const handle = await centreOf(r.page, done.handle);
