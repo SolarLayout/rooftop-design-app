@@ -52,7 +52,10 @@ The result is a table in this file, "What the spike found", and a recommendation
   the pictures under a gate (500 kB a clip, 6 MB in all, some twenty clips), served by Vercel's CDN with the app; object
   storage only if they outgrow it. The player's checks on the test stack use the Chrome channel.
 
-### 2. Decisions with the owner (one at a time, after the spike)
+### 2. Decisions with the owner: taken (session 19)
+D82: in the repository under the gate's budget. D83: H.264 MP4 by `@ffmpeg-installer/ffmpeg` 1.1.0, pinned, dev only.
+D84: the first clips are Move or turn the roof, Draw a rectangle, Outline by corners, Move or turn an obstacle
+(`plan/README.md`). As proposed:
 - **D82, where clips live** (recommended from the spike's sizes): in the repository beside the pictures under a budget held
   by the gate, if the total stays small (proposed: 1 MB a clip, 15 MB in all); else in object storage with a manifest in the
   repository (Vercel Blob, the app's own host; or S3 and CloudFront in the AWS account).
@@ -69,8 +72,11 @@ the boards of D80 and D81 were.
 
 ### 4. The pull requests (written here once the boards are approved; proposed)
 1. **The clips' making:** `bun help:clips`, the acts of `tools/help/pictures.ts` given a pace (pure, tested: each act's
-   duration, the frames' times), recorded on the test stack as the pictures are, the pointer drawn in, encoded as D83 says,
-   a poster from the first frame; written where D82 says.
+   frames, the pointer's path), recorded frame by frame on the test stack as the pictures are, the pointer drawn in, encoded
+   as D83 says, a poster from the first frame; written where D82 says. **With it, as a process aid for whoever makes clips
+   next (the owner, session 19):** a README beside the run (`e2e/help-clips/README.md`: what each file does, how to run
+   one clip, how to add one, what to look at before a commit), `docs/help-content.md` "Clips", a `bun help:clips` row in
+   both `CLAUDE.md` files, and the encoder pinned in the lockfile.
 2. **The player in the help kit:** `components.md` first; a `Clip` in a step's frame (or a picture's `clip` prop), its
    states, timed marks, reduced motion, failure to the picture; the gate (each clip and poster there, length and size within
    the budget, marks inside the length); the kit page.
