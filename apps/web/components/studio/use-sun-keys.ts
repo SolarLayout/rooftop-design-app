@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
+import { isKeyHeld, keyTargetOf } from "@/components/shell/keys-held";
 import { useStores } from "@/components/shell/stores";
 import { hoursOf } from "@/lib/flow/sun-day";
 import { sunDayOf } from "@/lib/stores/results-store";
 import { timeOfKey } from "@/lib/flow/sun-time";
 
-/** What has the focus takes its own keys: a field, a slider, a menu, a list (plan/phase-06-plan.md, decision 17). */
-const TAKES_ITS_OWN_KEYS = 'input, textarea, select, [contenteditable="true"], [role="slider"], [role="menu"], [role="listbox"], [role="combobox"]';
+/** What has the focus takes its own keys: a field or an open dialog, and a slider, a menu, a list (plan/phase-06-plan.md, decision 17). */
+const TAKES_ITS_OWN_KEYS = '[role="slider"], [role="menu"], [role="listbox"], [role="combobox"]';
 
 /**
  * The keys of the time in the Studio (decision 17): `,` and `.` an hour back and forward, `[` and `]` a
@@ -20,8 +21,7 @@ export function useSunKeys(): void {
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if (event.metaKey || event.ctrlKey || event.altKey) return;
-      const target = event.target instanceof Element ? event.target : null;
-      if (target?.closest(TAKES_ITS_OWN_KEYS)) return;
+      if (isKeyHeld(keyTargetOf(event), TAKES_ITS_OWN_KEYS)) return;
       const day = sunDayOf(results.getState());
       if (!day) return;
       const next = timeOfKey(event.key, view.getState().sunTime, day.dayOfYear, hoursOf(day));

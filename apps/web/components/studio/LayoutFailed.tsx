@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+import { isKeyHeld, keyTargetOf } from "@/components/shell/keys-held";
 import { useResults, useStores } from "@/components/shell/stores";
 import { Button } from "@/components/ui/Button";
 import { classNames } from "@/components/ui/class-names";
@@ -17,7 +18,7 @@ type ChipProps = { testId: string; words: FailedWords | null; failure: Failure |
  * The chip on the stage when what was asked for last did not come (docs/design/components.md, "Callout on
  * the stage", with the line of a note; the boards "Studio, Array lens, states" and "Time on the stage"): what
  * failed, the message of the API, and Try again, which asks once more. What came before stays under it. What
- * lands takes it away; Escape closes it until the next failure.
+ * lands takes it away; Escape closes it until the next failure, unless it is pressed in a field or an open dialog.
  */
 function FailedChip({ testId, words, failure, className }: ChipProps) {
   const { flow } = useStores();
@@ -27,7 +28,7 @@ function FailedChip({ testId, words, failure, className }: ChipProps) {
   useEffect(() => {
     if (!isShown) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setClosed(failure);
+      if (event.key === "Escape" && !isKeyHeld(keyTargetOf(event))) setClosed(failure);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);

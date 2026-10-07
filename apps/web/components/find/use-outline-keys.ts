@@ -1,15 +1,12 @@
 import { useEffect } from "react";
+import { isKeyHeld, keyTargetOf } from "@/components/shell/keys-held";
 import type { OutlineEvent } from "@/lib/outline/outline-state";
 
 // The keyboard of the outline: Enter closes, Escape takes the last corner back, the arrows nudge the
 // selected corner (a metre with Shift), Delete removes it, Cmd or Ctrl with Z undoes, with Shift redoes.
-// Keys typed into a field are the field's.
+// Keys typed into a field are the field's, and keys pressed in an open dialog (the help sheet) are the dialog's.
 
 const NUDGES = new Set(["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"]);
-
-function isTyping(target: EventTarget | null): boolean {
-  return target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
-}
 
 /** What a key of the outline means; null for a key that is none of its own. */
 export function outlineEventOfKey(event: Pick<KeyboardEvent, "key" | "shiftKey" | "metaKey" | "ctrlKey">): OutlineEvent | null {
@@ -27,7 +24,7 @@ export function useOutlineKeys(enabled: boolean, on: (event: OutlineEvent) => vo
   useEffect(() => {
     if (!enabled) return;
     function onKeyDown(event: KeyboardEvent) {
-      if (isTyping(event.target)) return;
+      if (isKeyHeld(keyTargetOf(event))) return;
       const outlineEvent = outlineEventOfKey(event);
       if (!outlineEvent) return;
       event.preventDefault();
