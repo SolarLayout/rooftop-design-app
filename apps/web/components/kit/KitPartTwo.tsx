@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Dialogs } from "./Dialogs";
 import { FileDrops } from "./FileDrops";
+import { HelpDiscs } from "./HelpDiscs";
 import { KitPage } from "./Pages";
 import { Selects } from "./Selects";
 import { Sheets } from "./Sheets";
@@ -29,6 +30,7 @@ export function KitPartTwo() {
           <Waiting />
           <TooltipsAndToasts onPress={setLastPressed} />
           <Tips onPress={setLastPressed} />
+          <HelpDiscs />
         </div>
       </div>
     </KitPage>

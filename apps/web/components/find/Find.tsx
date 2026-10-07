@@ -1,5 +1,6 @@
 "use client";
 
+import { HelpProvider } from "@/components/shell/help/HelpProvider";
 import type { Map as MapLibre } from "maplibre-gl";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -246,138 +247,140 @@ export function Find() {
   }
 
   return (
-    <div className="relative h-dvh overflow-hidden bg-ground text-text type-body-touch desktop:type-body">
-      <div className={STAGE}>
-        {state.kind === "ready" && PROVIDER && webGL ? (
-          <RoofMap
-            imagery={PROVIDER.imagery}
-            view={view}
-            onState={(at) => setTilesFailed(at === "failed")}
-            onMap={setMap}
-            outline={{ state: outline, tool: step === "outline" && entry === "map" ? tool : null, on, onDetected: setDetected }}
-            moreAttribution={step === "outline" && entry === "map" && tool === "detect" ? FOOTPRINTS_ATTRIBUTION : null}
-            className="h-full"
-          />
-        ) : entry === "hand" ? (
-          <PlanView corners={outline.corners} reason={state.kind === "ready" ? null : state.reason} />
-        ) : state.kind !== "ready" ? (
-          <NoMap state={state} onByHand={enterByHand} />
-        ) : null}
-      </div>
-
-      <div className={OVER_THE_STAGE}>
-        <div className="pointer-events-auto absolute top-3 right-3 left-3 flex items-center gap-2 tablet:top-5 tablet:right-5 tablet:left-5 tablet:gap-2.5 desktop:right-auto">
-          <Link href="/" aria-label="Back to home" className={FLOATING_BUTTON}>
-            <Icon name="arrow-left" size={18} />
-          </Link>
-          <Search provider={PROVIDER} near={near} onPlace={onPlace} found={foundAt?.label ?? null} className="min-w-0 grow desktop:w-100 desktop:grow-0" />
-          <Steps current={step} className="hidden tablet:flex" />
-        </div>
-        {/* The phone has no buttons: the map is pinched and turned by hand. Without a map there is nothing to turn or zoom. */}
-        {map ? <MapButtons map={map} className="pointer-events-auto absolute right-5 bottom-7 hidden tablet:flex desktop:right-0" /> : null}
-        {step === "outline" && entry === "map" ? (
-          <OutlineTools
-            state={outline}
-            tool={tool}
-            onTool={(taken) => {
-              setTool(taken);
-              setDetected(null);
-              // Another tool is taken to draw: the roof picked up is let go.
-              on({ type: "roofPicked", picked: false });
-            }}
-            on={on}
-            onShowTips={showTips}
-            className="pointer-events-auto absolute bottom-16 left-1/2 -translate-x-1/2 tablet:bottom-22 desktop:bottom-7"
-          />
-        ) : null}
-        {tip ? <div className={TIP_OVER_THE_MAP}>{tipCard(tip)}</div> : null}
-        {detected ? (
-          <div className="pointer-events-auto">
-            <DetectedCallout
-              detected={detected}
-              onUse={() => setDetected(null)}
-              // The footprint stays and its corners drag, as the corners of any closed roof do.
-              onAdjust={() => setDetected(null)}
-              onClose={() => setDetected(null)}
+    <HelpProvider>
+      <div className="relative h-dvh overflow-hidden bg-ground text-text type-body-touch desktop:type-body">
+        <div className={STAGE}>
+          {state.kind === "ready" && PROVIDER && webGL ? (
+            <RoofMap
+              imagery={PROVIDER.imagery}
+              view={view}
+              onState={(at) => setTilesFailed(at === "failed")}
+              onMap={setMap}
+              outline={{ state: outline, tool: step === "outline" && entry === "map" ? tool : null, on, onDetected: setDetected }}
+              moreAttribution={step === "outline" && entry === "map" && tool === "detect" ? FOOTPRINTS_ATTRIBUTION : null}
+              className="h-full"
             />
-          </div>
-        ) : null}
-      </div>
-
-      {/* Outside the layer over the stage, which lets pointer events through: a dialog inherits that. */}
-      {step === "outline" ? (
-        <HeightDialog
-          shape={outline.pending}
-          suggestedName={outline.pending ? nameOf(outline.pending.kind, outline.obstacles) : ""}
-          onAdd={(name, height) => on({ type: "heightGiven", name, height })}
-          onDiscard={() => on({ type: "pendingDiscarded" })}
-        />
-      ) : null}
-
-      <aside
-        aria-label={words.title}
-        className="absolute inset-x-0 bottom-0 flex h-96 flex-col gap-3 overflow-y-auto rounded-t-panel border-t border-line bg-chrome px-4 pt-2 pb-5 tablet:px-5 desktop:inset-x-auto desktop:top-5 desktop:right-5 desktop:bottom-5 desktop:h-auto desktop:w-find-panel desktop:gap-5 desktop:rounded-panel desktop:border desktop:p-card desktop:shadow-panel"
-      >
-        <span className="flex justify-center desktop:hidden">
-          <span className="h-1 w-10 rounded-full bg-line-strong" />
-        </span>
-        <div className="flex flex-col gap-1.5">
-          <div className="flex items-center gap-3">
-            <h1 className="type-lens-touch desktop:type-lens">{words.title}</h1>
-            <span className="ml-auto type-small text-text-2 desktop:hidden">Step {["find", "outline", "build"].indexOf(step) + 1} of 3</span>
-            {/* The phone's toolbar has room for Undo alone: its ? stands here (components.md, "Tip"). */}
-            {step === "outline" && entry === "map" && roofClosed ? (
-              <IconButton label="Show the tips" icon="help" iconSize={18} kind="quiet" size="l" onClick={showTips} className="-my-2 -mr-2 tablet:hidden" />
-            ) : null}
-          </div>
-          <p className="text-text-2">{words.lead}</p>
+          ) : entry === "hand" ? (
+            <PlanView corners={outline.corners} reason={state.kind === "ready" ? null : state.reason} />
+          ) : state.kind !== "ready" ? (
+            <NoMap state={state} onByHand={enterByHand} />
+          ) : null}
         </div>
-        {tip ? <div className={TIP_IN_THE_SHEET}>{tipCard(tip)}</div> : null}
+
+        <div className={OVER_THE_STAGE}>
+          <div className="pointer-events-auto absolute top-3 right-3 left-3 flex items-center gap-2 tablet:top-5 tablet:right-5 tablet:left-5 tablet:gap-2.5 desktop:right-auto">
+            <Link href="/" aria-label="Back to home" className={FLOATING_BUTTON}>
+              <Icon name="arrow-left" size={18} />
+            </Link>
+            <Search provider={PROVIDER} near={near} onPlace={onPlace} found={foundAt?.label ?? null} className="min-w-0 grow desktop:w-100 desktop:grow-0" />
+            <Steps current={step} className="hidden tablet:flex" />
+          </div>
+          {/* The phone has no buttons: the map is pinched and turned by hand. Without a map there is nothing to turn or zoom. */}
+          {map ? <MapButtons map={map} className="pointer-events-auto absolute right-5 bottom-7 hidden tablet:flex desktop:right-0" /> : null}
+          {step === "outline" && entry === "map" ? (
+            <OutlineTools
+              state={outline}
+              tool={tool}
+              onTool={(taken) => {
+                setTool(taken);
+                setDetected(null);
+                // Another tool is taken to draw: the roof picked up is let go.
+                on({ type: "roofPicked", picked: false });
+              }}
+              on={on}
+              onShowTips={showTips}
+              className="pointer-events-auto absolute bottom-16 left-1/2 -translate-x-1/2 tablet:bottom-22 desktop:bottom-7"
+            />
+          ) : null}
+          {tip ? <div className={TIP_OVER_THE_MAP}>{tipCard(tip)}</div> : null}
+          {detected ? (
+            <div className="pointer-events-auto">
+              <DetectedCallout
+                detected={detected}
+                onUse={() => setDetected(null)}
+                // The footprint stays and its corners drag, as the corners of any closed roof do.
+                onAdjust={() => setDetected(null)}
+                onClose={() => setDetected(null)}
+              />
+            </div>
+          ) : null}
+        </div>
+
+        {/* Outside the layer over the stage, which lets pointer events through: a dialog inherits that. */}
         {step === "outline" ? (
-          <>
-            {entry === "hand" ? (
-              <ByHandPanel hand={hand} onChange={changeHand} state={outline} />
-            ) : (
-              <>
-                <OutlinePanel state={outline} on={on} />
-                {outline.closed ? <ObstacleList state={outline} on={on} /> : null}
-              </>
-            )}
-            <section className="flex flex-col gap-2.5">
-              <h2 className={classNames("hidden desktop:block", SECTION)}>Roof type</h2>
-              <RoofTypeChoice value={roofType} onChange={setRoofType} />
-            </section>
-            <div className="mt-auto flex flex-col gap-2.5">
-              {building.kind === "failed" ? (
-                <p role="status" className="flex items-start gap-2 type-small text-text-2">
-                  <StatusMark kind="note" label="Note" wordsShown={false} size={16} />
-                  {building.message}
-                </p>
-              ) : null}
-              <Button kind="primary" size="xl" icon="arrow-right" disabled={!outline.closed || building.kind === "building"} onClick={build} className="w-full">
-                {building.kind === "building" ? (
-                  <>
-                    <ProgressRing size={16} />
-                    Building the roof
-                  </>
-                ) : (
-                  "Build this roof"
-                )}
-              </Button>
-              {entry === "map" ? (
-                <Button kind="quiet" size="l" onClick={enterByHand} className="w-full">
-                  Enter dimensions by hand instead
-                </Button>
-              ) : hasMap ? (
-                <Button kind="quiet" size="l" onClick={() => setEntry("map")} className="w-full">
-                  Draw on the map instead
-                </Button>
+          <HeightDialog
+            shape={outline.pending}
+            suggestedName={outline.pending ? nameOf(outline.pending.kind, outline.obstacles) : ""}
+            onAdd={(name, height) => on({ type: "heightGiven", name, height })}
+            onDiscard={() => on({ type: "pendingDiscarded" })}
+          />
+        ) : null}
+
+        <aside
+          aria-label={words.title}
+          className="absolute inset-x-0 bottom-0 flex h-96 flex-col gap-3 overflow-y-auto rounded-t-panel border-t border-line bg-chrome px-4 pt-2 pb-5 tablet:px-5 desktop:inset-x-auto desktop:top-5 desktop:right-5 desktop:bottom-5 desktop:h-auto desktop:w-find-panel desktop:gap-5 desktop:rounded-panel desktop:border desktop:p-card desktop:shadow-panel"
+        >
+          <span className="flex justify-center desktop:hidden">
+            <span className="h-1 w-10 rounded-full bg-line-strong" />
+          </span>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center gap-3">
+              <h1 className="type-lens-touch desktop:type-lens">{words.title}</h1>
+              <span className="ml-auto type-small text-text-2 desktop:hidden">Step {["find", "outline", "build"].indexOf(step) + 1} of 3</span>
+              {/* The phone's toolbar has room for Undo alone: its ? stands here (components.md, "Tip"). */}
+              {step === "outline" && entry === "map" && roofClosed ? (
+                <IconButton label="Show the tips" icon="help" iconSize={18} kind="quiet" size="l" onClick={showTips} className="-my-2 -mr-2 tablet:hidden" />
               ) : null}
             </div>
-          </>
-        ) : null}
-      </aside>
-    </div>
+            <p className="text-text-2">{words.lead}</p>
+          </div>
+          {tip ? <div className={TIP_IN_THE_SHEET}>{tipCard(tip)}</div> : null}
+          {step === "outline" ? (
+            <>
+              {entry === "hand" ? (
+                <ByHandPanel hand={hand} onChange={changeHand} state={outline} />
+              ) : (
+                <>
+                  <OutlinePanel state={outline} on={on} />
+                  {outline.closed ? <ObstacleList state={outline} on={on} /> : null}
+                </>
+              )}
+              <section className="flex flex-col gap-2.5">
+                <h2 className={classNames("hidden desktop:block", SECTION)}>Roof type</h2>
+                <RoofTypeChoice value={roofType} onChange={setRoofType} />
+              </section>
+              <div className="mt-auto flex flex-col gap-2.5">
+                {building.kind === "failed" ? (
+                  <p role="status" className="flex items-start gap-2 type-small text-text-2">
+                    <StatusMark kind="note" label="Note" wordsShown={false} size={16} />
+                    {building.message}
+                  </p>
+                ) : null}
+                <Button kind="primary" size="xl" icon="arrow-right" disabled={!outline.closed || building.kind === "building"} onClick={build} className="w-full">
+                  {building.kind === "building" ? (
+                    <>
+                      <ProgressRing size={16} />
+                      Building the roof
+                    </>
+                  ) : (
+                    "Build this roof"
+                  )}
+                </Button>
+                {entry === "map" ? (
+                  <Button kind="quiet" size="l" onClick={enterByHand} className="w-full">
+                    Enter dimensions by hand instead
+                  </Button>
+                ) : hasMap ? (
+                  <Button kind="quiet" size="l" onClick={() => setEntry("map")} className="w-full">
+                    Draw on the map instead
+                  </Button>
+                ) : null}
+              </div>
+            </>
+          ) : null}
+        </aside>
+      </div>
+    </HelpProvider>
   );
 }
 
