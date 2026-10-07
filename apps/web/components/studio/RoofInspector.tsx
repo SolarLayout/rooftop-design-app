@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ROOF_TYPES } from "@/components/find/RoofTypeChoice";
+import { ROOF_TYPES } from "@/lib/geometry/roof-types";
 import { useProject, useStores, useView } from "@/components/shell/stores";
 import { Button } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";

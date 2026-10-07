@@ -106,3 +106,4 @@ This is production software, not a prototype. The owner's words: "this is not th
 | `bun check` | Every check, in order, stopping at the first failure. A step whose inputs have not changed since it was last green is skipped, and the summary says so |
 | `bun check --fresh` | Every check, ignoring the caches and rebuilding them |
 | `bun gen:api` | Regenerate `packages/api-types` from the API |
+| `bun help:gen` | Write the in-app help's typed manifest from `apps/web/content/help` (commit both; the gate in `tools/help` fails while it is stale) |

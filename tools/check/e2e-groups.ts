@@ -34,6 +34,9 @@ export const BASE_INPUTS: string[] = [
   "apps/web/lib/geometry/**",
   // The designs kept on the device: the shell saves and opens them, so every page can see them (plan/phase-10-plan.md, decision 12).
   "apps/web/lib/device/**",
+  // The in-app help (D80): its registry and its topics, opened from the headings of every workspace's panels.
+  "apps/web/lib/help/**",
+  "apps/web/content/**",
   "apps/web/public/**",
   "apps/web/*",
   "!apps/web/CLAUDE.md",
