@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { markdownOf, problemsOfFolder, publishedPathOf, rawUrlOf, repoOf } from "./pr-shots";
+import { linkOf, markdownOf, problemsOfFolder, publishedPathOf, repoOf } from "./pr-shots";
 
 // The screenshots of a pull request (docs/screenshots.md): kept on the orphan branch pr-shots, linked by the commit.
 
@@ -20,12 +20,14 @@ describe("where a screenshot goes", () => {
     expect(problemsOfFolder("Help Pictures")).toEqual(['"Help Pictures": a folder is lower-case words and numbers joined by -, such as help-topics-roof']);
   });
 
-  test("under its folder by its own name, and read back by the commit", () => {
+  test("under its folder by its own name, and linked by the commit in the form GitHub shows in a private repository", () => {
     expect(publishedPathOf("help-pictures", ".playwright-mcp/help/1.jpg")).toBe("help-pictures/1.jpg");
-    expect(rawUrlOf("SolarLayout/rooftop-design-app", "abc123", "help-pictures/1.jpg")).toBe("https://raw.githubusercontent.com/SolarLayout/rooftop-design-app/abc123/help-pictures/1.jpg");
+    // raw.githubusercontent.com answers 404 without a token: a private repository's picture never showed in a pull request.
+    expect(linkOf("SolarLayout/rooftop-design-app", "abc123", "help-pictures/1.jpg")).toBe("https://github.com/SolarLayout/rooftop-design-app/blob/abc123/help-pictures/1.jpg?raw=true");
   });
 
   test("the links ready for the pull request's description", () => {
     expect(markdownOf(["https://x/a/desktop-1.png"])).toBe("| desktop-1 | ![](https://x/a/desktop-1.png) |");
+    expect(markdownOf(["https://x/blob/c/a/phone-2.jpg?raw=true"])).toBe("| phone-2 | ![](https://x/blob/c/a/phone-2.jpg?raw=true) |");
   });
 });

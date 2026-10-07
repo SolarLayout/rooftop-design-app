@@ -38,6 +38,7 @@ screens, and hold the exact values.
    The browser tests are in groups keyed on what they can see (`docs/checks.md`): a new suite is placed by
    its name, a part two workspaces share lives in `components/shell`, and `bun run e2e:<group>` runs one group
    before the check.
-7. Attach a screenshot of each changed screen, at each size, to the pull request: how, `docs/screenshots.md`
-   (`bun tools/pr-shots.ts`).
+7. Attach a screenshot of each changed screen and state, at each size, to the pull request's description, and see that
+   they show on its page before merging: how, `docs/screenshots.md` (`bun tools/pr-shots.ts`). No UI change is merged
+   without them.
 8. The 3D canvas is loaded with `next/dynamic` and `ssr: false`. Read `plan/reference/r3f-notes.md` before 3D work.
