@@ -110,7 +110,8 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 ## Next, in order
 
-1. The owner's next work, in a new session: UX, CX and UI on Find (`/find`), as he brings it (session 19's last message).
+1. The owner's next work, in a new session: Find's first step, a panel that tells the user what to do (resume prompt
+   `plan/resume/018-find-first-step.md`; design first, then build).
    Before it, or alongside: the owner plays the help's clips in Safari on an iPhone or iPad (Phase 15's last check).
 2. Issue #114: the Strings legend with many MPPT (design first).
 3. #99 and #100 when the owner needs them (advised: the budget alarm soon, the rate limit before the site is promoted).

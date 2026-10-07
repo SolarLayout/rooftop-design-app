@@ -1,5 +1,5 @@
 # 017: move and turn the roof and its obstacles, the grab cursor, the tips (D79)
-Written: 2026-10-07, by session 18. Status: open.
+Written: 2026-10-07, by session 18. Status: used by session 19.
 
 ## Paste this
 
