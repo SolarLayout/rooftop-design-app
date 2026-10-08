@@ -86,6 +86,7 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | UI fixes · Present, the figures of each scene | `PresentStats.dc.html`, `PresentStatsTablet.dc.html` (the scenes in `present_scenes/`) | `ui-fixes-present-stats-desktop.jpg`, `ui-fixes-present-stats-tablet.jpg` | desktop, tablet (Present has no phone) |
 | UI fixes · Coordinates in the search | `SearchCoordinates.dc.html`, `SearchCoordinatesTablet.dc.html`, `SearchCoordinatesPhone.dc.html` | `ui-fixes-search-coordinates-desktop.png`, `ui-fixes-search-coordinates-tablet.png`, `ui-fixes-search-coordinates-phone.png` | desktop, tablet, phone |
 | UI fixes · Find's first step, a panel that says what to do | `FindFirstStep.dc.html`, `FindFirstStepTablet.dc.html`, `FindFirstStepPhone.dc.html` (the shots in `find_first_step/`) | none: the boards are the shots | desktop, tablet, phone |
+| System voltage · Set by the user's country (Phase 16) | `SystemVoltage.dc.html`, `SystemVoltageTablet.dc.html`, `SystemVoltagePhone.dc.html` (the shots in `system_voltage/`) | `system-voltage-desktop.jpg`, `system-voltage-tablet.jpg`, `system-voltage-phone.jpg` | desktop, tablet, phone |
 
 Screens still to draw are listed in `plan/phase-00-design.md`.
 
@@ -185,6 +186,11 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   before a place is found, today and as proposed (the ways to start, what the search understands, the three steps, the ?), an
   example pressed, and without a map, caught in the browser at three sizes (`find_first_step/`) with a prototype on the local
   branch `design/find-first-step`, never merged; approved on 2026-10-07 (D85), built (#143 to #145).
+- `mockups/build_system_voltage.py` writes the boards "System voltage · Set by the user's country" (Phase 16, D87; desktop, tablet,
+  phone; the canvas page "System voltage"): the voltage of the user's country in the Strings lens (India 1000 V, the United States
+  600 V with no string length fitting the demo's inverter), the app's value following an inverter rated under it, the user's 1500 V
+  kept with an inverter of 1100 V and its note, and the picker's marks. Caught in the browser at three sizes (`system_voltage/`) with a
+  prototype on the local branch `design/system-voltage`, never merged; drawn on 2026-10-08 (session 22), for approval.
 - `mockups/build_in_app_help.py` writes the boards "In-App Help · The ? and the help sheet" (desktop, tablet, phone; the
   canvas page "In-App Help"): the ? disc beside the section headings in its states, the tooltip, the help sheet by size
   (from the right edge, the whole height, dimmed, on desktop and tablet; from the bottom on phone), a topic followed and
@@ -201,8 +207,8 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
 - A preview is the board rendered at its `$preview` size (the tail of each `.dc.html`) by a scratch Playwright script outside the
   repo: Chromium from `e2e/node_modules/@playwright/test`, the fonts served from `apps/web/app/fonts` and `apps/web/node_modules/geist`
   in place of the Google link in the board's `helmet`, `support.js` stubbed, everything else off the machine refused.
-- `mockups/canvas.json` is the layout of the boards on the canvas: 91 boards on three pages since 2026-10-07 ("Approved design", the
-  first, holds every board without a `page`; "UI fixes" the boards of session 18 on; "In-App Help" those of Phases 14 and 15); the 53 of the first page in sync with the canvas at claude.ai since
+- `mockups/canvas.json` is the layout of the boards on the canvas: 94 boards on four pages since 2026-10-08 ("Approved design", the
+  first, holds every board without a `page`; "UI fixes" the boards of session 18 on; "In-App Help" those of Phases 14 and 15; "System voltage" those of Phase 16); the 53 of the first page in sync with the canvas at claude.ai since
   2026-10-04 (session 15 published the 26 boards of Phases 6 to 11 and the five boards changed since 2026-09-30; the report's
   pages of `mockups/handover_pages/` travel with the Handover boards). A session on Bedrock has no Artifact tool: it adds its
   boards to `canvas.json` (frame, `order`, a row title in `notes`) and the next session with the tool publishes them.

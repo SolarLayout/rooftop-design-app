@@ -1,6 +1,7 @@
 # Phase 16: the system voltage set by the user's country
 
-**Status:** planned (session 22, 2026-10-08); its questions answered. Not started: the board comes first.
+**Status:** planned (session 22, 2026-10-08); its questions answered; the boards drawn, for approval (the canvas page "System voltage";
+`docs/design/mockups/build_system_voltage.py`). Not started.
 **Depends on:** Phase 7 (the Strings lens, its voltage decision card: D10, D37), Phase 12 (the web app on Vercel, D58).
 **Replaces:** D10 and hard rule 3 as they stand, by D87, when this phase is built.
 
