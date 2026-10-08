@@ -13,7 +13,21 @@ from rooftop_api.schemas.weather import Weather, WeatherSource
 SYSTEM_VOLTAGES = [600, 1000, 1500]
 SystemVoltage = Annotated[
     Literal[600, 1000, 1500],
-    Field(description="Volts. There is no default: the user chooses, and nothing is sized before."),
+    Field(
+        description=(
+            "Volts. The API has no default: without one nothing is sized. "
+            "The web app sets it from the user's country (D87)."
+        )
+    ),
+]
+VoltageSetBy = Annotated[
+    Literal["app", "user"],
+    Field(
+        description=(
+            "Who set the system voltage: the app, from the user's country, or the user. "
+            "Null without a voltage."
+        )
+    ),
 ]
 VocCoefficient = Annotated[
     float,
@@ -59,6 +73,7 @@ class Project(Input):
     weather_csv: FileName = ""
     weather_csv_text: CsvText = ""
     system_voltage: SystemVoltage | None = None
+    system_voltage_by: VoltageSetBy | None = None
     cell_rise_c: Annotated[float, Field(ge=0, le=100)] | None = None
     t_min_override: Annotated[float, Field(ge=-90, le=60)] | None = None
     t_max_override: Annotated[float, Field(ge=-90, le=70)] | None = None

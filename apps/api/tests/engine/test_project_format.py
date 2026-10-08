@@ -131,6 +131,36 @@ def test_a_file_written_before_the_voc_coefficient_opens_without_one(fmt):
     assert not Design(back).coeffs.entered
 
 
+# ── who set the voltage ──────────────────────────────────────────────────────
+@pytest.mark.parametrize("by", ["app", "user"])
+def test_who_set_the_voltage_comes_back_from_the_file(by):
+    back = _through_a_file(_light_project(system_voltage=1000.0, system_voltage_by=by))
+
+    assert (back.system_voltage, back.system_voltage_by) == (1000.0, by)
+
+
+@pytest.mark.parametrize("fmt", [1, 2])
+def test_a_voltage_in_a_file_of_before_was_the_users_choice(fmt):
+    written = json.loads(json.dumps(_light_project(system_voltage=600.0).to_json()))
+    del written["system_voltage_by"]
+    written["format"] = fmt
+
+    back = Project.from_json(written)
+
+    assert (back.system_voltage, back.system_voltage_by) == (600.0, "user")
+
+
+def test_a_file_of_before_without_a_voltage_names_no_one():
+    written = json.loads(json.dumps(_light_project(system_voltage=None).to_json()))
+    del written["system_voltage_by"]
+
+    assert Project.from_json(written).system_voltage_by is None
+
+
+def test_the_demo_voltage_is_the_users():
+    assert (demo_project().system_voltage, demo_project().system_voltage_by) == (1500.0, "user")
+
+
 # ── format 1 ─────────────────────────────────────────────────────────────────
 def test_format_1_opens():
     project = demo_project()
