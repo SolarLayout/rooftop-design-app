@@ -21,8 +21,13 @@ so the demo's option A is unchanged, D and E grow (28 × 28, 29 × 27). The pari
 limit about +0.08 s and +45 MB (664 to 709 MB; on Lambda about 970 MB of 1,769), the demo unchanged; the cost is the
 modules the options now place, not the forming; numbers in #160. Not deployed. The owner: there is no desktop app at
 all; the desktop version was a proof of concept, this repository is the product.
-**Next:** #161 (offer the string length that places the most modules), then #162 (no words of a desktop app; the 6 MB
-message needs a remedy); the browser groups run when the owner says (#157's suites, #151's mobile fixes, and the Strings
+Then #161, in two: #163, the options within the DC/AC target add inverters when the target needs them (a small
+inverter had dropped strings: a 10 kW roof's recommended placed 105 of 160, now 152); #164, the third length tried is
+the one from the nominal up that places the most modules (160 of 160 there), not below the nominal (short strings win
+positions on what the run does not price: cable, current, connectors); strings counted without forming them
+(`strings_held`), the API's answer about 0.45 s faster on the roof at the limit. Both measured in the Lambda image, one
+thread: no added time or memory. The demo unchanged. Not deployed (#160, #163, #164).
+**Next:** #162 (no words of a desktop app; the 6 MB message needs a remedy); the browser groups run when the owner says (#157's suites, #151's mobile fixes, and the Strings
 lens pictures whose options D and E #160 changed); Phase 15's clips on an iPhone or iPad.
 
 ## Where we are
