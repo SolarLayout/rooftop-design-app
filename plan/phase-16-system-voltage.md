@@ -1,7 +1,7 @@
 # Phase 16: the system voltage set by the user's country
 
-**Status:** planned (session 22, 2026-10-08); its questions answered; the boards approved by the owner on 2026-10-08 (the canvas page "System
-voltage"; `docs/design/mockups/build_system_voltage.py`). How it is built: `phase-16-plan.md`. Not started.
+**Status:** built (session 22, 2026-10-08): #153 to #157; D87, D88. The boards approved the same day (the canvas page "System
+voltage"). How it was built: `phase-16-plan.md`. Left: the browser suites, changed by reading, run when the owner says.
 **Depends on:** Phase 7 (the Strings lens, its voltage decision card: D10, D37), Phase 12 (the web app on Vercel, D58).
 **Replaces:** D10 and hard rule 3 as they stand, by D87, when this phase is built.
 
@@ -124,3 +124,23 @@ A default by the roof's location (the roof's coordinates are a better guide to t
 by building type (home or commercial); any voltage other than 600, 1000 and 1500 V; the engine's hourly model of a string
 below the MPPT minimum (found while planning: `_inverter_out` clips the voltage to the efficiency curves and never stops at
 `vmpp_min`; sizing keeps the strings above it at the hot design point).
+
+## As built (session 22)
+
+| Pull request | What |
+|---|---|
+| #153 | Engine and API: `system_voltage_by` ("app" or "user"), in the `.rtd` and read back; a file of before with a voltage reads as the user's; the demo's 1500 V the user's. The engine keeps no default |
+| #154 | `GET /country` (Vercel's `x-vercel-ip-country`); `lib/country` (the request's country, else the time zone's from a table generated from the tz database 2026c with the names browsers report, else India; the default by country); the project store gives a design opened without a voltage the country's, set by the app; a choice in the lens is the user's |
+| #155 | The Strings lens to the boards: who set it, the line, the plain line or the note for equipment rated under it (D88), the offer up (the lowest voltage at which a length fits, worked out from the run's range); the picker's marks; the decision card and its waiting list removed |
+| #156 | The help: System voltage rewritten; Inverter and Modules in series corrected; the manifest |
+| #157 | The browser suites: the Strings lens's by time zone and request; the screens that waited for a voltage now reached where no length fits (the demo at 600 V); three whole-screen tests of the gone state removed with their baselines. Changed by reading, not run |
+
+**Decisions:** D87 (with Canada at 600 V and India as the last fallback), D88 (the equipment never moves the voltage), both
+in `plan/README.md`. The boards' third state taken again from the build after D88.
+
+**Found while building:** a new design shows its inverter's file as the API's absolute path on the server
+(`…/rooftop_core/samples/wattpower-wp-330ktl-h1.OND`), as before this phase; the help sheet tags the design's current value
+`Your choice` (D80) also when the app set it; the test stack downloads no weather, so the checks by hand answered PVGIS with
+the recorded Pune year, as the browser tests do.
+
+**Left:** the browser suites of #157 run with the rest of the browser groups when the owner says.

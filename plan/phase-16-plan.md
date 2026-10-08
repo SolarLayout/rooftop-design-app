@@ -85,8 +85,9 @@ manifest committed with them; the gate (`bun test tools/help`) green; each topic
   <n> V set" under its maker; a marked row grows to hold it, on three sizes.
 - Removed: the decision card, the waiting list, the `before-a-voltage` view, Home's and the stage's words for a missing
   voltage, the kit's example, the coverage gate's exception. Their tests go with them.
-- The browser suites that assert the old flow are changed by reading (not run): a design built on the map now has a voltage
-  (600 or 1000 by the time zone Playwright gives, set per suite with `timezoneId`), its options and energy.
+- The browser suites that assert the old flow are changed by reading (not run), in one pull request at the end of the
+  phase against the finished screens (#157): a design built on the map now has a voltage (600 or 1000 by the time zone
+  Playwright gives, set per suite with `timezoneId`), its options and energy.
 - Checked by hand on the test stack at three sizes with `x-vercel-ip-country` sent and without it; screenshots of the five
   states of the boards in the description.
 

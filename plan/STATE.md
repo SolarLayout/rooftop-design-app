@@ -3,18 +3,16 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-08, session 21: #148 fixed by #149; **issue #147, the installable web app, built** (#151, #152;
-D86): the page covers the screen (`viewport-fit=cover`) and keeps clear of the clock, the notch and the home bar by the
-tokens `--safe-*` and their utilities (`pt-safe-`, `pb-safe-`, `top-safe-`, `bottom-safe-`, `h-safe-`, …); the top bar's
-widths (`tablet-wide`, `desktop-wide`) are container queries on the shell; the manifest, the icons drawn from the mark with
-`next/og` (`lib/brand`), `appleWebApp` with the status bar black-translucent. #150: the check's own test that timed out on
-a clean main. Session 20 before it: Find's first step (D85; #143 to #145). **Deployed:** the owner deployed `main` with #146 to
-#152 (2026-10-08; before it both ran `1d32752`), and checked #147 on an iPhone, added to the Home Screen: it works (2026-10-08). #147 closed; its item 4, a hint to Add to Home Screen,
-left out (the owner: "skip it for now"). Record: `plan/sessions/021/`. Found, not changed: on a phone on its side Find's
-sheet (384) fills the screen and hides the map, as before. Left of Phase 15: the owner plays the clips in Safari on an
-iPhone or iPad. **Next:** Phase 16, the system voltage set by the user's country (D87: 600 V in the US and Canada,
-1000 V elsewhere, India when the country is not found; `plan/phase-16-system-voltage.md`): its questions answered, its boards approved (session 22, the canvas page "System voltage"), its plan written (`plan/phase-16-plan.md`, one question open to the owner); then the build. Until it is
-built, hard rule 3 holds.
+**Last updated:** 2026-10-08, session 22: **Phase 16 built**, the system voltage set by the user's country (D87: 600 V
+in the US and Canada, 1000 V elsewhere; the request's country, else the time zone, else India; D88: the equipment never
+moves the voltage, the app never raises it). #153 (who set it, engine and API), #154 (`/country`, `lib/country`, the store),
+#155 (the Strings lens and the picker to the boards), #156 (the help), #157 (the browser suites, changed by reading). The
+boards "System voltage · Set by the user's country" approved and on the canvas, their third state from the build. Hard rule
+3, D10 replaced. Before it, the voltage questions: the analysis of F7 (no rationale found in either repository; the v1
+spec's artifact cannot be read), the codes (NEC 690.7 and 690.31(G), AS/NZS 5033 and 4777.1, IEC 60364-7-712, CE Code
+Section 64, MNRE) in `plan/phase-16-system-voltage.md`. Record: `plan/sessions/022/`. **Not deployed** since #152.
+**Next:** the owner deploys and checks Phase 16; the browser groups run when the owner says (#157's suites, and those
+#151's mobile fixes may trip, which the owner expects); Phase 15's clips on an iPhone or iPad.
 
 ## Where we are
 
@@ -38,6 +36,7 @@ built, hard rule 3 holds.
 | 13 Optimization | Done (session 17: #102 to #106) | What was found, the numbers before and after, what exists: `phase-13-optimization.md`, "As built". How: `phase-13-plan.md`, after the owner's interview (`reference/phase-13-interview.md`) |
 | 14 In-app help | Done (session 19: #123 to #137; D80, D81) | `phase-14-in-app-help.md`, "As built"; how to write a topic: `docs/help-content.md`; screenshots: `docs/screenshots.md` |
 | 15 Help clips | Built (session 19: #138 to #141; D82 to D84); the owner's iOS check left | `phase-15-help-clips.md`, "As built"; `e2e/help-clips/README.md` |
+| 16 System voltage by country | Built (session 22: #153 to #157; D87, D88); its browser suites changed by reading, to be run | `phase-16-system-voltage.md`, "As built"; `phase-16-plan.md` |
 
 ## In flight
 
@@ -225,6 +224,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 | 17 | 2026-10-05 | `plan/sessions/017/record.md`, `plan/sessions/017/owner-messages.md` |
 | 18 | 2026-10-06 to 2026-10-07 | `plan/sessions/018/record.md`, `plan/sessions/018/owner-messages.md` |
 | 19 | 2026-10-07 | `plan/sessions/019/record.md`, `plan/sessions/019/owner-messages.md` |
+| 22 | 2026-10-08 | `plan/sessions/022/record.md`, `plan/sessions/022/owner-messages.md` |
 
 ## Closed, do not reopen
 

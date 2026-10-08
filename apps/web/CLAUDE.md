@@ -32,7 +32,8 @@ screens, and hold the exact values.
 3. Phone (390), tablet (834) and desktop (1440) are each laid out for themselves. Touch targets are 44 px or
    more. No horizontal page scroll.
 4. No red, no cross. Tick or exclamation mark with the reason.
-5. System voltage is never preselected.
+5. System voltage: a design without one gets the user's country's, set by the app (D87, `lib/country`); never moved by the
+   equipment, never raised by the app (D88). Say who set it.
 6. Test first. Logic is tested with `bun test`; screens with Playwright on the three sizes, including a
    screenshot compared with the preview.
    The browser tests are in groups keyed on what they can see (`docs/checks.md`): a new suite is placed by

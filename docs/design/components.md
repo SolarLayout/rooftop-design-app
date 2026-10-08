@@ -39,10 +39,11 @@ The kit shows a state without a pointer or a keyboard by `shownAs`; a screen nev
 Track: `color-well`, border `line`, `shadow-well`, padding 3, radius `radius-control`.
 Items: height 30 (34 to 36 in panels, 44 on touch); active item `control-active`, `shadow-segment`, text, Geist
 500; others transparent, text-2. Use for 2 to 4 exclusive choices with short labels: 3D or Plan, Portrait or
-Landscape, design day, roof type, system voltage once chosen, colour by.
+Landscape, design day, roof type, system voltage, colour by.
 
-A choice that the user must make (system voltage before it is chosen) is not a segmented control with nothing
-selected. It is the decision card below.
+A choice the user must make is not a segmented control with nothing selected: it is a decision card (below). The system
+voltage is not such a choice any more: a design the app makes has the voltage of the user's country from the start (D87),
+and the segmented control shows it with its words (see "System voltage").
 
 In code: `Segmented`. It is a group of radio buttons to a screen reader (`radiogroup`, `radio`). The keyboard
 stops at it once, at the choice that is taken; the arrows go through the choices and around the ends, Home and
@@ -216,8 +217,8 @@ Desktop: floating, `surface-1`, `radius-bar`, `shadow-float`, height 78, cells s
 Energy year 1 (display size), DC capacity, AC capacity, DC/AC with its mark, Modules "638 of 790", PR, Yield,
 then the notes cell on `note-surface`.
 Tablet: grid of 4 by 2, cells 72 high. Phone: one row of cards 64 high that scrolls sideways.
-Before a system voltage is chosen: Roof, Positions, "If all were used" and a wide note cell that says what energy
-is waiting for.
+When the run has no options (no string length fits, too few positions): Roof, Positions, "If all were used" and a wide
+note cell that says why, in the words of the API.
 
 ## Status marks
 Tick: `color-ok`, stroke 2.4. Note: exclamation mark in a circle, accent. Size 14 to 22. Each has a text
@@ -228,8 +229,32 @@ beside the mark, or, where there is no room (`wordsShown={false}`), the mark say
 
 ## Decision card
 For a choice only the user can make. `note-surface`, accent border, 4 px accent halo, note icon, a title that
-is an instruction ("Choose a system voltage"), one sentence of why, the choices as large raised buttons (52
-high), one line of context. Nothing is preselected. Below it, the list of what is waiting and what is done.
+is an instruction, one sentence of why, the choices as large raised buttons (52 high), one line of context. Nothing is
+preselected. Below it, the list of what is waiting and what is done. Its one use, the system voltage, went with D87
+(Phase 16): the pattern is kept for a choice that comes to need it, and is in no screen today.
+
+## System voltage
+The Strings lens's section (the boards "System voltage · Set by the user's country"; D87, D88). The heading with its
+? disc, and at the right in `text-caption` `text-3` who set the voltage: `Set for <country>` (the app, for the user's
+country), `Set by the app` (the app's value is not the default of the country the user is in now), `Your choice`. Under
+it the segmented control of 600, 1000 and 1500 V, filling the width. Then, each only when it applies:
+- for the app's value, one line in `text-caption` `text-2`: where it comes from ("1000 V, the usual limit for rooftops in
+  India. Change it if the site needs another.");
+- for the app's value with equipment rated under it, a second line, plain, no mark: "Strings sized to 800 V, this
+  inverter's limit.";
+- for the user's value with equipment rated under it, a note: `surface-1`, border `note-line`, `radius-row`, padding 12
+  by 16, the note mark of 16, a title in Geist 500 and the detail in `text-caption` `text-2`, then a small secondary
+  button `Use <n> V` (the highest of the three at or under the rating, where there is one);
+- an offer, where the equipment takes more: the words in `text-caption` `text-2` with a small secondary button
+  `Use <n> V` at the right ("This inverter takes up to 1500 V. Raise it only if the site's code allows."; where no
+  length fits, the lowest voltage at which one does).
+The app never moves the value; every button is the user's choice, an edit undone in one step. Numbers and their unit stay
+on one line (a no-break space).
+
+In code: `SystemVoltage` draws what `voltageWordsOf` (`lib/studio/voltage-words.ts`) gives; the country from
+`lib/country`. In the inverter picker an inverter rated under the voltage set carries, under its maker, the note mark of
+14 and "Up to 800 V: strings sized under the 1000 V set" (`ratedUnderOf`, `lib/equipment/rows.ts`); its row grows to hold
+the third line.
 
 ## Callout on the stage
 Floating chip: `surface-1`, border `note-line` (or `line-strong`), `radius-row`, `shadow-float`, padding 10 by
@@ -313,8 +338,8 @@ t/MWh.
 On phone the assumptions are rows of 52: the label at the left with its caption under it, the field at the
 right, 44 high, 132 wide (148 for the CO₂ factor, 52 for each level).
 
-In code: `Assumptions`, of fields `assumption-fields.ts`. The card stands before the summary, and before a
-system voltage under the decision card: the assumptions are inputs and can be set before (decision 15).
+In code: `Assumptions`, of fields `assumption-fields.ts`. The card stands before the summary, and when the run
+has no options under the API's words: the assumptions are inputs and can be set before (decision 15).
 
 ## Timeline (Sun lens)
 Floating bar 64 high, `surface-1`, border `line`, radius `radius-bar`, `shadow-float`: round play button 44, time
@@ -1049,9 +1074,9 @@ itself, the block is `control-active` (`onTile`; the board "Shade map").
 | Updating | Every value at opacity 0.55. A turning ring of 16 beside the energy. The last cell, on `surface-1`, has the ring of 20 with its arc, "Updating energy" in Geist 500, 13, and the step of the engine in `text-caption` |
 | First load | Skeletons in every cell. The last cell has the ring of 20, "Opening" and the name of the project, and the step of the engine |
 | The run failed | The last good values, not dimmed. The last cell is a note: "Energy was not updated", "Values are of the design before · Try again". It opens the notes |
-| Before a system voltage, desktop | Three cells, Roof, Positions, "If all were used", and the note on `note-surface`, in the words of the API: "Choose a system voltage to size the strings", "600, 1000 or 1500 V. Nothing is sized until you choose." It leads to the Strings lens |
-| Before a system voltage, tablet | The three cells in a row, 72 high. Under them, across the width, the note, 72 high, with the same words and an arrow |
-| Before a system voltage, phone | The note is the first card of the row, with the title of the API alone, on two lines. Then Roof, Positions, "If all were used" |
+| No options, desktop | Three cells, Roof, Positions, "If all were used", and the note on `note-surface`, in the words of the API ("No string length fits this inverter", and its message). It leads to the Strings lens. Drawn first for a missing system voltage (D37), which a design the app makes no longer has (D87) |
+| No options, tablet | The three cells in a row, 72 high. Under them, across the width, the note, 72 high, with the same words and an arrow |
+| No options, phone | The note is the first card of the row, with the title of the API alone, on two lines. Then Roof, Positions, "If all were used" |
 
 In code: `Vitals` draws what `vitalsOf` (`components/shell/vitals-view.ts`) makes of the results and their
 status. It is one element, laid out for each size.

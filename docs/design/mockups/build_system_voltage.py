@@ -2,9 +2,10 @@
 
 The owner (session 22): the voltage had no default and every new design waited for a choice, "a constant cause of friction
 for the user". Now a new design gets 600 V in the United States and Canada, 1000 V elsewhere (India when the country cannot
-be found); the user can change it. A voltage the app set follows the inverter or the module down to their rating; a voltage
-the user chose is never moved, and a mismatch is said with an exclamation mark and a one-press way to match. The app never
-raises the voltage by itself. Each board is the app caught in the browser with a prototype on the local branch
+be found); the user can change it. The equipment never moves the voltage (D88): the strings are sized to the lower rating; for the
+app's value a plain line says so, for the user's an exclamation mark and a one-press way to match. The app never raises
+the voltage by itself. The third state was first drawn as the app's value lowered to a class; replaced by D88 and taken
+again from the build (#155). Each board is the app caught in the browser with a prototype on the local branch
 `design/system-voltage`, never merged (system_voltage/); the canvas's copies show the same images uploaded to it (--canvas).
 Usage: python3 -I build_system_voltage.py [--canvas]
 """
@@ -36,14 +37,14 @@ SPEC = [
      "“600 V, the limit for homes in the United States (NEC 690.7). Change it if the site allows more.”"),
     ("The country", "From the request (Vercel's country), else the browser's time zone, else India. Nothing is asked and "
      "nothing is kept but the voltage and who set it."),
-    ("Set by the app, equipment rated under it", "The app lowers its own value to the highest of 600, 1000, 1500 V at or under "
-     "the rating, so the screens and the bill of materials say what is built: “600 V, to match this inverter, which takes up "
-     "to 800 V. 1000 V is the default in India.” No edit counted."),
+    ("Set by the app, equipment rated under it (D88)", "The value is kept; the strings are sized to the rating, and a plain "
+     "line says so: “Strings sized to 800 V, this inverter's limit.” With an inverter of 800 V, 15 in series fit where "
+     "lowering the value to 600 V would have allowed 11."),
     ("Your choice, equipment rated under it", "Never moved. A note with the exclamation mark: “Strings sized to 1100 V, this "
      "inverter's limit. Your system is set to 1500 V.” and Use 1000 V, an edit like any other, undone in one step."),
     ("Equipment rated over it", "Never raised by the app, whoever set it: the value may be the legal ceiling of the place. "
      "One line and a button: “This inverter takes up to 1500 V. Raise it only if the site's code allows.” Use 1500 V. "
-     "Where no string length fits, the line says which voltage would (the United States board)."),
+     "Where no string length fits, the line says the lowest voltage at which one would (the United States board)."),
     ("The picker", "An inverter rated under the voltage set carries the exclamation mark and its reason under its maker: "
      "“Up to 800 V: strings sized under the 1000 V set”. Nothing is hidden; the rest carry nothing."),
     ("What leaves a new design", "The decision card “Choose a system voltage”, the list of what waits for it, and the vitals' "
@@ -57,21 +58,21 @@ SHOTS = {
         ("desktop-1-india.jpg", "India: 1000 V, set by the app; the demo's inverter takes 1500 V, offered"),
         ("desktop-2-us.jpg", "The United States: 600 V; no string length fits the demo's inverter under it, 1000 V offered"),
         ("desktop-5-picker.jpg", "The picker at 1000 V: the inverters rated 800 V marked"),
-        ("desktop-3-lowered.jpg", "An inverter of 800 V chosen: the app's 1000 V follows it down to 600 V"),
+        ("desktop-3-sized.jpg", "An inverter of 800 V chosen: the app's 1000 V kept, the strings sized to 800 V (D88)"),
         ("desktop-4-yours.jpg", "Your 1500 V, then an inverter of 1100 V: never moved; the note and Use 1000 V"),
     ],
     "tablet": [
         ("tablet-1-india.jpg", "India: 1000 V, set by the app, 1500 V offered"),
         ("tablet-2-us.jpg", "The United States: 600 V, 1000 V offered"),
         ("tablet-5-picker.jpg", "The picker: the inverters rated under the voltage marked"),
-        ("tablet-3-lowered.jpg", "An inverter of 800 V: the app's value down to 600 V"),
+        ("tablet-3-sized.jpg", "An inverter of 800 V: the app's 1000 V kept, sized to 800 V"),
         ("tablet-4-yours.jpg", "Your 1500 V, an inverter of 1100 V: the note"),
     ],
     "phone": [
         ("phone-1-india.jpg", "India: 1000 V, set by the app"),
         ("phone-2-us.jpg", "The United States: 600 V, 1000 V offered"),
         ("phone-5-picker.jpg", "The picker: rated under, marked"),
-        ("phone-3-lowered.jpg", "An inverter of 800 V: down to 600 V"),
+        ("phone-3-sized.jpg", "An inverter of 800 V: sized to 800 V"),
         ("phone-4-yours.jpg", "Your 1500 V, an inverter of 1100 V: the note"),
     ],
 }
@@ -108,7 +109,7 @@ def board(file: str, size: str, title: str, width: int, shotw: int, per_row: int
         f'background: {GROUND}; color: {TEXT}; overflow: hidden; font-size: 14px; line-height: 20px">'
         f'<div style="display: flex; flex-direction: column; gap: 10px"><h1 style="margin: 0; {DISPLAY}; font-size: 30px; line-height: 36px; letter-spacing: -0.02em">'
         f"System voltage: set by the user's country</h1><p style=\"margin: 0; max-width: 960px; color: {TEXT_2}\">{INTRO}</p>"
-        f'<p style="margin: 0; font-size: 12px; color: {TEXT_3}">The app caught in the browser, with a prototype of the Strings lens; for approval.</p></div>'
+        f'<p style="margin: 0; font-size: 12px; color: {TEXT_3}">The app caught in the browser, with a prototype of the Strings lens, approved on 2026-10-08; the third state from the build.</p></div>'
         f"{spec(columns)}"
         f'<div style="display: grid; grid-template-columns: repeat({per_row}, {shotw}px); gap: 28px 32px; align-items: start">{shots}</div></div>\n'
     )

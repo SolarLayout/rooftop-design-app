@@ -9,8 +9,9 @@ first, then the first phase that is not done. Ask the owner domain questions one
    `rooftop_api`, or any UI code. import-linter enforces it (`apps/api/pyproject.toml`). Engine code must
    run headless.
 2. Local roof metres: x east, y north, z up. WGS84 only at the edges.
-3. System voltage has no default and is never chosen for the user. Results that need it wait and say so. Phase 16
-   (D87) replaces this: a new design gets 600 V in the US and Canada, 1000 V elsewhere, set by the web app; the engine keeps no default.
+3. System voltage: the engine and the API have no default (a project without one is not sized, and says so). The web
+   app gives a design made or opened without one the voltage of the user's country, set by the app: 600 V in the US and
+   Canada, 1000 V elsewhere (D87). The equipment never moves it, and the app never raises it (D88).
 4. A result that does not fit shows a tick or an exclamation mark, never a red cross.
 5. The word "bankable" is never used, anywhere in the product.
 6. Tests never touch the network. Python tests are guarded by `apps/api/tests/conftest.py`; Playwright

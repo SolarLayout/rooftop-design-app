@@ -60,7 +60,7 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | Sun path and shadow outlines | `SunPathShadows.dc.html` | `studio-sun-path-shadows.png` | desktop in parts |
 | Shade map | `ShadeMap.dc.html` | `studio-shade-map.png` | desktop, phone in parts |
 | Studio, Strings lens | `StringsLens.dc.html`, `StringsLensTablet.dc.html`, `StringsLensPhone.dc.html` | `studio-strings-lens-desktop.png`, `studio-strings-lens-tablet.png`, `studio-strings-lens-phone.png` | desktop, tablet, phone |
-| Studio, Strings lens, no system voltage yet | `StringsLensNoVoltage.dc.html` | `studio-strings-lens-no-voltage.png` | desktop |
+| Studio, Strings lens, no system voltage yet (superseded by D87: no screen shows it since Phase 16) | `StringsLensNoVoltage.dc.html` | `studio-strings-lens-no-voltage.png` | desktop |
 | Strings on the roof | `StringsOnRoof.dc.html` | `studio-strings-on-roof.png` | desktop, phone in parts |
 | Options and your own | `StringsOptions.dc.html` | `studio-strings-options.png` | desktop, phone in parts |
 | Inverter and sizing | `StringsInverterSizing.dc.html` | `studio-strings-inverter-sizing.png` | desktop, phone in parts |
@@ -190,7 +190,8 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   phone; the canvas page "System voltage"): the voltage of the user's country in the Strings lens (India 1000 V, the United States
   600 V with no string length fitting the demo's inverter), the app's value following an inverter rated under it, the user's 1500 V
   kept with an inverter of 1100 V and its note, and the picker's marks. Caught in the browser at three sizes (`system_voltage/`) with a
-  prototype on the local branch `design/system-voltage`, never merged; drawn and approved on 2026-10-08 (session 22).
+  prototype on the local branch `design/system-voltage`, never merged; drawn and approved on 2026-10-08 (session 22). Built
+  (#155); the third state taken again from the build after D88 (the voltage kept, the strings sized to the inverter).
 - `mockups/build_in_app_help.py` writes the boards "In-App Help · The ? and the help sheet" (desktop, tablet, phone; the
   canvas page "In-App Help"): the ? disc beside the section headings in its states, the tooltip, the help sheet by size
   (from the right edge, the whole height, dimmed, on desktop and tablet; from the bottom on phone), a topic followed and

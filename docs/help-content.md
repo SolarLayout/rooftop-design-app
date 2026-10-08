@@ -30,7 +30,7 @@ Renaming a file changes its key. Keep the old key working by putting it in the t
 ```mdx
 ---
 title: System voltage
-summary: The highest DC voltage the system is built for. It caps how many modules can go in one string.
+summary: The highest DC voltage the system is built for. It caps how many modules can go in one string. The app starts it from your country.
 kind: section
 values:
   "600": Strings stay at or under 600 V on the coldest morning of the site.
@@ -73,8 +73,8 @@ when this happens.
 - Use only these components: `<Callout>` for a note, and `<HelpLink k="studio.section.inverter">the
   inverter</HelpLink>` to open another topic in the sheet, with Back. A topic imports nothing.
 - Every claim must be true of the code. Before writing a claim, read the engine (`apps/api/src/rooftop_core`)
-  or the component it describes. Never use the word "bankable". Never write that a system voltage is chosen for
-  the user.
+  or the component it describes. Never use the word "bankable". Say who set a system voltage: the app, from the user's
+  country (D87), or the user; never that the app chose the right one for the site.
 
 ## A section with options
 
