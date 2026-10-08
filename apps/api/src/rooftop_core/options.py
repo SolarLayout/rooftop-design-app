@@ -27,7 +27,9 @@ from .stringing import (
     System,
     assign,
     form_strings,
+    lengths_to_try,
     max_strings_per_inverter,
+    strings_held,
 )
 
 CUSTOM_KEY = "custom"  # there is one custom option at most (decision 8)
@@ -161,7 +163,7 @@ def build_options(pre: Precomputed, layout: Layout, module: Module, mm: ModuleMo
     """
     if not rng.ok:
         return []
-    candidates = sorted({rng.n_nominal, rng.n_max, max(rng.n_min, rng.n_max - 1)}, reverse=True)
+    candidates = lengths_to_try(rng.n_min, rng.n_max, rng.n_nominal, strings_held(layout))
     smax = max_strings_per_inverter(module, inv)
     pac = inv.pnom_kw * 1000.0
     formed = {n: form_strings(layout, n) for n in candidates}
@@ -213,7 +215,7 @@ def custom_misfit(rng: SeriesRange, layout: Layout, n: int, s: int, k: int) -> C
         return CustomMisfit("mppt_max", n, s, k)
     if n < rng.n_min:
         return CustomMisfit("mppt_min", n, s, k)
-    held = min(s, len(form_strings(layout, n)))
+    held = min(s, strings_held(layout)(n))
     return CustomMisfit("strings", n, held, k) if held < k else None
 
 

@@ -13,7 +13,7 @@ from .bom import BomLine, CableRow, bom, cable_schedule
 from .export.summary import structure_label, summary_rows
 from .options import StringOption
 from .project import Design
-from .stringing import DCAC_TARGET, DCAC_WARN, form_strings, max_strings_per_inverter, strings_per_mppt
+from .stringing import DCAC_TARGET, DCAC_WARN, max_strings_per_inverter, strings_held, strings_per_mppt
 from .weather import Weather
 
 CHOOSE_VOLTAGE = "Choose a system voltage to size the strings"
@@ -207,7 +207,8 @@ def strings_by_series(design: Design) -> list[StringsOfLength]:
     rng = design.range
     if rng is None or not rng.ok:
         return []
-    return [StringsOfLength(n, len(form_strings(design.layout, n))) for n in range(rng.n_min, rng.n_max + 1)]
+    held = strings_held(design.layout)
+    return [StringsOfLength(n, held(n)) for n in range(rng.n_min, rng.n_max + 1)]
 
 
 def limit_note(design: Design) -> str:
