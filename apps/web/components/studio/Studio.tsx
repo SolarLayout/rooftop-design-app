@@ -54,12 +54,12 @@ export function Studio({ lens }: Props) {
       <main ref={figures} className="relative flex shrink-0 flex-col desktop:min-w-0 desktop:shrink desktop:grow">
         <Stage lens={lens} name={name} className="h-63 shrink-0 tablet:h-127 desktop:h-auto desktop:grow" />
         <LensNav current={lens} look="row" className="absolute top-4 left-5 z-float hidden tablet:flex desktop:hidden" />
-        <Vitals view={vitals} onOpenNotes={open} className="desktop:absolute desktop:inset-x-panel desktop:bottom-panel" />
+        <Vitals view={vitals} onOpenNotes={open} className="desktop:absolute desktop:inset-x-panel desktop:bottom-safe-panel" />
       </main>
 
       <aside
         aria-label={`${name} inspector`}
-        className="hidden flex-col px-5 pt-6 pb-5 tablet:flex desktop:w-inspector desktop:shrink-0 desktop:overflow-y-auto desktop:border-l desktop:border-line-subtle desktop:bg-chrome desktop:p-panel"
+        className="hidden flex-col px-5 pt-6 pb-safe-5 tablet:flex desktop:w-inspector desktop:shrink-0 desktop:overflow-y-auto desktop:border-l desktop:border-line-subtle desktop:bg-chrome desktop:p-panel desktop:pb-safe-panel"
       >
         {size === "phone" ? null : inspector}
       </aside>

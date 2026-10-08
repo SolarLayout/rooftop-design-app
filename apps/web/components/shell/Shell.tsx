@@ -79,7 +79,8 @@ function Frame({ children }: { children: ReactNode }) {
 
   return (
     <NotesContext.Provider value={ofTheShell}>
-      <div className="flex h-dvh flex-col overflow-hidden">
+      {/* The container of the top bar's widths, tablet-wide and desktop-wide: its room, the sides kept clear left out. */}
+      <div className="@container/shell flex h-dvh flex-col overflow-hidden">
         <TopBar
           name={name}
           place={place}

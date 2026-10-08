@@ -201,6 +201,10 @@
   --space-page-x-desktop: 40px;
   --space-page-y: 28px;
   --space-grid: 16px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
 
   --breakpoint-tablet: 640px;
   --breakpoint-desktop: 1101px;
@@ -461,8 +465,6 @@
 
   --breakpoint-tablet: 640px;
   --breakpoint-desktop: 1101px;
-  --breakpoint-tablet-wide: 820px;
-  --breakpoint-desktop-wide: 1360px;
 
   --radius-swatch: var(--radius-swatch);
   --radius-key: var(--radius-key);
@@ -796,6 +798,22 @@
   `pressed` is declared after `hovered`, so that a control that is both looks pressed.
   A control that is shown and cannot be used (`aria-disabled`) answers to none, as a disabled one.
 */
+/*
+  Inside tablet and desktop, the room the top bar has: the shell's width, which leaves out the sides kept clear of the
+  notch (issue 147), not the screen's. The values are --breakpoint-tablet-wide and --breakpoint-desktop-wide: a query
+  cannot read a variable. The shell is the container (`@container/shell`).
+*/
+@custom-variant tablet-wide {
+  @container shell (width >= 820px) {
+    @slot;
+  }
+}
+@custom-variant desktop-wide {
+  @container shell (width >= 1360px) {
+    @slot;
+  }
+}
+
 @custom-variant hovered {
   @media (hover: hover) {
     &:hover:not(:disabled, [aria-disabled="true"]) {
@@ -1177,6 +1195,46 @@
   transition-duration: var(--duration-tilt);
 }
 
+/*
+  The safe areas of the screen (issue 147): a step of the scale or a token, and the inset of its edge beside it. An
+  installed app draws under the clock and the home bar; where the screen has none, the inset is nothing.
+*/
+@utility pt-safe-* {
+  padding-top: calc(--spacing(--value(number)) + var(--safe-top));
+  padding-top: calc(--value(--spacing-*) + var(--safe-top));
+}
+@utility pb-safe-* {
+  padding-bottom: calc(--spacing(--value(number)) + var(--safe-bottom));
+  padding-bottom: calc(--value(--spacing-*) + var(--safe-bottom));
+}
+@utility pl-safe-* {
+  padding-left: calc(--spacing(--value(number)) + var(--safe-left));
+  padding-left: calc(--value(--spacing-*) + var(--safe-left));
+}
+@utility pr-safe-* {
+  padding-right: calc(--spacing(--value(number)) + var(--safe-right));
+  padding-right: calc(--value(--spacing-*) + var(--safe-right));
+}
+@utility px-safe-* {
+  padding-left: calc(--spacing(--value(number)) + var(--safe-left));
+  padding-left: calc(--value(--spacing-*) + var(--safe-left));
+  padding-right: calc(--spacing(--value(number)) + var(--safe-right));
+  padding-right: calc(--value(--spacing-*) + var(--safe-right));
+}
+@utility top-safe-* {
+  top: calc(--spacing(--value(number)) + var(--safe-top));
+  top: calc(--value(--spacing-*) + var(--safe-top));
+}
+@utility bottom-safe-* {
+  bottom: calc(--spacing(--value(number)) + var(--safe-bottom));
+  bottom: calc(--value(--spacing-*) + var(--safe-bottom));
+}
+/* A height at the foot of the screen grows by the home bar under it. */
+@utility h-safe-* {
+  height: calc(--spacing(--value(number)) + var(--safe-bottom));
+  height: calc(--value(--spacing-*) + var(--safe-bottom));
+}
+
 @utility z-stage {
   z-index: var(--z-stage);
 }
@@ -1207,6 +1265,12 @@
    * The browser's own parts, the scrollbars first, in the dark of the theme: what scrolls has a thin bar in the
    * strong line's colour on no track (the owner, session 18: the browser's light bar stood beside the inspector).
    */
+  /* Turned on its side, a phone has the notch at one side: the page keeps clear of both (issue 147). */
+  body {
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
+  }
+
   html {
     color-scheme: dark;
     scrollbar-color: var(--color-line-strong) transparent;

@@ -269,6 +269,10 @@ Base 2 px. Steps in use: 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48,
 | `--space-page-x-desktop` | `40px` | Page side padding on desktop |
 | `--space-page-y` | `28px` | Page top padding |
 | `--space-grid` | `16px` | Gap between cards |
+| `--safe-top` | `env(safe-area-inset-top, 0px)` | The safe area at the top: the clock and the notch of an installed app (issue 147) |
+| `--safe-right` | `env(safe-area-inset-right, 0px)` | The safe area at the right: the notch, the phone on its side |
+| `--safe-bottom` | `env(safe-area-inset-bottom, 0px)` | The safe area at the bottom: the home bar |
+| `--safe-left` | `env(safe-area-inset-left, 0px)` | The safe area at the left: the notch, the phone on its side |
 
 ## Layout
 
@@ -276,8 +280,8 @@ Base 2 px. Steps in use: 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48,
 |---|---|---|
 | `--breakpoint-tablet` | `640px` | Tablet from this width; phone below it |
 | `--breakpoint-desktop` | `1101px` | Desktop from this width: over 1100 |
-| `--breakpoint-tablet-wide` | `820px` | Inside tablet: from this width the top bar has room for Present and for the word of Export |
-| `--breakpoint-desktop-wide` | `1360px` | Inside desktop: from this width the top bar has room for the place of the design and for the state of saving |
+| `--breakpoint-tablet-wide` | `820px` | Inside tablet: from this width of the shell (the screen without the sides kept clear of the notch) the top bar has room for Present and for the word of Export |
+| `--breakpoint-desktop-wide` | `1360px` | Inside desktop: from this width of the shell the top bar has room for the place of the design and for the state of saving |
 | `--size-topbar` | `56px` | Top bar height on desktop and phone |
 | `--size-topbar-tablet` | `60px` | Top bar height on tablet |
 | `--size-rail` | `72px` | Lens rail width |
@@ -469,7 +473,7 @@ layer of their own.
 | `--font-weight-*` | `font-regular`, `font-medium`, `font-semibold` | |
 | `--spacing` | every spacing and size utility, in steps | `gap-2`, `h-10`, `px-3.5` |
 | `--space-*`, `--size-*` | the same utilities, by name | `gap-row`, `p-panel`, `h-topbar`, `w-inspector`, `min-h-touch` |
-| `--breakpoint-*` | `tablet:`, `desktop:`; inside them `tablet-wide:`, `desktop-wide:`, for the top bar | `desktop:flex` |
+| `--breakpoint-*` | `tablet:`, `desktop:` (the screen's width); inside them `tablet-wide:`, `desktop-wide:`, for the top bar, by the width of the shell (`@container/shell`) | `desktop:flex` |
 | `--radius-*` | `rounded-` and the name | `rounded-control` |
 | `--shadow-*`, `--halo-*` | `shadow-` and the name | `shadow-raised`, `shadow-halo-focus`, `shadow-halo-selected` |
 | `--ring-focus`, `--ring-focus-offset` | `focus-ring` | on every control |
@@ -489,6 +493,7 @@ layer of their own.
 | `--duration-panel`, `--ease-out` | `drawer-motion` | on the dialog of a drawer: its panel slides and its dim fades, and it stays until they have left |
 | `--stroke-*` | `stroke-icon`, `stroke-icon-light`, `stroke-tick`; `stroke-chart`, `stroke-hair`, `stroke-wire` | on the `svg` of an icon; on the line, the gridlines and the crosshair of a chart; on the DC lines of the single-line diagram |
 | `--radius-xs` | `rx-xs` | the corners of a box drawn in an `svg`: the single-line diagram |
+| `--safe-*` | `pt-safe-`, `pb-safe-`, `pl-safe-`, `pr-safe-`, `px-safe-`, `top-safe-`, `bottom-safe-`, and `h-safe-` (a height grown by the home bar), each with a step or a name of the spacing: the value and the inset of its edge | `h-safe-tabbar pb-safe-2.5`, `top-safe-3`, `pt-safe-topbar`; the body keeps clear of the sides |
 | `--z-*` | `z-` and the name | `z-float` |
 | `--border-*` | `border-` and the name; `border-b-tab` for the line under a tab | `border-handle-touch desktop:border-handle`, `border-dot`, `border-corner`, `border-outline` |
 | `--shadow-text-on-imagery` | `on-imagery` | on text that stands on the satellite imagery |

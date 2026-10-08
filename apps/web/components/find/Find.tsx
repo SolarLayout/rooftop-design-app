@@ -79,8 +79,8 @@ const WORDS: Record<Exclude<Step, "find"> | Exclude<Tool, "corners"> | "hand", {
 };
 
 // On phone and tablet the panel is a sheet of 384 at the bottom; the map ends above it.
-const STAGE = "absolute inset-x-0 top-0 bottom-96 desktop:bottom-0";
-const OVER_THE_STAGE = "pointer-events-none absolute inset-x-0 top-0 bottom-96 desktop:bottom-0 desktop:right-find-stage-inset";
+const STAGE = "absolute inset-x-0 top-0 bottom-safe-96 desktop:bottom-0";
+const OVER_THE_STAGE = "pointer-events-none absolute inset-x-0 top-0 bottom-safe-96 desktop:bottom-0 desktop:right-find-stage-inset";
 const FLOATING_BUTTON = classNames(iconButtonLook("secondary", "l", "square"), "size-12 rounded-card-s bg-surface-1 shadow-float");
 
 type Building = { kind: "idle" } | { kind: "building" } | { kind: "failed"; message: string };
@@ -96,7 +96,7 @@ function deviceStorage(): Storage | null {
 
 // The tip is never over what is moved (components.md, "Tip"): on tablet and desktop at the map's edge, under the search;
 // on phone, whose map above the sheet is too short to give a card room, at the top of the sheet, under the lead.
-const TIP_OVER_THE_MAP = "pointer-events-auto absolute top-22 left-5 hidden w-75 tablet:block";
+const TIP_OVER_THE_MAP = "pointer-events-auto absolute top-safe-22 left-5 hidden w-75 tablet:block";
 const TIP_IN_THE_SHEET = "tablet:hidden";
 
 /** Find the roof on the map and outline it: the flagship (plan/phase-04-find-and-outline.md). */
@@ -295,7 +295,7 @@ export function Find() {
           </div>
 
           <div className={OVER_THE_STAGE}>
-            <div className="pointer-events-auto absolute top-3 right-3 left-3 flex items-center gap-2 tablet:top-5 tablet:right-5 tablet:left-5 tablet:gap-2.5 desktop:right-auto">
+            <div className="pointer-events-auto absolute top-safe-3 right-3 left-3 flex items-center gap-2 tablet:top-safe-5 tablet:right-5 tablet:left-5 tablet:gap-2.5 desktop:right-auto">
               <Link href="/" aria-label="Back to home" className={FLOATING_BUTTON}>
                 <Icon name="arrow-left" size={18} />
               </Link>
@@ -303,7 +303,7 @@ export function Find() {
               <Steps current={step} className="hidden tablet:flex" />
             </div>
             {/* The phone has no buttons: the map is pinched and turned by hand. Without a map there is nothing to turn or zoom. */}
-            {map ? <MapButtons map={map} className="pointer-events-auto absolute right-5 bottom-7 hidden tablet:flex desktop:right-0" /> : null}
+            {map ? <MapButtons map={map} className="pointer-events-auto absolute right-5 bottom-7 hidden tablet:flex desktop:right-0 desktop:bottom-safe-7" /> : null}
             {step === "outline" && entry === "map" ? (
               <OutlineTools
                 state={outline}
@@ -316,7 +316,7 @@ export function Find() {
                 }}
                 on={on}
                 onShowTips={showTips}
-                className="pointer-events-auto absolute bottom-16 left-1/2 -translate-x-1/2 tablet:bottom-22 desktop:bottom-7"
+                className="pointer-events-auto absolute bottom-16 left-1/2 -translate-x-1/2 tablet:bottom-22 desktop:bottom-safe-7"
               />
             ) : null}
             {tip ? <div className={TIP_OVER_THE_MAP}>{tipCard(tip)}</div> : null}
@@ -345,7 +345,7 @@ export function Find() {
 
           <aside
             aria-label={words.title}
-            className="absolute inset-x-0 bottom-0 flex h-96 flex-col gap-3 overflow-y-auto rounded-t-panel border-t border-line bg-chrome px-4 pt-2 pb-5 tablet:px-5 desktop:inset-x-auto desktop:top-5 desktop:right-5 desktop:bottom-5 desktop:h-auto desktop:w-find-panel desktop:gap-5 desktop:rounded-panel desktop:border desktop:p-card desktop:shadow-panel"
+            className="absolute inset-x-0 bottom-0 flex h-safe-96 max-h-full flex-col gap-3 overflow-y-auto rounded-t-panel border-t border-line bg-chrome px-4 pt-2 pb-safe-5 tablet:px-5 desktop:inset-x-auto desktop:top-safe-5 desktop:right-5 desktop:bottom-safe-5 desktop:h-auto desktop:w-find-panel desktop:gap-5 desktop:rounded-panel desktop:border desktop:p-card desktop:shadow-panel"
           >
             <span className="flex justify-center desktop:hidden">
               <span className="h-1 w-10 rounded-full bg-line-strong" />

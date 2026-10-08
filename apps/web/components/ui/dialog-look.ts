@@ -6,7 +6,7 @@ export type DialogSize = "narrow" | "wide";
 /** Where an action is shown: on every size, on the phone's sheet alone, or on the panel of tablet and desktop alone. */
 export type ActionShown = "always" | "phone" | "panel";
 
-const SHEET = "w-full rounded-t-panel border border-b-0 border-line bg-chrome px-4 pb-4";
+const SHEET = "w-full rounded-t-panel border border-b-0 border-line bg-chrome px-4 pb-safe-4";
 const PANEL = classNames(
   "tablet:max-w-full tablet:rounded-panel tablet:border-b tablet:border-line-strong tablet:bg-surface-1",
   "tablet:px-5.5 tablet:pt-5.5 tablet:pb-5 tablet:shadow-panel",
@@ -25,8 +25,9 @@ export function panelLook(size: DialogSize): string {
 export function dialogLook(size: DialogSize): string {
   return classNames(
     "fixed inset-0 size-full max-h-none max-w-none items-end justify-center bg-transparent text-text outline-none",
-    "backdrop:bg-dim open:flex tablet:items-center tablet:p-panel",
-    size === "wide" && "pt-12",
+    // The margin of the panel keeps clear of the clock, the notch and the home bar of an installed app (issue 147).
+    "backdrop:bg-dim open:flex tablet:items-center tablet:px-safe-panel tablet:pt-safe-panel tablet:pb-safe-panel",
+    size === "wide" && "pt-safe-12",
   );
 }
 

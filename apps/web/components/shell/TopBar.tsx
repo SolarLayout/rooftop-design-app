@@ -36,7 +36,8 @@ type Props = {
 };
 
 const BAR = classNames(
-  "flex h-topbar shrink-0 items-center gap-2 pr-2 pl-4",
+  // Its height, and the clock of an installed app over it (issue 147).
+  "box-content flex h-topbar shrink-0 items-center gap-2 pt-safe-0 pr-2 pl-4",
   "tablet:h-topbar-tablet tablet:gap-3.5 tablet:border-b tablet:border-line-subtle tablet:bg-chrome tablet:px-5",
   "desktop:h-topbar desktop:gap-5",
 );

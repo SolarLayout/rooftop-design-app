@@ -64,10 +64,10 @@ export function PlanView({ corners, reason, className }: Props) {
           <span className="type-small">Enter its length and width, or its corners.</span>
         </p>
       ) : null}
-      <span aria-hidden="true" className="absolute top-21 right-5 flex size-touch items-center justify-center rounded-row border border-line bg-surface-1 shadow-float desktop:top-5 desktop:right-find-stage-inset desktop:mr-5">
+      <span aria-hidden="true" className="absolute top-safe-21 right-5 flex size-touch items-center justify-center rounded-row border border-line bg-surface-1 shadow-float desktop:top-safe-5 desktop:right-find-stage-inset desktop:mr-5">
         <NorthIcon />
       </span>
-      <div className="pointer-events-none absolute bottom-7 left-5 flex flex-col gap-2 text-text">
+      <div className="pointer-events-none absolute bottom-7 left-5 flex flex-col gap-2 text-text desktop:bottom-safe-7">
         {drawn?.scale ? (
           <div data-testid="plan-scale" className="flex flex-col gap-0.75">
             <code className="type-value-xs">{drawn.scale.label}</code>

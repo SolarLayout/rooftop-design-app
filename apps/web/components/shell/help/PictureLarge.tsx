@@ -72,7 +72,7 @@ export function PictureLarge({ src, alt, width, height, marks, words, clip, once
       ref={dialog}
       aria-label={alt}
       onClose={onClose}
-      className="fixed inset-0 size-full max-h-none max-w-none flex-col bg-ground p-0 text-text outline-none backdrop:bg-dim open:flex"
+      className="fixed inset-0 size-full max-h-none max-w-none flex-col bg-ground p-0 pt-safe-0 px-safe-0 text-text outline-none backdrop:bg-dim open:flex"
     >
       <div className="flex shrink-0 items-center gap-3 border-b border-line-subtle py-1 pr-1 pl-4">
         <span className="grow type-small text-text-3">Pinch to look closer</span>
@@ -103,7 +103,7 @@ export function PictureLarge({ src, alt, width, height, marks, words, clip, once
           </div>
         ) : null}
       </div>
-      <div className="shrink-0 border-t border-line-subtle px-4 pt-3 pb-5">{words}</div>
+      <div className="shrink-0 border-t border-line-subtle px-4 pt-3 pb-safe-5">{words}</div>
     </dialog>
   );
 }

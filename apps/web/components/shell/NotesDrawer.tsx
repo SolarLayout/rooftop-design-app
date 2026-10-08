@@ -20,7 +20,7 @@ type PanelProps = {
 // Phone: a bottom sheet. Tablet and desktop: from the right, as wide as the inspector, over it.
 const PANEL = classNames(
   "flex max-h-3/4 w-full flex-col rounded-t-panel border border-b-0 border-line bg-chrome",
-  "tablet:max-h-none tablet:w-inspector tablet:rounded-none tablet:border-0 tablet:border-l tablet:shadow-drawer",
+  "tablet:max-h-none tablet:w-inspector tablet:rounded-none tablet:border-0 tablet:border-l tablet:pr-safe-0 tablet:shadow-drawer",
 );
 
 function NoteRow({ note, onClose, onTryAgain }: { note: Note } & Pick<PanelProps, "onClose" | "onTryAgain">) {
@@ -70,7 +70,7 @@ export function NotesPanel({ notes, onClose, onTryAgain, titleId }: PanelProps) 
         </span>
         <IconButton data-close kind="quiet" size="s" icon="close" iconSize={18} label="Close" onClick={onClose} />
       </div>
-      <ul className="flex min-h-0 grow flex-col gap-2.5 overflow-y-auto px-4 pt-1 pb-4 tablet:px-5 tablet:pb-5">
+      <ul className="flex min-h-0 grow flex-col gap-2.5 overflow-y-auto px-4 pt-1 pb-safe-4 tablet:px-5 tablet:pb-safe-5">
         {notes.length === 0 ? (
           <li className="flex items-center gap-3 rounded-row border border-line bg-surface-1 p-3.5">
             <Icon name="tick" stroke="tick" size={20} label="Fits" className="text-ok" />
@@ -124,7 +124,7 @@ export function NotesDrawer({ open, onClose, ...panel }: Props) {
       className={classNames(
         "drawer-motion fixed inset-0 size-full max-h-none max-w-none items-end justify-end bg-transparent text-text outline-none",
         // On tablet and desktop it stands over the inspector, under the top bar.
-        "backdrop:bg-dim open:flex tablet:items-stretch tablet:pt-topbar-tablet tablet:backdrop:bg-transparent desktop:pt-topbar",
+        "backdrop:bg-dim open:flex tablet:items-stretch tablet:pt-safe-topbar-tablet tablet:backdrop:bg-transparent desktop:pt-safe-topbar",
       )}
     >
       <NotesPanel {...panel} onClose={onClose} titleId={titleId} />

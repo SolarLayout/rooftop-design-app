@@ -24,9 +24,16 @@ describe("the look of a dialog", () => {
     expect(classes).not.toContain("tablet:w-110");
   });
 
-  test("the wide dialog leaves 48 above its sheet on phone", () => {
-    expect(classesOf(dialogLook("wide"))).toContain("pt-12");
-    expect(classesOf(dialogLook("narrow"))).not.toContain("pt-12");
+  test("the wide dialog leaves 48 above its sheet on phone, under the clock of an installed app", () => {
+    expect(classesOf(dialogLook("wide"))).toContain("pt-safe-12");
+    expect(classesOf(dialogLook("narrow"))).not.toContain("pt-safe-12");
+  });
+
+  test("the sheet keeps clear of the home bar; the panel keeps its margin clear of every edge of the screen", () => {
+    expect(classesOf(panelLook("narrow"))).toContain("pb-safe-4");
+    const dialog = classesOf(dialogLook("narrow"));
+    expect(dialog).toEqual(expect.arrayContaining(["tablet:pt-safe-panel", "tablet:pb-safe-panel", "tablet:px-safe-panel"]));
+    expect(dialog).not.toContain("tablet:p-panel");
   });
 
   test("an action can be for the phone's sheet alone, or for the panel alone: its wrapper says where it shows", () => {

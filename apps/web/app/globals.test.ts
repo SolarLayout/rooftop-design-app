@@ -213,11 +213,15 @@ describe("the tokens in Tailwind", () => {
     expect(made).not.toContain("lg\\:hidden");
   });
 
-  test("inside tablet and desktop there is one width each, for the top bar", async () => {
-    const made = oneLine(await utilitiesOf(["tablet-wide:flex", "desktop-wide:flex"]));
+  test("inside tablet and desktop there is one width each, for the top bar: the room of the shell, the sides kept clear left out", async () => {
+    // An iPhone on its side is 844 wide and has 750 between the safe areas: the screen's width would say there is room.
+    const made = oneLine(await utilitiesOf(["tablet-wide:flex", "desktop-wide:flex", "@container/shell"]));
 
-    expect(made).toContain("@media (width >= 820px) { .tablet-wide\\:flex");
-    expect(made).toContain("@media (width >= 1360px) { .desktop-wide\\:flex");
+    expect(made).toContain("@container shell (width >= 820px) { .tablet-wide\\:flex");
+    expect(made).toContain("@container shell (width >= 1360px) { .desktop-wide\\:flex");
+    expect(made).toContain(".\\@container\\/shell { container-type: inline-size; container-name: shell; }");
+    expect(declared.get("--breakpoint-tablet-wide")).toBe("820px");
+    expect(declared.get("--breakpoint-desktop-wide")).toBe("1360px");
   });
 
   test.each([
@@ -234,6 +238,52 @@ describe("the tokens in Tailwind", () => {
     "max-w-md",
   ])("%s, which is not made of a token, makes no CSS", async (utility) => {
     expect(await utilitiesOf([utility])).toBe("");
+  });
+});
+
+describe("the safe areas", () => {
+  // An installed app on an iPhone or an iPad draws under the clock, the home bar and, turned on its side, the
+  // notch (viewport-fit=cover, issue 147). Where the screen has none, each inset is nothing.
+  test.each(["top", "right", "bottom", "left"])("the %s inset is the browser's, or nothing", (edge) => {
+    expect(declared.get(`--safe-${edge}`)).toBe(`env(safe-area-inset-${edge}, 0px)`);
+  });
+
+  test("a padding, a place or a height of the scale or of a token adds the inset of its edge", async () => {
+    const made = oneLine(
+      await utilitiesOf([
+        "pt-safe-0",
+        "pt-safe-topbar",
+        "pb-safe-2.5",
+        "pl-safe-5",
+        "pr-safe-0",
+        "px-safe-4",
+        "top-safe-3",
+        "bottom-safe-tabbar",
+        "bottom-safe-panel",
+        "h-safe-tabbar",
+        "h-safe-96",
+      ]),
+    );
+
+    expect(made).toContain(".pt-safe-0 { padding-top: calc(calc(var(--spacing) * 0) + var(--safe-top)); }");
+    expect(made).toContain(".pt-safe-topbar { padding-top: calc(var(--size-topbar) + var(--safe-top)); }");
+    expect(made).toContain(".pb-safe-2\\.5 { padding-bottom: calc(calc(var(--spacing) * 2.5) + var(--safe-bottom)); }");
+    expect(made).toContain(".pl-safe-5 { padding-left: calc(calc(var(--spacing) * 5) + var(--safe-left)); }");
+    expect(made).toContain(".pr-safe-0 { padding-right: calc(calc(var(--spacing) * 0) + var(--safe-right)); }");
+    expect(made).toContain(
+      ".px-safe-4 { padding-left: calc(calc(var(--spacing) * 4) + var(--safe-left)); padding-right: calc(calc(var(--spacing) * 4) + var(--safe-right)); }",
+    );
+    expect(made).toContain(".top-safe-3 { top: calc(calc(var(--spacing) * 3) + var(--safe-top)); }");
+    expect(made).toContain(".bottom-safe-tabbar { bottom: calc(var(--size-tabbar) + var(--safe-bottom)); }");
+    expect(made).toContain(".bottom-safe-panel { bottom: calc(var(--space-panel) + var(--safe-bottom)); }");
+    // A height grows by what is under it: the home bar.
+    expect(made).toContain(".h-safe-tabbar { height: calc(var(--size-tabbar) + var(--safe-bottom)); }");
+    expect(made).toContain(".h-safe-96 { height: calc(calc(var(--spacing) * 96) + var(--safe-bottom)); }");
+  });
+
+  test("the page keeps clear of the sides, where the notch is when the phone is on its side", () => {
+    const base = block(css, "@layer base");
+    expect(oneLine(base)).toContain("body { padding-left: var(--safe-left); padding-right: var(--safe-right); }");
   });
 });
 

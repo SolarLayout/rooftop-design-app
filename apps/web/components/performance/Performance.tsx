@@ -23,7 +23,7 @@ import { WeatherNote, WeatherSelect } from "./WeatherSelect";
 import { YearsChart } from "./YearsChart";
 
 // The page's padding and the gaps between its parts, as the boards draw them on each size.
-const PAGE = "flex flex-col gap-3.5 px-page-x-phone pt-2 pb-6 tablet:gap-4 tablet:px-page-x-tablet tablet:pt-6 tablet:pb-8 desktop:gap-5 desktop:px-page-x-desktop desktop:pt-page-y";
+const PAGE = "flex flex-col gap-3.5 px-page-x-phone pt-2 pb-6 tablet:gap-4 tablet:px-page-x-tablet tablet:pt-6 tablet:pb-safe-8 desktop:gap-5 desktop:px-page-x-desktop desktop:pt-page-y";
 // Under the KPIs on desktop: the chain at the left, 7 of 12 columns, the charts at the right, 5; one column before.
 const UNDER_THE_KPIS = "grid gap-3.5 tablet:gap-4 desktop:grid-cols-12 desktop:items-start desktop:gap-grid";
 // The charts: stacked on phone, side by side on tablet, under each other in the right column on desktop.
