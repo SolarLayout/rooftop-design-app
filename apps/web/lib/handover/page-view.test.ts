@@ -32,7 +32,7 @@ describe("the first load", () => {
 
     expect(view.kind).toBe("loading");
     expect(view.rows.slice(0, 7).every((row) => row.facts === null && row.waits)).toBe(true);
-    expect(view.rows[7]).toMatchObject({ facts: "Pune-demo-roof.rtd · opens offline", waits: false });
+    expect(view.rows[7]).toMatchObject({ facts: "Pune-demo-roof.rtd · opens again here", waits: false });
     expect(view.isDimmed).toBe(false);
   });
 

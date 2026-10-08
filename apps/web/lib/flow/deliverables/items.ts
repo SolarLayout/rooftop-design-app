@@ -111,7 +111,7 @@ export function deliverablesOf({ name, design, pages }: Asked): Deliverable[] {
   return HANDOVER_ITEMS.map(({ id, name: itemName }): Deliverable => {
     const shape = SHAPES[id];
     if (id === PROJECT_FILE) {
-      const facts = name === null ? null : `${projectFileNameOf(name)} · opens offline`;
+      const facts = name === null ? null : `${projectFileNameOf(name)} · opens again here`;
       return { id, name: itemName, ...shape, action: SAVE_A_COPY, facts, about: facts, waits: name === null };
     }
     const action = shape.kind === null ? null : `Download ${shape.badge}`;

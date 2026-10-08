@@ -34,7 +34,7 @@ type Asked = {
 const BYTES_IN_A_KB = 1024;
 /** What the module or the inverter is read from when the document names no file. */
 const BUNDLED_SAMPLE = "the bundled sample";
-export const FORMAT = "Format 2 · opens offline, in the desktop app too";
+export const FORMAT = "Format 2";
 const NO_OPTION_YET = "None yet";
 
 const fileRow = (label: string, path: string): ContentRow => (path === "" ? { label, value: BUNDLED_SAMPLE, isFileName: false } : { label, value: path, isFileName: true });

@@ -5,6 +5,7 @@ from typing import Annotated, Literal, Self
 from pydantic import BaseModel, Field, model_validator
 
 from rooftop_api.schemas.common import Input, Latitude, Longitude, Point
+from rooftop_api.schemas.limits import MAX_CSV_TEXT
 
 WeatherSource = Literal["pvgis", "nasa", "csv"]
 
@@ -42,7 +43,7 @@ class WeatherRequest(Input):
     lat: Latitude
     lon: Longitude
     csv_name: Annotated[str, Field(max_length=1024)] = ""
-    csv_text: Annotated[str, Field(max_length=8_000_000)] = ""
+    csv_text: Annotated[str, Field(max_length=MAX_CSV_TEXT)] = ""
 
 
 class WeatherSummary(BaseModel):

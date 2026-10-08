@@ -28,7 +28,7 @@ describe("the eight items and their facts from the run's chosen option, the weat
       ["cad-layout", "Metres · one layer per string"],
       ["earth-model", "Roof, obstacles with heights, 638 modules"],
       ["hourly-data", "8,760 rows · irradiance, temperature, power"],
-      ["project-file", "Pune-demo-roof.rtd · opens offline"],
+      ["project-file", "Pune-demo-roof.rtd · opens again here"],
     ]);
   });
 
@@ -68,7 +68,7 @@ describe("the eight items and their facts from the run's chosen option, the weat
   });
 
   test("the file is named after the design, as the API writes it", () => {
-    expect(deliverablesOf({ ...AT_REST, name: "  Warehouse 7 / Block B  " })[7]!.facts).toBe("Warehouse-7-Block-B.rtd · opens offline");
+    expect(deliverablesOf({ ...AT_REST, name: "  Warehouse 7 / Block B  " })[7]!.facts).toBe("Warehouse-7-Block-B.rtd · opens again here");
   });
 
   test("every row is live once there is a chosen option", () => {
@@ -84,7 +84,7 @@ describe("before options (decision 11)", () => {
       expect(row.waits).toBe(true);
       expect(row.facts).toBe("Choose a system voltage to size the strings");
     }
-    expect(rows[7]).toMatchObject({ waits: false, facts: "Pune-demo-roof.rtd · opens offline" });
+    expect(rows[7]).toMatchObject({ waits: false, facts: "Pune-demo-roof.rtd · opens again here" });
   });
 
   test("the preview's line says what is known of the item without an option, else the API's title", () => {
@@ -98,7 +98,7 @@ describe("before options (decision 11)", () => {
       "Metres · one layer per string",
       "Choose a system voltage to size the strings",
       "Choose a system voltage to size the strings",
-      "Pune-demo-roof.rtd · opens offline",
+      "Pune-demo-roof.rtd · opens again here",
     ]);
   });
 
@@ -118,7 +118,7 @@ describe("the first load", () => {
   test("the design that is open is named before it is run: the project file is live and named", () => {
     const rows = deliverablesOf({ name: "Pune demo roof", design: null, pages: null });
 
-    expect(rows[7]).toMatchObject({ waits: false, facts: "Pune-demo-roof.rtd · opens offline" });
+    expect(rows[7]).toMatchObject({ waits: false, facts: "Pune-demo-roof.rtd · opens again here" });
     expect(rows[0]!.facts).toBeNull();
   });
 });

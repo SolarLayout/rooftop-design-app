@@ -12,13 +12,13 @@ export const NOT_A_PROJECT_FILE = "Choose a project file (.rtd).";
 
 /**
  * The largest request the deployed API takes: AWS Lambda's Function URL refuses one over 6 MiB with its own 413, before
- * the API sees it (issue #98). The API's own limit on the text (10 MB) is higher; this one is met first.
+ * the API sees it (issue #98). The API's limits keep every project it accepts, and so every file the app saves, under
+ * it (#162): only a file the app did not write meets it.
  */
 export const MAX_REQUEST_BYTES = 6_291_456;
 
 /** The dialog's own words for a file whose request would pass MAX_REQUEST_BYTES: no request is made for it. */
-export const TOO_LARGE =
-  "This project file is over 6 MB, more than the app can open. Open it in the desktop app, or remove its CSV weather there and choose the weather here.";
+export const TOO_LARGE = "This file is larger than any project this app saves, so it cannot be opened.";
 
 /** The browser could not read the file: words of the app, since the API never saw it. */
 export const COULD_NOT_BE_READ = "The file could not be read. Choose another.";
