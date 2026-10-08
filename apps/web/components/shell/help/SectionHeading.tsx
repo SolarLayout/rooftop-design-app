@@ -9,19 +9,21 @@ type Props = {
   help: HelpKey;
   /** The section's own value, marked among the topic's options in the sheet. */
   value?: string;
+  /** The words of that mark where the section says who set the value; "Your choice" without. */
+  mark?: string;
   id?: string;
   className?: string;
   children: ReactNode;
 };
 
 /** The heading of a section of an input panel, in the heading's orange, with the ? of its help beside it. */
-export function SectionHeading({ help, value, id, className, children }: Props) {
+export function SectionHeading({ help, value, mark, id, className, children }: Props) {
   return (
     <div className={classNames("flex items-center gap-1.5", className)}>
       <h2 id={id} className={SECTION}>
         {children}
       </h2>
-      <HelpDisc topic={help} {...(value === undefined ? {} : { value })} />
+      <HelpDisc topic={help} {...(value === undefined ? {} : { value })} {...(mark === undefined ? {} : { mark })} />
     </div>
   );
 }

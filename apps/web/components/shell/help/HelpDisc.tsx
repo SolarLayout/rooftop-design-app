@@ -10,6 +10,8 @@ type Props = {
   topic: HelpKey;
   /** The section's own value, so that the sheet marks it among the options ("Your choice"). */
   value?: string;
+  /** The words of that mark where the section says who set the value ("Set for India", D87); "Your choice" without. */
+  mark?: string;
   /** A state shown without a pointer: for the kit. */
   shownAs?: ShownAs;
   className?: string;
@@ -26,7 +28,7 @@ const DISC = classNames(
 const HELD = "bg-accent-pressed shadow-help-held";
 
 /** The ? beside a section heading: its summary under the pointer, its topic in the help sheet when pressed. */
-export function HelpDisc({ topic, value, shownAs, className }: Props) {
+export function HelpDisc({ topic, value, mark, shownAs, className }: Props) {
   const help = useHelp();
   if (!help) return null;
   const entry = MANIFEST[topic];
@@ -40,7 +42,7 @@ export function HelpDisc({ topic, value, shownAs, className }: Props) {
         aria-expanded={isShown}
         data-help={topic}
         data-shown-as={shownAs}
-        onClick={() => help.open(topic, value)}
+        onClick={() => help.open(topic, value, mark)}
         className={TARGET}
       >
         <span className={classNames(DISC, isShown && HELD)}>
