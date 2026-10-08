@@ -3,13 +3,14 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-07, session 20. **Find's first step built** (D85; #143 to #145): before a place is found, Find's
+**Last updated:** 2026-10-08, session 21 (#148 fixed by #149). Session 20, 2026-10-07: **Find's first step built** (D85; #143 to #145): before a place is found, Find's
 panel says what to do (Start here: search, my location, by hand; what the search understands, as examples a press puts into
 the search; the three steps), a ? opens the how-to "Find the roof"; without a map a place searched opens the entry by hand.
 Session 19 before it: D79 built, Phases 14 and 15 (in-app help, clips) done. **Left of Phase 15:** the owner plays the clips
 in Safari on an iPhone or iPad. **Deployed:** Staging and Production run `1d32752` (Staging 2026-10-07, Production
-2026-10-08), with #143 to #145. Since: #146 (a help clip's progress line moves smoothly), not deployed yet; issues #147
-(installable web app, no browser bar on iPhone from the Home Screen) and #148 (the empty band on phone). **Next:** the owner's enhancements and fixes.
+2026-10-08), with #143 to #145. Since, not deployed yet: #146 (a help clip's progress line moves smoothly) and #149 (fixes #148: on phone the Studio's
+sheet at half meets the foot of the vitals on a phone of any height; the owner chose it of the issue's three ways, the
+stage staying 252). Open: issue #147 (installable web app, no browser bar on iPhone from the Home Screen). **Next:** the owner's enhancements and fixes.
 
 ## Where we are
 
@@ -149,7 +150,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 |---|---|
 | On Find, an obstacle turned back to exactly nothing and let go is taken for a press inside the roof, which picks the roof | Issue #142 |
 | iPhone Safari's address bar cannot be hidden from a tab; the app made installable (manifest, icons, safe areas) opens without it from the Home Screen | Issue #147 |
-| On phone the Studio leaves an empty band between the stage's figures and the lens sheet (the stage fixed at 252, the sheet at half the room) | Issue #148 |
+| On phone at peek the Studio leaves the room under the vitals empty (the stage stays 252; #149 closed the band at half alone, by the owner's choice) | When the owner asks |
 | The pictures `kit-part-2.png` and Find's screens are to be renewed when the browser suites run again (the help's disc, how-to steps, the ? beside Find's title, Show me how; Find's first step, D85) | When the owner runs the suites |
 | Twelve findings of the help's writing (the shade-free line with a pitch entered, the PAN source of the coefficients, "fits" beside an exclamation mark, trees lost on Edit, …) | `plan/phase-14-in-app-help.md`, "As built"; for the owner to order |
 | On phone the help sheet's grip has a press area over its ×; both close the sheet | When the owner asks |

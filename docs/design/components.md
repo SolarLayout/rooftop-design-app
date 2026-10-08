@@ -251,6 +251,8 @@ and 4 under it. Holds the lens switch and the inspector as a list of rows 64 to 
 In code: `Sheet`; its stops in `sheet-stops.ts`. It stands at the bottom of the room it is put into.
 
 - Peek is `size-sheet-peek` high: the handle and the lens switch. Half is half the room, full all of it.
+  A sheet may be given another share of the room for half: the Studio's sheet at half meets the foot of the vitals on
+  a phone of any height (the boards draw it so at 844; #148, the owner's choice of 2026-10-08), the stage staying 252.
 - The sheet follows a drag of its handle. Let go, it goes to the nearest stop, and to the next one in the
   direction of the drag when the drag went a quarter of the way there. It goes in `duration-panel`.
 - A press on the handle opens the sheet one stop further, and closes it from full.
