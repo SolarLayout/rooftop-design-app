@@ -3,6 +3,9 @@
 How to add, change and wire a help topic so the gate passes the first time. The design is D80
 (`plan/phase-14-in-app-help.md`); the look is in `docs/design/components.md`, "Help disc and help sheet".
 
+A change elsewhere in the app can make a topic untrue without touching it: `docs/help-upkeep.md` says how every pull
+request that changes what the user meets keeps the help true.
+
 ## What is where
 
 | What | Where |

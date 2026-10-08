@@ -59,6 +59,9 @@ work, and `apps/web/CLAUDE.md` for the rules of the web app.
 ## In-app help
 Read `docs/help-content.md` before writing or changing a help topic (`apps/web/content/help`), wiring a ? to a heading,
 changing the options of a section that has a topic, or taking a how-to's pictures or recording its clips. After a topic changes: `bun help:gen`, and commit the manifest with it.
+**Every pull request that changes what the user meets** (what the engine decides, a rule or limit of the API, words,
+controls, states or screens) keeps the help true in the same pull request: `docs/help-upkeep.md`. No test catches a stale
+topic. The pull request says under "How it was checked" which topics were read and which changed.
 
 ## Engineering standard
 This is production software, not a prototype. The owner's words: "this is not throwaway code".
@@ -71,8 +74,8 @@ This is production software, not a prototype. The owner's words: "this is not th
 - Errors are handled where they can be acted on, and say what happened and what to do. Nothing is
   swallowed.
 - No dead code, no commented-out code, no TODO without an entry in the plan.
-- One change per pull request, described by what it does and how it was checked. Merge only on a green
-  check. Documents alone need no pull request (decision D26).
+- One change per pull request, described by what it does and how it was checked, the help included
+  (`docs/help-upkeep.md`). Merge only on a green check. Documents alone need no pull request (decision D26).
 - Browser tests run locally in `bun check`. In CI they live in the `e2e` workflow, started by hand.
 
 ## Working rules

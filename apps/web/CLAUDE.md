@@ -15,6 +15,7 @@ The browser app. Read the root `CLAUDE.md` first; its rules apply here.
 | Mockup sources with every exact value | `docs/design/mockups/*.dc.html` |
 | Previews | `docs/design/previews/*.png` |
 | In-app help: topics, the ? on a heading, the gate, a how-to's pictures and clips | `docs/help-content.md` |
+| Keeping the help true after a change the user meets | `docs/help-upkeep.md` |
 
 The canvas is open to anyone with the link. The mockup sources and previews in the repo show the same
 screens, and hold the exact values.
@@ -43,3 +44,5 @@ screens, and hold the exact values.
    owner its link (he flags pictures that do not show; the page is not opened to check): how, `docs/screenshots.md`
    (`bun tools/pr-shots.ts`). No UI change is merged without them.
 8. The 3D canvas is loaded with `next/dynamic` and `ssr: false`. Read `plan/reference/r3f-notes.md` before 3D work.
+9. A change the user meets (words, controls, states, screens) keeps the in-app help true in the same pull request:
+   `docs/help-upkeep.md`. No test catches a stale topic.
