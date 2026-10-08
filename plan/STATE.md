@@ -33,7 +33,8 @@ Then #162 (#165, D89): a project the app accepts can always be run and opened (a
 the CSV dialog refuses a larger file before sending it; no words of a desktop app, no remedy for a file the app never
 writes; Handover's project file "opens again here". The boards changed with it (`OpenProject`, `Handover*`): sources,
 previews (rendered as `docs/design/README.md` says, checked against the old ones first) and the canvas (version 45, the six
-files only). Not deployed (#165).
+files only). **Deployed:** the owner deployed `main` at 1a20137 (#165) to staging (version 20) and production (version
+17), 2026-10-08; the image smoked on staging.
 **Next:** a new task as the owner names it; the browser groups run when the owner says (#157's suites, #151's mobile fixes, and the Strings
 lens pictures whose options D and E #160 changed); Phase 15's clips on an iPhone or iPad.
 
