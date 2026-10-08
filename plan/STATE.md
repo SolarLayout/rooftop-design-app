@@ -26,7 +26,8 @@ inverter had dropped strings: a 10 kW roof's recommended placed 105 of 160, now 
 the one from the nominal up that places the most modules (160 of 160 there), not below the nominal (short strings win
 positions on what the run does not price: cable, current, connectors); strings counted without forming them
 (`strings_held`), the API's answer about 0.45 s faster on the roof at the limit. Both measured in the Lambda image, one
-thread: no added time or memory. The demo unchanged. Not deployed (#160, #163, #164).
+thread: no added time or memory. The demo unchanged. **Deployed:** the owner deployed `main` at e44a471 (#160, #163,
+#164) to staging (version 19) and production (version 16), 2026-10-08; the image smoked on staging, both at 1,769 MB.
 **Next:** #162 (no words of a desktop app; the 6 MB message needs a remedy); the browser groups run when the owner says (#157's suites, #151's mobile fixes, and the Strings
 lens pictures whose options D and E #160 changed); Phase 15's clips on an iPhone or iPad.
 
