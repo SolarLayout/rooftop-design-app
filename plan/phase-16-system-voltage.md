@@ -83,23 +83,25 @@ Components rated for 1000 V on a 500 V string are fine.
 
 ## Questions this phase answers
 1. **Canada**: answered, 600 V as the US (the owner, session 22).
-2. **The equipment rated for another voltage than the one set** (asked by the owner). The engine already sizes to the
-   lowest of the system voltage, the inverter's `VAbsMax` and the module's rating, so a string never exceeds its equipment;
-   what is open is what the app shows and whether it moves the value. Proposed:
-   - Keep where the value came from: set by the country, or chosen by the user (this answers question 4).
-   - An inverter or module rated **under** the value: the strings follow the equipment (as today), and the lens says so
-     ("Sized to 600 V, the inverter's limit"). While the value is the country's, it follows the equipment down to the
-     highest of 600, 1000, 1500 V at or under the rating (an inverter of 1100 V gives 1000 V; of 550 V keeps 600 V and sizes
-     to 550 V), so the screens and the bill of materials say what is built. A value the user chose is never moved.
-   - An inverter rated **over** the value (a 1500 V inverter at 1000 V): never raised by the app, since the value is the
-     legal ceiling of the place. The lens offers it in words, with one press ("This inverter takes up to 1500 V. Use 1500 V
-     if the site's code allows it"), and when no string length fits, says which voltage would fit.
+2. **The equipment rated for another voltage than the one set**: answered (the owner, session 22, "A, go with your
+   recommendation"). The engine already sizes to the lowest of the system voltage, the inverter's `VAbsMax` and the
+   module's rating, so a string never exceeds its equipment; this is what the app shows and when it moves the value:
+   - The design keeps where its voltage came from: set by the app (the country) or chosen by the user.
+   - Equipment rated **under** the value, the voltage **set by the app**: the app lowers it by itself to the highest of 600,
+     1000, 1500 V at or under the rating (an inverter of 800 V gives 600 V; of 1100 V gives 1000 V; of 550 V keeps 600 V
+     and the strings are sized to 550 V), so the screens and the bill of materials say what is built. No edit counted.
+   - Equipment rated **under** the value, the voltage **chosen by the user** (e.g. 1500 V, then an inverter of 1100 V):
+     never moved. The lens says it with an exclamation mark ("Strings sized to 1100 V, this inverter's limit. Your system is
+     set to 1500 V.") and offers "Use 1000 V" in one press, an edit like any other.
+   - Equipment rated **over** the value (a 1500 V inverter at 1000 V): never raised by the app, whoever set it, since the
+     value may be the legal ceiling of the place. The lens offers it ("This inverter takes up to 1500 V. Use 1500 V if the
+     site's code allows it"), and when no string length fits, says which voltage would fit.
    - The equipment picker marks each inverter against the voltage set, with a tick or an exclamation mark (hard rule 4).
 3. **A design of before, without a voltage** (on the device or opened from a `.rtd`): give it the default when it is opened,
    with the note, or leave it waiting as today?
-4. **Where the voltage came from**: the line under the choice says it ("600 V, the limit for homes in the United States
-   (NEC 690.7). Change it if the site allows more.", and for elsewhere its own words). Kept with the design (a field of the
-   document, which the API must then accept) or worked out when shown (only while the value equals the default)?
+4. **Where the voltage came from**: decided by question 2, it is kept with the design (a field of the document, which the
+   API accepts and the `.rtd` keeps; set by the app or chosen by the user). The line under the choice says it ("600 V, the
+   limit for homes in the United States (NEC 690.7). Change it if the site allows more.", and for elsewhere its own words).
 5. **The board**: the Strings lens with the voltage set, its line, at 1440, 834 and 390; the decision card, the waiting list
    and the vitals' waiting state leave a new design. Drawn and approved before it is built (CLAUDE.md, "Design").
 
