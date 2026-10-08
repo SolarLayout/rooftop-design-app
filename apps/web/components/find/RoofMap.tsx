@@ -143,7 +143,7 @@ export function RoofMap({ imagery, view, onState, onMap, outline, moreAttributio
         className="size-full"
       />
       {loaded && outline ? <OutlineLayer map={loaded} {...outline} /> : null}
-      <div className="pointer-events-none absolute bottom-7 left-5 flex flex-col gap-2 text-text">
+      <div className="pointer-events-none absolute bottom-7 left-5 flex flex-col gap-2 text-text desktop:bottom-safe-7">
         {scale ? (
           <div data-testid="scale-bar" className={SCALE_BAR}>
             <code className="type-value-xs on-imagery">{scale.label}</code>

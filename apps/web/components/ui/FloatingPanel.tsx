@@ -29,7 +29,7 @@ export function FloatingPanel({ floating, width = "list", onTouch = "sheet", chi
       {onTouch === "sheet" ? (
         <>
           <SheetGrip onClose={floating.close} className="desktop:hidden" />
-          <div className="min-h-0 grow overflow-y-auto px-4 pt-2 pb-4 desktop:overflow-visible desktop:p-0">{children}</div>
+          <div className="min-h-0 grow overflow-y-auto px-safe-4 pt-2 pb-safe-4 desktop:overflow-visible desktop:p-0">{children}</div>
         </>
       ) : (
         children

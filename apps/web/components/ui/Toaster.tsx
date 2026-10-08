@@ -14,8 +14,8 @@ type Props = {
   aboveTheTabBar?: boolean;
 };
 
-const AT_THE_BOTTOM = "bottom-0 px-4 pb-6";
-const ABOVE_THE_TAB_BAR = "bottom-tabbar px-3 pb-3 tablet:bottom-0 tablet:px-4 tablet:pb-6";
+const AT_THE_BOTTOM = "bottom-0 px-safe-4 pb-safe-6";
+const ABOVE_THE_TAB_BAR = "bottom-safe-tabbar px-3 pb-3 tablet:bottom-0 tablet:px-safe-4 tablet:pb-safe-6";
 
 const nothing = () => null;
 

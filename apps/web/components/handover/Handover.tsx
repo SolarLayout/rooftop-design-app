@@ -39,13 +39,13 @@ type Props = {
 // The two columns of the boards "Handover" on three sizes (plan/phase-09-plan.md, decision 3): on desktop the list is 440
 // wide with a line at its right, on tablet 300 wide beside the preview, on phone the list is the screen and an item is
 // pushed over it. Only one of the two stands on phone.
-const PAGE = "flex min-h-0 grow flex-col tablet:flex-row tablet:gap-5 tablet:p-6 desktop:gap-0 desktop:p-0";
+const PAGE = "flex min-h-0 grow flex-col tablet:flex-row tablet:gap-5 tablet:p-6 tablet:pb-safe-6 desktop:gap-0 desktop:p-0";
 const LIST = classNames(
   "flex-col gap-3 px-page-x-phone pt-2 pb-5",
   "tablet:w-75 tablet:shrink-0 tablet:gap-4.5 tablet:p-0",
-  "desktop:w-handover-list desktop:border-r desktop:border-line-subtle desktop:pt-7 desktop:pr-6 desktop:pb-6 desktop:pl-10",
+  "desktop:w-handover-list desktop:border-r desktop:border-line-subtle desktop:pt-7 desktop:pr-6 desktop:pb-safe-6 desktop:pl-10",
 );
-const PREVIEW = classNames("min-w-0 grow flex-col gap-3 px-page-x-phone pt-2 pb-5", "tablet:gap-4 tablet:p-0", "desktop:pt-7 desktop:pr-10 desktop:pb-6 desktop:pl-8");
+const PREVIEW = classNames("min-w-0 grow flex-col gap-3 px-page-x-phone pt-2 pb-5", "tablet:gap-4 tablet:p-0", "desktop:pt-7 desktop:pr-10 desktop:pb-safe-6 desktop:pl-8");
 /** The name of the back row: the tab bar's link is "Handover" already, and a name is given once. */
 const BACK_TO_THE_LIST = "Back to Handover";
 const BACK = classNames(

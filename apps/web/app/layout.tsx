@@ -2,16 +2,14 @@ import type { Metadata, Viewport } from "next";
 import { StoresProvider } from "@/components/shell/stores";
 import { fontVariables } from "./fonts";
 import "./globals.css";
+import { VIEWPORT } from "./viewport";
 
 export const metadata: Metadata = {
   title: "SolarLayout Rooftop",
   description: "Rooftop PV design.",
 };
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-};
+export const viewport: Viewport = VIEWPORT;
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (

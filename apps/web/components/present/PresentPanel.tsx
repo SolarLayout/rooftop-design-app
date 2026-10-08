@@ -23,8 +23,8 @@ const WHOLE: Reveal = { building: 1, obstacles: 1, modules: 1 };
 // The panel (the boards "UI fixes · Present, the figures of each scene", D72): over the stage at its top left, the
 // stage seen through it, blurred; 304 wide on tablet, 340 on desktop, the energy's 580 there with its chain beside.
 const PANEL = classNames(
-  "pointer-events-none absolute top-6 left-6 z-stage-overlay flex w-76 flex-col gap-3.5 rounded-card border border-line-glass",
-  "bg-dim-panel px-5.5 pt-4.5 pb-5 shadow-float backdrop-blur-panel appearing desktop:top-10 desktop:left-10 desktop:w-85",
+  "pointer-events-none absolute top-safe-6 left-6 z-stage-overlay flex w-76 flex-col gap-3.5 rounded-card border border-line-glass",
+  "bg-dim-panel px-5.5 pt-4.5 pb-5 shadow-float backdrop-blur-panel appearing desktop:top-safe-10 desktop:left-10 desktop:w-85",
 );
 
 // The track of the small cascade (the board "Present", frame 6): 150 wide, a step's row 12 high, a total's 20; the

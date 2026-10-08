@@ -16,7 +16,7 @@ import { useHelp } from "./HelpProvider";
 // height but 48, with the grip (components.md, "Help disc and help sheet"; the owner, session 19).
 const PANEL = classNames(
   "flex h-full w-full flex-col rounded-t-panel border border-b-0 border-line bg-chrome",
-  "tablet:w-105 tablet:rounded-none tablet:border-0 tablet:border-l tablet:shadow-drawer",
+  "tablet:w-105 tablet:rounded-none tablet:border-0 tablet:border-l tablet:pt-safe-0 tablet:pr-safe-0 tablet:shadow-drawer",
 );
 
 const REGISTRY = { entries: MANIFEST, aliases: ALIASES };
@@ -67,7 +67,7 @@ export function HelpSheet() {
       onClick={(event) => {
         if (event.target === event.currentTarget) close();
       }}
-      className="drawer-motion fixed inset-0 size-full max-h-none max-w-none items-end justify-end bg-transparent pt-12 text-text outline-none backdrop:bg-dim open:flex tablet:items-stretch tablet:pt-0"
+      className="drawer-motion fixed inset-0 size-full max-h-none max-w-none items-end justify-end bg-transparent pt-safe-12 text-text outline-none backdrop:bg-dim open:flex tablet:items-stretch tablet:pt-0"
     >
       {shown ? (
         <div data-drawer-panel className={PANEL}>
@@ -77,7 +77,7 @@ export function HelpSheet() {
             <span className="grow truncate type-section text-text-3 uppercase">{whereOf(shown.entry.kind, pathname)}</span>
             <IconButton data-close label="Close help" icon="close" iconSize={18} kind="quiet" size="s" onClick={close} />
           </div>
-          <div ref={scroller} className="flex min-h-0 grow flex-col gap-4 overflow-y-auto px-5 pt-4.5 pb-6">
+          <div ref={scroller} className="flex min-h-0 grow flex-col gap-4 overflow-y-auto px-5 pt-4.5 pb-safe-6">
             <div className="flex flex-col gap-1.5">
               <h2 id={titleId} className={classNames("type-lens-touch desktop:type-lens", HEADING_LIGHT)}>
                 {shown.entry.title}

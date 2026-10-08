@@ -127,10 +127,10 @@ export function Home() {
       <div aria-hidden="true" className="pointer-events-none absolute top-37.5 left-117.5 hidden w-260 desktop:block">
         <HomeIllustration view="whole" />
       </div>
-      <header className={classNames("flex h-14 shrink-0 items-center tablet:h-18", SIDES)}>
+      <header className={classNames("box-content flex h-14 shrink-0 items-center pt-safe-0 tablet:h-18", SIDES)}>
         <Logo wordmark="always" />
       </header>
-      <main className={classNames("relative flex grow flex-col pt-5 pb-10 tablet:pt-7 tablet:pb-12 desktop:pt-19 desktop:pb-14", SIDES)}>
+      <main className={classNames("relative flex grow flex-col pt-5 pb-safe-10 tablet:pt-7 tablet:pb-safe-12 desktop:pt-19 desktop:pb-safe-14", SIDES)}>
         <div className="flex flex-col gap-3 tablet:gap-5.5 desktop:w-140">
           <h1 className="type-page text-balance tablet:type-hero">
             {HEADLINE[0]}
