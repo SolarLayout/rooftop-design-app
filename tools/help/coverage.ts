@@ -8,7 +8,6 @@ export const COMPONENTS_DIR = resolve(import.meta.dir, "../../apps/web/component
 /** Headings in the SECTION look without a disc of their own, by file and the words of the line: why each is so. */
 export const WITHOUT_A_DISC: Readonly<Record<string, string>> = {
   "shell/help/SectionHeading.tsx": "the heading that carries the disc",
-  "studio/SystemVoltage.tsx · done": "\"Already done\" is in the System voltage decision card, whose disc is on \"Waiting for your choice\"",
   "kit/HelpDiscs.tsx": "the kit's example of a heading beside the disc",
   "shell/help/HelpSheet.tsx": "Related, in the help sheet itself: no input panel's section",
   "find/FirstStep.tsx": "Find's first step is itself the guide, with no input to explain; its ? stands beside the panel's title (D85)",

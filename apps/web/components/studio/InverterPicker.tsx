@@ -17,13 +17,15 @@ import {
   type PickerSort,
   type Span,
 } from "@/lib/equipment/picker";
-import { inverterRowOf, kwShown } from "@/lib/equipment/rows";
+import { inverterRowOf, kwShown, ratedUnderOf } from "@/lib/equipment/rows";
 import { EquipmentPicker, type PickerColumn, type PickerRow, type PickerWords } from "./EquipmentPicker";
 import { PickerSearch } from "./PickerSearch";
 import { useEquipmentCatalog } from "./use-equipment-catalog";
 import { useSize } from "./use-size";
 
 type Props = {
+  /** The design's system voltage: an inverter rated under it is marked (D88). */
+  voltage: number | null;
   open: boolean;
   /** The OND file of the design. */
   current: string | null;
@@ -46,7 +48,7 @@ const COLUMNS: readonly PickerColumn[] = [
 const KW_TICKS = [10, 50, 125];
 
 /** "Choose an inverter" (D75): the equipment picker over the library's inverters, filtered by AC power and MPPT. */
-export function InverterPicker({ open, current, onRead, onClose }: Props) {
+export function InverterPicker({ voltage, open, current, onRead, onClose }: Props) {
   const { catalog, error, retry } = useEquipmentCatalog();
   // On phone the sliders have no ticks: their values stand above them, and the list needs the room.
   const hasTicks = useSize() !== "phone";
@@ -71,7 +73,7 @@ export function InverterPicker({ open, current, onRead, onClose }: Props) {
   const rows: PickerRow[] | null = catalog
     ? sortedEntries(filteredInverters(inverters, { search, kw, mppt, vdc }, stops, volts), INVERTER_COLUMNS, sort).map((entry) => {
         const row = inverterRowOf(entry);
-        return { file: entry.file, model: row.model, second: row.second, cells: [row.cells.kw, row.cells.mppt, row.cells.window, row.cells.vdc], phone: row.phone, preliminary: row.preliminary };
+        return { file: entry.file, model: row.model, second: row.second, cells: [row.cells.kw, row.cells.mppt, row.cells.window, row.cells.vdc], phone: row.phone, preliminary: row.preliminary, mark: ratedUnderOf(entry.vdc_max_v, voltage) };
       })
     : null;
 
