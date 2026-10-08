@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useReducer, useRef, type ReactNode } from "react";
 import { helpOfAddress, withHelp } from "@/lib/help/address";
-import { CLOSED, helpAfter, valueShownOf } from "@/lib/help/help-state";
+import { CLOSED, helpAfter, markShownOf, valueShownOf } from "@/lib/help/help-state";
 import { ALIASES, MANIFEST, type HelpKey } from "@/lib/help/manifest.gen";
 import type { HelpEntry } from "@/lib/help/types";
 import { resolvedKey } from "@/lib/help/where";
@@ -13,9 +13,11 @@ export type Help = {
   shown: { key: HelpKey; entry: HelpEntry } | null;
   /** The value of the section the topic was opened from, while that topic is shown: its option is marked. */
   value: string | undefined;
+  /** The words of that option's mark: the section's own (who set it), else "Your choice". */
+  mark: string | undefined;
   canGoBack: boolean;
-  /** A disc pressed: its topic, afresh, with its section's value. */
-  open: (key: HelpKey, value?: string) => void;
+  /** A disc pressed: its topic, afresh, with its section's value and the words of its mark. */
+  open: (key: HelpKey, value?: string, mark?: string) => void;
   /** A link or a related topic followed, in the sheet. */
   follow: (key: string) => void;
   back: () => void;
@@ -58,8 +60,9 @@ export function HelpProvider({ children }: { children: ReactNode }) {
     return {
       shown: key && Object.hasOwn(MANIFEST, key) ? { key, entry: MANIFEST[key] } : null,
       value: valueShownOf(state),
+      mark: markShownOf(state),
       canGoBack: state.behind.length > 0,
-      open: (opened, value) => dispatch({ type: "opened", key: opened, ...(value === undefined ? {} : { value }) }),
+      open: (opened, value, mark) => dispatch({ type: "opened", key: opened, ...(value === undefined ? {} : { value }), ...(mark === undefined ? {} : { mark }) }),
       follow: (raw) => {
         const followed = resolvedKey(raw, REGISTRY);
         if (followed) dispatch({ type: "followed", key: followed });

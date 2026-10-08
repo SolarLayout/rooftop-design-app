@@ -28,7 +28,7 @@ export function SystemVoltage({ voltage, words, onChoose }: Props) {
   return (
     <section aria-labelledby={heading} data-testid="system-voltage" className="flex flex-col gap-2">
       <div className="flex items-center gap-3">
-        <SectionHeading id={heading} help="studio.section.system-voltage" value={voltage === null ? undefined : String(voltage)}>
+        <SectionHeading id={heading} help="studio.section.system-voltage" value={voltage === null ? undefined : String(voltage)} mark={words?.who}>
           System voltage
         </SectionHeading>
         {words ? <span className="ml-auto type-caption text-text-3">{words.who}</span> : null}

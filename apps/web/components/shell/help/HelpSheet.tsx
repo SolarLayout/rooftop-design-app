@@ -92,7 +92,7 @@ export function HelpSheet() {
                     <li key={id} aria-current={isChosen || undefined} className={classNames("flex flex-col gap-0.5 px-3.5 py-2.5", index > 0 && "border-t border-line", isChosen && "bg-note-surface")}>
                       <span className="flex items-center gap-2 font-medium">
                         {label}
-                        {isChosen ? <span className="rounded-xs bg-accent px-1.5 type-label-s font-semibold text-accent-ink">Your choice</span> : null}
+                        {isChosen ? <span className="rounded-xs bg-accent px-1.5 type-label-s font-semibold text-accent-ink">{help.mark}</span> : null}
                       </span>
                       <span className="type-small text-text-2">{meaning}</span>
                     </li>
