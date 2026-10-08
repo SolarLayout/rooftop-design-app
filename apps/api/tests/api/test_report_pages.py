@@ -159,8 +159,8 @@ def test_without_a_chosen_option_nothing_is_drawn(client, demo):
     assert response.status_code == 422
     assert error_of(response) == {
         "code": "no_option_chosen",
-        "message": "Choose a stringing option first. This design has 29x22x1, 26x24x1, 28x22x1, 26x27x2 "
-        "and 28x25x2.",
+        "message": "Choose a stringing option first. This design has 29x22x1, 26x24x1, 28x22x1, 28x28x2 "
+        "and 29x27x2.",
         "field": "chosen_option",
     }
 

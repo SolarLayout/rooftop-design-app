@@ -237,7 +237,7 @@ def options_note(design: Design) -> str:
         )
     return (
         f"Target DC/AC {DCAC_TARGET[0]:.2f}–{DCAC_TARGET[1]:.2f}, warning above {DCAC_WARN:.2f}. "
-        f"{strings} The least shaded strings are used first."
+        f"{strings} The least shaded strings in a row are used first, then those across rows."
         + (" ! " + "; ".join(missed) + "." if missed else "")
     )
 

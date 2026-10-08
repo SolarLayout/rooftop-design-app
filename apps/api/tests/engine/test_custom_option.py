@@ -10,7 +10,7 @@ from tests.kept import KEPT
 
 pytestmark = pytest.mark.slow
 
-OFFERED = ["29x22x1", "26x24x1", "28x22x1", "26x27x2", "28x25x2"]
+OFFERED = ["29x22x1", "26x24x1", "28x22x1", "28x28x2", "29x27x2"]
 
 
 def demo_with(custom, system_voltage: float | None = 1500.0, chosen: str = "") -> Design:
@@ -110,7 +110,7 @@ def test_a_custom_with_fewer_strings_than_inverters_is_refused():
 def test_strings_beyond_what_the_roof_holds_are_cut_to_what_fits_before_they_are_counted():
     design = demo_with((29, 500, 30))
 
-    assert readouts.custom_refused(design).title == "23 strings cannot fill 30 inverters"
+    assert readouts.custom_refused(design).title == "27 strings cannot fill 30 inverters"
 
 
 def test_one_string_on_two_inverters_is_said_in_the_singular():
@@ -158,7 +158,7 @@ def test_the_roof_of_the_demo_holds_so_many_strings_of_each_length_in_the_range(
 
     assert [length.n_series for length in held] == list(range(14, 30))
     by_length = {length.n_series: length.strings for length in held}
-    assert (by_length[29], by_length[26], by_length[14]) == (23, 27, 53)
+    assert (by_length[29], by_length[26], by_length[14]) == (27, 30, 56)
 
 
 def test_no_lengths_without_a_voltage_or_when_no_length_fits():
