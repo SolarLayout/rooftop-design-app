@@ -119,6 +119,13 @@ def _here(path: str, what: str, kind: str, field_name: str, local_files: bool) -
     return path
 
 
+def _named_by_its_file[Equipment: (Module, Inverter)](equipment: Equipment, name: str) -> Equipment:
+    """A bundled file named by its name alone: where the server keeps it is nothing to the user. Set on the object as
+    read, which keeps what the reader worked out beside its fields (an inverter's curves)."""
+    equipment.source = name
+    return equipment
+
+
 def module_of(p: Project, local_files: bool = True) -> Module:
     """The module of the project: its embedded PAN, else the file it names, else the bundled sample.
 
@@ -128,7 +135,7 @@ def module_of(p: Project, local_files: bool = True) -> Module:
     if p.pan_text:
         return parse_pan(p.pan_text, file_name(p.pan_path))
     if not p.pan_path:
-        return read_pan(sample_path(SAMPLE_PAN))
+        return _named_by_its_file(read_pan(sample_path(SAMPLE_PAN)), SAMPLE_PAN)
     return read_pan(_here(p.pan_path, "module", "PAN", "pan_path", local_files))
 
 
@@ -137,7 +144,7 @@ def inverter_of(p: Project, local_files: bool = True) -> Inverter:
     if p.ond_text:
         return parse_ond(p.ond_text, file_name(p.ond_path))
     if not p.ond_path:
-        return read_ond(sample_path(SAMPLE_OND))
+        return _named_by_its_file(read_ond(sample_path(SAMPLE_OND)), SAMPLE_OND)
     return read_ond(_here(p.ond_path, "inverter", "OND", "ond_path", local_files))
 
 
