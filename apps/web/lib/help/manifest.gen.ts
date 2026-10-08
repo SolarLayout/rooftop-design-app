@@ -283,10 +283,10 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
   },
   "studio.section.system-voltage": {
     title: "System voltage",
-    summary: "The highest DC voltage the system is built for. It caps how many modules can go in one string.",
+    summary: "The highest DC voltage the system is built for. It caps how many modules can go in one string. The app starts it from your country.",
     kind: "section",
     values: [{"id":"600","label":"600 V","meaning":"Strings stay at or under 600 V on the coldest morning of the site."},{"id":"1000","label":"1000 V","meaning":"Strings stay at or under 1000 V on the coldest morning of the site."},{"id":"1500","label":"1500 V","meaning":"Strings stay at or under 1500 V on the coldest morning of the site."}],
-    related: [],
+    related: ["studio.section.modules-in-series","studio.section.inverter","studio.section.module"],
     aliases: [],
     load: () => import("../../content/help/studio/section/system-voltage.mdx"),
   },
