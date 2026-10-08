@@ -41,7 +41,8 @@ true in the same pull request), linked from the root `CLAUDE.md`, `apps/web/CLAU
 (which also says how an engine change is measured for time and memory as Lambda runs it).
 Then the phone's tab bar, installed on an iPhone (#167, D90): its foot is the larger of its own padding and the home bar's
 zone, never both: 96 px with 41 px under the labels (was 106 and 51), 72 px without a home bar; the toasts on the same
-height. Measured at insets of 34, 24 and 0 px. Not deployed (#166, #167).
+height. Measured at insets of 34, 24 and 0 px. **Deployed:** the owner deployed #166 and #167 to staging and production and
+checked the tab bar on his iPhone, installed (2026-10-09): "all good".
 **Next:** a new task as the owner names it; the browser groups run when the owner says (#157's suites, #151's mobile fixes, and the Strings
 lens pictures whose options D and E #160 changed); Phase 15's clips on an iPhone or iPad.
 
