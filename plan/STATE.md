@@ -12,8 +12,8 @@ the voltage), both found while building. The
 boards "System voltage · Set by the user's country" approved and on the canvas, their third state from the build. Hard rule
 3, D10 replaced. Before it, the voltage questions: the analysis of F7 (no rationale found in either repository; the v1
 spec's artifact cannot be read), the codes (NEC 690.7 and 690.31(G), AS/NZS 5033 and 4777.1, IEC 60364-7-712, CE Code
-Section 64, MNRE) in `plan/phase-16-system-voltage.md`. Record: `plan/sessions/022/`. **Not deployed** since #152.
-**Next:** the owner deploys and checks Phase 16; the browser groups run when the owner says (#157's suites, and those
+Section 64, MNRE) in `plan/phase-16-system-voltage.md`. Record: `plan/sessions/022/`. **Deployed:** the owner deployed `main` with #153 to #159 and checked it (2026-10-08).
+**Next:** a new task in a fresh session, as the owner names it; the browser groups run when the owner says (#157's suites, and those
 #151's mobile fixes may trip, which the owner expects); Phase 15's clips on an iPhone or iPad.
 
 ## Where we are

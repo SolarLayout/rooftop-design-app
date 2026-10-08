@@ -53,4 +53,4 @@ later" (the mobile fixes of session 21 may trip some).
 
 - The browser groups were not run (the owner's instruction). #157's suites and those #151 may trip are to be run when the
   owner says.
-- Not deployed: the owner deploys.
+- Deployed and checked by the owner at the end of the session (#153 to #159).

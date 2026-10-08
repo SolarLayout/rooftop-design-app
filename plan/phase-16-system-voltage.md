@@ -1,6 +1,6 @@
 # Phase 16: the system voltage set by the user's country
 
-**Status:** built (session 22, 2026-10-08): #153 to #157; D87, D88. The boards approved the same day (the canvas page "System
+**Status:** built and deployed (session 22, 2026-10-08): #153 to #159; D87, D88; checked by the owner in production. The boards approved the same day (the canvas page "System
 voltage"). How it was built: `phase-16-plan.md`. Left: the browser suites, changed by reading, run when the owner says.
 **Depends on:** Phase 7 (the Strings lens, its voltage decision card: D10, D37), Phase 12 (the web app on Vercel, D58).
 **Replaces:** D10 and hard rule 3 as they stand, by D87, when this phase is built.

@@ -27,3 +27,4 @@
 15. "go ahead, build it. finally creat PR with screenshots as proof as usual"
 16. "regarding these, what's your reco and why?" (on the two findings: the inverter file shown as a full path on the server; the help sheet labelling the current voltage "Your choice" when the app set it)
 17. "go ahead with both, path one first. The user has nothing to so with the "path on teh server" - it makes no sense for them"
+18. "deployed. checked. we will start new task in fresh session"
