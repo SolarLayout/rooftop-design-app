@@ -283,3 +283,33 @@ describe("an amendment of the edit that is current", () => {
     expect(heard).toEqual([1]);
   });
 });
+
+describe("the system voltage of a design opened without one (D87)", () => {
+  test("is the one of the user's country, set by the app, as part of the opening", () => {
+    const store = createProjectStore({ voltageOfANewDesign: () => 600 });
+
+    store.getState().open(WITHOUT_A_VOLTAGE);
+
+    expect(projectOf(store.getState())).toEqual({ ...WITHOUT_A_VOLTAGE, system_voltage: 600, system_voltage_by: "app" });
+    expect(editOf(store.getState())).toBe(1);
+    expect(canUndo(store.getState())).toBe(false);
+  });
+
+  test("leaves a design's own voltage as it is, whoever set it", () => {
+    const store = createProjectStore({ voltageOfANewDesign: () => 600 });
+
+    store.getState().open(DEMO);
+
+    expect(projectOf(store.getState())).toBe(DEMO);
+  });
+
+  test("is asked when the design is opened, so the country known by then is the one used", () => {
+    let volts: 600 | 1000 = 1000;
+    const store = createProjectStore({ voltageOfANewDesign: () => volts });
+    volts = 600;
+
+    store.getState().open(WITHOUT_A_VOLTAGE);
+
+    expect(systemVoltageOf(store.getState())).toBe(600);
+  });
+});

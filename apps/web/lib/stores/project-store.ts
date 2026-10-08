@@ -1,9 +1,10 @@
 // The design that is open: the .rtd document, as the API hands it out. A store without React.
 //
-// Nothing here has a default. The system voltage least of all: it is the one of the document, or none,
-// until the user chooses.
+// Nothing here has a default but one: a design opened without a system voltage gets the one of the user's country,
+// set by the app (D87), from whoever made the store.
 import { createStore } from "zustand/vanilla";
 import type { Project } from "../api";
+import type { DefaultVoltage } from "../country/country";
 
 /** What a committed edit makes of the document. It gives back a new one and leaves the old as it was. */
 export type Edit = (project: Project) => Project;
@@ -41,7 +42,19 @@ const NOT_OPEN = "No design is open: open one before it is edited.";
 /** How many edits can be undone (plan/phase-05-plan.md, decision 11). */
 export const KEPT_EDITS = 50;
 
-export function createProjectStore() {
+type Options = {
+  /** The voltage a design opened without one gets: the user's country's, asked when it is opened. None: it gets none. */
+  voltageOfANewDesign?: () => DefaultVoltage;
+};
+
+/** The document with the voltage of the user's country when it has none, set by the app. */
+function withAVoltage(project: Project, voltageOfANewDesign: Options["voltageOfANewDesign"]): Project {
+  if (project.system_voltage !== null && project.system_voltage !== undefined) return project;
+  if (!voltageOfANewDesign) return project;
+  return { ...project, system_voltage: voltageOfANewDesign(), system_voltage_by: "app" };
+}
+
+export function createProjectStore({ voltageOfANewDesign }: Options = {}) {
   return createStore<ProjectState>()((set, get) => ({
     project: null,
     edit: 0,
@@ -51,7 +64,7 @@ export function createProjectStore() {
 
     open(project) {
       const edit = get().edit + 1;
-      set({ project, edit, openedAt: edit, past: [], future: [] });
+      set({ project: withAVoltage(project, voltageOfANewDesign), edit, openedAt: edit, past: [], future: [] });
     },
 
     commit(change) {
