@@ -7,8 +7,8 @@ Keep it short and true. History belongs in git and in the phase files, not here.
 panel says what to do (Start here: search, my location, by hand; what the search understands, as examples a press puts into
 the search; the three steps), a ? opens the how-to "Find the roof"; without a map a place searched opens the entry by hand.
 Session 19 before it: D79 built, Phases 14 and 15 (in-app help, clips) done. **Left of Phase 15:** the owner plays the clips
-in Safari on an iPhone or iPad. **Deployed:** Staging and Production run `f13375c` (2026-10-07); #143 to #145 are not
-deployed yet. **Next:** the owner says (UX, CX and UI on Find goes on, issue by issue).
+in Safari on an iPhone or iPad. **Deployed:** Staging and Production run `1d32752` (Staging 2026-10-07, Production
+2026-10-08), with #143 to #145. **Next:** the owner's enhancements and fixes, in a new session.
 
 ## Where we are
 
@@ -112,7 +112,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 ## Next, in order
 
 1. What the owner names next on Find (UX, CX and UI). Alongside: the owner plays the help's clips in Safari on an iPhone or
-   iPad (Phase 15's last check); a deploy of #143 to #145 when he wants them on Staging and Production.
+   iPad (Phase 15's last check).
 2. Issue #114: the Strings legend with many MPPT (design first).
 3. #99 and #100 when the owner needs them (advised: the budget alarm soon, the rate limit before the site is promoted).
 4. When browser tests come back: update the suites that use the old words (Replace and its dialogs, the top bar's words,
