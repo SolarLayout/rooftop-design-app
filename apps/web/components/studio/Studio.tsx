@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Sheet } from "@/components/ui/Sheet";
 import type { Stop } from "@/components/ui/sheet-stops";
 import { LENSES, type Lens } from "@/lib/routes";
@@ -12,6 +12,7 @@ import { Stage } from "@/components/studio/Stage";
 import { StringsInspector } from "@/components/studio/StringsInspector";
 import { useHistoryKeys } from "@/components/shell/use-history-keys";
 import { useSunKeys } from "@/components/studio/use-sun-keys";
+import { useShareUnder } from "@/components/studio/use-share-under";
 import { useSize } from "@/components/studio/use-size";
 import { useNotesOfTheShell } from "@/components/shell/Shell";
 import { useStores, useVitals } from "@/components/shell/stores";
@@ -31,6 +32,10 @@ export function Studio({ lens }: Props) {
   const vitals = useVitals(notes);
   const size = useSize();
   const [stop, setStop] = useState<Stop>("half");
+  const room = useRef<HTMLDivElement>(null);
+  const figures = useRef<HTMLElement>(null);
+  // On phone the sheet at half meets the foot of the vitals, on a phone of any height (issue 148).
+  const half = useShareUnder(room, figures, size === "phone");
   const name = LENSES.find((one) => one.id === lens)?.name ?? "";
   const inspector =
     size === null ? null : lens === "array" ? <ArrayInspector /> : lens === "roof" ? <RoofInspector size={size} /> : lens === "sun" ? <SunInspector size={size} /> : <StringsInspector />;
@@ -43,10 +48,10 @@ export function Studio({ lens }: Props) {
   useSunKeys();
 
   return (
-    <div className="relative flex min-h-0 grow flex-col desktop:flex-row">
+    <div ref={room} className="relative flex min-h-0 grow flex-col desktop:flex-row">
       <LensNav current={lens} look="rail" className="hidden desktop:flex" />
 
-      <main className="relative flex shrink-0 flex-col desktop:min-w-0 desktop:shrink desktop:grow">
+      <main ref={figures} className="relative flex shrink-0 flex-col desktop:min-w-0 desktop:shrink desktop:grow">
         <Stage lens={lens} name={name} className="h-63 shrink-0 tablet:h-127 desktop:h-auto desktop:grow" />
         <LensNav current={lens} look="row" className="absolute top-4 left-5 z-float hidden tablet:flex desktop:hidden" />
         <Vitals view={vitals} onOpenNotes={open} className="desktop:absolute desktop:inset-x-panel desktop:bottom-panel" />
@@ -60,7 +65,7 @@ export function Studio({ lens }: Props) {
       </aside>
 
       <div className="tablet:hidden">
-        <Sheet label="Inspector" stop={stop} onStop={setStop}>
+        <Sheet label="Inspector" stop={stop} onStop={setStop} half={half}>
           <LensNav current={lens} look="switch" className="mx-4 mt-1 grid" />
           <div className="px-4 pt-4 pb-6">{size === "phone" ? inspector : null}</div>
         </Sheet>
