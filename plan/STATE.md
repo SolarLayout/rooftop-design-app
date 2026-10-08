@@ -39,6 +39,9 @@ Then the help read against #160 to #165: Options and Inverter made true again (#
 written so it is not missed: `docs/help-upkeep.md` (every pull request that changes what the user meets keeps the help
 true in the same pull request), linked from the root `CLAUDE.md`, `apps/web/CLAUDE.md` and a new `apps/api/CLAUDE.md`
 (which also says how an engine change is measured for time and memory as Lambda runs it).
+Then the phone's tab bar, installed on an iPhone (#167, D90): its foot is the larger of its own padding and the home bar's
+zone, never both: 96 px with 41 px under the labels (was 106 and 51), 72 px without a home bar; the toasts on the same
+height. Measured at insets of 34, 24 and 0 px. Not deployed (#166, #167).
 **Next:** a new task as the owner names it; the browser groups run when the owner says (#157's suites, #151's mobile fixes, and the Strings
 lens pictures whose options D and E #160 changed); Phase 15's clips on an iPhone or iPad.
 
