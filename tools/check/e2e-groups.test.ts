@@ -81,9 +81,10 @@ describe("the groups of the browser tests", () => {
   });
 
   test("a group's suites are inputs of that group alone", () => {
+    const inputFiles = new Map(GROUPS.map((group) => [group.id, filesMatching(inputsOf(group))]));
     for (const suite of SUITES) {
       const owner = groupOf(suite);
-      const keyedBy = GROUPS.filter((group) => filesMatching(inputsOf(group)).has(`e2e/tests/${suite}`)).map((group) => group.id);
+      const keyedBy = GROUPS.filter((group) => inputFiles.get(group.id)!.has(`e2e/tests/${suite}`)).map((group) => group.id);
       expect({ suite, keyedBy }).toEqual({ suite, keyedBy: [owner] });
     }
   });
