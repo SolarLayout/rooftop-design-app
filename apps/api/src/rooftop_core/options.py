@@ -124,6 +124,33 @@ def workers_for(candidates: int) -> int:
     return max(1, min(candidates, SIMULATION_THREADS))
 
 
+def combos_of(n: int, avail: int, smax: int, pac_w: float, module_w: float) -> list[tuple[int, int, int]]:
+    """The (series, strings, inverters) simulated for strings of *n*, *avail* of them on the roof, each inverter taking
+    *smax* strings and *pac_w* of AC: the most strings within the DC/AC target, on as many inverters as that takes; the
+    strings that fill those inverters; and every string on the fewest inverters that take them. Each once, in order."""
+    if not avail:
+        return []
+    string_w = n * module_w
+    combos: list[tuple[int, int, int]] = []
+    best = None
+    # Up to the most inverters that keep every string at the target's low end: a small inverter meets the target by
+    # more inverters, where the fewest that take every string would leave strings, and so positions, unused.
+    most = max(math.ceil(avail / smax), math.floor(avail * string_w / (DCAC_TARGET[0] * pac_w)))
+    for k in range(1, most + 1):
+        s = min(avail, k * smax, math.floor(DCAC_TARGET[1] * k * pac_w / string_w))
+        if s >= k and s * string_w / (k * pac_w) >= DCAC_TARGET[0]:
+            if best is None or s > best[1]:
+                best = (n, s, k)
+    if best:
+        combos.append(best)
+    k0 = best[2] if best else 1
+    s_fill = min(avail, k0 * smax)
+    if not best or s_fill > best[1]:
+        combos.append((n, s_fill, k0))
+    combos.append((n, avail, math.ceil(avail / smax)))
+    return list(dict.fromkeys(combo for combo in combos if combo[1] >= 1))
+
+
 def build_options(pre: Precomputed, layout: Layout, module: Module, mm: ModuleModel, inv: Inverter,
                   rng: SeriesRange, losses: Losses, roof: Roof, max_options: int = 5,
                   on_option=None, kept: KeptPoints | None = None) -> list[StringOption]:
@@ -137,33 +164,8 @@ def build_options(pre: Precomputed, layout: Layout, module: Module, mm: ModuleMo
     candidates = sorted({rng.n_nominal, rng.n_max, max(rng.n_min, rng.n_max - 1)}, reverse=True)
     smax = max_strings_per_inverter(module, inv)
     pac = inv.pnom_kw * 1000.0
-    combos: list[tuple[int, int, int]] = []
     formed = {n: form_strings(layout, n) for n in candidates}
-    for n in candidates:
-        avail = len(formed[n])
-        if not avail:
-            continue
-        best = None
-        for k in range(1, math.ceil(avail / smax) + 1):
-            s = min(avail, k * smax, math.floor(DCAC_TARGET[1] * k * pac / (n * module.pnom_w)))
-            if s >= k and s * n * module.pnom_w / (k * pac) >= DCAC_TARGET[0]:
-                if best is None or s > best[1]:
-                    best = (n, s, k)
-        if best:
-            combos.append(best)
-        k0 = best[2] if best else 1
-        s_fill = min(avail, k0 * smax)
-        if not best or s_fill > best[1]:
-            combos.append((n, s_fill, k0))
-        k_all = math.ceil(avail / smax)
-        combos.append((n, avail, k_all))
-    seen: set[tuple[int, int, int]] = set()
-    todo: list[tuple[int, int, int]] = []
-    for n, s, k in combos:
-        if (n, s, k) in seen or s < 1:
-            continue
-        seen.add((n, s, k))
-        todo.append((n, s, k))
+    todo = [combo for n in candidates for combo in combos_of(n, len(formed[n]), smax, pac, module.pnom_w)]
     total = len(todo)
     made: list[StringOption | None] = [None] * total
     done = 0
