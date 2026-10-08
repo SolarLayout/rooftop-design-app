@@ -3,14 +3,18 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-08, session 21 (#148 fixed by #149). Session 20, 2026-10-07: **Find's first step built** (D85; #143 to #145): before a place is found, Find's
-panel says what to do (Start here: search, my location, by hand; what the search understands, as examples a press puts into
-the search; the three steps), a ? opens the how-to "Find the roof"; without a map a place searched opens the entry by hand.
-Session 19 before it: D79 built, Phases 14 and 15 (in-app help, clips) done. **Left of Phase 15:** the owner plays the clips
-in Safari on an iPhone or iPad. **Deployed:** Staging and Production run `1d32752` (Staging 2026-10-07, Production
-2026-10-08), with #143 to #145. Since, not deployed yet: #146 (a help clip's progress line moves smoothly) and #149 (fixes #148: on phone the Studio's
-sheet at half meets the foot of the vitals on a phone of any height; the owner chose it of the issue's three ways, the
-stage staying 252). Open: issue #147 (installable web app, no browser bar on iPhone from the Home Screen). **Next:** the owner's enhancements and fixes.
+**Last updated:** 2026-10-08, session 21: #148 fixed by #149; **issue #147, the installable web app, built** (#151, #152;
+D86): the page covers the screen (`viewport-fit=cover`) and keeps clear of the clock, the notch and the home bar by the
+tokens `--safe-*` and their utilities (`pt-safe-`, `pb-safe-`, `top-safe-`, `bottom-safe-`, `h-safe-`, …); the top bar's
+widths (`tablet-wide`, `desktop-wide`) are container queries on the shell; the manifest, the icons drawn from the mark with
+`next/og` (`lib/brand`), `appleWebApp` with the status bar black-translucent. #150: the check's own test that timed out on
+a clean main. Session 20 before it: Find's first step (D85; #143 to #145). **Deployed:** Staging and Production run
+`1d32752` (Staging 2026-10-07, Production 2026-10-08). Since, not deployed yet: #146, #149, #150, #151, #152. **Left of
+#147:** the owner, once deployed, adds the app to an iPhone's Home Screen and looks at each workspace and Find at the top
+and the bottom, upright and on its side (WebKit here cannot show the installed mode); item 4 of the issue, a hint to Add
+to Home Screen, is new UI and waits for the owner's word and a board. Found, not changed: on a phone on its side Find's
+sheet (384) fills the screen and hides the map, as before. Left of Phase 15: the owner plays the clips in Safari on an
+iPhone or iPad. **Next:** the owner's enhancements and fixes.
 
 ## Where we are
 
