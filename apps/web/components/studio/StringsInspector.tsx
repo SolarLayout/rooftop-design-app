@@ -13,6 +13,7 @@ import { withAcCable, withCurrentPerMppt } from "@/lib/studio/inverter-fields";
 import { mpptTableOf } from "@/lib/studio/mppt-table";
 import { optionCardsOf } from "@/lib/studio/option-cards";
 import { stringsViewOf } from "@/lib/studio/strings-view";
+import { withVoltageChosen } from "@/lib/studio/voltage-choice";
 import type { Volts } from "@/lib/studio/voltages";
 import { InverterCard } from "./InverterCard";
 import { InverterLimits } from "./InverterLimits";
@@ -77,7 +78,7 @@ export function StringsInspector() {
   }
 
   function choose(volts: Volts) {
-    store.getState().commit((document) => (document.system_voltage === volts ? document : { ...document, system_voltage: volts }));
+    store.getState().commit((document) => withVoltageChosen(document, volts));
   }
 
   return (

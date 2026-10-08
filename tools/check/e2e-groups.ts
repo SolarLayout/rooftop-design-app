@@ -38,6 +38,8 @@ export const BASE_INPUTS: string[] = [
   "apps/web/lib/help/**",
   // The installed app's name, colours, mark and icons (issue 147): the manifest and the head of every page.
   "apps/web/lib/brand/**",
+  // The user's country and a new design's system voltage (D87): the stores open designs on every page.
+  "apps/web/lib/country/**",
   "apps/web/content/**",
   "apps/web/public/**",
   "apps/web/*",

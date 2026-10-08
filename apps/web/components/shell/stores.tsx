@@ -15,6 +15,7 @@ import { createProjectStore, editOf, nameOf, projectOf, type ProjectState, type 
 import { createResultsStore, designFailureOf, designOf, designStatusOf, layoutFailureOf, newerLayoutNotesOf, progressOf, readoutsOf, sunDayOf, type ResultsState, type ResultsStore } from "@/lib/stores/results-store";
 import { createViewStore, type ViewState, type ViewStore } from "@/lib/stores/view-store";
 import { CLOCK_OF_THE_BROWSER } from "@/lib/clock";
+import { askCountry, createCountry, defaultVoltageOf, type Country } from "@/lib/country/country";
 import { hoursOf } from "@/lib/flow/sun-day";
 import { createPlay, type Play } from "@/lib/flow/play";
 import { notesOf, type Note } from "./notes-view";
@@ -35,12 +36,20 @@ type Stores = {
   saving: SavingStore;
   /** The choices of stringing an edit took away, waiting for the shell to tell them. */
   choicesGone: ChoicesGoneStore;
+  /** The user's country: a new design's system voltage, and the words that say where it came from (D87). */
+  country: Country;
 };
 
 const Context = createContext<Stores | null>(null);
 
+/** The browser's time zone; none on the server, where the stores are made too. */
+function timeZoneOfTheBrowser(): string | null {
+  return typeof window === "undefined" ? null : Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
+
 function createStores(): Stores {
-  const project = createProjectStore();
+  const country = createCountry({ ask: () => askCountry((path) => fetch(path)), timeZone: timeZoneOfTheBrowser });
+  const project = createProjectStore({ voltageOfANewDesign: () => defaultVoltageOf(country.current()) });
   const results = createResultsStore();
   const view = createViewStore();
   const play = createPlay({
@@ -86,7 +95,7 @@ function createStores(): Stores {
     },
     onChoiceGone: (gone) => choicesGone.getState().heard(gone),
   });
-  return { project, results, view, flow, play, toasts, downloads, saving, choicesGone };
+  return { project, results, view, flow, play, toasts, downloads, saving, choicesGone, country };
 }
 
 /** What the user's system says of motion (decision 4: under it, play moves an hour a second; Present's tour is cuts). */
@@ -101,6 +110,7 @@ export function StoresProvider({ children }: { children: ReactNode }) {
   const [stores] = useState(createStores);
 
   useEffect(() => {
+    void stores.country.learn();
     stores.flow.start();
     stores.saving.getState().start();
     return () => {
