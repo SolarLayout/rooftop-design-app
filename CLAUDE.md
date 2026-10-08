@@ -10,7 +10,7 @@ first, then the first phase that is not done. Ask the owner domain questions one
    run headless.
 2. Local roof metres: x east, y north, z up. WGS84 only at the edges.
 3. System voltage has no default and is never chosen for the user. Results that need it wait and say so. Phase 16
-   (D87) replaces this: a new design gets 600 V in the US, 1000 V elsewhere, set by the web app; the engine keeps no default.
+   (D87) replaces this: a new design gets 600 V in the US and Canada, 1000 V elsewhere, set by the web app; the engine keeps no default.
 4. A result that does not fit shows a tick or an exclamation mark, never a red cross.
 5. The word "bankable" is never used, anywhere in the product.
 6. Tests never touch the network. Python tests are guarded by `apps/api/tests/conftest.py`; Playwright
