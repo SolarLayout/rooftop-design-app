@@ -12,13 +12,15 @@
 from __future__ import annotations
 
 import math
+from collections import Counter
+from collections.abc import Callable
 from dataclasses import dataclass, field
 
 import numpy as np
 
 from .io.pvsyst import Inverter, Module
 from .onediode import ModuleModel
-from .placement import Layout
+from .placement import Layout, PlacedModule
 
 SYSTEM_VOLTAGES = (600.0, 1000.0, 1500.0)
 CELL_RISE = {"flat_tilted": 25.0, "flat_ew": 25.0, "sloped_flush": 35.0}   # decision 14
@@ -153,6 +155,36 @@ def form_strings(layout: Layout, n: int) -> list[PVString]:
         for i in range(0, len(seq) - n + 1, n):
             emit(seq[i:i + n], mods[seq[i]].row, across_rows=True)
     return out
+
+
+def strings_held(layout: Layout) -> Callable[[int], int]:
+    """How many strings of a length the layout holds, as form_strings forms them, without forming them: each
+    takes its length, and what is left is wired on within its orientation (an east-west side), so each
+    orientation holds its positions divided by the length. The positions are counted once."""
+    sizes: Counter[object] = Counter()
+    if layout.kind == "flat_ew":
+        sizes.update(m.line for m in layout.modules if m.line in (0, 1))
+    else:
+        first_of_row: dict[int, PlacedModule] = {}
+        for m in layout.modules:
+            first = first_of_row.setdefault(m.row, m)
+            sizes[(round(first.tilt, 3), round(first.azimuth, 3))] += 1
+    return lambda n: sum(size // n for size in sizes.values()) if n >= 1 else 0
+
+
+def lengths_to_try(n_min: int, n_max: int, nominal: int, held: Callable[[int], int]) -> list[int]:
+    """The string lengths the run simulates, longest first: the one nearest the inverter's nominal MPP
+    voltage, the longest (the fewest strings), and the one from the nominal up that places the most modules,
+    the nearest the nominal on a tie; the longest but one when that is one of the other two.
+
+    The fill is not looked for below the nominal: a shorter string carries more current for its power and
+    needs more strings, cables and connectors, which the run does not price, so it would win on a few
+    positions what a designer would not build."""
+    fill = max(range(nominal, n_max + 1), key=lambda n: (n * held(n), -n))
+    lengths = {nominal, n_max, fill}
+    if len(lengths) < 3:
+        lengths.add(max(n_min, n_max - 1))
+    return sorted(lengths, reverse=True)
 
 
 @dataclass

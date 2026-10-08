@@ -20,7 +20,7 @@ from rooftop_core.keepout_parts import keepout_parts, positions_kept_clear
 from rooftop_core.progress import ProgressEvent
 from rooftop_core.project import Design, Project
 from rooftop_core.simulation import UC_BY_ROOF
-from rooftop_core.stringing import form_strings
+from rooftop_core.stringing import strings_held
 
 logger = logging.getLogger("rooftop_api")
 
@@ -226,9 +226,8 @@ def no_options(design: Design) -> schemas.NoOptions | None:
 
 def _too_few_positions(design: Design) -> schemas.NoOptions:
     rng, positions = design.range, design.layout.n_modules
-    shortest = min(
-        (n for n in range(rng.n_min, rng.n_max + 1) if form_strings(design.layout, n)), default=None
-    )
+    held = strings_held(design.layout)
+    shortest = min((n for n in range(rng.n_min, rng.n_max + 1) if held(n)), default=None)
     fits = (
         "No string of that length fits."
         if shortest is None
