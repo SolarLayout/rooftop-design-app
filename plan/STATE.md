@@ -17,8 +17,9 @@ Section 64, MNRE) in `plan/phase-16-system-voltage.md`. Record: `plan/sessions/0
 the engine cut a string along one row only, so short rows left their ends unused. #160: each row gives its whole strings,
 then what the rows leave at their ends runs on into the next rows of the same orientation; strings in a row are used first,
 so the demo's option A is unchanged, D and E grow (28 × 28, 29 × 27). The parity snapshots renewed by `tools.parity renew`
-(only what moved past D64's bar). Time and memory measured: the demo +0.04 s, the roof at the limit +0.14 s and +30 MB
-(the modules the options now place, not the forming); numbers in #160. Not deployed. The owner: there is no desktop app at
+(only what moved past D64's bar). Time and memory measured in the API's Linux image, one thread (D67): the roof at the
+limit about +0.08 s and +45 MB (664 to 709 MB; on Lambda about 970 MB of 1,769), the demo unchanged; the cost is the
+modules the options now place, not the forming; numbers in #160. Not deployed. The owner: there is no desktop app at
 all; the desktop version was a proof of concept, this repository is the product.
 **Next:** #161 (offer the string length that places the most modules), then #162 (no words of a desktop app; the 6 MB
 message needs a remedy); the browser groups run when the owner says (#157's suites, #151's mobile fixes, and the Strings
