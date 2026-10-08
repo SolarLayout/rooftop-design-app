@@ -35,7 +35,7 @@ Always:
 | 13 | Optimization: the engine lean in time and memory for Lambda, and the hosted app's limits | `phase-13-optimization.md` | done (session 17: #102 to #106); how: `phase-13-plan.md` |
 | 14 | In-app help: a ? on the section headings of the input panels, a help sheet, topics in MDX on solarlayout's core; how-tos with pictures for Find's tools | `phase-14-in-app-help.md` | done (session 19: #123 to #137, 30 topics; D80, D81) |
 | 15 | Short video clips in the help: made from the app by a script, kept, served and played in a step's frame | `phase-15-help-clips.md` | built (session 19: #138 to #141; D82 to D84); the owner's check on iOS left |
-| 16 | The system voltage set by the user's country: 600 V in the US and Canada, 1000 V elsewhere, changeable (D87) | `phase-16-system-voltage.md` | planned (session 22); questions open in its file |
+| 16 | The system voltage set by the user's country: 600 V in the US and Canada, 1000 V elsewhere, changeable (D87) | `phase-16-system-voltage.md` | planned (session 22); questions answered; next: the board |
 
 ## Decisions taken (change here if overruled)
 

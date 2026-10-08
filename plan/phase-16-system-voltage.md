@@ -1,6 +1,6 @@
 # Phase 16: the system voltage set by the user's country
 
-**Status:** planned (session 22, 2026-10-08). Not started.
+**Status:** planned (session 22, 2026-10-08); its questions answered. Not started: the board comes first.
 **Depends on:** Phase 7 (the Strings lens, its voltage decision card: D10, D37), Phase 12 (the web app on Vercel, D58).
 **Replaces:** D10 and hard rule 3 as they stand, by D87, when this phase is built.
 
@@ -82,6 +82,7 @@ Components rated for 1000 V on a 500 V string are fine.
    the web app, and a project without a voltage still waits and says so (a file of before, a call to the API).
 
 ## Questions this phase answers
+All answered in session 22 but the board (5), which is the first step of the build.
 1. **Canada**: answered, 600 V as the US (the owner, session 22).
 2. **The equipment rated for another voltage than the one set**: answered (the owner, session 22, "A, go with your
    recommendation"). The engine already sizes to the lowest of the system voltage, the inverter's `VAbsMax` and the
@@ -97,8 +98,9 @@ Components rated for 1000 V on a 500 V string are fine.
      value may be the legal ceiling of the place. The lens offers it ("This inverter takes up to 1500 V. Use 1500 V if the
      site's code allows it"), and when no string length fits, says which voltage would fit.
    - The equipment picker marks each inverter against the voltage set, with a tick or an exclamation mark (hard rule 4).
-3. **A design of before, without a voltage** (on the device or opened from a `.rtd`): give it the default when it is opened,
-   with the note, or leave it waiting as today?
+3. **A design of before, without a voltage** (on the device or opened from a `.rtd`): answered (the owner, session 22: "this
+   is not in production yet. we don't care. but we will go with your recommendation"). It gets the default of the user's
+   country when it is opened, set by the app, with the note; no edit counted.
 4. **Where the voltage came from**: decided by question 2, it is kept with the design (a field of the document, which the
    API accepts and the `.rtd` keeps; set by the app or chosen by the user). The line under the choice says it ("600 V, the
    limit for homes in the United States (NEC 690.7). Change it if the site allows more.", and for elsewhere its own words).
