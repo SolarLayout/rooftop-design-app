@@ -17,8 +17,11 @@ import type { PickerSort } from "@/lib/equipment/picker";
 /** A column of the list: its head, its width, whether it sorts, and whether it is shown on desktop alone. */
 export type PickerColumn = { key: string; head: string; width: string; sorts: boolean; isDesktopOnly?: boolean };
 
-/** A row of the list, in words. `cells` follow the columns after the first, which is the model's. */
-export type PickerRow = { file: string; model: string; second: string; cells: readonly string[]; phone: string; preliminary: boolean };
+/**
+ * A row of the list, in words. `cells` follow the columns after the first, which is the model's. `mark`: a reason for the
+ * exclamation mark under the maker (an inverter rated under the system voltage set), or none.
+ */
+export type PickerRow = { file: string; model: string; second: string; cells: readonly string[]; phone: string; preliminary: boolean; mark?: string | null };
 
 export type PickerWords = {
   /** "Choose a module" */
@@ -320,7 +323,9 @@ function Row({ id, row, columns, isChosen, isCurrent, onChoose, onUse }: RowProp
       onClick={onChoose}
       onDoubleClick={onUse}
       className={classNames(
-        "flex cursor-pointer items-center gap-2.5 border-b border-l-tab border-b-line-subtle py-2 pr-3 pl-2 last:border-b-0 tablet:h-15 tablet:gap-3.5 tablet:py-0 tablet:pr-3.5 desktop:h-13",
+        "flex cursor-pointer items-center gap-2.5 border-b border-l-tab border-b-line-subtle py-2 pr-3 pl-2 last:border-b-0 tablet:gap-3.5 tablet:pr-3.5",
+        // A row with a mark holds a third line, so it grows.
+        row.mark ? "tablet:py-2.5" : "tablet:h-15 tablet:py-0 desktop:h-13",
         isChosen ? "border-l-accent bg-control-active shadow-halo-selected" : "border-l-transparent hovered:bg-surface-1",
       )}
     >
@@ -332,6 +337,12 @@ function Row({ id, row, columns, isChosen, isCurrent, onChoose, onUse }: RowProp
         </span>
         <span className="truncate type-caption text-text-2">{row.second}</span>
         <span className="truncate type-value-xs text-text-2 tablet:hidden">{row.phone}</span>
+        {row.mark ? (
+          <span className="flex min-w-0 items-center gap-1.5 type-caption text-text-2">
+            <StatusMark kind="note" label="Rated under the voltage set" wordsShown={false} size={14} />
+            <span className="truncate">{row.mark}</span>
+          </span>
+        ) : null}
       </span>
       {columns.slice(1).map((column, index) => (
         <span key={column.key} className={classNames("hidden shrink-0 text-right type-value-s whitespace-nowrap tablet:block", column.width, column.isDesktopOnly && "tablet:hidden desktop:block")}>

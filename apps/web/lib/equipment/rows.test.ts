@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { InverterEntry, ModuleEntry } from "./catalog";
-import { inverterRowOf, kwShown, moduleRowOf } from "./rows";
+import { inverterRowOf, kwShown, moduleRowOf, ratedUnderOf } from "./rows";
 
 const HELIENE: ModuleEntry = {
   file: "Heliene_144HC-540-M10-SL-Bifacial_TUV-SUD.PAN", sha256: "", maker: "Heliene Inc", model: "144HC-540 M10 SL Bifacial", data_source: "TUV SUD",
@@ -47,5 +47,18 @@ describe("an inverter's row", () => {
     expect(kwShown(3.68)).toBe("3.68");
     expect(kwShown(350)).toBe("350");
     expect(inverterRowOf({ ...SOLIS, preliminary: true }).preliminary).toBe(true);
+  });
+});
+
+describe("an inverter rated under the system voltage set (the boards \"System voltage · Set by the user's country\")", () => {
+  test("says so under its maker", () => {
+    expect(ratedUnderOf(800, 1000)).toBe("Up to 800 V: strings sized under the 1000 V set");
+  });
+
+  test("says nothing when it takes the voltage, when its file gives no rating, or before a voltage", () => {
+    expect(ratedUnderOf(1000, 1000)).toBeNull();
+    expect(ratedUnderOf(1500, 1000)).toBeNull();
+    expect(ratedUnderOf(0, 1000)).toBeNull();
+    expect(ratedUnderOf(800, null)).toBeNull();
   });
 });
