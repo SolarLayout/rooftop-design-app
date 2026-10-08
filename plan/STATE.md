@@ -12,8 +12,9 @@ a clean main. Session 20 before it: Find's first step (D85; #143 to #145). **Dep
 #152 (2026-10-08; before it both ran `1d32752`), and checked #147 on an iPhone, added to the Home Screen: it works (2026-10-08). #147 closed; its item 4, a hint to Add to Home Screen,
 left out (the owner: "skip it for now"). Record: `plan/sessions/021/`. Found, not changed: on a phone on its side Find's
 sheet (384) fills the screen and hides the map, as before. Left of Phase 15: the owner plays the clips in Safari on an
-iPhone or iPad. **Next:** a new session: features and enhancements about the system voltage, as the owner
-names them (hard rule 3: the voltage has no default and is never chosen for the user).
+iPhone or iPad. **Next:** Phase 16, the system voltage set by the user's country (D87: 600 V in the US, 1000 V
+elsewhere; `plan/phase-16-system-voltage.md`): its four questions to the owner, then the board, then the build. Until it is
+built, hard rule 3 holds.
 
 ## Where we are
 
