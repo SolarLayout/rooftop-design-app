@@ -2,12 +2,10 @@ import type { Metadata, Viewport } from "next";
 import { StoresProvider } from "@/components/shell/stores";
 import { fontVariables } from "./fonts";
 import "./globals.css";
+import { METADATA } from "./metadata";
 import { VIEWPORT } from "./viewport";
 
-export const metadata: Metadata = {
-  title: "SolarLayout Rooftop",
-  description: "Rooftop PV design.",
-};
+export const metadata: Metadata = METADATA;
 
 export const viewport: Viewport = VIEWPORT;
 
