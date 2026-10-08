@@ -774,3 +774,18 @@ def test_a_monofacial_module_with_a_stated_coefficient_has_no_note_and_no_rear_g
     assert result["equipment"]["module_notes"] == []
     rear = next(s for s in result["options"][0]["energy"]["steps"] if s["label"] == "Bifacial rear gain")
     assert rear["pct"] == 0.0
+
+
+def test_a_design_without_its_own_files_names_the_bundled_ones_by_their_files_alone(client, demo):
+    from rooftop_core.resources import samples_dir
+
+    project = small(demo)
+    for name in ("pan_path", "pan_text", "ond_path", "ond_text"):
+        project[name] = ""
+
+    result = result_of(client.post("/design", json=project))
+
+    # The user is shown the file's name; where the server keeps it is none of theirs.
+    assert result["equipment"]["module"]["source"] == "insolation-ina-144mhc-tf-560.PAN"
+    assert result["equipment"]["inverter"]["source"] == "wattpower-wp-330ktl-h1.OND"
+    assert str(samples_dir()) not in " ".join(result["equipment"]["module_notes"])

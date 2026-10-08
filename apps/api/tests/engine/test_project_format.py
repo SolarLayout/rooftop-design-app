@@ -10,7 +10,7 @@ import pytest
 from rooftop_core.demo import demo_project
 from rooftop_core.errors import MissingEquipmentFile, UnsupportedProjectFormat, WeatherNotLoaded
 from rooftop_core.project import FORMAT_VERSION, Design, Project
-from rooftop_core.resources import SAMPLE_OND, SAMPLE_PAN, sample_path
+from rooftop_core.resources import SAMPLE_OND, SAMPLE_PAN
 from tests.equipment import fixture_path
 
 PAN_TEXT = Path(fixture_path("Test.PAN")).read_text(encoding="utf-8")
@@ -237,11 +237,12 @@ def test_nothing_is_put_in_the_place_of_a_missing_file():
         Design(project)
 
 
-def test_empty_paths_mean_the_bundled_samples():
+def test_empty_paths_mean_the_bundled_samples_named_by_their_files_alone():
     design = Design(_light_project())
 
-    assert design.module.pnom_w == 560 and design.module.source == sample_path(SAMPLE_PAN)
-    assert design.inverter.pnom_kw == 275 and design.inverter.source == sample_path(SAMPLE_OND)
+    # The user is shown the file's name; where the server keeps it is none of theirs.
+    assert design.module.pnom_w == 560 and design.module.source == SAMPLE_PAN
+    assert design.inverter.pnom_kw == 275 and design.inverter.source == SAMPLE_OND
 
 
 def test_embedded_text_is_used_and_the_path_only_names_it():
