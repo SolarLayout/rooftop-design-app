@@ -54,12 +54,12 @@ async function theItem(page: Page, item: string): Promise<{ answer: Answer; docu
   return { answer, document, option: chosenOf(answer) };
 }
 
-/** The demo as the API hands it out, with its system voltage left out. */
-async function withoutAVoltage(page: Page): Promise<void> {
+/** The demo at 600 V, the user's: no string length fits its inverter, so there is no option to make files of. */
+async function whereNoLengthFits(page: Page): Promise<void> {
   await page.route("**/api/demo", async (route) => {
     const answer = await route.fetch();
     const demo: Record<string, unknown> = await answer.json();
-    await route.fulfill({ response: answer, json: { ...demo, system_voltage: null } });
+    await route.fulfill({ response: answer, json: { ...demo, system_voltage: 600, system_voltage_by: "user" } });
   });
 }
 
@@ -328,11 +328,11 @@ test.describe("Download all (step 21, decision 10)", () => {
     await expect(downloadAll(page)).toHaveCSS("opacity", "0.45");
   });
 
-  test("before a voltage it cannot be pressed, as the files of the design cannot be made", async ({ page }, testInfo) => {
-    await withoutAVoltage(page);
+  test("where no string length fits it cannot be pressed, as the files of the design cannot be made", async ({ page }, testInfo) => {
+    await whereNoLengthFits(page);
     await theItem(page, isPhone(testInfo.project.name) ? "" : "report");
 
-    await expect(page.getByTestId("deliverables").getByTestId("deliverable-facts").first()).toContainText("Choose a system voltage", { timeout: RUN });
+    await expect(page.getByTestId("deliverables").getByTestId("deliverable-facts").first()).toContainText("No string length fits", { timeout: RUN });
     await expect(downloadAll(page)).toHaveAttribute("aria-disabled", "true");
   });
 });

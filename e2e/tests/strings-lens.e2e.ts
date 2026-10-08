@@ -3,10 +3,10 @@ import { A_MAP, atTheRoof, drawTheRectangle, roofMap } from "../find";
 import { expect, test } from "../fixtures";
 import { sceneSettled, switchLens } from "../stage";
 
-// The Strings lens (plan/phase-07-plan.md, steps 3 to 6; the boards "Studio, Strings lens" on three sizes and
-// "Studio, Strings lens, no system voltage yet"). The system voltage is never chosen for the user: a new design
-// has none, and nothing of energy is shown anywhere until one is chosen (decisions 1 and 4); the demo shows
-// the one its document holds. Every number is read from the run's answer.
+// The Strings lens (plan/phase-07-plan.md, steps 3 to 6; the boards "Studio, Strings lens" on three sizes and "System
+// voltage · Set by the user's country"). A new design gets the voltage of the user's country, set by the app (D87): 600 V
+// in the United States and Canada, 1000 V elsewhere, found from the request, else the time zone, else India. A choice in
+// the lens is the user's. The demo shows the one its document holds. Every number is read from the run's answer.
 
 const RUN = 90_000;
 
@@ -26,12 +26,13 @@ async function resultOf(request: Request): Promise<Answer> {
   return done.result;
 }
 
-const decision = (page: Page) => page.getByTestId("voltage-decision").filter({ visible: true });
+const theVoltage = (page: Page) => page.getByTestId("system-voltage").filter({ visible: true });
+const radio = (page: Page, volts: string) => page.getByRole("radiogroup", { name: "System voltage" }).filter({ visible: true }).getByRole("radio", { name: volts });
 
 /**
  * A new design: the 90 by 40 roof outlined on the map and built; then its Strings lens with its first run over.
  * The roof has no weather: the flow loads it (plan/phase-08-plan.md, decision 11), answered from the fixture of
- * Pune (e2e/fixtures.ts). What the API answers for the roof is kept as it is, its system voltage none.
+ * Pune (e2e/fixtures.ts). The API answers the roof without a voltage; the app gives it the country's as it opens it.
  */
 async function aNewDesignInTheStringsLens(page: Page): Promise<void> {
   const built = page.waitForResponse((response) => response.url().endsWith("/api/roof/from-map"));
@@ -43,43 +44,62 @@ async function aNewDesignInTheStringsLens(page: Page): Promise<void> {
   expect((await (await built).json()).system_voltage).toBeNull();
   await expect(page).toHaveURL(/\/studio\/roof$/, { timeout: RUN });
   await switchLens(page, "Strings");
-  await expect(page.getByText("Shading for every module").filter({ visible: true })).toBeVisible({ timeout: RUN });
+  await expect(theVoltage(page)).toBeVisible({ timeout: RUN });
 }
 
 test.describe.configure({ timeout: RUN * 2 });
 
-test.describe("before a system voltage", () => {
-  test("a new design has none: nothing is chosen, and no energy is shown anywhere", async ({ page }) => {
+test.describe("a new design in the time zone of India (D87)", () => {
+  test.use({ timezoneId: "Asia/Calcutta" });
+
+  test("gets 1000 V, set by the app, and is sized and run with no choice made", async ({ page }) => {
+    const run = page.waitForRequest((request) => request.url().endsWith("/api/design") && request.postDataJSON().weather_json !== null, { timeout: RUN });
     await aNewDesignInTheStringsLens(page);
 
-    await expect(decision(page).getByRole("heading", { name: "Choose a system voltage" })).toBeVisible();
-    for (const volts of ["600 V", "1000 V", "1500 V"]) await expect(decision(page).getByRole("button", { name: volts })).toBeVisible();
-    await expect(page.getByRole("radio", { checked: true }).filter({ hasText: / V$/ })).toHaveCount(0);
-    await expect(page.getByText("Waiting for your choice").filter({ visible: true })).toBeVisible();
-    await expect(page.getByText(/^Layout: \d[\d,]* positions$/).filter({ visible: true })).toBeVisible();
-    await expect(page.locator("body")).not.toContainText("MWh");
-    await expect(page.locator("body")).not.toContainText("kWh/kWp");
-
-    await switchLens(page, "Sun");
-    await expect(page.getByRole("region", { name: "Shading over the year" })).toContainText("Choose a system voltage to size the strings");
-    await expect(page.locator("body")).not.toContainText("MWh");
+    expect((await run).postDataJSON()).toMatchObject({ system_voltage: 1000, system_voltage_by: "app" });
+    await expect(radio(page, "1000 V")).toBeChecked();
+    await expect(theVoltage(page)).toContainText("Set for India");
+    await expect(theVoltage(page)).toContainText("the usual limit for rooftops in India");
+    await expect(page.getByTestId("voltage-decision")).toHaveCount(0);
+    await expect(page.getByTestId("strings-sized").filter({ visible: true })).toBeVisible({ timeout: RUN });
   });
 
   test("a voltage pressed is the user's: the run is asked once after the pause, and the layout not at all", async ({ page }) => {
     await aNewDesignInTheStringsLens(page);
+    await expect(page.getByTestId("strings-sized").filter({ visible: true })).toBeVisible({ timeout: RUN });
     const asked: string[] = [];
     page.on("request", (request) => {
       if (/\/api\/(design|layout)$/.test(request.url())) asked.push(new URL(request.url()).pathname);
     });
     const run = page.waitForRequest((request) => request.url().endsWith("/api/design"), { timeout: RUN });
 
-    await decision(page).getByRole("button", { name: "1500 V" }).click();
+    await radio(page, "1500 V").click();
 
-    expect((await run).postDataJSON().system_voltage).toBe(1500);
-    await expect(page.getByRole("radiogroup", { name: "System voltage" }).filter({ visible: true }).getByRole("radio", { name: "1500 V" })).toBeChecked();
-    await expect(page.getByText("Your choice").filter({ visible: true })).toBeVisible();
-    await expect(decision(page)).toHaveCount(0);
+    expect((await run).postDataJSON()).toMatchObject({ system_voltage: 1500, system_voltage_by: "user" });
+    await expect(radio(page, "1500 V")).toBeChecked();
+    await expect(theVoltage(page)).toContainText("Your choice");
     await expect.poll(() => asked, { timeout: RUN }).toEqual(["/api/design"]);
+  });
+});
+
+test.describe("a new design in the United States (D87)", () => {
+  test.use({ timezoneId: "America/New_York" });
+
+  test("gets 600 V, the limit for homes; no length fits the demo's inverter under it, and 1000 V is offered", async ({ page }) => {
+    await aNewDesignInTheStringsLens(page);
+
+    await expect(radio(page, "600 V")).toBeChecked();
+    await expect(theVoltage(page)).toContainText("Set for the United States");
+    await expect(theVoltage(page)).toContainText("the limit for homes in the United States (NEC 690.7)");
+    await expect(page.getByTestId("voltage-offer").filter({ visible: true })).toContainText("at 1000 V one does", { timeout: RUN });
+  });
+
+  test("the request's country comes before the time zone", async ({ page }) => {
+    await page.setExtraHTTPHeaders({ "x-vercel-ip-country": "DE" });
+    await aNewDesignInTheStringsLens(page);
+
+    await expect(radio(page, "1000 V")).toBeChecked();
+    await expect(theVoltage(page)).toContainText("Set for Germany");
   });
 });
 

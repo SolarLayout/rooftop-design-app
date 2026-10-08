@@ -195,8 +195,8 @@ test.describe("two designs", () => {
     await expect(rows).toHaveCount(2);
     await expect(rows.nth(0)).toContainText(BUILT_NAME);
     await expect(rows.nth(0)).toHaveAttribute("aria-current", "true");
-    // Before a run with a chosen option (no voltage yet) the fact is the roof's words.
-    await expect(rows.nth(0)).toContainText(/m flat roof, east-west$/);
+    // The design runs at the voltage of the country (D87): until its run with a chosen option lands the fact is the roof's words, then its kWp.
+    await expect(rows.nth(0)).toContainText(/(m flat roof, east-west|\d kWp)$/);
     await expect(rows.nth(1)).toContainText(DEMO_NAME);
     await expect(rows.nth(1)).not.toHaveAttribute("aria-current", "true");
     await expect(rows.nth(1)).toContainText(/\d kWp$/);

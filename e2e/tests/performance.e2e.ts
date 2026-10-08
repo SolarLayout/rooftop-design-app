@@ -191,13 +191,13 @@ test.describe("the KPIs and the summary", () => {
   });
 });
 
-test.describe("before a system voltage", () => {
-  /** The demo as the API hands it out, with its system voltage left out: the engine's reason, in its words. */
-  async function withoutAVoltage(page: Page): Promise<Answer> {
+test.describe("when no string length fits", () => {
+  /** The demo at 600 V, the user's: no string length fits its inverter (14 needed, 11 held). The engine's reason, in its words. */
+  async function whereNoLengthFits(page: Page): Promise<Answer> {
     await page.route("**/api/demo", async (route) => {
       const answer = await route.fetch();
       const demo: Record<string, unknown> = await answer.json();
-      await route.fulfill({ response: answer, json: { ...demo, system_voltage: null } });
+      await route.fulfill({ response: answer, json: { ...demo, system_voltage: 600, system_voltage_by: "user" } });
     });
     const first = ran(page);
     await page.goto("/performance");
@@ -207,7 +207,7 @@ test.describe("before a system voltage", () => {
   }
 
   test("the API's title and message lead to the Strings lens; the line counts the positions; nothing of energy anywhere", async ({ page }) => {
-    const answer = await withoutAVoltage(page);
+    const answer = await whereNoLengthFits(page);
     const waits = page.getByTestId("energy-waits");
 
     await expect(waits).toContainText(answer.no_options!.title, { timeout: RUN });
@@ -224,7 +224,7 @@ test.describe("before a system voltage", () => {
   });
 
   test("axe finds nothing serious or critical", async ({ page }) => {
-    const answer = await withoutAVoltage(page);
+    const answer = await whereNoLengthFits(page);
     await expect(page.getByTestId("energy-waits")).toContainText(answer.no_options!.title, { timeout: RUN });
     const found = await new AxeBuilder({ page }).analyze();
     const grave = found.violations
