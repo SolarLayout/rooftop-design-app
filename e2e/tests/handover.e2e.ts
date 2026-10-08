@@ -83,12 +83,12 @@ async function theHandoverPage(page: Page, path = "/handover"): Promise<Answer> 
   return answer;
 }
 
-/** The demo as the API hands it out, with its system voltage left out: the engine's reason, in its words. */
-async function withoutAVoltage(page: Page, path = "/handover"): Promise<Answer> {
+/** The demo at 600 V, the user's: no string length fits its inverter (it needs 14 in series, 600 V holds 11). The engine's reason, in its words. */
+async function whereNoLengthFits(page: Page, path = "/handover"): Promise<Answer> {
   await page.route("**/api/demo", async (route) => {
     const answer = await route.fetch();
     const demo: Record<string, unknown> = await answer.json();
-    await route.fulfill({ response: answer, json: { ...demo, system_voltage: null } });
+    await route.fulfill({ response: answer, json: { ...demo, system_voltage: 600, system_voltage_by: "user" } });
   });
   const first = ran(page);
   await page.goto(path);
@@ -166,9 +166,9 @@ test.describe("the list (decisions 3 and 14)", () => {
   });
 });
 
-test.describe("before a voltage (decision 11)", () => {
+test.describe("when no string length fits (decision 11)", () => {
   test("every row but the project file says the API's title and is dim; the preview says the API's words and leads to the Strings lens", async ({ page }, testInfo) => {
-    const answer = await withoutAVoltage(page, isPhone(testInfo.project.name) ? "/handover/report" : "/handover");
+    const answer = await whereNoLengthFits(page, isPhone(testInfo.project.name) ? "/handover/report" : "/handover");
     const title = answer.no_options!.title;
 
     if (!isPhone(testInfo.project.name)) {
@@ -193,16 +193,16 @@ test.describe("before a voltage (decision 11)", () => {
   });
 
   test("the project file alone is live: its item has no decision card, and its press can be taken", async ({ page }) => {
-    await withoutAVoltage(page, "/handover/project-file");
+    await whereNoLengthFits(page, "/handover/project-file");
 
     await expect(projectFile(page)).toBeVisible({ timeout: RUN });
     await expect(page.getByTestId("files-wait")).toHaveCount(0);
     await expect(previewAction(page)).not.toHaveAttribute("aria-disabled", "true");
-    await expect(projectFile(page).getByTestId("in-the-file").filter({ hasText: "System voltage" })).toContainText("Choose a system voltage to size the strings");
+    await expect(projectFile(page).getByTestId("in-the-file").filter({ hasText: "System voltage" })).toContainText("600 V");
   });
 
   test("axe finds nothing serious or critical", async ({ page }, testInfo) => {
-    const answer = await withoutAVoltage(page, isPhone(testInfo.project.name) ? "/handover/report" : "/handover");
+    const answer = await whereNoLengthFits(page, isPhone(testInfo.project.name) ? "/handover/report" : "/handover");
     await expect(page.getByTestId("files-wait")).toContainText(answer.no_options!.title, { timeout: RUN });
 
     expect(await grave(page)).toEqual([]);

@@ -356,15 +356,19 @@ test.describe("by keyboard", () => {
   });
 });
 
-test.describe("before a system voltage", () => {
+test.describe("a design opened without a system voltage (D87)", () => {
+  // The time zone of India: the design gets 1000 V, set by the app, and runs.
+  test.use({ timezoneId: "Asia/Calcutta" });
+
   test("axe finds nothing serious or critical, and nothing scrolls sideways", async ({ page }) => {
     await page.route("**/api/demo", async (route) => {
       const answer = await route.fetch();
       const demo: Record<string, unknown> = await answer.json();
-      await route.fulfill({ response: answer, json: { ...demo, system_voltage: null } });
+      await route.fulfill({ response: answer, json: { ...demo, system_voltage: null, system_voltage_by: null } });
     });
     await page.goto("/studio/strings");
-    await expect(page.getByRole("region", { name: "Design vitals" }).getByText("442.40")).toBeVisible({ timeout: RUN });
+    await expect(page.getByTestId("system-voltage").filter({ visible: true })).toContainText("Set for India", { timeout: RUN });
+    await expect(page.getByRole("region", { name: "Design vitals" })).toContainText("MWh", { timeout: RUN });
 
     expect(await graveFindings(page)).toEqual([]);
     for (const width of WIDTHS) {

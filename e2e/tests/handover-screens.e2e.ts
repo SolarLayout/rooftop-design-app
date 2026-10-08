@@ -92,20 +92,6 @@ test("handover, the report loading", async ({ page }, testInfo) => {
   await expectWholeScreen(page, "handover-report-loading");
 });
 
-// Before a system voltage (the board "Handover, states"): every row but the project file dim with the API's title, the decision card in the preview.
-test("handover, before a voltage", async ({ page }, testInfo) => {
-  await page.route("**/api/demo", async (route) => {
-    const answer = await route.fetch();
-    const demo: Record<string, unknown> = await answer.json();
-    await route.fulfill({ response: answer, json: { ...demo, system_voltage: null } });
-  });
-  await page.goto(isPhone(testInfo.project.name) ? "/handover/report" : "/handover");
-  await expect(page.getByTestId("files-wait")).toContainText("Choose a system voltage to size the strings", { timeout: RUN });
-  await topBarSettled(page, testInfo.project.name);
-
-  await expectWholeScreen(page, "handover-no-voltage");
-});
-
 // The project file's item once the run has landed: its size is there, and what is in it says the weather and the option.
 const projectFileLanded = async (page: Page) => {
   await expect(page.getByTestId("project-file").getByTestId("file-size")).toBeVisible({ timeout: RUN });

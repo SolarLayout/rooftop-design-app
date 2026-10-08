@@ -17,7 +17,7 @@ const DEMO = [
   ["Yield", "1,729 kWh/kWp"],
 ];
 
-const BEFORE_A_VOLTAGE = [
+const NO_LENGTH_FITS = [
   ["Roof", "3,600 m²"],
   ["Positions", "790 modules"],
   ["If all were used", "442.40 kWp"],
@@ -41,11 +41,12 @@ async function valuesOf(vitals: Locator): Promise<string[][]> {
 }
 
 /** The demo as the API hands it out, with its system voltage left out. The request stays on this machine. */
-async function leaveTheVoltageOut(page: Page) {
+/** The demo at 600 V, the user's: its inverter needs 14 modules for its MPPT minimum, and 600 V holds 11. No length fits. */
+async function atSixHundredVolts(page: Page) {
   await page.route("**/api/demo", async (route) => {
     const answer = await route.fetch();
     const demo: Record<string, unknown> = await answer.json();
-    await route.fulfill({ response: answer, json: { ...demo, system_voltage: null } });
+    await route.fulfill({ response: answer, json: { ...demo, system_voltage: 600, system_voltage_by: "user" } });
   });
 }
 
@@ -162,22 +163,22 @@ test.describe("while the first run is on its way", () => {
   });
 });
 
-test.describe("before a system voltage", () => {
+test.describe("when no string length fits", () => {
   test.beforeEach(async ({ page }) => {
-    await leaveTheVoltageOut(page);
+    await atSixHundredVolts(page);
     await page.goto("/studio/array");
     await expect(vitalsOf(page).getByText("442.40")).toBeVisible({ timeout: RUN });
   });
 
-  test("the run was asked for without one: none is chosen for the user", async ({ page }) => {
+  test("the run was asked for with the voltage of the document, the user's", async ({ page }) => {
     const asked = page.waitForRequest("**/api/design");
     await page.reload();
 
-    expect((await asked).postDataJSON()).toMatchObject({ name: "Pune demo roof", system_voltage: null });
+    expect((await asked).postDataJSON()).toMatchObject({ name: "Pune demo roof", system_voltage: 600, system_voltage_by: "user" });
   });
 
   test("the vitals show the roof and the positions only", async ({ page }) => {
-    expect(await valuesOf(vitalsOf(page))).toEqual(BEFORE_A_VOLTAGE);
+    expect(await valuesOf(vitalsOf(page))).toEqual(NO_LENGTH_FITS);
   });
 
   test("no energy, no capacity of the design, no ratio, no yield", async ({ page }) => {
@@ -192,14 +193,14 @@ test.describe("before a system voltage", () => {
   test("what is waited for is said in the words of the API, and leads to the Strings lens", async ({ page }, testInfo) => {
     const note = vitalsOf(page).getByTestId("vitals-last");
 
-    await expect(note).toContainText("Choose a system voltage to size the strings");
-    if (!isPhone(testInfo.project.name)) await expect(note).toContainText("600, 1000 or 1500 V. Nothing is sized until you choose.");
+    await expect(note).toContainText("No string length fits this inverter");
+    if (!isPhone(testInfo.project.name)) await expect(note).toContainText("at least 14 modules are needed for the 500 V MPPT minimum, but at most 11 fit under 600 V.");
     await expect(note).toHaveAttribute("href", "/studio/strings");
 
     await note.click();
     await expect(page).toHaveURL(/\/studio\/strings$/);
     await expect(page.getByRole("heading", { level: 1, name: "Strings" })).toBeVisible();
-    expect(await valuesOf(vitalsOf(page))).toEqual(BEFORE_A_VOLTAGE);
+    expect(await valuesOf(vitalsOf(page))).toEqual(NO_LENGTH_FITS);
   });
 
   test("the note of the module is there to review all the same", async ({ page }, testInfo) => {

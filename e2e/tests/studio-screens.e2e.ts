@@ -446,20 +446,6 @@ test("studio, the Strings lens, a run on its way", async ({ page }) => {
   await expectWholeScreen(page, "studio-strings-updating");
 });
 
-test("studio, before a system voltage", async ({ page }) => {
-  await page.route("**/api/demo", async (route) => {
-    const answer = await route.fetch();
-    const demo: Record<string, unknown> = await answer.json();
-    await route.fulfill({ response: answer, json: { ...demo, system_voltage: null } });
-  });
-  await page.goto("/studio/strings");
-  await expect(vitals(page).getByText("442.40")).toBeVisible({ timeout: RUN });
-  await expect(page.getByText("Shading for every module").filter({ visible: true })).toBeVisible();
-
-  await sceneSettled(page);
-  await expectWholeScreen(page, "studio-before-a-voltage");
-});
-
 test("studio, the notes to review", async ({ page }, testInfo) => {
   await page.goto("/studio/array");
   await expect(vitals(page).getByText("617.8")).toBeVisible({ timeout: RUN });

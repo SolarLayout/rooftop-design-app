@@ -26,7 +26,7 @@ type Answer = { options: Option[]; chosen_option: string | null; weather: Weathe
 type Summary = { hours: number; ghi_kwh_m2: number; dni_kwh_m2: number; dhi_kwh_m2: number; t_min_c: number; t_max_c: number };
 type WeatherAnswer = { weather: { label: string; time: string[]; ghi: number[] }; summary: Summary; notes: string[] };
 type Losses = { uc: number | null; p_levels: number[]; co2_t_per_mwh: number };
-type Document = { weather_source: string; weather_csv: string; weather_csv_text: string; weather_json: { label: string; time: string[] } | null; losses: Losses; system_voltage: number | null };
+type Document = { weather_source: string; weather_csv: string; weather_csv_text: string; weather_json: { label: string; time: string[] } | null; losses: Losses; system_voltage: number | null; system_voltage_by: "app" | "user" | null };
 
 const FIXTURES = path.resolve(__dirname, "../fixtures");
 const PVGIS_FIXTURE: WeatherAnswer = JSON.parse(readFileSync(path.join(FIXTURES, "weather-pvgis-pune.json"), "utf8"));
@@ -386,11 +386,12 @@ test.describe("the assumptions (decisions 6 and 8)", () => {
     expect(paths.filter((asked) => asked.endsWith("/layout"))).toEqual([]);
   });
 
-  test("before a system voltage the assumptions stand as fields under the API's words (decision 15)", async ({ page }) => {
+  test("where no string length fits the assumptions stand as fields under the API's words (decision 15)", async ({ page }) => {
+    // The demo at 600 V, the user's: its inverter needs 14 in series, 600 V holds 11.
     await page.route("**/api/demo", async (route) => {
       const answer = await route.fetch();
       const demo: Record<string, unknown> = await answer.json();
-      await route.fulfill({ response: answer, json: { ...demo, system_voltage: null } });
+      await route.fulfill({ response: answer, json: { ...demo, system_voltage: 600, system_voltage_by: "user" } });
     });
     const first = ran(page);
     await page.goto("/performance");
@@ -406,6 +407,9 @@ test.describe("the assumptions (decisions 6 and 8)", () => {
 });
 
 test.describe("weather for a design that has none (decision 11)", () => {
+  // The time zone of India: a new design gets 1000 V, set by the app (D87).
+  test.use({ timezoneId: "Asia/Calcutta" });
+
   test("a roof built on the map gets its energy through /api/weather, asked once and answered from the fixture", async ({ page }) => {
     test.setTimeout(A_MAP + RUN * 4);
     const weathers: Request[] = [];
@@ -431,12 +435,13 @@ test.describe("weather for a design that has none (decision 11)", () => {
     expect(runs[0]!.weather_json).toBeFalsy();
     expect(runs[1]!.weather_json?.label).toBe("PVGIS TMY");
     expect(runs[1]!.weather_json?.time.length).toBeGreaterThan(0);
-    expect(runs[1]!.system_voltage).toBeNull();
+    expect(runs[1]!.system_voltage).toBe(1000);
+    expect(runs[1]!.system_voltage_by).toBe("app");
 
-    // A voltage chosen: the run has its weather already, and nothing is downloaded again.
+    // Another voltage chosen: the run has its weather already, and nothing is downloaded again.
     await switchLens(page, "Strings");
     const withAVoltage = page.waitForRequest((request) => isARun(request) && documentOf(request).system_voltage === 1500, { timeout: RUN });
-    await page.getByTestId("voltage-decision").filter({ visible: true }).getByRole("button", { name: "1500 V" }).click();
+    await page.getByRole("radiogroup", { name: "System voltage" }).filter({ visible: true }).getByRole("radio", { name: "1500 V" }).click();
     const answer = await resultOf(await withAVoltage);
     expect(answer.options.length).toBeGreaterThan(0);
 

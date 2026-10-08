@@ -72,19 +72,6 @@ test("performance, the degradation entered", async ({ page }, testInfo) => {
   await expectWholeScreen(page, "performance-years-degraded");
 });
 
-// Before a system voltage (the board "Performance, states"): the API's words in place of the KPIs, no energy.
-test("performance, before a system voltage", async ({ page }) => {
-  await page.route("**/api/demo", async (route) => {
-    const answer = await route.fetch();
-    const demo: Record<string, unknown> = await answer.json();
-    await route.fulfill({ response: answer, json: { ...demo, system_voltage: null } });
-  });
-  await page.goto("/performance");
-  await expect(page.getByTestId("energy-waits")).toContainText("Choose a system voltage to size the strings", { timeout: RUN });
-
-  await expectWholeScreen(page, "performance-no-voltage");
-});
-
 /**
  * A system voltage of 1000 V chosen in the Strings lens with the run that follows answered by `design`, then
  * Performance reached through the workspaces, so that the design that is open stays open.
