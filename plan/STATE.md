@@ -13,8 +13,16 @@ boards "System voltage · Set by the user's country" approved and on the canvas,
 3, D10 replaced. Before it, the voltage questions: the analysis of F7 (no rationale found in either repository; the v1
 spec's artifact cannot be read), the codes (NEC 690.7 and 690.31(G), AS/NZS 5033 and 4777.1, IEC 60364-7-712, CE Code
 Section 64, MNRE) in `plan/phase-16-system-voltage.md`. Record: `plan/sessions/022/`. **Deployed:** the owner deployed `main` with #153 to #159 and checked it (2026-10-08).
-**Next:** a new task in a fresh session, as the owner names it; the browser groups run when the owner says (#157's suites, and those
-#151's mobile fixes may trip, which the owner expects); Phase 15's clips on an iPhone or iPad.
+**Then, session 23 (2026-10-08):** a tester's report, "no more than 13 strings although the inverters have MPPTs free":
+the engine cut a string along one row only, so short rows left their ends unused. #160: each row gives its whole strings,
+then what the rows leave at their ends runs on into the next rows of the same orientation; strings in a row are used first,
+so the demo's option A is unchanged, D and E grow (28 × 28, 29 × 27). The parity snapshots renewed by `tools.parity renew`
+(only what moved past D64's bar). Time and memory measured: the demo +0.04 s, the roof at the limit +0.14 s and +30 MB
+(the modules the options now place, not the forming); numbers in #160. Not deployed. The owner: there is no desktop app at
+all; the desktop version was a proof of concept, this repository is the product.
+**Next:** #161 (offer the string length that places the most modules), then #162 (no words of a desktop app; the 6 MB
+message needs a remedy); the browser groups run when the owner says (#157's suites, #151's mobile fixes, and the Strings
+lens pictures whose options D and E #160 changed); Phase 15's clips on an iPhone or iPad.
 
 ## Where we are
 
