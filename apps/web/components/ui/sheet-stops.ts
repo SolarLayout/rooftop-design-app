@@ -13,12 +13,22 @@ const ENOUGH = 1 / 4;
 
 /**
  * Where the stops are in a room that is `room` high, for a sheet that shows `peek` of itself when it
- * is closed. They never cross: peek is the lowest, full the highest.
+ * is closed and takes `half` of the room at its middle stop. They never cross: peek is the lowest, full
+ * the highest.
  */
-export function heightsOf(room: number, peek: number): Heights {
+export function heightsOf(room: number, peek: number, half = 1 / 2): Heights {
   const full = Math.max(0, room);
   const lowest = Math.min(peek, full);
-  return { peek: lowest, half: Math.max(lowest, Math.round(full / 2)), full };
+  return { peek: lowest, half: Math.min(full, Math.max(lowest, Math.round(full * half))), full };
+}
+
+/**
+ * The share of a room `room` high that lies under what stands `above` high at its top, from 0 to 1; null
+ * while the room has no height. A sheet that takes this share at half meets the foot of what is above it.
+ */
+export function shareUnder(room: number, above: number): number | null {
+  if (room <= 0) return null;
+  return Math.min(1, Math.max(0, (room - above) / room));
 }
 
 /** How high the sheet is while it is dragged: it follows the pointer, between peek and full. */

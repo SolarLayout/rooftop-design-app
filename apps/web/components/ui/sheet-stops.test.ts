@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { heightAfterDrag, heightsOf, stopAfterDrag, stopAfterKey, stopAfterRelease, valueOf, wordsOf } from "./sheet-stops";
+import { heightAfterDrag, heightsOf, shareUnder, stopAfterDrag, stopAfterKey, stopAfterRelease, valueOf, wordsOf } from "./sheet-stops";
 
 // The room of the Studio on a phone of 390 by 844: what is between the top bar and the tab bar.
 const ROOM = 716;
@@ -22,6 +22,34 @@ describe("heightsOf: where the stops are", () => {
 
   test("a room that was not measured yet has no height", () => {
     expect(heightsOf(0, 84)).toEqual({ peek: 0, half: 0, full: 0 });
+  });
+
+  test("half can be another share of the room", () => {
+    expect(heightsOf(ROOM, PEEK, 0.6).half).toBe(430);
+  });
+
+  test("a share of the room for half still never crosses peek or full", () => {
+    expect(heightsOf(ROOM, PEEK, 0.05).half).toBe(84);
+    expect(heightsOf(ROOM, PEEK, 1.4).half).toBe(716);
+  });
+});
+
+describe("shareUnder: the share of the room under what stands at its top", () => {
+  test("the Studio on a phone of 390 by 844: the stage and the vitals take 330 of 716", () => {
+    expect(shareUnder(716, 330)).toBeCloseTo(386 / 716, 6);
+  });
+
+  test("on a taller phone the share grows, on a shorter one it shrinks", () => {
+    expect(shareUnder(804, 330)).toBeCloseTo(474 / 804, 6);
+    expect(shareUnder(536, 330)).toBeCloseTo(206 / 536, 6);
+  });
+
+  test("nothing is left when what stands above fills the room", () => {
+    expect(shareUnder(300, 330)).toBe(0);
+  });
+
+  test("a room that was not measured yet has no share", () => {
+    expect(shareUnder(0, 330)).toBeNull();
   });
 });
 

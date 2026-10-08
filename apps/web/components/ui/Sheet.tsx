@@ -11,6 +11,8 @@ type Props = {
   label: string;
   stop: Stop;
   onStop: (stop: Stop) => void;
+  /** The share of the room the sheet takes at half, from 0 to 1; half the room when it is not given. */
+  half?: number;
   children: ReactNode;
   className?: string;
 };
@@ -23,12 +25,14 @@ const HEIGHT: Record<Stop, string> = {
 
 /**
  * The bottom sheet of the phone. It stands at the bottom of the room it is put into, which is the
- * nearest element that is placed (`relative`), and has three stops: peek, half the room, all of it.
+ * nearest element that is placed (`relative`), and has three stops: peek, half the room (or the share
+ * given), all of it.
  */
-export function Sheet({ label, stop, onStop, children, className }: Props) {
+export function Sheet({ label, stop, onStop, half, children, className }: Props) {
   const content = useId();
-  const drag = useSheetDrag(stop, onStop);
+  const drag = useSheetDrag(stop, onStop, half);
   const isDragged = drag.share !== null;
+  const span = drag.share ?? (stop === "half" ? half : undefined);
 
   return (
     <section
@@ -36,10 +40,10 @@ export function Sheet({ label, stop, onStop, children, className }: Props) {
       aria-label={label}
       className={classNames(
         "absolute inset-x-0 bottom-0 z-sheet flex max-h-full flex-col rounded-t-panel border-t border-line bg-chrome",
-        isDragged ? "h-span" : classNames("sheet-motion", HEIGHT[stop]),
+        isDragged ? "h-span" : classNames("sheet-motion", span === undefined ? HEIGHT[stop] : "h-span min-h-sheet-peek"),
         className,
       )}
-      style={measures(isDragged ? { span: drag.share ?? 0 } : {})}
+      style={measures(span === undefined ? {} : { span })}
     >
       <div
         role="separator"
