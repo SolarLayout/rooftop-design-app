@@ -15,7 +15,7 @@ type Props = {
 };
 
 const AT_THE_BOTTOM = "bottom-0 px-safe-4 pb-safe-6";
-const ABOVE_THE_TAB_BAR = "bottom-safe-tabbar px-3 pb-3 tablet:bottom-0 tablet:px-safe-4 tablet:pb-safe-6";
+const ABOVE_THE_TAB_BAR = "bottom-tabbar-on-screen px-3 pb-3 tablet:bottom-0 tablet:px-safe-4 tablet:pb-safe-6";
 
 const nothing = () => null;
 
