@@ -22,3 +22,11 @@ export function measures(values: Partial<Record<Measure, number>>): CSSPropertie
   }
   return style;
 }
+
+/**
+ * The same numbers set on an element's style directly: for one that changes every frame (a clip's line as it plays),
+ * where a render of React a frame would be waste.
+ */
+export function applyMeasures(element: { style: Pick<CSSStyleDeclaration, "setProperty"> }, values: Partial<Record<Measure, number>>): void {
+  for (const [name, value] of Object.entries(measures(values))) element.style.setProperty(name, String(value));
+}

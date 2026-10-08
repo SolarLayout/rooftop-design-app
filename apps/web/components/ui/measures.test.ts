@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { measures } from "./measures";
+import { applyMeasures, measures } from "./measures";
 
 /** The style as the variables it sets. */
 const variables = (values: Parameters<typeof measures>[0]): Record<string, unknown> => ({ ...measures(values) });
@@ -29,5 +29,13 @@ describe("measures", () => {
   test("what is no number is refused: the style would be void", () => {
     expect(() => measures({ at: Number.NaN })).toThrow("at is no number");
     expect(() => measures({ span: Number.POSITIVE_INFINITY })).toThrow("span is no number");
+  });
+});
+
+describe("measures on an element", () => {
+  test("set the same variables on its style, for a number that changes every frame", () => {
+    const set: Record<string, string> = {};
+    applyMeasures({ style: { setProperty: (name: string, value: string) => void (set[name] = value) } }, { span: 1 / 3 });
+    expect(set).toEqual({ "--span": "0.333333" });
   });
 });

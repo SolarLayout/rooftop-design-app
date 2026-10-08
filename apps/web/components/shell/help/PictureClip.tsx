@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
-import { measures } from "@/components/ui/measures";
+import { applyMeasures, measures } from "@/components/ui/measures";
+import { clipShareOf } from "@/lib/help/clip-share";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { PictureLarge } from "./PictureLarge";
 import { FRAME, MarksOver, MarkWords, useMatches, type MarkProps } from "./picture-parts";
@@ -33,7 +34,7 @@ const BUTTON = "absolute top-1/2 left-1/2 grid size-12 -translate-1/2 place-item
 export function PictureClip({ clip, length, poster, alt, width, height, marks }: Props) {
   const video = useRef<HTMLVideoElement>(null);
   const [state, setState] = useState<State>("rest");
-  const [share, setShare] = useState(0);
+  const line = useRef<HTMLSpanElement>(null);
   const still = useMatches("(prefers-reduced-motion: reduce)");
   const touch = useMatches("(pointer: coarse)");
   const [large, setLarge] = useState(false);
@@ -55,6 +56,21 @@ export function PictureClip({ clip, length, poster, alt, width, height, marks }:
 
   const playing = state === "playing";
   const moving = playing || state === "paused";
+
+  // The line at the foot follows the clip every frame while it plays: the video's own time events come about four times a
+  // second, and the line jumped with them. Paused, it stays where the last frame put it. It begins at nothing (its style,
+  // set once when it appears; a render after does not touch it, as the value given does not change).
+  useEffect(() => {
+    const element = video.current;
+    if (!moving || !element) return;
+    let frame = 0;
+    const follow = () => {
+      if (line.current) applyMeasures(line.current, { span: clipShareOf(element.currentTime, element.duration) });
+      if (!element.paused) frame = requestAnimationFrame(follow);
+    };
+    follow();
+    return () => cancelAnimationFrame(frame);
+  }, [moving, playing]);
   return (
     <>
       <div className="relative">
@@ -79,7 +95,6 @@ export function PictureClip({ clip, length, poster, alt, width, height, marks }:
             onPause={() => unlessFailed("paused")}
             onEnded={() => unlessFailed("paused")}
             onError={() => setState("failed")}
-            onTimeUpdate={(event) => setShare(event.currentTarget.currentTime / (event.currentTarget.duration || 1))}
             className="block h-auto w-full"
           />
           {moving ? null : <MarksOver marks={marks} />}
@@ -95,7 +110,7 @@ export function PictureClip({ clip, length, poster, alt, width, height, marks }:
           ) : null}
           {moving ? (
             <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1 bg-ground/60">
-              <span className="block h-full w-span bg-accent" style={measures({ span: share })} />
+              <span ref={line} className="block h-full w-span bg-accent" style={measures({ span: 0 })} />
             </span>
           ) : null}
         </button>
