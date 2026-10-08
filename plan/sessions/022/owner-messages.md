@@ -25,3 +25,5 @@
 13. "approved. now the plan. the in-app help docs need to updated/created/corrected as needed"
 14. "go with your recommendation"
 15. "go ahead, build it. finally creat PR with screenshots as proof as usual"
+16. "regarding these, what's your reco and why?" (on the two findings: the inverter file shown as a full path on the server; the help sheet labelling the current voltage "Your choice" when the app set it)
+17. "go ahead with both, path one first. The user has nothing to so with the "path on teh server" - it makes no sense for them"

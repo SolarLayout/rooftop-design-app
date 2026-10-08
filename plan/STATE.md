@@ -6,7 +6,9 @@ Keep it short and true. History belongs in git and in the phase files, not here.
 **Last updated:** 2026-10-08, session 22: **Phase 16 built**, the system voltage set by the user's country (D87: 600 V
 in the US and Canada, 1000 V elsewhere; the request's country, else the time zone, else India; D88: the equipment never
 moves the voltage, the app never raises it). #153 (who set it, engine and API), #154 (`/country`, `lib/country`, the store),
-#155 (the Strings lens and the picker to the boards), #156 (the help), #157 (the browser suites, changed by reading). The
+#155 (the Strings lens and the picker to the boards), #156 (the help), #157 (the browser suites, changed by reading); then
+#158 (the bundled files named by their names, not their path on the server) and #159 (the help sheet's mark says who set
+the voltage), both found while building. The
 boards "System voltage · Set by the user's country" approved and on the canvas, their third state from the build. Hard rule
 3, D10 replaced. Before it, the voltage questions: the analysis of F7 (no rationale found in either repository; the v1
 spec's artifact cannot be read), the codes (NEC 690.7 and 690.31(G), AS/NZS 5033 and 4777.1, IEC 60364-7-712, CE Code

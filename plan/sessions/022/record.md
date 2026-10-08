@@ -21,6 +21,7 @@ later" (the mobile fixes of session 21 may trip some).
 | The boards "System voltage · Set by the user's country", from a prototype on the local branch `design/system-voltage` (never merged), on the canvas page "System voltage"; approved | `docs/design/mockups/build_system_voltage.py`, `system_voltage/` |
 | The plan; D88 found while planning (lowering the app's value to a class shortened the strings: 11 where the inverter takes 15) and taken on the owner's word | `plan/phase-16-plan.md`, D88 |
 | Built: who set it (#153); the country and the default (#154); the lens and the picker (#155); the help (#156); the browser suites by reading (#157) | `phase-16-system-voltage.md`, "As built" |
+| Two findings fixed on the owner's word: the bundled files named by their names, not their path on the server (#158; the parity test caught a first try that dropped the inverter's curves); the help sheet's mark of the voltage says who set it (#159) | #158, #159 |
 | The boards' third state taken again from the build; hard rule 3, `apps/web/CLAUDE.md`, D10, `components.md` ("System voltage", the vitals' states), `docs/help-content.md` | this commit |
 
 ## Why things are as they are

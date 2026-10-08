@@ -518,7 +518,8 @@ holds the focus; Escape, the ×, a press beside it close it, and the focus goes 
 - Then, 20 in, 18 down, with 16 between: the title (`type-lens`, `type-lens-touch` on touch, in the light of a section
   heading: `color-heading` with `heading-glow`; the owner, session 19), the summary (`text-2`); for a
   one-choice section its options in a bordered list (`radius-row`), each its label (500) and what it means (`type-small`,
-  `text-2`), the user's own on `note-surface` with "Your choice" (`accent` on `accent-ink`, 11 at 600); the body: headings
+  `text-2`), the section's own on `note-surface` with "Your choice" (`accent` on `accent-ink`, 11 at 600), or the words the section
+  gives of who set it (the system voltage: `Set for India`, `Set by the app`; D87, #159); the body: headings
   (`type-title`, in the same light), words (`text-2`), the user's own on-screen words in mono on `surface-2`, a note (`note-surface`, the note
   mark), a link to another topic in the accent, underlined; while the body loads, three lines of skeleton; when it cannot
   load, "This part of the help did not load. Check the connection and try again." and Try again. Then "Related" (a section heading:
