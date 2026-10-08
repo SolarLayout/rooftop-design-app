@@ -230,7 +230,7 @@ def string_physics(pre: Precomputed, module: Module, mm: ModuleModel, strings: l
     chain = np.zeros((len(CHAIN), n_s))
     group = pre.group_of[members]                  # (strings, N)
     if np.any(group != group[:, :1]):
-        raise ValueError("A string spans modules of two orientations; strings are formed along one row.")
+        raise ValueError("A string spans modules of two orientations; strings are formed within one orientation.")
     seen = 1.0 - sh.sky_loss[members].astype(float).mean(axis=1)   # (strings,) the sky its modules see
     for gi, key in enumerate(pre.groups):
         g = pre.groups[key]

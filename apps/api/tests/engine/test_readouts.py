@@ -49,8 +49,8 @@ def test_the_verdict_of_an_option_below_target_says_so(demo_design, option_d):
     verdict = readouts.verdict(demo_design, option_d)
 
     assert not verdict.ok
-    assert verdict.title.startswith("26 in series fits: Vmp 1,075 V at STC")
-    assert verdict.detail.endswith("27 strings on 2 inverter(s), DC/AC 0.71 (below target).")
+    assert verdict.title.startswith("28 in series fits: Vmp 1,158 V at STC")
+    assert verdict.detail.endswith("28 strings on 2 inverter(s), DC/AC 0.80 (below target).")
 
 
 # ── the verdict counts the MPPT loads (decision 18) ──────────────────────────
@@ -137,8 +137,8 @@ def test_without_a_current_limit_every_option_is_not_ok_and_says_so(without_limi
         "29x22x1",
         "26x24x1",
         "28x22x1",
-        "26x27x2",
-        "28x25x2",
+        "28x28x2",
+        "29x27x2",
     ]
     assert all(not verdict.ok for verdict in verdicts)
     assert all(verdict.detail.endswith(f". {NO_LIMIT}") for verdict in verdicts)
@@ -187,7 +187,7 @@ def test_the_captions_of_the_demo_at_1000_v():
     design = Design(project, memo=KEPT)
     design.run_options()
 
-    assert [option.key for option in design.options] == ["18x42x2", "19x37x2", "19x24x1", "18x24x1"]
+    assert [option.key for option in design.options] == ["19x41x2", "18x43x2", "19x24x1", "18x24x1"]
     assert captions(design) == [
         "Below target, 2 inverters",
         "Below target, 2 inverters",
@@ -233,8 +233,9 @@ def test_the_limit_note_names_the_three_ratings(demo_design):
 def test_the_note_on_the_options(demo_design):
     assert readouts.options_note(demo_design) == (
         "Target DC/AC 1.10–1.30, warning above 1.40. At most 4 strings per MPPT (4 × 13.58 A ≤ 65.0 A), "
-        "so one inverter takes 24 strings. The least shaded strings are used first. "
-        "! D: DC/AC 0.71, below target; E: DC/AC 0.71, below target."
+        "so one inverter takes 24 strings. The least shaded strings in a row are used first, "
+        "then those across rows. "
+        "! D: DC/AC 0.80, below target; E: DC/AC 0.80, below target."
     )
 
 
@@ -265,7 +266,7 @@ def test_the_mppts_of_option_a(demo_design, option_a):
 def test_an_mppt_without_strings_is_left_out(demo_design, option_d):
     loads = readouts.mppt_loads(demo_design, option_d)
 
-    assert sum(load.strings for load in loads) == 27
+    assert sum(load.strings for load in loads) == 28
     assert all(load.strings > 0 for load in loads)
     assert {load.inverter for load in loads} == {1, 2}
 
@@ -360,7 +361,7 @@ def test_the_read_outs_of_an_option_that_is_not_the_chosen_one(demo_design, opti
     rows = dict(readouts.summary(demo_design, option_d))
     lines = readouts.bill_of_materials(demo_design, option_d)
 
-    assert rows["Stringing"] == "26 in series × 27 strings on 2 inverter(s)"
-    assert rows["DC capacity"] == "393.12 kWp (702 modules)"
-    assert (lines[0].qty, lines[1].qty) == (702, 2)
+    assert rows["Stringing"] == "28 in series × 28 strings on 2 inverter(s)"
+    assert rows["DC capacity"] == "439.04 kWp (784 modules)"
+    assert (lines[0].qty, lines[1].qty) == (784, 2)
     assert demo_design.p.chosen_option == chosen_before, "the design is only read"

@@ -5,7 +5,8 @@
   inverter maxima); Vmp cold ≤ MPPT max; Vmp at the highest ambient + ΔT ≥ MPPT min.
 * Parallel: per MPPT, strings × Imp ≤ max input current and strings × Isc ≤ max
   short-circuit current (decision F2).
-* A string runs along one row: out on the top line, back on the bottom (decision O6).
+* A string runs along one row: out on the top line, back on the bottom (decision O6). What the
+  rows leave at their ends is wired across rows of the same orientation.
 """
 
 from __future__ import annotations
@@ -87,22 +88,26 @@ class PVString:
     azimuth: float
     start_xy: tuple[float, float]
     extent_m: float
+    across_rows: bool = False       # wired from what rows left at their ends: used after the strings in a row
 
 
 def form_strings(layout: Layout, n: int) -> list[PVString]:
     """Cut the layout into strings of n modules.
 
     Tilted and flush rows: along one row, out on the top line and back on the
-    bottom (decision O6). East-west: along one side of a unit, snaking into the
-    same side of the next unit, so a string never mixes east and west modules.
+    bottom (decision O6). What the rows' whole strings leave at their ends runs
+    on into the next row of the same orientation, turning back at each, so the
+    roof's positions are used. East-west: along one side of a unit, snaking into
+    the same side of the next unit, so a string never mixes east and west modules.
     """
     mods = layout.modules
     out: list[PVString] = []
 
-    def emit(chosen: list[int], row: int):
+    def emit(chosen: list[int], row: int, across_rows: bool = False):
         first = mods[chosen[0]]
         pts = [mods[j].center for j in chosen]
-        out.append(PVString(chosen, row, first.azimuth, first.center, max(math.dist(pts[0], p) for p in pts)))
+        out.append(PVString(chosen, row, first.azimuth, first.center, max(math.dist(pts[0], p) for p in pts),
+                            across_rows))
 
     if layout.kind == "flat_ew":
         for side in (0, 1):
@@ -115,23 +120,38 @@ def form_strings(layout: Layout, n: int) -> list[PVString]:
                 emit(seq[i:i + n], mods[seq[i]].row)
         return out
 
+    def wired(cols: list[int], lines: list[int], grid: dict[tuple[int, int], int]) -> list[int]:
+        """The modules of these columns in wiring order: out on the top line, back on the bottom."""
+        order: list[int] = []
+        for k, ln in enumerate(lines):
+            seq = cols if k % 2 == 0 else list(reversed(cols))
+            order += [grid[(c, ln)] for c in seq if (c, ln) in grid]
+        return order
+
     by_row: dict[int, list] = {}
     for m in mods:
         by_row.setdefault(m.row, []).append(m)
+    left: dict[tuple[float, float], list[list[int]]] = {}   # per orientation, what each row's strings left
     for row in sorted(by_row):
         ms = by_row[row]
         lines = sorted({m.line for m in ms}, reverse=True)      # top line first
         cols = sorted({m.col for m in ms})
         grid = {(m.col, m.line): m.idx for m in ms}
         c_need = math.ceil(n / len(lines))
+        taken: set[int] = set()
         for i in range(0, len(cols) - c_need + 1, c_need):
-            block = cols[i:i + c_need]
-            order: list[int] = []
-            for k, ln in enumerate(lines):
-                seq = block if k % 2 == 0 else list(reversed(block))
-                order += [grid[(c, ln)] for c in seq if (c, ln) in grid]
+            order = wired(cols[i:i + c_need], lines, grid)
             if len(order) >= n:
                 emit(order[:n], row)
+                taken.update(order[:n])
+        rest = [i for i in wired(cols, lines, grid) if i not in taken]
+        if rest:
+            left.setdefault((round(ms[0].tilt, 3), round(ms[0].azimuth, 3)), []).append(rest)
+    # What is left runs on from row to row, turning back at each, so a string never mixes two orientations.
+    for rests in left.values():
+        seq = [i for k, rest in enumerate(rests) for i in (rest if k % 2 == 0 else reversed(rest))]
+        for i in range(0, len(seq) - n + 1, n):
+            emit(seq[i:i + n], mods[seq[i]].row, across_rows=True)
     return out
 
 

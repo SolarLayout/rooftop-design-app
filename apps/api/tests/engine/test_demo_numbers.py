@@ -8,7 +8,7 @@ from tests.kept import KEPT
 
 pytestmark = pytest.mark.slow
 
-OPTION_KEYS = ["29x22x1", "26x24x1", "28x22x1", "26x27x2", "28x25x2"]
+OPTION_KEYS = ["29x22x1", "26x24x1", "28x22x1", "28x28x2", "29x27x2"]
 MONTHLY_MWH = [62.0, 58.8, 68.4, 64.1, 54.9, 46.9, 31.5, 38.5, 37.5, 53.4, 53.5, 48.5]
 P_VALUES_MWH = {50: 617.8, 75: 600.2, 90: 584.2}
 # A value printed with one decimal is at most half a step away from the value it was rounded from.

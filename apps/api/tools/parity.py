@@ -8,6 +8,8 @@ figure, identical or by how much it moved.
 Run from apps/api:
   uv run python -m tools.parity save [demo|limit]    the snapshot, into tests/fixtures/parity (once)
   uv run python -m tools.parity check [demo|limit]   today's engine against it
+  uv run python -m tools.parity renew [demo|limit]   after a change of behaviour the owner asked for: what
+                                                     moved past the bar is taken from today, the rest kept
 """
 
 from __future__ import annotations
@@ -106,6 +108,22 @@ def within_the_bar(moved: Moved) -> bool:
     return moved.relative <= RELATIVE or abs(moved.now - moved.was) <= ABSOLUTE
 
 
+def renewed(was: Any, now: Any) -> Any:
+    """The snapshot with today's figures where they moved past the bar, and its own wherever they did not.
+
+    An option whose key changed is another option: it is taken whole. What today has not is dropped.
+    """
+    if isinstance(was, dict) and isinstance(now, dict):
+        if "key" in was and "key" in now and was["key"] != now["key"]:
+            return now
+        return {key: renewed(was[key], value) if key in was else value for key, value in now.items()}
+    if isinstance(was, list) and isinstance(now, list):
+        if len(was) != len(now):
+            return now
+        return [renewed(a, b) for a, b in zip(was, now, strict=True)]
+    return was if all(within_the_bar(m) for m in differences(was, now)) else now
+
+
 def family(path: str) -> str:
     """The path with its list indices dropped: one line per kind of figure."""
     out, depth = [], 0
@@ -156,6 +174,13 @@ def main(args: list[str]) -> None:
             with gzip.open(path_of(roof), "wt", encoding="utf-8") as f:
                 json.dump(now, f, sort_keys=True, separators=(",", ":"))
             print(f"{roof}: saved {path_of(roof)} ({seconds:.1f} s)")
+            continue
+        if action == "renew":
+            was = saved(roof)
+            with gzip.open(path_of(roof), "wt", encoding="utf-8") as f:
+                json.dump(renewed(was, now), f, sort_keys=True, separators=(",", ":"))
+            past = [m for m in differences(was, now) if not within_the_bar(m)]
+            print(f"\n## {roof}: renewed ({seconds:.1f} s)\n\n{report(past)}")
             continue
         print(f"\n## {roof} ({seconds:.1f} s)\n\n{report(differences(saved(roof), now))}")
 

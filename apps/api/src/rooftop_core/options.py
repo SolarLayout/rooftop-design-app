@@ -78,7 +78,8 @@ def verdict(dcac: float) -> tuple[bool, str]:
 
 @dataclass
 class OfLength:
-    """The strings of one series length, least shaded first, and their hours (shared by its candidates, D66)."""
+    """The strings of one series length, those in a row and then those across rows, each least shaded first, and
+    their hours (shared by its candidates, D66)."""
 
     ranked: list[PVString]
     physics: StringPhysics
@@ -86,9 +87,9 @@ class OfLength:
 
 def of_length(pre: Precomputed, layout: Layout, module: Module, mm: ModuleModel, losses: Losses, roof: Roof,
               n: int, strings: list[PVString] | None = None, kept: KeptPoints | None = None) -> OfLength:
-    """The strings of *n* modules the layout holds (*strings*, when they are formed already), ordered by their
-    beam-weighted annual shaded fraction (stable: the order they were formed in breaks a tie), with their hours
-    worked out once."""
+    """The strings of *n* modules the layout holds (*strings*, when they are formed already), those in their rows
+    before those across rows, each part ordered by its beam-weighted annual shaded fraction (stable: the order they
+    were formed in breaks a tie), with their hours worked out once."""
     strings = form_strings(layout, n) if strings is None else strings
     physics = string_physics(pre, module, mm, strings, losses, roof, kept)
     if not strings:
@@ -97,7 +98,8 @@ def of_length(pre: Precomputed, layout: Layout, module: Module, mm: ModuleModel,
     total = max(beam.sum(), 1e-9)
     # Each string's hours summed alone and in order, as a row of its own.
     shade = np.ascontiguousarray((physics.E * beam[:, None]).T).sum(axis=1) / total
-    return OfLength([strings[i] for i in np.argsort(shade, kind="stable")], physics)
+    # The strings in their rows first, those across rows only when more are needed: each needs a jumper.
+    return OfLength([strings[i] for i in np.lexsort((shade, [s.across_rows for s in strings]))], physics)
 
 
 def make_option(pre, layout, module, mm, inv, losses, roof, n, s, k, held: OfLength, custom=False) -> StringOption:

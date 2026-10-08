@@ -118,17 +118,17 @@ def test_the_layout_is_that_of_the_layout_route(client, demo, demo_result):
 def test_the_five_options_of_the_demo(demo_result):
     options = demo_result["options"]
 
-    assert [o["key"] for o in options] == ["29x22x1", "26x24x1", "28x22x1", "26x27x2", "28x25x2"]
+    assert [o["key"] for o in options] == ["29x22x1", "26x24x1", "28x22x1", "28x28x2", "29x27x2"]
     assert [o["letter"] for o in options] == list("ABCDE")
-    assert [o["n_modules"] for o in options] == [638, 624, 616, 702, 700]
-    assert [o["dc_kwp"] for o in options] == pytest.approx([357.28, 349.44, 344.96, 393.12, 392.00])
-    assert [round(o["dcac"], 2) for o in options] == [1.30, 1.27, 1.25, 0.71, 0.71]
+    assert [o["n_modules"] for o in options] == [638, 624, 616, 784, 783]
+    assert [o["dc_kwp"] for o in options] == pytest.approx([357.28, 349.44, 344.96, 439.04, 438.48])
+    assert [round(o["dcac"], 2) for o in options] == [1.30, 1.27, 1.25, 0.80, 0.80]
     assert [o["ok"] for o in options] == [True, True, True, False, False]
     assert [o["note"] for o in options] == ["", "", "", "below target", "below target"]
     assert [o["recommended"] for o in options] == [True, False, False, False, False]
     assert [o["custom"] for o in options] == [False] * 5
     energy = [o["energy"]["energy_mwh"] for o in options]
-    assert energy == pytest.approx([617.8, 607.7, 602.9, 700.9, 700.5], abs=ONE_DECIMAL)
+    assert energy == pytest.approx([617.8, 607.7, 602.9, 785.0, 784.5], abs=ONE_DECIMAL)
     assert [o["caption"] for o in options] == [
         "Recommended",
         "Fills the inverter",
@@ -152,8 +152,8 @@ def test_the_strings_the_roof_holds_of_each_length_in_the_range(demo_result):
     held = demo_result["strings_by_series"]
 
     assert [length["n_series"] for length in held] == list(range(14, 30))
-    assert held[-1] == {"n_series": 29, "strings": 23}
-    assert held[26 - 14] == {"n_series": 26, "strings": 27}
+    assert held[-1] == {"n_series": 29, "strings": 27}
+    assert held[26 - 14] == {"n_series": 26, "strings": 30}
 
 
 def test_the_energy_of_option_a(option_a):
@@ -535,7 +535,7 @@ def test_a_custom_equal_to_option_b_is_a_sixth_option_that_custom_chooses(client
     result = result_of(client.post("/design", json=demo))
 
     options = result["options"]
-    assert [o["key"] for o in options] == ["29x22x1", "26x24x1", "28x22x1", "26x27x2", "28x25x2", "custom"]
+    assert [o["key"] for o in options] == ["29x22x1", "26x24x1", "28x22x1", "28x28x2", "29x27x2", "custom"]
     assert [o["custom"] for o in options] == [False] * 5 + [True]
     assert (options[5]["n_series"], options[5]["n_strings"], options[5]["n_inverters"]) == (26, 24, 1)
     assert result["chosen_option"] == "custom"
@@ -611,8 +611,8 @@ def test_a_roof_with_fewer_positions_than_a_string_says_so(client, demo):
     assert result["no_options"] == {
         "code": "too_few_positions",
         "title": "Too few positions for a string",
-        "message": f"The roof holds {positions} positions, and a string takes 14 to 29 modules along one "
-        "row. No row holds a string of that length.",
+        "message": f"The roof holds {positions} positions, and a string takes 14 to 29 modules. "
+        "No string of that length fits.",
     }
 
 
