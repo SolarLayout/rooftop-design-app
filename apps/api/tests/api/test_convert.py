@@ -112,6 +112,24 @@ def test_a_project_without_voltage_weather_and_overrides_survives_both_ways():
     assert back.system_voltage is None and back.weather_json is None and back.custom is None
 
 
+def test_who_set_the_voltage_survives_both_ways():
+    project = Project(system_voltage=1000.0, system_voltage_by="app")
+
+    schema = convert.project_from_engine(project)
+
+    assert schema.system_voltage_by == "app"
+    assert convert.project_to_engine(schema) == project
+
+
+def test_a_request_names_who_set_the_voltage_as_the_app_or_the_user():
+    written = json.loads(json.dumps(Project(system_voltage=600.0, system_voltage_by="app").to_json()))
+
+    assert schemas.Project.model_validate(written).system_voltage_by == "app"
+    written["system_voltage_by"] = "the country"
+    with pytest.raises(ValueError, match="system_voltage_by"):
+        schemas.Project.model_validate(written)
+
+
 def test_what_the_api_answers_is_a_project_file():
     project = demo_project()
 

@@ -1569,6 +1569,8 @@ export interface components {
             roof_input?: components["schemas"]["RoofInput"];
             /** System Voltage */
             system_voltage?: (600 | 1000 | 1500) | null;
+            /** System Voltage By */
+            system_voltage_by?: ("app" | "user") | null;
             /** T Max Override */
             t_max_override?: number | null;
             /** T Min Override */

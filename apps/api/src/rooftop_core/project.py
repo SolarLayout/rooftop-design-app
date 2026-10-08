@@ -7,6 +7,7 @@ import json
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field, fields, replace
 from pathlib import Path
+from typing import Literal
 
 from . import memo as memo_mod
 from . import progress
@@ -23,6 +24,7 @@ from .resources import SAMPLE_OND, SAMPLE_PAN, sample_path
 from .simulation import KeptPoints, Losses, Precomputed, after_the_year, precompute
 from .stringing import CELL_RISE, SeriesRange, series_range
 
+VoltageSetBy = Literal["app", "user"]
 FILE_SUFFIX = ".rtd"
 FORMAT_VERSION = 2          # embeds the PAN, OND and CSV text; format 1 held paths to them
 READABLE_FORMATS = (1, 2)
@@ -41,7 +43,8 @@ class Project:
     weather_source: str = "pvgis"
     weather_csv: str = ""                    # the name of the CSV file; its content is weather_csv_text
     weather_csv_text: str = ""
-    system_voltage: float | None = None      # decision F7: the user must choose
+    system_voltage: float | None = None      # None: nothing is sized; the engine never chooses one (D87)
+    system_voltage_by: VoltageSetBy | None = None  # who set it: the app (from the user's country) or the user
     cell_rise_c: float | None = None         # None: by roof type (decision 14)
     t_min_override: float | None = None
     t_max_override: float | None = None
@@ -81,6 +84,9 @@ class Project:
         losses = Losses(**_known(Losses, los_d))
         if d.get("custom"):
             d["custom"] = tuple(d["custom"])
+        if "system_voltage_by" not in d:
+            # A file of before: a voltage in it was chosen by someone.
+            d["system_voltage_by"] = "user" if d.get("system_voltage") else None
         return cls(roof=roof, array=arr, losses=losses, **_known(cls, d))
 
     def to_text(self) -> str:

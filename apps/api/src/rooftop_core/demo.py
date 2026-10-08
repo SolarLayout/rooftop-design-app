@@ -48,5 +48,6 @@ def demo_project():
     p = Project(name="Pune demo roof", roof=demo_roof(), array=demo_array())
     p.weather_json = json.loads(open(sample_path("pune_weather.json")).read())
     p.system_voltage = 1500.0
+    p.system_voltage_by = "user"
     p.roof_input = {"mode": "rect", "length": 90.0, "width": 40.0, "facing": 180.0, "file": "", "dxf_units": "m"}
     return p

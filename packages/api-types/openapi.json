@@ -2587,7 +2587,7 @@
           "system_voltage": {
             "anyOf": [
               {
-                "description": "Volts. There is no default: the user chooses, and nothing is sized before.",
+                "description": "Volts. The API has no default: without one nothing is sized. The web app sets it from the user's country (D87).",
                 "enum": [
                   600,
                   1000,
@@ -2600,6 +2600,22 @@
               }
             ],
             "title": "System Voltage"
+          },
+          "system_voltage_by": {
+            "anyOf": [
+              {
+                "description": "Who set the system voltage: the app, from the user's country, or the user. Null without a voltage.",
+                "enum": [
+                  "app",
+                  "user"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "System Voltage By"
           },
           "t_max_override": {
             "anyOf": [
