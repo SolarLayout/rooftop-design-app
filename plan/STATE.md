@@ -9,9 +9,8 @@ tokens `--safe-*` and their utilities (`pt-safe-`, `pb-safe-`, `top-safe-`, `bot
 widths (`tablet-wide`, `desktop-wide`) are container queries on the shell; the manifest, the icons drawn from the mark with
 `next/og` (`lib/brand`), `appleWebApp` with the status bar black-translucent. #150: the check's own test that timed out on
 a clean main. Session 20 before it: Find's first step (D85; #143 to #145). **Deployed:** Staging and Production run
-`1d32752` (Staging 2026-10-07, Production 2026-10-08). Since, not deployed yet: #146, #149, #150, #151, #152. **Left of
-#147:** the owner, once deployed, adds the app to an iPhone's Home Screen and looks at each workspace and Find at the top
-and the bottom, upright and on its side (WebKit here cannot show the installed mode); item 4 of the issue, a hint to Add
+`1d32752` (Staging 2026-10-07, Production 2026-10-08). Since, not deployed yet: #146, #149, #150, #151, #152. The owner
+deployed them and checked #147 on an iPhone, added to the Home Screen: it works (2026-10-08). **Left of #147:** item 4 of the issue, a hint to Add
 to Home Screen, is new UI and waits for the owner's word and a board. Found, not changed: on a phone on its side Find's
 sheet (384) fills the screen and hides the map, as before. Left of Phase 15: the owner plays the clips in Safari on an
 iPhone or iPad. **Next:** the owner's enhancements and fixes.
