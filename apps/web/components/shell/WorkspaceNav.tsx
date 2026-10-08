@@ -53,7 +53,7 @@ export function TabBar({ current, lens }: Props) {
   return (
     <nav
       aria-label="Workspaces"
-      className="grid h-safe-tabbar shrink-0 grid-cols-3 border-t border-line-subtle bg-chrome px-3 pt-1.5 pb-safe-2.5 tablet:hidden"
+      className="grid h-tabbar-on-screen shrink-0 grid-cols-3 border-t border-line-subtle bg-chrome px-3 pt-1.5 pb-tabbar-foot-on-screen tablet:hidden"
     >
       {WORKSPACES.map(({ id, name }) => (
         <Link

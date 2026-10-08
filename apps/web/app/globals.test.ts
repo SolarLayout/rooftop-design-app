@@ -281,6 +281,17 @@ describe("the safe areas", () => {
     expect(made).toContain(".h-safe-96 { height: calc(calc(var(--spacing) * 96) + var(--safe-bottom)); }");
   });
 
+  test("the tab bar's foot is the larger of its own padding and the home bar, not both: the home bar's zone is its foot", async () => {
+    expect(declared.get("--size-tabbar-foot")).toBe("10px");
+    expect(declared.get("--size-tabbar-foot-on-screen")).toBe("max(var(--size-tabbar-foot), var(--safe-bottom))");
+    expect(declared.get("--size-tabbar-on-screen")).toBe("calc(var(--size-tabbar) - var(--size-tabbar-foot) + var(--size-tabbar-foot-on-screen))");
+    const made = oneLine(await utilitiesOf(["pb-tabbar-foot-on-screen", "h-tabbar-on-screen", "bottom-tabbar-on-screen"]));
+
+    expect(made).toContain(".pb-tabbar-foot-on-screen { padding-bottom: var(--size-tabbar-foot-on-screen); }");
+    expect(made).toContain(".h-tabbar-on-screen { height: var(--size-tabbar-on-screen); }");
+    expect(made).toContain(".bottom-tabbar-on-screen { bottom: var(--size-tabbar-on-screen); }");
+  });
+
   test("the page keeps clear of the sides, where the notch is when the phone is on its side", () => {
     const base = block(css, "@layer base");
     expect(oneLine(base)).toContain("body { padding-left: var(--safe-left); padding-right: var(--safe-right); }");

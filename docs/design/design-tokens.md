@@ -290,7 +290,10 @@ Base 2 px. Steps in use: 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48,
 | `--size-find-panel` | `380px` | Find and outline panel width |
 | `--size-find-stage-inset` | `424px` | Desktop: what floats over the map of Find stays this far from the right: the panel, its margin and a gap |
 | `--size-vitals` | `78px` | Vitals bar height on desktop |
-| `--size-tabbar` | `72px` | Bottom tab bar height |
+| `--size-tabbar` | `72px` | Bottom tab bar height, on a screen with no home bar |
+| `--size-tabbar-foot` | `10px` | The tab bar's own padding under its tabs, on a screen with no home bar |
+| `--size-tabbar-foot-on-screen` | `max(var(--size-tabbar-foot), var(--safe-bottom))` | The tab bar's foot on the screen: its own padding, or the home bar's zone where that is larger; never both (an installed app on an iPhone) |
+| `--size-tabbar-on-screen` | `calc(var(--size-tabbar) - var(--size-tabbar-foot) + var(--size-tabbar-foot-on-screen))` | The tab bar's height on the screen, its foot included; what sits above the bar (the toasts) stands on it |
 | `--size-touch` | `44px` | Touch target, the least on phone and tablet, both ways |
 | `--size-sheet-peek` | `84px` | What is seen of the bottom sheet at its lowest stop: the handle and the lens switch |
 | `--columns-vitals` | `1.25fr 1.15fr 0.85fr 0.85fr 1fr 0.8fr 1.25fr 1.55fr` | The columns of the vitals bar on desktop: seven values and the last cell |
