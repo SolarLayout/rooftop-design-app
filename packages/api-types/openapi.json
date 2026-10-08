@@ -642,7 +642,7 @@
           "base64": {
             "anyOf": [
               {
-                "maxLength": 2800000,
+                "maxLength": 341336,
                 "type": "string"
               },
               {
@@ -660,7 +660,7 @@
           "text": {
             "anyOf": [
               {
-                "maxLength": 2000000,
+                "maxLength": 256000,
                 "type": "string"
               },
               {
@@ -2554,7 +2554,7 @@
           },
           "ond_text": {
             "default": "",
-            "maxLength": 2000000,
+            "maxLength": 256000,
             "title": "Ond Text",
             "type": "string"
           },
@@ -2566,7 +2566,7 @@
           },
           "pan_text": {
             "default": "",
-            "maxLength": 2000000,
+            "maxLength": 256000,
             "title": "Pan Text",
             "type": "string"
           },
@@ -2665,7 +2665,7 @@
           },
           "weather_csv_text": {
             "default": "",
-            "maxLength": 8000000,
+            "maxLength": 3000000,
             "title": "Weather Csv Text",
             "type": "string"
           },
@@ -2706,7 +2706,7 @@
             "type": "string"
           },
           "text": {
-            "maxLength": 10000000,
+            "maxLength": 5000000,
             "title": "Text",
             "type": "string"
           }
@@ -3735,7 +3735,7 @@
           },
           "csv_text": {
             "default": "",
-            "maxLength": 8000000,
+            "maxLength": 3000000,
             "title": "Csv Text",
             "type": "string"
           },
@@ -4141,7 +4141,7 @@
     },
     "/export/{kind}": {
       "post": {
-        "description": "A file of the design, for the option the project has chosen; the project file; or the zip of them all.\n\npdf: the report, A4 landscape. dxf: the layout, R2010 in metres, a layer for every string.\nkmz: roof, obstacles and the modules in use, for Google Earth. csv: the 8,760 hours.\nsld: the single-line diagram as a PNG. rtd: the project file, format 2, as the desktop app reads\nit: the request as the engine holds it, and nothing of the design. zip: the five files and the\nproject file in one archive, each entry named as its own download would be.\n\nday: the reader's day (YYYY-MM-DD), printed on page 1 of the report; without it the server's\ntoday. Every kind takes it; the report reads it, in the zip too.\n\nFor every kind but rtd the project must name its chosen option, and the design must have it.\nrtd needs no chosen option, no system voltage, no weather and no run.",
+        "description": "A file of the design, for the option the project has chosen; the project file; or the zip of them all.\n\npdf: the report, A4 landscape. dxf: the layout, R2010 in metres, a layer for every string.\nkmz: roof, obstacles and the modules in use, for Google Earth. csv: the 8,760 hours.\nsld: the single-line diagram as a PNG. rtd: the project file, format 2: the request as the engine\nholds it, and nothing of the design. zip: the five files and the\nproject file in one archive, each entry named as its own download would be.\n\nday: the reader's day (YYYY-MM-DD), printed on page 1 of the report; without it the server's\ntoday. Every kind takes it; the report reads it, in the zip too.\n\nFor every kind but rtd the project must name its chosen option, and the design must have it.\nrtd needs no chosen option, no system voltage, no weather and no run.",
         "operationId": "exportDesign",
         "parameters": [
           {

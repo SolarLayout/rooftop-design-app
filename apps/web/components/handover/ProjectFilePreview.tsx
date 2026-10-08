@@ -41,7 +41,7 @@ function Content({ row }: { row: ContentRow }) {
 
 /**
  * The body of the project file (plan/phase-09-plan.md, decisions 9 and 13): the name as a text field, the file's name as the
- * API will write it following the words as they are typed, its size, "Format 2 · opens offline, in the desktop app too", and
+ * API will write it following the words as they are typed, its size, "Format 2", and
  * what the .rtd embeds.
  */
 export function ProjectFilePreview({ document, design, bytes, isWaitingForBytes, onRename }: Props) {

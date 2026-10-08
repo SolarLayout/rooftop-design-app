@@ -41,9 +41,10 @@ from rooftop_api.schemas.equipment import (
 from rooftop_api.schemas.errors import ErrorDetail, ErrorResponse
 from rooftop_api.schemas.health import Health
 from rooftop_api.schemas.layout import Keepout, Layout, LayoutReadouts, LayoutResponse, PlacedModule
+from rooftop_api.schemas.limits import MAX_CSV_TEXT, MAX_EQUIPMENT_TEXT, MAX_PROJECT_TEXT
 from rooftop_api.schemas.losses import Losses
 from rooftop_api.schemas.project import Project, RoofInput
-from rooftop_api.schemas.project_file import MAX_PROJECT_TEXT, OpenedProject, ProjectFile
+from rooftop_api.schemas.project_file import OpenedProject, ProjectFile
 from rooftop_api.schemas.report import ReportPage, ReportPages
 from rooftop_api.schemas.roof import Obstacle, Roof
 from rooftop_api.schemas.roof_import import ImportedRoof, RoofFile
@@ -82,6 +83,8 @@ __all__ = [
     "LayoutResponse",
     "LossStep",
     "Losses",
+    "MAX_CSV_TEXT",
+    "MAX_EQUIPMENT_TEXT",
     "MAX_PROJECT_TEXT",
     "Module",
     "ModuleResponse",

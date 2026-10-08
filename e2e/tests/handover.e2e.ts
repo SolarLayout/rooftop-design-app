@@ -126,7 +126,7 @@ test.describe("the list (decisions 3 and 14)", () => {
     await expect(rows(page)).toHaveCount(7);
     // The report's row counts its pages once they come (handover-report.e2e.ts), asked at the workspace's open: the paper size stands either way.
     await expect(rowFacts(page)).toHaveText([/^A4 landscape/, ...factsOf(answer).slice(1)]);
-    await expect(card(page)).toContainText(`${stemOf(DEMO_NAME)}.rtd · opens offline`);
+    await expect(card(page)).toContainText(`${stemOf(DEMO_NAME)}.rtd · opens again here`);
     await expect(card(page).getByRole("button", { name: "Save a copy" })).not.toHaveAttribute("aria-disabled", "true");
     // Download all is live with the rows of the design (handover-files.e2e.ts captures its zip).
     await expect(page.getByRole("button", { name: "Download all" })).not.toHaveAttribute("aria-disabled", "true");
@@ -178,7 +178,7 @@ test.describe("when no string length fits (decision 11)", () => {
         await expect(row.locator("> span").last()).toHaveCSS("opacity", "0.45");
         await expect(row).toHaveCSS("opacity", "1");
       }
-      await expect(card(page)).toContainText(`${stemOf(DEMO_NAME)}.rtd · opens offline`);
+      await expect(card(page)).toContainText(`${stemOf(DEMO_NAME)}.rtd · opens again here`);
       await expect(card(page)).toHaveCSS("opacity", "1");
       await expect(card(page).getByRole("button", { name: "Save a copy" })).not.toHaveAttribute("aria-disabled", "true");
       // The zip needs an option as the five files do: Download all is dim with their rows.
@@ -218,7 +218,7 @@ test.describe("the project file (decisions 9 and 12)", () => {
     await expect(nameField(page)).toHaveValue(DEMO_NAME);
     await expect(projectFile(page).getByTestId("file-name")).toHaveText(`${stemOf(DEMO_NAME)}.rtd`);
     await expect(projectFile(page).getByTestId("file-size")).toHaveText(/^\d[\d,]* KB$/, { timeout: RUN });
-    await expect(projectFile(page)).toContainText("Format 2 · opens offline, in the desktop app too");
+    await expect(projectFile(page)).toContainText("Format 2");
     await expect(inTheFile("Weather")).toContainText(`${answer.weather.label} · ${count(answer.weather.hours)} hours`);
     await expect(inTheFile("System voltage")).toContainText("1500 V");
     await expect(inTheFile("Chosen option")).toContainText(`${option.letter} · ${option.n_series} × ${option.n_strings} on ${option.n_inverters === 1 ? "1 inverter" : `${option.n_inverters} inverters`}`);
@@ -301,7 +301,7 @@ test.describe("the name (decision 13)", () => {
 
     await expect(switcher(page)).toContainText(NEW_NAME);
     await expect(nameField(page)).toHaveValue(NEW_NAME);
-    if (!isPhone(testInfo.project.name)) await expect(card(page)).toContainText("Pune-demo-roof,-block-B.rtd · opens offline");
+    if (!isPhone(testInfo.project.name)) await expect(card(page)).toContainText("Pune-demo-roof,-block-B.rtd · opens again here");
     await switcher(page).click();
     await expect(menu(page).getByTestId("this-design")).toContainText(NEW_NAME);
     await page.keyboard.press("Escape");

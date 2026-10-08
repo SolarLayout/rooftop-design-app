@@ -89,9 +89,7 @@ describe("a file larger than the deployed API takes (#98)", () => {
     expect(fitsTheApi({ name: "big.rtd", text: "x".repeat(MAX_REQUEST_BYTES - ENVELOPE + 1) })).toBe(false);
   });
 
-  test("is refused in the dialog's own words: the limit, and what to do", () => {
-    expect(TOO_LARGE).toBe(
-      "This project file is over 6 MB, more than the app can open. Open it in the desktop app, or remove its CSV weather there and choose the weather here.",
-    );
+  test("is refused in the dialog's own words: no project the app saves is that large (#162)", () => {
+    expect(TOO_LARGE).toBe("This file is larger than any project this app saves, so it cannot be opened.");
   });
 });

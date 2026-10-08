@@ -6,6 +6,7 @@ from pydantic import Field, PositiveInt
 
 from rooftop_api.schemas.array import ArraySpec
 from rooftop_api.schemas.common import Compass, Input
+from rooftop_api.schemas.limits import MAX_CSV_TEXT, MAX_EQUIPMENT_TEXT
 from rooftop_api.schemas.losses import Losses
 from rooftop_api.schemas.roof import Roof
 from rooftop_api.schemas.weather import Weather, WeatherSource
@@ -38,8 +39,8 @@ VocCoefficient = Annotated[
     ),
 ]
 FileName = Annotated[str, Field(max_length=1024)]
-FileText = Annotated[str, Field(max_length=2_000_000)]
-CsvText = Annotated[str, Field(max_length=8_000_000)]
+FileText = Annotated[str, Field(max_length=MAX_EQUIPMENT_TEXT)]
+CsvText = Annotated[str, Field(max_length=MAX_CSV_TEXT)]
 
 
 class RoofInput(Input):

@@ -21,8 +21,7 @@ const NOT_JSON = "The file is not a project file (.rtd): it is not JSON.";
 const FORMAT_3 = "This project file is format 3. This version reads formats 1 and 2. Open it with a newer version of the app.";
 const NOT_AN_RTD = "Choose a project file (.rtd).";
 const NOT_LOADED = "This file was not loaded";
-const TOO_LARGE =
-  "This project file is over 6 MB, more than the app can open. Open it in the desktop app, or remove its CSV weather there and choose the weather here.";
+const TOO_LARGE = "This file is larger than any project this app saves, so it cannot be opened.";
 const UNREACHABLE = "The server cannot be reached. Check the connection and try again.";
 
 const isDesktop = (projectName: string) => projectName === "desktop";
@@ -109,9 +108,9 @@ test.describe("the dialog", () => {
     await dialogOpened(page);
 
     await expect(switcher(page)).toHaveAttribute("aria-expanded", "false");
-    await expect(dialog(page)).toContainText("A project saved by this app or the desktop app. It opens in the Studio and runs again here.");
+    await expect(dialog(page)).toContainText("A project saved by this app. It opens in the Studio and runs again here.");
     await expect(drop(page)).toContainText("Drop the project file here");
-    await expect(drop(page)).toContainText("An .rtd file saved by this app or the desktop app");
+    await expect(drop(page)).toContainText("An .rtd file saved by this app");
     await expect(drop(page).getByRole("button", { name: "Choose a file" })).toBeVisible();
     await expect(openButton(page)).toHaveAttribute("aria-disabled", "true");
     await expect(dialog(page).getByRole("button", { name: "Cancel" })).toBeFocused();
@@ -257,7 +256,7 @@ test.describe("a file that is refused", () => {
     expect(opens).toEqual([]);
   });
 
-  test("a project file over 6 MB is refused in the field, in the dialog's own words, without a request (#98)", async ({ page }) => {
+  test("a file over the deployed API's 6 MiB is refused in the field, in the dialog's own words, without a request (#98, #162)", async ({ page }) => {
     await theRoofLens(page);
     const opens = requestsTo(page, "/api/project/open");
     await dialogOpened(page);

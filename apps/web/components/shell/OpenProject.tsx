@@ -15,7 +15,7 @@ import { lensOf } from "@/lib/stores/view-store";
 type Props = { open: boolean; onClose: () => void };
 
 export const OPEN_A_PROJECT = "Open a project";
-const WHAT_IT_IS = "A project saved by this app or the desktop app. It opens in the Studio and runs again here.";
+const WHAT_IT_IS = "A project saved by this app. It opens in the Studio and runs again here.";
 
 /** What the dialog holds of the file chosen last: the file, and what the API answered for it once it has. */
 type Chosen = { file: File; opened: OpenedProject | null };
@@ -104,7 +104,7 @@ export function OpenProject({ open, onClose }: Props) {
     >
       <p>{WHAT_IT_IS}</p>
       <div className="mt-3 flex flex-col gap-3">
-        <FileDrop title="Drop the project file here" detail="An .rtd file saved by this app or the desktop app" whenOver="It is read, and opens as a new design on this device" accept=".rtd" state={state} onFile={hold} />
+        <FileDrop title="Drop the project file here" detail="An .rtd file saved by this app" whenOver="It is read, and opens as a new design on this device" accept=".rtd" state={state} onFile={hold} />
         {canTryAgain && chosen ? (
           <div className="flex justify-end">
             <Button size="s" onClick={() => void readTheFile(chosen.file)}>

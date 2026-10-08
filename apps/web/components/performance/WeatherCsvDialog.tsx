@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { Dialog } from "@/components/ui/Dialog";
 import { FileDrop, type FileDropState } from "@/components/ui/FileDrop";
 import { api, ApiError, type WeatherResponse } from "@/lib/api";
-import { CSV_WORDS, csvSummaryLinesOf } from "@/lib/performance/weather-csv";
+import { CSV_TOO_LARGE, CSV_WORDS, csvFits, csvSummaryLinesOf } from "@/lib/performance/weather-csv";
 import type { WeatherChosen } from "@/lib/flow/weather-source";
 import { NoteLine } from "./NoteLine";
 
@@ -66,9 +66,14 @@ export function WeatherCsvDialog({ open, site, onUse, onClose }: Props) {
 
   async function readFile(file: File) {
     giveUp();
+    setRead(null);
+    if (!csvFits(file)) {
+      setReading(null);
+      setRefused(CSV_TOO_LARGE);
+      return;
+    }
     const thisCall = new AbortController();
     call.current = thisCall;
-    setRead(null);
     setRefused(null);
     setReading(file.name);
     try {

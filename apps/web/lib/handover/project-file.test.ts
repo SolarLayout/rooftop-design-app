@@ -13,7 +13,7 @@ describe("the demo at 1500 V", () => {
 
     expect(view.fileName).toBe("Pune-demo-roof.rtd");
     expect(view.size).toBe("680 KB");
-    expect(view.format).toBe("Format 2 · opens offline, in the desktop app too");
+    expect(view.format).toBe("Format 2");
     expect(view.contents).toEqual([
       { label: "Module file", value: "insolation-ina-144mhc-tf-560.PAN", isFileName: true },
       { label: "Inverter file", value: "wattpower-wp-330ktl-h1.OND", isFileName: true },

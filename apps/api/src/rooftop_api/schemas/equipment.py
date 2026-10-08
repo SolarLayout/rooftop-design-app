@@ -5,19 +5,18 @@ from typing import Annotated, Literal, Self
 from pydantic import BaseModel, Field, model_validator
 
 from rooftop_api.schemas.common import Input, Point
+from rooftop_api.schemas.limits import MAX_EQUIPMENT_BASE64, MAX_EQUIPMENT_TEXT
 
 CoefficientSource = Literal["one-diode model", "PAN file", "entered"]
 CurrentSource = Literal["OND file", "IMaxDC over the MPPT count", "not in the OND"]
-MAX_TEXT = 2_000_000
-MAX_BASE64 = 2_800_000
 
 
 class EquipmentFile(Input):
     """A PAN or OND file: its name, and its content either as text or as base64 of its bytes."""
 
     name: Annotated[str, Field(min_length=1, max_length=255)]
-    text: Annotated[str, Field(max_length=MAX_TEXT)] | None = None
-    base64: Annotated[str, Field(max_length=MAX_BASE64)] | None = None
+    text: Annotated[str, Field(max_length=MAX_EQUIPMENT_TEXT)] | None = None
+    base64: Annotated[str, Field(max_length=MAX_EQUIPMENT_BASE64)] | None = None
 
     @model_validator(mode="after")
     def has_its_content_once(self) -> Self:

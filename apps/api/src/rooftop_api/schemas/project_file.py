@@ -5,10 +5,8 @@ from typing import Annotated
 from pydantic import BaseModel, Field
 
 from rooftop_api.schemas.common import Input
+from rooftop_api.schemas.limits import MAX_PROJECT_TEXT
 from rooftop_api.schemas.project import Project
-
-# A format 2 file embeds the PAN, the OND, the CSV weather and the weather: about 10 MB at the most.
-MAX_PROJECT_TEXT = 10_000_000
 
 
 class ProjectFile(Input):
