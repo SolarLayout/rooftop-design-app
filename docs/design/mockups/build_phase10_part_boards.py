@@ -123,8 +123,8 @@ FORMAT1_FILE = f"{file_stem(FORMAT1_NAME)}.rtd"
 UNREADABLE_NAME = "roof-notes.txt"
 FORMAT3_FILE = "Warehouse-7.rtd"
 DROP_TITLE = "Drop the project file here"
-DROP_DETAIL = "An .rtd file saved by this app or the desktop app"
-DIALOG_SENTENCE = "A project saved by this app or the desktop app. It opens in the Studio and runs again here."
+DROP_DETAIL = "An .rtd file saved by this app"
+DIALOG_SENTENCE = "A project saved by this app. It opens in the Studio and runs again here."
 NOT_LOADED = "This file was not loaded"
 PRESENT_WORDS = WORDS["present_words"]
 PRESENT_HINT = WORDS["present_hint"]
@@ -251,7 +251,7 @@ def over_home_card() -> str:
     side = notes(
         "Above, the screen on desktop 1440 × 900: the dialog of components.md (340 to 440 wide; here 440, as Import a drawing has it), over Home dimmed in color-dim: the title “Open a project” in the display "
         "face, a quiet close button of 32, one sentence of what a project file is and what happens to it, the file drop of the kit at rest (dashed line-strong, the upload icon, “Drop the project file here”, "
-        "“An .rtd file saved by this app or the desktop app”, “Choose a file”), then Cancel quiet and Open primary at the right.",
+        "“An .rtd file saved by this app”, “Choose a file”), then Cancel quiet and Open primary at the right.",
         "Open is shown and cannot be pressed (opacity-disabled, no shadow) until a file is read: the dialog's primary action waits for the field, as the dialog of a height does. The focus goes to Cancel, which "
         "changes nothing. The same dialog opens from Home's card “Open a project” and from the project switcher's row “Open a project (.rtd)”, live with this phase (plan step 9).",
         "The file is read at once when it is dropped or chosen, through POST /project/open with the engine's Project.from_json (decision 4): the web parses no .rtd itself. What comes back is the next card.",

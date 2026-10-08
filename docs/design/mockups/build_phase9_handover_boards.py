@@ -119,7 +119,7 @@ ITEMS = [
     ("KMZ", "Google Earth model", f"Roof, obstacles with heights, {SYSTEM['n_modules']} modules", False),
     ("CSV", "Hourly data", f"{WEATHER['hours']:,} rows · irradiance, temperature, power", False),
 ]
-PROJECT_FACTS = f"{FILES['names']['rtd']} · opens offline"
+PROJECT_FACTS = f"{FILES['names']['rtd']} · opens again here"
 ZIP_FACTS = f"{ZIP_FILES} files · one zip"
 SUBTITLE = "Everything the installer, the client and the utility need"
 PAGE_WORDS = f"Page {PAGES[0]['number']} of {len(PAGES)} · {PAGES[0]['title']}"

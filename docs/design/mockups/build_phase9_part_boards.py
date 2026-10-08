@@ -181,7 +181,7 @@ FACTS = {
     "dxf": "Metres · one layer per string",
     "kmz": f"Roof, obstacles with heights, {N_MODULES} modules",
     "csv": f"{WEATHER['hours']:,} rows · irradiance, temperature, power",
-    "rtd": f"{FILES['names']['rtd']} · opens offline",
+    "rtd": f"{FILES['names']['rtd']} · opens again here",
 }
 ZIP_FACTS = f"{len(FILES['names']) - 1} files · one zip"
 INVERTER_WORDS = f"{INVERTER['pnom_kw']:.0f} kW · {N_MPPT} MPPT"
@@ -775,7 +775,7 @@ def file_lines(name: str, touch: bool = False) -> str:
     return (
         f'<div style="display: flex; flex-direction: column; gap: 2px; padding-left: {84 if not touch else 0}px">'
         f'<span style="display: flex; align-items: baseline; gap: 10px"><code style="font-size: {size + 1}px; font-weight: 500">{file_stem(name)}.rtd</code><span style="font-size: {size}px; color: {TEXT_2}">{RTD_KB}</span></span>'
-        f'<span style="font-size: {size}px; color: {TEXT_2}">Format {DOCUMENT["format"]} · opens offline, in the desktop app too</span></div>'
+        f'<span style="font-size: {size}px; color: {TEXT_2}">Format {DOCUMENT["format"]}</span></div>'
     )
 
 
@@ -807,7 +807,7 @@ def project_card() -> str:
     phone = phone_pushed("Project file", FACTS["rtd"], phone_icon_action("Save a copy", DOWNLOAD), project_body(touch=True))
     side = notes(
         f"The name is a text field (step 6, TextField): the number field's well, 40 high, 44 on touch, labelled “Name”, the value in Geist at the left since it is words. Under it the file's name as the API "
-        f"will write it, “{FILES['names']['rtd']}”, in mono, and its size, {RTD_KB} (KB of 1,024, from the bytes the API writes, {FILES['bytes']['rtd']:,}); then “Format {DOCUMENT['format']} · opens offline, in the desktop app too”.",
+        f"will write it, “{FILES['names']['rtd']}”, in mono, and its size, {RTD_KB} (KB of 1,024, from the bytes the API writes, {FILES['bytes']['rtd']:,}); then “Format {DOCUMENT['format']}”.",
         f"“What is in it” lists what the .rtd embeds (decision 9): the module file, {DOCUMENT['pan_path'] or 'the bundled sample'}, the inverter file, {DOCUMENT['ond_path'] or 'the bundled sample'} (“the bundled sample” when the "
         f"document names none), the weather with its hours, the system voltage, and the chosen option, “{OPTION_WORDS}”. The file names stand in mono.",
         "“Save a copy” is the primary action here: the .rtd needs no option and no run, so this item is live before a voltage too (decision 1). The same action stands in the project switcher.",

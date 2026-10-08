@@ -28,7 +28,12 @@ positions on what the run does not price: cable, current, connectors); strings c
 (`strings_held`), the API's answer about 0.45 s faster on the roof at the limit. Both measured in the Lambda image, one
 thread: no added time or memory. The demo unchanged. **Deployed:** the owner deployed `main` at e44a471 (#160, #163,
 #164) to staging (version 19) and production (version 16), 2026-10-08; the image smoked on staging, both at 1,769 MB.
-**Next:** #162 (no words of a desktop app; the 6 MB message needs a remedy); the browser groups run when the owner says (#157's suites, #151's mobile fixes, and the Strings
+Then #162 (#165, D89): a project the app accepts can always be run and opened (a weather CSV 3 MB, a PAN or OND
+256 KB, a project file 5 MB; the largest project is a request of 4.53 MB to run, 5.36 MB to open, of AWS's 6.29 MB);
+the CSV dialog refuses a larger file before sending it; no words of a desktop app, no remedy for a file the app never
+writes; Handover's project file "opens again here". The boards' sources changed with it (`OpenProject`, `Handover*`);
+their previews and the canvas still show the old words. Not deployed (#165).
+**Next:** a new task as the owner names it; the browser groups run when the owner says (#157's suites, #151's mobile fixes, and the Strings
 lens pictures whose options D and E #160 changed); Phase 15's clips on an iPhone or iPad.
 
 ## Where we are

@@ -664,8 +664,8 @@ height takes the obstacle off the list; the note goes when it is empty. On the r
 
 ## Open a project (the project switcher and Home)
 The board "Open a project" (plan phase 10, step 9, decision 4). A dialog of 440 ("Open a project"), one sentence ("A
-project saved by this app or the desktop app. It opens in the Studio and runs again here."), the file drop at rest ("Drop
-the project file here", "An .rtd file saved by this app or the desktop app", "Choose a file"), Cancel quiet and Open
+project saved by this app. It opens in the Studio and runs again here."), the file drop at rest ("Drop
+the project file here", "An .rtd file saved by this app", "Choose a file"), Cancel quiet and Open
 primary, Open shown as it cannot be pressed until a file is read. A file of another ending is refused in the field in the
 dialog's own words, "Choose a project file (.rtd).", without a request. A file dropped or chosen is read at once: the
 browser reads it as text and sends it to the API, where the engine's one reader reads it (the web parses no `.rtd` itself,
