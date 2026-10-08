@@ -8,8 +8,8 @@ panel says what to do (Start here: search, my location, by hand; what the search
 the search; the three steps), a ? opens the how-to "Find the roof"; without a map a place searched opens the entry by hand.
 Session 19 before it: D79 built, Phases 14 and 15 (in-app help, clips) done. **Left of Phase 15:** the owner plays the clips
 in Safari on an iPhone or iPad. **Deployed:** Staging and Production run `1d32752` (Staging 2026-10-07, Production
-2026-10-08), with #143 to #145. Since: #146 (a help clip's progress line moves smoothly), not deployed yet; issue #147
-(installable web app, no browser bar on iPhone from the Home Screen). **Next:** the owner's enhancements and fixes.
+2026-10-08), with #143 to #145. Since: #146 (a help clip's progress line moves smoothly), not deployed yet; issues #147
+(installable web app, no browser bar on iPhone from the Home Screen) and #148 (the empty band on phone). **Next:** the owner's enhancements and fixes.
 
 ## Where we are
 
@@ -148,7 +148,8 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 | Item | Where it belongs |
 |---|---|
 | On Find, an obstacle turned back to exactly nothing and let go is taken for a press inside the roof, which picks the roof | Issue #142 |
-| iPhone Safari's address bar cannot be hidden from a tab; the app made installable (manifest, icons, safe areas) opens without it from the Home Screen. Seen beside it: an empty band between the Studio's figures and the lens sheet on phone | Issue #147 |
+| iPhone Safari's address bar cannot be hidden from a tab; the app made installable (manifest, icons, safe areas) opens without it from the Home Screen | Issue #147 |
+| On phone the Studio leaves an empty band between the stage's figures and the lens sheet (the stage fixed at 252, the sheet at half the room) | Issue #148 |
 | The pictures `kit-part-2.png` and Find's screens are to be renewed when the browser suites run again (the help's disc, how-to steps, the ? beside Find's title, Show me how; Find's first step, D85) | When the owner runs the suites |
 | Twelve findings of the help's writing (the shade-free line with a pitch entered, the PAN source of the coefficients, "fits" beside an exclamation mark, trees lost on Edit, …) | `plan/phase-14-in-app-help.md`, "As built"; for the owner to order |
 | On phone the help sheet's grip has a press area over its ×; both close the sheet | When the owner asks |
