@@ -35,6 +35,10 @@ writes; Handover's project file "opens again here". The boards changed with it (
 previews (rendered as `docs/design/README.md` says, checked against the old ones first) and the canvas (version 45, the six
 files only). **Deployed:** the owner deployed `main` at 1a20137 (#165) to staging (version 20) and production (version
 17), 2026-10-08; the image smoked on staging.
+Then the help read against #160 to #165: Options and Inverter made true again (#166; not deployed). The process
+written so it is not missed: `docs/help-upkeep.md` (every pull request that changes what the user meets keeps the help
+true in the same pull request), linked from the root `CLAUDE.md`, `apps/web/CLAUDE.md` and a new `apps/api/CLAUDE.md`
+(which also says how an engine change is measured for time and memory as Lambda runs it).
 **Next:** a new task as the owner names it; the browser groups run when the owner says (#157's suites, #151's mobile fixes, and the Strings
 lens pictures whose options D and E #160 changed); Phase 15's clips on an iPhone or iPad.
 
