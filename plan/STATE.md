@@ -10,10 +10,11 @@ widths (`tablet-wide`, `desktop-wide`) are container queries on the shell; the m
 `next/og` (`lib/brand`), `appleWebApp` with the status bar black-translucent. #150: the check's own test that timed out on
 a clean main. Session 20 before it: Find's first step (D85; #143 to #145). **Deployed:** Staging and Production run
 `1d32752` (Staging 2026-10-07, Production 2026-10-08). Since, not deployed yet: #146, #149, #150, #151, #152. The owner
-deployed them and checked #147 on an iPhone, added to the Home Screen: it works (2026-10-08). **Left of #147:** item 4 of the issue, a hint to Add
-to Home Screen, is new UI and waits for the owner's word and a board. Found, not changed: on a phone on its side Find's
+deployed them and checked #147 on an iPhone, added to the Home Screen: it works (2026-10-08). #147 closed; its item 4, a hint to Add to Home Screen,
+left out (the owner: "skip it for now"). Record: `plan/sessions/021/`. Found, not changed: on a phone on its side Find's
 sheet (384) fills the screen and hides the map, as before. Left of Phase 15: the owner plays the clips in Safari on an
-iPhone or iPad. **Next:** the owner's enhancements and fixes.
+iPhone or iPad. **Next:** a new session: features and enhancements about the system voltage, as the owner
+names them (hard rule 3: the voltage has no default and is never chosen for the user).
 
 ## Where we are
 
