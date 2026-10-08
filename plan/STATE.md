@@ -13,7 +13,7 @@ a clean main. Session 20 before it: Find's first step (D85; #143 to #145). **Dep
 left out (the owner: "skip it for now"). Record: `plan/sessions/021/`. Found, not changed: on a phone on its side Find's
 sheet (384) fills the screen and hides the map, as before. Left of Phase 15: the owner plays the clips in Safari on an
 iPhone or iPad. **Next:** Phase 16, the system voltage set by the user's country (D87: 600 V in the US and Canada,
-1000 V elsewhere, India when the country is not found; `plan/phase-16-system-voltage.md`): its questions answered and its boards drawn for approval (session 22, the canvas page "System voltage"); then the owner's approval, then the build. Until it is
+1000 V elsewhere, India when the country is not found; `plan/phase-16-system-voltage.md`): its questions answered, its boards approved (session 22, the canvas page "System voltage"), its plan written (`plan/phase-16-plan.md`, one question open to the owner); then the build. Until it is
 built, hard rule 3 holds.
 
 ## Where we are

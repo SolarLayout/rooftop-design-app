@@ -190,7 +190,7 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   phone; the canvas page "System voltage"): the voltage of the user's country in the Strings lens (India 1000 V, the United States
   600 V with no string length fitting the demo's inverter), the app's value following an inverter rated under it, the user's 1500 V
   kept with an inverter of 1100 V and its note, and the picker's marks. Caught in the browser at three sizes (`system_voltage/`) with a
-  prototype on the local branch `design/system-voltage`, never merged; drawn on 2026-10-08 (session 22), for approval.
+  prototype on the local branch `design/system-voltage`, never merged; drawn and approved on 2026-10-08 (session 22).
 - `mockups/build_in_app_help.py` writes the boards "In-App Help · The ? and the help sheet" (desktop, tablet, phone; the
   canvas page "In-App Help"): the ? disc beside the section headings in its states, the tooltip, the help sheet by size
   (from the right edge, the whole height, dimmed, on desktop and tablet; from the bottom on phone), a topic followed and

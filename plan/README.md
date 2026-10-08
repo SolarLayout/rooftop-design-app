@@ -35,7 +35,7 @@ Always:
 | 13 | Optimization: the engine lean in time and memory for Lambda, and the hosted app's limits | `phase-13-optimization.md` | done (session 17: #102 to #106); how: `phase-13-plan.md` |
 | 14 | In-app help: a ? on the section headings of the input panels, a help sheet, topics in MDX on solarlayout's core; how-tos with pictures for Find's tools | `phase-14-in-app-help.md` | done (session 19: #123 to #137, 30 topics; D80, D81) |
 | 15 | Short video clips in the help: made from the app by a script, kept, served and played in a step's frame | `phase-15-help-clips.md` | built (session 19: #138 to #141; D82 to D84); the owner's check on iOS left |
-| 16 | The system voltage set by the user's country: 600 V in the US and Canada, 1000 V elsewhere, changeable (D87) | `phase-16-system-voltage.md` | planned (session 22); questions answered; next: the board |
+| 16 | The system voltage set by the user's country: 600 V in the US and Canada, 1000 V elsewhere, changeable (D87) | `phase-16-system-voltage.md` | planned (session 22): boards approved; how: `phase-16-plan.md` |
 
 ## Decisions taken (change here if overruled)
 
@@ -157,6 +157,7 @@ plan/
   phase-10-plan.md              how Phase 10 is built: what was found, the boards, four pull requests, the decisions, the risks
   phase-11-plan.md              how Phase 11 is built: what was found, scoped with the owner item by item, the steps, the decisions, the risks
   phase-12-plan.md              how Phase 12 is built: what was found on Vercel, GitHub and AWS, the decisions, the owner's steps, the risks
+  phase-16-plan.md              how Phase 16 is built: what was found, the help to change, the steps, one question, the risks
   phase-13-optimization.md      Phase 13, filed: the engine lean on Lambda (#76, #96), the functions fitted, #98
   reference/
     functional-inventory.md     every input, output, export and message of the desktop app
