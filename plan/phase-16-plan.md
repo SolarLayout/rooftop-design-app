@@ -29,9 +29,6 @@ here. A decision proposed here takes a number (D88 onwards) once the owner keeps
   (the United States, the United Kingdom, the Netherlands, the Philippines, the United Arab Emirates, …).
 - **Where a new design is made**: `POST /roof/from-map` (Find), a drawing (`lib/flow/import-drawing.ts`), by hand; and a design
   is opened from the device or from a `.rtd`. Each is where the voltage is set if the design has none.
-- **Where the equipment's ratings are known before a run**: the inverter read from the picker or a file (`InverterResponse`:
-  `vabs_max`), the module likewise (`v_max_iec`). So the app's value can follow an inverter or module down in the same edit
-  that changes it, with one run, not two.
 - **What the old flow leaves behind**: the decision card and the waiting list (`SystemVoltage.tsx`: `VoltageDecision`,
   `WaitingAndDone`), the `before-a-voltage` view (`lib/studio/strings-view.ts`), Home's "waiting for a voltage"
   (`lib/home/cards.ts:35`), the stage's words for `system_voltage_missing` (`stage-view.ts:33`), the kit's shell example, and
@@ -49,10 +46,10 @@ manifest committed with them; the gate (`bun test tools/help`) green; each topic
 
 | Topic | Change |
 |---|---|
-| `studio.section.system-voltage` | Rewritten. Summary: what it is and that the app starts it from the user's country. Keeps "How it limits a string". "Nothing is chosen for you" becomes "Where it starts" (the lowest choice in the United States and Canada, the limit for homes there, NEC 690.7 and CE Code Section 64; the middle choice elsewhere; India when the country cannot be found; the words beside the heading say who set it). New: "When the equipment is rated lower" (the app's own value follows the inverter or the module down; a value you chose is kept, with the note and its button), "Going higher" (the app never raises it; the offer; only where the site's code allows). The callout on the cable of the bill of materials stays. Numbers with units only as on-screen words in code spans (the gate). `values` unchanged (the three ids) |
+| `studio.section.system-voltage` | Rewritten. Summary: what it is and that the app starts it from the user's country. Keeps "How it limits a string". "Nothing is chosen for you" becomes "Where it starts" (the lowest choice in the United States and Canada, the limit for homes there, NEC 690.7 and CE Code Section 64; the middle choice elsewhere; India when the country cannot be found; the words beside the heading say who set it). New: "When the equipment is rated lower" (the value is never moved; the strings are sized to the equipment's limit, and the lens says so; for a value you chose, with the exclamation mark and a button to match), "Going higher" (the app never raises it; the offer; only where the site's code allows). The callout on the cable of the bill of materials stays. Numbers with units only as on-screen words in code spans (the gate). `values` unchanged (the three ids) |
 | `studio.section.modules-in-series` | "It appears once a system voltage is chosen" goes: the range shows from the first run. The rest is true |
-| `studio.section.inverter` | "Change": inverters rated under the voltage set carry the exclamation mark and its reason; choosing one may lower the voltage the app set |
-| `studio.section.module` | One sentence: a module rated under the voltage the app set lowers it, as an inverter does |
+| `studio.section.inverter` | "Change": inverters rated under the voltage set carry the exclamation mark and its reason; the strings are then sized to the inverter's limit |
+| `studio.section.module` | Read; its sentence on the module's highest system voltage is true (one of the limits) |
 | `studio.section.options` | Read; true as it is (no voltage wording to change) |
 | `docs/help-content.md` | The rule "Never write that a system voltage is chosen for the user" becomes: say who set it (the app, from the user's country, or the user), never that the app chose it for the site; the example topic's frontmatter kept in step with the real one |
 
@@ -71,20 +68,18 @@ manifest committed with them; the gate (`bun test tools/help`) green; each topic
   `null`), `Cache-Control: no-store`. Kept nowhere. (Not under `/api`, which is the Python API's.)
 - `lib/country/`: the time-zone table (generated once from the tz database, its source and release named in the file), `countryOf({ header, timeZone })` → the header's, else the time zone's, else `"IN"`; `nameOf(country)` with "the" where it belongs. Pure, tested.
 - `lib/studio/voltage-default.ts`: `defaultVoltageOf(country)` (600 for US, CA and the NEC's territories PR, GU, VI, AS, MP;
-  1000 else); `followDown(volts, ratings)` (the highest of 600, 1000, 1500 at or under the lowest rating; 600 when none is);
-  `offerUp(volts, rating)` (the next of the three above, at or under the rating, or none). Pure, tested.
+  1000 else); `offerUp(volts, rating)` (the next of the three above, at or under the rating, or none). Pure, tested.
 - The country asked once a visit, at the shell's start; until it answers, the time zone stands in, so a design is never left
   without a voltage.
 - Applied: a new design (from the map, a drawing, by hand) and a design opened without a voltage get the default, `by: app`,
-  as part of the edit that makes or opens them (no edit counted, nothing to undo). A choice in the lens sets `by: user`. An
-  inverter or a module read while `by: app` lowers the value in the same edit when it is rated under it (`followDown`); never
-  when `by: user`; never up.
+  as part of the edit that makes or opens them (no edit counted, nothing to undo). A choice in the lens sets `by: user`. The
+  equipment never moves the value (D88).
 - Unit tests first for each; the unit tests of the old flow changed.
 
 ### 3. The Strings lens, the picker, what goes (pull request 3, screens)
 - The voltage section as the boards: beside the heading `Set for <country>` or `Your choice`; the line under the choice
-  (the country's words, or the lowering's words); the note with the exclamation mark and `Use <n> V` when the user's value is
-  over the equipment's rating; the line and `Use <n> V` when the inverter takes more (`offerUp`), and its words when no string
+  (the country's words); when the equipment is rated under the value, the plain line "Strings sized to <n> V, this
+  inverter's limit" if the app set it, the note with the exclamation mark and `Use <n> V` if the user chose it (D88); the line and `Use <n> V` when the inverter takes more (`offerUp`), and its words when no string
   length fits. Words from one pure module (`lib/studio/voltage-words.ts`), tested.
 - The picker: an inverter rated under the voltage set carries the exclamation mark and "Up to <n> V: strings sized under the
   <n> V set" under its maker; a marked row grows to hold it, on three sizes.
@@ -104,16 +99,16 @@ manifest committed with them; the gate (`bun test tools/help`) green; each topic
   D10 marked replaced by D87, `docs/help-content.md`, `docs/design/components.md` (the voltage section and the picker's mark),
   `docs/design/README.md` (the boards approved, built), `STATE.md`, the phase's "As built".
 
-## Question for the owner (one)
-**Lowering the app's value to a class shortens the strings.** Found while planning: with the app's 1000 V and an inverter of
-800 V, lowering the value to 600 V (as approved) sizes the strings to 600 V, not to the 800 V the inverter takes. The board's own
-example shows it: 5 to 11 in series at 600 V (Voc 561 V), where the inverter alone allows 15 (Voc about 765 V). The engine
-already keeps every string under the inverter's rating without lowering anything (`stringing.py:57`).
-- **Keep as approved**: the value follows the equipment down to a class; the strings are sized to that class (shorter, fewer
-  watts a string, more strings and cable).
-- **Recommended: leave the app's value alone** (1000 V) and say it plainly, without an exclamation mark: "Strings sized to
-  800 V, this inverter's limit." The strings are as long as the inverter allows; a system of the 1000 V class with an inverter
-  of 800 V is valid, and a cable rated 1000 V on it is right. Nothing moves, nothing runs twice.
+## Decided while planning
+**D88: the equipment never moves the voltage.** Found while planning: lowering the app's value to a class (as first approved)
+shortens the strings: with the app's 1000 V and an inverter of 800 V, 600 V allows 11 in series (Voc 561 V) where the inverter
+allows 15 (about 765 V). The owner (session 22): "go with your recommendation". So the value stays as set, by the app or by
+the user; the engine keeps every string under the equipment's rating as it does today (`stringing.py:57`). Under the choice:
+- set by the app, equipment rated under it: a plain line, no mark, no button: "Strings sized to 800 V, this inverter's limit."
+- chosen by the user, equipment rated under it: the note with the exclamation mark and `Use <n> V`, as approved.
+- equipment rated over it: the offer up, as approved, whoever set it.
+The board's third state ("An inverter of 800 V: the app's value down to 600 V") is superseded: it is taken again from the
+build in pull request 3 and the boards rewritten with it.
 
 ## Risks
 - **The header in production**: if Vercel's header is missing behind some proxy, the time zone decides; a VPN gives a wrong

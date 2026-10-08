@@ -89,9 +89,9 @@ All answered in session 22 but the board (5), which is the first step of the bui
    recommendation"). The engine already sizes to the lowest of the system voltage, the inverter's `VAbsMax` and the
    module's rating, so a string never exceeds its equipment; this is what the app shows and when it moves the value:
    - The design keeps where its voltage came from: set by the app (the country) or chosen by the user.
-   - Equipment rated **under** the value, the voltage **set by the app**: the app lowers it by itself to the highest of 600,
-     1000, 1500 V at or under the rating (an inverter of 800 V gives 600 V; of 1100 V gives 1000 V; of 550 V keeps 600 V
-     and the strings are sized to 550 V), so the screens and the bill of materials say what is built. No edit counted.
+   - Equipment rated **under** the value, the voltage **set by the app**: first decided to lower it to a class; replaced by
+     D88 (session 22, while planning): the value is kept and a plain line says "Strings sized to 800 V, this inverter's
+     limit", since lowering to a class shortened the strings below what the inverter takes.
    - Equipment rated **under** the value, the voltage **chosen by the user** (e.g. 1500 V, then an inverter of 1100 V):
      never moved. The lens says it with an exclamation mark ("Strings sized to 1100 V, this inverter's limit. Your system is
      set to 1500 V.") and offers "Use 1000 V" in one press, an edit like any other.
