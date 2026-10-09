@@ -71,6 +71,24 @@ def test_the_answer_is_a_whole_project_with_the_defaults_of_the_api(client, demo
     assert body["roof"]["parapet_h"] == demo["roof"]["parapet_h"]
 
 
+def test_a_sloped_roof_from_the_map_has_no_parapet_and_a_pitch_as_in_the_roof_lens(client):
+    # One rule wherever Sloped is chosen (#169), as web/lib/geometry/roof-type-rule.ts gives it
+    # in the Roof lens.
+    roof = _from_map(client, roof_type="sloped_flush").json()["roof"]
+
+    assert roof["roof_type"] == "sloped_flush"
+    assert roof["parapet_h"] == 0
+    assert roof["slope_deg"] == 10
+
+
+def test_a_flat_roof_from_the_map_keeps_the_engine_s_parapet_and_no_pitch(client):
+    for roof_type in ("flat_tilted", "flat_ew"):
+        roof = _from_map(client, roof_type=roof_type).json()["roof"]
+
+        assert roof["parapet_h"] == 0.9
+        assert roof["slope_deg"] == 0
+
+
 def test_without_a_name_the_project_is_the_untitled_roof(client):
     assert _from_map(client).json()["name"] == "Untitled roof"
 

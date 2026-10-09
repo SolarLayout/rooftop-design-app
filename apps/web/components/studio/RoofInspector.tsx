@@ -16,7 +16,7 @@ import type { Project, Roof } from "@/lib/api";
 import { roofCardOf, type RoofCard } from "@/lib/geometry/roof-card";
 import { roofFieldsOf, withRoofField, type RoofFieldId } from "@/lib/studio/roof-fields";
 import { HEIGHTS_SET, indexToReview, namesToReview, toReviewWordsOf } from "@/lib/studio/review-heights";
-import { withRoofType } from "@/lib/studio/roof-type";
+import { withRoofType } from "@/lib/geometry/roof-type-rule";
 import { projectOf } from "@/lib/stores/project-store";
 import { toReviewOf } from "@/lib/stores/view-store";
 import { fieldsLayoutOf } from "./inspector-look";
