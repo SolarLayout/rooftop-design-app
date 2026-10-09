@@ -191,6 +191,8 @@ def _sizing(design: Design) -> schemas.Sizing:
         uc=p.losses.uc or UC_BY_ROOF[p.roof.roof_type],
         uc_from="entered" if p.losses.uc else "roof type",
         uc_default=UC_BY_ROOF[p.roof.roof_type],
+        voc_coefficient_pct=design.mm.sizing_voc_coefficient_pct(p.voc_coefficient_pct),
+        voc_coefficient_from="one-diode model" if p.voc_coefficient_pct is None else "entered",
     )
 
 

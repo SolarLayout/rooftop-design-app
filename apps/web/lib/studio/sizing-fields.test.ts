@@ -7,7 +7,7 @@ const VOC_NOTE = "Voc coefficient -0.164 %/°C is outside the usual -0.35 to -0.
 const run = (change: Partial<DesignResult> = {}) =>
   ({
     weather: { t_min_c: 11.93, t_max_c: 39.26 },
-    sizing: { t_min_c: 11.93, t_max_c: 39.26, t_min_from: "weather", t_max_from: "weather", cell_rise_c: 25, cell_rise_from: "roof type", uc: 29, uc_from: "roof type", uc_default: 29 },
+    sizing: { t_min_c: 11.93, t_max_c: 39.26, t_min_from: "weather", t_max_from: "weather", cell_rise_c: 25, cell_rise_from: "roof type", uc: 29, uc_from: "roof type", uc_default: 29, voc_coefficient_pct: -0.16412, voc_coefficient_from: "one-diode model" },
     equipment: { coefficients: { mu_voc_pct: -0.16412, source: "one-diode model" }, module_notes: [VOC_NOTE] },
     ...change,
   }) as unknown as DesignResult;
@@ -20,7 +20,7 @@ describe("the sizing temperatures and the Voc coefficient (the board \"Inverter 
       { id: "t_min_override", value: null, detail: "11.9 °C from the weather", reset: null },
       { id: "t_max_override", value: null, detail: "39.3 °C from the weather", reset: null },
       { id: "cell_rise_c", value: null, detail: "25 °C by roof type: flat, open rack", reset: null },
-      { id: "voc_coefficient_pct", value: null, detail: "−0.164 %/°C from the one-diode model", reset: null },
+      { id: "voc_coefficient_pct", value: null, detail: "−0.164 %/°C, the one-diode model's", reset: null },
     ]);
   });
 
@@ -35,12 +35,12 @@ describe("the sizing temperatures and the Voc coefficient (the board \"Inverter 
     ]);
   });
 
-  test("a coefficient the PAN states says so; a sloped roof's cell rise is flush", () => {
+  test("the coefficient said is the one that sizes the strings, the model's, though the PAN states its own (#179, item 15); a sloped roof's cell rise is flush", () => {
     const design = run({ equipment: { coefficients: { mu_voc_pct: -0.286, source: "PAN file" }, module_notes: [] } } as never);
     const sloped = { ...DOCUMENT, roof: { roof_type: "sloped_flush" } } as Project;
-    const fields = sizingFieldsOf(sloped, { ...design, sizing: { ...design.sizing, cell_rise_c: 35 } });
+    const fields = sizingFieldsOf(sloped, { ...design, sizing: { ...design.sizing, cell_rise_c: 35, voc_coefficient_pct: -0.164, voc_coefficient_from: "one-diode model" } });
     expect(fields[2]?.detail).toBe("35 °C by roof type: sloped, flush");
-    expect(fields[3]?.detail).toBe("−0.286 %/°C from the PAN file");
+    expect(fields[3]?.detail).toBe("−0.164 %/°C, the one-diode model's");
   });
 
   test("the Voc coefficient carries the engine's note on it, with true minus signs; none once entered", () => {

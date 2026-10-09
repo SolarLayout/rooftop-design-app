@@ -277,7 +277,11 @@ def test_the_series_range_of_the_demo(demo_result):
 
 
 def test_the_sizing_temperatures_come_from_the_weather(demo_result):
-    assert demo_result["sizing"] == {
+    sizing = dict(demo_result["sizing"])
+    # #179, item 15: the Voc coefficient the strings are sized with: the one-diode model's, none entered.
+    assert sizing.pop("voc_coefficient_pct") == pytest.approx(-0.164, abs=0.003)
+    assert sizing.pop("voc_coefficient_from") == "one-diode model"
+    assert sizing == {
         "t_min_c": 11.93,
         "t_max_c": 39.26,
         "t_min_from": "weather",

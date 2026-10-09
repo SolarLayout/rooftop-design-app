@@ -3341,6 +3341,19 @@
             ],
             "title": "Uc From",
             "type": "string"
+          },
+          "voc_coefficient_from": {
+            "enum": [
+              "one-diode model",
+              "entered"
+            ],
+            "title": "Voc Coefficient From",
+            "type": "string"
+          },
+          "voc_coefficient_pct": {
+            "description": "The Voc coefficient the strings are sized with, %/\u00b0C: the one entered, else the one-diode model's (the PAN's own is the module card's)",
+            "title": "Voc Coefficient Pct",
+            "type": "number"
           }
         },
         "required": [
@@ -3352,7 +3365,9 @@
           "cell_rise_from",
           "uc",
           "uc_from",
-          "uc_default"
+          "uc_default",
+          "voc_coefficient_pct",
+          "voc_coefficient_from"
         ],
         "title": "Sizing",
         "type": "object"

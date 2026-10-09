@@ -83,6 +83,15 @@ class ModuleModel:
             return float(self.voc(1000.0, t_min)[0])
         return self.m.voc * (1.0 + mu_voc_pct / 100.0 * (t_min - 25.0))
 
+    def sizing_voc_coefficient_pct(self, mu_voc_pct: float | None = None) -> float:
+        """The Voc coefficient (%/°C) the strings are sized with: the one entered, else the one-diode
+        model's over 0 to 50 °C, since cold Voc is then the model's (voc_cold), whatever the PAN states
+        (#179, item 15)."""
+        if mu_voc_pct is not None:
+            return mu_voc_pct
+        voc0, voc50 = self.voc([1000.0] * 2, [0.0, 50.0])
+        return float((voc50 - voc0) / 50.0 / self.m.voc * 100.0)
+
     def coefficients(self, mu_voc_pct: float | None = None) -> Coefficients:
         """The temperature coefficients: the PAN's where it states them, else the model's.
 

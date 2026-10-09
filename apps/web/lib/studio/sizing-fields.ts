@@ -32,7 +32,6 @@ export type SizingField = {
 };
 
 const MOUNTING: Record<Roof["roof_type"], string> = { flat_tilted: "flat, open rack", flat_ew: "flat east-west, open rack", sloped_flush: "sloped, flush" };
-const SOURCE: Record<string, string> = { "one-diode model": "the one-diode model", "PAN file": "the PAN file" };
 const ENTERED = "entered";
 const degrees = (value: number) => `${shown(value, 1)} °C`;
 
@@ -46,10 +45,11 @@ export function sizingFieldsOf(document: Project, design: DesignResult | null): 
     return { id, label, unit, value, detail: value === null ? byDefault : ENTERED, reset: value === null ? null : reset, note: null };
   };
   const weather = design?.weather ?? null;
-  const coefficients = design?.equipment.coefficients ?? null;
   const cellRise = design && design.sizing.cell_rise_from === "roof type" ? design.sizing.cell_rise_c : null;
-  const fromTheModule = coefficients && coefficients.source !== "entered" ? `${shown(coefficients.mu_voc_pct, 3)} %/°C from ${SOURCE[coefficients.source] ?? coefficients.source}` : null;
-  const voc = field("voc_coefficient_pct", "Voc coefficient", "%/°C", fromTheModule, "Use the module's");
+  // The coefficient the strings are sized with: cold Voc is the one-diode model's while none is entered, whatever the
+  // PAN states for the module card (#179, item 15).
+  const sizedWith = design && design.sizing.voc_coefficient_from === "one-diode model" ? `${shown(design.sizing.voc_coefficient_pct, 3)} %/°C, the one-diode model's` : null;
+  const voc = field("voc_coefficient_pct", "Voc coefficient", "%/°C", sizedWith, "Use the module's");
   const vocNote = design && voc.value === null ? vocNoteOf(design) : null;
   return [
     field("t_min_override", "Lowest ambient", "°C", weather ? `${degrees(weather.t_min_c)} from the weather` : null, weather ? `Use the weather's ${degrees(weather.t_min_c)}` : "Use the weather's"),

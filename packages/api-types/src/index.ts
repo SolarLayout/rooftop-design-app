@@ -1979,6 +1979,16 @@ export interface components {
              * @enum {string}
              */
             uc_from: "roof type" | "entered";
+            /**
+             * Voc Coefficient From
+             * @enum {string}
+             */
+            voc_coefficient_from: "one-diode model" | "entered";
+            /**
+             * Voc Coefficient Pct
+             * @description The Voc coefficient the strings are sized with, %/°C: the one entered, else the one-diode model's (the PAN's own is the module card's)
+             */
+            voc_coefficient_pct: number;
         };
         /** StringsOfLength */
         StringsOfLength: {
