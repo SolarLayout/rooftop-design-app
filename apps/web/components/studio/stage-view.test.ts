@@ -141,7 +141,7 @@ describe("the strings on the roof in words", () => {
   const option = {
     letter: "A",
     system: { inverters: [{ label: "INV-1", position: [31.042985, 39.0] as [number, number] }] },
-    cable_schedule: [{ string: "S8", inverter: "INV-1", mppt: 3, modules: 29, voc_cold_v: 1480, isc_a: 14.3, length_m: 93.2, size: "4 mm² Cu, 1500 V DC" }],
+    cable_schedule: [{ string: "S8", inverter: "INV-1", mppt: 3, modules: 29, voc_cold_v: 1480, isc_a: 14.3, length_m: 93.2, size: "4 mm² Cu, 1500 V DC", cross_section_mm2: 4, drop_pct: 0.64 }],
   };
   const of = (colouring: "string" | "mppt" | "inverter", selected: string | null = null) => stringsWordsOf({ option, strings, colouring, positions: 790, selected });
 

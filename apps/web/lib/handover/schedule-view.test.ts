@@ -9,24 +9,24 @@ const cells = (view: ReturnType<typeof scheduleViewOf>, row: ScheduleLine) => vi
 describe("the DC cable schedule as a table (plan/phase-09-plan.md, step 16, decision 7; the board \"Handover, previews\")", () => {
   const view = scheduleViewOf(A, null);
 
-  test("the eight columns in the engine's order, the first seven sortable, the cable words", () => {
-    expect(view.columns.map((column) => column.head)).toEqual(["String", "Inverter", "MPPT", "Modules", "Voc cold (V)", "Isc (A)", "DC cable (m)", "Cable"]);
-    expect(view.columns.map((column) => column.kind)).toEqual(["name", "text", "number", "number", "number", "number", "number", "text"]);
-    expect(view.columns.map((column) => column.sortBy !== undefined)).toEqual([true, true, true, true, true, true, true, false]);
-    expect(view.columns[7]!.words).toBe(true);
+  test("the nine columns in the engine's order, the first eight sortable, the cable words", () => {
+    expect(view.columns.map((column) => column.head)).toEqual(["String", "Inverter", "MPPT", "Modules", "Voc cold (V)", "Isc (A)", "DC cable (m)", "Drop (%)", "Cable"]);
+    expect(view.columns.map((column) => column.kind)).toEqual(["name", "text", "number", "number", "number", "number", "number", "number", "text"]);
+    expect(view.columns.map((column) => column.sortBy !== undefined)).toEqual([true, true, true, true, true, true, true, true, false]);
+    expect(view.columns[8]!.words).toBe(true);
   });
 
-  test("every string in the engine's order, Voc cold without decimals, Isc with two, the length with one; then the total row", () => {
+  test("every string in the engine's order, Voc cold without decimals, Isc and the drop with two, the length with one; then the total row", () => {
     expect(view.rows).toHaveLength(23);
     expect(view.rows.slice(0, 22).map((row) => row.key)).toEqual(A.cable_schedule.map((row) => row.string));
-    expect(cells(view, view.rows[0]!)).toEqual(["S1", "INV-1", "1", "29", "1,480", "14.30", "131.9", "4 mm² Cu, 1500 V DC"]);
-    expect(cells(view, view.rows[21]!)).toEqual(["S22", "INV-1", "6", "29", "1,480", "14.30", "55.3", "4 mm² Cu, 1500 V DC"]);
+    expect(cells(view, view.rows[0]!)).toEqual(["S1", "INV-1", "1", "29", "1,480", "14.30", "131.9", "0.91", "4 mm² Cu, 1500 V DC"]);
+    expect(cells(view, view.rows[21]!)).toEqual(["S22", "INV-1", "6", "29", "1,480", "14.30", "55.3", "0.38", "4 mm² Cu, 1500 V DC"]);
   });
 
   test("the total row: the count of strings as its name, the lengths' sum with one decimal under DC cable, nothing else", () => {
     const total = view.rows[22]!;
     expect(view.total).toBe(total.key);
-    expect(cells(view, total)).toEqual(["22 strings", "", "", "", "", "", "1,681.0", ""]);
+    expect(cells(view, total)).toEqual(["22 strings", "", "", "", "", "", "1,681.0", "", ""]);
   });
 
   test("the caption in the engine's order; the toast's words", () => {
@@ -37,9 +37,19 @@ describe("the DC cable schedule as a table (plan/phase-09-plan.md, step 16, deci
   test("the text for the clipboard is what is shown in the order shown, the total row last", () => {
     expect(view.text).toBe(tableAsText(view.columns, view.rows));
     const lines = view.text.split("\n");
-    expect(lines[0]).toBe("String\tInverter\tMPPT\tModules\tVoc cold (V)\tIsc (A)\tDC cable (m)\tCable");
-    expect(lines[1]).toBe("S1\tINV-1\t1\t29\t1,480\t14.30\t131.9\t4 mm² Cu, 1500 V DC");
-    expect(lines[23]).toBe("22 strings\t\t\t\t\t\t1,681.0\t");
+    expect(lines[0]).toBe("String\tInverter\tMPPT\tModules\tVoc cold (V)\tIsc (A)\tDC cable (m)\tDrop (%)\tCable");
+    expect(lines[1]).toBe("S1\tINV-1\t1\t29\t1,480\t14.30\t131.9\t0.91\t4 mm² Cu, 1500 V DC");
+    expect(lines[23]).toBe("22 strings\t\t\t\t\t\t1,681.0\t\t");
+  });
+
+  test("a drop within 1 % has no mark; a string that drops more, even at 10 mm², has an exclamation mark that says so (issue 179, item 27)", () => {
+    const drop = view.columns.find((column) => column.key === "drop")!;
+    expect(view.rows.slice(0, 22).map((row) => drop.mark?.(row) ?? null)).toEqual(Array(22).fill(null));
+    const long = { ...A.cable_schedule[0]!, length_m: 400, cross_section_mm2: 10, size: "10 mm² Cu, 1500 V DC", drop_pct: 1.27 };
+    const over = scheduleViewOf({ ...A, cable_schedule: [long] }, null);
+    expect(cells(over, over.rows[0]!).slice(6)).toEqual(["400.0", "1.27", "10 mm² Cu, 1500 V DC"]);
+    expect(drop.mark?.(over.rows[0]!)).toEqual({ kind: "note", label: "More than 1 % even at 10 mm²: a shorter run, or the inverter nearer, brings it down" });
+    expect(drop.mark?.(over.rows[1]!)).toBeNull();
   });
 
   test("the card of the total row on phone shows its sum alone", () => {

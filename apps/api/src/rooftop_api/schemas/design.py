@@ -192,6 +192,8 @@ class CableRow(BaseModel):
     isc_a: float
     length_m: float
     size: str
+    cross_section_mm2: float
+    drop_pct: float = Field(description="The cable's voltage drop at the string's MPP at STC, %")
 
 
 class SummaryRow(BaseModel):

@@ -1,9 +1,9 @@
 // The DC cable schedule of the chosen option as a Table (plan/phase-09-plan.md, step 16, decision 7; the board "Handover,
-// previews"): every string with the engine's eight columns in its order, sortable on the first seven, the engine's order
-// by default; a total row with the count of strings and the lengths' sum; the caption; the text for the clipboard, what is
+// previews"): every string with the engine's nine columns in its order, sortable on the first eight, the engine's order
+// by default, a drop over 1 % marked (issue 179, item 27); a total row with the count of strings and the lengths' sum; the caption; the text for the clipboard, what is
 // shown in the order shown; the words of the toast. Pure; CableSchedule draws what it gives.
 import { shown } from "../../components/ui/number-entry";
-import type { Column } from "../../components/ui/table-cells";
+import type { Column, Mark } from "../../components/ui/table-cells";
 import { sortedRows, type Sort } from "../../components/ui/table-sort";
 import type { CableRow, DesignOption } from "../api";
 import { tableAsText } from "./copy-table";
@@ -20,6 +20,7 @@ export type ScheduleLine = {
   vocCold: string;
   isc: string;
   length: string;
+  drop: string;
   cable: string;
 };
 
@@ -38,6 +39,10 @@ export type ScheduleView = {
 const TOTAL = "total";
 export const SCHEDULE_COPIED = "DC cable schedule copied as a table";
 
+/** The most a string's cable drops of its voltage at the maximum power point, as the engine sizes it. */
+const DROP_LIMIT_PCT = 1;
+const OVER_THE_LIMIT: Mark = { kind: "note", label: "More than 1 % even at 10 mm²: a shorter run, or the inverter nearer, brings it down" };
+
 /** The number of a string from its label, so that S10 sorts after S9. */
 const numberOfString = (label: string) => Number(label.match(/\d+$/)?.[0] ?? 0);
 
@@ -49,6 +54,14 @@ const COLUMNS: ReadonlyArray<Column<ScheduleLine>> = [
   { key: "vocCold", head: "Voc cold (V)", kind: "number", value: (row) => row.vocCold, sortBy: (row) => row.raw?.voc_cold_v ?? 0 },
   { key: "isc", head: "Isc (A)", kind: "number", value: (row) => row.isc, sortBy: (row) => row.raw?.isc_a ?? 0 },
   { key: "length", head: "DC cable (m)", kind: "number", value: (row) => row.length, sortBy: (row) => row.raw?.length_m ?? 0 },
+  {
+    key: "drop",
+    head: "Drop (%)",
+    kind: "number",
+    value: (row) => row.drop,
+    sortBy: (row) => row.raw?.drop_pct ?? 0,
+    mark: (row) => (row.raw !== null && row.raw.drop_pct > DROP_LIMIT_PCT ? OVER_THE_LIMIT : null),
+  },
   { key: "cable", head: "Cable", kind: "text", value: (row) => row.cable, words: true },
 ];
 
@@ -65,6 +78,7 @@ function lineOf(row: CableRow): ScheduleLine {
     vocCold: shown(row.voc_cold_v, 0),
     isc: shown(row.isc_a, 2),
     length: shown(row.length_m, 1),
+    drop: shown(row.drop_pct, 2),
     cable: row.size,
   };
 }
@@ -72,7 +86,7 @@ function lineOf(row: CableRow): ScheduleLine {
 function totalOf(option: DesignOption): ScheduleLine {
   const strings = option.cable_schedule.length;
   const sum = option.cable_schedule.reduce((total, row) => total + row.length_m, 0);
-  return { key: TOTAL, raw: null, string: `${shown(strings, 0)} ${strings === 1 ? "string" : "strings"}`, inverter: "", mppt: "", modules: "", vocCold: "", isc: "", length: shown(sum, 1), cable: "" };
+  return { key: TOTAL, raw: null, string: `${shown(strings, 0)} ${strings === 1 ? "string" : "strings"}`, inverter: "", mppt: "", modules: "", vocCold: "", isc: "", length: shown(sum, 1), drop: "", cable: "" };
 }
 
 function captionOf(option: DesignOption, sort: Sort | null): string {

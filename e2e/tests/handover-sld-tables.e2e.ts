@@ -17,7 +17,7 @@ const TOAST_STAYS = 5_000;
 type PVString = { label: string; inverter: number; mppt: number };
 type Load = { inverter: number; mppt: number; imp_a: number; imp_limit_a: number | null };
 type BomLine = { item: string; spec: string; qty: number; unit: string };
-type CableRow = { string: string; inverter: string; mppt: number; modules: number; voc_cold_v: number; isc_a: number; length_m: number; size: string };
+type CableRow = { string: string; inverter: string; mppt: number; modules: number; voc_cold_v: number; isc_a: number; length_m: number; drop_pct: number; size: string };
 type Option = {
   key: string;
   letter: string;
@@ -93,8 +93,8 @@ const loadWordsOf = (load: Load) => (load.imp_limit_a === null ? `Imp ${fixed(lo
 /** The bill of materials as the page copies it: tab-separated lines with a header line. */
 const bomTextOf = (option: Option) =>
   ["Item\tSpecification\tQty\tUnit", ...option.bom.map((line) => [line.item, line.spec, fixed(line.qty, 0), line.unit].join("\t"))].join("\n");
-const scheduleLineOf = (row: CableRow) => [row.string, row.inverter, String(row.mppt), String(row.modules), fixed(row.voc_cold_v, 0), fixed(row.isc_a, 2), fixed(row.length_m, 1), row.size];
-const totalOf = (option: Option) => [plural(option.cable_schedule.length, "string", "strings"), "", "", "", "", "", fixed(option.cable_schedule.reduce((sum, row) => sum + row.length_m, 0), 1), ""];
+const scheduleLineOf = (row: CableRow) => [row.string, row.inverter, String(row.mppt), String(row.modules), fixed(row.voc_cold_v, 0), fixed(row.isc_a, 2), fixed(row.length_m, 1), fixed(row.drop_pct, 2), row.size];
+const totalOf = (option: Option) => [plural(option.cable_schedule.length, "string", "strings"), "", "", "", "", "", fixed(option.cable_schedule.reduce((sum, row) => sum + row.length_m, 0), 1), "", ""];
 
 test.describe.configure({ timeout: RUN * 2 });
 
@@ -243,7 +243,7 @@ test.describe("the DC cable schedule (decision 7)", () => {
   const head = (page: Page, name: string) => schedule(page).getByRole("columnheader", { name, exact: true });
   const longestOf = (option: Option) => option.cable_schedule.reduce((longest, row) => (row.length_m > longest.length_m ? row : longest));
 
-  test("every string in the engine's order with the eight columns, then the total row with the count and the lengths' sum", async ({ page }, testInfo) => {
+  test("every string in the engine's order with the nine columns, then the total row with the count and the lengths' sum", async ({ page }, testInfo) => {
     const option = await theItem(page, "cable-schedule", schedule);
     const shown = rows(schedule(page), testInfo.project.name);
 
@@ -257,7 +257,7 @@ test.describe("the DC cable schedule (decision 7)", () => {
       expect(await wordsOf(shown.last(), testInfo.project.name)).toEqual([total[0], total[6]]);
     } else {
       expect(await wordsOf(shown.last(), testInfo.project.name)).toEqual(total);
-      await expect(schedule(page).getByRole("columnheader")).toHaveText(["String", "Inverter", "MPPT", "Modules", "Voc cold (V)", "Isc (A)", "DC cable (m)", "Cable"]);
+      await expect(schedule(page).getByRole("columnheader")).toHaveText(["String", "Inverter", "MPPT", "Modules", "Voc cold (V)", "Isc (A)", "DC cable (m)", "Drop (%)", "Cable"]);
     }
     await expect(schedule(page)).toContainText(`The DC cable schedule of option ${option.letter}, in the engine's order, by string`);
     await expect(preview(page).getByText("In the report, page 5").filter({ visible: true })).toBeVisible();
@@ -300,7 +300,7 @@ test.describe("the DC cable schedule (decision 7)", () => {
     if (onDesktop) {
       const lines = (await page.evaluate(() => navigator.clipboard.readText())).split("\n");
       const sorted = [...option.cable_schedule].sort((a, b) => b.length_m - a.length_m);
-      expect(lines[0]).toBe("String\tInverter\tMPPT\tModules\tVoc cold (V)\tIsc (A)\tDC cable (m)\tCable");
+      expect(lines[0]).toBe("String\tInverter\tMPPT\tModules\tVoc cold (V)\tIsc (A)\tDC cable (m)\tDrop (%)\tCable");
       expect(lines.slice(1, -1)).toEqual(sorted.map((row) => scheduleLineOf(row).join("\t")));
       expect(lines.at(-1)).toBe(totalOf(option).join("\t"));
       await expect(toast(page)).toContainText("DC cable schedule copied as a table");

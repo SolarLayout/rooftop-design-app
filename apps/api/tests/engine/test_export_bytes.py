@@ -30,7 +30,7 @@ def _pages(pdf: bytes) -> list[str]:
 
 
 def _row(number: int) -> CableRow:
-    return CableRow(f"S{number}", "INV-1", 1, 26, 1327.0, 14.3, 40.0, "4 mm² Cu, 1500 V DC")
+    return CableRow(f"S{number}", "INV-1", 1, 26, 1327.0, 14.3, 40.0, "4 mm² Cu, 1500 V DC", 4.0, 0.31)
 
 
 @pytest.fixture

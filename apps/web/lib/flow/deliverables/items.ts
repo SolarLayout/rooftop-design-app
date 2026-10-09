@@ -64,11 +64,14 @@ const plural = (value: number, one: string, many: string) => `${count(value)} ${
 
 function bomFactsOf(option: DesignOption): string {
   const line = (item: string) => option.bom.find((one) => one.item === item) ?? null;
-  const [modules, structure, cable] = [line(MODULES), line(STRUCTURE), line(DC_CABLE)];
+  const [modules, structure] = [line(MODULES), line(STRUCTURE)];
+  // A line for each size of DC cable the strings take, together here.
+  const cables = option.bom.filter((one) => one.item === DC_CABLE);
+  const metres = cables.reduce((total, one) => total + one.qty, 0);
   const parts = [
     modules && `${count(modules.qty)} modules`,
     structure && `${count(structure.qty)} ${structure.unit}`,
-    cable && `${count(cable.qty)} ${cable.unit} ${DC_CABLE}`,
+    cables.length > 0 ? `${count(metres)} ${cables[0]!.unit} ${DC_CABLE}` : null,
   ];
   return parts.filter((part) => part !== null).join(" · ");
 }
