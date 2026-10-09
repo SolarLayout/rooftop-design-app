@@ -213,9 +213,15 @@ def strings_by_series(design: Design) -> list[StringsOfLength]:
 
 def limit_note(design: Design) -> str:
     """Which voltage limits the strings. Needs the series range of the design."""
+    module = design.module
+    rated = (
+        f"{module.v_max_iec:.0f} V"
+        if module.v_max_from_file
+        else f"{module.v_max_iec:.0f} V taken, its file gives none"
+    )
     return (
         f"Limit {design.range.limit_v:.0f} V: the lowest of the system, module "
-        f"({design.module.v_max_iec:.0f} V) and inverter ({design.inverter.vabs_max:.0f} V) ratings."
+        f"({rated}) and inverter ({design.inverter.vabs_max:.0f} V) ratings."
     )
 
 

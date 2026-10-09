@@ -1101,6 +1101,11 @@ export interface components {
             source: string;
             /** Technology */
             technology: string;
+            /**
+             * V Max From File
+             * @description Whether the file gives the module's highest system voltage; when not, 1000 V is taken
+             */
+            v_max_from_file: boolean;
             /** V Max Iec */
             v_max_iec: number;
             /** Vmp */

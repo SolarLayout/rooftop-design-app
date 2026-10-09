@@ -148,6 +148,7 @@ class Module:
     gamma: float = 0.0
     mu_gamma: float = 0.0
     v_max_iec: float = 1000.0
+    v_max_from_file: bool = True  # False: the file gives no rating, and 1000 V is taken (#179, item 14)
     bifaciality: float = 0.0
     lid_loss_pct: float | None = None
     iam_profile: list[tuple[float, float]] = field(default_factory=list)
@@ -207,6 +208,7 @@ def parse_pan(text: str, source: str = "") -> Module:
         gamma=_f(kv, "Gamma"),
         mu_gamma=_f(kv, "muGamma"),
         v_max_iec=_f(kv, "VMaxIEC", "VMaxUL", default=1000.0),
+        v_max_from_file=_f(kv, "VMaxIEC", "VMaxUL", default=0.0) > 0,
         bifaciality=_f(kv, "BifacialityFactor"),
         lid_loss_pct=float(lid) if lid not in (None, "") else None,
         iam_profile=_profile(lines, "IAMProfile"),

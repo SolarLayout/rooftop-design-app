@@ -828,3 +828,24 @@ def test_a_design_without_its_own_files_names_the_bundled_ones_by_their_files_al
     assert result["equipment"]["module"]["source"] == "insolation-ina-144mhc-tf-560.PAN"
     assert result["equipment"]["inverter"]["source"] == "wattpower-wp-330ktl-h1.OND"
     assert str(samples_dir()) not in " ".join(result["equipment"]["module_notes"])
+
+
+def test_a_module_whose_file_gives_no_rating_is_sized_to_1000_v_taken_and_says_so(client, demo):
+    # #179, item 14: a PAN without VMaxIEC or VMaxUL is taken as 1000 V; the answer says it was taken.
+    from tests.equipment import fixture_text
+
+    project = small(demo)
+    project["pan_path"] = "abi-ab340-72phc.PAN"
+    project["pan_text"] = "\n".join(
+        line for line in fixture_text("abi-ab340-72phc.PAN").splitlines() if "VMax" not in line
+    )
+
+    result = result_of(client.post("/design", json=project))
+
+    module = result["equipment"]["module"]
+    assert (module["v_max_iec"], module["v_max_from_file"]) == (1000.0, False)
+    assert result["series_range"]["limit_v"] == 1000
+    assert result["series_range"]["limit_note"] == (
+        "Limit 1000 V: the lowest of the system, module (1000 V taken, its file gives none) and inverter "
+        "(1500 V) ratings."
+    )

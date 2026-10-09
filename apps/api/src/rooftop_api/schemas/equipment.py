@@ -54,6 +54,9 @@ class Module(BaseModel):
     gamma: float
     mu_gamma: float
     v_max_iec: float
+    v_max_from_file: bool = Field(
+        description="Whether the file gives the module's highest system voltage; when not, 1000 V is taken"
+    )
     bifaciality: float
     lid_loss_pct: float | None
     iam_profile: list[Point] = Field(description="(angle of incidence in degrees, factor)")
