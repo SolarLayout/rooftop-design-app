@@ -15,7 +15,7 @@ It appears once the strings are sized. The band holds the lengths that fit, and 
 ## How the ends are set
 
 - Shortest: with the cell at its hottest (the highest ambient plus the cell rise), the string's MPP voltage must stay at or above the inverter's MPPT minimum.
-- `Voc limit`: with the cell at the lowest ambient, the string's open-circuit voltage must stay at or under the lowest of the system voltage, the inverter's highest DC voltage and the module's highest system voltage.
+- `Voc limit`: with the cell at the lowest ambient, the string's open-circuit voltage must stay at or under the lowest of the system voltage, the inverter's highest DC voltage and the module's highest system voltage (from its file, or `1000 V` when the file gives none).
 - `MPPT maximum`: with the cell at the lowest ambient, the string's MPP voltage must stay at or under the inverter's MPPT maximum.
 
 The temperatures and the Voc coefficient are under `Sizing temperatures`.
@@ -26,4 +26,4 @@ Under the bar stands the engine's verdict on the chosen option: its MPP voltage 
 
 ## When no length fits
 
-When the shortest length needed is longer than the longest allowed, the heading says `None fit`, the verdict gives both numbers, and there are no options. Change the system voltage, the inverter or the sizing temperatures. To try a length the run did not offer, add <HelpLink k="studio.section.options">your own option</HelpLink>.
+When the shortest length needed is longer than the longest allowed, the heading says `None fit`, the verdict gives both numbers, and there are no options. Change the system voltage, the inverter or the sizing temperatures: until one length fits, no option can be built, your own included.

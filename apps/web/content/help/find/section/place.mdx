@@ -13,10 +13,10 @@ When you enter the roof by hand, `Latitude` and `Longitude` say where it is, in 
 
 ## Where the numbers come from
 
-A place found with the search fills both fields. If you switch to entering by hand after drawing on the map, they start where the drawn roof stands. You can also type them.
+A place found with the search fills both fields. If you switch to entering by hand after drawing on the map without searching, they start at the first corner you placed. You can also type them.
 
 ## How it behaves
 
-The shape under `Shape` is laid out around this point, in metres east and north of it. Nothing is drawn until the place and the shape are both complete. Obstacles drawn on the map before you switched stay while the place stays the same; type another place and they are dropped.
+The shape under `Shape` is laid out around this point, in metres east and north of it. Nothing is drawn until the place and the shape are both complete. Obstacles drawn on the map before you switched stay only while the fields hold the place they started at, the first corner you placed; when a place found with the search fills them, or you type another, the obstacles are dropped.
 
 When the roof is built, its place is taken at the middle of its outline. The sun of the design is worked out at that place, and weather from an online source is fetched for it.
