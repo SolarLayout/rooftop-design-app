@@ -240,11 +240,12 @@ def _too_few_positions(design: Design) -> schemas.NoOptions:
     fits = (
         "No string of that length fits."
         if shortest is None
-        else f"A string of {shortest} would fit: enter it as a custom option."
+        else f"A string of {shortest} would fit: add it as your own option."
     )
     return schemas.NoOptions(
         code="too_few_positions",
         title="Too few positions for a string",
         message=f"The roof holds {positions:,} {'position' if positions == 1 else 'positions'}, and a "
         f"string takes {rng.n_min} to {rng.n_max} modules. {fits}",
+        fits=shortest,
     )

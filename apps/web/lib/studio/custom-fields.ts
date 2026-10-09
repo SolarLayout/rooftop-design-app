@@ -19,7 +19,8 @@ export function customOf(document: Project, design: DesignResult | null): Custom
   if (document.custom) return [...document.custom] as Custom;
   const chosen = design?.options.find((option) => option.key === design.chosen_option);
   if (chosen) return [chosen.n_series, chosen.n_strings, chosen.n_inverters];
-  return [design?.series_range?.n_min ?? 1, 1, 1];
+  // Too few positions for an option: the string the API says fits (#171), else the shortest the range allows.
+  return [design?.no_options?.fits ?? design?.series_range?.n_min ?? 1, 1, 1];
 }
 
 export type CustomBounds = Record<"series" | "strings" | "inverters", { range: Range & { min: number; max: number }; hint: string }>;

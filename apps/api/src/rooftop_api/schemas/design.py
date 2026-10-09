@@ -233,6 +233,11 @@ class NoOptions(BaseModel):
     code: NoOptionsCode
     title: str
     message: str
+    fits: int | None = Field(
+        default=None,
+        description="Too few positions for an option, yet a string of this many modules fits: "
+        "your own of it is built",
+    )
 
 
 class DesignResult(BaseModel):

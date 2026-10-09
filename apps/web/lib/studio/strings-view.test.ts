@@ -65,8 +65,20 @@ describe("with a system voltage", () => {
   });
 
   test("too few positions: the API's words, without a verdict on the bar", () => {
-    const reason = { code: "too_few_positions", title: "Too few positions for a string", message: "The roof holds 12 positions, …" } as const;
+    const reason = { code: "too_few_positions", title: "Too few positions for a string", message: "The roof holds 12 positions, …", fits: null } as const;
     const view = stringsViewOf({ voltage: 1500, design: run({ options: [], chosen_option: null, no_options: reason }), option: null });
-    expect(view).toMatchObject({ verdict: null, noOptions: { title: reason.title, message: reason.message, change: null } });
+    expect(view).toMatchObject({ verdict: null, noOptions: { title: reason.title, message: reason.message, change: null, yourOwn: false } });
+  });
+
+  test("too few positions, but a short string fits: your own is offered, as the API's words advise (#171)", () => {
+    const reason = { code: "too_few_positions", title: "Too few positions for a string", message: "… A string of 14 would fit: add it as your own option.", fits: 14 } as const;
+    const view = stringsViewOf({ voltage: 1500, design: run({ options: [], chosen_option: null, no_options: reason }), option: null });
+    expect(view).toMatchObject({ noOptions: { yourOwn: true } });
+  });
+
+  test("no length fits the voltage: your own is not offered, since no option is built", () => {
+    const reason = { code: "no_string_length_fits", title: "None fit", message: "…", fits: null } as const;
+    const view = stringsViewOf({ voltage: 1500, design: run({ options: [], chosen_option: null, no_options: reason }), option: null });
+    expect(view).toMatchObject({ noOptions: { yourOwn: false } });
   });
 });

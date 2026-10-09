@@ -21,7 +21,8 @@ export type Sized = {
   /** The verdict under the bar: the chosen option's, or why no length fits; null without either. */
   verdict: Verdict | null;
   /** When nothing fits or nothing is offered: the API's words and what can change it. */
-  noOptions: { title: string; message: string; change: string | null } | null;
+  /** `yourOwn`: too few positions for an option, yet a string fits, so your own can be built (#171). */
+  noOptions: { title: string; message: string; change: string | null; yourOwn: boolean } | null;
 };
 
 export type StringsView = NoVoltage | Sized;
@@ -48,7 +49,8 @@ export function stringsViewOf({ voltage, design, option }: Of): StringsView {
   if (reason && reason.code !== "system_voltage_missing") {
     const change = reason.code === "no_string_length_fits" ? CHANGE_WHEN_NOTHING_FITS : null;
     const verdict = reason.code === "no_string_length_fits" ? { ok: false, title: reason.title, detail: reason.message } : null;
-    return { kind: "sized", voltage: volts, range, isOfTheVoltage, chosen: null, verdict, noOptions: { title: reason.title, message: reason.message, change } };
+    const yourOwn = reason.code === "too_few_positions" && reason.fits != null;
+    return { kind: "sized", voltage: volts, range, isOfTheVoltage, chosen: null, verdict, noOptions: { title: reason.title, message: reason.message, change, yourOwn } };
   }
   return { kind: "sized", voltage: volts, range, isOfTheVoltage, chosen: option?.n_series ?? null, verdict: option?.verdict ?? null, noOptions: null };
 }

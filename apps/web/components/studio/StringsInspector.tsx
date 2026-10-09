@@ -121,6 +121,9 @@ export function StringsInspector() {
         {view.kind === "no-voltage" ? null : (
           <>
             <NothingFits view={view} />
+            {view.noOptions?.yourOwn && design ? (
+              <YourOwn document={project} design={design} onSave={(custom) => store.getState().commit((document) => withCustom(document, custom))} onRemove={() => store.getState().commit(withoutCustom)} />
+            ) : null}
             {view.range && !view.noOptions && design ? (
               <div data-testid="strings-sized" data-state={isUpdating ? "updating" : "settled"} className={classNames("flex flex-col gap-1.5", isUpdating && "opacity-updating")}>
                 <OptionCards cards={optionCardsOf(design)} onChoose={chooseOption} />

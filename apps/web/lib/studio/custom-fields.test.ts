@@ -20,6 +20,11 @@ describe("your own option (the board \"Options and your own\"; plan/phase-07-pla
     expect(customOf(DOCUMENT, RUN)).toEqual([29, 22, 1]);
   });
 
+  test("with too few positions for an option, Add your own begins with the string the API says fits (#171)", () => {
+    const tooFew = { ...RUN, options: [], chosen_option: null, series_range: { n_min: 14, n_max: 29 }, no_options: { code: "too_few_positions", title: "", message: "", fits: 15 } } as unknown as DesignResult;
+    expect(customOf(DOCUMENT, tooFew)).toEqual([15, 1, 1]);
+  });
+
   test("Change begins with the document's own", () => {
     expect(customOf({ ...DOCUMENT, custom: [26, 24, 1] } as Project, RUN)).toEqual([26, 24, 1]);
   });
