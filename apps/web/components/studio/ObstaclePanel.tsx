@@ -22,6 +22,7 @@ import {
   factsOf,
   FEWEST_POINTS,
   fieldsOfObstacle,
+  heightToAdd,
   newObstacleOf,
   OBSTACLE_KINDS,
   withObstacleAdded,
@@ -122,8 +123,6 @@ type CardProps<Kind extends Obstacle | DraftObstacle> = {
   obstacle: Kind;
   size: Size;
   onChange: (next: Kind) => void;
-  /** Hears the height alone, where a typed height does more than set a field: a draft joins the design by it. */
-  onHeight?: (height: number) => void;
   /** The focus goes into the height when the card opens: the height is what is asked. */
   focusHeight?: boolean;
   onRemove?: () => void;
@@ -138,7 +137,7 @@ type CardProps<Kind extends Obstacle | DraftObstacle> = {
  * head, the word of its kind, Remove, and its fields by its kind two to a row; a wall's and a building's
  * points as a table.
  */
-export function ObstacleCard<Kind extends Obstacle | DraftObstacle>({ obstacle, size, onChange, onHeight, focusHeight = false, onRemove, hint, foot }: CardProps<Kind>) {
+export function ObstacleCard<Kind extends Obstacle | DraftObstacle>({ obstacle, size, onChange, focusHeight = false, onRemove, hint, foot }: CardProps<Kind>) {
   const card = useRef<HTMLDivElement>(null);
   const hasPoints = obstacle.kind === "wall" || obstacle.kind === "building";
 
@@ -147,7 +146,6 @@ export function ObstacleCard<Kind extends Obstacle | DraftObstacle>({ obstacle, 
   }, [focusHeight]);
 
   function commitField(id: ObstacleFieldId, value: number) {
-    if (id === "height" && onHeight) return onHeight(value);
     onChange(withObstacleField(obstacle, id, value));
   }
 
@@ -296,11 +294,15 @@ export function ObstaclePanel({ roof, size }: Props) {
     view.getState().setDraft(newObstacleOf(kind, [centre.x, centre.y], roof.obstacles));
   }
 
-  /** The draft joins the design with the height that was typed, and is the selected one. */
-  function addWithHeight(height: number) {
-    if (!draft) return;
+  /** Add, or Enter in the draft's card: the draft joins the design with the height its field holds, and is the selected
+   * one. Leaving the field only fills the draft (issue 179, item 30). The store is read, not the render's draft: Enter has just
+   * committed the height into it. */
+  function addTheDraft() {
+    const current = view.getState().draft;
+    const height = heightToAdd(current);
+    if (!current || height === null) return;
     const index = roof.obstacles.length;
-    commitRoof((before) => withObstacleAdded(before, draft, height));
+    commitRoof((before) => withObstacleAdded(before, current, height));
     view.getState().select({ kind: "obstacle", index });
   }
 
@@ -330,23 +332,29 @@ export function ObstaclePanel({ roof, size }: Props) {
         <AddMenu onAdd={add} />
       </div>
       {draft ? (
-        <ObstacleCard
-          obstacle={draft}
-          size={size}
-          onChange={(next) => view.getState().setDraft(next)}
-          onHeight={addWithHeight}
-          focusHeight
-          foot={
-            <div className="flex justify-end gap-2">
-              <Button kind="quiet" size="s" onClick={() => view.getState().setDraft(null)}>
-                Remove
-              </Button>
-              <Button kind="primary" size="s" aria-disabled={draft.height === null || undefined}>
-                Add the {wordOfKind(draft.kind).toLowerCase()}
-              </Button>
-            </div>
-          }
-        />
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            addTheDraft();
+          }}
+        >
+          <ObstacleCard
+            obstacle={draft}
+            size={size}
+            onChange={(next) => view.getState().setDraft(next)}
+            focusHeight
+            foot={
+              <div className="flex justify-end gap-2">
+                <Button kind="quiet" size="s" onClick={() => view.getState().setDraft(null)}>
+                  Remove
+                </Button>
+                <Button kind="primary" size="s" type="submit" aria-disabled={heightToAdd(draft) === null || undefined}>
+                  Add the {wordOfKind(draft.kind).toLowerCase()}
+                </Button>
+              </div>
+            }
+          />
+        </form>
       ) : null}
       {own.length === 0 && !draft ? <p className="type-small text-text-2">None yet. Add a box, a tank, a wall, a tree or a building.</p> : null}
       <ul className="flex flex-col gap-2.5">
