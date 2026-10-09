@@ -53,8 +53,8 @@ The website's designs approved on that canvas (page "Rooftop page and header", 2
 SolarLayout/solarlayout#1311: `/products/rooftop`; the header Home · Products ▾ · Downloads ▾ · Docs; the home and footer
 in the order of weight (utility-scale PV, BESS, Rooftop); "rooftop solar", the industry's wording, never a bare
 "rooftops". Open Rooftop goes to the app of the same environment through `NEXT_PUBLIC_ROOFTOP_URL`, set in the
-`solarlayout-web` Vercel project (Production and staging); a deploy build without it refuses to start. Arun merges and
-deploys it. Still to come: the docs (solarlayout_desktop_docs#19) and the Rooftop legal pages.
+`solarlayout-web` Vercel project (Production and staging); a deploy build without it refuses to start. **Deployed** to
+staging and production (2026-10-09), checked live at 1440, 834 and 390. Still to come: the docs (solarlayout_desktop_docs#19) and the Rooftop legal pages.
 **Next:** a new task as the owner names it; the browser groups run when the owner says (#157's suites, #151's mobile fixes, and the Strings
 lens pictures whose options D and E #160 changed).
 
