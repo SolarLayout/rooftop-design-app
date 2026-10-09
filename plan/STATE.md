@@ -43,6 +43,9 @@ Then the phone's tab bar, installed on an iPhone (#167, D90): its foot is the la
 zone, never both: 96 px with 41 px under the labels (was 106 and 51), 72 px without a home bar; the toasts on the same
 height. Measured at insets of 34, 24 and 0 px. **Deployed:** the owner deployed #166 and #167 to staging and production and
 checked the tab bar on his iPhone, installed (2026-10-09): "all good".
+The launch on the website and the docs, filed 2026-10-09 (the other repos' work, design first on a canvas):
+SolarLayout/solarlayout#1310 (the site re-imagined for three products, Rooftop's page; the cloud stays gated dark) and
+SolarLayout/solarlayout_desktop_docs#19 (Rooftop's docs, a new landing for three products).
 **Next:** a new task as the owner names it; the browser groups run when the owner says (#157's suites, #151's mobile fixes, and the Strings
 lens pictures whose options D and E #160 changed).
 
