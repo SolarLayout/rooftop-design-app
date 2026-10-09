@@ -61,7 +61,7 @@ export function StringsInspector() {
   // A file read for another design says nothing about this one.
   const inverter = inverterShownOf({ design, designEdit, replaced: replaced?.openedAt === openedAt ? replaced : null });
   // The inverter shown, also one read and not yet run with; the module of the run.
-  const ratings = inverter && design ? { inverter: inverter.inverter.vabs_max, module: design.equipment.module.v_max_iec } : null;
+  const ratings = inverter && design ? { inverter: inverter.inverter.vabs_max, module: design.equipment.module.v_max_iec, moduleTaken: !design.equipment.module.v_max_from_file } : null;
   const words =
     view.kind === "sized"
       ? voltageWordsOf({

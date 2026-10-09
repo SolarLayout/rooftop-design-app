@@ -1680,6 +1680,11 @@
             "title": "Technology",
             "type": "string"
           },
+          "v_max_from_file": {
+            "description": "Whether the file gives the module's highest system voltage; when not, 1000 V is taken",
+            "title": "V Max From File",
+            "type": "boolean"
+          },
           "v_max_iec": {
             "title": "V Max Iec",
             "type": "number"
@@ -1722,6 +1727,7 @@
           "gamma",
           "mu_gamma",
           "v_max_iec",
+          "v_max_from_file",
           "bifaciality",
           "lid_loss_pct",
           "iam_profile",

@@ -107,3 +107,14 @@ def test_the_power_of_an_ond_is_in_kilowatts_whatever_its_display_unit():
 
     assert (inverter.pnom_kw, inverter.pmax_kw) == (parse_ond(text).pnom_kw, parse_ond(text).pmax_kw)
     assert inverter.pnom_kw == 275.0
+
+
+def test_a_pan_without_a_rating_is_taken_as_1000_v_and_says_it_was_taken():
+    # #179, item 14: the 1000 V of a PAN that gives no VMaxIEC or VMaxUL is taken, not the module's own.
+    text = Path(fixture_path("Test.PAN")).read_bytes().decode("latin-1")
+    without = "\n".join(line for line in text.splitlines() if "VMax" not in line)
+
+    rated, taken = parse_pan(text), parse_pan(without)
+
+    assert (rated.v_max_iec, rated.v_max_from_file) == (1500.0, True)
+    assert (taken.v_max_iec, taken.v_max_from_file) == (1000.0, False)

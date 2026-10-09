@@ -15,8 +15,9 @@ export type VoltageFacts = {
   country: string;
   /** A country's name as a sentence takes it: "the United States". */
   nameOf: (country: string) => string;
-  /** The highest DC voltages of the inverter and of the module, from their files; 0 where a file gives none. None before a run. */
-  ratings: { inverter: number; module: number } | null;
+  /** The highest DC voltages of the inverter and of the module, from their files; 0 where a file gives none. None before a run.
+   * moduleTaken: the module's file gives no rating and the engine takes 1000 V for it (#179, item 14). */
+  ratings: { inverter: number; module: number; moduleTaken?: boolean } | null;
   /** What the run's series range says of a string, for the offer where no length fits. None before a run. */
   range: { ok: boolean; voc_cold: number; n_min: number; n_max_mppt: number } | null;
 };
@@ -34,14 +35,14 @@ export type VoltageWords = {
   offer: { words: string; use: Volts } | null;
 };
 
-type Rating = { volts: number; of: "inverter" | "module" };
+type Rating = { volts: number; of: "inverter" | "module"; taken: boolean };
 
 /** The lower of the two ratings a file gives; none when neither does. */
 function ratingOf(ratings: VoltageFacts["ratings"]): Rating | null {
   if (!ratings) return null;
   const given: Rating[] = [];
-  if (ratings.inverter > 0) given.push({ volts: ratings.inverter, of: "inverter" });
-  if (ratings.module > 0) given.push({ volts: ratings.module, of: "module" });
+  if (ratings.inverter > 0) given.push({ volts: ratings.inverter, of: "inverter", taken: false });
+  if (ratings.module > 0) given.push({ volts: ratings.module, of: "module", taken: ratings.moduleTaken === true });
   return given.sort((a, b) => a.volts - b.volts)[0] ?? null;
 }
 
@@ -71,7 +72,8 @@ function offerOf(voltage: Volts, rating: Rating | null, range: VoltageFacts["ran
   }
   const next = above[0];
   if (next === undefined) return null;
-  return { words: `This ${rating.of} takes up to ${v(rating.volts)}. Raise it only if the site's code allows.`, use: next };
+  const takes = rating.taken ? `${v(rating.volts)} is taken for this module: its file gives no limit.` : `This ${rating.of} takes up to ${v(rating.volts)}.`;
+  return { words: `${takes} Raise it only if the site's code allows.`, use: next };
 }
 
 export function voltageWordsOf({ voltage, by, country, nameOf, ratings, range }: VoltageFacts): VoltageWords {
@@ -82,10 +84,14 @@ export function voltageWordsOf({ voltage, by, country, nameOf, ratings, range }:
   return {
     who: !isTheApps ? "Your choice" : defaultVoltageOf(country) === voltage ? `Set for ${nameOf(country)}` : "Set by the app",
     line: isTheApps ? lineOf(voltage, country, nameOf) : null,
-    limit: isTheApps && under ? `Strings sized to ${v(under.volts)}, this ${under.of}'s limit.` : null,
+    limit: isTheApps && under ? (under.taken ? `Strings sized to ${v(under.volts)}, taken for this module: its file gives no limit.` : `Strings sized to ${v(under.volts)}, this ${under.of}'s limit.`) : null,
     note:
       !isTheApps && under
-        ? { title: `Strings sized to ${v(under.volts)}, this ${under.of}'s limit`, detail: `Your system is set to ${v(voltage)}. The bill of materials follows the voltage set.`, use: matching }
+        ? {
+            title: under.taken ? `Strings sized to ${v(under.volts)}, taken for this module` : `Strings sized to ${v(under.volts)}, this ${under.of}'s limit`,
+            detail: `${under.taken ? `Its file gives no limit, so ${v(under.volts)} is taken. ` : ""}Your system is set to ${v(voltage)}. The bill of materials follows the voltage set.`,
+            use: matching,
+          }
         : null,
     offer: offerOf(voltage, rating, range),
   };

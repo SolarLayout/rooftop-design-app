@@ -71,6 +71,16 @@ describe("equipment rated under the voltage (D88)", () => {
     expect(voltageWordsOf(facts({ ratings: { inverter: 1500, module: 800 } })).limit).toBe(`Strings sized to ${V(800)}, this module's limit.`);
   });
 
+  // #179, item 14: a module whose file gives no rating is taken as 1000 V; the words say it was taken, not the module's.
+  test("a module rating taken for want of one in the file is said to be taken", () => {
+    const taken = { inverter: 1500, module: 1000, moduleTaken: true };
+    expect(voltageWordsOf(facts({ voltage: 1500, ratings: taken })).limit).toBe(`Strings sized to ${V(1000)}, taken for this module: its file gives no limit.`);
+    const note = voltageWordsOf(facts({ voltage: 1500, by: "user", ratings: taken })).note;
+    expect(note?.title).toBe(`Strings sized to ${V(1000)}, taken for this module`);
+    expect(note?.detail).toBe(`Its file gives no limit, so ${V(1000)} is taken. Your system is set to ${V(1500)}. The bill of materials follows the voltage set.`);
+    expect(voltageWordsOf(facts({ voltage: 600, ratings: taken })).offer?.words).toBe(`${V(1000)} is taken for this module: its file gives no limit. Raise it only if the site's code allows.`);
+  });
+
   test("offers no button when no voltage is at or under the rating", () => {
     expect(voltageWordsOf(facts({ voltage: 600, by: "user", ratings: { inverter: 550, module: 1500 } })).note?.use).toBeNull();
   });
