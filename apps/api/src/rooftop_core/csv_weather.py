@@ -46,6 +46,7 @@ def read(text: str, lat: float, lon: float, name: str = "", tz_offset_h: float =
             message = f"{label} cannot be read as a table of hours: {message}."
         raise UnusableWeatherFile(message, field=FIELD) from error
     _check_values(weather, raw, label)
+    _check_a_whole_year(weather, label)
     return CsvWeather(weather, _notes(weather, raw, label))
 
 
@@ -89,6 +90,17 @@ def _check_values(weather: wx.Weather, raw: pd.DataFrame, label: str) -> None:
         )
 
 
+def _check_a_whole_year(weather: wx.Weather, label: str) -> None:
+    """The energy of a year, PR, the P-values and 25 years come from the hours given (#179, item 20)."""
+    hours = len(weather.data)
+    if hours not in HOURS_OF_A_YEAR:
+        raise UnusableWeatherFile(
+            f"{label} has {hours:,} {'hour' if hours == 1 else 'hours'}, not the 8,760 of a year "
+            "(8,784 in a leap year). The energy of a year needs every hour of it: give a whole year.",
+            field=FIELD,
+        )
+
+
 def _notes(weather: wx.Weather, raw: pd.DataFrame, label: str) -> list[str]:
     notes = []
     if any(wx.csv_column(raw, wx.CSV_COLUMNS[column]) is None for column in ("dni", "dhi")):
@@ -111,11 +123,6 @@ def _notes(weather: wx.Weather, raw: pd.DataFrame, label: str) -> list[str]:
         notes.append(
             f"{label} gives the weather every {step:g} minutes. Each hour is the average of its rows "
             "(the simulation takes a row as an hour)."
-        )
-    if len(weather.data) not in HOURS_OF_A_YEAR:
-        notes.append(
-            f"{label} has {len(weather.data):,} {'hour' if len(weather.data) == 1 else 'hours'}, not the "
-            "8,760 of a year. Energy of a year needs every hour of it."
         )
     return notes
 

@@ -6,13 +6,6 @@ from rooftop_core import csv_weather
 from rooftop_core import weather as wx
 from rooftop_core.errors import UnusableWeatherFile
 
-CSV = """time,GHI,DNI,DHI,Temp,Wind
-2023-06-01 00:00,0,0,0,24.0,1.0
-2023-06-01 01:00,0,0,0,23.5,1.2
-2023-06-01 02:00,80,120,50,24.5,1.4
-"""
-
-
 EVERY_COLUMN = "ghi,dni,dhi,temp,wind"
 A_ROW = "100,80,40,25,2"
 
@@ -24,9 +17,12 @@ def _year(columns: str, row: str, hours: int = 8760) -> str:
 
 
 def test_a_good_file_is_the_weather_the_reader_gives():
-    read = csv_weather.read(CSV, 18.52, 73.86, "site.csv")
+    text = _year(EVERY_COLUMN, A_ROW)
+    read = csv_weather.read(text, 18.52, 73.86, "site.csv")
 
-    wx.pd.testing.assert_frame_equal(read.weather.data, wx.parse_csv(CSV, 18.52, 73.86, name="site.csv").data)
+    wx.pd.testing.assert_frame_equal(
+        read.weather.data, wx.parse_csv(text, 18.52, 73.86, name="site.csv").data
+    )
     assert (read.weather.source, read.weather.label) == ("csv", "site.csv")
 
 
@@ -38,10 +34,18 @@ def test_a_leap_year_is_a_year():
     assert csv_weather.read(_year(EVERY_COLUMN, A_ROW, 8784), 18.52, 73.86, "site.csv").notes == []
 
 
-def test_fewer_hours_than_a_year_are_noted():
-    assert csv_weather.read(CSV, 18.52, 73.86, "site.csv").notes == [
-        "site.csv has 3 hours, not the 8,760 of a year. Energy of a year needs every hour of it."
-    ]
+# #179, item 20: the energy of a year, PR, the P-values and 25 years are worked out from the hours given, so a
+# file that is not a whole year would give figures of a year that are not.
+@pytest.mark.parametrize(("hours", "said"), [(3, "3 hours"), (1, "1 hour"), (8759, "8,759 hours")])
+def test_a_file_that_is_not_a_whole_year_is_refused(hours, said):
+    with pytest.raises(UnusableWeatherFile) as error:
+        csv_weather.read(_year(EVERY_COLUMN, A_ROW, hours), 18.52, 73.86, "site.csv")
+
+    assert str(error.value) == (
+        f"site.csv has {said}, not the 8,760 of a year (8,784 in a leap year). "
+        "The energy of a year needs every hour of it: give a whole year."
+    )
+    assert error.value.field == "weather_csv_text"
 
 
 # The words of the notes, approved by the owner (plan/phase-08-plan.md, decision 14).
@@ -89,15 +93,13 @@ def test_the_notes_change_no_number():
 
 
 def test_gaps_in_the_temperature_are_filled_as_the_reader_does():
-    rows = [
-        "time,ghi,dni,dhi,temp",
-        "2023-06-01 00:00,1,1,1,20",
-        "2023-06-01 01:00,1,1,1,",
-        "2023-06-01 02:00,1,1,1,22",
-    ]
-    text = "\n".join(rows)
+    year = _year("ghi,dni,dhi,temp", "1,1,1,20").splitlines()
+    year[2] = year[2].rsplit(",", 1)[0] + ","  # the second hour has no temperature
+    year[3] = year[3].rsplit(",", 1)[0] + ",22"
 
-    assert list(csv_weather.read(text, 18.52, 73.86, "site.csv").weather.data["temp_air"]) == [20, 21, 22]
+    temperatures = csv_weather.read("\n".join(year), 18.52, 73.86, "site.csv").weather.data["temp_air"]
+
+    assert list(temperatures[:3]) == [20, 21, 22]
 
 
 @pytest.mark.parametrize(
@@ -163,7 +165,7 @@ def _rows_every(minutes: int, hours: int, value_of) -> str:
 def test_rows_of_fifteen_minutes_are_averaged_into_the_hour_they_begin_in():
     text = _rows_every(15, 3, lambda h, k: f"{100 * h + 10 * k},{50 * h},{20 * h},{25 + k},{1 + h}")
 
-    weather = csv_weather.read(text, 18.52, 73.86, "site.csv").weather
+    weather = wx.parse_csv(text, 18.52, 73.86, name="site.csv")
 
     assert len(weather.data) == 3
     assert list(weather.data.index.strftime("%H:%M")) == ["00:00", "01:00", "02:00"]
@@ -177,14 +179,14 @@ def test_rows_that_repeat_each_hour_give_the_hourly_weather_exactly():
     quarters = _rows_every(15, 24, lambda h, k: f"{40 * h},{30 * h},{10 * h},{20 + h},{h / 10}")
 
     wx.pd.testing.assert_frame_equal(
-        csv_weather.read(quarters, 18.52, 73.86, "q.csv").weather.data,
-        csv_weather.read(hourly, 18.52, 73.86, "h.csv").weather.data,
+        wx.parse_csv(quarters, 18.52, 73.86, name="q.csv").data,
+        wx.parse_csv(hourly, 18.52, 73.86, name="h.csv").data,
         check_dtype=False,  # an hourly file of whole numbers stays integer; an average is a float
     )
 
 
 def test_a_file_of_rows_under_an_hour_says_so_and_an_hourly_one_does_not():
-    quarters = csv_weather.read(_rows_every(15, 2, lambda h, k: A_ROW), 18.52, 73.86, "site.csv")
+    quarters = csv_weather.read(_rows_every(15, 8760, lambda h, k: A_ROW), 18.52, 73.86, "site.csv")
     hourly = csv_weather.read(_year(EVERY_COLUMN, A_ROW), 18.52, 73.86, "site.csv")
 
     assert quarters.notes[0] == (
