@@ -44,7 +44,7 @@ zone, never both: 96 px with 41 px under the labels (was 106 and 51), 72 px with
 height. Measured at insets of 34, 24 and 0 px. **Deployed:** the owner deployed #166 and #167 to staging and production and
 checked the tab bar on his iPhone, installed (2026-10-09): "all good".
 **Next:** a new task as the owner names it; the browser groups run when the owner says (#157's suites, #151's mobile fixes, and the Strings
-lens pictures whose options D and E #160 changed); Phase 15's clips on an iPhone or iPad.
+lens pictures whose options D and E #160 changed).
 
 ## Where we are
 
@@ -67,7 +67,7 @@ lens pictures whose options D and E #160 changed); Phase 15's clips on an iPhone
 | 12 Deployment: staging and production | In progress; both environments live (session 16: #90 to #95, #97); left: #99, #100 | `phase-12-plan.md`: what was found, 14 decisions, the owner's steps in order (1 to 4 done), the pull requests; `infra/aws/README.md`: what exists on AWS and how it was made |
 | 13 Optimization | Done (session 17: #102 to #106) | What was found, the numbers before and after, what exists: `phase-13-optimization.md`, "As built". How: `phase-13-plan.md`, after the owner's interview (`reference/phase-13-interview.md`) |
 | 14 In-app help | Done (session 19: #123 to #137; D80, D81) | `phase-14-in-app-help.md`, "As built"; how to write a topic: `docs/help-content.md`; screenshots: `docs/screenshots.md` |
-| 15 Help clips | Built (session 19: #138 to #141; D82 to D84); the owner's iOS check left | `phase-15-help-clips.md`, "As built"; `e2e/help-clips/README.md` |
+| 15 Help clips | Done (session 19: #138 to #141; D82 to D84); checked by the owner on an iPhone and an iPad (2026-10-09) | `phase-15-help-clips.md`, "As built"; `e2e/help-clips/README.md` |
 | 16 System voltage by country | Built (session 22: #153 to #157; D87, D88); its browser suites changed by reading, to be run | `phase-16-system-voltage.md`, "As built"; `phase-16-plan.md` |
 
 ## In flight
