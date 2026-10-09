@@ -175,7 +175,8 @@ def fetch_pvgis(lat: float, lon: float, use_cache: bool = True, cache: WeatherCa
     except Exception:  # horizon is optional
         hz = []
     w = parse_pvgis_tmy(j, lat, lon, hz)
-    cache.put(key, w)
+    if hz:  # without its horizon it is not kept: the next load asks PVGIS again (#170)
+        cache.put(key, w)
     return w
 
 

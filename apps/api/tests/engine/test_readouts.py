@@ -243,7 +243,11 @@ def test_the_note_on_far_shading(demo_design, pune_weather):
     from dataclasses import replace
 
     assert readouts.far_shading_note(pune_weather) == "Far shading: PVGIS horizon, highest 2.7°"
+    # PVGIS gives a horizon; without one it did not come this time, and the note says so (#170).
     assert readouts.far_shading_note(replace(pune_weather, horizon=[])) == (
+        "Far shading: not counted, PVGIS sent no horizon for this site"
+    )
+    assert readouts.far_shading_note(replace(pune_weather, source="nasa", horizon=[])) == (
         "Far shading: no horizon profile for this weather source"
     )
 

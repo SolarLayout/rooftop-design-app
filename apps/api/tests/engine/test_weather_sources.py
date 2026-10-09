@@ -237,6 +237,25 @@ def test_a_download_is_cached_in_the_cache_given_and_nothing_is_written(pvgis, t
     assert list(tmp_path.iterdir()) == []
 
 
+def test_pvgis_without_its_horizon_loads_without_one_and_is_not_kept(pvgis):
+    # The horizon is optional: when PVGIS does not send it the weather still loads, but it is not cached,
+    # so the next load asks PVGIS again (#170).
+    def no_horizon(url: str, params: dict, timeout: float = 60.0) -> dict:
+        if url.endswith("/printhorizon"):
+            raise wx.requests.ConnectionError("no horizon today")
+        return _pvgis_answer(url, params, timeout)
+
+    pvgis.result = no_horizon
+    cache = wx.MemoryWeatherCache()
+
+    first = wx.fetch_pvgis(18.52, 73.86, cache=cache)
+    asked = len(pvgis.calls)
+    wx.fetch_pvgis(18.52, 73.86, cache=cache)
+
+    assert first.horizon == []
+    assert len(pvgis.calls) == 2 * asked
+
+
 def test_a_download_can_be_forced_past_the_cache(pvgis):
     cache = wx.MemoryWeatherCache()
     wx.fetch_pvgis(18.52, 73.86, cache=cache)
