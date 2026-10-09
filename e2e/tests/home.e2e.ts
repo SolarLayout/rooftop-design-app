@@ -17,7 +17,7 @@ import { expect, test } from "../fixtures";
 
 const RUN = 90_000;
 const DEMO_NAME = "Pune demo roof";
-const APPEAR_HERE = "Designs you save appear here. Nothing leaves this browser until you export.";
+const APPEAR_HERE = "Designs you save appear here. Your designs are kept on this device.";
 const RUNS_IN_THE_STUDIO = "Capacity and energy come with the run in the Studio";
 
 const isPhone = (projectName: string) => projectName === "phone";
@@ -236,7 +236,7 @@ test.describe("the cards of the designs on this device", () => {
     await expect(plan.locator('[data-part="roof"]')).toHaveCount(1);
     await expect(plan.locator('[data-part="obstacle"]')).toHaveCount(6);
     expect(await plan.locator("[data-module]").count()).toBeGreaterThan(100);
-    await expect(onThisDevice(page)).toContainText("Nothing leaves this browser until you export.");
+    await expect(onThisDevice(page)).toContainText("Your designs are kept on this device.");
     await expect(onThisDevice(page)).not.toContainText("Designs you save appear here.");
   });
 

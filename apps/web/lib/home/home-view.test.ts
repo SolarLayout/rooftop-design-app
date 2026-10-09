@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Project } from "../api";
-import { APPEAR_HERE, demoCardOf, NOTHING_LEAVES, onThisDeviceWordsOf } from "./home-view";
+import { APPEAR_HERE, demoCardOf, KEPT_HERE, onThisDeviceWordsOf } from "./home-view";
 
 // Home (plan/phase-10-plan.md, step 11, decision 5; the boards "Home" on three sizes): the demo's card reads its name and
 // its roof from /demo, and shows the capacity and the energy only once the demo has run on this device, from that run;
@@ -33,13 +33,18 @@ describe("the demo's card", () => {
 });
 
 describe("the words of On this device", () => {
-  test("none kept: where the designs appear, and that nothing leaves the browser", () => {
-    expect(onThisDeviceWordsOf(0)).toBe(`${APPEAR_HERE} ${NOTHING_LEAVES}`);
-    expect(onThisDeviceWordsOf(0)).toBe("Designs you save appear here. Nothing leaves this browser until you export.");
+  test("none kept: where the designs appear, and where they are kept", () => {
+    expect(onThisDeviceWordsOf(0)).toBe(`${APPEAR_HERE} ${KEPT_HERE}`);
+    expect(onThisDeviceWordsOf(0)).toBe("Designs you save appear here. Your designs are kept on this device.");
   });
 
-  test("some kept: that nothing leaves the browser alone; the cards say the rest", () => {
-    expect(onThisDeviceWordsOf(1)).toBe(NOTHING_LEAVES);
-    expect(onThisDeviceWordsOf(3)).toBe("Nothing leaves this browser until you export.");
+  test("some kept: where they are kept, alone; the cards say the rest", () => {
+    expect(onThisDeviceWordsOf(1)).toBe(KEPT_HERE);
+    expect(onThisDeviceWordsOf(3)).toBe("Your designs are kept on this device.");
+  });
+
+  test("never claims that nothing leaves the browser: a run uses the server (#168)", () => {
+    expect(onThisDeviceWordsOf(0)).not.toMatch(/leaves|browser|export/);
+    expect(onThisDeviceWordsOf(2)).not.toMatch(/leaves|browser|export/);
   });
 });

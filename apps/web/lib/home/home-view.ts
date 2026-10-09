@@ -22,11 +22,12 @@ export function demoCardOf(demo: Project, run: DemoRun | null): DemoCard {
   };
 }
 
-/** The words of "On this device" on the approved board. */
+/** The words of "On this device" on the approved board; where designs are kept, in plain words (#168: a run uses the
+ * server, so "nothing leaves this browser" was not true). */
 export const APPEAR_HERE = "Designs you save appear here.";
-export const NOTHING_LEAVES = "Nothing leaves this browser until you export.";
+export const KEPT_HERE = "Your designs are kept on this device.";
 
-/** Under the section's label: where the designs appear while there are none; that nothing leaves the browser, always. */
+/** Under the section's label: where the designs appear while there are none; where they are kept, always. */
 export function onThisDeviceWordsOf(count: number): string {
-  return count === 0 ? `${APPEAR_HERE} ${NOTHING_LEAVES}` : NOTHING_LEAVES;
+  return count === 0 ? `${APPEAR_HERE} ${KEPT_HERE}` : KEPT_HERE;
 }
