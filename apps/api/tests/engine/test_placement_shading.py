@@ -100,3 +100,18 @@ def test_flush_modules_face_the_slope_whatever_azimuth_the_array_kept(module):
     assert kept.azimuth == unset.azimuth == 200.0
     assert {m.azimuth for m in kept.modules} == {200.0}
     assert kept.n_modules == unset.n_modules
+
+
+def test_a_row_pitch_entered_under_the_table_s_depth_is_raised_and_says_so(module):
+    # #179, item 10: a pitch under a table's depth on plan plus 0.3 m was raised without a word.
+    roof = demo_roof()
+
+    raised = place(roof, ArraySpec(row_pitch_m=1.0), module)
+    kept = place(roof, ArraySpec(row_pitch_m=7.0), module)
+
+    used = raised.slope_len * math.cos(math.radians(raised.tilt)) + 0.3  # a table's depth on plan, plus 0.3 m
+    assert raised.pitch == pytest.approx(used)
+    assert raised.notes == [
+        f"Row pitch 1.00 m is under a table's depth on plan plus 0.3 m, so {used:.2f} m is used."
+    ]
+    assert kept.pitch == 7.0 and kept.notes == []
