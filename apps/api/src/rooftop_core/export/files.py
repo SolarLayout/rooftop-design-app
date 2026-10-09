@@ -21,6 +21,7 @@ from matplotlib.backends.backend_pdf import PdfPages  # noqa: E402
 
 from .. import plots  # noqa: E402
 from ..geo import local_to_lonlat  # noqa: E402
+from ..io.pvsyst import Inverter  # noqa: E402
 from ..project import Design  # noqa: E402
 from .report import A4_L, need_option, report_pages  # noqa: E402
 from .report import schedule_pages as schedule_pages  # noqa: E402
@@ -76,6 +77,17 @@ def export_dxf(d: Design, path: str | Path) -> None:
     Path(path).write_bytes(export_dxf_bytes(d))
 
 
+SYMBOL_M = (2.0, 1.2)  # the inverter's block where its file gives no size
+
+
+def inverter_outline(inverter: Inverter) -> tuple[float, float, str]:
+    """The inverter on plan, width by depth in metres, as its OND file gives them; else SYMBOL_M, and the words
+    that say it is a symbol."""
+    if inverter.width_m > 0 and inverter.depth_m > 0:
+        return inverter.width_m, inverter.depth_m, ""
+    return *SYMBOL_M, " (symbol, not to scale)"
+
+
 def export_dxf_bytes(d: Design) -> bytes:
     import ezdxf
 
@@ -110,9 +122,11 @@ def export_dxf_bytes(d: Design) -> bytes:
             used[i] = layer
     for m in d.layout.modules:
         poly(list(m.poly.exterior.coords)[:-1], used.get(m.idx, "MODULES_UNUSED"))
+    width, depth, marked = inverter_outline(d.inverter)
     for i, (x, y) in enumerate(o.system.inverter_xy):
-        poly([(x - 1, y - 0.6), (x + 1, y - 0.6), (x + 1, y + 0.6), (x - 1, y + 0.6)], "INVERTERS")
-        msp.add_text(f"INV-{i + 1}", height=0.5, dxfattribs={"layer": "TEXT"}).set_placement((x, y + 0.8))
+        w, h = width / 2, depth / 2
+        poly([(x - w, y - h), (x + w, y - h), (x + w, y + h), (x - w, y + h)], "INVERTERS")
+        msp.add_text(f"INV-{i + 1}{marked}", height=0.5, dxfattribs={"layer": "TEXT"}).set_placement((x, y + h + 0.2))
     text = io.StringIO()
     doc.write(text)
     return doc.encode(text.getvalue())

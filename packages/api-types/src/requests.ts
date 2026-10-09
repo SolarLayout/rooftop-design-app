@@ -698,6 +698,11 @@ export interface components {
             curve_euro_pct: number[];
             /** Curves */
             curves: components["schemas"]["EfficiencyCurve"][];
+            /**
+             * Depth M
+             * @description Depth of the box; 0 when the file does not give it
+             */
+            depth_m: number;
             /** Effic Euro Pct */
             effic_euro_pct: number;
             /** Effic Max Pct */
@@ -748,6 +753,11 @@ export interface components {
             vmpp_min: number;
             /** Vmpp Nom */
             vmpp_nom: number;
+            /**
+             * Width M
+             * @description Width of the box; 0 when the file does not give it
+             */
+            width_m: number;
         };
         /** InverterPlace */
         InverterPlace: {
