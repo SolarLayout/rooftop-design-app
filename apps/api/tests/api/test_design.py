@@ -407,6 +407,7 @@ def test_without_a_system_voltage_the_answer_says_what_it_waits_for(waiting_resu
         "code": "system_voltage_missing",
         "title": "Choose a system voltage to size the strings",
         "message": "600, 1000 or 1500 V. Nothing is sized until you choose.",
+        "fits": None,
     }
 
 
@@ -595,6 +596,7 @@ def test_a_roof_too_small_for_a_module_has_no_positions_and_says_so(client, demo
         "title": "No module fits on this roof",
         "message": "Inside the edge setback and clear of shadows there is no room for a module. "
         "Check the outline, the setback and the obstacles.",
+        "fits": None,
     }
 
 
@@ -613,7 +615,29 @@ def test_a_roof_with_fewer_positions_than_a_string_says_so(client, demo):
         "title": "Too few positions for a string",
         "message": f"The roof holds {positions} positions, and a string takes 14 to 29 modules. "
         "No string of that length fits.",
+        "fits": None,
     }
+
+
+def test_a_roof_that_holds_one_short_string_says_which_and_builds_it_as_your_own(client, demo):
+    # #171: the message's advice, a custom option of the shortest string that fits, is one the app can follow.
+    project = small(demo)
+    project["roof"]["outline"] = [[-6, -5], [6, -5], [6, 5], [-6, 5]]
+    project["roof"]["obstacles"] = []
+
+    result = result_of(client.post("/design", json=project))
+
+    assert result["options"] == []
+    assert result["no_options"]["code"] == "too_few_positions"
+    assert result["no_options"]["fits"] == 14
+    assert result["no_options"]["message"].endswith("A string of 14 would fit: add it as your own option.")
+
+    project["custom"] = [14, 1, 1]
+    built = result_of(client.post("/design", json=project))
+
+    assert built["no_options"] is None
+    assert [option["key"] for option in built["options"]] == ["custom"]
+    assert built["chosen_option"] == "custom"
 
 
 # ── what is refused before the run ───────────────────────────────────────────

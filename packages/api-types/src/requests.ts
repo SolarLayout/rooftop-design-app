@@ -1166,6 +1166,11 @@ export interface components {
              * @enum {string}
              */
             code: "no_positions" | "system_voltage_missing" | "no_string_length_fits" | "too_few_positions";
+            /**
+             * Fits
+             * @description Too few positions for an option, yet a string of this many modules fits: your own of it is built
+             */
+            fits?: number | null;
             /** Message */
             message: string;
             /** Title */

@@ -88,6 +88,7 @@ test.describe("the client of the API", () => {
       code: "system_voltage_missing",
       title: "Choose a system voltage to size the strings",
       message: "600, 1000 or 1500 V. Nothing is sized until you choose.",
+      fits: null,
     });
   });
 
