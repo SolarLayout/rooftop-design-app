@@ -14,11 +14,11 @@ related:
 
 ## How it limits a string
 
-A string's open-circuit voltage is highest when its modules are coldest. At the coldest sizing temperature, the voltage of the whole string must stay at or under the lowest of three limits: the system voltage, the inverter's highest DC input voltage, and the module's highest system voltage from its file. That sets the most modules a string can hold.
+A string's open-circuit voltage is highest when its modules are coldest. At the coldest sizing temperature, the voltage of the whole string must stay at or under the lowest of three limits: the system voltage, the inverter's highest DC input voltage, and the module's highest system voltage from its file (`1000 V` when the file gives none). That sets the most modules a string can hold.
 
 ## Where it starts
 
-A new design starts with the voltage of your country, so that it is sized and run at once. In the United States and Canada it is `600 V`, the limit for homes there (NEC 690.7; CE Code, Section 64). Everywhere else it is `1000 V`. The country is the one your connection comes from, else your device's time zone, else India. The words beside the heading say who set it: `Set for` your country (`Set by the app` for a design made where the default differs), or `Your choice` once you choose. The line under the choice says where the app's value comes from.
+A new design starts with the voltage of your country, so that it is sized and run at once. In the United States and its territories, and in Canada, it is `600 V`, the limit for homes there (NEC 690.7; CE Code, Section 64). Everywhere else it is `1000 V`. The country is the one your connection comes from, else your device's time zone, else India. The words beside the heading say who set it: `Set for` your country (`Set by the app` for a design made where the default differs), or `Your choice` once you choose. The line under the choice says where the app's value comes from.
 
 It is yours to change: the right voltage depends on the site, its building and the code that applies there.
 
@@ -28,6 +28,6 @@ The voltage is never moved for you. When the inverter or the module is rated und
 
 ## Going higher
 
-The app never raises the voltage. When the inverter takes more, or when no string length fits and a higher voltage would fit one, the lens offers it with a button. Choose it only where the site's code allows it.
+The app never raises the voltage. When both the inverter and the module take more, or when no string length fits and a higher voltage would fit one, the lens offers it with a button: never above the lower of their two ratings. Choose it only where the site's code allows it.
 
 <Callout>The bill of materials names the DC cable by the voltage set.</Callout>
