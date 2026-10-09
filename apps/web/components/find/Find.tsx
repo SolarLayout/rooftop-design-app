@@ -18,7 +18,8 @@ import { iconButtonLook } from "@/components/ui/button-look";
 import { classNames } from "@/components/ui/class-names";
 import { ROOF_ZOOM } from "@/components/ui/design-numbers";
 import { Icon } from "@/components/ui/Icon";
-import { api, ApiError, type Project } from "@/lib/api";
+import { api, ApiError } from "@/lib/api";
+import { roofAfterBuild } from "@/lib/geometry/roof-type-rule";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/places/esri";
 import { FOOTPRINTS_ATTRIBUTION } from "@/lib/map/overture";
 import { mapStateOf } from "@/lib/map/map-state";
@@ -245,7 +246,7 @@ export function Find() {
     try {
       const answer = await api.roofFromMap(request);
       if (isEditing && project) {
-        store.getState().commit((design) => ({ ...design, roof: { ...design.roof, ...roofOf(answer) } }));
+        store.getState().commit((design) => ({ ...design, roof: roofAfterBuild(design.roof, answer.roof) }));
       } else {
         store.getState().open(answer);
       }
@@ -421,8 +422,3 @@ export function Find() {
   );
 }
 
-/** What of a built document goes into a design that is edited: its geometry, its source, its type. */
-function roofOf(answer: Project): Pick<Project["roof"], "outline" | "lat" | "lon" | "obstacles" | "source" | "roof_type"> {
-  const { outline, lat, lon, obstacles, source, roof_type } = answer.roof;
-  return { outline, lat, lon, obstacles, source, roof_type };
-}

@@ -39,10 +39,21 @@ def from_map(drawn: schemas.OutlineOnMap) -> schemas.Project:
         roof_type=drawn.roof_type,
         source=drawn.source,
         obstacles=obstacles,
+        **_sloped_defaults(drawn.roof_type),
     )
     new = project.Project(name=drawn.name or UNTITLED, roof=roof)
     new.roof_input["mode"] = "corners"
     return convert.project_from_engine(new)
+
+
+# A new sloped roof has no parapet and a pitch of 10°: the rule of the Roof lens
+# (web/lib/geometry/roof-type-rule.ts), so that Sloped chosen on Find is the roof Sloped
+# chosen in the lens is (#169). Flat roofs keep the engine's defaults.
+SLOPED_PITCH_DEG = 10.0
+
+
+def _sloped_defaults(roof_type: str) -> dict[str, float]:
+    return {"parapet_h": 0.0, "slope_deg": SLOPED_PITCH_DEG} if roof_type == "sloped_flush" else {}
 
 
 def on_map(roof: schemas.Roof) -> schemas.RoofOnMap:
