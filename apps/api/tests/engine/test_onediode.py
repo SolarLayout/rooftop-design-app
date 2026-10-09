@@ -47,3 +47,15 @@ def test_voc_cold_is_the_model_s_or_the_datasheet_s_with_an_entered_coefficient(
     # IEC 62548-1 Annex F: Voc(Tmin) = Voc,STC × (1 + μ/100 × (Tmin − 25)).
     assert mm.voc_cold(11.93, mu_voc_pct=-0.29) == pytest.approx(49.95 * (1 + -0.29 / 100 * (11.93 - 25)))
     assert mm.voc_cold(11.93, mu_voc_pct=-0.29) == pytest.approx(51.84, abs=0.01)
+
+
+def test_the_coefficient_that_sizes_is_the_model_s_even_when_the_file_states_one(mm):
+    # #179, item 15: cold Voc is the one-diode model's unless one is entered, so the coefficient the strings
+    # are sized with is the model's, whatever the PAN states for the module card.
+    from dataclasses import replace
+
+    stated = ModuleModel(replace(mm.m, mu_voc_mv=-0.28 / 100 * 49.95 * 1000))
+
+    assert stated.coefficients().mu_voc_pct == pytest.approx(-0.28)  # the card shows the file's
+    assert stated.sizing_voc_coefficient_pct() == pytest.approx(-0.164, abs=0.003)  # the strings are sized so
+    assert stated.sizing_voc_coefficient_pct(-0.29) == -0.29  # an entered one sizes them

@@ -58,6 +58,11 @@ class Sizing(BaseModel):
     uc_default: float = Field(
         description="The roof type's Uc, W/m2K: what holds while none is entered, and what a reset gives back"
     )
+    voc_coefficient_pct: float = Field(
+        description="The Voc coefficient the strings are sized with, %/°C: the one entered, else the "
+        "one-diode model's (the PAN's own is the module card's)"
+    )
+    voc_coefficient_from: Literal["one-diode model", "entered"]
 
 
 class SeriesRange(BaseModel):

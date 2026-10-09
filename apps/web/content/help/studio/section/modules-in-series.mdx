@@ -18,7 +18,7 @@ It appears once the strings are sized. The band holds the lengths that fit, and 
 - `Voc limit`: with the cell at the lowest ambient, the string's open-circuit voltage must stay at or under the lowest of the system voltage, the inverter's highest DC voltage and the module's highest system voltage (from its file, or `1000 V` when the file gives none).
 - `MPPT maximum`: with the cell at the lowest ambient, the string's MPP voltage must stay at or under the inverter's MPPT maximum.
 
-The temperatures and the Voc coefficient are under `Sizing temperatures`.
+The temperatures and the Voc coefficient are under `Sizing temperatures`. The open-circuit voltage at the lowest ambient comes from the module's one-diode model, and the coefficient beside the field is that model's; a Voc coefficient you enter from the datasheet takes its place.
 
 ## The verdict
 
