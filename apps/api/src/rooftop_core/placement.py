@@ -128,7 +128,9 @@ def place(roof: Roof, arr: ArraySpec, module: Module) -> Layout:
     doy = arr.design_doy or solstice_doy(roof.lat)
     az = roof.default_array_azimuth() if arr.azimuth_deg is None else arr.azimuth_deg
     if rt == "sloped_flush":
-        az = roof.slope_azimuth_deg if arr.azimuth_deg is None else arr.azimuth_deg
+        # Flush modules lie on the roof, so they face where it slopes: an array azimuth kept from a flat roof is
+        # not theirs (#179, item 12).
+        az = roof.slope_azimuth_deg
     rot = az - 180.0
     origin = roof.polygon.centroid
 
