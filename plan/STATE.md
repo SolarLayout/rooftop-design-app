@@ -60,6 +60,7 @@ fixed through the website's proxy); each app opens its own docs and skips it, so
 open `/docs/rooftop`. The writing standards for three products and the Rooftop tree are in that repo's
 `docs/WRITING_GUIDE.md`. Rooftop joins the index with its first pages, fact sheet first (`PRODUCT_FACTS.rooftop.md`).
 SolarLayout Desktop's Docs button moves to `/docs/solarlayout`: PVlayout_Advance#400.
+Then the four issues found while writing Rooftop's fact sheet (filed 2026-10-09), closed the same day: #168, Home says "Your designs are kept on this device." (#172; where data goes said in plain words, no technical inventory); #169, a roof built as Sloped on Find is the roof Sloped makes in the Roof lens (#173, one rule in `lib/geometry/roof-type-rule.ts`); #170, PVGIS weather without its horizon says so and is not kept (#174); #171, nine help claims the code contradicted: the help made true (#175), the east-west ridge line says the ridges run square to the edge closest to the equator and the hints never shown removed (#176), and where the roof holds too few positions for the options yet a string fits, Add your own stands under the words, set to that string, the API saying which (`no_options.fits`; #177, its boards approved on the canvas, page "UI fixes", version 49), and a stale comment (#178). Not deployed.
 **Next:** a new task as the owner names it; the browser groups run when the owner says (#157's suites, #151's mobile fixes, and the Strings
 lens pictures whose options D and E #160 changed).
 
@@ -67,7 +68,7 @@ lens pictures whose options D and E #160 changed).
 
 | Phase | Status | Notes |
 |---|---|---|
-| 0 Design | Direction approved. 79 boards on the canvas: the approved design, and the page "UI fixes" of session 18 on (D68 to D79) | More screens to draw, listed in `phase-00-design.md`; the canvas and the repo in sync (`docs/design/README.md`, `mockups/canvas.json`) |
+| 0 Design | Direction approved. 97 boards on the canvas: the approved design, and the page "UI fixes" of session 18 on (D68 to D79) | More screens to draw, listed in `phase-00-design.md`; the canvas and the repo in sync (`docs/design/README.md`, `mockups/canvas.json`) |
 | UI polish | Session 18: #107 to #116; session 19: D79 built (#117 to #122); session 20: Find's first step (D85, #143 to #145) | Driven by the owner, issue by issue; the records: `plan/sessions/018/`, `019/`, `020/` |
 | 1 Foundation | Done, merged (PR #1) | |
 | 2 Engine and API | Done (PR #7, PRs #11 to #23) | What exists, what was decided, what was found: `phase-02-engine-api.md`, "As built" |
