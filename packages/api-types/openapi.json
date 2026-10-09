@@ -861,6 +861,11 @@
             "title": "Curves",
             "type": "array"
           },
+          "depth_m": {
+            "description": "Depth of the box; 0 when the file does not give it",
+            "title": "Depth M",
+            "type": "number"
+          },
           "effic_euro_pct": {
             "title": "Effic Euro Pct",
             "type": "number"
@@ -950,6 +955,11 @@
           "vmpp_nom": {
             "title": "Vmpp Nom",
             "type": "number"
+          },
+          "width_m": {
+            "description": "Width of the box; 0 when the file does not give it",
+            "title": "Width M",
+            "type": "number"
           }
         },
         "required": [
@@ -972,6 +982,8 @@
           "night_loss_w",
           "v_out_v",
           "i_max_ac_a",
+          "width_m",
+          "depth_m",
           "curves",
           "curve_euro_pct",
           "source",

@@ -116,6 +116,8 @@ class Inverter(BaseModel):
     night_loss_w: float
     v_out_v: float
     i_max_ac_a: float
+    width_m: float = Field(description="Width of the box; 0 when the file does not give it")
+    depth_m: float = Field(description="Depth of the box; 0 when the file does not give it")
     curves: list[EfficiencyCurve]
     curve_euro_pct: list[float]
     source: str

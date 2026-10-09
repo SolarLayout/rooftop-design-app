@@ -243,6 +243,8 @@ class Inverter:
     night_loss_w: float = 0.0
     v_out_v: float = 0.0            # AC output voltage
     i_max_ac_a: float = 0.0
+    width_m: float = 0.0            # the box, as the file gives it; 0 = not in the file
+    depth_m: float = 0.0
     # {V_nominal: [(P_in W, P_out W), ...]}
     curves: dict[float, list[tuple[float, float]]] = field(default_factory=dict)
     source: str = ""
@@ -297,6 +299,8 @@ def parse_ond(text: str, source: str = "") -> Inverter:
         night_loss_w=_f(kv, "Night_Loss"),
         v_out_v=_f(kv, "VOutConv"),
         i_max_ac_a=_f(kv, "IMaxAC"),
+        width_m=_f(kv, "Width"),
+        depth_m=_f(kv, "Depth"),
         source=source,
     )
     vnoms = _floats(kv, "VNomEff")
