@@ -344,12 +344,14 @@ test.describe("by Detect building", () => {
     await expect(corners(page)).toHaveCount(4);
   });
 
-  test("Adjust keeps the footprint, whose corners drag as any closed roof's; the toolbar has gone on to the obstacles", async ({ page }) => {
+  // #179, item 3 (the owner's call): one button. Adjust did what Use this outline does; the callout says to drag the corners.
+  test("Use this outline keeps the footprint, whose corners drag as any closed roof's; the toolbar has gone on to the obstacles", async ({ page }) => {
     await withTheFootprints(page);
     const centre = await atTheRoof(page);
     const callout = await proposed(page, centre);
+    await expect(callout.getByRole("button", { name: "Adjust" })).toHaveCount(0);
 
-    await callout.getByRole("button", { name: "Adjust" }).click();
+    await callout.getByRole("button", { name: "Use this outline" }).click();
 
     await expect(callout).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Box" })).toHaveAttribute("aria-pressed", "true");
