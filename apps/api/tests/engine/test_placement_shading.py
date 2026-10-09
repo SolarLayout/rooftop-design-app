@@ -86,3 +86,17 @@ def test_the_modules_turned_back_in_one_call_are_shapely_s_own_rotation_to_the_b
         at_once = rotate_all(shapes, angle, origin)
 
         assert [shape.wkb for shape in at_once] == [shape.wkb for shape in one_by_one]
+
+
+def test_flush_modules_face_the_slope_whatever_azimuth_the_array_kept(module):
+    # #179, item 12: an azimuth set while the roof was flat stayed in the array when the roof became sloped, and the
+    # modules faced it rather than the slope. Flush modules lie on the roof: they can face only where it slopes.
+    roof = demo_roof()
+    roof.roof_type, roof.slope_deg, roof.parapet_h, roof.slope_azimuth_deg = "sloped_flush", 10, 0, 200.0
+
+    kept = place(roof, ArraySpec(azimuth_deg=90.0), module)
+    unset = place(roof, ArraySpec(), module)
+
+    assert kept.azimuth == unset.azimuth == 200.0
+    assert {m.azimuth for m in kept.modules} == {200.0}
+    assert kept.n_modules == unset.n_modules
