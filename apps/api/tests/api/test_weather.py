@@ -1,5 +1,6 @@
 """POST /weather: a year of hours from PVGIS, NASA POWER or a CSV file, with its horizon and a summary."""
 
+import pandas as pd
 import pytest
 import requests
 
@@ -9,12 +10,24 @@ from tests.api.conftest import error_of
 pytestmark = pytest.mark.slow
 
 PUNE = {"lat": 18.52, "lon": 73.86}
-CSV = """time,GHI,DNI,DHI,Temp,Wind
-2023-06-01 00:00,0,0,0,24.0,1.0
-2023-06-01 01:00,0,0,0,23.5,1.2
-2023-06-01 02:00,80,120,50,24.5,1.4
-2023-06-01 03:00,310,480,90,26.0,1.8
+FIRST_HOURS = """time,GHI,DNI,DHI,Temp,Wind
+2023-01-01 00:00,0,0,0,24.0,1.0
+2023-01-01 01:00,0,0,0,23.5,1.2
+2023-01-01 02:00,80,120,50,24.5,1.4
+2023-01-01 03:00,310,480,90,26.0,1.8
 """
+
+
+def _hours(first: str, hours: int) -> str:
+    """*first* (a header, its rows from 2023-01-01 00:00), then rows of its last values up to *hours*."""
+    lines = first.strip().splitlines()
+    start = pd.Timestamp("2023-01-01")
+    tail = ",".join(lines[-1].split(",")[1:])
+    more = [f"{start + pd.Timedelta(hours=h):%Y-%m-%d %H:%M},{tail}" for h in range(len(lines) - 1, hours)]
+    return "\n".join(lines + more) + "\n"
+
+
+CSV = _hours(FIRST_HOURS, 8760)  # a CSV weather is a whole year (#179, item 20)
 
 
 @pytest.fixture(autouse=True)
@@ -161,19 +174,24 @@ def test_csv_text_is_read_without_a_download(client):
     body = client.post("/weather", json=_csv(CSV)).json()
 
     assert (body["weather"]["source"], body["weather"]["label"]) == ("csv", "site.csv")
-    assert body["weather"]["time"][:2] == ["2023-06-01T00:00:00+00:00", "2023-06-01T01:00:00+00:00"]
-    assert body["weather"]["ghi"] == [0, 0, 80, 310]
-    assert body["weather"]["dni"] == [0, 0, 120, 480]
+    assert body["weather"]["time"][:2] == ["2023-01-01T00:00:00+00:00", "2023-01-01T01:00:00+00:00"]
+    assert body["weather"]["ghi"][:4] == [0, 0, 80, 310]
+    assert body["weather"]["dni"][:4] == [0, 0, 120, 480]
     assert (body["weather"]["lat"], body["weather"]["lon"]) == (18.52, 73.86)
-    assert body["summary"]["hours"] == 4
+    assert body["summary"]["hours"] == 8760
+    assert body["notes"] == []
 
 
-def test_a_csv_that_is_not_a_year_is_read_and_says_so(client):
-    notes = client.post("/weather", json=_csv(CSV)).json()["notes"]
+def test_a_csv_that_is_not_a_whole_year_is_refused(client):
+    response = client.post("/weather", json=_csv(FIRST_HOURS))
 
-    assert notes == [
-        "site.csv has 4 hours, not the 8,760 of a year. Energy of a year needs every hour of it."
-    ]
+    assert response.status_code == 422
+    assert error_of(response) == {
+        "code": "not_a_weather_csv",
+        "message": "site.csv has 4 hours, not the 8,760 of a year (8,784 in a leap year). "
+        "The energy of a year needs every hour of it: give a whole year.",
+        "field": "csv_text",
+    }
 
 
 def test_a_csv_of_time_and_irradiance_alone_says_what_was_taken_for_the_rest(client):
@@ -188,7 +206,6 @@ def test_a_csv_of_time_and_irradiance_alone_says_what_was_taken_for_the_rest(cli
         "site.csv has no air temperature. 25 °C was taken for every hour, so the strings are sized for "
         "25 °C. Enter the site's lowest and highest ambient in the Strings lens.",
         "site.csv has no wind speed. 1 m/s was taken for every hour.",
-        "site.csv has 4 hours, not the 8,760 of a year. Energy of a year needs every hour of it.",
     ]
 
 
@@ -278,7 +295,7 @@ def test_with_downloads_off_a_download_is_refused_in_words(client, services, dow
 def test_with_downloads_off_a_csv_is_still_read(client, services, downloads_off):
     body = client.post("/weather", json=_csv(CSV)).json()
 
-    assert body["weather"]["label"] == "site.csv" and body["summary"]["hours"] == 4
+    assert body["weather"]["label"] == "site.csv" and body["summary"]["hours"] == 8760
     assert services.asked == []
 
 
