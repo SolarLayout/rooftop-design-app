@@ -710,7 +710,7 @@ def mounting_ew() -> str:
 
 def spacing_ew() -> str:
     body = (
-        switch_row("Azimuth", "180° S", "The ridge runs along the roof edge closest to the equator", True, "Follow the roof edge")
+        switch_row("Azimuth", "180° S", "The ridges run square to the roof edge closest to the equator", True, "Follow the roof edge")
         + readout_row("Unit pitch", "2.53 m", POSITIONS["flat_ew"]["notes"][0])
     )
     return lens_section("Spacing", body)
