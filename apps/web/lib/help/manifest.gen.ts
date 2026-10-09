@@ -106,7 +106,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
   },
   "find.tool.detect": {
     title: "Detect the building",
-    summary: "Press inside a building to have its footprint proposed as the outline, then accept it or adjust its corners.",
+    summary: "Press inside a building to have its footprint proposed as the outline, then use it and drag its corners to the roof.",
     kind: "tool",
     related: ["find.tool.corners","find.tool.rectangle","find.section.edges"],
     aliases: [],

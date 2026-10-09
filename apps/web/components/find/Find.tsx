@@ -327,7 +327,6 @@ export function Find() {
                   detected={detected}
                   onUse={() => setDetected(null)}
                   // The footprint stays and its corners drag, as the corners of any closed roof do.
-                  onAdjust={() => setDetected(null)}
                   onClose={() => setDetected(null)}
                 />
               </div>

@@ -8,10 +8,8 @@ import type { Detected } from "./OutlineLayer";
 
 type Props = {
   detected: Detected;
-  /** The footprint is taken as it is. */
+  /** The footprint is taken; its corners drag as any closed roof's (the callout says so). */
   onUse: () => void;
-  /** The footprint is kept and the corners tool is taken, to drag them. */
-  onAdjust: () => void;
   onClose: () => void;
 };
 
@@ -22,8 +20,8 @@ const CALLOUT = classNames(
 );
 const CALLOUT_GAP = 16;
 
-/** What a press with Detect building found: a footprint to accept or adjust, or nothing known here. */
-export function DetectedCallout({ detected, onUse, onAdjust, onClose }: Props) {
+/** What a press with Detect building found: a footprint to use, its corners to drag after, or nothing known here. */
+export function DetectedCallout({ detected, onUse, onClose }: Props) {
   return (
     <div role="status" data-testid="detected" className={CALLOUT} style={measures({ x: detected.at.x + CALLOUT_GAP, y: detected.at.y + CALLOUT_GAP })}>
       <div className="flex items-start gap-2">
@@ -41,9 +39,6 @@ export function DetectedCallout({ detected, onUse, onAdjust, onClose }: Props) {
         <div className="flex gap-2">
           <Button kind="primary" size="s" onClick={onUse}>
             Use this outline
-          </Button>
-          <Button kind="quiet" size="s" onClick={onAdjust}>
-            Adjust
           </Button>
         </div>
       ) : null}
