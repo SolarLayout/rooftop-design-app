@@ -1,9 +1,9 @@
 """What shading costs over the year: for every position, and for any choice of positions.
 
 The figures are those of the loss chain of a simulation (simulation.simulate), worked out the same
-way: far shading takes the beam while the sun is behind the horizon, near shading takes the shaded
-part of the beam and the hidden part of the sky. The chain of an option counts the modules the option
-uses; here any positions can be counted, also before there is an option.
+way: far shading takes the beam while the sun is behind the horizon and the sky the horizon hides,
+near shading takes the shaded part of the beam and the rest of the hidden sky. The chain of an option
+counts the modules the option uses; here any positions can be counted, also before there is an option.
 """
 
 from __future__ import annotations
@@ -44,7 +44,7 @@ def summarise(pre: Precomputed, modules: Sequence[int] | None = None) -> ShadeSu
             positions, lambda f_lin, beam=beam: beam @ (1.0 - f_lin.astype(float))
         )
         open_sky[here] = float((group["beam"] + diffuse).sum())
-        past_horizon[here] = float((beam + diffuse).sum())
+        past_horizon[here] = float(beam.sum() + diffuse.sum() * (1.0 - pre.shading.sky_far))
         past_near[here] = beam_past_near + float(diffuse.sum()) * seen
     return ShadeSummary(
         modules=[int(i) for i in chosen],

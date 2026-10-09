@@ -326,16 +326,32 @@ def sky_loss_sectors(points: np.ndarray, z: np.ndarray, casters: list[Obstacle],
             for x, y in list(ring.coords):
                 samples.append((x, y, z1))
     elev = np.zeros((len(points), n_sectors))
-    if horizon:
-        az_h = np.array([a for a, _ in horizon])
-        el_h = np.array([e for _, e in horizon])
-        centers = (np.arange(n_sectors) + 0.5) * 360.0 / n_sectors
-        elev[:] = np.interp(centers, az_h, el_h, period=360.0)[None, :]
+    elev[:] = _horizon_elevations(horizon, n_sectors)[None, :]
     if samples:
         s = np.array(samples)
         # A block of points at a time: points × samples is 12 million at the roof limit, 97 MB an array.
         for i in range(0, len(points), SKY_BLOCK):
             block = slice(i, i + SKY_BLOCK)
             _blocking_elevations(s, points[block], z[block], elev[block], n_sectors)
-    elev = np.clip(elev, 0, 90)
-    return (np.sin(np.radians(elev)) ** 2).mean(axis=1)
+    return _sky_lost(elev)
+
+
+def horizon_sky_loss(horizon: list[tuple[float, float]] | None, n_sectors: int = 36) -> float:
+    """Fraction of isotropic diffuse the far horizon alone hides, the same at every point of the roof:
+    the part of sky_loss_sectors that is the horizon's, which never exceeds it."""
+    return float(_sky_lost(_horizon_elevations(horizon, n_sectors)[None, :])[0])
+
+
+def _horizon_elevations(horizon: list[tuple[float, float]] | None, n_sectors: int) -> np.ndarray:
+    """The horizon's elevation at the middle of each sector; 0 with no horizon."""
+    if not horizon:
+        return np.zeros(n_sectors)
+    az_h = np.array([a for a, _ in horizon])
+    el_h = np.array([e for _, e in horizon])
+    centers = (np.arange(n_sectors) + 0.5) * 360.0 / n_sectors
+    return np.interp(centers, az_h, el_h, period=360.0)
+
+
+def _sky_lost(elev: np.ndarray) -> np.ndarray:
+    """Each row's sky lost to its sectors' blocking elevations: sin²h of each, averaged."""
+    return (np.sin(np.radians(np.clip(elev, 0, 90))) ** 2).mean(axis=1)

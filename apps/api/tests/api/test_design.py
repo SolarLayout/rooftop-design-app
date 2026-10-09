@@ -215,7 +215,7 @@ def test_the_loss_chain_of_option_a(option_a):
     ]
     changes = [round(step["pct"], 2) for step in steps[1:7] + steps[8:20]]
     assert changes == pytest.approx(
-        [9.60, -0.01, -0.35, -2.22, -2.00, 3.65]
+        [9.60, -0.04, -0.33, -2.22, -2.00, 3.65]
         + [-0.48, -4.08, -0.56, 0.00, -0.20, -1.00, -0.95, -1.33, -3.36, -0.00, -0.76, -0.50],
         abs=0.0051,
     )
@@ -315,8 +315,8 @@ def test_the_weather_and_the_shading_of_the_demo(demo_result):
     shading = demo_result["shading"]
     assert list(shading) == ["near_pct", "far_pct", "near_pct_by_module", "keepout_area_m2"]
     assert len(shading["near_pct_by_module"]) == 790
-    assert shading["far_pct"] == pytest.approx(0.01, abs=0.005)
-    assert shading["near_pct"] > 0.35, "all positions lose more than the least shaded strings of option A"
+    assert shading["far_pct"] == pytest.approx(0.04, abs=0.005)
+    assert shading["near_pct"] > 0.33, "all positions lose more than the least shaded strings of option A"
     assert shading["keepout_area_m2"] == pytest.approx(150, abs=0.5)
 
 

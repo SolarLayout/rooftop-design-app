@@ -247,7 +247,7 @@ def string_physics(pre: Precomputed, module: Module, mm: ModuleModel, strings: l
         iam = beam_iam @ lit + diffuse_iam.sum() * seen[cols]
         chain[:, cols] = N * np.array([
             np.full(len(cols), (g["beam"] + diffuse).sum()),
-            np.full(len(cols), (beam_far + diffuse).sum()),
+            np.full(len(cols), beam_far.sum() + diffuse.sum() * (1.0 - sh.sky_far)),
             beam_far @ lit + diffuse.sum() * seen[cols],
             iam,
             iam * soil,
