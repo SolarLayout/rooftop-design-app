@@ -55,6 +55,11 @@ in the order of weight (utility-scale PV, BESS, Rooftop); "rooftop solar", the i
 "rooftops". Open Rooftop goes to the app of the same environment through `NEXT_PUBLIC_ROOFTOP_URL`, set in the
 `solarlayout-web` Vercel project (Production and staging); a deploy build without it refuses to start. **Deployed** to
 staging and production (2026-10-09), checked live at 1440, 834 and 390. Still to come: the docs (solarlayout_desktop_docs#19) and the Rooftop legal pages.
+The docs: `solarlayout.app/docs` is the company-level index (solarlayout_desktop_docs#20, #21, live 2026-10-09; search
+fixed through the website's proxy); each app opens its own docs and skips it, so Rooftop's Docs link and help topics will
+open `/docs/rooftop`. The writing standards for three products and the Rooftop tree are in that repo's
+`docs/WRITING_GUIDE.md`. Rooftop joins the index with its first pages, fact sheet first (`PRODUCT_FACTS.rooftop.md`).
+SolarLayout Desktop's Docs button moves to `/docs/solarlayout`: PVlayout_Advance#400.
 **Next:** a new task as the owner names it; the browser groups run when the owner says (#157's suites, #151's mobile fixes, and the Strings
 lens pictures whose options D and E #160 changed).
 
