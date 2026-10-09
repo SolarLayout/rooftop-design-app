@@ -174,6 +174,12 @@ def place(roof: Roof, arr: ArraySpec, module: Module) -> Layout:
             else:
                 pitch, psi_min = shade_free_pitch(roof.lat, az, tilt, L, arr.window_start_h, arr.window_end_h, doy)
                 pitch = math.ceil(pitch * 20) / 20.0  # round up to 5 cm
+            if arr.row_pitch_m and arr.row_pitch_m < D + 0.3:
+                # The rows must not overlap; a pitch entered under that is raised, and says so (#179, item 10).
+                notes.append(
+                    f"Row pitch {arr.row_pitch_m:.2f} m is under a table's depth on plan plus 0.3 m, "
+                    f"so {D + 0.3:.2f} m is used."
+                )
             pitch = max(pitch, D + 0.3)
             every, aisle_after = roof.walkway_every_modules, "modules"
         else:
