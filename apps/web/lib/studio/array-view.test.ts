@@ -30,8 +30,8 @@ describe("the azimuth, decided by the engine or given", () => {
     expect(azimuthLineOf(ARRAY, LAYOUT, "flat_tilted")).toEqual({ value: "180° S", line: "Follows the roof edge closest to the equator", isEngine: true });
   });
 
-  test("on an east-west roof the ridge runs along it", () => {
-    expect(azimuthLineOf(ARRAY, LAYOUT, "flat_ew")).toEqual({ value: "180° S", line: "The ridge runs along the roof edge closest to the equator", isEngine: true });
+  test("on an east-west roof the ridges run square to it, as the engine lays them (#171)", () => {
+    expect(azimuthLineOf(ARRAY, LAYOUT, "flat_ew")).toEqual({ value: "180° S", line: "The ridges run square to the roof edge closest to the equator", isEngine: true });
   });
 
   test("given, the line says where that edge faces", () => {
