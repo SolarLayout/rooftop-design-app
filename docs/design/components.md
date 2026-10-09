@@ -290,7 +290,9 @@ In code: `Sheet`; its stops in `sheet-stops.ts`. It stands at the bottom of the 
 ## Option card (stringing options)
 Row 52 high, radius `radius-row`. Letter badge 26, title (Recommended, or the verdict), one mono line
 "series x strings, kWp, DC/AC", energy at the right in `text-value`, then the status mark. Selected: as the
-selected card. "Add your own" is a dashed quiet button.
+selected card. "Add your own" is a dashed quiet button. With no options because the roof holds too few positions, yet
+one string fits on it, the button stands under the engine's words, its fields set to that string
+(the board "UI fixes · Your own when the roof holds too few positions").
 
 ## Series range bar
 Track 8 high in `color-well`; feasible band in `color-ok` at 55 %; chosen length as a 4 px accent marker with a
