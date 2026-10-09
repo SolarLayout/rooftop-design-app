@@ -31,7 +31,7 @@ import shapely
 from pvlib import shading as pvshading
 from shapely.ops import unary_union
 
-from .geometry import Roof, prisms_of, prisms_shadow, sky_loss_sectors, solids_of
+from .geometry import Roof, horizon_sky_loss, prisms_of, prisms_shadow, sky_loss_sectors, solids_of
 from .io.pvsyst import Module
 from .placement import Layout
 
@@ -51,6 +51,7 @@ class ShadingResult:
     cell_e_mod: np.ndarray   # (cells,) float32 ... and its e_mod
     sky_loss: np.ndarray     # (modules,) diffuse fraction lost
     far_block: np.ndarray    # (hours,) beam blocked by the horizon
+    sky_far: float = 0.0     # the part of every sky_loss the horizon hides, far shading's; in float32, never above it
 
     @property
     def n_hours(self) -> int:
@@ -254,7 +255,7 @@ def compute(layout: Layout, roof: Roof, module: Module, orientation: str,
     return ShadingResult(
         of, linear(f_row, no_obstacle), electrical(f_row, no_obstacle, *rule),
         cell_hour, cell_module, linear(cell_f_row, cell_f_obj), electrical(cell_f_row, cell_f_obj, *rule),
-        sky.astype(np.float32), far)
+        sky.astype(np.float32), far, float(np.float32(horizon_sky_loss(horizon))))
 
 
 def spread_over_hours(position: np.ndarray, obj_position: np.ndarray, obj_module: np.ndarray,

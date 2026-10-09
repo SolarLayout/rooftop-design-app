@@ -25,8 +25,8 @@ def test_the_modules_of_an_option_lose_what_its_loss_chain_says(demo_design):
 def test_option_a_of_the_demo_loses_what_the_reference_says(demo_design):
     summary = shade_summary.summarise(demo_design.pre, demo_design.options[0].system.module_indices())
 
-    assert summary.near_pct == pytest.approx(0.35, abs=0.005)
-    assert summary.far_pct == pytest.approx(0.01, abs=0.005)
+    assert summary.near_pct == pytest.approx(0.33, abs=0.005)
+    assert summary.far_pct == pytest.approx(0.04, abs=0.005), "the horizon's beam and the sky it hides"
 
 
 def test_every_position_has_its_own_loss(demo_design):
@@ -68,3 +68,19 @@ def test_no_positions_lose_nothing(demo_design):
     summary = shade_summary.summarise(demo_design.pre, [])
 
     assert (summary.near_pct, summary.far_pct, len(summary.near_pct_by_module)) == (0.0, 0.0, 0)
+
+
+def test_the_sky_behind_the_horizon_is_far_shading_not_near(demo_design):
+    """Issue 179, item 24: the diffuse the horizon hides is booked with the beam it hides."""
+    pre = demo_design.pre
+    summary = shade_summary.summarise(pre)
+    assert pre.shading.sky_far > 0.0, "the demo's PVGIS horizon hides some sky"
+    open_sky = lost_far = 0.0
+    for number, group in enumerate(pre.groups.values()):
+        count = int((pre.group_of == number).sum())
+        diffuse = group["sky"] + group["gnd"]
+        open_sky += count * float((group["beam"] + diffuse).sum())
+        beam_behind = float((group["beam"] * pre.shading.far_block).sum())
+        lost_far += count * (beam_behind + float(diffuse.sum()) * pre.shading.sky_far)
+
+    assert summary.far_pct == pytest.approx(100.0 * lost_far / open_sky, rel=1e-9)

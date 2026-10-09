@@ -54,7 +54,7 @@ def test_the_chain_s_irradiation_is_that_of_every_module_and_hour(design):
         b_iam = beam_far * (1 - f) * g["iam_b"][:, None]
         d_iam = sky * (1 - sk) * g["iam_d"] + gnd * (1 - sk) * g["iam_g"]
         sums["nom"] += float(np.broadcast_to(beam + sky + gnd, f.shape).sum())
-        sums["far"] += float(np.broadcast_to(beam_far + sky + gnd, f.shape).sum())
+        sums["far"] += float(np.broadcast_to(beam_far + (sky + gnd) * (1 - sh.sky_far), f.shape).sum())
         sums["lin"] += float((beam_far * (1 - f) + (sky + gnd) * (1 - sk)).sum())
         sums["iam"] += float((b_iam + d_iam).sum())
         sums["soil"] += float(((b_iam + d_iam) * soil).sum())

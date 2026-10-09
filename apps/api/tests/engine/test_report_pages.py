@@ -54,7 +54,7 @@ DEMO_PAGE_2 = [
 ]
 DEMO_PAGE_3 = [
     "Shadows at 16:00 solar time on the design day (window 9:00–16:00)",
-    "Near shading, linear -0.35 % · electrical beyond linear -0.56 % · far (horizon) -0.01 % · "
+    "Near shading, linear -0.33 % · electrical beyond linear -0.56 % · far (horizon) -0.04 % · "
     "keep-out left empty 150 m²",
 ]
 DEMO_PAGE_4 = [
