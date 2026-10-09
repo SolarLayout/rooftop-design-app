@@ -670,6 +670,17 @@ def test_a_roof_that_crosses_itself_is_refused(client, demo):
     assert error_of(response)["code"] == "roof_outline_crosses_itself"
 
 
+def test_pvgis_weather_without_its_horizon_says_far_shading_is_not_counted(client, demo):
+    # #170: a PVGIS weather that came without its horizon is told, in plain words, under the run line.
+    project = small(demo)
+    project["weather_json"] = {**demo["weather_json"], "horizon": []}
+
+    result = result_of(client.post("/design", json=project))
+
+    assert result["weather_notes"] == ["PVGIS sent no horizon for this site, so far shading is not counted."]
+    assert result["far_shading_note"] == "Far shading: not counted, PVGIS sent no horizon for this site"
+
+
 def test_csv_weather_in_the_project_is_checked_and_used(client, demo):
     hours = zip(demo["weather_json"]["time"], demo["weather_json"]["ghi"], strict=True)
     project = small(demo, system_voltage=None)

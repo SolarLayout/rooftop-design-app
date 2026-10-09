@@ -15,6 +15,7 @@ from rooftop_api.services import weather as weather_service
 from rooftop_api.services.equipment import current_per_mppt, module_notes
 from rooftop_api.services.uploads import file_name
 from rooftop_core import csv_weather, memo, readouts, shade_summary
+from rooftop_core import weather as wx
 from rooftop_core.errors import EngineError
 from rooftop_core.keepout_parts import keepout_parts, positions_kept_clear
 from rooftop_core.progress import ProgressEvent
@@ -59,8 +60,8 @@ def prepare(project: schemas.Project) -> Run:
     layouts.module_for(p)
     design = _design(p)
     notes = _use_csv_weather(p)
-    design.load_weather()
-    return Run(design, notes)
+    weather = design.load_weather()
+    return Run(design, notes + _horizon_notes(weather))
 
 
 def events(run: Run) -> Iterator[ServerSentEvent]:
@@ -123,6 +124,14 @@ def _design(p: Project) -> Design:
         return Design(p, local_files=False, memo=MEMO)
     except ValueError as error:
         raise ApiError(UNPROCESSABLE, "not_an_ond_file", str(error), "ond_text") from error
+
+
+# PVGIS gives a horizon with its weather; one that came without it is told in plain words (#170).
+NO_HORIZON = "PVGIS sent no horizon for this site, so far shading is not counted."
+
+
+def _horizon_notes(weather: wx.Weather) -> list[str]:
+    return [NO_HORIZON] if weather.source == "pvgis" and not weather.horizon else []
 
 
 def _use_csv_weather(p: Project) -> list[str]:

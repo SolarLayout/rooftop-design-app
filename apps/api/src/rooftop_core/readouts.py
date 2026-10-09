@@ -244,6 +244,8 @@ def options_note(design: Design) -> str:
 
 
 def far_shading_note(weather: Weather) -> str:
+    if not weather.horizon and weather.source == "pvgis":  # PVGIS gives one; this time it did not (#170)
+        return "Far shading: not counted, PVGIS sent no horizon for this site"
     if not weather.horizon:
         return "Far shading: no horizon profile for this weather source"
     return f"Far shading: PVGIS horizon, highest {max(height for _, height in weather.horizon):.1f}°"
