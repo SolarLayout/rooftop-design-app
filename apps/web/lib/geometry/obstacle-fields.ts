@@ -17,6 +17,9 @@ export type ObstacleField = { id: ObstacleFieldId; label: string; unit?: string;
 /** A new obstacle before its height is typed: the height is null until then (decision 15). */
 export type DraftObstacle = Omit<Obstacle, "height"> & { height: number | null };
 
+/** The height a new obstacle is added with, once its field holds one; null while it does not (#179, item 30). */
+export const heightToAdd = (draft: DraftObstacle | null): number | null => draft?.height ?? null;
+
 const METRES = (min: number, max: number): Range => ({ min, max, decimals: 2 });
 
 const SPEC: Record<ObstacleFieldId, { label: string; unit?: string; range: Range }> = {

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { Obstacle } from "../api";
 import type { Project, Roof } from "../api";
-import { factOfNewKind, factsOf, FEWEST_POINTS, fieldsOfObstacle, newObstacleOf, OBSTACLE_KINDS, withDraftAt, withObstacleAdded, withObstacleAt, withObstacleField, withObstacleReplaced, withoutObstacleAt, withPoint, withPointAdded, withPointRemoved } from "./obstacle-fields";
+import { type DraftObstacle, factOfNewKind, factsOf, FEWEST_POINTS, heightToAdd, fieldsOfObstacle, newObstacleOf, OBSTACLE_KINDS, withDraftAt, withObstacleAdded, withObstacleAt, withObstacleField, withObstacleReplaced, withoutObstacleAt, withPoint, withPointAdded, withPointRemoved } from "./obstacle-fields";
 
 // The obstacles of the Roof lens (plan/phase-05-plan.md, step 12, decision 15; the board "Obstacle edited
 // on the roof"): the fields of each kind from plan/reference/functional-inventory.md, 1.2, and what a new
@@ -205,5 +205,22 @@ describe("the draft placed where the roof was tapped", () => {
   test("the same place is the same draft", () => {
     const box = newObstacleOf("box", [45, 20], []);
     expect(withDraftAt(box, [45, 20])).toBe(box);
+  });
+});
+
+// #179, item 30: a new obstacle is added by Add (or Enter), with the height its field holds; a height committed by
+// leaving the field only fills the draft.
+describe("a new obstacle, added with its height", () => {
+  const draft: DraftObstacle = { ...newObstacleOf("box", [0, 0], []), height: null };
+
+  test("a draft without a height cannot be added", () => {
+    expect(heightToAdd(draft)).toBeNull();
+    expect(heightToAdd(null)).toBeNull();
+  });
+
+  test("the height typed into the draft is the one it is added with", () => {
+    const typed = withObstacleField(draft, "height", 2.5);
+    expect(typed.height).toBe(2.5);
+    expect(heightToAdd(typed)).toBe(2.5);
   });
 });
