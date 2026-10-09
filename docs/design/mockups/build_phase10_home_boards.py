@@ -126,7 +126,7 @@ DEMO_CARD = piece(HOME_BOARD, '<a href="Main.dc.html" style="position: absolute;
 OPEN_DEMO = piece(DEMO_CARD, '<span style="display: flex; align-items: center; gap: 8px; height: 44px;', "</span>")
 
 SECTION_LABEL = f"font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: {TEXT_3}"
-ON_THIS_DEVICE = "Designs you save appear here. Nothing leaves this browser until you export."
+ON_THIS_DEVICE = "Designs you save appear here. Your designs are kept on this device."
 
 
 def logo_header(height: int, padding: int, logo_size: int, word_size: int) -> str:
@@ -341,7 +341,7 @@ def cards_row(tags: str, menu_on_first: bool = False) -> str:
 
 def home_section(tags: str, menu_on_first: bool = False) -> str:
     """The section "On this device" of the approved board with the cards in the place of its sentence."""
-    return on_this_device(body=f'<div style="font-size: 14px; color: {TEXT_2}">Nothing leaves this browser until you export.</div><div style="margin-top: 10px">{cards_row(tags, menu_on_first)}</div>')
+    return on_this_device(body=f'<div style="font-size: 14px; color: {TEXT_2}">Your designs are kept on this device.</div><div style="margin-top: 10px">{cards_row(tags, menu_on_first)}</div>')
 
 
 def cards_card() -> str:
@@ -551,7 +551,7 @@ def phone_frame(inside: str, header: str) -> str:
 
 def phone_cards() -> str:
     cards = "".join(design_card(d, f"p{n}", PHONE_CARD, touch=True) for n, d in enumerate(KEPT))
-    body = f'<div style="font-size: 15px; color: {TEXT_2}">Nothing leaves this browser until you export.</div><div style="margin-top: 12px; display: flex; flex-direction: column; gap: 12px">{cards}</div>'
+    body = f'<div style="font-size: 15px; color: {TEXT_2}">Your designs are kept on this device.</div><div style="margin-top: 12px; display: flex; flex-direction: column; gap: 12px">{cards}</div>'
     main = f'<main style="display: flex; flex-direction: column; padding: 8px {PHONE_PAD}px 24px">{on_this_device(body=body)}</main>'
     return phone_frame(main, logo_header(56, PHONE_PAD, 28, 17))
 

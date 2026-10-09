@@ -774,8 +774,8 @@ Studio's last lens: one press from a cold start. While the demo is on its way th
 come says the API's words in the card. On phone the card is stacked: the words, the two numbers side by side, the button as
 wide as the card.
 
-"On this device": the label in `text-section` text-3, then "Designs you save appear here. Nothing leaves this browser until
-you export." while nothing is kept, "Nothing leaves this browser until you export." once something is, then the cards
+"On this device": the label in `text-section` text-3, then "Designs you save appear here. Your designs are kept on
+this device." while nothing is kept, "Your designs are kept on this device." once something is, then the cards
 (below). On desktop the section stands at the foot at the left and the demo's card at the right while nothing is kept;
 with cards, the demo's card stands at the right over the section, which takes the width. The 3D illustration of the board
 (`HomeIllustration`, the board's own markup, its colours the tokens `--color-scene-*` and `--color-module-*` that mirror the
