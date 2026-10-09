@@ -208,3 +208,52 @@ def test_without_beam_and_diffuse_the_hours_are_split_after_they_are_averaged():
     hours = wx.parse_csv(f"time,{columns}\n" + "\n".join(hour_lines) + "\n", 18.52, 73.86)
 
     wx.pd.testing.assert_frame_equal(quarters.data, hours.data, check_dtype=False)
+
+
+# ── what the reader made of a cell in silence (#179, item 19) ──────────────────────────────────────────────
+def _year_with(columns: str, row: str, changes: dict[int, str]) -> str:
+    """A year of *row*, the rows numbered in *changes* (1: the first below the header) given instead."""
+    lines = _year(columns, row).splitlines()
+    for number, values in changes.items():
+        lines[number] = lines[number].split(",", 1)[0] + "," + values
+    return "\n".join(lines) + "\n"
+
+
+@pytest.mark.parametrize(
+    ("changes", "message"),
+    [
+        (
+            {2: ",80,40,25,2", 9: "n/a,80,40,25,2"},
+            "site.csv: ghi has no value in 2 rows, the first of them row 2. "
+            "Fill the gaps: an hour without its irradiance is not an hour of none.",
+        ),
+        (
+            {5: "100,,40,25,2"},
+            "site.csv: dni has no value in 1 row, the first of them row 5. Fill the gaps, or leave out both "
+            "beam and diffuse.",
+        ),
+    ],
+)
+def test_irradiance_with_no_value_is_refused_not_taken_as_zero(changes, message):
+    with pytest.raises(UnusableWeatherFile) as error:
+        csv_weather.read(_year_with(EVERY_COLUMN, A_ROW, changes), 18.52, 73.86, "site.csv")
+
+    assert str(error.value) == message
+    assert error.value.field == "weather_csv_text"
+
+
+def test_irradiance_below_zero_is_taken_as_zero_and_noted():
+    read = csv_weather.read(
+        _year_with(EVERY_COLUMN, A_ROW, {1: "-2,0,-1,25,2", 2: "-1,0,0,25,2"}), 18.52, 73.86, "site.csv"
+    )
+
+    assert read.notes == ["site.csv has irradiance below zero in 2 rows. It was taken as 0."]
+    assert (read.weather.data[["ghi", "dhi"]].iloc[:2].to_numpy() == 0).all()
+
+
+def test_gaps_in_the_temperature_are_filled_and_noted():
+    read = csv_weather.read(_year_with(EVERY_COLUMN, A_ROW, {3: "100,80,40,,2"}), 18.52, 73.86, "site.csv")
+
+    assert read.notes == [
+        "site.csv has no air temperature in 1 row. It was taken from the hours on either side."
+    ]
