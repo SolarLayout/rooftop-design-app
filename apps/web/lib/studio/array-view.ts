@@ -15,7 +15,7 @@ export function bearingOf(degrees: number): string {
 
 const FOLLOWS: Record<Roof["roof_type"], string> = {
   flat_tilted: "Follows the roof edge closest to the equator",
-  flat_ew: "The ridge runs along the roof edge closest to the equator",
+  flat_ew: "The ridges run square to the roof edge closest to the equator",
   sloped_flush: "Follows the roof edge closest to the equator",
 };
 

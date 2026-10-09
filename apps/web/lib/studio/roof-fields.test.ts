@@ -65,9 +65,6 @@ describe("the fields", () => {
     expect(ROOF_FIELDS.slope_azimuth_deg.range).toEqual({ min: 0, max: 359.9, decimals: 1 });
   });
 
-  test("the albedo carries the inventory's hint", () => {
-    expect(ROOF_FIELDS.albedo.hint).toBe("0.20 concrete, 0.60 white membrane");
-  });
 });
 
 describe("the edit a field makes", () => {

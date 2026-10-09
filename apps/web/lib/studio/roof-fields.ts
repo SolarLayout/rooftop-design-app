@@ -7,7 +7,7 @@ import type { Roof } from "../api";
 /** The numbers of the roof a field edits. */
 export type RoofFieldId = "parapet_h" | "setback_m" | "walkway_m" | "walkway_every_modules" | "walkway_every_rows" | "obstacle_clearance_m" | "albedo" | "slope_deg" | "slope_azimuth_deg";
 
-export type RoofFieldSpec = { label: string; unit?: string; range: Range; hint?: string };
+export type RoofFieldSpec = { label: string; unit?: string; range: Range };
 
 export type RoofField = RoofFieldSpec & { id: RoofFieldId; value: number };
 
@@ -15,10 +15,10 @@ export const ROOF_FIELDS: Record<RoofFieldId, RoofFieldSpec> = {
   parapet_h: { label: "Parapet", unit: "m", range: { min: 0, max: 5, decimals: 2 } },
   setback_m: { label: "Setback", unit: "m", range: { min: 0, max: 10, decimals: 2 } },
   walkway_m: { label: "Walkway", unit: "m", range: { min: 0, max: 3, decimals: 2 } },
-  walkway_every_modules: { label: "Every", unit: "mod", range: { min: 0, max: 500, decimals: 0 }, hint: "0 is no walkway" },
-  walkway_every_rows: { label: "Every", unit: "rows", range: { min: 0, max: 500, decimals: 0 }, hint: "0 is no walkway" },
+  walkway_every_modules: { label: "Every", unit: "mod", range: { min: 0, max: 500, decimals: 0 } },
+  walkway_every_rows: { label: "Every", unit: "rows", range: { min: 0, max: 500, decimals: 0 } },
   obstacle_clearance_m: { label: "Clearance", unit: "m", range: { min: 0, max: 5, decimals: 2 } },
-  albedo: { label: "Albedo", range: { min: 0.05, max: 0.9, decimals: 2 }, hint: "0.20 concrete, 0.60 white membrane" },
+  albedo: { label: "Albedo", range: { min: 0.05, max: 0.9, decimals: 2 } },
   slope_deg: { label: "Pitch", unit: "°", range: { min: 0, max: 60, decimals: 0 } },
   slope_azimuth_deg: { label: "Faces", unit: "°", range: { min: 0, max: 359.9, decimals: 1 } },
 };
