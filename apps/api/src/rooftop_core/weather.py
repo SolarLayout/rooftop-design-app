@@ -286,8 +286,8 @@ def parse_csv(text: str, lat: float, lon: float, tz_offset_h: float = 0.0, name:
     dni, dhi = pick(_DNI), pick(_DHI)
     split = dni is None or dhi is None
     if not split:
-        df["dni"] = pd.to_numeric(dni, errors="coerce").fillna(0).to_numpy()
-        df["dhi"] = pd.to_numeric(dhi, errors="coerce").fillna(0).to_numpy()
+        df["dni"] = pd.to_numeric(dni, errors="coerce").fillna(0).clip(lower=0).to_numpy()
+        df["dhi"] = pd.to_numeric(dhi, errors="coerce").fillna(0).clip(lower=0).to_numpy()
     if minutes_between_rows(idx) < 60:
         # Every row is taken as an hour by the simulation: rows of less than an hour are averaged into the hour
         # they begin in (a row is the time from its stamp on, as an hour's row is), before anything else.

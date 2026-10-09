@@ -37,6 +37,7 @@ def read(text: str, lat: float, lon: float, name: str = "", tz_offset_h: float =
     try:
         raw = wx.csv_table(text)
         _check(raw, label, tz_offset_h)
+        _check_irradiance(raw, label)
         weather = wx.parse_csv(text, lat, lon, tz_offset_h, name)
     except UnusableWeatherFile:
         raise
@@ -72,6 +73,29 @@ def _check(raw: pd.DataFrame, label: str, tz_offset_h: float) -> None:
         raise UnusableWeatherFile(
             f"{label}: {hours} {'hour is' if hours == 1 else 'hours are'} there more than once, the first "
             f"of them {repeated.iloc[0]:%Y-%m-%d %H:%M}. Every hour may be there once.",
+            field=FIELD,
+        )
+
+
+def _check_irradiance(raw: pd.DataFrame, label: str) -> None:
+    """The reader takes a cell of irradiance it cannot read as 0 W/m²: an hour of none. Refused instead
+    (#179, item 19)."""
+    ghi = wx.csv_column(raw, wx.CSV_COLUMNS["ghi"])
+    if ghi is None:
+        return
+    _refuse_gaps(ghi, label, "Fill the gaps: an hour without its irradiance is not an hour of none.")
+    dni, dhi = wx.csv_column(raw, wx.CSV_COLUMNS["dni"]), wx.csv_column(raw, wx.CSV_COLUMNS["dhi"])
+    if dni is not None and dhi is not None:  # with one of them alone, both are worked out from the GHI
+        for column in (dni, dhi):
+            _refuse_gaps(column, label, "Fill the gaps, or leave out both beam and diffuse.")
+
+
+def _refuse_gaps(column: pd.Series, label: str, advice: str) -> None:
+    missing = pd.to_numeric(column, errors="coerce").isna().to_numpy()
+    if missing.any():
+        raise UnusableWeatherFile(
+            f"{label}: {str(column.name).strip()} has no value in {_rows(int(missing.sum()))}, the first of "
+            f"them row {int(np.argmax(missing)) + 1}. {advice}",
             field=FIELD,
         )
 
@@ -124,6 +148,27 @@ def _notes(weather: wx.Weather, raw: pd.DataFrame, label: str) -> list[str]:
             f"{label} gives the weather every {step:g} minutes. Each hour is the average of its rows "
             "(the simulation takes a row as an hour)."
         )
+    notes.extend(_notes_of_cells(raw, label))
+    return notes
+
+
+def _notes_of_cells(raw: pd.DataFrame, label: str) -> list[str]:
+    """What the reader made of cells that are there: irradiance below zero, gaps in the temperature
+    (#179, item 19)."""
+    notes = []
+    given = [wx.csv_column(raw, wx.CSV_COLUMNS[column]) for column in ("ghi", "dni", "dhi")]
+    values = [pd.to_numeric(column, errors="coerce").to_numpy() for column in given if column is not None]
+    below = int(np.any(np.vstack(values) < 0, axis=0).sum()) if values else 0
+    if below:
+        notes.append(f"{label} has irradiance below zero in {_rows(below)}. It was taken as 0.")
+    temperature = wx.csv_column(raw, wx.CSV_COLUMNS["temp_air"])
+    if temperature is not None:
+        gaps = int(pd.to_numeric(temperature, errors="coerce").isna().sum())
+        if gaps:
+            notes.append(
+                f"{label} has no air temperature in {_rows(gaps)}. "
+                "It was taken from the hours on either side."
+            )
     return notes
 
 
