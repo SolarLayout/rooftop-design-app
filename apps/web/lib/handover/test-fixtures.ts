@@ -21,7 +21,12 @@ const row = (string: string, mppt: number, length_m: number) => ({
   isc_a: 14.3,
   length_m,
   size: "4 mm² Cu, 1500 V DC",
+  cross_section_mm2: 4.0,
+  drop_pct: length_m * DROP_PCT_PER_M,
 });
+
+/** The voltage drop of the demo's 4 mm² cable, % of its strings' voltage at the maximum power point, per metre. */
+const DROP_PCT_PER_M = 0.9121334787426001 / 131.9;
 
 /** The DC cable of each of the 22 strings of option A, in metres, in the engine's order. */
 const LENGTHS_M = [131.9, 97.3, 85.2, 119.8, 119.0, 84.4, 72.3, 106.9, 47.9, 82.5, 118.2, 93.2, 41.9, 76.5, 80.3, 45.7, 33.6, 68.2, 67.4, 32.8, 20.7, 55.3];

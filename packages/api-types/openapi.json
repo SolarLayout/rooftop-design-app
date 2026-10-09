@@ -153,6 +153,15 @@
       },
       "CableRow": {
         "properties": {
+          "cross_section_mm2": {
+            "title": "Cross Section Mm2",
+            "type": "number"
+          },
+          "drop_pct": {
+            "description": "The cable's voltage drop at the string's MPP at STC, %",
+            "title": "Drop Pct",
+            "type": "number"
+          },
           "inverter": {
             "title": "Inverter",
             "type": "string"
@@ -194,7 +203,9 @@
           "voc_cold_v",
           "isc_a",
           "length_m",
-          "size"
+          "size",
+          "cross_section_mm2",
+          "drop_pct"
         ],
         "title": "CableRow",
         "type": "object"

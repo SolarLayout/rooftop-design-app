@@ -59,6 +59,17 @@ describe("the eight items and their facts from the run's chosen option, the weat
     expect(rows[5]!.facts).toBe("Roof, obstacles with heights, 702 modules");
   });
 
+  test("the DC cable is the metres of every size together (issue 179, item 27)", () => {
+    const sized = A.bom.flatMap((line) =>
+      line.item === "DC cable"
+        ? [{ ...line, spec: "4 mm² Cu, 1500 V DC, red + black", qty: 1044 }, { ...line, spec: "6 mm² Cu, 1500 V DC, red + black", qty: 637 }]
+        : [line],
+    );
+    const design = { ...DEMO, options: [{ ...A, bom: sized }, D] } as DesignResult;
+
+    expect(deliverablesOf({ ...AT_REST, design })[2]!.facts).toBe("638 modules · 27 tables · 1,681 m DC cable");
+  });
+
   test("the Voc cold is the highest of the schedule", () => {
     const schedule = [...A.cable_schedule];
     schedule[3] = { ...schedule[3]!, voc_cold_v: 1491.4 };

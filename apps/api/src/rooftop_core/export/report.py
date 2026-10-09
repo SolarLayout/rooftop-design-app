@@ -27,8 +27,10 @@ from .summary import structure_label, summary_rows  # noqa: E402
 A4_L = (11.69, 8.27)
 SCHEDULE_ROWS_WITH_BOM = 28  # the first page of the schedule also holds the bill of materials
 SCHEDULE_ROWS_PER_PAGE = 40  # a page with the schedule alone
-SCHEDULE_WIDTHS = [0.07, 0.09, 0.07, 0.09, 0.14, 0.1, 0.12, 0.32]
-SCHEDULE_HEADER = ["String", "Inverter", "MPPT", "Modules", "Voc cold, V", "Isc, A", "DC cable, m", "Cable"]
+SCHEDULE_WIDTHS = [0.07, 0.08, 0.06, 0.08, 0.12, 0.09, 0.12, 0.09, 0.29]
+SCHEDULE_HEADER = [
+    "String", "Inverter", "MPPT", "Modules", "Voc cold, V", "Isc, A", "DC cable, m", "Drop, %", "Cable"
+]  # fmt: skip
 NOTE = "#6b4700"
 YEARS_SHOWN = [1, 5, 10, 15, 20, 25]
 
@@ -249,7 +251,7 @@ def _table(ax, rows, col_widths, fs=8, header=None):
 
 def _schedule_cells(c: CableRow) -> list[object]:
     voc, isc, length = f"{c.voc_cold_v:,.0f}", f"{c.isc_a:.2f}", f"{c.length_m:,.1f}"
-    return [c.string, c.inverter, c.mppt, c.modules, voc, isc, length, c.size]
+    return [c.string, c.inverter, c.mppt, c.modules, voc, isc, length, f"{c.drop_pct:.2f}", c.size]
 
 
 def _schedule_table(ax, rows: list[CableRow]) -> None:

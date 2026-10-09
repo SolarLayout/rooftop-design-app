@@ -103,7 +103,7 @@ describe("the callout of the roof", () => {
 // A string of the chosen option, pressed in the Strings lens (plan/phase-07-plan.md, step 15, decision 13; the board
 // "Strings on the roof"): S12 of the demo's option A, its cable from the engine's schedule, cut to three modules.
 const S12 = { label: "S12", modules: [10, 12, 11], inverter: 1, mppt: 3 };
-const S12_CABLE: CableRow = { string: "S12", inverter: "INV-1", mppt: 3, modules: 29, voc_cold_v: 1480, isc_a: 14.3, length_m: 93.2, size: "4 mm² Cu, 1500 V DC" };
+const S12_CABLE: CableRow = { string: "S12", inverter: "INV-1", mppt: 3, modules: 29, voc_cold_v: 1480, isc_a: 14.3, length_m: 93.2, size: "4 mm² Cu, 1500 V DC", cross_section_mm2: 4, drop_pct: 0.64 };
 const at = (idx: number, x: number): PlacedModule => ({
   ...MODULE,
   idx,

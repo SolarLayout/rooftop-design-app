@@ -405,6 +405,13 @@ export interface components {
         };
         /** CableRow */
         CableRow: {
+            /** Cross Section Mm2 */
+            cross_section_mm2: number;
+            /**
+             * Drop Pct
+             * @description The cable's voltage drop at the string's MPP at STC, %
+             */
+            drop_pct: number;
             /** Inverter */
             inverter: string;
             /** Isc A */

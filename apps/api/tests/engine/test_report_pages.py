@@ -75,20 +75,23 @@ DEMO_PAGE_4 = [
     "P75 600.2",
     "P90 584.2",
 ]
-# (string, MPPT, DC cable m) of the demo's 22 strings; each is a line of the schedule such as
-# "S1 INV-1 1 29 1,480 14.30 131.9 4 mm² Cu, 1500 V DC"
+# (string, MPPT, DC cable m, drop %) of the demo's 22 strings; each is a line of the schedule such as
+# "S1 INV-1 1 29 1,480 14.30 131.9 0.91 4 mm² Cu, 1500 V DC"
 DEMO_STRINGS = [
-    (1, 1, "131.9"), (2, 1, "97.3"), (3, 1, "85.2"), (4, 1, "119.8"),
-    (5, 2, "119.0"), (6, 2, "84.4"), (7, 2, "72.3"), (8, 2, "106.9"),
-    (9, 3, "47.9"), (10, 3, "82.5"), (11, 3, "118.2"), (12, 3, "93.2"),
-    (13, 4, "41.9"), (14, 4, "76.5"), (15, 4, "80.3"), (16, 4, "45.7"),
-    (17, 5, "33.6"), (18, 5, "68.2"), (19, 5, "67.4"),
-    (20, 6, "32.8"), (21, 6, "20.7"), (22, 6, "55.3"),
+    (1, 1, "131.9", "0.91"), (2, 1, "97.3", "0.67"), (3, 1, "85.2", "0.59"), (4, 1, "119.8", "0.83"),
+    (5, 2, "119.0", "0.82"), (6, 2, "84.4", "0.58"), (7, 2, "72.3", "0.50"), (8, 2, "106.9", "0.74"),
+    (9, 3, "47.9", "0.33"), (10, 3, "82.5", "0.57"), (11, 3, "118.2", "0.82"), (12, 3, "93.2", "0.64"),
+    (13, 4, "41.9", "0.29"), (14, 4, "76.5", "0.53"), (15, 4, "80.3", "0.56"), (16, 4, "45.7", "0.32"),
+    (17, 5, "33.6", "0.23"), (18, 5, "68.2", "0.47"), (19, 5, "67.4", "0.47"),
+    (20, 6, "32.8", "0.23"), (21, 6, "20.7", "0.14"), (22, 6, "55.3", "0.38"),
 ]  # fmt: skip
 DEMO_PAGE_5 = [
     "String schedule and bill of materials",
-    "String Inverter MPPT Modules Voc cold, V Isc, A DC cable, m Cable",
-    *(f"S{n} INV-1 {mppt} 29 1,480 14.30 {length} 4 mm² Cu, 1500 V DC" for n, mppt, length in DEMO_STRINGS),
+    "String Inverter MPPT Modules Voc cold, V Isc, A DC cable, m Drop, % Cable",
+    *(
+        f"S{n} INV-1 {mppt} 29 1,480 14.30 {length} {drop} 4 mm² Cu, 1500 V DC"
+        for n, mppt, length, drop in DEMO_STRINGS
+    ),
     "Item Specification Qty Unit",
     "PV module INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560, 560 Wp, bifacial 0.80 638 pcs",
     "String inverter WattPower Systems Pvt.Ltd WP-330KTL-H1, 275 kW, 6 MPPT 1 pcs",
@@ -127,18 +130,20 @@ FORTY_PAGE_1 = [
 ]
 FORTY_PAGE_5_ENDS = [
     "String schedule and bill of materials",
-    "S1 INV-1 1 14 715 14.30 80.1 4 mm² Cu, 1500 V DC",
-    "S28 INV-2 2 14 715 14.30 53.6 4 mm² Cu, 1500 V DC",
+    "S1 INV-1 1 14 715 14.30 80.1 0.76 6 mm² Cu, 1500 V DC",
+    "S28 INV-2 2 14 715 14.30 53.6 0.77 4 mm² Cu, 1500 V DC",
     "PV module INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560, 560 Wp, bifacial 0.80 560 pcs",
     "String inverter WattPower Systems Pvt.Ltd WP-330KTL-H1, 275 kW, 6 MPPT 2 pcs",
-    "DC cable 4 mm² Cu, 1500 V DC, red + black 2,483 m",
+    "DC cable 4 mm² Cu, 1500 V DC, red + black 1,044 m",
+    "DC cable 6 mm² Cu, 1500 V DC, red + black 1,211 m",
+    "DC cable 10 mm² Cu, 1500 V DC, red + black 228 m",
     "AC distribution board 2 incomer(s), 1 outgoing 1 pcs",
 ]
 FORTY_PAGE_6_ENDS = [
     "String schedule, continued: S29 to S40",
-    "String Inverter MPPT Modules Voc cold, V Isc, A DC cable, m Cable",
-    "S29 INV-2 3 14 715 14.30 36.3 4 mm² Cu, 1500 V DC",
-    "S40 INV-2 6 14 715 14.30 76.2 4 mm² Cu, 1500 V DC",
+    "String Inverter MPPT Modules Voc cold, V Isc, A DC cable, m Drop, % Cable",
+    "S29 INV-2 3 14 715 14.30 36.3 0.52 4 mm² Cu, 1500 V DC",
+    "S40 INV-2 6 14 715 14.30 76.2 0.73 6 mm² Cu, 1500 V DC",
 ]
 FORTY_PAGE_7 = ["Single-line diagram · 40 strings of 14 × 560 Wp", "INV-1", "INV-2"]
 
