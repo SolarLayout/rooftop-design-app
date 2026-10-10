@@ -1,0 +1,158 @@
+{
+ "name": "solarlayout-rooftop-launch",
+ "shots": [
+  {
+   "seg": "s9-present",
+   "start": 15,
+   "end": 235,
+   "speed": 1.0,
+   "captions": [
+    {
+     "name": "hook",
+     "in": 18
+    }
+   ],
+   "square": "full",
+   "sq_cx": 1000
+  },
+  {
+   "seg": "s1-home",
+   "start": 20,
+   "end": 225,
+   "speed": 1.15,
+   "captions": [
+    {
+     "name": "c1",
+     "in": 10,
+     "out": 150
+    }
+   ],
+   "square": "full",
+   "sq_cx": 540
+  },
+  {
+   "seg": "s2-detect",
+   "start": 0,
+   "end": 253,
+   "speed": 1.1,
+   "captions": [
+    {
+     "name": "c2",
+     "in": 16
+    }
+   ],
+   "square": "full",
+   "sq_cx": 960
+  },
+  {
+   "seg": "s3-build",
+   "start": 0,
+   "end": 86,
+   "speed": 1.0,
+   "captions": [
+    {
+     "name": "c3",
+     "in": 36
+    }
+   ],
+   "square": "full",
+   "sq_cx": 700
+  },
+  {
+   "seg": "s4-imagery",
+   "start": 0,
+   "end": 274,
+   "speed": 1.15,
+   "captions": [
+    {
+     "name": "c3",
+     "in": 0,
+     "out": 90
+    },
+    {
+     "name": "c4",
+     "in": 96
+    }
+   ],
+   "square": "full",
+   "sq_cx": 700
+  },
+  {
+   "seg": "s5-sun",
+   "start": 0,
+   "end": 292,
+   "speed": 1.1,
+   "captions": [
+    {
+     "name": "c5",
+     "in": 30
+    }
+   ],
+   "square": "full",
+   "sq_cx": 760
+  },
+  {
+   "seg": "s6-strings",
+   "start": 0,
+   "end": 144,
+   "speed": 0.6,
+   "captions": [
+    {
+     "name": "c6",
+     "in": 24
+    }
+   ],
+   "push": 0.03,
+   "square": "full",
+   "sq_cx": 760
+  },
+  {
+   "seg": "s7-performance",
+   "start": 0,
+   "end": 156,
+   "speed": 0.48,
+   "captions": [
+    {
+     "name": "c7",
+     "in": 24
+    }
+   ],
+   "push": 0.04,
+   "square": "full",
+   "sq_cx": 560
+  },
+  {
+   "seg": "s8-handover",
+   "start": 0,
+   "end": 156,
+   "speed": 0.5,
+   "captions": [
+    {
+     "name": "c8",
+     "in": 28
+    }
+   ],
+   "push": 0.03,
+   "square": "full",
+   "sq_cx": 600
+  },
+  {
+   "seg": "s9-present",
+   "start": 905,
+   "end": 1160,
+   "speed": 1.0,
+   "captions": [
+    {
+     "name": "c9",
+     "in": 140
+    }
+   ],
+   "square": "full",
+   "sq_cx": 560
+  },
+  {
+   "card": "end",
+   "hold": 190
+  }
+ ]
+}
