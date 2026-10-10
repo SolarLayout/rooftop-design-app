@@ -87,6 +87,7 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | UI fixes · Coordinates in the search | `SearchCoordinates.dc.html`, `SearchCoordinatesTablet.dc.html`, `SearchCoordinatesPhone.dc.html` | `ui-fixes-search-coordinates-desktop.png`, `ui-fixes-search-coordinates-tablet.png`, `ui-fixes-search-coordinates-phone.png` | desktop, tablet, phone |
 | UI fixes · Find's first step, a panel that says what to do | `FindFirstStep.dc.html`, `FindFirstStepTablet.dc.html`, `FindFirstStepPhone.dc.html` (the shots in `find_first_step/`) | none: the boards are the shots | desktop, tablet, phone |
 | UI fixes · Your own when the roof holds too few positions | `OwnTooFew.dc.html`, `OwnTooFewTablet.dc.html`, `OwnTooFewPhone.dc.html` (the shots in `own_too_few/`) | `ui-fixes-own-too-few-desktop.png`, `ui-fixes-own-too-few-tablet.png`, `ui-fixes-own-too-few-phone.png` | desktop, tablet, phone |
+| UI fixes · The docs from the app (#193), for approval | `DocsLinks.dc.html`, `DocsLinksTablet.dc.html`, `DocsLinksPhone.dc.html` (the shots in `docs_links/`) | none: the boards are the shots | desktop, tablet, phone |
 | System voltage · Set by the user's country (Phase 16) | `SystemVoltage.dc.html`, `SystemVoltageTablet.dc.html`, `SystemVoltagePhone.dc.html` (the shots in `system_voltage/`) | `system-voltage-desktop.jpg`, `system-voltage-tablet.jpg`, `system-voltage-phone.jpg` | desktop, tablet, phone |
 
 Screens still to draw are listed in `plan/phase-00-design.md`.
@@ -191,6 +192,11 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   the Strings lens on a 12.0 × 10.0 m roof of 16 positions, today, then Add your own under the words, its fields set to the
   string that fits, and the option added; caught in the browser at three sizes (`own_too_few/`), the build on the branch
   `fix/171-own-option-too-few`; approved on 2026-10-09.
+- `mockups/build_ui_fixes_docs_links.py` writes the boards "UI fixes · The docs from the app" (#193; desktop, tablet, phone):
+  Docs at the right of Home's header, a Docs row at the foot of the project menu, and In the docs under a help topic's
+  Related, each opening `solarlayout.app/docs/rooftop` in a new tab, with two new icons (a book; the arrow out of a box).
+  Caught in the browser at three sizes (`docs_links/`) with a prototype on the local branch `design/docs-links`, never
+  merged; drawn on 2026-10-10, for approval (canvas version 50).
 - `mockups/build_system_voltage.py` writes the boards "System voltage · Set by the user's country" (Phase 16, D87; desktop, tablet,
   phone; the canvas page "System voltage"): the voltage of the user's country in the Strings lens (India 1000 V, the United States
   600 V with no string length fitting the demo's inverter), the app's value following an inverter rated under it, the user's 1500 V
@@ -213,7 +219,7 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
 - A preview is the board rendered at its `$preview` size (the tail of each `.dc.html`) by a scratch Playwright script outside the
   repo: Chromium from `e2e/node_modules/@playwright/test`, the fonts served from `apps/web/app/fonts` and `apps/web/node_modules/geist`
   in place of the Google link in the board's `helmet`, `support.js` stubbed, everything else off the machine refused.
-- `mockups/canvas.json` is the layout of the boards on the canvas: 94 boards on four pages since 2026-10-08 ("Approved design", the
+- `mockups/canvas.json` is the layout of the boards on the canvas: 100 boards on four pages since 2026-10-10 ("Approved design", the
   first, holds every board without a `page`; "UI fixes" the boards of session 18 on; "In-App Help" those of Phases 14 and 15; "System voltage" those of Phase 16); the 53 of the first page in sync with the canvas at claude.ai since
   2026-10-04 (session 15 published the 26 boards of Phases 6 to 11 and the five boards changed since 2026-09-30; the report's
   pages of `mockups/handover_pages/` travel with the Handover boards). A session on Bedrock has no Artifact tool: it adds its
