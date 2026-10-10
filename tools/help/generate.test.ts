@@ -38,6 +38,11 @@ describe("the manifest", () => {
     expect(manifest).toContain('values: [{"id":"355","label":"21 Dec","meaning":"December."},{"id":"80","label":"21 Mar","meaning":"March."},{"id":"any","label":"Any date","meaning":"Any."}],');
   });
 
+  test("the place in the docs, when the topic names one (issue 193)", () => {
+    const topic = topicOf("studio/section/day.mdx", "---\ntitle: Day\nsummary: S\nkind: section\ndocs:\n  page: sun\n  section: The day\n---\n");
+    expect(manifestOf([topic], () => undefined)).toContain('    docs: {"page":"sun","section":"The day"},\n');
+  });
+
   test("no topics, an empty manifest that still types", () => {
     expect(manifestOf([], () => undefined)).toContain("export const HELP_KEYS = [] as const;");
   });

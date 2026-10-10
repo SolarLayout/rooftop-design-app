@@ -44,6 +44,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["studio.section.edges-and-access","app.section.roof-type","studio.section.shading-over-the-year"],
     aliases: [],
+    docs: {"page":"roof","section":"Obstacles"},
     load: () => import("../../content/help/app/section/obstacles.mdx"),
   },
   "app.section.roof-type": {
@@ -53,6 +54,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     values: [{"id":"flat_tilted","label":"Flat, tilted rows","meaning":"Rows of tables on a flat roof, tilted at the array's tilt and facing the equator side of the roof."},{"id":"flat_ew","label":"Flat, east-west","meaning":"Back-to-back units on a flat roof, one side facing east and one west, at a low tilt."},{"id":"sloped_flush","label":"Sloped, flush","meaning":"Modules laid on the surface of a pitched roof, at its pitch and facing where its slope faces."}],
     related: ["studio.section.edges-and-access","app.section.obstacles"],
     aliases: [],
+    docs: {"page":"roof","section":"Roof type"},
     load: () => import("../../content/help/app/section/roof-type.mdx"),
   },
   "find.section.edges": {
@@ -61,6 +63,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["find.section.shape","app.section.obstacles"],
     aliases: [],
+    docs: {"page":"find","section":"Outline the roof"},
     load: () => import("../../content/help/find/section/edges.mdx"),
   },
   "find.section.place": {
@@ -69,6 +72,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["find.section.shape","studio.section.location"],
     aliases: [],
+    docs: {"page":"find","section":"By hand"},
     load: () => import("../../content/help/find/section/place.mdx"),
   },
   "find.section.shape": {
@@ -78,6 +82,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     values: [{"id":"rectangle","label":"Rectangle","meaning":"A rectangle, by its length, its width and the direction its long side faces."},{"id":"corners","label":"Corners","meaning":"Any outline, by its corners in metres east and north of the place, in order around the roof."}],
     related: ["find.section.place","find.section.edges"],
     aliases: [],
+    docs: {"page":"find","section":"By hand"},
     load: () => import("../../content/help/find/section/shape.mdx"),
   },
   "find.tool.box": {
@@ -86,6 +91,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "tool",
     related: ["find.tool.move-an-obstacle","find.tool.tank","app.section.obstacles"],
     aliases: [],
+    docs: {"page":"find","section":"What stands on the roof"},
     load: () => import("../../content/help/find/tool/box.mdx"),
   },
   "find.tool.building": {
@@ -94,6 +100,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "tool",
     related: ["find.tool.move-an-obstacle","find.tool.wall","app.section.obstacles"],
     aliases: [],
+    docs: {"page":"find","section":"What stands on the roof"},
     load: () => import("../../content/help/find/tool/building.mdx"),
   },
   "find.tool.corners": {
@@ -102,6 +109,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "tool",
     related: ["find.tool.rectangle","find.tool.detect","find.section.edges"],
     aliases: [],
+    docs: {"page":"find","section":"Outline the roof"},
     load: () => import("../../content/help/find/tool/corners.mdx"),
   },
   "find.tool.detect": {
@@ -110,6 +118,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "tool",
     related: ["find.tool.corners","find.tool.rectangle","find.section.edges"],
     aliases: [],
+    docs: {"page":"find","section":"Outline the roof"},
     load: () => import("../../content/help/find/tool/detect.mdx"),
   },
   "find.tool.find-the-roof": {
@@ -118,6 +127,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "tool",
     related: ["find.tool.corners","find.tool.rectangle","find.section.place"],
     aliases: [],
+    docs: {"page":"find","section":"Find the building"},
     load: () => import("../../content/help/find/tool/find-the-roof.mdx"),
   },
   "find.tool.move-an-obstacle": {
@@ -126,6 +136,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "tool",
     related: ["find.tool.move-the-roof","app.section.obstacles"],
     aliases: [],
+    docs: {"page":"find","section":"What stands on the roof"},
     load: () => import("../../content/help/find/tool/move-an-obstacle.mdx"),
   },
   "find.tool.move-the-roof": {
@@ -134,6 +145,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "tool",
     related: ["find.section.edges","app.section.obstacles"],
     aliases: [],
+    docs: {"page":"find","section":"Move or turn the roof"},
     load: () => import("../../content/help/find/tool/move-the-roof.mdx"),
   },
   "find.tool.rectangle": {
@@ -142,6 +154,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "tool",
     related: ["find.tool.corners","find.tool.detect","find.section.edges"],
     aliases: [],
+    docs: {"page":"find","section":"Outline the roof"},
     load: () => import("../../content/help/find/tool/rectangle.mdx"),
   },
   "find.tool.tank": {
@@ -150,6 +163,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "tool",
     related: ["find.tool.move-an-obstacle","find.tool.box","app.section.obstacles"],
     aliases: [],
+    docs: {"page":"find","section":"What stands on the roof"},
     load: () => import("../../content/help/find/tool/tank.mdx"),
   },
   "find.tool.wall": {
@@ -158,6 +172,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "tool",
     related: ["find.tool.move-an-obstacle","find.tool.building","app.section.obstacles"],
     aliases: [],
+    docs: {"page":"find","section":"What stands on the roof"},
     load: () => import("../../content/help/find/tool/wall.mdx"),
   },
   "studio.section.day": {
@@ -167,6 +182,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     values: [{"id":"355","label":"21 Dec","meaning":"21 December, the winter solstice north of the equator and the summer solstice south of it."},{"id":"80","label":"21 Mar","meaning":"21 March, the equinox."},{"id":"172","label":"21 Jun","meaning":"21 June, the summer solstice north of the equator and the winter solstice south of it."},{"id":"any","label":"Any date","meaning":"Any day of the year, by its day and its month."}],
     related: ["studio.section.sun-at-the-hour","studio.section.on-the-roof"],
     aliases: [],
+    docs: {"page":"sun","section":"The day"},
     load: () => import("../../content/help/studio/section/day.mdx"),
   },
   "studio.section.edges-and-access": {
@@ -175,6 +191,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["app.section.roof-type","app.section.obstacles"],
     aliases: [],
+    docs: {"page":"roof","section":"Edges and access"},
     load: () => import("../../content/help/studio/section/edges-and-access.mdx"),
   },
   "studio.section.inverter": {
@@ -183,6 +200,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["studio.section.modules-in-series","studio.section.options","studio.section.mppt-loading"],
     aliases: [],
+    docs: {"page":"strings","section":"Inverter"},
     load: () => import("../../content/help/studio/section/inverter.mdx"),
   },
   "studio.section.location": {
@@ -191,6 +209,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["find.section.edges","find.section.place","app.section.obstacles"],
     aliases: [],
+    docs: {"page":"roof","section":"Location"},
     load: () => import("../../content/help/studio/section/location.mdx"),
   },
   "studio.section.module": {
@@ -199,6 +218,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["studio.section.mounting","studio.section.modules-in-series"],
     aliases: [],
+    docs: {"page":"array","section":"Module"},
     load: () => import("../../content/help/studio/section/module.mdx"),
   },
   "studio.section.modules-in-series": {
@@ -207,6 +227,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["studio.section.system-voltage","studio.section.inverter","studio.section.options"],
     aliases: [],
+    docs: {"page":"strings","section":"Modules in series"},
     load: () => import("../../content/help/studio/section/modules-in-series.mdx"),
   },
   "studio.section.mounting": {
@@ -215,6 +236,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["studio.section.module","studio.section.spacing","studio.section.shade-free-window"],
     aliases: [],
+    docs: {"page":"array","section":"Mounting"},
     load: () => import("../../content/help/studio/section/mounting.mdx"),
   },
   "studio.section.mppt-loading": {
@@ -223,6 +245,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["studio.section.options","studio.section.inverter"],
     aliases: [],
+    docs: {"page":"strings","section":"MPPT loading"},
     load: () => import("../../content/help/studio/section/mppt-loading.mdx"),
   },
   "studio.section.on-the-roof": {
@@ -231,6 +254,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["studio.section.day","studio.section.sun-at-the-hour","app.section.obstacles"],
     aliases: [],
+    docs: {"page":"sun","section":"On the roof"},
     load: () => import("../../content/help/studio/section/on-the-roof.mdx"),
   },
   "studio.section.options": {
@@ -239,6 +263,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["studio.section.modules-in-series","studio.section.mppt-loading"],
     aliases: [],
+    docs: {"page":"strings","section":"Options"},
     load: () => import("../../content/help/studio/section/options.mdx"),
   },
   "studio.section.shade-free-window": {
@@ -247,6 +272,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["studio.section.spacing","studio.section.mounting"],
     aliases: [],
+    docs: {"page":"array","section":"Shade-free window"},
     load: () => import("../../content/help/studio/section/shade-free-window.mdx"),
   },
   "studio.section.shade-map": {
@@ -255,6 +281,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["studio.section.shading-over-the-year","app.section.obstacles"],
     aliases: [],
+    docs: {"page":"sun","section":"Shade map"},
     load: () => import("../../content/help/studio/section/shade-map.mdx"),
   },
   "studio.section.shading-over-the-year": {
@@ -263,6 +290,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["studio.section.shade-map","app.section.obstacles"],
     aliases: [],
+    docs: {"page":"sun","section":"Shading over the year"},
     load: () => import("../../content/help/studio/section/shading-over-the-year.mdx"),
   },
   "studio.section.spacing": {
@@ -271,6 +299,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["studio.section.shade-free-window","studio.section.mounting"],
     aliases: [],
+    docs: {"page":"array","section":"Spacing"},
     load: () => import("../../content/help/studio/section/spacing.mdx"),
   },
   "studio.section.sun-at-the-hour": {
@@ -279,6 +308,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["studio.section.day","studio.section.on-the-roof"],
     aliases: [],
+    docs: {"page":"sun","section":"The sun at the hour"},
     load: () => import("../../content/help/studio/section/sun-at-the-hour.mdx"),
   },
   "studio.section.system-voltage": {
@@ -288,6 +318,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     values: [{"id":"600","label":"600 V","meaning":"Strings stay at or under 600 V on the coldest morning of the site."},{"id":"1000","label":"1000 V","meaning":"Strings stay at or under 1000 V on the coldest morning of the site."},{"id":"1500","label":"1500 V","meaning":"Strings stay at or under 1500 V on the coldest morning of the site."}],
     related: ["studio.section.modules-in-series","studio.section.inverter","studio.section.module"],
     aliases: [],
+    docs: {"page":"strings","section":"System voltage"},
     load: () => import("../../content/help/studio/section/system-voltage.mdx"),
   },
 };

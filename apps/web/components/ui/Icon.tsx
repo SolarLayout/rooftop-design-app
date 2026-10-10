@@ -15,6 +15,13 @@ const STROKED = {
   "arrow-right": <path d="M5 12h14m0 0-6-6m6 6-6 6" />,
   "arrow-up": <path d="M12 19V5m0 0-6 6m6-6 6 6" />,
   bin: <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />,
+  book: (
+    <>
+      <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5z" />
+      <path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z" />
+    </>
+  ),
+  external: <path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" />,
   box: (
     <>
       <path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z" />

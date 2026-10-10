@@ -7,8 +7,10 @@ import { Icon } from "@/components/ui/Icon";
 import { IconButton } from "@/components/ui/IconButton";
 import { HEADING_LIGHT, SECTION } from "@/components/ui/section-look";
 import { SheetGrip } from "@/components/ui/SheetGrip";
+import { inTheDocsOf, type DocsPlace } from "@/lib/docs/docs";
 import { ALIASES, MANIFEST } from "@/lib/help/manifest.gen";
 import { resolvedKey, whereOf } from "@/lib/help/where";
+import { useDocsHome } from "../use-docs-home";
 import { HelpBody } from "./HelpBody";
 import { useHelp } from "./HelpProvider";
 
@@ -126,9 +128,32 @@ export function HelpSheet() {
                 </ul>
               </div>
             ) : null}
+            <InTheDocs place={shown.entry.docs} />
           </div>
         </div>
       ) : null}
     </dialog>
+  );
+}
+
+/** The page and section of the docs that tell more about the topic, opened in a new tab (D91), after its related topics. */
+function InTheDocs({ place }: { place: DocsPlace | undefined }) {
+  const id = useId();
+  const row = inTheDocsOf(place, useDocsHome());
+  if (!row) return null;
+  return (
+    <div className="flex shrink-0 flex-col gap-1.5">
+      <span id={id} className={SECTION}>
+        In the docs
+      </span>
+      <a aria-describedby={id} href={row.href} target="_blank" rel="noopener" className="-mx-2 flex items-center gap-3 rounded-row px-2 py-2.5 hovered:bg-surface-2 focus-ring">
+        <Icon name="book" size={18} stroke="light" className="shrink-0 text-text-2" />
+        <span className="flex min-w-0 grow flex-col gap-0.5">
+          <span className="font-medium">{row.title}</span>
+          <span className="line-clamp-2 type-small text-text-2">{row.section}</span>
+        </span>
+        <Icon name="external" size={16} className="shrink-0 text-text-3" />
+      </a>
+    </div>
   );
 }

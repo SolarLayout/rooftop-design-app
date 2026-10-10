@@ -16,6 +16,7 @@ import { useFloating } from "@/components/ui/use-floating";
 import { NAME_RULES } from "@/lib/flow/name-field";
 import { SAVING_WORDS, SaveMark, SaveState, type Saving } from "./SaveState";
 import type { DeviceRow } from "./switcher-view";
+import { useDocsHome } from "./use-docs-home";
 
 type Design = {
   /** The name of the design that is open; null while none is. */
@@ -63,7 +64,7 @@ export function ProjectTrigger({ name, place, open, saving, className, ...rest }
  * An action of the menu: it leads to an address, or it does something: opens a project file, opens the import of a
  * drawing, or saves a copy of the project file. A row whose doing is not given is shown and cannot be used.
  */
-type Action = { name: string; icon: IconName; fact?: string; href?: string; does?: "open" | "import" | "save" };
+type Action = { name: string; icon: IconName; fact?: string; href?: string; docs?: true; does?: "open" | "import" | "save" };
 
 // Open a project opens its dialog (plan/phase-10-plan.md, step 9); Save a copy downloads the .rtd the API writes
 // (plan/phase-09-plan.md, step 8).
@@ -73,6 +74,8 @@ const ACTIONS: Action[] = [
   { name: "Import a drawing", icon: "upload", fact: "KMZ, KML, DXF", does: "import" },
   { name: "Save a copy", icon: "download", fact: ".rtd", does: "save" },
   { name: "Home", icon: "home", href: "/" },
+  // The docs, in a new tab so the design stays open (D91).
+  { name: "Docs", icon: "book", docs: true },
 ];
 
 const LABEL = "px-2.5 pt-2 pb-1 type-section text-text-3 uppercase";
@@ -175,6 +178,7 @@ function OnThisDevice({ designs, onTake, onOpenDesign }: Required<Pick<MenuProps
 /** What the project switcher holds: this design, the designs on this device, what can be done. */
 export function ProjectMenu({ name, saving, onOpenNotes, onImport, onOpenProject, onTake, onSaveACopy, onRename, designs = [], onOpenDesign, shownAs }: MenuProps) {
   const doers: Record<NonNullable<Action["does"]>, (() => void) | undefined> = { open: onOpenProject, import: onImport, save: onSaveACopy };
+  const docsHome = useDocsHome();
 
   return (
     <div data-testid="project-menu" className={classNames(LIST, "desktop:gap-0")}>
@@ -189,18 +193,23 @@ export function ProjectMenu({ name, saving, onOpenNotes, onImport, onOpenProject
       )}
       <span className={classNames(DIVIDER, "mb-1")} />
       <ul role="menu" aria-label="Project" onKeyDown={onMenuKeyDown} className="flex flex-col gap-0.5">
-        {ACTIONS.map(({ name: action, icon, fact, href, does }) => {
+        {ACTIONS.map(({ name: action, icon, fact, href, docs, does }) => {
           const run = does === undefined ? undefined : doers[does];
           const inside = (
             <>
               <Icon name={icon} size={18} stroke="light" className="text-text-2" />
               <span className="grow">{action}</span>
               {fact ? <span className={FACT}>{fact}</span> : null}
+              {docs ? <Icon name="external" size={16} className="text-text-3" /> : null}
             </>
           );
           return (
             <li key={action} role="none">
-              {href !== undefined ? (
+              {docs ? (
+                <a role="menuitem" tabIndex={-1} href={docsHome} target="_blank" rel="noopener" onClick={onTake} className={classNames(MENU_ROW, "cursor-pointer")}>
+                  {inside}
+                </a>
+              ) : href !== undefined ? (
                 <Link role="menuitem" tabIndex={-1} href={href} onClick={onTake} className={classNames(MENU_ROW, "cursor-pointer")}>
                   {inside}
                 </Link>

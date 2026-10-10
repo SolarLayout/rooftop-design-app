@@ -1,6 +1,7 @@
 // The in-app help (D80, plan/phase-14-in-app-help.md), after the core of solarlayout's packages/help: one MDX topic per
 // key, its metadata loaded with the page, its body only when it is opened.
 import type { MDXContent } from "mdx/types";
+import type { DocsPlace } from "../docs/docs";
 
 /** Where in the app a topic belongs: the key's first part. */
 export const HELP_PLACES = ["find", "studio", "performance", "handover", "home", "app"] as const;
@@ -19,6 +20,8 @@ export type HelpMeta = {
   values?: readonly { id: string; label: string; meaning: string }[];
   related: readonly string[];
   aliases: readonly string[];
+  /** The page and section of the docs that tell more (D91); the gate asks every topic for one. */
+  docs?: DocsPlace;
 };
 
 export type HelpEntry = HelpMeta & { load: () => Promise<{ default: MDXContent }> };

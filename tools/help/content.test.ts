@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { brokenLinks, clashingAliases, driftedOptions, typedNumbers } from "./checks";
+import { badDocsPlaces, brokenLinks, clashingAliases, driftedOptions, typedNumbers } from "./checks";
 import { MANIFEST_PATH, manifestOf, readTopics } from "./generate";
 import { OPTIONS_OF } from "./options";
 import { badClips, badPictures } from "./pictures-in-topics";
@@ -19,6 +19,10 @@ describe("the topics of the help", () => {
 
   test("every link and related topic leads to a topic", () => {
     expect(brokenLinks(topics)).toEqual([]);
+  });
+
+  test("every topic names its place in the docs, a page and a section they have (D91)", () => {
+    expect(badDocsPlaces(topics)).toEqual([]);
   });
 
   test("aliases are keys of one topic each", () => {

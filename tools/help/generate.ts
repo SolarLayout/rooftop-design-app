@@ -59,7 +59,7 @@ function optionsInOrder(values: Readonly<Record<string, string>>, options: reado
 /** The manifest: every key a type, each topic's metadata, its options labelled as the code labels them, its body loaded when opened. */
 export function manifestOf(topics: readonly Topic[], optionsOf: (key: string) => readonly Option[] | undefined): string {
   const entries = topics.map(({ key, path, frontmatter }) => {
-    const { title, summary, kind, values, related, aliases } = frontmatter;
+    const { title, summary, kind, values, related, aliases, docs } = frontmatter;
     const labelled = values && optionsInOrder(values, optionsOf(key) ?? []);
     return [
       `  ${json(key)}: {`,
@@ -69,6 +69,7 @@ export function manifestOf(topics: readonly Topic[], optionsOf: (key: string) =>
       ...(labelled ? [`    values: ${json(labelled)},`] : []),
       `    related: ${json(related)},`,
       `    aliases: ${json(aliases)},`,
+      ...(docs ? [`    docs: ${json(docs)},`] : []),
       `    load: () => import(${json(`../../content/help/${path}`)}),`,
       "  },",
     ].join("\n");
