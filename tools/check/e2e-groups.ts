@@ -36,6 +36,8 @@ export const BASE_INPUTS: string[] = [
   "apps/web/lib/device/**",
   // The in-app help (D80): its registry and its topics, opened from the headings of every workspace's panels.
   "apps/web/lib/help/**",
+  // The docs' address and pages (D91): the help sheet, the project menu and Home link to them.
+  "apps/web/lib/docs/**",
   // The installed app's name, colours, mark and icons (issue 147): the manifest and the head of every page.
   "apps/web/lib/brand/**",
   // The user's country and a new design's system voltage (D87): the stores open designs on every page.

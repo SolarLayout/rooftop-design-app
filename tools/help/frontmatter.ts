@@ -1,5 +1,7 @@
 // The frontmatter of a topic, read and checked: title (80 at most), summary (140 at most: the tooltip and the sheet's
-// lead), kind (the key's own), values (a one-choice section's options and what each means), related, aliases. Nothing else.
+// lead), kind (the key's own), values (a one-choice section's options and what each means), related, aliases, docs (the
+// page and section of the docs that tell more, D91). Nothing else.
+import type { DocsPlace } from "../../apps/web/lib/docs/docs";
 import { HELP_KINDS, type HelpKind } from "../../apps/web/lib/help/types";
 
 export type Frontmatter = {
@@ -9,12 +11,15 @@ export type Frontmatter = {
   values?: Record<string, string>;
   related: string[];
   aliases: string[];
+  docs?: DocsPlace;
 };
 
-const FIELDS = new Set(["title", "summary", "kind", "values", "related", "aliases"]);
+const FIELDS = new Set(["title", "summary", "kind", "values", "related", "aliases", "docs"]);
 
 const isText = (value: unknown, most: number): value is string => typeof value === "string" && value.trim().length > 0 && value.length <= most;
 const isTexts = (value: unknown): value is string[] => Array.isArray(value) && value.every((item) => typeof item === "string");
+const isPlace = (value: unknown): value is DocsPlace =>
+  typeof value === "object" && value !== null && !Array.isArray(value) && Object.keys(value).length === 2 && isText((value as DocsPlace).page, 80) && isText((value as DocsPlace).section, 80);
 
 /** The frontmatter, or every way it is wrong, each in words. */
 export function frontmatterOf(raw: unknown): { ok: true; frontmatter: Frontmatter } | { ok: false; problems: string[] } {
@@ -32,6 +37,7 @@ export function frontmatterOf(raw: unknown): { ok: true; frontmatter: Frontmatte
   }
   if (fields.related !== undefined && !isTexts(fields.related)) problems.push("related: a list of keys");
   if (fields.aliases !== undefined && !isTexts(fields.aliases)) problems.push("aliases: a list of keys");
+  if (fields.docs !== undefined && !isPlace(fields.docs)) problems.push("docs: a page and a section of the docs");
   if (problems.length > 0) return { ok: false, problems };
   return {
     ok: true,
@@ -42,6 +48,7 @@ export function frontmatterOf(raw: unknown): { ok: true; frontmatter: Frontmatte
       ...(values === undefined ? {} : { values: Object.fromEntries(Object.entries(values as Record<string, string>).map(([id, meaning]) => [String(id), meaning])) }),
       related: (fields.related as string[] | undefined) ?? [],
       aliases: (fields.aliases as string[] | undefined) ?? [],
+      ...(fields.docs === undefined ? {} : { docs: { page: (fields.docs as DocsPlace).page, section: (fields.docs as DocsPlace).section } }),
     },
   };
 }

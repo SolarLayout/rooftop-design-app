@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { brokenLinks, clashingAliases, driftedOptions, linksOf, typedNumbers } from "./checks";
+import { badDocsPlaces, brokenLinks, clashingAliases, driftedOptions, linksOf, typedNumbers } from "./checks";
 import type { Topic } from "./generate";
 
 // The gate's checks, each on topics made for it: one that passes and the ways it fails.
@@ -67,6 +67,22 @@ describe("options", () => {
     expect(driftedOptions([topic("studio.section.volts")], optionsOf)).toEqual(["studio/section/volts.mdx: the section offers 600, 1500; say what each means in values"]);
     expect(driftedOptions([topic("studio.section.other", { values: { a: "b" } })], optionsOf)).toEqual([
       "studio/section/other.mdx: values given, but the code offers this section no options (tools/help/options.ts)",
+    ]);
+  });
+});
+
+describe("the place in the docs (issue 193, D91)", () => {
+  test("every topic names a page of the docs and one of its sections", () => {
+    const topics = [
+      topic("studio.section.day", { docs: { page: "sun", section: "The day" } }),
+      topic("studio.section.none"),
+      topic("studio.section.moon", { docs: { page: "moon", section: "Craters" } }),
+      topic("studio.section.lost", { docs: { page: "sun", section: "Moonlight" } }),
+    ];
+    expect(badDocsPlaces(topics)).toEqual([
+      "studio/section/none.mdx: names no place in the docs; give docs, its page and section",
+      'studio/section/moon.mdx: docs: "moon" is no page of the docs',
+      'studio/section/lost.mdx: docs: "Moonlight" is no section of The Sun lens',
     ]);
   });
 });

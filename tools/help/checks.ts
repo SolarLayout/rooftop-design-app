@@ -1,5 +1,6 @@
 // The gate of the help (D80, after solarlayout's packages/help): what would let a topic say something false or lead
 // nowhere. Each check gives its problems in words, with the topic's path; none is the topic as it should be.
+import { problemsOfPlace } from "../../apps/web/lib/docs/docs";
 import { isHelpKey } from "../../apps/web/lib/help/keys";
 import type { Topic } from "./generate";
 import type { Option } from "./options";
@@ -64,4 +65,13 @@ export function driftedOptions(topics: readonly Topic[], optionsOf: (key: string
       ...(extra.length ? [`${path}: values name ${extra.join(", ")}, which the code does not offer`] : []),
     ];
   });
+}
+
+/** Every topic names the page and section of the docs that tell more (D91), and the docs have them (lib/docs/docs.ts). */
+export function badDocsPlaces(topics: readonly Topic[]): string[] {
+  return topics.flatMap(({ path, frontmatter }) =>
+    frontmatter.docs === undefined
+      ? [`${path}: names no place in the docs; give docs, its page and section`]
+      : problemsOfPlace(frontmatter.docs).map((problem) => `${path}: docs: ${problem}`),
+  );
 }

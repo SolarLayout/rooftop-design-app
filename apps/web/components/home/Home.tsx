@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { Search, type FoundPlace } from "@/components/shell/Search";
 import { ImportDrawing } from "@/components/shell/ImportDrawing";
 import { Logo } from "@/components/shell/Logo";
+import { useDocsHome } from "@/components/shell/use-docs-home";
 import { useSaving, useStores } from "@/components/shell/stores";
 import { classNames } from "@/components/ui/class-names";
 import { Icon, type IconName } from "@/components/ui/Icon";
@@ -69,6 +70,7 @@ export function Home() {
   const [asked, setAsked] = useState<Asked>({ kind: "on-its-way" });
   const [isImportOpen, setImportOpen] = useState(false);
   const [isOpenProjectOpen, setOpenProjectOpen] = useState(false);
+  const docsHome = useDocsHome();
   const demoRunText = useSyncExternalStore(nothingToHear, () => rawDemoRunOf(window.localStorage), noRunOnTheServer);
   const demo = useMemo<Demo>(() => (asked.kind === "here" ? { kind: "here", card: demoCardOf(asked.document, demoRunOfText(demoRunText)) } : asked), [asked, demoRunText]);
 
@@ -127,8 +129,14 @@ export function Home() {
       <div aria-hidden="true" className="pointer-events-none absolute top-37.5 left-117.5 hidden w-260 desktop:block">
         <HomeIllustration view="whole" />
       </div>
-      <header className={classNames("box-content flex h-14 shrink-0 items-center pt-safe-0 tablet:h-18", SIDES)}>
+      <header className={classNames("relative box-content flex h-14 shrink-0 items-center justify-between pt-safe-0 tablet:h-18", SIDES)}>
         <Logo wordmark="always" />
+        {/* The docs, in a new tab (D91): Home has no project menu, where the rest of the app finds them. */}
+        <a href={docsHome} target="_blank" rel="noopener" className="-mr-2 flex h-11 items-center gap-2 rounded-row px-3 type-body text-text-2 hovered:bg-surface-2 hovered:text-text focus-ring">
+          <Icon name="book" size={18} stroke="light" />
+          Docs
+          <Icon name="external" size={14} className="text-text-3" />
+        </a>
       </header>
       <main className={classNames("relative flex grow flex-col pt-5 pb-safe-10 tablet:pt-7 tablet:pb-safe-12 desktop:pt-19 desktop:pb-safe-14", SIDES)}>
         <div className="flex flex-col gap-3 tablet:gap-5.5 desktop:w-140">

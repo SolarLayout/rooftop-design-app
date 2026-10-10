@@ -22,6 +22,13 @@ describe("the frontmatter of a topic", () => {
     });
   });
 
+  test("the place in the docs that tells more: a page and a section (issue 193)", () => {
+    const read = frontmatterOf({ title: "Day", summary: "S", kind: "section", docs: { page: "sun", section: "The day" } });
+    expect(read.ok && read.frontmatter.docs).toEqual({ page: "sun", section: "The day" });
+    expect(frontmatterOf({ title: "Day", summary: "S", kind: "section", docs: "sun#the-day" })).toEqual({ ok: false, problems: ["docs: a page and a section of the docs"] });
+    expect(frontmatterOf({ title: "Day", summary: "S", kind: "section", docs: { page: "sun" } })).toEqual({ ok: false, problems: ["docs: a page and a section of the docs"] });
+  });
+
   test("no frontmatter at all", () => {
     expect(frontmatterOf(null)).toEqual({ ok: false, problems: ["the frontmatter is not a set of fields"] });
   });
