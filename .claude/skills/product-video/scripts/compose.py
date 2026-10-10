@@ -3,8 +3,13 @@
 push-in on still screens; and the email GIF. Pipes raw frames to the e2e workspace's ffmpeg (H.264).
 
   uv run --with pillow python compose.py <video> wide       -> <work>/<video>/out/<name>-1920x1080.mp4   (plan.json)
+                                                               and <name>-thumbnail-1920x1080.png and .jpg
   uv run --with pillow python compose.py <video> square     -> <work>/<video>/out/<name>-1080x1080.mp4   (plan.json)
+                                                               and <name>-thumbnail-1080x1080.png
   uv run --with pillow python compose.py <video> gif-640    -> <work>/<video>/out/<name>.gif             (plan-gif-640.json)
+
+A cut comes with its thumbnail (every video has one, the owner's rule of 2026-10-10): the one overlays.cjs rendered over
+the frame plan.json names ("thumb"), written beside the cut. Without it the cut is refused before the minutes of encoding.
 
 The plans are assets/videos/<video>/plan*.json. A plan is a list of shots: a segment of the video's frames with a frame range, its speed (frames skipped), its captions with
 the frames they fade in and out at, a push-in, and for the square cut the centre of the window kept ("sq_cx", in 1920
@@ -159,6 +164,21 @@ def encode(shots: list, kind: str, path: Path, crf: int = 18) -> int:
     return count
 
 
+def thumbnail(kind: str, name: str) -> list:
+    """The cut's thumbnail from the overlays, beside the cut: png for both cuts, and jpg for the wide one (what an upload
+    form takes). Refused plainly when overlays.cjs has not rendered it."""
+    rendered = OVER / f"thumb-{kind}.png"
+    if not rendered.exists():
+        raise SystemExit(f"No thumbnail for the {kind} cut: {rendered} is missing. Run `node overlays.cjs <video> captions` first (it renders the thumbnails over plan.json's thumb frame).")
+    size = "1920x1080" if kind == "wide" else "1080x1080"
+    written = [OUT / f"{name}-thumbnail-{size}.png"]
+    shutil.copyfile(rendered, written[0])
+    if kind == "wide":
+        written.append(OUT / f"{name}-thumbnail-{size}.jpg")
+        Image.open(rendered).convert("RGB").save(written[1], quality=92)
+    return written
+
+
 def gif(plan: dict, path: Path) -> None:
     """The email GIF: the shots without crossfades, the wide composition scaled down, one palette for the whole GIF."""
     shots = [Shot(**s) for s in plan["shots"]]
@@ -189,4 +209,7 @@ if __name__ == "__main__":
     if kind.startswith("gif"):
         gif(plan, OUT / plan["name"])
     else:
+        thumbs = thumbnail(kind, plan["name"])
         encode([Shot(**s) for s in plan["shots"]], kind, OUT / f"{plan['name']}-{'1920x1080' if kind == 'wide' else '1080x1080'}.mp4")
+        for thumb in thumbs:
+            print(kind, "thumbnail ->", thumb, flush=True)

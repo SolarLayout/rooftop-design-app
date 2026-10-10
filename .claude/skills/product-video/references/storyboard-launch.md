@@ -30,6 +30,7 @@ rising (120 to 240), the modules filling (240 to 420), the day (420 to 780), the
 
 ```json
 { "name": "solarlayout-rooftop-launch",
+  "thumb": { "seg": "s9-present", "frame": 410 },
   "shots": [
     { "seg": "s2-detect", "start": 0, "end": 253, "speed": 1.1, "captions": [{ "name": "c2", "in": 16 }], "square": "full", "sq_cx": 960 },
     { "seg": "s7-performance", "start": 0, "end": 156, "speed": 0.48, "captions": [{ "name": "c7", "in": 24 }], "push": 0.04, "square": "full", "sq_cx": 560 },
@@ -45,6 +46,9 @@ rising (120 to 240), the modules filling (240 to 420), the day (420 to 780), the
 - `square`: on the 1:1 cut, `full` keeps a 1080-wide window of the screen centred at `sq_cx` (in 1920 coordinates: 960 is
   the middle), chosen per shot so that the roof, the map or the number is in it; `box` letterboxes the whole frame.
 - A `card` is an overlay held for `hold` frames (the end card).
+- `thumb`: the recorded frame the thumbnails are made over (the modules filling in Present, for the launch), with the words
+  of `captions.json`'s `thumb`. Every video has one per cut; `overlays.cjs` renders them with the captions and `compose.py`
+  writes them beside the cuts.
 - Shots are joined by a 12-frame crossfade; the video fades in from black and out to black.
 
 ## The cuts

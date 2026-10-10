@@ -1,11 +1,33 @@
 // Renders a video's text layers with the app's own fonts, through Chromium: the captions (transparent PNG, one per
-// caption and cut), the end card, and the thumbnails over a frame. The words are assets/videos/<video>/captions.json.
+// caption and cut), the end card, and the thumbnails over a frame of the recording. The words are
+// assets/videos/<video>/captions.json; the thumbnail's frame is plan.json's "thumb" ({ "seg", "frame" }), kept with the
+// cut so that a remake gives the same picture. Every video has thumbnails (the owner, 2026-10-10): `captions` renders
+// them with the rest and refuses to run without the frame or the words, so a cut is never composed without them.
 //
-//   node overlays.cjs <video> captions              -> <work>/<video>/overlays/<name>-wide.png and -square.png, end-*.png
-//   node overlays.cjs <video> thumb <frame.jpg>     -> <work>/<video>/overlays/thumb-wide.png and thumb-square.png
+//   node overlays.cjs <video> captions              -> <work>/<video>/overlays/<name>-wide.png and -square.png, end-*.png,
+//                                                      thumb-wide.png and thumb-square.png (over plan.json's thumb frame)
+//   node overlays.cjs <video> thumb [frame.jpg]     -> the thumbnails alone, over the plan's frame or the one given (to try another)
 const fs = require("node:fs");
 const path = require("node:path");
+const { pathToFileURL } = require("node:url");
 const { ROOT, playwright, videoDir, workOf, readJson } = require("./paths.cjs");
+
+/** The frame the thumbnails are made over: the one given, else plan.json's "thumb". Said plainly when it is missing. */
+function thumbFrame(video, frameArg) {
+  if (frameArg) {
+    const given = path.resolve(frameArg);
+    if (!fs.existsSync(given)) throw new Error(`No such frame: ${given}`);
+    return given;
+  }
+  const plan = readJson(path.join(videoDir(video), "plan.json"));
+  const thumb = plan.thumb;
+  if (!thumb || !thumb.seg || !Number.isInteger(thumb.frame)) {
+    throw new Error('Every video has thumbnails: name their frame in plan.json, "thumb": { "seg": "<segment>", "frame": <n> }, and the words in captions.json ("thumb").');
+  }
+  const frame = path.join(workOf(video), "frames", thumb.seg, `${String(thumb.frame).padStart(5, "0")}.jpg`);
+  if (!fs.existsSync(frame)) throw new Error(`The thumbnail's frame is not recorded: ${frame} (plan.json's thumb). Record first, or name another frame.`);
+  return frame;
+}
 const { chromium } = playwright();
 
 /** The app's fonts: Bricolage Grotesque for display, Geist for text, Geist Mono for the eyebrows. */
@@ -81,7 +103,7 @@ function thumbHtml(layout, thumb, framePath) {
   const sq = Boolean(layout.square);
   const style = `.t{position:absolute;left:${sq ? 64 : 110}px;top:50%;transform:translateY(-50%);max-width:${sq ? 900 : 980}px;display:flex;flex-direction:column;gap:${sq ? 22 : 26}px}
   .t .head{font-size:${sq ? 96 : 118}px;line-height:1.0} .t .sub{font-size:${sq ? 34 : 40}px;color:#D5DAE2} .badge{position:absolute;right:${sq ? 56 : 96}px;bottom:${sq ? 56 : 80}px;font-size:${sq ? 26 : 30}px}`;
-  const frame = `<div class="frame" style="background-image:url('file://${framePath}');background-size:cover;background-position:${sq ? thumb.squarePosition ?? "38% 50%" : thumb.position ?? "0% 50%"}"></div><div class="shade"></div>`;
+  const frame = `<div class="frame" style="background-image:url('${pathToFileURL(framePath).href}');background-size:cover;background-position:${sq ? thumb.squarePosition ?? "38% 50%" : thumb.position ?? "0% 50%"}"></div><div class="shade"></div>`;
   return page(layout, style, `${frame}<div class="t"><div>${mark(sq ? 40 : 46)}</div><div class="head">${thumb.head}</div><div class="sub">${thumb.sub}</div><div style="margin-top:6px;display:flex;gap:14px">${pills(thumb.pills)}</div></div><div class="badge pill">rooftop.solarlayout.app</div>`);
 }
 
@@ -98,18 +120,18 @@ function thumbHtml(layout, thumb, framePath) {
     const ctx = await browser.newContext({ viewport: { width: layout.w, height: layout.h }, deviceScaleFactor: 1 });
     const tab = await ctx.newPage();
     const jobs = [];
+    if (what !== "captions" && what !== "thumb") throw new Error("Usage: node overlays.cjs <video> captions | thumb [frame.jpg]");
+    if (!words.thumb) throw new Error('Every video has thumbnails: add "thumb" ({ "head", "sub", "pills" }) to captions.json.');
+    const frame = thumbFrame(video, what === "thumb" ? frameArg : undefined);
     if (what === "captions") {
       for (const c of words.captions) jobs.push({ name: `${c.name}-${key}`, html: captionHtml(layout, c), transparent: true });
       if (words.end) jobs.push({ name: `end-${key}`, html: endHtml(layout, words.end), transparent: false });
-    } else if (what === "thumb") {
-      const frame = path.resolve(frameArg || "");
-      if (!fs.existsSync(frame) || !words.thumb) throw new Error("Usage: node overlays.cjs <video> thumb <frame.jpg> (and a \"thumb\" in captions.json)");
-      jobs.push({ name: `thumb-${key}`, html: thumbHtml(layout, words.thumb, frame), transparent: false });
-    } else throw new Error("Usage: node overlays.cjs <video> captions | thumb <frame.jpg>");
+    }
+    jobs.push({ name: `thumb-${key}`, html: thumbHtml(layout, words.thumb, frame), transparent: false });
     for (const job of jobs) {
       const file = path.join(html, `${job.name}.html`);
       fs.writeFileSync(file, job.html);
-      await tab.goto("file://" + file);
+      await tab.goto(pathToFileURL(file).href);
       await tab.evaluate(() => document.fonts.ready);
       await tab.waitForTimeout(150);
       await tab.screenshot({ path: path.join(out, `${job.name}.png`), omitBackground: job.transparent, type: "png" });
