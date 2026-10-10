@@ -3,7 +3,7 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-10 (the Sun lens video, #196; the launch video and the skill product-video, #195; #187 to #192 deployed; see the end of the paragraph below). Earlier, 2026-10-08, session 22: **Phase 16 built**, the system voltage set by the user's country (D87: 600 V
+**Last updated:** 2026-10-10 (the skill product-video reviewed, #197; the Sun lens video, #196; the launch video and the skill product-video, #195; #187 to #192 deployed; see the end of the paragraph below). Earlier, 2026-10-08, session 22: **Phase 16 built**, the system voltage set by the user's country (D87: 600 V
 in the US and Canada, 1000 V elsewhere; the request's country, else the time zone, else India; D88: the equipment never
 moves the voltage, the app never raises it). #153 (who set it, engine and API), #154 (`/country`, `lib/country`, the store),
 #155 (the Strings lens and the picker to the boards), #156 (the help), #157 (the browser suites, changed by reading); then
@@ -77,6 +77,13 @@ assets `assets/videos/sun-lens` (#196), the cuts and thumbnails in `solarlayout/
 there). The owner's rule, same day: every video is delivered with its thumbnails. `bun check` on that branch failed only in the
 browser group `e2e:kit`, 25 of 545 (a phone dialog 421 wide on a 390 screen, the project switcher, toasts, the kit pictures
 shifted page-wide); `main` at 758cd6f fails the same 25, so it predates the change and waits for the owner's run with the rest.
+Then the skill reviewed on the owner's three rules of the day (#197): every video is delivered with its thumbnails, made by
+the pipeline from the frame `plan.json` names (the overlay step refuses to run without it, `compose.py` writes them beside
+each cut); a video for LinkedIn, Twitter or an email is delivered with its post, tweet or email (`post-<channel>.md`,
+`references/posts.md`, the launch's post the model, the Sun lens post written); and the skill stays self-contained for
+other people's machines, macOS or Windows (file URLs through `pathToFileURL`, both platforms' commands, no path of one
+machine). The browser step of that check failed in the handover group's pictures while kit passed, so the kit failures
+above are flaky on this machine; both wait for the owner's run.
 **Next:** a new task as the owner names it; the browser groups run when the owner says (#157's suites, #151's mobile fixes, and the Strings
 lens pictures whose options D and E #160 changed).
 
