@@ -1,5 +1,9 @@
 {
  "name": "solarlayout-rooftop-launch",
+ "thumb": {
+  "seg": "s9-present",
+  "frame": 410
+ },
  "shots": [
   {
    "seg": "s9-present",

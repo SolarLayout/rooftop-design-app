@@ -1,5 +1,9 @@
 {
  "name": "solarlayout-rooftop-sun-lens",
+ "thumb": {
+  "seg": "s2-day",
+  "frame": 140
+ },
  "shots": [
   {
    "seg": "s1-sun",

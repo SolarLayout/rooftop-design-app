@@ -11,8 +11,9 @@ bun install                                   # Playwright and the encoder come 
 cd e2e && bun x playwright install chromium   # the browser
 ```
 
-Node is found as `tools/lib/node.ts` finds it (Homebrew's). `uv` runs `compose.py` with Pillow in an environment of its
-own. For a voice, put the key and the voice in `.product-video/.env` (gitignored):
+The skill runs on macOS or Windows, on any machine with the repository. Node is the one the repository's tools find
+(`tools/lib/node.ts`; `bun status` prints it). `uv` runs `compose.py` with Pillow in an environment of its own.
+`narrate.py` and `weather.py` are the standard library: `python3 -I` on macOS, `python -I` on Windows. For a voice, put the key and the voice in `.product-video/.env` (gitignored):
 
 ```
 ELEVENLABS_API_KEY=...
@@ -27,18 +28,20 @@ A key scoped to text-to-speech alone is enough.
 bun dev:bg --profile test                                           # the test stack, never the dev one
 cd .claude/skills/product-video/scripts
 node record.cjs launch                                              # about 8 min; a browser window opens: leave it alone
-node overlays.cjs launch captions                                   # the captions and the end card, wide and square
-node overlays.cjs launch thumb ../../../../.product-video/launch/frames/s9-present/00410.jpg
-uv run --with pillow python compose.py launch wide                  # about 7 min
-uv run --with pillow python compose.py launch square                # the 1:1 cut, if wanted
+node overlays.cjs launch captions                                   # the captions, the end card and the thumbnails, wide and square
+uv run --with pillow python compose.py launch wide                  # about 7 min; the thumbnail beside the cut
+uv run --with pillow python compose.py launch square                # the 1:1 cut, if wanted, with its thumbnail
 uv run --with pillow python compose.py launch gif-640               # the email GIF, if wanted
-python3 -I narrate.py launch speak                                  # the lines, with their length against their screen
+python3 -I narrate.py launch speak                                  # the lines, with their length against their screen (python -I on Windows)
 python3 -I narrate.py launch mix                                    # the cuts with sound: ...-voice.mp4
 bun stop --profile test
 ```
 
-Outputs: `.product-video/launch/out/`. Frames and overlays stay in `.product-video/launch/`, so a change of captions is
-`overlays.cjs` and `compose.py` again, a change of a spoken line is `narrate.py launch speak <id>` and `mix`.
+Outputs: `.product-video/launch/out/`, the cuts with their thumbnails (`<name>-thumbnail-1920x1080.png` and `.jpg`,
+`<name>-thumbnail-1080x1080.png`). The thumbnails are made over the frame `plan.json` names (`"thumb": { "seg", "frame" }`)
+with the words of `captions.json` (`thumb`); to try another frame, `node overlays.cjs launch thumb <frame.jpg>`, then put
+the one kept into the plan. Frames and overlays stay in `.product-video/launch/`, so a change of captions is `overlays.cjs`
+and `compose.py` again, a change of a spoken line is `narrate.py launch speak <id>` and `mix`.
 
 ## A new video
 
@@ -46,8 +49,10 @@ Copy `assets/videos/launch` to `assets/videos/<name>`, keep what fits, change th
 
 - `record.json`: the segments and acts (`references/scripting.md`). A feature video can start on `/studio/roof`
   (the demo) and record one lens.
-- `plan.json`: the shots (`references/storyboard-launch.md`). `"name"` names the output files.
+- `plan.json`: the shots and the thumbnail's frame (`references/storyboard-launch.md`). `"name"` names the output files.
 - `captions.json`: short plain captions; `narration.json`: full plain sentences, or delete it for a silent video.
+- `post-<channel>.md`: the LinkedIn post, the tweet or the email the video goes out with (`references/posts.md`), copied
+  beside the cuts at delivery.
 - A new roof: `assets/sites/<site>.json` and its weather,
   `cd apps/api && ROOFTOP_WEATHER_DOWNLOADS=on uv run python ../../.claude/skills/product-video/scripts/weather.py <lat> <lon> ../../.claude/skills/product-video/assets/sites/<site>-weather.json`.
 
@@ -67,7 +72,7 @@ Then the same commands with `<name>` in place of `launch`.
   scripts/weather.py       a site's PVGIS weather through the API's own service
   assets/videos/<video>/   record.json, plan.json, captions.json, narration.json, plan-gif-*.json
   assets/sites/            a site and its weather
-  references/              scripting.md, storyboard-launch.md, pipeline.md
+  references/              scripting.md, storyboard-launch.md, pipeline.md, posts.md
 .product-video/<video>/    frames, overlays, html, out, audio (gitignored)
 .product-video/.env        the ElevenLabs key and voice (gitignored)
 ```
@@ -76,4 +81,5 @@ Then the same commands with `<name>` in place of `launch`.
 
 `references/pipeline.md` lists the three things that fail without their workaround (the Esri key's referrer, the API's
 weather downloads, Present on the GPU) and the smaller ones. Leftover headless browsers from an interrupted run slow
-everything: `pkill -f ms-playwright/chromium`.
+everything: on macOS `pkill -f ms-playwright/chromium`; on Windows, end the Chromium processes whose path is under
+`ms-playwright` (Task Manager, or in PowerShell `Get-Process chrome | Where-Object { $_.Path -like '*ms-playwright*' } | Stop-Process`).
