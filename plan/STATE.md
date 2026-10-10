@@ -3,7 +3,7 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-10 (the launch video and the skill product-video, #195; #187 to #192 deployed; see the end of the paragraph below). Earlier, 2026-10-08, session 22: **Phase 16 built**, the system voltage set by the user's country (D87: 600 V
+**Last updated:** 2026-10-10 (the Sun lens video, #196; the launch video and the skill product-video, #195; #187 to #192 deployed; see the end of the paragraph below). Earlier, 2026-10-08, session 22: **Phase 16 built**, the system voltage set by the user's country (D87: 600 V
 in the US and Canada, 1000 V elsewhere; the request's country, else the time zone, else India; D88: the equipment never
 moves the voltage, the app never raises it). #153 (who set it, engine and API), #154 (`/country`, `lib/country`, the store),
 #155 (the Strings lens and the picker to the boards), #156 (the help), #157 (the browser suites, changed by reading); then
@@ -71,6 +71,12 @@ direct, natural sentences, nothing flowery or clipped; captions short). The appr
 script-driven so that feature clips and long walkthroughs come the same way. `bun check` on that branch failed only in the
 browser group `e2e:shell`, 40 failures of the screens' pictures, the device's saving states and the mobile layout tests that
 predate the change (the suites waiting for the owner's run); the GitHub check was green.
+Then the first feature video from the skill (2026-10-10, no issue): the Sun lens for LinkedIn, 47.8 s, the lens opened on the
+launch's roof over the imagery, the day played, the engine's shadow outlines, 21 June, the shade map, six narrated lines; its
+assets `assets/videos/sun-lens` (#196), the cuts and thumbnails in `solarlayout/output/rooftop-sun-lens-2026-10-10/` (ignored
+there). The owner's rule, same day: every video is delivered with its thumbnails. `bun check` on that branch failed only in the
+browser group `e2e:kit`, 25 of 545 (a phone dialog 421 wide on a 390 screen, the project switcher, toasts, the kit pictures
+shifted page-wide); `main` at 758cd6f fails the same 25, so it predates the change and waits for the owner's run with the rest.
 **Next:** a new task as the owner names it; the browser groups run when the owner says (#157's suites, #151's mobile fixes, and the Strings
 lens pictures whose options D and E #160 changed).
 
