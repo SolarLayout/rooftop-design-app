@@ -87,7 +87,7 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | UI fixes · Coordinates in the search | `SearchCoordinates.dc.html`, `SearchCoordinatesTablet.dc.html`, `SearchCoordinatesPhone.dc.html` | `ui-fixes-search-coordinates-desktop.png`, `ui-fixes-search-coordinates-tablet.png`, `ui-fixes-search-coordinates-phone.png` | desktop, tablet, phone |
 | UI fixes · Find's first step, a panel that says what to do | `FindFirstStep.dc.html`, `FindFirstStepTablet.dc.html`, `FindFirstStepPhone.dc.html` (the shots in `find_first_step/`) | none: the boards are the shots | desktop, tablet, phone |
 | UI fixes · Your own when the roof holds too few positions | `OwnTooFew.dc.html`, `OwnTooFewTablet.dc.html`, `OwnTooFewPhone.dc.html` (the shots in `own_too_few/`) | `ui-fixes-own-too-few-desktop.png`, `ui-fixes-own-too-few-tablet.png`, `ui-fixes-own-too-few-phone.png` | desktop, tablet, phone |
-| UI fixes · The docs from the app (#193), for approval | `DocsLinks.dc.html`, `DocsLinksTablet.dc.html`, `DocsLinksPhone.dc.html` (the shots in `docs_links/`) | none: the boards are the shots | desktop, tablet, phone |
+| UI fixes · The docs from the app (#193, D91) | `DocsLinks.dc.html`, `DocsLinksTablet.dc.html`, `DocsLinksPhone.dc.html` (the shots in `docs_links/`) | none: the boards are the shots | desktop, tablet, phone |
 | System voltage · Set by the user's country (Phase 16) | `SystemVoltage.dc.html`, `SystemVoltageTablet.dc.html`, `SystemVoltagePhone.dc.html` (the shots in `system_voltage/`) | `system-voltage-desktop.jpg`, `system-voltage-tablet.jpg`, `system-voltage-phone.jpg` | desktop, tablet, phone |
 
 Screens still to draw are listed in `plan/phase-00-design.md`.
@@ -196,7 +196,7 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   Docs at the right of Home's header, a Docs row at the foot of the project menu, and In the docs under a help topic's
   Related, each opening `solarlayout.app/docs/rooftop` in a new tab, with two new icons (a book; the arrow out of a box).
   Caught in the browser at three sizes (`docs_links/`) with a prototype on the local branch `design/docs-links`, never
-  merged; drawn on 2026-10-10, for approval (canvas version 50).
+  merged; drawn and approved on 2026-10-10 (D91).
 - `mockups/build_system_voltage.py` writes the boards "System voltage · Set by the user's country" (Phase 16, D87; desktop, tablet,
   phone; the canvas page "System voltage"): the voltage of the user's country in the Strings lens (India 1000 V, the United States
   600 V with no string length fitting the demo's inverter), the app's value following an inverter rated under it, the user's 1500 V
