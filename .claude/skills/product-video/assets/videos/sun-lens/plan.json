@@ -1,0 +1,81 @@
+{
+ "name": "solarlayout-rooftop-sun-lens",
+ "shots": [
+  {
+   "seg": "s1-sun",
+   "start": 0,
+   "end": 204,
+   "speed": 0.78,
+   "captions": [
+    {
+     "name": "hook",
+     "in": 34
+    }
+   ],
+   "push": 0.03,
+   "square": "full",
+   "sq_cx": 760
+  },
+  {
+   "seg": "s2-day",
+   "start": 0,
+   "end": 214,
+   "speed": 0.78,
+   "captions": [
+    {
+     "name": "c1",
+     "in": 20
+    }
+   ],
+   "square": "full",
+   "sq_cx": 760
+  },
+  {
+   "seg": "s3-outlines",
+   "start": 0,
+   "end": 170,
+   "speed": 0.55,
+   "captions": [
+    {
+     "name": "c2",
+     "in": 20
+    }
+   ],
+   "square": "full",
+   "sq_cx": 760
+  },
+  {
+   "seg": "s4-june",
+   "start": 0,
+   "end": 164,
+   "speed": 0.9,
+   "captions": [
+    {
+     "name": "c3",
+     "in": 20
+    }
+   ],
+   "square": "full",
+   "sq_cx": 760
+  },
+  {
+   "seg": "s5-shade-map",
+   "start": 0,
+   "end": 164,
+   "speed": 0.55,
+   "captions": [
+    {
+     "name": "c4",
+     "in": 20
+    }
+   ],
+   "push": 0.03,
+   "square": "full",
+   "sq_cx": 760
+  },
+  {
+   "card": "end",
+   "hold": 170
+  }
+ ]
+}

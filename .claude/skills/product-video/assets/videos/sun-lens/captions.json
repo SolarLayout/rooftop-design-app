@@ -1,0 +1,61 @@
+{
+ "captions": [
+  {
+   "name": "hook",
+   "place": "tl",
+   "sqPlace": "tl",
+   "brand": 40,
+   "head": "Shadows at any hour.",
+   "sub": "The Sun lens, on a real roof."
+  },
+  {
+   "name": "c1",
+   "place": "tl",
+   "sqPlace": "tl",
+   "eyebrow": "01 · The day",
+   "head": "Play the day.",
+   "sub": "The shadows move across the roof, hour by hour."
+  },
+  {
+   "name": "c2",
+   "place": "tl",
+   "sqPlace": "tl",
+   "eyebrow": "02 · The engine's shadows",
+   "head": "The calculated shadow outlines.",
+   "sub": "Drawn over what you see, at any hour."
+  },
+  {
+   "name": "c3",
+   "place": "tr",
+   "sqPlace": "tr",
+   "eyebrow": "03 · Any day",
+   "head": "Any day of the year.",
+   "sub": "The solstices, the equinox, or a date."
+  },
+  {
+   "name": "c4",
+   "place": "tr",
+   "sqPlace": "tr",
+   "eyebrow": "04 · Shade map",
+   "head": "Every module, shaded over the year.",
+   "sub": "Near, electrical and far shading, over all 8,760 hours."
+  }
+ ],
+ "end": {
+  "line": "Rooftop PV design, in your browser.",
+  "pills": [
+   "Free",
+   "No account needed",
+   "Phone, tablet or computer"
+  ]
+ },
+ "thumb": {
+  "head": "Shadows at any hour.",
+  "sub": "The Sun lens of SolarLayout Rooftop, on a real roof.",
+  "pills": [
+   "Free",
+   "No account needed"
+  ]
+ },
+ "_about": "The words on the screen of the Sun lens video (2026-10-10): short, plain and direct, as the launch's. The cards sit at the top left over the black above the roof on 21 December; on 21 June the sun path's arc crosses the top left, so those two sit at the top right."
+}

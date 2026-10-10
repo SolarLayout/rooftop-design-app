@@ -1,0 +1,48 @@
+{
+ "voice": null,
+ "model": "eleven_multilingual_v2",
+ "settings": {
+  "stability": 0.75,
+  "similarity_boost": 0.8,
+  "style": 0.0,
+  "speed": 1.0
+ },
+ "lines": [
+  {
+   "id": "01-hook",
+   "shot": 0,
+   "offset": 0.6,
+   "text": "This is the Sun lens of SolarLayout Rooftop. It shows where the sun stands over your roof, and what it shades."
+  },
+  {
+   "id": "02-day",
+   "shot": 1,
+   "offset": 0.4,
+   "text": "When you play the day, the shadows move across the roof hour by hour, and the sun's height and bearing are shown for every hour."
+  },
+  {
+   "id": "03-outlines",
+   "shot": 2,
+   "offset": 0.4,
+   "text": "The engine's own shadow outlines can be drawn over the view, and they follow the hour, so you can check what you see against what is calculated."
+  },
+  {
+   "id": "04-june",
+   "shot": 3,
+   "offset": 0.4,
+   "text": "You can look at the solstices, the equinox, or any date you choose."
+  },
+  {
+   "id": "05-shade-map",
+   "shot": 4,
+   "offset": 0.4,
+   "text": "The shade map colours every module by its shading over the whole year, and the losses are given as near, electrical and far shading."
+  },
+  {
+   "id": "06-end",
+   "shot": 5,
+   "offset": 0.4,
+   "text": "It is free, with no account needed, at rooftop dot solarlayout dot app."
+  }
+ ]
+}
