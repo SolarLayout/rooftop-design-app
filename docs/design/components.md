@@ -526,6 +526,9 @@ holds the focus; Escape, the ×, a press beside it close it, and the focus goes 
   mark), a link to another topic in the accent, underlined; while the body loads, three lines of skeleton; when it cannot
   load, "This part of the help did not load. Check the connection and try again." and Try again. Then "Related" (a section heading:
   `type-section`, 600, uppercase, in the same light) and a row per topic: its title (500), its summary in two lines at most (`type-small`, `text-2`), a chevron.
+  Last, "In the docs" (the same heading) and one row: a book (18, light), the docs page's title (500), the section under it
+  (`type-small`, `text-2`), and the mark of a link that leaves the app (`external`, 16, `text-3`); it opens the docs at that section
+  in a new tab (D91, the boards "UI fixes · The docs from the app").
 - A related topic or a link opens in the sheet; Back returns, as many steps as were taken; a disc pressed starts afresh.
 - The topic shown is in the address (`?help=<key>`), read when the page opens, so a shared link opens it; nothing else of the
   address is touched.
@@ -1158,6 +1161,10 @@ made by `rowsOnTheDeviceOf` (`components/shell/switcher-view.ts`) of the designs
 - "This design" carries a quiet Rename (a pencil of 18) that turns the name into the text field; a commit edits the
   document's name, Escape gives it back (Phase 9, decision 13).
 - The icons of the rows have the stroke of the navigation, 1.7; the board draws 1.8.
+- The last row, **Docs** (a book), opens the Rooftop docs in a new tab, with the mark of a link that leaves the app (`external`,
+  16, `text-3`) where the others give a fact (D91). Home, which has no switcher, has the same link at the right of its header:
+  the book (18, light), "Docs" (`type-body`, `text-2`), the mark (14). The docs' address follows the app's: `rooftop.<x>`
+  opens `<x>/docs/rooftop`, anywhere else production's (`lib/docs/docs.ts`).
 - The place of the design, "18.52° N · 73.86° E", has two decimals, as the mockups have it. It is shown on
   desktop from 1360 wide.
 - While no design is open, a skeleton stands in the place of the name.

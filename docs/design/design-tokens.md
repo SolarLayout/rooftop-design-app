@@ -524,6 +524,7 @@ that is disabled, nor to one that is shown and cannot be used (`aria-disabled="t
 ## Icons
 Stroke icons, 24 by 24 view box, round caps and joins, `currentColor`. Sizes 14, 16, 18, 20, 22, which are
 steps of `--spacing`. No emoji. No filled icons except the play triangle and the logo; Pause, its other state, is two bars of `--stroke-pause`.
+A link that leaves the app carries `external`, the arrow out of a box, after its words; the docs are a `book` (D91).
 
 | Token | Value | Use |
 |---|---|---|

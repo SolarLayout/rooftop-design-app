@@ -41,6 +41,9 @@ values:
   "1500": Strings stay at or under 1500 V on the coldest morning of the site.
 related:
   - studio.section.inverter
+docs:
+  page: strings
+  section: System voltage
 ---
 
 ## How it limits a string
@@ -62,6 +65,7 @@ These fields and no others:
 | `values` | Only for a section where one option is chosen. List every option the code offers, keyed by the id the code uses, with what each means (140 characters at most). The labels come from the code, never from here. |
 | `related` | Keys of other topics, listed under Related at the foot of the sheet. |
 | `aliases` | Old keys that still lead here. |
+| `docs` | The place in the Rooftop docs that tells more, shown as "In the docs" at the foot of the sheet (D91): `page`, the page's address (`sun`, `strings`, …), and `section`, one of its `##` headings as written. Required; the gate refuses a page or a section the docs do not have (`apps/web/lib/docs/docs.ts` lists them: a page or heading renamed in the docs is renamed there). |
 
 A summary or meaning that contains `: ` must be quoted, or YAML cannot read it. The generator names the file
 when this happens.
