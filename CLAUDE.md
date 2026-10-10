@@ -125,3 +125,4 @@ This is production software, not a prototype. The owner's words: "this is not th
 | `bun help:gen` | Write the in-app help's typed manifest from `apps/web/content/help` (commit both; the gate in `tools/help` fails while it is stale) |
 | `bun help:pictures` | Take the pictures of the help's how-tos from the app on the test stack (`docs/help-content.md`, "Pictures"; `e2e/help-pictures/README.md`) |
 | `bun help:clips` | Record the clips of the help's how-tos from the app on the test stack (`docs/help-content.md`, "Clips"; `e2e/help-clips/README.md`) |
+| the skill `product-video` | Videos of the product from the app itself (launch, feature clips, walkthroughs, with or without a narration): `.claude/skills/product-video/README.md` |
