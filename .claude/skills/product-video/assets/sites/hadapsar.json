@@ -1,0 +1,12 @@
+{
+ "place": "18.51919, 73.93147",
+ "name": "Hadapsar rooftop",
+ "click": {
+  "x": 960,
+  "y": 560
+ },
+ "weather": "hadapsar-weather.json",
+ "clock": "2026-10-10T10:00:00",
+ "geocoderReferrer": "http://localhost:4700/",
+ "_about": "The roof the video designs: the words typed into Home's search, the design's name, where on the map (CSS pixels of a 1920x1080 window, at the roof zoom) the building is clicked for Detect building, its PVGIS weather (weather.py), the page's clock while recording, and the referrer the geocoder is asked with (the Esri key is restricted to the dev profile's origin)."
+}

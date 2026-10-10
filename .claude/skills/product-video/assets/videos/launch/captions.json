@@ -1,0 +1,98 @@
+{
+ "captions": [
+  {
+   "name": "hook",
+   "brand": 40,
+   "head": "Rooftop PV design,<br>in your browser.",
+   "sub": "From a roof on the map to a complete PV design.",
+   "pill": "Free · no account needed"
+  },
+  {
+   "name": "c1",
+   "place": "bl",
+   "sqPlace": "br",
+   "eyebrow": "01 · Find the roof",
+   "head": "Paste the coordinates.",
+   "sub": "Or search an address, or a maps link."
+  },
+  {
+   "name": "c2",
+   "place": "tl-find",
+   "sqPlace": "tr",
+   "eyebrow": "02 · Outline",
+   "head": "One click detects the building.",
+   "sub": "The footprint from Overture Maps, with corners you can drag."
+  },
+  {
+   "name": "c3",
+   "place": "tr",
+   "sqPlace": "tr",
+   "eyebrow": "03 · Build",
+   "head": "The roof rises in 3D, laid out at once.",
+   "sub": "Every position to scale, clear of the parapet, the setback and the walkways."
+  },
+  {
+   "name": "c4",
+   "place": "tr",
+   "sqPlace": "tr",
+   "eyebrow": "04 · The site",
+   "head": "On the satellite imagery, to scale.",
+   "sub": "Obstacles with their heights, so their shadows stay off the modules."
+  },
+  {
+   "name": "c5",
+   "place": "tl",
+   "sqPlace": "tl",
+   "eyebrow": "05 · Sun",
+   "head": "Shadows at any hour.",
+   "sub": "The sun path, the shade-free window, and shading over the year."
+  },
+  {
+   "name": "c6",
+   "place": "tr",
+   "sqPlace": "tr",
+   "eyebrow": "06 · Strings",
+   "head": "Strings sized to your inverter.",
+   "sub": "Options compared by DC/AC, clipping and energy."
+  },
+  {
+   "name": "c7",
+   "place": "bl",
+   "sqPlace": "bl",
+   "eyebrow": "07 · Performance",
+   "head": "8,760 hours, every loss named.",
+   "sub": "P50 · P75 · P90 on PVGIS weather, or your own CSV."
+  },
+  {
+   "name": "c8",
+   "place": "bl",
+   "sqPlace": "bl",
+   "eyebrow": "08 · Handover",
+   "head": "Report, SLD, BOM, cable schedule, DXF, KMZ.",
+   "sub": "And the hourly data. One by one, or in one zip."
+  },
+  {
+   "name": "c9",
+   "eyebrow": "The result",
+   "head": "From a roof on the map to the energy. In minutes.",
+   "sub": ""
+  }
+ ],
+ "end": {
+  "line": "Rooftop PV design, in your browser.",
+  "pills": [
+   "Free",
+   "No account needed",
+   "Phone, tablet or computer"
+  ]
+ },
+ "thumb": {
+  "head": "Rooftop PV design,<br>in your browser.",
+  "sub": "From a roof on the map to the report, SLD, BOM and drawings.",
+  "pills": [
+   "Free",
+   "No account needed"
+  ]
+ },
+ "_about": "The words on the screen: short, plain and direct, as the owner approved them on 2026-10-10 (a longer full-sentence set was tried and rejected: captions are read at a glance). A caption with a place is a card at that place on the wide cut (sqPlace on the square): bl, bc, tl, tr, tl-find, br; without one it stands at the bottom left over a fade. head may hold <br>."
+}

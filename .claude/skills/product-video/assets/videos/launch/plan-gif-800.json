@@ -1,0 +1,57 @@
+{
+ "name": "rooftop-launch-email-800.gif",
+ "width": 800,
+ "fps": 10,
+ "colors": 128,
+ "shots": [
+  {
+   "seg": "s9-present",
+   "start": 398,
+   "end": 420,
+   "speed": 2.0,
+   "captions": [
+    {
+     "name": "hook",
+     "in": 0,
+     "fade": 1
+    }
+   ]
+  },
+  {
+   "seg": "s2-detect",
+   "start": 160,
+   "end": 253,
+   "speed": 3.0,
+   "captions": [
+    {
+     "name": "c2",
+     "in": 2
+    }
+   ]
+  },
+  {
+   "seg": "s9-present",
+   "start": 312,
+   "end": 420,
+   "speed": 3.0,
+   "captions": [
+    {
+     "name": "c3",
+     "in": 2
+    }
+   ]
+  },
+  {
+   "seg": "s9-present",
+   "start": 1060,
+   "end": 1138,
+   "speed": 3.0,
+   "captions": [
+    {
+     "name": "c9",
+     "in": 2
+    }
+   ]
+  }
+ ]
+}

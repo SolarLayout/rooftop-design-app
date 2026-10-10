@@ -1,0 +1,115 @@
+{
+  "_about": "The launch video's recording (references/storyboard-launch.md): the design made on the map from Home, the Studio's lenses, Performance, Handover, then Present's whole tour. The words in braces come from the site.",
+  "site": "hadapsar",
+  "gpu": true,
+  "start": { "path": "/", "waitFor": { "role": "link", "name": "Find my roof" } },
+  "segments": [
+    {
+      "name": "s1-home",
+      "acts": [
+        { "act": "rest", "frames": 30 },
+        { "act": "click", "role": "combobox", "frames": 30 },
+        { "act": "rest", "frames": 6 },
+        { "act": "type", "text": "{place}" },
+        { "act": "rest", "frames": 14 },
+        { "act": "click", "role": "button", "name": "Find my roof", "frames": 20 },
+        { "act": "until", "url": "/find", "max": 150 },
+        { "act": "glide", "x": 1100, "y": 980, "frames": 20 },
+        { "act": "until", "testid": "roof-map", "attr": "data-state", "equals": "ready", "max": 300 },
+        { "act": "until", "testid": "roof-map", "attr": "aria-busy", "equals": "false", "max": 400 },
+        { "act": "rest", "frames": 45 }
+      ]
+    },
+    {
+      "name": "s2-detect",
+      "acts": [
+        { "act": "rest", "frames": 10 },
+        { "act": "click", "role": "button", "name": "Detect building", "exact": true },
+        { "act": "rest", "frames": 8 },
+        { "act": "glide", "x": "{click.x}", "y": "{click.y}", "frames": 30 },
+        { "act": "rest", "frames": 4 },
+        { "act": "press-until", "testid": "detected", "includes": "Footprint found" },
+        { "act": "rest", "frames": 50 },
+        { "act": "click", "role": "button", "name": "Use this outline", "exact": true },
+        { "act": "rest", "frames": 12 },
+        { "act": "glide", "x": 1240, "y": 900, "frames": 20 },
+        { "act": "rest", "frames": 40 }
+      ]
+    },
+    {
+      "name": "s3-build",
+      "acts": [
+        { "act": "click", "role": "button", "name": "Build this roof", "exact": true, "frames": 28 },
+        { "act": "until", "url": "/studio", "max": 300 },
+        { "act": "glide", "x": 1300, "y": 950, "frames": 16 },
+        { "act": "until", "includes": "MWh", "in": "main", "max": 600 },
+        { "act": "rest", "frames": 30 },
+        { "act": "unseen", "acts": [{ "act": "rename", "name": "{name}" }] }
+      ]
+    },
+    {
+      "name": "s4-imagery",
+      "acts": [
+        { "act": "rest", "frames": 20 },
+        { "act": "click", "role": "button", "name": "Layers", "exact": true, "frames": 28 },
+        { "act": "rest", "frames": 10 },
+        { "act": "click", "role": "switch", "name": "Satellite imagery", "frames": 18 },
+        { "act": "until", "testid": "on-the-roof-ground", "includes": "imagery", "max": 300 },
+        { "act": "rest", "frames": 25 },
+        { "act": "key", "key": "Escape", "frames": 8 },
+        { "act": "glide", "x": 420, "y": 820, "frames": 20 },
+        { "act": "rest", "frames": 6 },
+        { "act": "drag", "dx": 190, "dy": -40, "frames": 75 },
+        { "act": "rest", "frames": 40 }
+      ]
+    },
+    {
+      "name": "s5-sun",
+      "acts": [
+        { "act": "click", "role": "link", "name": "Sun", "exact": true, "frames": 26 },
+        { "act": "rest", "frames": 40 },
+        { "act": "click", "role": "button", "name": "/Play the day/", "frames": 26 },
+        { "act": "glide", "x": 760, "y": 990, "frames": 16 },
+        { "act": "rest", "frames": 150 },
+        { "act": "unseen", "acts": [{ "act": "click", "role": "button", "name": "/^Pause/", "frames": 1, "settle": 0 }] },
+        { "act": "rest", "frames": 10 }
+      ]
+    },
+    {
+      "name": "s6-strings",
+      "acts": [
+        { "act": "click", "role": "link", "name": "Strings", "exact": true, "frames": 26 },
+        { "act": "glide", "x": 1300, "y": 960, "frames": 16 },
+        { "act": "rest", "frames": 90 }
+      ]
+    },
+    {
+      "name": "s7-performance",
+      "acts": [
+        { "act": "click", "role": "link", "name": "Performance", "exact": true, "frames": 28 },
+        { "act": "glide", "x": 1180, "y": 1000, "frames": 16 },
+        { "act": "rest", "frames": 100 }
+      ]
+    },
+    {
+      "name": "s8-handover",
+      "acts": [
+        { "act": "click", "role": "link", "name": "Handover", "exact": true, "frames": 28 },
+        { "act": "glide", "x": 860, "y": 1050, "frames": 16 },
+        { "act": "until", "includes": "Page 1 of", "in": "main", "max": 300 },
+        { "act": "rest", "frames": 100 }
+      ]
+    },
+    {
+      "name": "s9-present",
+      "acts": [
+        { "act": "unseen", "acts": [
+          { "act": "pointer-away" },
+          { "act": "click", "role": "link", "name": "/Present/", "frames": 1, "settle": 0 },
+          { "act": "until", "testid": "present", "attr": "data-state", "equals": "touring", "max": 600 }
+        ] },
+        { "act": "rest", "frames": 1230 }
+      ]
+    }
+  ]
+}

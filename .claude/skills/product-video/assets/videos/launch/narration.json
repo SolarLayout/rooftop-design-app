@@ -1,0 +1,73 @@
+{
+ "voice": null,
+ "model": "eleven_multilingual_v2",
+ "settings": {
+  "stability": 0.75,
+  "similarity_boost": 0.8,
+  "style": 0.0,
+  "speed": 1.0
+ },
+ "lines": [
+  {
+   "id": "01-hook",
+   "shot": 0,
+   "offset": 0.8,
+   "text": "This is SolarLayout Rooftop, a tool for designing rooftop PV systems in the browser."
+  },
+  {
+   "id": "02-home",
+   "shot": 1,
+   "offset": 0.5,
+   "text": "You start by entering the coordinates of the roof, or by searching for an address."
+  },
+  {
+   "id": "03-detect",
+   "shot": 2,
+   "offset": 0.5,
+   "text": "When you click the building, its footprint is detected from the map, and you can drag the corners if you need to."
+  },
+  {
+   "id": "04-build",
+   "shot": 3,
+   "offset": 0.5,
+   "text": "When you build the roof, it appears in 3D with the modules already laid out, and you can show it on the satellite imagery.",
+   "continues": true
+  },
+  {
+   "id": "05-sun",
+   "shot": 5,
+   "offset": 0.5,
+   "text": "If you play the day, you can see how the shadows move, and the shading on every module is calculated for the whole year."
+  },
+  {
+   "id": "06-strings",
+   "shot": 6,
+   "offset": 0.4,
+   "text": "The strings are sized for the inverter you choose, and the stringing options are compared side by side."
+  },
+  {
+   "id": "07-performance",
+   "shot": 7,
+   "offset": 0.5,
+   "text": "Every hour of a typical year is simulated, each loss is listed, and you get the P50, P75 and P90 values."
+  },
+  {
+   "id": "08-handover",
+   "shot": 8,
+   "offset": 0.5,
+   "text": "For the handover you get the report, the single-line diagram, the bill of materials, the cable schedule, and DXF and KMZ files."
+  },
+  {
+   "id": "09-energy",
+   "shot": 9,
+   "offset": 1.7,
+   "text": "For this roof, the result is one thousand one hundred and fifty-five megawatt hours a year."
+  },
+  {
+   "id": "10-end",
+   "shot": 10,
+   "offset": 0.4,
+   "text": "It is free, with no account needed, at rooftop dot solarlayout dot app."
+  }
+ ]
+}
