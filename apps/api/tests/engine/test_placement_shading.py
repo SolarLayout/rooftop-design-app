@@ -115,3 +115,14 @@ def test_a_row_pitch_entered_under_the_table_s_depth_is_raised_and_says_so(modul
         f"Row pitch 1.00 m is under a table's depth on plan plus 0.3 m, so {used:.2f} m is used."
     ]
     assert kept.pitch == 7.0 and kept.notes == []
+
+
+def test_an_east_west_layout_names_its_unit_gap_only_when_there_is_one(module):
+    # #179, item 11: the note "Unit gap 0.00 m keeps …" was added to every east-west layout, so such a design never had
+    # nothing to review. A gap of nothing is said by no note; a gap the window needs is said as before.
+    pune, north = demo_roof(), demo_roof()
+    pune.roof_type = north.roof_type = "flat_ew"
+    north.lat = 45.0
+
+    assert place(pune, ArraySpec(), module).notes == []
+    assert place(north, ArraySpec(), module).notes == ["Unit gap 2.55 m keeps east-west units shade-free in the window."]

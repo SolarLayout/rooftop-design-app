@@ -67,6 +67,14 @@ class LayoutReadouts(BaseModel):
     profile_angle_deg: float | None = Field(
         description="Lowest sun in the window; null when the pitch was given"
     )
+    shade_free_pitch_m: float | None = Field(
+        description="The pitch the engine chooses for the window, even when one was given; "
+        "null but on flat tilted rows"
+    )
+    edge_azimuth_deg: float = Field(
+        description="Where the roof edge closest to the equator faces: "
+        "the array's azimuth unless one was given"
+    )
     roof_area_m2: float
     inside_setback_area_m2: float
     usable_area_m2: float

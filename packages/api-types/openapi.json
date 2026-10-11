@@ -1232,6 +1232,11 @@
       "LayoutReadouts": {
         "description": "The figures shown next to the plan.",
         "properties": {
+          "edge_azimuth_deg": {
+            "description": "Where the roof edge closest to the equator faces: the array's azimuth unless one was given",
+            "title": "Edge Azimuth Deg",
+            "type": "number"
+          },
           "gcr": {
             "title": "Gcr",
             "type": "number"
@@ -1278,6 +1283,18 @@
             "title": "Rows",
             "type": "integer"
           },
+          "shade_free_pitch_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The pitch the engine chooses for the window, even when one was given; null but on flat tilted rows",
+            "title": "Shade Free Pitch M"
+          },
           "tables": {
             "title": "Tables",
             "type": "integer"
@@ -1294,6 +1311,8 @@
           "pitch_m",
           "gcr",
           "profile_angle_deg",
+          "shade_free_pitch_m",
+          "edge_azimuth_deg",
           "roof_area_m2",
           "inside_setback_area_m2",
           "usable_area_m2",

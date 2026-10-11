@@ -255,6 +255,11 @@ describe("before a system voltage", () => {
     });
   });
 
+  test("no module fits on the roof: it leads to the Roof lens, where the outline, the setback and the obstacles are (#179, item 13)", () => {
+    const noPositions = { ...NO_LENGTH_FITS, no_options: { code: "no_positions" as const, title: "No module fits on this roof", message: "Check the outline, the setback and the obstacles." } };
+    expect(vitalsOf({ ...waiting, design: noPositions }).last).toMatchObject({ kind: "decision", path: "/studio/roof" });
+  });
+
   test("an edit meanwhile: the cells are dimmed and the last cell says that it is updated", () => {
     const view = vitalsOf({ ...waiting, designStatus: "running", progress: SHADING });
 

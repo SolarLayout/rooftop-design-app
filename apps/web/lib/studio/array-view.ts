@@ -25,7 +25,8 @@ export function azimuthLineOf(array: ArraySpec, layout: LayoutResponse | null, r
   const given = isEngine ? null : bearingOf(array.azimuth_deg as number);
   if (!layout) return { value: given, line: null, isEngine };
   if (isEngine) return { value: bearingOf(layout.layout.azimuth), line: FOLLOWS[roofType], isEngine };
-  return { value: given, line: `The roof edge closest to the equator faces ${bearingOf(layout.layout.azimuth)}`, isEngine };
+  // The layout faces the azimuth given: where the roof edge faces is the readouts' (#179, item 9).
+  return { value: given, line: `The roof edge closest to the equator faces ${bearingOf(layout.readouts.edge_azimuth_deg)}`, isEngine };
 }
 
 /** The tilt of a sloped roof: the roof's own pitch, set in the Roof lens. */

@@ -88,6 +88,10 @@ class Layout:
     design_doy: int
     psi_min_deg: float | None = None
     notes: list[str] = field(default_factory=list)
+    # What the engine would decide where it is told otherwise, so that the lens can say so (#179, item 9): the pitch it
+    # would choose for the window (flat tilted rows only), and the azimuth of the roof edge closest to the equator.
+    shade_free_pitch: float | None = None
+    edge_azimuth: float = 180.0
 
     @property
     def n_modules(self) -> int:
@@ -160,6 +164,7 @@ def place(roof: Roof, arr: ArraySpec, module: Module) -> Layout:
     notes: list[str] = []
     modules: list[PlacedModule] = []
     psi_min = None
+    free_pitch = None
 
     if rt in ("flat_tilted", "sloped_flush"):
         tilt = arr.tilt_deg if rt == "flat_tilted" else roof.slope_deg
@@ -169,11 +174,12 @@ def place(roof: Roof, arr: ArraySpec, module: Module) -> Layout:
         b = math.radians(tilt)
         D = L * math.cos(b)
         if rt == "flat_tilted":
+            free, psi = shade_free_pitch(roof.lat, az, tilt, L, arr.window_start_h, arr.window_end_h, doy)
+            free_pitch = max(math.ceil(free * 20) / 20.0, D + 0.3)  # rounded up to 5 cm, the rows never overlapping
             if arr.row_pitch_m:
                 pitch = arr.row_pitch_m
             else:
-                pitch, psi_min = shade_free_pitch(roof.lat, az, tilt, L, arr.window_start_h, arr.window_end_h, doy)
-                pitch = math.ceil(pitch * 20) / 20.0  # round up to 5 cm
+                pitch, psi_min = free_pitch, psi
             if arr.row_pitch_m and arr.row_pitch_m < D + 0.3:
                 # The rows must not overlap; a pitch entered under that is raised, and says so (#179, item 10).
                 notes.append(
@@ -281,7 +287,9 @@ def place(roof: Roof, arr: ArraySpec, module: Module) -> Layout:
         gcr = 2 * L / (W + g) if units_x else 0.0
         slope_len, used_pitch = L, W + g
         n_rows = len({m.row for m in modules})
-        notes.append(f"Unit gap {g:.2f} m keeps east-west units shade-free in the window.")
+        if g > 0:
+            # A gap of nothing is no news: noted every time, it left an east-west design always with a note (#179, item 11).
+            notes.append(f"Unit gap {g:.2f} m keeps east-west units shade-free in the window.")
 
     # The modules were placed in the frame; back to the roof, all of them in one call.
     for m, world in zip(modules, rotate_all([m.poly for m in modules], -rot, origin), strict=True):
@@ -289,7 +297,8 @@ def place(roof: Roof, arr: ArraySpec, module: Module) -> Layout:
     return Layout(
         kind=rt, modules=modules, azimuth=az, tilt=tilt, pitch=used_pitch, gcr=gcr, slope_len=slope_len,
         table_count=table_count, n_rows=n_rows, inner=inner, usable=usable, keepout=ko,
-        obstacle_zone=obstacle_zone, design_doy=doy, psi_min_deg=psi_min, notes=notes)
+        obstacle_zone=obstacle_zone, design_doy=doy, psi_min_deg=psi_min, notes=notes,
+        shade_free_pitch=free_pitch, edge_azimuth=roof.default_array_azimuth())
 
 
 def rotate_all(geoms: list, angle_deg: float, origin) -> np.ndarray:
