@@ -84,6 +84,77 @@ describe("the legend by string", () => {
   });
 });
 
+// More than six of a kind (#114, D92; the boards "UI fixes · The strings' legend with many MPPT"): the colours come round
+// again, so the legend has one entry per colour, naming all it marks; past four the first three, an ellipsis and the last.
+describe("the legend with more than six of a kind", () => {
+  /** Ten MPPTs on each of three inverters, one string each: the library's Solis S5-GC125K-HV on the demo roof. */
+  const tenMppts = [1, 2, 3].flatMap((inverter) => Array.from({ length: 10 }, (_, n) => string(`S${(inverter - 1) * 10 + n + 1}`, inverter, n + 1)));
+
+  test("by MPPT, one entry per colour: the seventh MPPT in the first's", () => {
+    const legend = stringLegendOf(tenMppts, "mppt", 8);
+    expect(legend.entries).toEqual([
+      { swatch: 1, words: "MPPT 1 · 7" },
+      { swatch: 2, words: "MPPT 2 · 8" },
+      { swatch: 3, words: "MPPT 3 · 9" },
+      { swatch: 4, words: "MPPT 4 · 10" },
+      { swatch: 5, words: "MPPT 5" },
+      { swatch: 6, words: "MPPT 6" },
+      { swatch: "unused", words: "Not used" },
+    ]);
+  });
+
+  test("compact, the numbers of a colour stand close", () => {
+    expect(stringLegendOf(tenMppts, "mppt", 8).compact).toEqual({
+      lead: "MPPT",
+      items: [
+        { swatch: 1, words: "1·7" },
+        { swatch: 2, words: "2·8" },
+        { swatch: 3, words: "3·9" },
+        { swatch: 4, words: "4·10" },
+        { swatch: 5, words: "5" },
+        { swatch: 6, words: "6" },
+      ],
+    });
+  });
+
+  test("the library's most, 15 MPPT, gives three to a colour", () => {
+    const fifteen = Array.from({ length: 15 }, (_, n) => string(`S${n + 1}`, 1, n + 1));
+    expect(stringLegendOf(fifteen, "mppt", 0).entries.slice(0, 3).map((entry) => entry.words)).toEqual(["MPPT 1 · 7 · 13", "MPPT 2 · 8 · 14", "MPPT 3 · 9 · 15"]);
+  });
+
+  test("by inverter, the same; past four in a colour, the first three, an ellipsis and the last", () => {
+    const thirty = Array.from({ length: 30 }, (_, n) => string(`S${n + 1}`, n + 1));
+    const legend = stringLegendOf(thirty, "inverter", 0);
+    expect(legend.entries[0]).toEqual({ swatch: 1, words: "INV-1 · 7 · 13 … 25" });
+    expect(legend.entries).toHaveLength(6);
+    expect(legend.compact.items[0]).toEqual({ swatch: 1, words: "1·7·13 … 25" });
+  });
+
+  test("by string, 46 strings: each colour's strings shortened past four", () => {
+    const fortySix = Array.from({ length: 46 }, (_, n) => string(`S${n + 1}`));
+    const legend = stringLegendOf(fortySix, "string", 8);
+    expect(legend.entries).toEqual([
+      { swatch: 1, words: "S1 · S7 · S13 … S43" },
+      { swatch: 2, words: "S2 · S8 · S14 … S44" },
+      { swatch: 3, words: "S3 · S9 · S15 … S45" },
+      { swatch: 4, words: "S4 · S10 · S16 … S46" },
+      { swatch: 5, words: "S5 · S11 · S17 … S41" },
+      { swatch: 6, words: "S6 · S12 · S18 … S42" },
+      { swatch: "unused", words: "Not used" },
+    ]);
+    expect(legend.compact).toEqual({ lead: null, items: legend.entries.slice(0, 6) });
+  });
+
+  test("a screen reader hears every one, none shortened", () => {
+    const thirty = Array.from({ length: 30 }, (_, n) => string(`S${n + 1}`, n + 1));
+    expect(stringLegendOf(thirty, "inverter", 4).label).toBe(
+      "Colours: INV-1 · 7 · 13 · 19 · 25, INV-2 · 8 · 14 · 20 · 26, INV-3 · 9 · 15 · 21 · 27, INV-4 · 10 · 16 · 22 · 28, INV-5 · 11 · 17 · 23 · 29, INV-6 · 12 · 18 · 24 · 30, Not used",
+    );
+    const fortySix = Array.from({ length: 46 }, (_, n) => string(`S${n + 1}`));
+    expect(stringLegendOf(fortySix, "string", 0).label).toStartWith("Colours: S1 · S7 · S13 · S19 · S25 · S31 · S37 · S43, S2 · S8");
+  });
+});
+
 describe("the words of the legend to a screen reader", () => {
   test("say every colour and what it marks", () => {
     expect(stringLegendOf([string("S1", 1), string("S15", 2)], "inverter", 88).label).toBe("Colours: INV-1, INV-2, Not used");

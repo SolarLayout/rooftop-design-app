@@ -63,9 +63,10 @@ const SHADE_LEGEND = "absolute bottom-7 left-3 z-stage-overlay tablet:bottom-26 
 /**
  * The strings' colour switch and legend (the boards "Studio, Strings lens" on three sizes): 12 over the time pill on
  * desktop (the pill's 116 and 44: 172), at the bottom right on tablet and at the bottom left on phone, 28 over the
- * stage's bottom there, so that the imagery's attribution under it stays clear.
+ * stage's bottom there, so that the imagery's attribution under it stays clear. On desktop it is held 24 from both
+ * sides, so that a long legend wraps within the stage (D92).
  */
-const STRING_LEGEND = "absolute bottom-7 left-3 z-stage-overlay tablet:right-5 tablet:left-auto desktop:right-auto desktop:bottom-safe-43 desktop:left-6";
+const STRING_LEGEND = "absolute bottom-7 left-3 z-stage-overlay tablet:right-5 tablet:left-auto desktop:right-6 desktop:bottom-safe-43 desktop:left-6";
 
 /** The chip of a layout that failed stands under the title, in the middle of the stage: as wide as the board draws it, or as the phone allows. */
 const LAYOUT_FAILED = "absolute inset-x-4 top-16 z-stage-overlay tablet:inset-x-0 tablet:top-20 tablet:mx-auto tablet:w-95 desktop:top-24";
