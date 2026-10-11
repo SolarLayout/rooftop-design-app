@@ -69,7 +69,9 @@ describe("the pitch and the azimuth, decided by the engine or given", () => {
   });
 
   test("when the pitch is given the line says what shade-free would be", () => {
-    expect(pitchLineOf({ ...ARRAY, row_pitch_m: 7 }, LAYOUT)).toEqual({ value: "7.00 m", line: "Shade-free would be 6.45 m", isEngine: false });
+    // The layout of a pitch given is at that pitch: the line reads the engine's own, from the readouts (#179, item 9).
+    const given = { layout: { ...LAYOUT.layout, pitch: 7 }, readouts: { ...LAYOUT.readouts, shade_free_pitch_m: 6.45 } } as unknown as LayoutResponse;
+    expect(pitchLineOf({ ...ARRAY, row_pitch_m: 7 }, given)).toEqual({ value: "7.00 m", line: "Shade-free would be 6.45 m", isEngine: false });
   });
 
   test("without a layout the pitch has no line yet", () => {

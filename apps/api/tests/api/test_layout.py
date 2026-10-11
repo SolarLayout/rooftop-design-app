@@ -126,13 +126,13 @@ def test_the_other_roof_types_of_the_demo(client, light_demo, roof, positions):
     assert body["layout"]["kind"] == roof["roof_type"]
 
 
-def test_an_east_west_roof_has_no_profile_angle_but_a_note(client, light_demo):
+def test_an_east_west_roof_has_no_profile_angle_and_at_pune_no_unit_gap_to_note(client, light_demo):
     light_demo["roof"]["roof_type"] = "flat_ew"
 
     body = client.post("/layout", json=light_demo).json()
 
     assert body["readouts"]["profile_angle_deg"] is None
-    assert body["layout"]["notes"] == ["Unit gap 0.00 m keeps east-west units shade-free in the window."]
+    assert body["layout"]["notes"] == []
 
 
 def test_allowing_shaded_positions_places_more(client, light_demo):
@@ -305,3 +305,29 @@ def test_every_keepout_part_says_how_many_positions_it_keeps_clear(client, demo)
     assert all(isinstance(count, int) and count >= 0 for count in by_name.values())
     assert by_name["Stair room"] > 0
     assert sum(by_name.values()) >= 1
+
+
+def test_the_readouts_say_what_the_engine_would_decide_where_it_is_told_otherwise(client, light_demo):
+    # #179, item 9: with a pitch or an azimuth given, the lens said "Shade-free would be …" and "The roof edge
+    # closest to the equator faces …" from the layout's own values, which are the ones given. The readouts
+    # carry the engine's.
+    decided = client.post("/layout", json=light_demo).json()
+    light_demo["array"]["row_pitch_m"] = 7.0
+    light_demo["array"]["azimuth_deg"] = 200.0
+    given = client.post("/layout", json=light_demo).json()
+
+    assert given["layout"]["pitch"] == 7.0 and given["layout"]["azimuth"] == 200.0
+    assert decided["readouts"]["shade_free_pitch_m"] == decided["layout"]["pitch"]
+    assert decided["readouts"]["edge_azimuth_deg"] == decided["layout"]["azimuth"] == 180.0
+    assert given["readouts"]["edge_azimuth_deg"] == 180.0
+    # Shade-free for the rows as they face, toward 200°: not the 7.0 m given.
+    assert given["readouts"]["shade_free_pitch_m"] not in (None, 7.0)
+
+
+def test_only_tilted_rows_have_a_shade_free_pitch(client, light_demo):
+    light_demo["roof"]["roof_type"] = "flat_ew"
+
+    body = client.post("/layout", json=light_demo).json()
+
+    assert body["readouts"]["shade_free_pitch_m"] is None
+    assert body["readouts"]["edge_azimuth_deg"] == 180.0

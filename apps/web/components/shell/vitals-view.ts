@@ -14,9 +14,9 @@ import {
   specificYield,
   type Quantity,
 } from "../../lib/format/vitals";
-import { pathOfLens } from "../../lib/routes";
 import type { Status } from "../../lib/stores/results-store";
 import { wordsOfTheTarget, type Note } from "./notes-view";
+import { pathOfNoOptions } from "../../lib/flow/no-options";
 
 export type VitalId = "energy" | "dc" | "ac" | "dcac" | "modules" | "pr" | "yield" | "roof" | "positions" | "if-all-used";
 
@@ -130,7 +130,7 @@ export function vitalsOf({ name, design, readouts, designStatus, progress, notes
     }
     if (design?.no_options) {
       const { title, message } = design.no_options;
-      return { kind: "decision", title, detail: message, path: pathOfLens("strings") };
+      return { kind: "decision", title, detail: message, path: pathOfNoOptions(design.no_options) };
     }
     return notesCell(notes);
   })();

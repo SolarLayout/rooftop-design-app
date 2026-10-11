@@ -35,7 +35,9 @@ describe("the azimuth, decided by the engine or given", () => {
   });
 
   test("given, the line says where that edge faces", () => {
-    expect(azimuthLineOf({ ...ARRAY, azimuth_deg: 170 }, LAYOUT, "flat_tilted")).toEqual({ value: "170° S", line: "The roof edge closest to the equator faces 180° S", isEngine: false });
+    // The layout of an azimuth given faces it: the line reads the roof edge's, from the readouts (#179, item 9).
+    const given = { layout: { ...LAYOUT.layout, azimuth: 170 }, readouts: { ...LAYOUT.readouts, edge_azimuth_deg: 180 } } as unknown as LayoutResponse;
+    expect(azimuthLineOf({ ...ARRAY, azimuth_deg: 170 }, given, "flat_tilted")).toEqual({ value: "170° S", line: "The roof edge closest to the equator faces 180° S", isEngine: false });
   });
 
   test("an azimuth that is no whole degree keeps its decimal", () => {

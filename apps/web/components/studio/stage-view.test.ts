@@ -13,6 +13,8 @@ const DEMO: LayoutReadouts = {
   pitch_m: 6.45,
   gcr: 0.709,
   profile_angle_deg: 30.5,
+  shade_free_pitch_m: 6.45,
+  edge_azimuth_deg: 180,
   roof_area_m2: 3600,
   inside_setback_area_m2: 3344,
   usable_area_m2: 3184,

@@ -54,6 +54,8 @@ def readouts(roof: Roof, layout: Layout, module: Module) -> schemas.LayoutReadou
         pitch_m=layout.pitch,
         gcr=layout.gcr,
         profile_angle_deg=layout.psi_min_deg,
+        shade_free_pitch_m=layout.shade_free_pitch,
+        edge_azimuth_deg=layout.edge_azimuth,
         roof_area_m2=roof.area_m2,
         inside_setback_area_m2=layout.inner.area,
         usable_area_m2=layout.usable.area,

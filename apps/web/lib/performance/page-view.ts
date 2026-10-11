@@ -3,12 +3,12 @@
 // load and of a failure are the vitals' (components/shell/vitals-view.ts), not written a second time. Pure.
 import { ENERGY_NOT_COMPUTED, ENERGY_NOT_UPDATED, openingOf, TRY_AGAIN, UPDATING_ENERGY } from "../../components/shell/vitals-view";
 import type { DesignProgress, DesignResult, Energy, LayoutReadouts } from "../api";
-import { pathOfLens } from "../routes";
 import type { Failure, Status } from "../stores/results-store";
 import { headerOf, type HeaderView } from "./header";
 import { kpisOf, type KpisView } from "./kpis";
 import { chainViewOf, type ChainView } from "./loss-chain";
 import { summaryRowsOf, type SummaryRowView } from "./summary";
+import { pathOfNoOptions } from "../flow/no-options";
 
 /** A run on its way: what is done in a word, the engine's step, and how far from 0 to 1; null where how far is not known, and the ring turns. */
 export type RunRow = { title: string; step: string | null; share: number | null };
@@ -51,7 +51,7 @@ function valuesOf(design: DesignResult): Values | null {
 function decisionOf(design: DesignResult): Decision | null {
   if (!design.no_options) return null;
   const { title, message } = design.no_options;
-  return { title, message, path: pathOfLens("strings") };
+  return { title, message, path: pathOfNoOptions(design.no_options) };
 }
 
 export function pageViewOf({ name, design, readouts, designStatus, progress, failure }: Asked): PageView {

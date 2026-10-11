@@ -867,6 +867,11 @@ export interface components {
          * @description The figures shown next to the plan.
          */
         LayoutReadouts: {
+            /**
+             * Edge Azimuth Deg
+             * @description Where the roof edge closest to the equator faces: the array's azimuth unless one was given
+             */
+            edge_azimuth_deg: number;
             /** Gcr */
             gcr: number;
             /** Inside Setback Area M2 */
@@ -894,6 +899,11 @@ export interface components {
             roof_area_m2: number;
             /** Rows */
             rows: number;
+            /**
+             * Shade Free Pitch M
+             * @description The pitch the engine chooses for the window, even when one was given; null but on flat tilted rows
+             */
+            shade_free_pitch_m: number | null;
             /** Tables */
             tables: number;
             /** Usable Area M2 */

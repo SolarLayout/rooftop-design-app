@@ -59,7 +59,9 @@ export function pitchLineOf(array: ArraySpec, layout: LayoutResponse | null): De
     const parts = [`GCR ${shown(layout.readouts.gcr, 2)}`, ...(angle == null ? [] : [`profile angle ${shown(angle, 1)}°`])];
     return { value: enginePitch, line: `Shade-free · ${parts.join(" · ")}`, isEngine };
   }
-  return { value: `${shown(array.row_pitch_m as number, 2)} m`, line: `Shade-free would be ${enginePitch}`, isEngine };
+  // The layout is at the pitch given: what shade-free would be is the engine's own, from the readouts (#179, item 9).
+  const free = layout.readouts.shade_free_pitch_m;
+  return { value: `${shown(array.row_pitch_m as number, 2)} m`, line: free == null ? null : `Shade-free would be ${shown(free, 2)} m`, isEngine };
 }
 
 /** The switch of the pitch: off fills the field with the engine's last pitch, on hands it back to the engine. */

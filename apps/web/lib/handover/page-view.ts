@@ -5,9 +5,9 @@
 import { TRY_AGAIN } from "../../components/shell/vitals-view";
 import type { DesignResult } from "../api";
 import type { Decision, FailedRow } from "../performance/page-view";
-import { pathOfLens } from "../routes";
 import type { Failure, Status } from "../stores/results-store";
 import { deliverablesOf, type Deliverable } from "../flow/deliverables/items";
+import { pathOfNoOptions } from "../flow/no-options";
 
 export type { Decision, FailedRow };
 
@@ -39,7 +39,7 @@ type Asked = {
 function decisionOf(design: DesignResult | null): Decision | null {
   if (!design?.no_options) return null;
   const { title, message } = design.no_options;
-  return { title, message, path: pathOfLens("strings") };
+  return { title, message, path: pathOfNoOptions(design.no_options) };
 }
 
 export function pageViewOf({ name, design, designStatus, failure, pages }: Asked): PageView {
