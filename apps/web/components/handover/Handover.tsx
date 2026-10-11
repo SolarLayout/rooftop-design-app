@@ -18,6 +18,7 @@ import { reportViewOf, type ShownPage } from "@/lib/handover/report-view";
 import { FIRST_ITEM, HANDOVER, type HandoverItem } from "@/lib/routes";
 import { editOf, nameOf, projectOf } from "@/lib/stores/project-store";
 import { chosenOptionOf, designFailureOf, designOf, designStatusOf } from "@/lib/stores/results-store";
+import { FailedRow } from "@/components/shell/UnderTheTitle";
 import { CadPreview } from "./CadPreview";
 import { DeliverableList } from "./DeliverableList";
 import { EarthPreview } from "./EarthPreview";
@@ -141,6 +142,7 @@ export function Handover({ item }: Props) {
           onSaveACopy={() => void downloads.getState().download("project-file")}
           all={all}
           onDownloadAll={() => void downloads.getState().downloadAll()}
+          note={view.failed ? <FailedRow failed={view.failed} onTryAgain={flow.tryAgain} /> : null}
         />
       </nav>
       <section aria-label={row.name} data-testid="preview" className={classNames(PREVIEW, item === null ? "hidden tablet:flex" : "flex")}>

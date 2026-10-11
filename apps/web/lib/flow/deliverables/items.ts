@@ -49,7 +49,7 @@ const SHAPES: Record<HandoverItem, Shape> = {
   "project-file": { badge: "RTD", kind: "rtd", opens: "file" },
 };
 
-const PROJECT_FILE: HandoverItem = "project-file";
+export const PROJECT_FILE: HandoverItem = "project-file";
 /** What is known of an item without an option. */
 const KNOWN_WITHOUT_AN_OPTION: Partial<Record<HandoverItem, string>> = { report: "A4 landscape", "cad-layout": "Metres · one layer per string" };
 const SAVE_A_COPY = "Save a copy";

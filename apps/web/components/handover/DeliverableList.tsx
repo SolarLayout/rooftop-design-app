@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import { classNames } from "@/components/ui/class-names";
 import { ProgressRing } from "@/components/ui/ProgressRing";
@@ -21,6 +22,8 @@ type Props = {
   all: DownloadStatus;
   /** Download all was pressed: the zip of everything is downloaded (plan/phase-09-plan.md, step 21, decision 10). */
   onDownloadAll: () => void;
+  /** The note of a run that failed, under the head on phone, where the list is the whole page (D93); on tablet and desktop the preview beside holds it. */
+  note?: ReactNode;
 };
 
 const PROJECT_FILE: HandoverItem = "project-file";
@@ -48,7 +51,7 @@ function openOf(row: Deliverable, item: HandoverItem | null, shown: HandoverItem
  * files, each named as its own download (decision 10): it needs a chosen option as the five files do, and is dim with their
  * rows before one; on its way it shows the ring and is dim without its shadow.
  */
-export function DeliverableList({ rows, item, shown, downloads, onSaveACopy, all, onDownloadAll }: Props) {
+export function DeliverableList({ rows, item, shown, downloads, onSaveACopy, all, onDownloadAll, note = null }: Props) {
   const projectFile = rows.find((row) => row.id === PROJECT_FILE) ?? null;
   const isProjectFileOnItsWay = downloads[PROJECT_FILE]?.status === ON_ITS_WAY;
   const canSave = projectFile !== null && !projectFile.waits && !isProjectFileOnItsWay;
@@ -78,6 +81,7 @@ export function DeliverableList({ rows, item, shown, downloads, onSaveACopy, all
           <span className="type-caption text-text-2">{zipFacts}</span>
         </div>
       </div>
+      {note ? <div className="tablet:hidden">{note}</div> : null}
       <ul data-testid="deliverables" className="flex flex-col gap-1.5">
         {rows
           .filter((row) => row.id !== PROJECT_FILE)
