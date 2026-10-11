@@ -244,7 +244,7 @@ def test_a_path_as_name_is_cut_to_the_name_of_the_file(client):
         (
             "time,ghi\nyesterday,100\n2023-06-01 01:00,200\nlater,300\n",
             "not_a_weather_csv",
-            "site.csv: the time cannot be read in 2 rows, the first of them row 1 (yesterday). "
+            "site.csv: the time cannot be read in 2 rows, the first of them on line 2 (yesterday). "
             "Write it as 2023-06-01 13:00, in UTC.",
         ),
         (
@@ -256,7 +256,7 @@ def test_a_path_as_name_is_cut_to_the_name_of_the_file(client):
         (
             "time,ghi,wind\n2023-06-01 00:00,100,\n2023-06-01 01:00,200,2\n",
             "not_a_weather_csv",
-            "site.csv: wind_speed has no value in 1 row, the first of them row 1. Fill the gaps, or "
+            "site.csv: wind has no value in 1 row, the first of them on line 2. Fill the gaps, or "
             "leave the column out.",
         ),
     ],

@@ -1,13 +1,15 @@
 // The CSV dialog (plan/phase-08-plan.md, step 19, decisions 12 and 19; the board "Weather and assumptions"): its words,
-// and the summary of the file the API read, in three lines. The notes are the API's, shown as they come. Pure.
+// and the summary of the file the API read, in three lines. The engine takes rows every hour or more often and averages
+// those of less than an hour, so the words do not say hourly alone (#179, item 22). The notes are the API's, shown as
+// they come. Pure.
 import { shown } from "../../components/ui/number-entry";
 import type { WeatherSummary } from "../api";
 
 export const CSV_WORDS = {
   title: "Load weather from a CSV",
-  sentence: "Hourly values of a year: a time column, global irradiance, and, if you have them, beam, diffuse, air temperature and wind. Times are read as UTC.",
+  sentence: "A year of values, every hour or more often: a time column, global irradiance, and, if you have them, beam, diffuse, air temperature and wind. Rows of less than an hour are averaged into hours. Times are read as UTC.",
   drop: "Drop the weather file here",
-  detail: "A CSV of hourly values, 3 MB at most",
+  detail: "A CSV of a year's weather, 3 MB at most",
   whenOver: "It is read, and becomes the weather of this design when you use it",
   accept: ".csv,.CSV,.txt",
   use: "Use this weather",
@@ -20,7 +22,7 @@ export const CSV_WORDS = {
 export const MAX_CSV_BYTES = 3_000_000;
 
 /** The dialog's own words for a file over MAX_CSV_BYTES: no request is made for it. */
-export const CSV_TOO_LARGE = "This file is over 3 MB, more than a year of weather takes. Choose a file of hourly values.";
+export const CSV_TOO_LARGE = "This file is over 3 MB, more than a year of weather takes, even every 15 minutes. Choose a file of one year.";
 
 /** Whether the file is small enough to send: its size in bytes, which is at least its count of characters. */
 export function csvFits(file: Pick<File, "size">): boolean {

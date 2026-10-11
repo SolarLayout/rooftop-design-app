@@ -39,7 +39,7 @@ describe("the weather source (decision 12)", () => {
     expect(WEATHER_ITEMS).toEqual([
       { value: "pvgis", label: "PVGIS TMY", fact: "Typical year · PVGIS horizon" },
       { value: "nasa", label: "NASA POWER 2023", fact: "The year 2023 · no horizon" },
-      { value: "csv", label: "CSV file", fact: "Hourly · times read as UTC" },
+      { value: "csv", label: "CSV file", fact: "Hourly or finer · times read as UTC" },
     ]);
   });
 

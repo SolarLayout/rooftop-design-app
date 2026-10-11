@@ -17,7 +17,7 @@ export type DownloadedSource = Exclude<WeatherSource, "csv">;
 export const WEATHER_ITEMS: ReadonlyArray<SelectOption<WeatherSource>> = [
   { value: "pvgis", label: WEATHER_LABELS.pvgis, fact: "Typical year · PVGIS horizon" },
   { value: "nasa", label: WEATHER_LABELS.nasa, fact: "The year 2023 · no horizon" },
-  { value: "csv", label: WEATHER_LABELS.csv, fact: "Hourly · times read as UTC" },
+  { value: "csv", label: WEATHER_LABELS.csv, fact: "Hourly or finer · times read as UTC" },
 ];
 
 /** The words of the trigger: the document's source by its name; a CSV document names its file. */
