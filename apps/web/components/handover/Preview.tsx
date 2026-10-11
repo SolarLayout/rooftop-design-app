@@ -7,7 +7,7 @@ import { IconButton } from "@/components/ui/IconButton";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { Skeleton } from "@/components/ui/Skeleton";
 import type { Deliverable } from "@/lib/flow/deliverables/items";
-import type { PageView } from "@/lib/handover/page-view";
+import { previewBodyOf, type PageView } from "@/lib/handover/page-view";
 
 type Props = {
   /** The item that is shown. */
@@ -36,11 +36,13 @@ const FACTS = "type-caption text-text-2";
 /**
  * The frame of an item's preview (the boards "Handover" on three sizes and "Handover, states"): the head with the item's
  * name, its facts and its primary action, 44 square with the icon alone on phone (or the tools of a view: the tables);
- * under it a run that failed with Try again; then the body, or before options the API's words leading to the Strings lens, or at the first load a skeleton.
+ * under it a run that failed with Try again; then the body, or before options the API's words leading to the lens that
+ * puts them right, or at the first load a skeleton, or after a first run that failed nothing more (previewBodyOf).
  */
 export function Preview({ row, view, onTryAgain, onAction, isOnItsWay = false, actions, words, skeleton, tools, children }: Props) {
   const canAct = onAction !== undefined && !row.waits && view.kind !== "loading" && !isOnItsWay;
   const disabled = canAct ? undefined : "true";
+  const body = previewBodyOf(view, row);
 
   return (
     <>
@@ -90,13 +92,13 @@ export function Preview({ row, view, onTryAgain, onAction, isOnItsWay = false, a
         ) : null}
       </div>
       {view.failed ? <FailedRow failed={view.failed} onTryAgain={onTryAgain} /> : null}
-      {view.decision && row.waits ? (
+      {body === "decision" && view.decision ? (
         <NoOptionsCard decision={view.decision} testId="files-wait" />
-      ) : view.kind === "loading" && row.waits ? (
+      ) : body === "skeleton" ? (
         (skeleton ?? <div data-testid="preview-skeleton" aria-hidden="true" className="h-80 w-full rounded-xs bg-surface-2 breathing tablet:h-96" />)
-      ) : (
+      ) : body === "body" ? (
         children
-      )}
+      ) : null}
     </>
   );
 }

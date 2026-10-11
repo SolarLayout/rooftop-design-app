@@ -56,6 +56,21 @@ export function pageViewOf({ name, design, designStatus, failure, pages }: Asked
   return { kind: "design", rows, decision: null, failed: null, isDimmed: isOnItsWay };
 }
 
+/** What stands under an item's head: the decision before options, the skeleton at the first load, nothing, or its body. */
+export type PreviewBody = "decision" | "skeleton" | "nothing" | "body";
+
+/**
+ * What an item's preview holds under its head and any note of a failed run. An item that waits for a design holds the
+ * decision before options, the skeleton while the first run is on its way, and nothing once it failed: the note says
+ * there are no files yet (#179, item 25). Every other item holds its body.
+ */
+export function previewBodyOf(view: Pick<PageView, "kind" | "decision" | "failed">, row: Pick<Deliverable, "waits">): PreviewBody {
+  if (!row.waits) return "body";
+  if (view.decision) return "decision";
+  if (view.kind === "loading") return "skeleton";
+  return view.failed ? "nothing" : "body";
+}
+
 /**
  * Whether the report's pages are wanted: as soon as the report's row is live, whatever item is open, so that the row
  * counts its pages from the workspace's open (plan/phase-11-plan.md, step 33); not before the run has an option, when

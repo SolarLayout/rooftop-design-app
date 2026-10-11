@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { arePagesWantedOf, pageViewOf } from "./page-view";
+import { arePagesWantedOf, pageViewOf, previewBodyOf } from "./page-view";
 import { BEFORE_A_VOLTAGE, DEMO } from "./test-fixtures";
 
 const UNREACHABLE = { code: "api_unreachable", message: "The server cannot be reached. Check the connection and try again." };
@@ -88,6 +88,32 @@ describe("a run that failed", () => {
 
     expect(view.kind).toBe("failed");
     expect(view.decision?.title).toBe("Choose a system voltage to size the strings");
+  });
+});
+
+// #179, item 25: after a first run that failed, some previews said "This part is not built yet." while others loaded
+// forever. An item that waits for a design shows the failed run alone; the note says there are no files yet.
+describe("what an item's preview holds under its head", () => {
+  const rowOf = (view: ReturnType<typeof pageViewOf>, index: number) => view.rows[index]!;
+
+  test("a first run that failed: nothing under the note for every item that waits; the project file is still there", () => {
+    const view = pageViewOf({ ...AT_REST, design: null, designStatus: "failed", failure: UNREACHABLE });
+
+    for (let index = 0; index < 7; index += 1) expect(previewBodyOf(view, rowOf(view, index))).toBe("nothing");
+    expect(previewBodyOf(view, rowOf(view, 7))).toBe("body");
+  });
+
+  test("a run that failed with a design of before: the bodies of before stay", () => {
+    const view = pageViewOf({ ...AT_REST, designStatus: "failed", failure: UNREACHABLE });
+    expect(previewBodyOf(view, rowOf(view, 0))).toBe("body");
+  });
+
+  test("before options the decision; at the first load the skeleton; at rest the body", () => {
+    const before = pageViewOf({ ...AT_REST, design: BEFORE_A_VOLTAGE });
+    const loading = pageViewOf({ ...AT_REST, design: null, designStatus: "running" });
+    expect(previewBodyOf(before, rowOf(before, 0))).toBe("decision");
+    expect(previewBodyOf(loading, rowOf(loading, 0))).toBe("skeleton");
+    expect(previewBodyOf(pageViewOf(AT_REST), rowOf(pageViewOf(AT_REST), 0))).toBe("body");
   });
 });
 
