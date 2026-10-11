@@ -123,7 +123,7 @@ NOTE_NO_TEMPERATURE = (
     "Enter the site's lowest and highest ambient in the Strings lens."
 )
 NOTE_NO_WIND = "pune-ghi.csv has no wind speed. 1 m/s was taken for every hour."
-SOURCE_FACTS = {"PVGIS TMY": "Typical year · PVGIS horizon", "NASA POWER 2023": "The year 2023 · no horizon", "CSV file": "Hourly · times read as UTC"}
+SOURCE_FACTS = {"PVGIS TMY": "Typical year · PVGIS horizon", "NASA POWER 2023": "The year 2023 · no horizon", "CSV file": "Hourly or finer · times read as UTC"}
 
 
 # --------------------------------------------------------------------------------------------------
@@ -1084,7 +1084,7 @@ def csv_dialog(drop_html: str, notes_html: str = "", can_use: bool = True) -> st
         f'<h3 id="csv-t" style="flex-grow: 1; margin: 0; {DISPLAY}; font-size: 22px; line-height: 28px; letter-spacing: -0.02em">Load weather from a CSV</h3>'
         + icon_button("Close", CLOSE, 32)
         + "</div>"
-        f'<p id="csv-d" style="margin: 0; color: {TEXT_2}">Hourly values of a year: a time column, global irradiance, and, if you have them, beam, diffuse, air temperature and wind. Times are read as UTC.</p>'
+        f'<p id="csv-d" style="margin: 0; color: {TEXT_2}">A year of values, every hour or more often: a time column, global irradiance, and, if you have them, beam, diffuse, air temperature and wind. Rows of less than an hour are averaged into hours. Times are read as UTC.</p>'
         + drop_html
         + notes_html
         + f'<div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px">{quiet("Cancel")}{use}</div></div>'
