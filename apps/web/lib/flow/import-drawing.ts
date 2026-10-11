@@ -1,9 +1,11 @@
 // Import a drawing (plan/phase-05-plan.md, step 13, decision 13): a KMZ, KML or DXF goes to /roof/import as
 // base64, the whole document it answers is opened, and the heights the file could not give go on the
-// list to review in the Roof lens. The refusal of the API is the caller's to show.
+// list to review in the Roof lens. The refusal of the API is the caller's to show; a drawing too large to reach the
+// deployed API is refused before it is sent (#179, item 6).
 import type { Api, RoofFile } from "../api";
 import type { ProjectStore } from "../stores/project-store";
 import type { ViewStore } from "../stores/view-store";
+import { MAX_REQUEST_BYTES } from "./open-project";
 
 export type DrawingKind = "kmz" | "dxf";
 
@@ -20,10 +22,25 @@ export function kindOfDrawing(name: string): DrawingKind | null {
   return null;
 }
 
+/** The dialog's own words for a drawing whose request would pass MAX_REQUEST_BYTES: about 4.7 MB of file once in base64. */
+export const DRAWING_TOO_LARGE = "This drawing is larger than the app can send, about 4.7 MB. Save it with the roof and its obstacles alone, and choose it again.";
+
+/** The request of POST /roof/import: the units and the place only where they are given. */
+function requestOf({ name, base64, units, lat, lon }: Drawing): RoofFile {
+  return { name, base64, ...(units === undefined ? {} : { units }), ...(lat === undefined || lon === undefined ? {} : { lat, lon }) };
+}
+
+/**
+ * Whether the drawing's request can reach the deployed API at all: its JSON in UTF-8 within MAX_REQUEST_BYTES. Over it,
+ * AWS answers a 413 of its own before the API sees the file, in a form the app cannot read.
+ */
+export function drawingFits(drawing: Drawing): boolean {
+  return new TextEncoder().encode(JSON.stringify(requestOf(drawing))).length <= MAX_REQUEST_BYTES;
+}
+
 /** Sends the drawing, opens its document, lists the heights to review; gives back the API's notes. */
-export async function importDrawing({ name, base64, units, lat, lon }: Drawing, { api, project, view }: Stores): Promise<string[]> {
-  const file: RoofFile = { name, base64, ...(units === undefined ? {} : { units }), ...(lat === undefined || lon === undefined ? {} : { lat, lon }) };
-  const answer = await api.importRoof(file);
+export async function importDrawing(drawing: Drawing, { api, project, view }: Stores): Promise<string[]> {
+  const answer = await api.importRoof(requestOf(drawing));
   project.getState().open(answer.project);
   view.getState().setToReview(answer.missing_heights);
   return answer.notes;
