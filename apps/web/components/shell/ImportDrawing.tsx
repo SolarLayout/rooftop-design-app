@@ -10,7 +10,7 @@ import { Segmented } from "@/components/ui/Segmented";
 import { api, ApiError, type RoofFile } from "@/lib/api";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/places/esri";
 import { pathOfLens } from "@/lib/routes";
-import { base64OfDataUrl, heldWordsOf, importDrawing, kindOfDrawing } from "@/lib/flow/import-drawing";
+import { base64OfDataUrl, DRAWING_TOO_LARGE, drawingFits, heldWordsOf, importDrawing, kindOfDrawing } from "@/lib/flow/import-drawing";
 import { useStores } from "./stores";
 
 type Props = { open: boolean; onClose: () => void };
@@ -25,7 +25,9 @@ const UNITS: { value: Units; label: string }[] = [
 /** The inventory's units of a DXF, suggested once the file is one (functional-inventory.md, 1.1). */
 const SUGGESTED_UNITS: Units = "m";
 
-const WHAT_IS_READ = "The largest closed shape is the roof; the other closed shapes are obstacles, named by their layer. A KMZ or KML says where the roof is; a DXF does not, so its place is asked.";
+/** What the importer reads of each kind (rooftop_core/io/roof_import.py; issue 179, item 7). */
+const WHAT_IS_READ =
+  "The largest closed shape is the roof. In a KMZ or KML the other closed shapes are obstacles named by their placemark, and open lines are walls; in a DXF the other closed polylines are obstacles named by their layer, and circles are tanks. A height in a name, as h=2.5, is read. A KMZ or KML says where the roof is; a DXF does not, so its place is asked.";
 
 /** The place of a DXF, searched or typed; nothing until it is (docs/design/components.md, "Import a drawing"). */
 type Place = { lat: number | null; lon: number | null; found: string | null };
@@ -49,7 +51,8 @@ function readAsBase64(file: File): Promise<string> {
  * Import a drawing, from the project switcher (plan/phase-05-plan.md, step 13, decision 13; the board
  * "Import with missing heights"): a KMZ, KML or DXF is held until Open the roof, then sent as base64; the
  * document it answers opens in the Studio on the Roof lens, with the heights the file could not give on the
- * list to review. A refusal shows in the field, in the API's words. The units are asked for a DXF alone.
+ * list to review. A refusal shows in the field, in the API's words, or in the app's for a drawing too large to send.
+ * The units are asked for a DXF alone.
  */
 export function ImportDrawing({ open, onClose }: Props) {
   const router = useRouter();
@@ -87,6 +90,12 @@ export function ImportDrawing({ open, onClose }: Props) {
     try {
       const base64 = await readAsBase64(held);
       const drawing = isDxf && units && place.lat !== null && place.lon !== null ? { name: held.name, base64, units, lat: place.lat, lon: place.lon } : { name: held.name, base64 };
+      if (!drawingFits(drawing)) {
+        setHeld(null);
+        setUnits(null);
+        setState({ kind: "refused", reason: DRAWING_TOO_LARGE });
+        return;
+      }
       await importDrawing(drawing, { api, project, view });
       close();
       router.push(pathOfLens("roof"));

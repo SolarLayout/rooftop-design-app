@@ -11,7 +11,7 @@ import { Select } from "@/components/ui/Select";
 import { StatusMark } from "@/components/ui/StatusMark";
 import { ApiError, type CallOptions, type EquipmentFile } from "@/lib/api";
 import type { Kind } from "@/lib/equipment/catalog";
-import { base64Of, libraryFileOf } from "@/lib/equipment/library-file";
+import { libraryFileOf, ownFileOf } from "@/lib/equipment/library-file";
 import type { PickerSort } from "@/lib/equipment/picker";
 
 /** A column of the list: its head, its width, whether it sorts, and whether it is shown on desktop alone. */
@@ -160,7 +160,7 @@ export function EquipmentPicker<Read>(props: Props<Read>) {
 
   function takeOwn(file: File | null) {
     if (!file || isReading) return;
-    void read(file.name, true, async () => ({ name: file.name, base64: base64Of(new Uint8Array(await file.arrayBuffer())) }));
+    void read(file.name, true, () => ownFileOf(file));
   }
 
   function onListKey(event: KeyboardEvent<HTMLDivElement>) {

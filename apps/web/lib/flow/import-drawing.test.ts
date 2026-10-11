@@ -3,7 +3,8 @@ import type { ImportedRoof, Project, RoofFile } from "../api";
 import { ApiError } from "../api";
 import { createProjectStore } from "../stores/project-store";
 import { createViewStore, toReviewOf } from "../stores/view-store";
-import { base64OfDataUrl, heldWordsOf, importDrawing, kindOfDrawing } from "./import-drawing";
+import { base64OfDataUrl, DRAWING_TOO_LARGE, drawingFits, heldWordsOf, importDrawing, kindOfDrawing } from "./import-drawing";
+import { MAX_REQUEST_BYTES } from "./open-project";
 
 // Import a drawing (plan/phase-05-plan.md, step 13, decision 13): the file goes to /roof/import, the
 // document it answers is opened, and the heights it could not give go on the list to review.
@@ -91,5 +92,26 @@ describe("the base64 of what the browser read", () => {
 
   test("a URL without one is refused", () => {
     expect(() => base64OfDataUrl("QUJD")).toThrow("The file could not be read.");
+  });
+});
+
+// #179, item 6: the deployed API refuses a request over 6 MiB with a 413 of its own, which the app cannot read; a drawing
+// that large is refused in the dialog's words, before it is sent.
+describe("a drawing too large to send", () => {
+  const dxf = { name: "big.dxf", units: "m" as const, lat: 18.5912, lon: 73.7384 };
+  const ENVELOPE = new TextEncoder().encode(JSON.stringify({ ...dxf, base64: "" })).length;
+
+  test("fits up to the deployed API's limit to the byte, the request as it is sent, and not one byte over", () => {
+    expect(drawingFits({ ...dxf, base64: "A".repeat(MAX_REQUEST_BYTES - ENVELOPE) })).toBe(true);
+    expect(drawingFits({ ...dxf, base64: "A".repeat(MAX_REQUEST_BYTES - ENVELOPE + 1) })).toBe(false);
+  });
+
+  test("a KMZ is measured without the units and the place it does not send", () => {
+    const kmz = { name: "big.kmz", base64: "A".repeat(MAX_REQUEST_BYTES - new TextEncoder().encode(JSON.stringify({ name: "big.kmz", base64: "" })).length) };
+    expect(drawingFits(kmz)).toBe(true);
+  });
+
+  test("is refused in the dialog's own words, with the size that fits", () => {
+    expect(DRAWING_TOO_LARGE).toBe("This drawing is larger than the app can send, about 4.7 MB. Save it with the roof and its obstacles alone, and choose it again.");
   });
 });
