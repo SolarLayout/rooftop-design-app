@@ -1,5 +1,5 @@
 # 019: The first new cloud session: see the map work from the cloud, then the owner's next task
-Written: 2026-10-11, by a Claude Code cloud session (#198). Status: open.
+Written: 2026-10-11, by a Claude Code cloud session (#198). Status: used by the first new cloud session, 2026-10-11.
 
 ## Paste this
 
