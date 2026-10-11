@@ -26,7 +26,8 @@ const COLUMNS: ReadonlyArray<Column<BomLine>> = [
   { key: "unit", head: "Unit", kind: "text", value: (row) => row.unit },
 ];
 
-const keyOf = (row: BomLine) => row.item;
+/** A line by its item and its spec: one item may have a line per size, as the DC cable has since #191. */
+const keyOf = (row: BomLine) => `${row.item} · ${row.spec}`;
 
 export const BOM_COPIED = "Bill of materials copied as a table";
 

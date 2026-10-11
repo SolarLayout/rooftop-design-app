@@ -23,7 +23,15 @@ describe("the bill of materials as a table (plan/phase-09-plan.md, step 15, deci
     expect(cells[0]).toEqual(["PV module", "INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560, 560 Wp, bifacial 0.80", "638", "pcs"]);
     expect(cells[1]).toEqual(["String inverter", "WattPower Systems Pvt.Ltd WP-330KTL-H1, 275 kW, 6 MPPT", "1", "pcs"]);
     expect(cells[3]).toEqual(["DC cable", "4 mm² Cu, 1500 V DC, red + black", "1,681", "m"]);
-    expect(view.rows.map(view.keyOf)).toEqual(BOM.map((line) => line.item));
+    expect(new Set(view.rows.map(view.keyOf)).size).toBe(BOM.length);
+  });
+
+  // Since each string's DC cable is sized for itself (#191), an option can list a DC cable line per size: the rows are told
+  // apart by their spec too, or React gives two of them one key.
+  test("two lines of one item, a DC cable of two sizes, have keys of their own", () => {
+    const twoSizes = [...A.bom.slice(0, 3), { ...A.bom[3]!, spec: "4 mm² Cu, 1500 V DC, red + black" }, { ...A.bom[3]!, spec: "6 mm² Cu, 1500 V DC, red + black", qty: 147 }, ...A.bom.slice(4)];
+    const keys = bomViewOf({ ...A, bom: twoSizes }).rows.map(view.keyOf);
+    expect(new Set(keys).size).toBe(twoSizes.length);
   });
 
   test("the caption names the option; the toast says what was done", () => {
