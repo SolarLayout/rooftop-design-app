@@ -36,9 +36,12 @@ next-env.d.ts
 # pytest-testmon: which tests each Python file affects; a cache, never committed
 apps/api/.testmondata*
 
-# Worktrees of the agents of this harness, made beside the repo while they work; the skills of this repo are kept
+# Worktrees of the agents of this harness, made beside the repo while they work; the skills of this repo are kept, and
+# the shared settings with the hook that sets up a cloud session
 .claude/*
 !.claude/skills/
+!.claude/settings.json
+!.claude/hooks/
 
 # The product videos' work (frames, overlays, cuts, narration, the key): made by the skill product-video, never committed
 .product-video/
