@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>UI fixes · Handover after a first run that failed · phone 390</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Geist,system-ui,sans-serif;background:#0B0E13;color:#F2F4F7}</style>
+</helmet>
+<div style="width: 390px; height: 3280px; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px; padding: 40px 0; background: #0B0E13; color: #F2F4F7; overflow: hidden; font-size: 14px; line-height: 20px"><div style="display: flex; flex-direction: column; gap: 10px; padding: 0 16px"><h1 style="margin: 0; font-family: 'Bricolage Grotesque', Geist, sans-serif; font-weight: 600; font-size: 30px; line-height: 36px; letter-spacing: -0.02em">Handover after a first run that failed</h1><p style="margin: 0; max-width: 960px; color: #A9B2C0">When a design's first run fails, Handover has no files to show. Its previews now show the note “The files were not made · There are no files yet · Try again” alone (#205), but each row's facts still breathe as if the run were on its way, and on phone, where the list is the whole page, there is no note and no Try again. Proposed, as before options, where each row carries the API's title: each row that waits says “Not made · the run failed”, its download icon dim; the preview's head says the same. On phone the note with Try again stands under the list's head, as it stands under the head of an item.</p><p style="margin: 0; max-width: 960px; color: #A9B2C0">When: the run failed and there is no design of before. A run that fails after one that worked keeps the files of before and their facts, as today. The project file is never waiting: it keeps its own facts. Phone: the list, then an item pushed over it.</p></div><div style="display: grid; grid-template-columns: repeat(1, 390px); gap: 24px"><figure style="margin: 0; display: flex; flex-direction: column; gap: 8px; width: 390px"><figcaption style="padding: 0 16px; color: #A9B2C0">1 · Today: the list, no note, no Try again, the loading bars</figcaption><img src="handover_failed/phone-1.png" alt="Today: the list, no note, no Try again, the loading bars, phone" style="display: block; width: 390px; border: 1px solid #232A36; border-radius: 12px; box-sizing: border-box"></figure><figure style="margin: 0; display: flex; flex-direction: column; gap: 8px; width: 390px"><figcaption style="padding: 0 16px; color: #A9B2C0">2 · Proposed: the note with Try again under the head; each row says why</figcaption><img src="handover_failed/phone-2.png" alt="Proposed: the note with Try again under the head; each row says why, phone" style="display: block; width: 390px; border: 1px solid #232A36; border-radius: 12px; box-sizing: border-box"></figure><figure style="margin: 0; display: flex; flex-direction: column; gap: 8px; width: 390px"><figcaption style="padding: 0 16px; color: #A9B2C0">3 · Proposed: an item, its head saying why, the note alone</figcaption><img src="handover_failed/phone-3.png" alt="Proposed: an item, its head saying why, the note alone, phone" style="display: block; width: 390px; border: 1px solid #232A36; border-radius: 12px; box-sizing: border-box"></figure></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":3280}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

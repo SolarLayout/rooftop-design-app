@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>UI fixes · Handover after a first run that failed · tablet 834</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Geist,system-ui,sans-serif;background:#0B0E13;color:#F2F4F7}</style>
+</helmet>
+<div style="width: 834px; height: 920px; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px; padding: 40px 16px; background: #0B0E13; color: #F2F4F7; overflow: hidden; font-size: 14px; line-height: 20px"><div style="display: flex; flex-direction: column; gap: 10px; padding: 0"><h1 style="margin: 0; font-family: 'Bricolage Grotesque', Geist, sans-serif; font-weight: 600; font-size: 30px; line-height: 36px; letter-spacing: -0.02em">Handover after a first run that failed</h1><p style="margin: 0; max-width: 960px; color: #A9B2C0">When a design's first run fails, Handover has no files to show. Its previews now show the note “The files were not made · There are no files yet · Try again” alone (#205), but each row's facts still breathe as if the run were on its way, and on phone, where the list is the whole page, there is no note and no Try again. Proposed, as before options, where each row carries the API's title: each row that waits says “Not made · the run failed”, its download icon dim; the preview's head says the same. On phone the note with Try again stands under the list's head, as it stands under the head of an item.</p><p style="margin: 0; max-width: 960px; color: #A9B2C0">When: the run failed and there is no design of before. A run that fails after one that worked keeps the files of before and their facts, as today. The project file is never waiting: it keeps its own facts. Tablet: the list beside the first item.</p></div><div style="display: grid; grid-template-columns: repeat(2, 391px); gap: 20px"><figure style="margin: 0; display: flex; flex-direction: column; gap: 8px; width: 391px"><figcaption style="padding: 0; color: #A9B2C0">1 · Today: the rows' facts keep their loading bars</figcaption><img src="handover_failed/tablet-1.png" alt="Today: the rows' facts keep their loading bars, tablet" style="display: block; width: 391px; border: 1px solid #232A36; border-radius: 12px; box-sizing: border-box"></figure><figure style="margin: 0; display: flex; flex-direction: column; gap: 8px; width: 391px"><figcaption style="padding: 0; color: #A9B2C0">2 · Proposed: each row says Not made · the run failed</figcaption><img src="handover_failed/tablet-2.png" alt="Proposed: each row says Not made · the run failed, tablet" style="display: block; width: 391px; border: 1px solid #232A36; border-radius: 12px; box-sizing: border-box"></figure></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":834,"height":920}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

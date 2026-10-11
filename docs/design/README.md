@@ -89,6 +89,7 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | UI fixes · Your own when the roof holds too few positions | `OwnTooFew.dc.html`, `OwnTooFewTablet.dc.html`, `OwnTooFewPhone.dc.html` (the shots in `own_too_few/`) | `ui-fixes-own-too-few-desktop.png`, `ui-fixes-own-too-few-tablet.png`, `ui-fixes-own-too-few-phone.png` | desktop, tablet, phone |
 | UI fixes · The docs from the app (#193, D91) | `DocsLinks.dc.html`, `DocsLinksTablet.dc.html`, `DocsLinksPhone.dc.html` (the shots in `docs_links/`) | none: the boards are the shots | desktop, tablet, phone |
 | UI fixes · The strings' legend with many MPPT (#114) | `StringsLegend.dc.html`, `StringsLegendTablet.dc.html`, `StringsLegendPhone.dc.html` (the shots in `strings_legend/`) | none: the boards are the shots | desktop, tablet, phone |
+| UI fixes · Handover after a first run that failed (issue 179) | `HandoverFailed.dc.html`, `HandoverFailedTablet.dc.html`, `HandoverFailedPhone.dc.html` (the shots in `handover_failed/`) | none: the boards are the shots | desktop, tablet, phone |
 | System voltage · Set by the user's country (Phase 16) | `SystemVoltage.dc.html`, `SystemVoltageTablet.dc.html`, `SystemVoltagePhone.dc.html` (the shots in `system_voltage/`) | `system-voltage-desktop.jpg`, `system-voltage-tablet.jpg`, `system-voltage-phone.jpg` | desktop, tablet, phone |
 
 Screens still to draw are listed in `plan/phase-00-design.md`.
@@ -204,6 +205,12 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   (MPPT 1 · 7; S1 · S7 · S13 … S43 past four), and the demo as approved, unchanged. Caught in the browser at three sizes
   (`strings_legend/`) with a prototype on the local branch `design/strings-legend-many`, never merged; drawn and approved
   on 2026-10-11 (D92).
+- `mockups/build_ui_fixes_handover_failed.py` writes the boards "UI fixes · Handover after a first run that failed" (issue 179,
+  after #205; desktop, tablet, phone): Handover with the demo's first run answered 503, today (the rows' facts breathing,
+  on phone no note and no Try again) and as proposed (each waiting row and the preview's head say "Not made · the run
+  failed", the download icon dim; on phone the note with Try again under the list's head). Caught in the browser at three
+  sizes (`handover_failed/`) with a prototype on the local branch `design/handover-first-run-failed`, never merged; drawn
+  on 2026-10-11, for approval.
 - `mockups/build_system_voltage.py` writes the boards "System voltage · Set by the user's country" (Phase 16, D87; desktop, tablet,
   phone; the canvas page "System voltage"): the voltage of the user's country in the Strings lens (India 1000 V, the United States
   600 V with no string length fitting the demo's inverter), the app's value following an inverter rated under it, the user's 1500 V
@@ -226,7 +233,7 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
 - A preview is the board rendered at its `$preview` size (the tail of each `.dc.html`) by a scratch Playwright script outside the
   repo: Chromium from `e2e/node_modules/@playwright/test`, the fonts served from `apps/web/app/fonts` and `apps/web/node_modules/geist`
   in place of the Google link in the board's `helmet`, `support.js` stubbed, everything else off the machine refused.
-- `mockups/canvas.json` is the layout of the boards on the canvas: 103 boards on four pages since 2026-10-11 ("Approved design", the
+- `mockups/canvas.json` is the layout of the boards on the canvas: 106 boards on four pages since 2026-10-11 ("Approved design", the
   first, holds every board without a `page`; "UI fixes" the boards of session 18 on; "In-App Help" those of Phases 14 and 15; "System voltage" those of Phase 16); the 53 of the first page in sync with the canvas at claude.ai since
   2026-10-04 (session 15 published the 26 boards of Phases 6 to 11 and the five boards changed since 2026-09-30; the report's
   pages of `mockups/handover_pages/` travel with the Handover boards). A session on Bedrock has no Artifact tool: it adds its
