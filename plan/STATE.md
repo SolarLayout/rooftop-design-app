@@ -3,7 +3,7 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-10 (the skill product-video reviewed, #197; the Sun lens video, #196; the launch video and the skill product-video, #195; #187 to #192 deployed; see the end of the paragraph below). Earlier, 2026-10-08, session 22: **Phase 16 built**, the system voltage set by the user's country (D87: 600 V
+**Last updated:** 2026-10-11 (Claude Code cloud sessions set up, #198). Before it, 2026-10-10 (the skill product-video reviewed, #197; the Sun lens video, #196; the launch video and the skill product-video, #195; #187 to #192 deployed; see the end of the paragraph below). Earlier, 2026-10-08, session 22: **Phase 16 built**, the system voltage set by the user's country (D87: 600 V
 in the US and Canada, 1000 V elsewhere; the request's country, else the time zone, else India; D88: the equipment never
 moves the voltage, the app never raises it). #153 (who set it, engine and API), #154 (`/country`, `lib/country`, the store),
 #155 (the Strings lens and the picker to the boards), #156 (the help), #157 (the browser suites, changed by reading); then
@@ -84,8 +84,19 @@ each cut); a video for LinkedIn, Twitter or an email is delivered with its post,
 other people's machines, macOS or Windows (file URLs through `pathToFileURL`, both platforms' commands, no path of one
 machine). The browser step of that check failed in the handover group's pictures while kit passed, so the kit failures
 above are flaky on this machine; both wait for the owner's run.
-**Next:** a new task as the owner names it; the browser groups run when the owner says (#157's suites, #151's mobile fixes, and the Strings
-lens pictures whose options D and E #160 changed).
+Then Claude Code's cloud sessions (2026-10-11, #198): a SessionStart hook (`.claude/hooks/session-start.sh`, registered in
+`.claude/settings.json`, both let into git; `settings.local.json` stays ignored) that in the cloud alone runs `bun install`
+and `uv sync` and points the Chromium build `@playwright/test` 1.52.0 asks for (1169) at the container's (1194). Checked in a
+cloud container (4 cores, Node 22.22, bun 1.4.2, uv's Python 3.12.13): the test stack up, the rewrite and the demo answer,
+`bun check --skip=e2e` green (922 pytest, 2,184 bun tests). The cloud's address is `localhost:4710`, so the Esri key's
+referrers now hold `http://localhost:4710` and `http://127.0.0.1:4710` beside 4700; the owner regenerated the key, in
+`.env.local` and in the cloud environment's `NEXT_PUBLIC_ESRI_API_KEY`; geocoding from 4710 not yet seen working (a new
+session reads the new key). The screen pictures' baselines are darwin only, so their tests cannot pass on Linux.
+The owner (2026-10-11): the browser tests are set aside; they are broken and will be fixed later. Until then no browser
+group runs, here or in the cloud, and `bun check --skip=e2e` is the check.
+**Next:** a new task as the owner names it; in the first new cloud session, see Find's search and imagery work from
+`localhost:4710`. Later, the browser tests fixed (#157's suites, #151's mobile fixes, the Strings lens pictures whose options
+D and E #160 changed, the kit and shell failures above).
 
 ## Where we are
 
