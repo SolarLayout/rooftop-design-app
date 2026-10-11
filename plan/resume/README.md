@@ -36,6 +36,7 @@ asks for one. Paste the block inside the file into a new session started in this
 | 016 | `016-phase-13-interview.md` | Phase 13: optimization; the owner's interview first (the code that takes so much memory), then the plan | 2026-10-05 | used by session 17, 2026-10-05 |
 | 017 | `017-move-and-turn.md` | D79: move and turn the roof and its obstacles on Find's map, the grab cursor, the tips | 2026-10-07 | used by session 19, 2026-10-07. D79 built (#117 to #122); the session went on to Phases 14 and 15 |
 | 018 | `018-find-first-step.md` | Find's first step: a panel that tells the user what to do (the owner's screenshot); design first | 2026-10-07 | used by session 20, 2026-10-07. Boards approved (D85), built (#143 to #145) |
+| 019 | `019-cloud-session-check.md` | The first new cloud session: the map seen to work from localhost:4710 with the regenerated Esri key, then the owner's next task | 2026-10-11 | open |
 
 ## Shape of a prompt file
 
