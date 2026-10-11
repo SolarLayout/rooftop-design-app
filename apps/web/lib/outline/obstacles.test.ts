@@ -12,6 +12,7 @@ import {
   obstaclesOfMap,
   obstacleTurnedAbout,
   tankOf,
+  treesOfMap,
   type Obstacle,
 } from "./obstacles";
 
@@ -177,6 +178,14 @@ describe("to the API and back", () => {
     const back = toMetres(frame, { lon: shapes[1].points[0][0], lat: shapes[1].points[0][1] });
     expect(back.x).toBeCloseTo(30, 3);
     expect(back.y).toBeCloseTo(10, 3);
+  });
+
+  test("the trees of a roof shown on the map again are kept aside, as they came: the map draws none (#179, item 1)", () => {
+    const tree = { name: "Mango", kind: "tree" as const, points: [[73.8601, 18.5201]] as [number, number][], diameter: 4, height: 6 };
+    const shapes = [...mapShapesOf(drawn, frame), tree];
+
+    expect(treesOfMap(shapes)).toEqual([tree]);
+    expect(obstaclesOfMap(shapes, frame).map((obstacle) => obstacle.kind)).toEqual(["box", "cylinder", "wall"]);
   });
 
   test("the shapes of a roof shown on the map again become obstacles in the frame, numbered on", () => {

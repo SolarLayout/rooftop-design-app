@@ -1,6 +1,7 @@
 // What "Build this roof" sends to the API (decision D43): the corners as drawn, in WGS84, the roof type,
-// and the name of the place when the roof was found by words (decision of the plan, 6).
-import type { OutlineOnMap, Roof } from "../api";
+// and the name of the place when the roof was found by words (decision of the plan, 6). A roof built again keeps
+// its trees, which the map does not draw (#179, item 1).
+import type { MapShapeRequest, OutlineOnMap, Roof } from "../api";
 import { toLonLat } from "./frame";
 import { mapShapesOf } from "./obstacles";
 import type { OutlineState } from "./outline-state";
@@ -20,12 +21,19 @@ export function cornersOnMap(state: OutlineState): [number, number][] | null {
 /** How the roof was entered: outlined on the map, or typed by its measurements ("coordinates", as the desktop app's). */
 export type EnteredBy = "map" | "coordinates";
 
-export function buildRequestOf(state: OutlineState, roofType: Roof["roof_type"], foundBy: FoundBy | null, source: EnteredBy = "map"): OutlineOnMap | null {
+/** The request of "Build this roof"; *trees*, of a roof built again, go after the obstacles of the map, as they came. */
+export function buildRequestOf(
+  state: OutlineState,
+  roofType: Roof["roof_type"],
+  foundBy: FoundBy | null,
+  source: EnteredBy = "map",
+  trees: readonly MapShapeRequest[] = [],
+): OutlineOnMap | null {
   const outline = cornersOnMap(state);
   if (!outline || !state.frame) return null;
   return {
     outline,
-    obstacles: mapShapesOf(state.obstacles, state.frame),
+    obstacles: [...mapShapesOf(state.obstacles, state.frame), ...trees],
     roof_type: roofType,
     source,
     ...(foundBy?.byWords ? { name: foundBy.label } : {}),

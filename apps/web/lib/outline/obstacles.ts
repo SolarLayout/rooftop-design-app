@@ -130,7 +130,15 @@ export function mapShapesOf(obstacles: readonly Obstacle[], frame: Frame): MapSh
   }));
 }
 
-/** The shapes of a roof shown on the map again, as obstacles in the frame, numbered from one. */
+/**
+ * The trees of a roof shown on the map again, as they came: the map draws none ("Trees come with the Roof lens"), so they
+ * are kept aside and go back with the build where they stand (#179, item 1).
+ */
+export function treesOfMap(shapes: readonly MapShapeRequest[]): MapShapeRequest[] {
+  return shapes.filter((shape) => shape.kind === "tree");
+}
+
+/** The shapes of a roof shown on the map again, as obstacles in the frame, numbered from one; its trees are not. */
 export function obstaclesOfMap(shapes: readonly MapShapeRequest[], frame: Frame): Obstacle[] {
   return shapes
     .filter((shape): shape is MapShapeRequest & { kind: ObstacleKind } => shape.kind !== "tree")
