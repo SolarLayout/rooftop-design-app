@@ -406,10 +406,14 @@ the legend in a card of 48 (`surface-1`, border `line`, `radius-card-s`, `shadow
 12 over the time pill; by string the legend takes a second line under it, after "By string: six colours in turn
 along the rows". On tablet the card is 384 wide at the bottom right, 28 over the stage's bottom, the switch filling
 it, the compact legend under it. On phone the switch is the first thing of the Strings inspector in the sheet, and
-the compact legend stands at the stage's bottom left, 28 over its bottom. The legend: by MPPT "MPPT 1" to "MPPT 6";
-by inverter "INV-1", "INV-2"; by string the six colours, each with the strings it marks ("S1 · S7 · S13 · S19");
-then "Not used" while positions are not used. Compact: "MPPT" (or "INV", "Strings") and the numbers, each beside its
-swatch. Swatches of 12 (10 compact), radius 3; the words text-2, never a series colour.
+the compact legend stands at the stage's bottom left, 28 over its bottom. The legend has one entry per series colour
+(D92): by MPPT "MPPT 1" to "MPPT 6", and from the seventh the MPPTs of a colour together ("MPPT 1 · 7"); by inverter
+"INV-1", "INV-2", the same way ("INV-1 · 7"); by string the six colours, each with the strings it marks ("S1 · S7 · S13
+· S19"); past four in a colour the first three, an ellipsis and the last ("S1 · S7 · S13 … S43"), the screen reader's
+words naming them all; then "Not used" while positions are not used. Compact: "MPPT" (or "INV") and the numbers of each
+colour close beside its swatch ("1·7"), or the strings as the entries name them; the rule and "Not used" keep to the
+line of the last colour. On desktop the card is held 24 from both sides of the stage, as wide as its legend, and wraps
+within the stage. Swatches of 12 (10 compact), radius 3; the words text-2, never a series colour.
 
 Each inverter of the option is a small box on the roof in `inverterMarker` where the engine places it, with a chip
 "INV-1" over it (accent, `accent-ink`, mono 11, `radius-xs`), placed by the Projector; a chip that would cover an edge

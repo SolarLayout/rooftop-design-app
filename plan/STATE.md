@@ -3,7 +3,7 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-11 (the map seen working from the cloud, resume 019). Before it, 2026-10-11 (Claude Code cloud sessions set up, #198). Before it, 2026-10-10 (the skill product-video reviewed, #197; the Sun lens video, #196; the launch video and the skill product-video, #195; #187 to #192 deployed; see the end of the paragraph below). Earlier, 2026-10-08, session 22: **Phase 16 built**, the system voltage set by the user's country (D87: 600 V
+**Last updated:** 2026-10-11 (#114: the strings' legend, one entry per colour, D92, #199; before it the map seen working from the cloud, resume 019). Before it, 2026-10-11 (Claude Code cloud sessions set up, #198). Before it, 2026-10-10 (the skill product-video reviewed, #197; the Sun lens video, #196; the launch video and the skill product-video, #195; #187 to #192 deployed; see the end of the paragraph below). Earlier, 2026-10-08, session 22: **Phase 16 built**, the system voltage set by the user's country (D87: 600 V
 in the US and Canada, 1000 V elsewhere; the request's country, else the time zone, else India; D88: the equipment never
 moves the voltage, the app never raises it). #153 (who set it, engine and API), #154 (`/country`, `lib/country`, the store),
 #155 (the Strings lens and the picker to the boards), #156 (the help), #157 (the browser suites, changed by reading); then
@@ -125,10 +125,10 @@ D and E #160 changed, the kit and shell failures above).
 
 ## In flight
 
-#114, the strings' legend with many MPPT: the boards "UI fixes · The strings' legend with many MPPT" drawn (2026-10-11,
-`docs/design/mockups/build_ui_fixes_strings_legend.py`, the prototype on the local branch `design/strings-legend-many` of the
-cloud container, never merged), approved by the owner the same day (D92); not yet on the canvas (the publish is refused while the
-canvas is shared with the link). Being built test-first, one pull request. The owner's standing instructions (sessions 18 to 20): run solo once a design is approved, open the pull
+Nothing open. #114 done (2026-10-11): the boards "UI fixes · The strings' legend with many MPPT" drawn
+(`docs/design/mockups/build_ui_fixes_strings_legend.py`, its prototype a local branch of the cloud container, never merged),
+approved (D92), built and merged (#199). The three boards are not yet on the canvas: the publish is refused while the canvas is
+shared with the link; the next time the owner makes it private, upload `strings_legend/` and publish them. The owner's standing instructions (sessions 18 to 20): run solo once a design is approved, open the pull
 requests and merge them on a green check, one after the other; no stacked pull requests; no browser test suites run and no
 new UI tests; each change checked by hand in the browser with Playwright at three sizes, its screenshots in the pull request
 (the orphan branch `pr-shots`), and the owner told the link (the page is not opened to check them, session 20); every board
@@ -206,11 +206,10 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 1. What the owner names next on Find (UX, CX and UI). Alongside: the owner plays the help's clips in Safari on an iPhone or
    iPad (Phase 15's last check).
-2. Issue #114: the Strings legend with many MPPT: boards approved (D92), being built (see "In flight").
-3. #99 and #100 when the owner needs them (advised: the budget alarm soon, the rate limit before the site is promoted).
-4. When browser tests come back: update the suites that use the old words (Replace and its dialogs, the top bar's words,
+2. #99 and #100 when the owner needs them (advised: the budget alarm soon, the rate limit before the site is promoted).
+3. When browser tests come back: update the suites that use the old words (Replace and its dialogs, the top bar's words,
    the geocoder's words, the Layers default, `present-energy`), and #74.
-5. Issues #87, #88, #96 and #73 to #77 as the owner decides.
+4. Issues #87, #88, #96 and #73 to #77 as the owner decides.
 
 ## Facts about this machine and setup
 
