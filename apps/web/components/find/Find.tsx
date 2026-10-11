@@ -18,7 +18,7 @@ import { iconButtonLook } from "@/components/ui/button-look";
 import { classNames } from "@/components/ui/class-names";
 import { ROOF_ZOOM } from "@/components/ui/design-numbers";
 import { Icon } from "@/components/ui/Icon";
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError, type MapShapeRequest } from "@/lib/api";
 import { roofAfterBuild } from "@/lib/geometry/roof-type-rule";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/places/esri";
 import { FOOTPRINTS_ATTRIBUTION } from "@/lib/map/overture";
@@ -26,7 +26,7 @@ import { mapStateOf } from "@/lib/map/map-state";
 import { buildRequestOf } from "@/lib/outline/build-request";
 import { isEntered, NOTHING_ENTERED, type ByHand } from "@/lib/outline/by-hand";
 import { frameAt, toMetres } from "@/lib/outline/frame";
-import { nameOf, obstaclesOfMap } from "@/lib/outline/obstacles";
+import { nameOf, obstaclesOfMap, treesOfMap } from "@/lib/outline/obstacles";
 import { firstKnownOf } from "@/lib/help/keys";
 import { HELP_KEYS } from "@/lib/help/manifest.gen";
 import { entryAfterPlace, firstStepOf, type Entry } from "@/lib/outline/first-step";
@@ -127,6 +127,8 @@ export function Find() {
   const [entry, setEntry] = useState<Entry>("map");
   const [hand, setHand] = useState<ByHand>(placeAsked ? { ...NOTHING_ENTERED, lat: placeAsked.lat, lon: placeAsked.lon } : NOTHING_ENTERED);
   const loaded = useRef(false);
+  // The trees of the roof edited: the map draws none, and they go back with the build where they stand (issue 179, item 1).
+  const trees = useRef<MapShapeRequest[]>([]);
   // The tips (D79): gone for good on this device once Got it is pressed or their move is done; all hidden for this visit by the ×.
   const [tipsGone, setTipsGone] = useState<ReadonlySet<TipId>>(() => {
     const storage = deviceStorage();
@@ -225,6 +227,7 @@ export function Find() {
         const at = { lon: project.roof.lon, lat: project.roof.lat };
         const frame = frameAt(at);
         on({ type: "loaded", at, corners: onMap.outline.map(([lon, lat]) => toMetres(frame, { lon, lat })), obstacles: obstaclesOfMap(onMap.obstacles, frame) });
+        trees.current = treesOfMap(onMap.obstacles);
         setRoofType(project.roof.roof_type);
         setView({ lon: at.lon, lat: at.lat, zoom: ROOF_ZOOM });
         setStep("outline");
@@ -240,7 +243,7 @@ export function Find() {
 
   /** Build this roof: the document from the API, opened as the design, or its roof put into the design that is edited. */
   async function build() {
-    const request = buildRequestOf(outline, roofType, foundAt, entry === "hand" ? "coordinates" : "map");
+    const request = buildRequestOf(outline, roofType, foundAt, entry === "hand" ? "coordinates" : "map", trees.current);
     if (!request) return;
     setBuilding({ kind: "building" });
     try {

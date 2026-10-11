@@ -74,3 +74,18 @@ describe("the request of Build", () => {
     expect(buildRequestOf(drawn(false), "flat_tilted", null)).toBeNull();
   });
 });
+
+// #179, item 1: the map shows no trees, and the roof built again took the map's obstacles alone, so the trees added in the
+// Roof lens were lost. The trees of the roof shown on the map go back with the build, where they stand.
+describe("the trees of a roof built again", () => {
+  const TREE = { name: "Mango", kind: "tree" as const, points: [[73.8601, 18.5201]] as [number, number][], diameter: 4, height: 6 };
+
+  test("go with the build, after the obstacles of the map, as they came", () => {
+    const request = buildRequestOf(drawn(), "flat_tilted", null, "map", [TREE])!;
+    expect(request.obstacles?.at(-1)).toEqual(TREE);
+  });
+
+  test("none by default", () => {
+    expect(buildRequestOf(drawn(), "flat_tilted", null)!.obstacles).toEqual([]);
+  });
+});
