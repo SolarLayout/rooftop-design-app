@@ -127,8 +127,7 @@ D and E #160 changed, the kit and shell failures above).
 
 Nothing open. #114 done (2026-10-11): the boards "UI fixes · The strings' legend with many MPPT" drawn
 (`docs/design/mockups/build_ui_fixes_strings_legend.py`, its prototype a local branch of the cloud container, never merged),
-approved (D92), built and merged (#199). The three boards are not yet on the canvas: the publish is refused while the canvas is
-shared with the link; the next time the owner makes it private, upload `strings_legend/` and publish them. The owner's standing instructions (sessions 18 to 20): run solo once a design is approved, open the pull
+approved (D92), built and merged (#199); the three boards on the canvas (version 52). The owner's standing instructions (sessions 18 to 20): run solo once a design is approved, open the pull
 requests and merge them on a green check, one after the other; no stacked pull requests; no browser test suites run and no
 new UI tests; each change checked by hand in the browser with Playwright at three sizes, its screenshots in the pull request
 (the orphan branch `pr-shots`), and the owner told the link (the page is not opened to check them, session 20); every board

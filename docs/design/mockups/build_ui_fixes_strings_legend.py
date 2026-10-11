@@ -18,8 +18,18 @@ sys.path.insert(0, str(HERE))
 from build_phase3_boards import GROUND, LINE, TEXT, TEXT_2  # noqa: E402
 
 DISPLAY = "font-family: 'Bricolage Grotesque', Geist, sans-serif; font-weight: 600"
-# The uploads of strings_legend/ to the canvas, by file name: filled when the boards are published there.
-CANVAS: dict[str, str] = {}
+# The uploads of strings_legend/ to the canvas, by file name.
+CANVAS = {
+    "desktop-1.png": "/_blob/f4c90446dfce7aba8c977c5a7d1119fd", "desktop-2.png": "/_blob/fdf3e288c1f211edb4b807c791e83b2f",
+    "desktop-3.png": "/_blob/ab7cdb8a8d3954a1247ea099971d83a4", "desktop-4.png": "/_blob/745c4df1df700e24d005543d8cff08b5",
+    "desktop-5.png": "/_blob/18efdf0e3ac0c2b67af48e018728e3c3", "desktop-6.png": "/_blob/3ce968dea8ce8fd399d710ecc262b611",
+    "tablet-1.png": "/_blob/7dc2a6bc1e981dcca521d05bdc33eae2", "tablet-2.png": "/_blob/0c34f0e9d33f6f2f8193b510811b5612",
+    "tablet-3.png": "/_blob/bc028b55bfcc5addf1942e1ac6d12a7e", "tablet-4.png": "/_blob/dbf253e5bf7a119bf1923a07cf1d5dd3",
+    "tablet-5.png": "/_blob/e9f65e9bab9e9bf6d7902ff3b2a77030", "tablet-6.png": "/_blob/84ba3b8f59fb56bdbd5680505306eab3",
+    "phone-1.png": "/_blob/7f4a1fd735b00b5c3a0048c57c2f1410", "phone-2.png": "/_blob/e0fb64cee42ac7ae01658b5b366d5eb7",
+    "phone-3.png": "/_blob/254f558bbb04c35d5972efd012b02ccc", "phone-4.png": "/_blob/06ac48f4151772db430187855a6a0673",
+    "phone-5.png": "/_blob/bd129171d287c925070a7ec5ca2be607", "phone-6.png": "/_blob/d257558ce1e8e57857ec6cb2025123d3",
+}
 STATES = (
     "Today · by MPPT, 10 MPPT: one entry per MPPT, past the stage",
     "Today · by string, 46 strings: every string named",
