@@ -65,9 +65,12 @@ def verdict(design: Design, option: StringOption | None) -> Verdict:
     nominal = f", inverter nominal {inverter.vmpp_nom:,.0f} V" if inverter.vmpp_nom else ""
     loads = mppt_loads(design, option)
     currents = _currents(loads)
+    ok = option.ok and all(load.ok for load in loads)
     return Verdict(
-        ok=option.ok and all(load.ok for load in loads),
-        title=f"{n} in series fits: Vmp {n * rng.vmp_stc:,.0f} V at STC{nominal}",
+        ok=ok,
+        # "fits" only where it does: a length that misses the target or a current limit is marked, not said
+        # to fit (#179, item 17); the detail says what it misses.
+        title=f"{n} in series{' fits' if ok else ''}: Vmp {n * rng.vmp_stc:,.0f} V at STC{nominal}",
         detail=(
             f"Voc at {rng.t_min:.1f} °C is {n * rng.voc_cold:,.0f} V (limit {rng.limit_v:.0f} V); "
             f"Vmp at {rng.t_cell_hot:.1f} °C cell is {n * rng.vmp_hot:,.0f} V (MPPT minimum "
