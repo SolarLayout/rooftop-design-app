@@ -25,15 +25,15 @@ describe("the CSV dialog (plan/phase-08-plan.md, step 19; the board \"Weather an
 
   test("the words of the dialog: what a file holds, and that times are read as UTC (decision 19)", () => {
     expect(CSV_WORDS.title).toBe("Load weather from a CSV");
-    expect(CSV_WORDS.sentence).toBe("Hourly values of a year: a time column, global irradiance, and, if you have them, beam, diffuse, air temperature and wind. Times are read as UTC.");
+    expect(CSV_WORDS.sentence).toBe("A year of values, every hour or more often: a time column, global irradiance, and, if you have them, beam, diffuse, air temperature and wind. Rows of less than an hour are averaged into hours. Times are read as UTC.");
     expect(CSV_WORDS.use).toBe("Use this weather");
   });
 
   test("a file over 3 MB, more than a year of weather takes, is refused before it is sent, in the dialog's words (#162)", () => {
     expect(csvFits({ size: MAX_CSV_BYTES })).toBe(true);
     expect(csvFits({ size: MAX_CSV_BYTES + 1 })).toBe(false);
-    expect(CSV_TOO_LARGE).toBe("This file is over 3 MB, more than a year of weather takes. Choose a file of hourly values.");
-    expect(CSV_WORDS.detail).toBe("A CSV of hourly values, 3 MB at most");
+    expect(CSV_TOO_LARGE).toBe("This file is over 3 MB, more than a year of weather takes, even every 15 minutes. Choose a file of one year.");
+    expect(CSV_WORDS.detail).toBe("A CSV of a year's weather, 3 MB at most");
   });
 
   test("the limit is the API's: the text of the CSV it takes, in characters, one byte each", () => {

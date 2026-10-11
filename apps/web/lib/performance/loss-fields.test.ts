@@ -74,6 +74,14 @@ describe("the fields of the chain (plan/phase-08-plan.md, decision 6; functional
     });
   });
 
+  // #179, item 23: on a sloped, flush roof the engine applies no rear gain (the rear faces the roof), and the switch said
+  // nothing of it.
+  test("on a sloped, flush roof the switch cannot be used either, and the row says why", () => {
+    const flush = { ...DOCUMENT, roof: { ...DOCUMENT.roof, roof_type: "sloped_flush" as const } };
+    expect(lossControlOf("Bifacial rear gain", flush, RUN)).toMatchObject({ disabled: true, note: "Flush modules lie on the roof: no rear gain." });
+    expect(lossControlOf("Bifacial rear gain", flush, { ...RUN, module: MONOFACIAL_MODULE })).toMatchObject({ disabled: true, note: "The module is monofacial: no rear gain." });
+  });
+
   test("a step of the engine's own has no control", () => {
     for (const label of ["Global horizontal irradiation", "Transposition to plane (15°)", "IAM", "Temperature", "Inverter clipping", "Energy to grid"]) {
       expect(lossControlOf(label, DOCUMENT, RUN)).toBeNull();

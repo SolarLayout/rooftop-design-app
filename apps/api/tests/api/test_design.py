@@ -743,7 +743,7 @@ def test_csv_weather_that_cannot_be_used_is_refused_before_the_run(client, demo)
     assert response.status_code == 422
     assert error_of(response) == {
         "code": "not_a_weather_csv",
-        "message": "site.csv: the time cannot be read in 1 row, the first of them row 1 (noon). "
+        "message": "site.csv: the time cannot be read in 1 row, the first of them on line 2 (noon). "
         "Write it as 2023-06-01 13:00, in UTC.",
         "field": "weather_csv_text",
     }

@@ -115,7 +115,7 @@ def test_gaps_in_the_temperature_are_filled_as_the_reader_does():
         ("time,ghi\n", "site.csv has no hours: below its header there is no row."),
         (
             "time,ghi\nyesterday,100\n2023-06-01 01:00,200\nlater,300\n",
-            "site.csv: the time cannot be read in 2 rows, the first of them row 1 (yesterday). "
+            "site.csv: the time cannot be read in 2 rows, the first of them on line 2 (yesterday). "
             "Write it as 2023-06-01 13:00, in UTC.",
         ),
         (
@@ -125,12 +125,12 @@ def test_gaps_in_the_temperature_are_filled_as_the_reader_does():
         ),
         (
             "time,ghi,wind\n2023-06-01 00:00,100,\n2023-06-01 01:00,200,2\n",
-            "site.csv: wind_speed has no value in 1 row, the first of them row 1. Fill the gaps, or "
+            "site.csv: wind has no value in 1 row, the first of them on line 2. Fill the gaps, or "
             "leave the column out.",
         ),
         (
             "time,ghi,temp\n2023-06-01 00:00,100,warm\n2023-06-01 01:00,200,hot\n",
-            "site.csv: temp_air has no value in 2 rows, the first of them row 1. Fill the gaps, or "
+            "site.csv: temp has no value in 2 rows, the first of them on line 2. Fill the gaps, or "
             "leave the column out.",
         ),
     ],
@@ -224,13 +224,13 @@ def _year_with(columns: str, row: str, changes: dict[int, str]) -> str:
     [
         (
             {2: ",80,40,25,2", 9: "n/a,80,40,25,2"},
-            "site.csv: ghi has no value in 2 rows, the first of them row 2. "
+            "site.csv: ghi has no value in 2 rows, the first of them on line 3. "
             "Fill the gaps: an hour without its irradiance is not an hour of none.",
         ),
         (
             {5: "100,,40,25,2"},
-            "site.csv: dni has no value in 1 row, the first of them row 5. Fill the gaps, or leave out both "
-            "beam and diffuse.",
+            "site.csv: dni has no value in 1 row, the first of them on line 6. Fill the gaps, or leave out "
+            "both beam and diffuse.",
         ),
     ],
 )
@@ -257,3 +257,16 @@ def test_gaps_in_the_temperature_are_filled_and_noted():
     assert read.notes == [
         "site.csv has no air temperature in 1 row. It was taken from the hours on either side."
     ]
+
+
+# ── the refusals point at the file as the user sees it (#179, item 21) ─────────────────────────────────────
+def test_a_gap_is_named_by_the_file_s_own_column_and_its_line_comments_and_header_counted():
+    text = "# Station 7, Pune\n# 2023, UTC\ntime,ghi,Wind\n2023-06-01 00:00,100,1\n2023-06-01 01:00,200,\n"
+
+    with pytest.raises(UnusableWeatherFile) as error:
+        csv_weather.read(text, 18.52, 73.86, "site.csv")
+
+    assert str(error.value) == (
+        "site.csv: Wind has no value in 1 row, the first of them on line 5. Fill the gaps, or leave the "
+        "column out."
+    )

@@ -2,7 +2,8 @@
 
 The reader (weather.parse_csv) takes what it gets: a time it cannot read becomes no time, a gap in the
 wind stays a gap, an hour may be there twice. Each of these ends in results that are wrong without a
-word. Here the file is refused instead, with the row and what to do about it.
+word. Here the file is refused instead, with what to do about it: the column by the file's own header, and
+the line of the file as an editor numbers it, the header and the comments counted (#179, item 21).
 """
 
 from __future__ import annotations
@@ -34,10 +35,11 @@ def read(text: str, lat: float, lon: float, name: str = "", tz_offset_h: float =
     label = name or wx.SOURCE_LABELS["csv"]
     if not text.strip():
         raise UnusableWeatherFile("Choose a CSV weather file.", field=FIELD)
+    lines = _lines_of_rows(text)
     try:
         raw = wx.csv_table(text)
-        _check(raw, label, tz_offset_h)
-        _check_irradiance(raw, label)
+        _check(raw, label, tz_offset_h, lines)
+        _check_irradiance(raw, label, lines)
         weather = wx.parse_csv(text, lat, lon, tz_offset_h, name)
     except UnusableWeatherFile:
         raise
@@ -46,12 +48,28 @@ def read(text: str, lat: float, lon: float, name: str = "", tz_offset_h: float =
         if not message.startswith(f"{label}: "):
             message = f"{label} cannot be read as a table of hours: {message}."
         raise UnusableWeatherFile(message, field=FIELD) from error
-    _check_values(weather, raw, label)
+    _check_values(weather, raw, label, lines)
     _check_a_whole_year(weather, label)
     return CsvWeather(weather, _notes(weather, raw, label))
 
 
-def _check(raw: pd.DataFrame, label: str, tz_offset_h: float) -> None:
+def _lines_of_rows(text: str) -> list[int]:
+    """The line of the file, from 1, of each row of the table csv_table reads: the lines that are blank or
+    begin with # are left out, and the first line left is the header."""
+    kept = [
+        n
+        for n, line in enumerate(text.splitlines(), start=1)
+        if line.strip() and not line.lstrip().startswith("#")
+    ]
+    return kept[1:]
+
+
+def _line(lines: list[int], row: int) -> int:
+    """The line of the file of the row *row* of the table, from 0."""
+    return lines[row] if row < len(lines) else row + 2
+
+
+def _check(raw: pd.DataFrame, label: str, tz_offset_h: float, lines: list[int]) -> None:
     """What can be seen before the reader runs. Missing columns are left to the reader, which names them."""
     time = wx.csv_column(raw, wx.CSV_COLUMNS["time"])
     if time is None or wx.csv_column(raw, wx.CSV_COLUMNS["ghi"]) is None:
@@ -63,8 +81,8 @@ def _check(raw: pd.DataFrame, label: str, tz_offset_h: float) -> None:
     if unread.any():
         first = int(np.argmax(unread))
         raise UnusableWeatherFile(
-            f"{label}: the time cannot be read in {_rows(int(unread.sum()))}, the first of them row "
-            f"{first + 1} ({str(time.iloc[first]).strip()}). Write it as 2023-06-01 13:00, in UTC.",
+            f"{label}: the time cannot be read in {_rows(int(unread.sum()))}, the first of them on line "
+            f"{_line(lines, first)} ({str(time.iloc[first]).strip()}). Write it as 2023-06-01 13:00, in UTC.",
             field=FIELD,
         )
     repeated = times[times.duplicated(keep="first")]
@@ -77,30 +95,34 @@ def _check(raw: pd.DataFrame, label: str, tz_offset_h: float) -> None:
         )
 
 
-def _check_irradiance(raw: pd.DataFrame, label: str) -> None:
+def _check_irradiance(raw: pd.DataFrame, label: str, lines: list[int]) -> None:
     """The reader takes a cell of irradiance it cannot read as 0 W/m²: an hour of none. Refused instead
     (#179, item 19)."""
     ghi = wx.csv_column(raw, wx.CSV_COLUMNS["ghi"])
     if ghi is None:
         return
-    _refuse_gaps(ghi, label, "Fill the gaps: an hour without its irradiance is not an hour of none.")
+    _refuse_gaps(ghi, label, lines, "Fill the gaps: an hour without its irradiance is not an hour of none.")
     dni, dhi = wx.csv_column(raw, wx.CSV_COLUMNS["dni"]), wx.csv_column(raw, wx.CSV_COLUMNS["dhi"])
     if dni is not None and dhi is not None:  # with one of them alone, both are worked out from the GHI
         for column in (dni, dhi):
-            _refuse_gaps(column, label, "Fill the gaps, or leave out both beam and diffuse.")
+            _refuse_gaps(column, label, lines, "Fill the gaps, or leave out both beam and diffuse.")
 
 
-def _refuse_gaps(column: pd.Series, label: str, advice: str) -> None:
+def _refuse_gaps(column: pd.Series, label: str, lines: list[int], advice: str) -> None:
     missing = pd.to_numeric(column, errors="coerce").isna().to_numpy()
     if missing.any():
-        raise UnusableWeatherFile(
-            f"{label}: {str(column.name).strip()} has no value in {_rows(int(missing.sum()))}, the first of "
-            f"them row {int(np.argmax(missing)) + 1}. {advice}",
-            field=FIELD,
-        )
+        raise UnusableWeatherFile(_gaps(column, missing, label, lines, advice), field=FIELD)
 
 
-def _check_values(weather: wx.Weather, raw: pd.DataFrame, label: str) -> None:
+def _gaps(column: pd.Series, missing: np.ndarray, label: str, lines: list[int], advice: str) -> str:
+    """The refusal of a column with gaps, by the file's own header and the line of its first gap."""
+    return (
+        f"{label}: {str(column.name).strip()} has no value in {_rows(int(missing.sum()))}, "
+        f"the first of them on line {_line(lines, int(np.argmax(missing)))}. {advice}"
+    )
+
+
+def _check_values(weather: wx.Weather, raw: pd.DataFrame, label: str, lines: list[int]) -> None:
     """Every hour needs every value. The reader fills some gaps itself; what is left is a fault."""
     for column in weather.data.columns:
         if np.isfinite(weather.data[column].to_numpy()).all():
@@ -108,9 +130,7 @@ def _check_values(weather: wx.Weather, raw: pd.DataFrame, label: str) -> None:
         given = wx.csv_column(raw, wx.CSV_COLUMNS[column])
         missing = pd.to_numeric(given, errors="coerce").isna().to_numpy()
         raise UnusableWeatherFile(
-            f"{label}: {column} has no value in {_rows(int(missing.sum()))}, the first of them row "
-            f"{int(np.argmax(missing)) + 1}. Fill the gaps, or leave the column out.",
-            field=FIELD,
+            _gaps(given, missing, label, lines, "Fill the gaps, or leave the column out."), field=FIELD
         )
 
 

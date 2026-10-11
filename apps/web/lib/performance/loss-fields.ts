@@ -63,6 +63,8 @@ const FIELD_OF: Record<string, LossFieldId> = {
 
 const REAR_GAIN = "Bifacial rear gain";
 export const MONOFACIAL = "The module is monofacial: no rear gain.";
+/** On a sloped, flush roof the engine applies no rear gain: the rear faces the roof (#179, item 23). */
+export const FLUSH = "Flush modules lie on the roof: no rear gain.";
 
 const percent = (value: number) => `${shown(value, 1)} %`;
 
@@ -77,8 +79,8 @@ function lidWords(value: number | null, { energy, module }: RunOfTheChain): Pick
 /** The control of the step labelled so by the engine, from the document and the run; null for a step of the engine's own. */
 export function lossControlOf(label: string, document: Project, run: RunOfTheChain): LossControl | null {
   if (label === REAR_GAIN) {
-    const disabled = !run.module.is_bifacial;
-    return { kind: "switch", id: "bifacial", label, on: document.losses.bifacial, disabled, note: disabled ? MONOFACIAL : null };
+    const note = !run.module.is_bifacial ? MONOFACIAL : document.roof.roof_type === "sloped_flush" ? FLUSH : null;
+    return { kind: "switch", id: "bifacial", label, on: document.losses.bifacial, disabled: note !== null, note };
   }
   const id = FIELD_OF[label];
   if (!id) return null;
