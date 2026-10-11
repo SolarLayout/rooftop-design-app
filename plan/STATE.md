@@ -3,7 +3,7 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-11 (#114: the strings' legend, one entry per colour, D92, #199; before it the map seen working from the cloud, resume 019). Before it, 2026-10-11 (Claude Code cloud sessions set up, #198). Before it, 2026-10-10 (the skill product-video reviewed, #197; the Sun lens video, #196; the launch video and the skill product-video, #195; #187 to #192 deployed; see the end of the paragraph below). Earlier, 2026-10-08, session 22: **Phase 16 built**, the system voltage set by the user's country (D87: 600 V
+**Last updated:** 2026-10-11 (#179's rest: #200 to #205, merged, not yet deployed; before it #114: the strings' legend, one entry per colour, D92, #199; before it the map seen working from the cloud, resume 019). Before it, 2026-10-11 (Claude Code cloud sessions set up, #198). Before it, 2026-10-10 (the skill product-video reviewed, #197; the Sun lens video, #196; the launch video and the skill product-video, #195; #187 to #192 deployed; see the end of the paragraph below). Earlier, 2026-10-08, session 22: **Phase 16 built**, the system voltage set by the user's country (D87: 600 V
 in the US and Canada, 1000 V elsewhere; the request's country, else the time zone, else India; D88: the equipment never
 moves the voltage, the app never raises it). #153 (who set it, engine and API), #154 (`/country`, `lib/country`, the store),
 #155 (the Strings lens and the picker to the boards), #156 (the help), #157 (the browser suites, changed by reading); then
@@ -127,7 +127,18 @@ D and E #160 changed, the kit and shell failures above).
 
 Nothing open. #114 done (2026-10-11): the boards "UI fixes · The strings' legend with many MPPT" drawn
 (`docs/design/mockups/build_ui_fixes_strings_legend.py`, its prototype a local branch of the cloud container, never merged),
-approved (D92), built and merged (#199); the three boards on the canvas (version 52). The owner's standing instructions (sessions 18 to 20): run solo once a design is approved, open the pull
+approved (D92), built and merged (#199); the three boards on the canvas (version 52). Then #179's rest, in six pull
+requests, each test-first with the help kept true: #200 (items 6, 7, 8: files too large refused in the app's words, the
+import dialog's words), #201 (1: a roof built again on Find keeps its trees), #202 (9, 11, 13: the Array lens's lines read
+the engine's shade-free pitch and roof edge, new readouts `shade_free_pitch_m` and `edge_azimuth_deg`; no unit gap noted at
+0 m; no module fitting leads to the Roof lens), #203 (17, 26: "fits" only beside a tick; the AC cable's 415 V said to be
+taken), #204 (21, 22, 23: the CSV's refusals by the file's column and line, no "hourly" alone; the rear-gain switch off on
+a sloped roof with why), #205 (25: Handover after a first run that failed shows the note alone; the bill of materials'
+duplicate key). Not changed, with reasons on the issue: 2 and 16 (as designed), 4 and 5 (the help says so), 29 (no path in
+the app reaches it). The parity snapshots renewed in #202 and #203 (new readouts; verdict titles), every number unchanged.
+The boards Import with missing heights and Weather and assumptions follow the new words (canvas version 53). Open, for the
+owner: after a first run that failed, Handover's rows keep their facts' skeleton bars (no board says what a row then says);
+deploy #200 to #205. The owner's standing instructions (sessions 18 to 20): run solo once a design is approved, open the pull
 requests and merge them on a green check, one after the other; no stacked pull requests; no browser test suites run and no
 new UI tests; each change checked by hand in the browser with Playwright at three sizes, its screenshots in the pull request
 (the orphan branch `pr-shots`), and the owner told the link (the page is not opened to check them, session 20); every board
@@ -208,7 +219,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 2. #99 and #100 when the owner needs them (advised: the budget alarm soon, the rate limit before the site is promoted).
 3. When browser tests come back: update the suites that use the old words (Replace and its dialogs, the top bar's words,
    the geocoder's words, the Layers default, `present-energy`), and #74.
-4. Issues #87, #88, #96 and #73 to #77 as the owner decides.
+4. Issues #87, #88, #96 and #73 to #77 as the owner decides. Deploy #200 to #205 (#179's rest) when the owner says.
 
 ## Facts about this machine and setup
 
