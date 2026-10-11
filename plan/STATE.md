@@ -127,8 +127,8 @@ D and E #160 changed, the kit and shell failures above).
 
 #114, the strings' legend with many MPPT: the boards "UI fixes · The strings' legend with many MPPT" drawn (2026-10-11,
 `docs/design/mockups/build_ui_fixes_strings_legend.py`, the prototype on the local branch `design/strings-legend-many` of the
-cloud container, never merged), waiting for the owner's approval; not yet on the canvas (the publish is refused while the
-canvas is shared with the link). After approval: built test-first, one pull request. The owner's standing instructions (sessions 18 to 20): run solo once a design is approved, open the pull
+cloud container, never merged), approved by the owner the same day (D92); not yet on the canvas (the publish is refused while the
+canvas is shared with the link). Being built test-first, one pull request. The owner's standing instructions (sessions 18 to 20): run solo once a design is approved, open the pull
 requests and merge them on a green check, one after the other; no stacked pull requests; no browser test suites run and no
 new UI tests; each change checked by hand in the browser with Playwright at three sizes, its screenshots in the pull request
 (the orphan branch `pr-shots`), and the owner told the link (the page is not opened to check them, session 20); every board
@@ -206,7 +206,7 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 1. What the owner names next on Find (UX, CX and UI). Alongside: the owner plays the help's clips in Safari on an iPhone or
    iPad (Phase 15's last check).
-2. Issue #114: the Strings legend with many MPPT: boards drawn, for approval (see "In flight").
+2. Issue #114: the Strings legend with many MPPT: boards approved (D92), being built (see "In flight").
 3. #99 and #100 when the owner needs them (advised: the budget alarm soon, the rate limit before the site is promoted).
 4. When browser tests come back: update the suites that use the old words (Replace and its dialogs, the top bar's words,
    the geocoder's words, the Layers default, `present-energy`), and #74.

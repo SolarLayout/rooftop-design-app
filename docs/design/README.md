@@ -202,8 +202,8 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   tablet, phone): the legend of the strings with the library's Solis S5-GC125K-HV (10 MPPT, three inverters on the demo roof),
   by MPPT and by string (46 strings), today and as proposed: one entry per colour of the six, each naming all it marks
   (MPPT 1 · 7; S1 · S7 · S13 … S43 past four), and the demo as approved, unchanged. Caught in the browser at three sizes
-  (`strings_legend/`) with a prototype on the local branch `design/strings-legend-many`, never merged; drawn on 2026-10-11,
-  for approval.
+  (`strings_legend/`) with a prototype on the local branch `design/strings-legend-many`, never merged; drawn and approved
+  on 2026-10-11 (D92).
 - `mockups/build_system_voltage.py` writes the boards "System voltage · Set by the user's country" (Phase 16, D87; desktop, tablet,
   phone; the canvas page "System voltage"): the voltage of the user's country in the Strings lens (India 1000 V, the United States
   600 V with no string length fitting the demo's inverter), the app's value following an inverter rated under it, the user's 1500 V
