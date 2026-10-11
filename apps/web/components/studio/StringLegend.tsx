@@ -46,20 +46,31 @@ function Item({ entry, compact = false }: { entry: LegendEntry; compact?: boolea
   );
 }
 
-/** The legend where room is short: the lead word and the numbers each beside its swatch, a rule, then Not used. */
+/**
+ * The legend where room is short: the lead word and the numbers each beside its swatch, a rule, then Not used. The rule
+ * and Not used keep to the line of the last colour (D92), so that no line of the wrapped legend starts with the rule.
+ */
 function Compact({ legend }: { legend: ReturnType<typeof stringLegendOf> }) {
   const unused = legend.entries.find((entry) => entry.swatch === "unused");
+  const numbered = legend.compact.lead !== null;
+  const leading = legend.compact.items.slice(0, -1);
+  const last = legend.compact.items.at(-1);
   return (
     <div role="img" aria-label={legend.label} data-testid="string-legend" className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1">
       {legend.compact.lead ? <span className="type-caption text-text-2">{legend.compact.lead}</span> : null}
-      {legend.compact.items.map((entry) => (
-        <Item key={entry.words} entry={entry} compact={legend.compact.lead !== null} />
+      {leading.map((entry) => (
+        <Item key={entry.words} entry={entry} compact={numbered} />
       ))}
-      {unused ? (
-        <>
-          <span aria-hidden="true" className="block h-3.5 w-px bg-line-strong" />
-          <Item entry={unused} compact />
-        </>
+      {last ? (
+        <span className="flex items-center gap-x-2.5">
+          <Item entry={last} compact={numbered} />
+          {unused ? (
+            <>
+              <span aria-hidden="true" className="block h-3.5 w-px bg-line-strong" />
+              <Item entry={unused} compact />
+            </>
+          ) : null}
+        </span>
       ) : null}
     </div>
   );
@@ -70,7 +81,8 @@ function Compact({ legend }: { legend: ReturnType<typeof stringLegendOf> }) {
  * roof"): in the Strings lens, while the run has an option. On desktop a card at the bottom left over the time pill,
  * the switch beside the legend (by string the legend on a line of its own); on tablet a card at the bottom right, the
  * switch over the compact legend; on phone the compact legend alone, the switch being in the sheet. While the run is
- * not of the layout shown, the legend says that the strings follow it, with the ring.
+ * not of the layout shown, the legend says that the strings follow it, with the ring. One entry per colour (D92); on
+ * desktop the card is as wide as its legend and wraps within the stage when that is wider.
  */
 export function StringLegend({ size, className }: { size: Size; className?: string }) {
   const colouring = useView(stringsShownByOf);
@@ -99,7 +111,7 @@ export function StringLegend({ size, className }: { size: Size; className?: stri
     );
   }
   const entries = legend ? (
-    <div role="img" aria-label={legend.label} data-testid="string-legend" className={classNames("flex items-center gap-3.5", legend.note && "pl-2.5")}>
+    <div role="img" aria-label={legend.label} data-testid="string-legend" className={classNames("flex flex-wrap items-center gap-x-3.5 gap-y-1.5", legend.note && "pl-2.5")}>
       {legend.entries.map((entry) => (
         <Item key={entry.words} entry={entry} />
       ))}
@@ -109,8 +121,8 @@ export function StringLegend({ size, className }: { size: Size; className?: stri
   );
   if (legend?.note) {
     return (
-      <div role="group" aria-label="Strings on the roof" className={classNames("flex flex-col gap-2 pt-1.5 pr-4 pb-2.5 pl-1.5 whitespace-nowrap", card, className)}>
-        <div className="flex items-center gap-3.5">
+      <div role="group" aria-label="Strings on the roof" className={classNames("flex w-fit flex-col gap-2 pt-1.5 pr-4 pb-2.5 pl-1.5", card, className)}>
+        <div className="flex items-center gap-3.5 whitespace-nowrap">
           <StringColourSwitch />
           <span className="type-caption text-text-2">{legend.note}</span>
         </div>
@@ -119,7 +131,7 @@ export function StringLegend({ size, className }: { size: Size; className?: stri
     );
   }
   return (
-    <div role="group" aria-label="Strings on the roof" className={classNames("flex h-12 items-center gap-3.5 pr-4 pl-1.5 whitespace-nowrap", card, className)}>
+    <div role="group" aria-label="Strings on the roof" className={classNames("flex min-h-12 w-fit items-center gap-3.5 py-1.5 pr-4 pl-1.5", card, className)}>
       <StringColourSwitch />
       {entries}
     </div>
