@@ -1083,7 +1083,7 @@ def import_dialog(held_file: str | None = None, place: str | None = None) -> str
         f'<h3 id="im-t" style="flex-grow: 1; margin: 0; {DISPLAY}; font-size: 22px; line-height: 28px; letter-spacing: -0.02em">Import a drawing</h3>'
         + icon_button("Close", CLOSE, 32)
         + "</div>"
-        f'<p id="im-d" style="margin: 0; color: {TEXT_2}">The largest closed shape is the roof; the other closed shapes are obstacles, named by their layer. A KMZ or KML says where the roof is; a DXF does not, so its place is asked.</p>'
+        f'<p id="im-d" style="margin: 0; color: {TEXT_2}">The largest closed shape is the roof. In a KMZ or KML the other closed shapes are obstacles named by their placemark, and open lines are walls; in a DXF the other closed polylines are obstacles named by their layer, and circles are tanks. A height in a name, as h=2.5, is read. A KMZ or KML says where the roof is; a DXF does not, so its place is asked.</p>'
         + held
         + units_choice("m" if is_dxf else None)
         + (place_asked(place == "found") if is_dxf else "")
@@ -1103,7 +1103,7 @@ def import_card() -> str:
         + state("The place found by the search fills the coordinates, as it does for a roof entered by hand; Open the roof", import_dialog("warehouse-roof.dxf", "found"))
         + f'<p style="margin: 0; font-size: 12px; color: {TEXT_2}">A DXF holds the roof\'s shape and nothing of where it is on Earth, and the place sets the sun, the shadows and the weather: so nothing is guessed (the desktop app put every DXF at its own default, Pune). The place is searched or pasted, in the words of Find, or typed; the same two fields as "Enter dimensions by hand". The API refuses a DXF without a place (<code>site_missing</code>) and the dialog never sends one without. A KMZ or KML needs no place: the block is not shown.</p>'
         + "</div>"
-        + f'<p style="margin: 0; font-size: 12px; color: {TEXT_2}">The largest closed polyline is the roof; other closed polylines and circles are obstacles, named by their layer: a circle a tank, a near-rectangle a box with its turn, a line a wall, anything else a building. A KMZ or KML gives its place and heights from the placemarks; a DXF gives neither, and its units and its place are asked. Open the roof opens the design in the Studio at the Roof lens. On phone and tablet the dialog is a bottom sheet.</p>'
+        + f'<p style="margin: 0; font-size: 12px; color: {TEXT_2}">The largest closed shape is the roof. In a KMZ or KML the other closed shapes are obstacles named by their placemark, an open line a wall; in a DXF the other closed polylines are obstacles named by their layer, a circle a tank, and open lines are left out. A near-rectangle is a box with its turn, any other closed shape a building; a height in a name is read (issue 179, item 7). A KMZ or KML gives its place; a DXF does not, and its units and its place are asked. Open the roof opens the design in the Studio at the Roof lens. On phone and tablet the dialog is a bottom sheet.</p>'
     )
     return card("Import a drawing", body, gap=14)
 
