@@ -210,7 +210,7 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   on phone no note and no Try again) and as proposed (each waiting row and the preview's head say "Not made · the run
   failed", the download icon dim; on phone the note with Try again under the list's head). Caught in the browser at three
   sizes (`handover_failed/`) with a prototype on the local branch `design/handover-first-run-failed`, never merged; drawn
-  on 2026-10-11, for approval.
+  and approved on 2026-10-11 (D93).
 - `mockups/build_system_voltage.py` writes the boards "System voltage · Set by the user's country" (Phase 16, D87; desktop, tablet,
   phone; the canvas page "System voltage"): the voltage of the user's country in the Strings lens (India 1000 V, the United States
   600 V with no string length fitting the demo's inverter), the app's value following an inverter rated under it, the user's 1500 V
