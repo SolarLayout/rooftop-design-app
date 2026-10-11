@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { arePagesWantedOf, pageViewOf, previewBodyOf } from "./page-view";
+import { arePagesWantedOf, NOT_MADE, pageViewOf, previewBodyOf } from "./page-view";
 import { BEFORE_A_VOLTAGE, DEMO } from "./test-fixtures";
 
 const UNREACHABLE = { code: "api_unreachable", message: "The server cannot be reached. Check the connection and try again." };
@@ -79,8 +79,27 @@ describe("a run that failed", () => {
     const view = pageViewOf({ ...AT_REST, design: null, designStatus: "failed", failure: UNREACHABLE });
 
     expect(view.kind).toBe("failed");
-    expect(view.rows.slice(0, 7).every((row) => row.facts === null && row.waits)).toBe(true);
+    expect(view.rows.slice(0, 7).every((row) => row.facts === NOT_MADE && row.waits)).toBe(true);
     expect(view.failed).toMatchObject({ title: "The files were not made", detail: "There are no files yet", action: "Try again" });
+  });
+
+  // D93: the rows of a first run that failed say so, as the rows before options carry the API's title; no row breathes on.
+  test("at the first load, every row that waits says it was not made; the project file keeps its own facts", () => {
+    const view = pageViewOf({ ...AT_REST, design: null, designStatus: "failed", failure: UNREACHABLE });
+
+    expect(NOT_MADE).toBe("Not made · the run failed");
+    expect(view.rows.slice(0, 7).every((row) => row.facts === NOT_MADE && row.about === NOT_MADE && row.waits)).toBe(true);
+    expect(view.rows[7]).toMatchObject({ facts: "Pune-demo-roof.rtd · opens again here", waits: false });
+  });
+
+  test("a project not yet named at the first load: its file waits without saying it was not made", () => {
+    const view = pageViewOf({ name: null, design: null, designStatus: "failed", failure: UNREACHABLE, pages: null });
+    expect(view.rows[7]).toMatchObject({ facts: null, waits: true });
+  });
+
+  test("with a design of before, the rows keep its facts", () => {
+    const view = pageViewOf({ ...AT_REST, designStatus: "failed", failure: UNREACHABLE });
+    expect(view.rows.some((row) => row.facts === NOT_MADE)).toBe(false);
   });
 
   test("before options, the decision stands with the note", () => {

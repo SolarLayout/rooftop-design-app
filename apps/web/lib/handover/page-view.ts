@@ -6,13 +6,19 @@ import { TRY_AGAIN } from "../../components/shell/vitals-view";
 import type { DesignResult } from "../api";
 import type { Decision, FailedRow } from "../performance/page-view";
 import type { Failure, Status } from "../stores/results-store";
-import { deliverablesOf, type Deliverable } from "../flow/deliverables/items";
+import { deliverablesOf, PROJECT_FILE, type Deliverable } from "../flow/deliverables/items";
 import { pathOfNoOptions } from "../flow/no-options";
 
 export type { Decision, FailedRow };
 
 export const FILES_NOT_UPDATED = { title: "The files were not updated", detail: "They are of the design before" } as const;
 export const FILES_NOT_MADE = { title: "The files were not made", detail: "There are no files yet" } as const;
+/** The facts of a row that waits once the first run failed (D93): it says why, as a row before options says the API's title. */
+export const NOT_MADE = "Not made · the run failed";
+
+/** The rows of a first run that failed: each that waits for the design says it was not made; the project file keeps its own. */
+const notMadeOf = (rows: Deliverable[]): Deliverable[] =>
+  rows.map((row) => (row.id !== PROJECT_FILE && row.waits && row.facts === null ? { ...row, facts: NOT_MADE, about: NOT_MADE } : row));
 
 export type PageView = {
   /** Loading: no value was ever there. Decision: there are no options. Failed: the run failed. Design: the chosen option's. */
@@ -48,7 +54,7 @@ export function pageViewOf({ name, design, designStatus, failure, pages }: Asked
 
   if (designStatus === "failed") {
     const { title, detail } = design ? FILES_NOT_UPDATED : FILES_NOT_MADE;
-    return { kind: "failed", rows, decision, failed: { title, detail, action: TRY_AGAIN, message: failure?.message ?? "" }, isDimmed: false };
+    return { kind: "failed", rows: design ? rows : notMadeOf(rows), decision, failed: { title, detail, action: TRY_AGAIN, message: failure?.message ?? "" }, isDimmed: false };
   }
   if (design === null) return { kind: "loading", rows, decision: null, failed: null, isDimmed: false };
   const isOnItsWay = designStatus === "waiting" || designStatus === "running";
