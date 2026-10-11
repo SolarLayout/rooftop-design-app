@@ -49,7 +49,8 @@ def test_the_verdict_of_an_option_below_target_says_so(demo_design, option_d):
     verdict = readouts.verdict(demo_design, option_d)
 
     assert not verdict.ok
-    assert verdict.title.startswith("28 in series fits: Vmp 1,158 V at STC")
+    # #179, item 17: a length that misses only the target does not say "fits" beside the mark.
+    assert verdict.title.startswith("28 in series: Vmp 1,158 V at STC")
     assert verdict.detail.endswith("28 strings on 2 inverter(s), DC/AC 0.80 (below target).")
 
 
@@ -89,7 +90,7 @@ def test_an_option_over_the_current_limit_names_its_mppts(overloaded):
 
     assert own.custom and own.n_strings == 37
     assert not verdict.ok
-    assert verdict.title.startswith("20 in series fits: ")
+    assert verdict.title.startswith("20 in series: ")
     assert verdict.detail.endswith(
         "37 strings on 1 inverter(s), DC/AC 1.51 (heavy clipping). "
         "INV-1 · MPPT 1 carries 95.1 A and MPPT 2 to 6 carry 81.5 A, over the limit of 65.0 A."

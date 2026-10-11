@@ -2,6 +2,7 @@
 
 import io
 import zipfile
+from dataclasses import replace
 from datetime import date
 
 import pandas as pd
@@ -193,6 +194,25 @@ def test_the_bill_of_materials_names_the_system_voltage(demo_design, volts):
 
     cable = next(line for line in lines if line.item == "DC cable")
     assert cable.spec == f"4 mm² Cu, {volts:.0f} V DC, red + black"
+
+
+def test_the_ac_cable_says_its_voltage_is_taken_when_the_ond_gives_none(demo_design):
+    # #179, item 26: an inverter file without an output voltage had its AC cable sized at 415 V without a
+    # word.
+    d = demo_design
+    silent = replace(d.inverter, v_out_v=0.0)
+
+    def ac_cable(inverter):
+        voc = d.range.voc_cold
+        lines = bom(d.layout, d.chosen.system, d.module, inverter, voc, "Fixed tilt", 30.0, 1500.0)
+        return next(line for line in lines if line.item == "AC cable")
+
+    given, taken = ac_cable(d.inverter), ac_cable(silent)
+
+    assert given.spec == "Inverter to ACDB, sized for 240 A at 800 V AC"
+    assert taken.spec == (
+        "Inverter to ACDB, sized for 240 A at 415 V AC, taken as the OND gives no output voltage"
+    )
 
 
 def test_the_pdf_names_the_system_voltage_of_the_project(design_at_1000_v):
