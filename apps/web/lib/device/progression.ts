@@ -1,13 +1,14 @@
 // What the order of work remembers on this device (D95, D96, D99): the steps opened, per design, so that a step gone past
 // shows its tick and "Next:" stops once the next step was opened; the app's own words the user has met, so that their line
-// under a title is said once; and the work column hidden on desktop. Per-viewer conveniences in localStorage: a storage
-// that refuses (a private window, a quota) only means they are said again.
+// under a title is said once; the work column hidden on desktop; the sections of the work column opened or closed (V2 · 3).
+// Per-viewer conveniences in localStorage: a storage that refuses (a private window, a quota) only means they are said again.
 import { STEPS, type Step } from "../flow/steps";
 import { EXPLAIN, type ExplainedWord } from "../words/explain";
 
 export const SEEN_KEY = "rooftop.steps-seen";
 export const MET_KEY = "rooftop.words-met";
 export const PANEL_KEY = "rooftop.panel-hidden";
+export const SECTIONS_KEY = "rooftop.sections-open";
 
 type Read = Pick<Storage, "getItem">;
 type Write = Pick<Storage, "setItem" | "removeItem">;
@@ -65,4 +66,18 @@ export const isPanelHiddenOn = (storage: Read): boolean => read(storage, PANEL_K
 
 export function rememberPanelHidden(storage: Write, hidden: boolean): void {
   write(storage, PANEL_KEY, hidden ? true : null);
+}
+
+/** The sections of the work column the user opened (true) or closed (false) on this device, by their id ("roof.edges"). */
+export function sectionsOpenOf(storage: Read): Readonly<Record<string, boolean>> {
+  const all = read(storage, SECTIONS_KEY);
+  if (all === null || typeof all !== "object" || Array.isArray(all)) return {};
+  return Object.fromEntries(Object.entries(all).filter((entry): entry is [string, boolean] => typeof entry[1] === "boolean"));
+}
+
+/** A section as the user left it; one never touched opens as its step says (V2 · 3). */
+export const isSectionOpenOf = (open: Readonly<Record<string, boolean>>, id: string, opensFirst: boolean): boolean => open[id] ?? opensFirst;
+
+export function rememberSectionOpen(storage: Read & Write, id: string, open: boolean): void {
+  write(storage, SECTIONS_KEY, { ...sectionsOpenOf(storage), [id]: open });
 }

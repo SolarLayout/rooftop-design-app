@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { ArraySpec, LayoutResponse } from "../api";
-import { ARRAY_RANGES, designDayOf, mountingOf, pitchLineOf, spacingOf, tiltHintOf, withDesignDay, withPitchDecided, withAzimuthDecided } from "./array-fields";
+import { ARRAY_RANGES, designDayOf, mountingFactsOf, mountingOf, mountingSetByOf, pitchLineOf, spacingFactsOf, spacingOf, spacingSetByOf, tiltHintOf, windowFactsOf, windowSetByOf, withDesignDay, withPitchDecided, withAzimuthDecided } from "./array-fields";
+import type { Roof } from "../api";
 
 // The fields of the Array lens (plan/phase-05-plan.md, steps 14 and 15, decisions 16 and 20), from
 // plan/reference/functional-inventory.md, 1.3, on the demo's numbers.
@@ -99,5 +100,53 @@ describe("the design day", () => {
     expect(withDesignDay(ARRAY, "june").design_doy).toBe(172);
     expect(withDesignDay(ARRAY, "march").design_doy).toBe(80);
     expect(withDesignDay({ ...ARRAY, design_doy: 172 }, "winter").design_doy).toBeNull();
+  });
+});
+
+describe("who set each field of the array (V2 · 3)", () => {
+  const AT_DEFAULTS = { ...ARRAY, modules_in_tilt: 1 };
+
+  test("the mounting at the API's defaults is the app's; a value changed is Yours, with its default", () => {
+    expect(Object.values(mountingSetByOf(AT_DEFAULTS, "flat_tilted")).map((by) => by.kind)).toEqual(["default", "default", "default", "default"]);
+    const changed = mountingSetByOf({ ...AT_DEFAULTS, tilt_deg: 10, orientation: "landscape" }, "flat_tilted");
+    expect(changed.tilt_deg).toEqual({ kind: "yours", byDefault: "15°" });
+    expect(changed.orientation).toEqual({ kind: "yours", byDefault: "portrait" });
+    expect(changed.clearance_m).toEqual({ kind: "default" });
+  });
+
+  test("the mounting of a roof type has its own fields", () => {
+    expect(Object.keys(mountingSetByOf(AT_DEFAULTS, "flat_ew"))).toEqual(["ew_tilt_deg", "ew_ridge_gap_m", "clearance_m"]);
+  });
+
+  test("a spacing the engine decides is the app's; one given is Yours", () => {
+    expect(spacingSetByOf(ARRAY, "flat_tilted")).toEqual({ row_pitch_m: { kind: "default" }, azimuth_deg: { kind: "default" } });
+    expect(spacingSetByOf({ ...ARRAY, row_pitch_m: 5 }, "flat_tilted").row_pitch_m).toEqual({ kind: "yours", byDefault: "shade-free" });
+    expect(spacingSetByOf({ ...ARRAY, azimuth_deg: 170 }, "flat_tilted").azimuth_deg).toEqual({ kind: "yours", byDefault: "the roof edge's" });
+  });
+
+  test("the window, the design day and shaded positions against their defaults", () => {
+    expect(Object.values(windowSetByOf(ARRAY)).map((by) => by.kind)).toEqual(["default", "default", "default"]);
+    const changed = windowSetByOf({ ...ARRAY, window_start_h: 8, design_doy: 172, allow_shaded: true });
+    expect(changed).toEqual({ window: { kind: "yours", byDefault: "09:00 to 16:00" }, design_day: { kind: "yours", byDefault: "winter solstice" }, allow_shaded: { kind: "yours", byDefault: "off" } });
+  });
+});
+
+describe("the facts of the array's sections, on one line (V2 · 3)", () => {
+  const roof = (roof_type: Roof["roof_type"]) => ({ roof_type, slope_deg: 12, slope_azimuth_deg: 180 }) as Roof;
+
+  test("the mounting of each roof type", () => {
+    expect(mountingFactsOf(ARRAY, roof("flat_tilted"))).toBe("Tilt 15° · portrait · 2 in tilt");
+    expect(mountingFactsOf(ARRAY, roof("flat_ew"))).toBe("East-west 10° · ridge gap 0.30 m");
+    expect(mountingFactsOf({ ...ARRAY, orientation: "landscape" }, roof("sloped_flush"))).toBe("Flush at 12° · landscape · 2 in tilt");
+  });
+
+  test("the spacing: the pitch and the azimuth as the layout used them", () => {
+    expect(spacingFactsOf(ARRAY, LAYOUT, "flat_tilted")).toBe("Pitch 6.45 m · azimuth 180.0°");
+    expect(spacingFactsOf(ARRAY, null, "flat_tilted")).toBeNull();
+  });
+
+  test("the window in solar time and the design day", () => {
+    expect(windowFactsOf(ARRAY)).toBe("09:00 to 16:00 · winter solstice");
+    expect(windowFactsOf({ ...ARRAY, design_doy: 172 })).toBe("09:00 to 16:00 · 21 Jun");
   });
 });

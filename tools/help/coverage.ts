@@ -11,6 +11,7 @@ export const WITHOUT_A_DISC: Readonly<Record<string, string>> = {
   "kit/HelpDiscs.tsx": "the kit's example of a heading beside the disc",
   "shell/help/HelpSheet.tsx": "Related, in the help sheet itself: no input panel's section",
   "find/FirstStep.tsx": "Find's first step is itself the guide, with no input to explain; its ? stands beside the panel's title (D85)",
+  "studio/SummaryRow.tsx": "the summary row draws its section's disc beside its heading from the topic it is given (V2 · 3); Sizing temperatures and Inverter limits, closed rows without a topic before V2, get theirs with the help's topics (#219)",
 };
 
 /** Lines drawing a heading in the SECTION look, from one file's text: the line's number and words. */

@@ -19,10 +19,12 @@ The model, the maker, the rated AC power and the number of MPPTs; then the curre
 
 `Change` opens `Choose an inverter`: the app's library of OND files, with a search over the maker, the model and the file's name, and filters by `AC power`, `MPPT` and `Max DC`. The design's own inverter is tagged `In this design`, and a file its maker calls preliminary is tagged `Preliminary`. `Use this inverter` reads the one chosen; an OND file of your own can be chosen or dropped instead. An inverter rated under the system voltage set carries an exclamation mark and says so under its maker: the strings are then sized to its rating, and the voltage stays as it is. A file that cannot be read leaves the inverter as it was and says why; a file over 256 KB, larger than any OND file, is refused before it is sent. A new inverter clears any current per MPPT you entered, and the design runs again.
 
+In the Strings step the section is one line: the model and its power, with `Default` for the app's inverter and `Yours` once you read a file of your own.
+
 ## How it shapes the strings
 
 Its MPPT voltage window sets the shortest string that fits, and can set the longest. Its highest DC voltage is one of the limits on a string's open-circuit voltage. Its nominal MPP voltage gives one of the lengths the options try. Its rated AC power sets the DC/AC ratio of each option, and so how many inverters an option takes to stay in target. Its MPPT count, its inputs and its current per MPPT set how many strings one inverter takes. See <HelpLink k="studio.section.modules-in-series">Modules in series</HelpLink> and <HelpLink k="studio.section.mppt-loading">MPPT loading</HelpLink>.
 
 ## The current per MPPT
 
-When the OND lacks it, or the datasheet gives another value, enter it under `Inverter limits and cabling`, further down the inspector.
+When the OND lacks it, or the datasheet gives another value, enter it under `Inverter limits and cabling`, further down the step.

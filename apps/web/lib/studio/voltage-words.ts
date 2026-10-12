@@ -2,6 +2,7 @@
 // D88): who set it, where the app's value comes from, what the equipment's ratings do to the strings, and the voltage
 // above that the equipment takes. The app never moves the value; it says and offers. Pure; the lens draws what it gives.
 import { defaultVoltageOf } from "../country/country";
+import { DEFAULT, wordOf, type SetBy } from "./set-by";
 import { VOLTAGES, type Volts } from "./voltages";
 
 /** A number and its unit, kept on one line. */
@@ -23,7 +24,9 @@ export type VoltageFacts = {
 };
 
 export type VoltageWords = {
-  /** Beside the heading. */
+  /** Who set it (V2 · 3): the user's country, the app's default, or the user's. */
+  setBy: SetBy;
+  /** Beside the heading: its word. */
   who: string;
   /** Under the choice: where the app's value comes from. None for the user's. */
   line: string | null;
@@ -81,8 +84,10 @@ export function voltageWordsOf({ voltage, by, country, nameOf, ratings, range }:
   const rating = ratingOf(ratings);
   const under = rating !== null && rating.volts < voltage ? rating : null;
   const matching = under ? ([...VOLTAGES].reverse().find((volts) => volts <= under.volts) ?? null) : null;
+  const setBy: SetBy = !isTheApps ? { kind: "yours", byDefault: v(defaultVoltageOf(country)) } : defaultVoltageOf(country) === voltage ? { kind: "country", country: nameOf(country) } : DEFAULT;
   return {
-    who: !isTheApps ? "Your choice" : defaultVoltageOf(country) === voltage ? `Set for ${nameOf(country)}` : "Set by the app",
+    setBy,
+    who: wordOf(setBy),
     line: isTheApps ? lineOf(voltage, country, nameOf) : null,
     limit: isTheApps && under ? (under.taken ? `Strings sized to ${v(under.volts)}, taken for this module: its file gives no limit.` : `Strings sized to ${v(under.volts)}, this ${under.of}'s limit.`) : null,
     note:

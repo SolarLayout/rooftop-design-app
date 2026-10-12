@@ -1,7 +1,6 @@
 "use client";
 
-import { SectionHeading } from "@/components/shell/help/SectionHeading";
-import { useId, useState } from "react";
+import { useState } from "react";
 import { useProject, useResults, useStores } from "@/components/shell/stores";
 import { classNames } from "@/components/ui/class-names";
 import type { InverterResponse } from "@/lib/api";
@@ -9,8 +8,10 @@ import { editOf, openedAtOf, projectOf } from "@/lib/stores/project-store";
 import { chosenOptionOf, designEditOf, designOf, isDesignUpdating } from "@/lib/stores/results-store";
 import { displayNameOf, nameOfCountry } from "@/lib/country/country";
 import { withCustom, withoutCustom } from "@/lib/studio/custom-fields";
-import { inverterShownOf, withInverterRead, type ReplacedInverter } from "@/lib/studio/inverter-card";
-import { withAcCable, withCurrentPerMppt } from "@/lib/studio/inverter-fields";
+import { inverterFactsOf, inverterShownOf, withInverterRead, type ReplacedInverter } from "@/lib/studio/inverter-card";
+import { limitsRowOf, limitsSetByOf, withAcCable, withCurrentPerMppt } from "@/lib/studio/inverter-fields";
+import { fileSetByOf, wordOf } from "@/lib/studio/set-by";
+import { sizingFieldsOf, sizingRowOf, sizingSetByOf } from "@/lib/studio/sizing-fields";
 import { mpptTableOf } from "@/lib/studio/mppt-table";
 import { optionCardsOf } from "@/lib/studio/option-cards";
 import { stringsViewOf } from "@/lib/studio/strings-view";
@@ -25,7 +26,9 @@ import { SizingTemperatures } from "./SizingTemperatures";
 import { StringColourSwitch } from "./StringLegend";
 import { InverterPicker } from "./InverterPicker";
 import { NothingFits, OptionCards, OptionsNote, YourOwn } from "./StringOptions";
+import { SummaryRow } from "./SummaryRow";
 import { SystemVoltage } from "./SystemVoltage";
+import { useSectionOpen } from "./use-section-open";
 import { useSize } from "./use-size";
 
 /** The inverter read from a replaced file, for the design that was open when it was read. */
@@ -53,8 +56,7 @@ export function StringsInspector() {
   const [isReplacing, setReplacing] = useState(false);
   // Each opening of the picker mounts it afresh: its filters and its choice at rest.
   const [openings, setOpenings] = useState(0);
-  const heading = useId();
-  const [isLimitsOpen, setLimitsOpen] = useState(false);
+  const [, openLimits] = useSectionOpen("strings.limits", false);
   const [focusCurrent, setFocusCurrent] = useState(0);
   if (!project) return null;
   const view = stringsViewOf({ voltage: project.system_voltage ?? null, design, option });
@@ -76,7 +78,7 @@ export function StringsInspector() {
 
   /** The MPPT table's way to the current per MPPT: the row opened, the focus in its field (decision 17). */
   function enterCurrent() {
-    setLimitsOpen(true);
+    openLimits(true);
     setFocusCurrent((times) => times + 1);
   }
 
@@ -96,28 +98,37 @@ export function StringsInspector() {
     store.getState().commit((document) => withVoltageChosen(document, volts));
   }
 
+  const sizingBy = sizingSetByOf(sizingFieldsOf(project, design));
+
   return (
-    <div className="flex flex-col gap-section tablet:grid tablet:grid-cols-2 tablet:gap-x-8 desktop:flex desktop:flex-col">
-      <div className="flex flex-col gap-section">
-        {/* On phone the colour switch of the strings is the sheet's first thing (the board "Studio, Strings lens, phone"). */}
-        {size === "phone" && option ? <StringColourSwitch fill /> : null}
-        <section aria-labelledby={heading} className="flex flex-col gap-2">
-          <SectionHeading id={heading} help="studio.section.inverter">
-            Inverter
-          </SectionHeading>
-          <InverterCard
-            inverter={inverter}
-            entered={project.imax_mppt_override ?? null}
-            onChange={() => {
-              setOpenings((count) => count + 1);
-              setReplacing(true);
-            }}
-          />
-        </section>
+    <div className="flex flex-col">
+      {/* On phone the colour switch of the strings is the sheet's first thing (the board "Studio, Strings lens, phone"). */}
+      {size === "phone" && option ? <StringColourSwitch fill /> : null}
+      <SummaryRow id="strings.inverter" title="Inverter" help="studio.section.inverter" facts={inverter ? inverterFactsOf(inverter.inverter) : null} setBy={wordOf(fileSetByOf(project.ond_text))}>
+        <InverterCard
+          inverter={inverter}
+          entered={project.imax_mppt_override ?? null}
+          onChange={() => {
+            setOpenings((count) => count + 1);
+            setReplacing(true);
+          }}
+        />
+      </SummaryRow>
+      <SummaryRow
+        id="strings.voltage"
+        title="System voltage"
+        help="studio.section.system-voltage"
+        {...(view.kind === "sized" ? { helpValue: String(view.voltage) } : {})}
+        {...(words ? { helpMark: words.who } : {})}
+        facts={view.kind === "sized" ? `${view.voltage} V` : null}
+        setBy={words?.who ?? null}
+        opensFirst
+      >
         <SystemVoltage voltage={view.kind === "sized" ? view.voltage : null} words={words} onChoose={choose} />
+      </SummaryRow>
+      {/* The step's own matter stands open: the series range, the options, the MPPT loading of the one chosen. */}
+      <div className="flex flex-col gap-section py-group empty:hidden">
         {view.kind === "sized" ? <SeriesRange view={view} isUpdating={isUpdating} /> : null}
-      </div>
-      <div className="flex flex-col gap-section">
         {view.kind === "no-voltage" ? null : (
           <>
             <NothingFits view={view} />
@@ -136,19 +147,25 @@ export function StringsInspector() {
                 <MpptTable table={mpptTableOf(option, view.voltage, design.equipment.max_current_per_mppt)} onEnterCurrent={enterCurrent} />
               </div>
             ) : null}
+          </>
+        )}
+      </div>
+      {view.kind === "no-voltage" ? null : (
+        <>
+          <SummaryRow id="strings.sizing" title="Sizing temperatures" facts={sizingRowOf(design)} setBy={sizingBy && wordOf(sizingBy)}>
             <SizingTemperatures />
+          </SummaryRow>
+          <SummaryRow id="strings.limits" title="Inverter limits and cabling" facts={limitsRowOf(project, inverter)} setBy={wordOf(limitsSetByOf(project))}>
             <InverterLimits
               document={project}
               inverter={inverter}
-              isOpen={isLimitsOpen}
-              onOpen={setLimitsOpen}
               focusCurrent={focusCurrent}
               onCurrent={(value) => store.getState().commit((document) => withCurrentPerMppt(document, value))}
               onCable={(value) => store.getState().commit((document) => withAcCable(document, value))}
             />
-          </>
-        )}
-      </div>
+          </SummaryRow>
+        </>
+      )}
       <InverterPicker key={openings} voltage={project.system_voltage ?? null} open={isReplacing} current={inverter?.inverter.source ?? null} onRead={inverterRead} onClose={() => setReplacing(false)} />
     </div>
   );

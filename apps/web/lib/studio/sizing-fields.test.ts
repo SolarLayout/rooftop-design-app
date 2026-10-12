@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { DesignResult, Project } from "../api";
-import { SIZING_RANGES, sizingFieldsOf, sizingRowOf, withSizing } from "./sizing-fields";
+import { SIZING_RANGES, sizingFieldsOf, sizingRowOf, sizingSetByOf, withSizing } from "./sizing-fields";
 
 const VOC_NOTE = "Voc coefficient -0.164 %/°C is outside the usual -0.35 to -0.20 %/°C for crystalline silicon. Check the datasheet and enter it if it differs.";
 
@@ -16,31 +16,38 @@ const DOCUMENT = { roof: { roof_type: "flat_tilted" }, t_min_override: null, t_m
 
 describe("the sizing temperatures and the Voc coefficient (the board \"Inverter and sizing\"; plan/phase-07-plan.md, decisions 6 and 7)", () => {
   test("every field empty for its default, with the default and where it comes from beside it", () => {
-    expect(sizingFieldsOf(DOCUMENT, run()).map(({ id, value, detail, reset }) => ({ id, value, detail, reset }))).toEqual([
-      { id: "t_min_override", value: null, detail: "11.9 °C from the weather", reset: null },
-      { id: "t_max_override", value: null, detail: "39.3 °C from the weather", reset: null },
-      { id: "cell_rise_c", value: null, detail: "25 °C by roof type: flat, open rack", reset: null },
-      { id: "voc_coefficient_pct", value: null, detail: "−0.164 %/°C, the one-diode model's", reset: null },
+    expect(sizingFieldsOf(DOCUMENT, run()).map(({ id, value, detail }) => ({ id, value, detail }))).toEqual([
+      { id: "t_min_override", value: null, detail: "From the weather · 11.9 °C" },
+      { id: "t_max_override", value: null, detail: "From the weather · 39.3 °C" },
+      { id: "cell_rise_c", value: null, detail: "Default · 25 °C by roof type: flat, open rack" },
+      { id: "voc_coefficient_pct", value: null, detail: "Default · −0.164 %/°C, the one-diode model's" },
     ]);
   });
 
-  test("a value entered stays, says so, and can be given back to its default", () => {
+  test("a value entered is Yours, says the default it took the place of where the run said it, for Reset to give back (V2 · 3)", () => {
     const document = { ...DOCUMENT, t_min_override: 5, cell_rise_c: 25, voc_coefficient_pct: -0.29 } as Project;
-    const fields = sizingFieldsOf(document, run({ equipment: { coefficients: { mu_voc_pct: -0.29, source: "entered" }, module_notes: [] } } as never));
-    expect(fields.map(({ value, detail, reset }) => ({ value, detail, reset }))).toEqual([
-      { value: 5, detail: "entered", reset: "Use the weather's 11.9 °C" },
-      { value: null, detail: "39.3 °C from the weather", reset: null },
-      { value: 25, detail: "entered", reset: "Use the roof type's" },
-      { value: -0.29, detail: "entered", reset: "Use the module's" },
+    const design = run({ equipment: { coefficients: { mu_voc_pct: -0.29, source: "entered" }, module_notes: [] } } as never);
+    const fields = sizingFieldsOf(document, { ...design, sizing: { ...design.sizing, cell_rise_from: "entered", voc_coefficient_from: "entered" } } as DesignResult);
+    expect(fields.map(({ value, detail }) => ({ value, detail }))).toEqual([
+      { value: 5, detail: "Yours · default 11.9 °C" },
+      { value: null, detail: "From the weather · 39.3 °C" },
+      { value: 25, detail: "Yours" },
+      { value: -0.29, detail: "Yours" },
     ]);
+    expect(fields.map((field) => field.setBy.kind)).toEqual(["yours", "weather", "yours", "yours"]);
+  });
+
+  test("the section is from the weather while every field holds its default, Yours once one is entered (V2 · 3)", () => {
+    expect(sizingSetByOf(sizingFieldsOf(DOCUMENT, run()))).toEqual({ kind: "weather" });
+    expect(sizingSetByOf(sizingFieldsOf({ ...DOCUMENT, cell_rise_c: 30 } as Project, run()))).toEqual({ kind: "yours", byDefault: null });
   });
 
   test("the coefficient said is the one that sizes the strings, the model's, though the PAN states its own (#179, item 15); a sloped roof's cell rise is flush", () => {
     const design = run({ equipment: { coefficients: { mu_voc_pct: -0.286, source: "PAN file" }, module_notes: [] } } as never);
     const sloped = { ...DOCUMENT, roof: { roof_type: "sloped_flush" } } as Project;
     const fields = sizingFieldsOf(sloped, { ...design, sizing: { ...design.sizing, cell_rise_c: 35, voc_coefficient_pct: -0.164, voc_coefficient_from: "one-diode model" } });
-    expect(fields[2]?.detail).toBe("35 °C by roof type: sloped, flush");
-    expect(fields[3]?.detail).toBe("−0.164 %/°C, the one-diode model's");
+    expect(fields[2]?.detail).toBe("Default · 35 °C by roof type: sloped, flush");
+    expect(fields[3]?.detail).toBe("Default · −0.164 %/°C, the one-diode model's");
   });
 
   test("the Voc coefficient carries the engine's note on it, with true minus signs; none once entered", () => {

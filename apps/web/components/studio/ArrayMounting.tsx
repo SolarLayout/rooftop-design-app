@@ -1,14 +1,15 @@
 "use client";
 
-import { SectionHeading } from "@/components/shell/help/SectionHeading";
 import { NumberField } from "@/components/ui/NumberField";
 import { Segmented } from "@/components/ui/Segmented";
 import { Slider } from "@/components/ui/Slider";
 import { Stepper } from "@/components/ui/Stepper";
 import type { ArraySpec, Roof } from "@/lib/api";
-import { ARRAY_RANGES, mountingOf, tiltHintOf, type MountingId } from "@/lib/studio/array-fields";
+import { ARRAY_RANGES, mountingOf, mountingSetByOf, tiltHintOf, type MountingId } from "@/lib/studio/array-fields";
+import { ARRAY_DEFAULTS } from "@/lib/studio/defaults";
+import { DEFAULT } from "@/lib/studio/set-by";
 import { slopedTiltLineOf } from "@/lib/studio/array-view";
-import { ReadOut, ROW } from "./inspector-look";
+import { ReadOut, ROW, WithSetBy } from "./inspector-look";
 
 /** What a field does to the array once it is committed. */
 export type ArrayChange = (array: ArraySpec) => ArraySpec;
@@ -29,8 +30,8 @@ const EW_TILT = { min: ARRAY_RANGES.ew_tilt_deg.min, max: ARRAY_RANGES.ew_tilt_d
 
 /**
  * The mounting of the modules (plan step 14, functional-inventory.md 1.3): the fields of the roof
- * type, as the board draws them. A slider commits on release, a segmented control and a stepper at
- * once, a number field on Enter or blur.
+ * type, as the board draws them, inside the Array step's summary row (V2 · 3), each saying who set it with Reset for the
+ * user's value. A slider commits on release, a segmented control and a stepper at once, a number field on Enter or blur.
  */
 export function ArrayMounting({ array, roof, onChange }: Props) {
   const set = <Id extends MountingId>(id: Id, value: ArraySpec[Id]) => onChange((before) => (before[id] === value ? before : { ...before, [id]: value }));
@@ -58,12 +59,16 @@ export function ArrayMounting({ array, roof, onChange }: Props) {
   };
 
   const sloped = roof.roof_type === "sloped_flush" ? slopedTiltLineOf(roof) : null;
+  const setBy = mountingSetByOf(array, roof.roof_type);
 
   return (
-    <section aria-label="Mounting" className="flex flex-col gap-row">
-      <SectionHeading help="studio.section.mounting">Mounting</SectionHeading>
+    <>
       {sloped ? <ReadOut label="Tilt" value={sloped.value} line={sloped.line} /> : null}
-      {mountingOf(roof.roof_type).map(field)}
-    </section>
+      {mountingOf(roof.roof_type).map((id) => (
+        <WithSetBy key={id} setBy={setBy[id] ?? DEFAULT} onReset={() => set(id, ARRAY_DEFAULTS[id])}>
+          {field(id)}
+        </WithSetBy>
+      ))}
+    </>
   );
 }

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { addSeen, isPanelHiddenOn, MET_KEY, PANEL_KEY, rememberMet, rememberPanelHidden, rememberSeen, SEEN_KEY, seenOf, wordsMetOf } from "./progression";
+import { addSeen, isPanelHiddenOn, isSectionOpenOf, MET_KEY, PANEL_KEY, rememberMet, rememberPanelHidden, rememberSeen, rememberSectionOpen, SECTIONS_KEY, sectionsOpenOf, SEEN_KEY, seenOf, wordsMetOf } from "./progression";
 
 // What the progression remembers on this device (D95, D96, D99): the steps opened per design, the app's words met, the
 // panel hidden. A storage that refuses only means it is said again.
@@ -59,5 +59,25 @@ describe("the panel hidden, on this device", () => {
     rememberPanelHidden(storage, false);
     expect(storage.items.has(PANEL_KEY)).toBe(false);
     expect(isPanelHiddenOn(refusing)).toBe(false);
+  });
+});
+
+describe("the sections of the work column opened or closed (V2 · 3)", () => {
+  test("a section never touched opens as its step says; once opened or closed, as the user left it", () => {
+    const storage = memory();
+    expect(isSectionOpenOf(sectionsOpenOf(storage), "array.module", true)).toBe(true);
+    expect(isSectionOpenOf(sectionsOpenOf(storage), "roof.edges", false)).toBe(false);
+    rememberSectionOpen(storage, "array.module", false);
+    rememberSectionOpen(storage, "roof.edges", true);
+    expect(isSectionOpenOf(sectionsOpenOf(storage), "array.module", true)).toBe(false);
+    expect(isSectionOpenOf(sectionsOpenOf(storage), "roof.edges", false)).toBe(true);
+    expect(JSON.parse(storage.items.get(SECTIONS_KEY) ?? "")).toEqual({ "array.module": false, "roof.edges": true });
+  });
+
+  test("what is not a yes or a no is left out; a storage that refuses opens them as their step says", () => {
+    expect(sectionsOpenOf(memory({ [SECTIONS_KEY]: '{"roof.edges":"yes","array.module":true}' }))).toEqual({ "array.module": true });
+    expect(sectionsOpenOf(memory({ [SECTIONS_KEY]: "[1]" }))).toEqual({});
+    expect(isSectionOpenOf(sectionsOpenOf(refusing), "roof.edges", false)).toBe(false);
+    expect(() => rememberSectionOpen(refusing, "roof.edges", true)).not.toThrow();
   });
 });

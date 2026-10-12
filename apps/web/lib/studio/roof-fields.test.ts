@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Roof } from "../api";
-import { ROOF_FIELDS, roofFieldsOf, withRoofField } from "./roof-fields";
+import { edgesFactsOf, obstaclesFactsOf, placeFactsOf, ROOF_FIELDS, roofFieldsOf, roofTypeFactsOf, withRoofField } from "./roof-fields";
 
 // The fields of the Roof lens (plan/phase-05-plan.md, step 11, decision 20), from
 // plan/reference/functional-inventory.md, 1.1: each with its unit, its range and its decimals.
@@ -77,5 +77,47 @@ describe("the edit a field makes", () => {
 
   test("the same value is the same roof", () => {
     expect(withRoofField(DEMO, "parapet_h", 0.9)).toBe(DEMO);
+  });
+});
+
+describe("who set each field (V2 · 3)", () => {
+  test("a field at the API's default is the app's", () => {
+    expect(roofFieldsOf(DEMO).map((field) => field.setBy.kind)).toEqual(["default", "default", "default", "default", "default", "default"]);
+  });
+
+  test("a field typed by the user is Yours, with the default it can be given back", () => {
+    const parapet = roofFieldsOf({ ...DEMO, parapet_h: 1.2 })[0];
+    expect(parapet?.setBy).toEqual({ kind: "yours", byDefault: "0.90 m" });
+    expect(parapet?.byDefault).toBe(0.9);
+  });
+
+  test("a sloped roof's default parapet is none and its pitch the roof type's", () => {
+    const fields = roofFieldsOf({ ...DEMO, roof_type: "sloped_flush", parapet_h: 0, slope_deg: 10 });
+    expect(fields.find((field) => field.id === "parapet_h")?.setBy.kind).toBe("default");
+    expect(fields.find((field) => field.id === "slope_deg")?.setBy.kind).toBe("default");
+  });
+});
+
+describe("the facts of each section, on one line (V2 · 3)", () => {
+  test("the roof type in its words", () => {
+    expect(roofTypeFactsOf(DEMO)).toBe("Flat, tilted rows · rows facing the equator");
+    expect(roofTypeFactsOf({ ...DEMO, roof_type: "sloped_flush" })).toBe("Sloped, flush · modules follow the roof pitch");
+  });
+
+  test("the edges: the parapet and the setback", () => {
+    expect(edgesFactsOf(DEMO)).toBe("Parapet 0.90 m · setback 1.00 m");
+    expect(edgesFactsOf({ ...DEMO, parapet_h: 0 })).toBe("No parapet · setback 1.00 m");
+  });
+
+  test("the obstacles by name, those of one kind counted", () => {
+    const named = (...names: string[]) => names.map((name) => ({ name })) as unknown as Roof["obstacles"];
+    expect(obstaclesFactsOf(named("Stair room", "Water tank", "AC unit 1", "AC unit 2", "AC unit 3", "AC unit 4"))).toBe("Stair room, water tank, 4 AC units");
+    expect(obstaclesFactsOf(named("Tree"))).toBe("Tree");
+    expect(obstaclesFactsOf([])).toBe("None on the roof");
+  });
+
+  test("the place in degrees, to two decimals", () => {
+    expect(placeFactsOf(DEMO)).toBe("18.52° N, 73.86° E");
+    expect(placeFactsOf({ ...DEMO, lat: -33.868, lon: -151.2 })).toBe("33.87° S, 151.20° W");
   });
 });

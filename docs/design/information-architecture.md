@@ -32,10 +32,10 @@ Studio step, no step. The steps after Find share one project and one top bar.
 
 | Region | Desktop (over 1100) | Tablet (640 to 1100) | Phone (under 640) |
 |---|---|---|---|
-| 3D stage | Fills the centre; the whole width while the work column is hidden (D99) | Full width, top, 440 px, the result row under it | Full width, top, about 252 px |
+| 3D stage | Fills the centre; the whole width while the work column is hidden (D99) | Full width, top, 440 px, the result row under it (the energy at the left, the modules and the kWp at the right) | Full width, top, 40 % of the height; the sheet at half meets its foot |
 | View controls (3D, Plan, Fit, north, Sun, Layers; Show panel while the column is hidden) | Floating, top right of the stage | Floating, top right | 3D, Plan, Sun and Layers, top right |
-| Work column | Right panel, 384 px, the step's primary pinned at its foot; Hide panel (⌘ \) at its top right, the primary then floating at the stage's foot | Under the stage, the primary at the screen's foot | Bottom sheet with a drag handle, the primary at its end |
-| Time control | Floating pill, bottom left of the stage (a full timeline in the Sun view) | Floating pill | Play button with the time, top left of the stage |
+| Work column | Right panel, 384 px: the step's head (its instruction, one line, the first-open status), its sections as summary rows, its primary pinned at the foot (V2 · 3); Hide panel (⌘ \) at its top right, the primary then floating at the stage's foot | Under the stage, one column, the primary at the screen's foot beside its Next line | Bottom sheet with a drag handle, the primary at its end |
+| Time control | In the Sun view alone: its timeline across the stage's foot | The same | In the Sun view alone: the play button with the time, top left of the stage |
 
 ### What each step holds
 
@@ -61,8 +61,11 @@ list. On phone the list is the screen and a preview opens as a pushed screen.
 1. Home: type an address, press "Find my roof".
 2. Find and outline: the map goes to the address; outline the roof by corners, by rectangle, or by accepting a
    detected footprint; choose the roof type; "Build this roof".
-3. Studio opens on the Roof step. The map tilts into 3D and the building rises on the imagery.
-4. The array fills the roof at once with defaults. The user adjusts in the Array step.
+3. Studio opens on the Roof step and says what happened (V2 · 3, D97): `Check the roof`, the line of what the app set,
+   `The array is on the roof` with its modules and kWp, then `Computing the energy`, then the energy of year 1; one
+   primary, `Continue to Array`. The status is said until the user continues. The stage draws the design day's noon.
+4. The array fills the roof at once with defaults; every section says who set it (`Default`, `From the weather`,
+   `Set for <country>`, `Yours`). The user adjusts in the Array step.
 5. Strings step: the user chooses the system voltage. Until then, energy and everything that depends on it wait
    and say so. Nothing is preselected.
 6. Performance and Handover become complete.

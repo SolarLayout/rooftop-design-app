@@ -11,7 +11,7 @@ import { timeOfKey } from "@/lib/flow/sun-time";
 const TAKES_ITS_OWN_KEYS = '[role="slider"], [role="menu"], [role="listbox"], [role="combobox"]';
 
 /**
- * The keys of the time in the Studio (decision 17): `,` and `.` an hour back and forward, `[` and `]` a
+ * The keys of the time in the Sun view (decision 17; V2 · 3): `,` and `.` an hour back and forward, `[` and `]` a
  * day; not while what has the focus takes keys of its own, nor with a modifier. A key stops play, as any
  * time set by something else does.
  */
@@ -20,7 +20,8 @@ export function useSunKeys(): void {
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      // The time belongs to the Sun view (V2 · 3).
+      if (!view.getState().isSunView || event.metaKey || event.ctrlKey || event.altKey) return;
       if (isKeyHeld(keyTargetOf(event), TAKES_ITS_OWN_KEYS)) return;
       const day = sunDayOf(results.getState());
       if (!day) return;

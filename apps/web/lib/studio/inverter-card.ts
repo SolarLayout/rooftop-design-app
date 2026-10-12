@@ -64,3 +64,6 @@ export function inverterShownOf({ design, designEdit, replaced }: Sources): Inve
 export function withInverterRead(document: Project, read: InverterResponse): Project {
   return { ...document, ond_text: read.text, ond_path: read.file, imax_mppt_override: null };
 }
+
+/** The inverter on one line, as the Strings step's summary row says it (V2 · 3): its model and its power. */
+export const inverterFactsOf = (inverter: Pick<Inverter, "model" | "pnom_kw">): string => `${inverter.model} · ${kilowatts(inverter.pnom_kw)}`;

@@ -2,7 +2,8 @@
 // loses its parapet, as the desktop app's did, and gets the inventory's pitch of 10° where it had none.
 import type { Roof } from "../api";
 
-const PITCH_UNLESS_SET = 10;
+/** The pitch a roof made sloped is given where it had none (inventory 1.1). */
+export const PITCH_UNLESS_SET = 10;
 
 export function withRoofType(roof: Roof, roofType: Roof["roof_type"]): Roof {
   if (roof.roof_type === roofType) return roof;

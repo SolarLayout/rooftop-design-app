@@ -146,6 +146,7 @@
   --size-tabbar-on-screen: calc(var(--size-tabbar) - var(--size-tabbar-foot) + var(--size-tabbar-foot-on-screen));
   --size-touch: 44px;
   --size-sheet-peek: 84px;
+  --size-stage-phone: 40dvh;
   --columns-p-values-phone: 1fr 1fr 1.5fr;
   --columns-loss-chain: 210px 100px 64px 216px minmax(0, 1fr);
   --columns-loss-chain-tablet: 220px 112px 72px 190px minmax(0, 1fr);
@@ -370,6 +371,7 @@
   --spacing-tabbar-on-screen: var(--size-tabbar-on-screen);
   --spacing-touch: var(--size-touch);
   --spacing-sheet-peek: var(--size-sheet-peek);
+  --spacing-stage-phone: var(--size-stage-phone);
 
   --grid-template-columns-p-values-phone: var(--columns-p-values-phone);
   --grid-template-columns-loss-chain: var(--columns-loss-chain);

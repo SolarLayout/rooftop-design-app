@@ -1,6 +1,5 @@
 "use client";
 
-import { SectionHeading } from "@/components/shell/help/SectionHeading";
 import Link from "next/link";
 import { ROOF_TYPES } from "@/lib/geometry/roof-types";
 import { useProject, useStores, useView } from "@/components/shell/stores";
@@ -14,19 +13,23 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { StatusMark } from "@/components/ui/StatusMark";
 import type { Project, Roof } from "@/lib/api";
 import { roofCardOf, type RoofCard } from "@/lib/geometry/roof-card";
-import { roofFieldsOf, withRoofField, type RoofFieldId } from "@/lib/studio/roof-fields";
+import { edgesFactsOf, obstaclesFactsOf, placeFactsOf, roofFieldsOf, roofTypeFactsOf, withRoofField, type RoofFieldId } from "@/lib/studio/roof-fields";
+import { sectionSetByOf, wordOf, type SetBy } from "@/lib/studio/set-by";
 import { HEIGHTS_SET, indexToReview, namesToReview, toReviewWordsOf } from "@/lib/studio/review-heights";
 import { withRoofType } from "@/lib/geometry/roof-type-rule";
 import { projectOf } from "@/lib/stores/project-store";
-import { toReviewOf } from "@/lib/stores/view-store";
-import { fieldsLayoutOf } from "./inspector-look";
+import { selectionOf, toReviewOf } from "@/lib/stores/view-store";
 import { ObstaclePanel } from "./ObstaclePanel";
+import { SetByHint } from "./SetByHint";
+import { SummaryRow } from "./SummaryRow";
 import type { Size } from "./use-size";
 
 type Props = {
   /** The size of the screen: the inspector is mounted once, in the container of the size (decision 9). */
   size: Size;
 };
+
+const YOURS: SetBy = { kind: "yours", byDefault: null };
 
 /** The way back to the map, with the outline of this design shown there. */
 export const EDIT_THE_OUTLINE = "/find?edit=roof";
@@ -117,20 +120,24 @@ function ReviewNote({ count, onReview }: { count: number; onReview: () => void }
 }
 
 /**
- * The inspector of the Roof lens (plan/phase-05-plan.md, steps 11 to 13): the card of the roof with Edit,
- * the roof type, the edges and access as fields that commit as fields do (decision 16), and the obstacles.
- * On tablet it stands in two columns under the vitals, the obstacles in the second; on phone in the sheet.
+ * The Roof step's sections (V2 · 3, D97; the board "The Studio's first open"): each one line of facts with who set it, that
+ * opens in place: the roof type, the edges and access as fields that commit as fields do (decision 16), each saying who
+ * set it with Reset for the user's value, the obstacles, and where the roof is with Edit. The obstacles open while one is
+ * selected on the roof. The note of heights to review stands over them.
  */
 export function RoofInspector({ size }: Props) {
   const project = useProject(projectOf);
   const { project: store, view } = useStores();
   const toReview = useView(toReviewOf);
-  const card = project ? roofCardOf(project.roof, project.roof_input.file) : null;
-  const reviewing = project ? namesToReview(project.roof.obstacles, toReview) : [];
+  const selection = useView(selectionOf);
+  if (!project) return <Skeleton kind="text" className="w-full" />;
+  const { roof } = project;
+  const card = roofCardOf(roof, project.roof_input.file);
+  const reviewing = namesToReview(roof.obstacles, toReview);
+  const fields = roofFieldsOf(roof);
 
   function review() {
-    if (!project) return;
-    const index = indexToReview(project.roof.obstacles, toReview);
+    const index = indexToReview(roof.obstacles, toReview);
     if (index !== null) view.getState().select({ kind: "obstacle", index });
   }
 
@@ -142,50 +149,41 @@ export function RoofInspector({ size }: Props) {
     store.getState().commit((design) => withRoof(design, withRoofField(design.roof, id, value)));
   }
 
+  const edgesBy = sectionSetByOf(fields.map((field) => field.setBy));
+
   return (
-    <div data-size={size} className="flex flex-col gap-4 tablet:grid tablet:grid-cols-2 tablet:gap-8 desktop:flex desktop:gap-4">
-      <div className="flex flex-col gap-4 tablet:gap-5 desktop:contents">
-        <section aria-label="Location" className="flex flex-col gap-2.5">
-          <SectionHeading help="studio.section.location">Location</SectionHeading>
-          <LocationCard card={card} size={size} />
-        </section>
-        {reviewing.length > 0 ? <ReviewNote count={reviewing.length} onReview={review} /> : null}
-
-        <section aria-label="Roof type" className="flex flex-col gap-2.5">
-          <SectionHeading help="app.section.roof-type" {...(project ? { value: project.roof.roof_type } : {})}>
-            Roof type
-          </SectionHeading>
-          {project ? (
-            <Segmented
-              label="Roof type"
-              options={ROOF_TYPES.map(({ id, short }) => ({ value: id, label: short }))}
-              value={project.roof.roof_type}
-              onChange={chooseRoofType}
-              fill
-            />
-          ) : (
-            <Skeleton kind="text" className="w-full" />
-          )}
-        </section>
-
-        <section aria-label="Edges and access" className="flex flex-col gap-2.5">
-          <SectionHeading help="studio.section.edges-and-access">Edges and access</SectionHeading>
-          {project ? (
-            <div className={fieldsLayoutOf(size)}>
-              {roofFieldsOf(project.roof).map((field) => (
-                <NumberField key={field.id} label={field.label} value={field.value} unit={field.unit} range={field.range} labelInside={size !== "phone"} onCommit={(value) => commitField(field.id, value)} />
-              ))}
-            </div>
-          ) : (
-            <Skeleton kind="text" className="w-full" />
-          )}
-        </section>
-      </div>
-      {project ? (
-        <div className="desktop:contents">
-          <ObstaclePanel roof={project.roof} size={size} />
-        </div>
-      ) : null}
+    <div data-size={size} className="flex flex-col">
+      {reviewing.length > 0 ? <ReviewNote count={reviewing.length} onReview={review} /> : null}
+      {/* The roof type is the user's: Find asks for it before the roof is built. */}
+      <SummaryRow id="roof.type" title="Roof type" help="app.section.roof-type" facts={roofTypeFactsOf(roof)} setBy={wordOf(YOURS)}>
+        <Segmented label="Roof type" options={ROOF_TYPES.map(({ id, short }) => ({ value: id, label: short }))} value={roof.roof_type} onChange={chooseRoofType} fill />
+      </SummaryRow>
+      <SummaryRow id="roof.edges" title="Edges and access" help="studio.section.edges-and-access" facts={edgesFactsOf(roof)} setBy={edgesBy && wordOf(edgesBy)}>
+        {fields.map((field) => (
+          <NumberField
+            key={field.id}
+            label={field.label}
+            value={field.value}
+            unit={field.unit}
+            range={field.range}
+            detail={<SetByHint setBy={field.setBy} onReset={() => commitField(field.id, field.byDefault)} />}
+            onCommit={(value) => commitField(field.id, value)}
+          />
+        ))}
+      </SummaryRow>
+      <SummaryRow
+        id="roof.obstacles"
+        title={`Obstacles · ${roof.obstacles.length}`}
+        help="app.section.obstacles"
+        facts={obstaclesFactsOf(roof.obstacles)}
+        setBy={roof.obstacles.length > 0 ? wordOf(YOURS) : null}
+        isHeldOpen={selection?.kind === "obstacle" || reviewing.length > 0}
+      >
+        <ObstaclePanel roof={roof} size={size} isHeaded={false} />
+      </SummaryRow>
+      <SummaryRow id="roof.location" title="Location" help="studio.section.location" facts={placeFactsOf(roof)} setBy={null}>
+        <LocationCard card={card} size={size} />
+      </SummaryRow>
     </div>
   );
 }

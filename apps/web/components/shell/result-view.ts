@@ -40,3 +40,10 @@ export function summaryOf(view: VitalsView): SummaryRow[] {
     return [{ id, name: NAMES[id] ?? cell.label, value: unit ? `${number} ${unit}` : number }];
   });
 }
+
+/** Beside the result in the row under the stage on tablet (V2 · 3): the modules used and the DC capacity; none before a design. */
+export function capacityOf(view: VitalsView): string | null {
+  const modules = view.cells.find((cell) => cell.id === "modules")?.quantity;
+  const dc = view.cells.find((cell) => cell.id === "dc")?.quantity;
+  return view.kind === "design" && modules && dc ? `${modules.number} modules · ${dc.number} ${dc.unit}` : null;
+}

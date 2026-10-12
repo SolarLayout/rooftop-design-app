@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { resultChipOf, summaryOf } from "./result-view";
+import { capacityOf, resultChipOf, summaryOf } from "./result-view";
 import type { VitalsView } from "./vitals-view";
 
 // The result chip at the top bar's right (D95; the board "V2 · 2"): the energy of year 1 in one figure, what waits for the
@@ -51,5 +51,15 @@ describe("the summary under the chip", () => {
 
   test("nothing to sum up before there is a design", () => {
     expect(summaryOf(view({ kind: "layout", cells: [] }))).toEqual([]);
+  });
+});
+
+describe("the capacity beside the result on tablet (V2 · 3)", () => {
+  test("the modules used and the DC capacity of a design", () => {
+    expect(capacityOf(view({}))).toBe("638 modules · 357.28 kWp");
+  });
+
+  test("none before a design", () => {
+    expect(capacityOf(view({ kind: "layout", cells: [] }))).toBeNull();
   });
 });

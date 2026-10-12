@@ -53,24 +53,24 @@ const ATTRIBUTION = esriProvider(KEY_OF_THE_APP)?.imagery.attribution ?? null;
 const VIEW_CONTROLS = "top-1 right-3 tablet:top-4 tablet:right-5 desktop:top-5";
 
 /**
- * The time on the stage (the boards "Time on the stage" and "Studio, Sun lens"): the pill of every lens at the
- * top left on phone, at the bottom left of the stage on tablet, over the vitals on desktop (the panel's 20,
- * the vitals' 78 and 18 between: 116, and the home bar of an installed app); the timeline of the Sun lens across the stage there instead. On tablet
- * both stand 28 over the stage's bottom, so that the imagery's attribution under them stays clear.
+ * The time on the stage, in the Sun view alone (V2 · 3; the boards "Time on the stage" and "Studio, Sun lens"): the pill
+ * at the top left on phone, the timeline across the stage on tablet and desktop, 28 over the stage's bottom (and the home
+ * bar of an installed app), so that the imagery's attribution under it stays clear.
  */
-const TIME_PILL = "absolute top-1 left-3 z-stage-overlay tablet:top-auto tablet:bottom-7 tablet:left-5 desktop:bottom-safe-29 desktop:left-6";
-const TIMELINE = "absolute inset-x-5 bottom-7 z-stage-overlay desktop:bottom-safe-29";
+const TIME_PILL = "absolute top-1 left-3 z-stage-overlay";
+const TIMELINE = "absolute inset-x-5 bottom-7 z-stage-overlay desktop:bottom-safe-7";
 
 /** The legend of the shade map: 12 over the timeline on tablet and desktop; on phone at the stage's bottom left, over the attribution. */
-const SHADE_LEGEND = "absolute bottom-7 left-3 z-stage-overlay tablet:bottom-26 tablet:left-5 desktop:bottom-safe-48";
+const SHADE_LEGEND = "absolute bottom-7 left-3 z-stage-overlay tablet:bottom-26 tablet:left-5 desktop:bottom-safe-26";
 
 /**
- * The strings' colour switch and legend (the boards "Studio, Strings lens" on three sizes): 12 over the time pill on
- * desktop (the pill's 116 and 44: 172), at the bottom right on tablet and at the bottom left on phone, 28 over the
- * stage's bottom there, so that the imagery's attribution under it stays clear. On desktop it is held 24 from both
- * sides, so that a long legend wraps within the stage (D92).
+ * The strings' colour switch and legend (the boards "Studio, Strings lens" on three sizes): at the bottom right on tablet
+ * and at the bottom left on phone and desktop, 28 over the stage's bottom, so that the imagery's attribution under it stays
+ * clear; in the Sun view 12 over the timeline instead. On desktop it is held 24 from both sides, so that a long legend
+ * wraps within the stage (D92).
  */
-const STRING_LEGEND = "absolute bottom-7 left-3 z-stage-overlay tablet:right-5 tablet:left-auto desktop:right-6 desktop:bottom-safe-43 desktop:left-6";
+const stringLegendOf = (isSunView: boolean) =>
+  classNames("absolute bottom-7 left-3 z-stage-overlay tablet:right-5 tablet:left-auto desktop:right-6 desktop:left-6", isSunView ? "tablet:bottom-26 desktop:bottom-safe-26" : "desktop:bottom-safe-7");
 
 /** The chip of a layout that failed stands under the title, in the middle of the stage: as wide as the board draws it, or as the phone allows. */
 const LAYOUT_FAILED = "absolute inset-x-4 top-16 z-stage-overlay tablet:inset-x-0 tablet:top-20 tablet:mx-auto tablet:w-95 desktop:top-24";
@@ -150,9 +150,10 @@ export function Stage({ lens, name, className }: Props) {
       <LayoutFailed className={LAYOUT_FAILED} />
       <SunFailed className={LAYOUT_FAILED} />
       {cannotDraw ? null : <ViewControls stage={stage} className={VIEW_CONTROLS} />}
-      {cannotDraw || size === null ? null : isSunView && size !== "phone" ? <SunTimeline size={size} className={TIMELINE} /> : <TimePill size={size} className={TIME_PILL} />}
+      {/* The time belongs to the Sun view (V2 · 3): the other steps draw the design day's noon, still. */}
+      {cannotDraw || size === null || !isSunView ? null : size !== "phone" ? <SunTimeline size={size} className={TIMELINE} /> : <TimePill size={size} className={TIME_PILL} />}
       {cannotDraw || size === null ? null : <ShadeLegend size={size} className={SHADE_LEGEND} />}
-      {cannotDraw || size === null ? null : <StringLegend size={size} className={STRING_LEGEND} />}
+      {cannotDraw || size === null ? null : <StringLegend size={size} className={stringLegendOf(isSunView)} />}
       {cannotDraw ? null : attribution ? (
         <p data-testid="stage-attribution" className="pointer-events-none absolute bottom-1 left-4 z-stage-overlay max-w-full truncate type-unit text-text-on-imagery on-imagery tablet:left-5 desktop:bottom-safe-1.5 desktop:left-6">
           {attribution}
