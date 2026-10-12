@@ -101,14 +101,14 @@ def words_strip(touch: bool) -> str:
             f'{where}{tip}<div style="display: grid; grid-template-columns: {"1fr" if touch else "repeat(3, minmax(0, 1fr))"}; column-gap: 24px">{rows}</div></section>')
 
 
-def view_controls(touch: bool) -> str:
+def view_controls(touch: bool, plan: bool = False) -> str:
     sun = button("Sun", "secondary", "compact", touch, icon(STEP_ICON["Sun"], 16, TEXT_2))
     layers = button("", "secondary", "compact", touch, icon(ICON["layers"], 16, TEXT_2), "width: %dpx; padding: 0" % (44 if touch else 32))
-    seg = segmented(["3D", "Plan"], 0, touch) if touch else (
+    seg = segmented(["3D", "Plan"], 1 if plan else 0, touch) if touch else (
         f'<span style="display: inline-flex; padding: 3px; height: 32px; box-sizing: border-box; background: {WELL}; border: 1px solid {LINE}; '
         f'border-radius: {RADIUS["control"]}px"><span style="height: 24px; padding: 0 10px; display: inline-flex; align-items: center; '
-        f'border-radius: 5px; background: #232A36; {style("strong", False)}">3D</span><span style="height: 24px; padding: 0 10px; '
-        f'display: inline-flex; align-items: center; {style("body", False, TEXT_2)}">Plan</span></span>')
+        f'border-radius: 5px; {"" if plan else "background: #232A36; "}{style("body" if plan else "strong", False, TEXT_2 if plan else TEXT)}">3D</span><span style="height: 24px; padding: 0 10px; '
+        f'display: inline-flex; align-items: center; border-radius: 5px; {"background: #232A36; " if plan else ""}{style("strong" if plan else "body", False, TEXT if plan else TEXT_2)}">Plan</span></span>')
     fit = button("Fit", "secondary", "compact", touch)
     return f'<div style="display: flex; gap: 8px; align-items: center">{seg}{fit}{sun}{layers}</div>'
 
