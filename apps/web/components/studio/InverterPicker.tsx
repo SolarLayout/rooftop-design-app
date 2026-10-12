@@ -20,6 +20,7 @@ import {
 import { inverterRowOf, kwShown, ratedUnderOf } from "@/lib/equipment/rows";
 import { EquipmentPicker, type PickerColumn, type PickerRow, type PickerWords } from "./EquipmentPicker";
 import { PickerSearch } from "./PickerSearch";
+import { makerOf } from "@/lib/equipment/makers";
 import { useEquipmentCatalog } from "./use-equipment-catalog";
 import { useSize } from "@/components/shell/use-screen-size";
 
@@ -82,9 +83,9 @@ export function InverterPicker({ voltage, open, current, onRead, onClose }: Prop
 
   const voltTicks = [0, lastVolts].map((index) => ({ value: index, label: shown(volts[index] ?? 0, 0) }));
 
+  const makers = useMemo(() => new Set(inverters.map((inverter) => makerOf(inverter.maker))).size, [inverters]);
   const filters = (
     <div className="grid grid-cols-1 items-end gap-x-4 gap-y-3 tablet:grid-cols-3 tablet:gap-y-4 desktop:gap-x-6">
-      <PickerSearch value={search} onChange={setSearch} className="tablet:col-span-3" />
       <RangeSlider
         label="AC power"
         isNamed
@@ -127,9 +128,12 @@ export function InverterPicker({ voltage, open, current, onRead, onClose }: Prop
       kind="inverters"
       words={WORDS}
       current={current}
+      searchField={<PickerSearch value={search} onChange={setSearch} />}
       filters={filters}
       search={search}
       isFiltered={isFiltered || search !== ""}
+      isNarrowed={isFiltered}
+      makers={makers}
       onClearSearch={() => setSearch("")}
       onClearFilters={() => {
         setSearch("");

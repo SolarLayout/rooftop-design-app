@@ -20,6 +20,7 @@ import {
 import { moduleRowOf } from "@/lib/equipment/rows";
 import { EquipmentPicker, type PickerColumn, type PickerRow, type PickerWords } from "./EquipmentPicker";
 import { PickerSearch } from "./PickerSearch";
+import { makerOf } from "@/lib/equipment/makers";
 import { useEquipmentCatalog } from "./use-equipment-catalog";
 import { useSize } from "@/components/shell/use-screen-size";
 
@@ -65,9 +66,9 @@ export function ModulePicker({ open, current, onRead, onClose }: Props) {
       })
     : null;
 
+  const makers = useMemo(() => new Set(modules.map((module) => makerOf(module.maker))).size, [modules]);
   const filters = (
     <div className="grid grid-cols-1 items-end gap-4 desktop:grid-cols-2 desktop:gap-6">
-      <PickerSearch value={search} onChange={setSearch} />
       <RangeSlider
         label="Power"
         isNamed
@@ -89,9 +90,12 @@ export function ModulePicker({ open, current, onRead, onClose }: Props) {
       kind="modules"
       words={WORDS}
       current={current}
+      searchField={<PickerSearch value={search} onChange={setSearch} />}
       filters={filters}
       search={search}
       isFiltered={isFiltered || search !== ""}
+      isNarrowed={isFiltered}
+      makers={makers}
       onClearSearch={() => setSearch("")}
       onClearFilters={() => {
         setSearch("");
