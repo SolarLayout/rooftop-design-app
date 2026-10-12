@@ -32,7 +32,7 @@ export function DetectedCallout({ detected, onUse, onClose }: Props) {
       </div>
       <span className="type-body-touch desktop:type-body text-text-2">
         {detected.found
-          ? `From Overture Maps · approximate, about ${shown(FOOTPRINTS_QUANTISED_M, 1)} m. Accept it, or drag the corners to the roof edge you see.`
+          ? `From Overture Maps, accurate to about ${shown(FOOTPRINTS_QUANTISED_M, 1)} m. Use it, or drag its corners to the roof's edge.`
           : "Outline the roof by corners or by a rectangle instead."}
       </span>
       {detected.found ? (

@@ -15,15 +15,15 @@ export type MapState = { kind: "ready" } | { kind: "no-key" | "no-webgl" | "offl
 export const NO_MAP: Record<Exclude<MapState["kind"], "ready">, { title: string; reason: string }> = {
   "no-key": {
     title: "The map is not available",
-    reason: "Enter the roof's measurements instead.",
+    reason: "Enter the roof by hand instead.",
   },
   "no-webgl": {
     title: "This browser cannot draw the map",
-    reason: "It has no WebGL. Try another browser, or enter the roof by its measurements.",
+    reason: "Try another browser, or enter the roof by hand.",
   },
   offline: {
     title: "The imagery does not load",
-    reason: "Check the connection and try again, or enter the roof by its measurements.",
+    reason: "Check your connection and try again, or enter the roof by hand.",
   },
 };
 

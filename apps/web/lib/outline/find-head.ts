@@ -24,7 +24,7 @@ export function findHeadOf({ stage, touch, area = null, corners = 0 }: Asked): F
       return { title: "Outline the roof", line: `${press} each corner of the roof. ${press} the first corner again to close the outline.` };
     case "closed":
       return {
-        title: "Add what stands on the roof",
+        title: "Add the obstacles",
         line: `The roof is outlined: ${area === null ? "" : `${squareMetres(area)}, `}${corners} corners. Add its obstacles, choose its type, then build.`,
       };
     case "hand":
@@ -43,7 +43,7 @@ export function roofTypeChoicesOf(latitude: number): RoofTypeChoice[] {
   return [
     { id: "flat_tilted", name: `Flat, rows facing ${equator}`, line: "Tilted rows, the usual for a flat roof", isDefault: true },
     { id: "flat_ew", name: "Flat, rows facing east and west", line: "Low rows back to back: more modules, less from each", isDefault: false },
-    { id: "sloped_flush", name: "Sloped", line: "Modules flush on the slope", isDefault: false },
+    { id: "sloped_flush", name: "Sloped", line: "Modules follow the roof pitch", isDefault: false },
   ];
 }
 

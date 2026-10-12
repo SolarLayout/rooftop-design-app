@@ -46,7 +46,7 @@ export function ByHandPanel({ hand, onChange, className }: Props) {
             <NumberField label="Latitude" value={hand.lat} unit="°" range={LATITUDE} labelInside wide onCommit={(lat) => onChange({ lat })} />
             <NumberField label="Longitude" value={hand.lon} unit="°" range={LONGITUDE} labelInside wide onCommit={(lon) => onChange({ lon })} />
           </div>
-          <p className="type-body-touch desktop:type-body text-text-3">Five decimals; north and east are positive.</p>
+          <p className="type-body-touch desktop:type-body text-text-3">North and east positive, to 5 decimals.</p>
         </section>
       )}
 
@@ -89,7 +89,7 @@ export function ByHandPanel({ hand, onChange, className }: Props) {
             <Button size="s" icon="plus" onClick={() => onChange({ rows: [...rows, { east: null, north: null }] })} className="self-start">
               Add a corner
             </Button>
-            <p className="type-body-touch desktop:type-body text-text-3">Metres east and north of the middle of the roof, in order around it. Three at least.</p>
+            <p className="type-body-touch desktop:type-body text-text-3">{"Type each corner in metres east and north of the roof's centre, in order. At least 3."}</p>
           </div>
         )}
       </section>
