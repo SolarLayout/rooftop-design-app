@@ -87,7 +87,7 @@ function useLegendWords() {
   const follows = (
     <span data-testid="string-legend" className="flex items-center gap-2 type-body-touch desktop:type-body whitespace-nowrap text-text-2">
       <ProgressRing size={16} />
-      The strings follow the design run
+      The strings follow the run
     </span>
   );
   return { legend, follows };

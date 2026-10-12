@@ -60,7 +60,7 @@ export function LossChain({ view, isDimmed, onBack, className }: Props) {
           Eleven steps
         </button>
         <h3 id={heading} className="type-body-touch desktop:type-body text-text-2">
-          All 21 steps, in the engine&apos;s words
+          All 21 steps, as the report lists them
         </h3>
         <Legend />
       </div>

@@ -15,9 +15,9 @@ export function SummaryTable({ rows, isDimmed }: Props) {
   return (
     <section data-testid="summary-table" aria-labelledby={heading} className="flex flex-col gap-2.5">
       <h3 id={heading} className="type-body-touch desktop:type-body text-text-2">
-        The engine&apos;s summary
+        The summary, as in the report
       </h3>
-      <Table caption="The design, summed up by the engine" columns={SUMMARY_COLUMNS} rows={rows} keyOf={(row) => row.key} className={classNames(isDimmed && "opacity-updating")} />
+      <Table caption="The design, summed up as in the report" columns={SUMMARY_COLUMNS} rows={rows} keyOf={(row) => row.key} className={classNames(isDimmed && "opacity-updating")} />
     </section>
   );
 }

@@ -70,7 +70,7 @@ export function assumptionFieldsOf(document: Pick<Project, "roof" | "losses">): 
     uncertainty: [
       fieldOf("weather_sigma_pct", "Weather variability", "%", ASSUMPTION_RANGES.weather_sigma_pct, losses.weather_sigma_pct, LOSS_DEFAULTS.weather_sigma_pct),
       fieldOf("model_sigma_pct", "Model and data", "%", ASSUMPTION_RANGES.model_sigma_pct, losses.model_sigma_pct, LOSS_DEFAULTS.model_sigma_pct),
-      { kind: "levels", label: "Exceedance levels", levels, range: LEVEL_RANGE },
+      { kind: "levels", label: "Likely and conservative levels", levels, range: LEVEL_RANGE },
     ],
     co2: [fieldOf("co2_t_per_mwh", "Grid CO₂", "t/MWh", ASSUMPTION_RANGES.co2_t_per_mwh, losses.co2_t_per_mwh, LOSS_DEFAULTS.co2_t_per_mwh, { kind: "country", country: CO2_COUNTRY })],
   };

@@ -41,7 +41,7 @@ export type Api = ReturnType<typeof createApi>;
 
 const JSON_TYPE = "application/json";
 const EVENT_STREAM = "text/event-stream";
-const RUN_CUT_SHORT = "The design run ended before its result arrived. Run it again.";
+const RUN_CUT_SHORT = "The run ended before its result arrived. Try again.";
 /** How many times an export is asked for when the answer is not the API's. */
 const EXPORT_TRIES = 3;
 const FILE_NAMES: Record<ExportKind, string> = {

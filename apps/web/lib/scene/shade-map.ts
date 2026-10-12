@@ -65,7 +65,7 @@ export type Legend = { title: string; marks: string[]; of: string };
 /** The legend of the map: what is coloured, the marks of the scale (the unit after the last), what it counts. */
 export function legendOf(map: ShadeMap | null, positions: number): Legend {
   const title = "Near shading over the year";
-  if (map === null) return { title, marks: [], of: "The shade map follows the design run" };
+  if (map === null) return { title, marks: [], of: "The shade map follows the run" };
   const { top, steps } = map.scale;
   const marks = Array.from({ length: steps + 1 }, (_, step) => String(Number(((top * step) / steps).toFixed(2))));
   marks[steps] = `${marks[steps]} %`;
@@ -74,7 +74,7 @@ export function legendOf(map: ShadeMap | null, positions: number): Legend {
 
 /** The shade map in words, for the text equivalent of the stage. */
 export function shadeMapWordsOf(map: ShadeMap | null): string {
-  if (map === null) return "The shade map follows the design run";
+  if (map === null) return "The shade map follows the run";
   const { top, steps } = map.scale;
   const counts = map.counts.map((count) => shown(count, 0));
   const listed = `${counts.slice(0, -1).join(", ")} and ${counts.at(-1)}`;

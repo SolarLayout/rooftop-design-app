@@ -90,7 +90,7 @@ describe("the legend", () => {
   });
 
   test("without a map it waits for the run", () => {
-    expect(legendOf(null, 790)).toEqual({ title: "Near shading over the year", marks: [], of: "The shade map follows the design run" });
+    expect(legendOf(null, 790)).toEqual({ title: "Near shading over the year", marks: [], of: "The shade map follows the run" });
   });
 });
 
@@ -102,6 +102,6 @@ describe("the shade map in words", () => {
   });
 
   test("without a map, that it follows the run", () => {
-    expect(shadeMapWordsOf(null)).toBe("The shade map follows the design run");
+    expect(shadeMapWordsOf(null)).toBe("The shade map follows the run");
   });
 });

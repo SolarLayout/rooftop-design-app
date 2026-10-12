@@ -19,7 +19,7 @@ export type RoofCard = {
 
 const HOW: Record<Roof["source"], string> = {
   map: "Outlined on satellite",
-  coordinates: "Entered by hand",
+  coordinates: "By hand",
   kmz: "From a file",
   dxf: "From a file",
 };

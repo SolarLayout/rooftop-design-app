@@ -99,8 +99,8 @@ describe("the kept design", () => {
 
 describe("when it was edited, in words", () => {
   test("within the minute: just now; before that, minutes and hours", () => {
-    expect(whenOf(NOON, NOON)).toBe("Edited just now");
-    expect(whenOf(NOON - 59_000, NOON)).toBe("Edited just now");
+    expect(whenOf(NOON, NOON)).toBe("Edited moments ago");
+    expect(whenOf(NOON - 59_000, NOON)).toBe("Edited moments ago");
     expect(whenOf(NOON - MINUTE, NOON)).toBe("Edited 1 minute ago");
     expect(whenOf(NOON - 5 * MINUTE, NOON)).toBe("Edited 5 minutes ago");
     expect(whenOf(NOON - 59 * MINUTE, NOON)).toBe("Edited 59 minutes ago");
@@ -120,6 +120,6 @@ describe("when it was edited, in words", () => {
   });
 
   test("a time ahead of the clock (another device's clock) is just now, never negative", () => {
-    expect(whenOf(NOON + HOUR, NOON)).toBe("Edited just now");
+    expect(whenOf(NOON + HOUR, NOON)).toBe("Edited moments ago");
   });
 });

@@ -17,7 +17,7 @@ type Props = {
 const WORDS: Record<Exclude<Saving, "not-saved">, string> = {
   saved: "Saved on this device",
   saving: "Saving",
-  "not-kept": "Not kept on this device",
+  "not-kept": "Not saved",
 };
 
 /** The state of saving in words: what its mark is named, the tooltip of the project switcher (D74). */
