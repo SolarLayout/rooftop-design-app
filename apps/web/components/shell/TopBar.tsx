@@ -1,25 +1,27 @@
 import Link from "next/link";
-import { iconButtonLook } from "@/components/ui/button-look";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { classNames } from "@/components/ui/class-names";
-import { Icon } from "@/components/ui/Icon";
-import { HANDOVER, HOME, PRESENT, type Lens, type Workspace } from "@/lib/routes";
+import { HOME, PRESENT } from "@/lib/routes";
+import type { Step, StepState } from "@/lib/flow/steps";
 import { Logo } from "./Logo";
 import { ProjectSwitcher } from "./ProjectSwitcher";
+import { ResultChip } from "./ResultChip";
+import type { ResultChip as Chip, SummaryRow } from "./result-view";
 import type { Saving } from "./SaveState";
+import { StepNav } from "./StepNav";
 import type { DeviceRow } from "./switcher-view";
-import { WorkspaceNav } from "./WorkspaceNav";
+import { useDocsHome } from "./use-docs-home";
 
 type Props = {
   /** The name of the design that is open; null while none is. */
   name: string | null;
-  place: string | null;
-  workspace: Workspace | null;
-  /** The lens that was opened last. */
-  lens: Lens;
   saving: Saving;
-  /** How many notes there are to review. */
-  notes: number;
+  /** The step in hand and the state of each (D95). */
+  step: Step | null;
+  states: Readonly<Record<Step, StepState>>;
+  /** The result at the bar's right, and its summary. */
+  result: Chip;
+  summary: readonly SummaryRow[];
   onOpenNotes: () => void;
   /** Import a drawing was taken in the project switcher. */
   onImport: () => void;
@@ -38,42 +40,34 @@ type Props = {
 const BAR = classNames(
   // Its height, and the clock of an installed app over it (issue 147).
   "box-content flex h-topbar shrink-0 items-center gap-2 pt-safe-0 pr-2 pl-4",
-  "tablet:h-topbar-tablet tablet:gap-3.5 tablet:border-b tablet:border-line-subtle tablet:bg-chrome tablet:px-5",
+  "tablet:h-topbar-tablet tablet:gap-3 tablet:border-b tablet:border-line-subtle tablet:bg-chrome tablet:px-5",
   "desktop:h-topbar desktop:gap-5",
 );
 
-// The word of a button that shows its icon alone where there is no room for it.
-const WORD_WHERE_THERE_IS_ROOM = "sr-only tablet-wide:not-sr-only";
-const WORD_FROM_DESKTOP = "sr-only desktop:not-sr-only";
-
-/** Present leads to the tour of the design on the whole screen (plan/phase-10-plan.md, decision 8); the phone has none. */
+/**
+ * Present leads to the tour of the design on the whole screen (plan/phase-10-plan.md, decision 8): a secondary button with
+ * its word at the head of Performance and Handover (D95); the phone has none.
+ */
 export function Present({ className }: { className?: string }) {
   return (
-    <ButtonLink size="s" icon="play" href={PRESENT} className={classNames("w-touch px-0 desktop:w-auto desktop:px-3.5", className)}>
-      <span className={WORD_FROM_DESKTOP}>Present</span>
+    <ButtonLink size="m" icon="play" href={PRESENT} className={classNames("hidden tablet:inline-flex", className)}>
+      Present
     </ButtonLink>
   );
 }
 
-/** Export leads to Handover, where every file of the design is. */
-export function Export() {
+/** The docs, from the top bar's right (D91): a quiet link with its word on desktop. */
+function Docs() {
+  const home = useDocsHome();
   return (
-    <ButtonLink
-      kind="primary"
-      size="s"
-      icon="download"
-      href={HANDOVER}
-      className="w-touch px-0 tablet-wide:w-auto tablet-wide:px-4"
-    >
-      <span className={WORD_WHERE_THERE_IS_ROOM}>Export</span>
+    <ButtonLink kind="quiet" size="m" icon="book" href={home} target="_blank" rel="noreferrer" className="hidden desktop:inline-flex">
+      Docs
     </ButtonLink>
   );
 }
 
-const countOf = (notes: number) => (notes === 0 ? "Nothing to review" : notes === 1 ? "1 note to review" : `${notes} notes to review`);
-
-/** The bar at the top of the three workspaces. */
-export function TopBar({ name, place, workspace, lens, saving, notes, onOpenNotes, onImport, onOpenProject, onRename, onSaveACopy, designs, onOpenDesign }: Props) {
+/** The bar at the top of the order of work (D95): the mark, the design, the five steps, the result, the docs. */
+export function TopBar({ name, saving, step, states, result, summary, onOpenNotes, onImport, onOpenProject, onRename, onSaveACopy, designs, onOpenDesign }: Props) {
   return (
     <header className={BAR}>
       {/* The mark leads home on every size (the owner, session 18), with the ring of every control. On touch the mark alone is
@@ -88,7 +82,6 @@ export function TopBar({ name, place, workspace, lens, saving, notes, onOpenNote
       <span className="hidden h-6 w-px shrink-0 bg-line desktop:block" />
       <ProjectSwitcher
         name={name}
-        place={place}
         saving={saving}
         onOpenNotes={onOpenNotes}
         onImport={onImport}
@@ -99,23 +92,12 @@ export function TopBar({ name, place, workspace, lens, saving, notes, onOpenNote
         onOpenDesign={onOpenDesign}
       />
       <span className="grow" />
-      <WorkspaceNav current={workspace} lens={lens} />
+      <StepNav current={step} states={states} />
       <span className="hidden grow tablet:block" />
-      <div className="flex shrink-0 items-center gap-2 tablet:gap-3.5 desktop:gap-3">
-        {/* Where the bar is short of room, what the project switcher says too goes first. */}
-        <span className="flex tablet:hidden">
-          <button type="button" aria-label={countOf(notes)} onClick={onOpenNotes} className={iconButtonLook("quiet", "l", "square")}>
-            {notes === 0 ? (
-              <Icon name="tick" stroke="tick" size={22} className="text-ok" />
-            ) : (
-              <Icon name="note" size={22} className="text-accent" />
-            )}
-          </button>
-        </span>
-        <span className="hidden tablet-wide:flex">
-          <Present />
-        </span>
-        <Export />
+      {/* On tablet the result is a row under the stage (D95, D97): the bar holds the steps. */}
+      <div className="flex shrink-0 items-center gap-2 tablet:hidden desktop:flex">
+        <ResultChip chip={result} summary={summary} onOpenNotes={onOpenNotes} />
+        <Docs />
       </div>
     </header>
   );

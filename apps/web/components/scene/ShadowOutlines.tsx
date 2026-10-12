@@ -7,20 +7,20 @@ import { toScene, type XY } from "@/lib/geometry/adapter";
 import { ringsOf } from "@/lib/scene/shadow-outlines";
 import { PALETTE } from "@/lib/geometry/scene-palette";
 import { shadowOutlinesOf } from "@/lib/stores/results-store";
-import { lensOf, onTheRoofOf } from "@/lib/stores/view-store";
+import { isSunViewOf, onTheRoofOf } from "@/lib/stores/view-store";
 
 type Props = { heightAt: (point: XY) => number };
 
 /**
  * The engine's shadows of the parapet and the obstacles on the roof surface, dashed in the line of the
  * kept-clear areas and without a fill, on the roof under the modules and over the rendered shadows
- * (plan/phase-06-plan.md, decision 9): where the two agree, the view is true. In the Sun lens, while their
+ * (plan/phase-06-plan.md, decision 9): where the two agree, the view is true. In the Sun view, while their
  * switch is on and they are of the time shown. It reads them itself, so that they redraw it and not the scene.
  */
 export function ShadowOutlines({ heightAt }: Props) {
   const outlines = useResults(shadowOutlinesOf);
   const isOn = useView(onTheRoofOf).shadowOutlines;
-  const isSunLens = useView(lensOf) === "sun";
+  const isSunLens = useView(isSunViewOf);
   const rings = useMemo(
     () =>
       (outlines ? ringsOf(outlines.polygons, heightAt) : []).map((ring) =>

@@ -23,7 +23,7 @@ theme (`:root`).
 | Token | Value | Use |
 |---|---|---|
 | `--color-ground` | `#0B0E13` | Page and 3D stage background |
-| `--color-chrome` | `#0E1218` | Top bar, lens rail, inspector, bottom sheet, tab bar |
+| `--color-chrome` | `#0E1218` | Top bar, work column, bottom sheet, tab bar |
 | `--color-surface-1` | `#12161D` | Cards, floating panels, list rows |
 | `--color-surface-2` | `#181D26` | Tiles inside a card, selected list row |
 | `--color-control` | `#151A22` | Raised secondary buttons |
@@ -274,7 +274,6 @@ sections. A half step of the utilities (2 px) is for the inside of a control alo
 | `--breakpoint-desktop-wide` | `1360px` | Inside desktop: from this width of the shell the top bar has room for the place of the design and for the state of saving |
 | `--size-topbar` | `56px` | Top bar height on desktop and phone |
 | `--size-topbar-tablet` | `60px` | Top bar height on tablet |
-| `--size-rail` | `72px` | Lens rail width |
 | `--size-inspector` | `384px` | Inspector width |
 | `--size-handover-list` | `440px` | Handover list width |
 | `--size-find-panel` | `380px` | Find and outline panel width |
@@ -286,8 +285,6 @@ sections. A half step of the utilities (2 px) is for the inside of a control alo
 | `--size-tabbar-on-screen` | `calc(var(--size-tabbar) - var(--size-tabbar-foot) + var(--size-tabbar-foot-on-screen))` | The tab bar's height on the screen, its foot included; what sits above the bar (the toasts) stands on it |
 | `--size-touch` | `44px` | Touch target, the least on phone and tablet, both ways |
 | `--size-sheet-peek` | `84px` | What is seen of the bottom sheet at its lowest stop: the handle and the lens switch |
-| `--columns-vitals` | `1.25fr 1.15fr 0.85fr 0.85fr 1fr 0.8fr 1.25fr 1.55fr` | The columns of the vitals bar on desktop: seven values and the last cell |
-| `--columns-vitals-waiting` | `1fr 1fr 1fr 2.4fr` | The same before there are options: three values and what is waited for |
 | `--columns-p-values-phone` | `1fr 1fr 1.5fr` | The three exceedance values of the lead tile on phone: the last cell, which carries the sigma too, is wider |
 | `--columns-loss-chain` | `210px 100px 64px 216px minmax(0, 1fr)` | A row of the loss chain on desktop: the label, the field where the step is the user's, the change, the track, the running total |
 | `--columns-loss-chain-tablet` | `220px 112px 72px 190px minmax(0, 1fr)` | The same on tablet |
@@ -447,7 +444,7 @@ layer of their own.
 |---|---|---|
 | `--z-stage` | `0` | 3D canvas, map |
 | `--z-stage-overlay` | `1` | Titles, labels and callouts over the stage |
-| `--z-float` | `10` | Floating controls, vitals |
+| `--z-float` | `10` | Floating controls |
 | `--z-sheet` | `20` | Bottom sheet, drawers |
 | `--z-dialog` | `30` | Dialogs |
 | `--z-toast` | `40` | Toasts |
@@ -474,7 +471,7 @@ layer of their own.
 | `--duration-spin`, `--duration-breathe` | `turning`, `breathing` | on a ring that turns, on a skeleton |
 | `--duration-pulse-saved`, `--halo-saved`, `--halo-saved-out` | `pulsing` | on the saved dot |
 | `--duration-pulse-corner`, `--halo-corner`, `--halo-corner-out` | `pulsing-corner` | on the corner being edited |
-| `--columns-*` | `grid-cols-` and the name | `desktop:grid-cols-vitals` |
+| `--columns-*` | `grid-cols-` and the name | `desktop:grid-cols-loss-chain` |
 | `--ease-out`, `--duration-*` | `ease-out`, `duration-` and the name | `duration-press` |
 | `--duration-press`, `--ease-out`, `--shift-press`, `--scale-press` | `press-motion`, `raised-by-hover`, `lowered-by-press` | on every control that is pressed |
 | `--duration-panel`, `--ease-out` | `sheet-motion` | on a sheet that goes to its stop |

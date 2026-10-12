@@ -42,6 +42,8 @@ export const BASE_INPUTS: string[] = [
   "apps/web/lib/brand/**",
   // The user's country and a new design's system voltage (D87): the stores open designs on every page.
   "apps/web/lib/country/**",
+  // The words of the work explained in a line (D96): the steps in the top bar and the titles of every workspace.
+  "apps/web/lib/words/**",
   "apps/web/content/**",
   "apps/web/public/**",
   "apps/web/*",

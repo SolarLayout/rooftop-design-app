@@ -16,7 +16,7 @@ import { createStageStore, cursorOf, groundOf, moduleWritesOf, type Cursor, type
 import type { Lens } from "@/lib/routes";
 import { projectOf } from "@/lib/stores/project-store";
 import { chosenOptionOf, designOf, isDesignUpdating, layoutOf, readoutsOf, shadowOutlinesOf, sunDayOf } from "@/lib/stores/results-store";
-import { draftOf, isShadeMapShownOf, lensOf, onTheRoofOf, selectionOf, showsSunPathOf, stringsShownByOf, sunTimeOf, toReviewOf } from "@/lib/stores/view-store";
+import { draftOf, isShadeMapShownOf, isSunViewOf, onTheRoofOf, selectionOf, showsSunPathOf, stringsShownByOf, sunTimeOf, toReviewOf } from "@/lib/stores/view-store";
 import { shadeMapWordsOf } from "@/lib/scene/shade-map";
 import { useShadeMapOfTheRun } from "@/components/scene/use-shade-map";
 import { readOutOf, sunLineOf, sunPathLineOf } from "@/lib/flow/sun-time";
@@ -36,6 +36,10 @@ import { useEscapeClears } from "./use-escape-clears";
 import { TimePill, SunTimeline } from "./Time";
 import { useSize } from "./use-size";
 import { ViewControls } from "./ViewControls";
+import { FirstMeeting } from "@/components/shell/FirstMeeting";
+
+/** The app's word of each step in the Studio, explained once under its title (D96). */
+const LENS_WORD = { roof: "Roof", array: "Array", strings: "Strings" } as const;
 
 // The scene draws with WebGL in the browser alone: it is loaded there, never on the server.
 const Scene = dynamic(() => import("@/components/scene/Scene").then((module) => module.Scene), { ssr: false });
@@ -85,11 +89,12 @@ const CURSOR: Record<Cursor, string | false> = { default: false, pointer: "curso
  * "Studio, Array lens, states"). Without WebGL, or once the browser takes the context away, it says so.
  */
 export function Stage({ lens, name, className }: Props) {
+  const isSunView = useView(isSunViewOf);
   const project = useProject(projectOf);
   const obstacles = project?.roof.obstacles.length ?? 0;
   const layoutLine = useResults(useShallow((results) => lineOf(lens, results, obstacles)));
   const sunDay = useResults(sunDayOf);
-  // The Sun lens's line says the day and the window (the board "Studio, Sun lens"), once the day has come.
+  // The Sun view's line says the day and the window (the board "Studio, Sun lens"), once the day has come.
   const design = useResults(designOf);
   const option = useResults(chosenOptionOf);
   const positions = useResults((results) => readoutsOf(results)?.positions ?? null);
@@ -97,7 +102,7 @@ export function Stage({ lens, name, className }: Props) {
   // The Strings lens's line says the chosen option's strings, or why there are none (plan/phase-07-plan.md, decision 14).
   const stringsWords = stringsLineOf({ positions, mppts: design?.equipment.inverter.n_mppt ?? null, option, noOptions: design?.no_options?.code ?? null });
   const line =
-    lens === "sun"
+    isSunView
       ? sunDay && project
         ? { words: sunLineOf(sunDay.dayOfYear, project.roof.lat, { from: project.array.window_start_h, to: project.array.window_end_h }), isUpdating: false }
         : null
@@ -134,6 +139,7 @@ export function Stage({ lens, name, className }: Props) {
       {cannotDraw ? null : <Handles stage={stage} />}
       <div className="pointer-events-none absolute inset-x-4 top-4 z-stage-overlay flex flex-col gap-0.5 tablet:inset-x-5 desktop:top-5 desktop:left-6">
         <h1 className="sr-only desktop:not-sr-only type-title-touch desktop:type-title">{name}</h1>
+        <FirstMeeting word={isSunView ? "Sun" : LENS_WORD[lens]} className="hidden type-body text-text-2 desktop:block" />
         {line ? (
           <p data-testid="stage-subline" data-state={line.isUpdating ? "updating" : "settled"} className="hidden items-center gap-2 type-body-touch desktop:type-body text-text-2 desktop:flex">
             <span className={classNames(line.isUpdating && "opacity-updating")}>{line.words}</span>
@@ -144,7 +150,7 @@ export function Stage({ lens, name, className }: Props) {
       <LayoutFailed className={LAYOUT_FAILED} />
       <SunFailed className={LAYOUT_FAILED} />
       {cannotDraw ? null : <ViewControls stage={stage} className={VIEW_CONTROLS} />}
-      {cannotDraw || size === null ? null : lens === "sun" && size !== "phone" ? <SunTimeline size={size} className={TIMELINE} /> : <TimePill size={size} className={TIME_PILL} />}
+      {cannotDraw || size === null ? null : isSunView && size !== "phone" ? <SunTimeline size={size} className={TIMELINE} /> : <TimePill size={size} className={TIME_PILL} />}
       {cannotDraw || size === null ? null : <ShadeLegend size={size} className={SHADE_LEGEND} />}
       {cannotDraw || size === null ? null : <StringLegend size={size} className={STRING_LEGEND} />}
       {cannotDraw ? null : attribution ? (
@@ -168,7 +174,7 @@ function OnTheRoof({ stage, isScene }: { stage: StageStore; isScene: boolean }) 
   const { hour } = useView(sunTimeOf);
   const outlines = useResults(shadowOutlinesOf);
   const onTheRoof = useView(onTheRoofOf);
-  const lens = useView(lensOf);
+  const isSunView = useView(isSunViewOf);
   const selection = useView(selectionOf);
   const draft = useView(draftOf);
   const toReview = useView(toReviewOf);
@@ -236,7 +242,7 @@ function OnTheRoof({ stage, isScene }: { stage: StageStore; isScene: boolean }) 
       ) : stringsShownBy && option ? (
         <li data-testid="on-the-roof-strings">The strings follow the design run</li>
       ) : null}
-      {outlines && onTheRoof.shadowOutlines && lens === "sun" ? (
+      {outlines && onTheRoof.shadowOutlines && isSunView ? (
         <li data-testid="on-the-roof-shadow-outlines">
           {`The engine's shadow outlines at ${hourOf(outlines.hour)}: ${outlines.polygons.length} ${outlines.polygons.length === 1 ? "polygon" : "polygons"}`}
         </li>

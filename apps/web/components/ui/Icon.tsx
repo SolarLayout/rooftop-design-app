@@ -114,6 +114,12 @@ const STROKED = {
       <path d="M12 7v6M12 16.5v.5" />
     </>
   ),
+  panel: (
+    <>
+      <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
+      <path d="M14.5 4.5v15" />
+    </>
+  ),
   parapet: <path d="M3 19V8h18v11M3 8V6h18v2" />,
   // The pencil of Rename: a name that can be edited.
   pencil: (

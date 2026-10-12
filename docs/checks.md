@@ -81,7 +81,7 @@ desktop and tablet.
 the downloads store needs on every page), `lib/format`, `lib/places` (the search for a place and its provider: Find's,
 Home's and Import a drawing's), `lib/geometry` (the engine's metres and the 3D palette: Find's, the Studio's, the stores'
 and the device's thumbnails' alike), `lib/device` (the designs kept on the device: the shell saves and opens them on
-every page), `lib/help` and `content` (the in-app help, D80: its registry and topics, opened from every workspace's headings), `lib/docs` (the docs' address and pages, D91: the help sheet, the project menu and Home link to them), `lib/brand` (the installed app's name, colours, mark and icons: the manifest and every page's head, #147), `public`, the web's configuration files, `packages/api-types`, the API's sources and configuration, the
+every page), `lib/help` and `content` (the in-app help, D80: its registry and topics, opened from every workspace's headings), `lib/docs` (the docs' address and pages, D91: the help sheet, the project menu and Home link to them), `lib/brand` (the installed app's name, colours, mark and icons: the manifest and every page's head, #147), `lib/words` (the words of the work explained in a line, D96: the steps of the top bar and every workspace's titles), `public`, the web's configuration files, `packages/api-types`, the API's sources and configuration, the
 helpers and fixtures of `e2e`, the tools that start the stack, the lockfile, `.nvmrc`.
 
 **What a change runs** (proved by `tools/check/proofs/turbo.proof.ts`):

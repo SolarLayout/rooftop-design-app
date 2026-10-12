@@ -25,16 +25,17 @@ describe("Present", () => {
 });
 
 describe("the lenses of the Studio", () => {
-  test("four, in the order of the work", () => {
-    expect(LENSES.map((lens) => lens.id)).toEqual(["roof", "array", "sun", "strings"]);
-    expect(LENSES.map((lens) => lens.name)).toEqual(["Roof", "Array", "Sun", "Strings"]);
+  test("three, the steps of the Studio in the order of the work; Sun is a view, no lens (D95)", () => {
+    expect(LENSES.map((lens) => lens.id)).toEqual(["roof", "array", "strings"]);
+    expect(LENSES.map((lens) => lens.name)).toEqual(["Roof", "Array", "Strings"]);
+    expect(isLens("sun")).toBe(false);
   });
 
-  test.each(["roof", "array", "sun", "strings"])("%s is a lens", (id) => {
+  test.each(["roof", "array", "strings"])("%s is a lens", (id) => {
     expect(isLens(id)).toBe(true);
   });
 
-  test.each(["", "Roof", "energy", "roof/", "constructor"])("'%s' is none", (id) => {
+  test.each(["", "Roof", "energy", "roof/", "constructor", "sun"])("'%s' is none", (id) => {
     expect(isLens(id)).toBe(false);
   });
 
@@ -43,7 +44,7 @@ describe("the lenses of the Studio", () => {
   });
 
   test("each has its address", () => {
-    expect(LENSES.map((lens) => pathOfLens(lens.id))).toEqual(["/studio/roof", "/studio/array", "/studio/sun", "/studio/strings"]);
+    expect(LENSES.map((lens) => pathOfLens(lens.id))).toEqual(["/studio/roof", "/studio/array", "/studio/strings"]);
   });
 });
 
@@ -89,10 +90,10 @@ describe("the workspaces", () => {
   });
 
   test("the Studio is entered at a lens, Handover at its list (plan/phase-09-plan.md, decision 3)", () => {
-    expect(pathOfWorkspace("studio", "sun")).toBe("/studio/sun");
-    expect(pathOfWorkspace("performance", "sun")).toBe("/performance");
-    expect(pathOfWorkspace("handover", "sun")).toBe("/handover");
-    expect(pathOfWorkspace("handover", "sun")).toBe(HANDOVER);
+    expect(pathOfWorkspace("studio", "strings")).toBe("/studio/strings");
+    expect(pathOfWorkspace("performance", "strings")).toBe("/performance");
+    expect(pathOfWorkspace("handover", "strings")).toBe("/handover");
+    expect(pathOfWorkspace("handover", "strings")).toBe(HANDOVER);
   });
 
   test.each([

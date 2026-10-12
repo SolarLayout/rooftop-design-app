@@ -51,9 +51,14 @@ import { RoofTypeChoice } from "./RoofTypeChoice";
 import type { RoofType } from "@/lib/geometry/roof-types";
 import type { MapView } from "./RoofMap";
 import { Search, type FoundPlace, type SearchHandle } from "@/components/shell/Search";
-import { Steps, type Step } from "./Steps";
+import type { Step } from "./find-step";
+import { StepNav } from "@/components/shell/StepNav";
+import { stepStatesOf } from "@/lib/flow/steps";
 import { useOutlineKeys } from "./use-outline-keys";
 import { useWebGL } from "./use-web-gl";
+
+// On Find there is no design yet: Roof is in hand, the steps after it cannot be gone to (D95).
+const ON_FIND = stepStatesOf({ current: "roof", seen: [], waiting: [], hasDesign: false });
 
 // The map draws with WebGL in the browser alone: it is loaded there, never on the server.
 const RoofMap = dynamic(() => import("./RoofMap").then((module) => module.RoofMap), { ssr: false });
@@ -304,7 +309,9 @@ export function Find() {
                 <Icon name="arrow-left" size={18} />
               </Link>
               <Search ref={search} provider={PROVIDER} near={near} onPlace={onPlace} found={foundAt?.label ?? null} className="min-w-0 grow desktop:w-100 desktop:grow-0" />
-              <Steps current={step} className="hidden tablet:flex" />
+              <span className="hidden tablet:flex">
+                <StepNav current="roof" states={ON_FIND} compact />
+              </span>
             </div>
             {/* The phone has no buttons: the map is pinched and turned by hand. Without a map there is nothing to turn or zoom. */}
             {map ? <MapButtons map={map} className="pointer-events-auto absolute right-5 bottom-7 hidden tablet:flex desktop:right-0 desktop:bottom-safe-7" /> : null}
@@ -360,7 +367,6 @@ export function Find() {
                   <h1 className="type-title-touch desktop:type-title">{words.title}</h1>
                   {howTo ? <HelpDisc topic={howTo} /> : null}
                 </span>
-                <span className="ml-auto type-body-touch desktop:type-body text-text-2 desktop:hidden">Step {["find", "outline", "build"].indexOf(step) + 1} of 3</span>
               </div>
               <p className="text-text-2">{words.lead}</p>
             </div>

@@ -155,7 +155,7 @@ const TABS = [
 export function SunInspector({ size }: { size: Size }) {
   const { view } = useStores();
   const tab = useView(sunTabOf);
-  const tabs = <Segmented label="Sun lens" fill options={TABS} value={tab} onChange={(chosen) => view.getState().showSunTab(chosen)} />;
+  const tabs = <Segmented label="Sun view" fill options={TABS} value={tab} onChange={(chosen) => view.getState().showSunTab(chosen)} />;
   return (
     <div className="flex flex-col gap-section tablet:grid tablet:grid-cols-2 tablet:gap-x-8 desktop:flex desktop:flex-col">
       {size === "phone" ? <SunTimeline size="phone" className="border-b border-line-subtle pb-4" /> : null}

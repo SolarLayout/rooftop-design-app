@@ -86,13 +86,14 @@
 
 | Width | Name | Reference | Navigation | Studio |
 |---|---|---|---|---|
-| under 640 | Phone | 390 by 844 | Bottom tab bar | 3D on top, vitals row, bottom sheet |
-| 640 to 1100 | Tablet | 834 by 1194 | Top bar | 3D on top, vitals grid, inspector in two columns |
+| under 640 | Phone | 390 by 844 | The steps as the tab bar; the result in the top bar | 3D on top, bottom sheet |
+| 640 to 1100 | Tablet | 834 by 1194 | The steps in the top bar | 3D on top (440), the result row, the work column under it |
 | over 1100 | Desktop | 1440 by 900 | Top bar | Rail, stage, inspector |
 
-- Inside a size nothing is laid out anew. Where the top bar is short of room, what is said elsewhere goes
-  first: under 820 Present and the word of Export, under 1360 the place of the design and the state of
-  saving. The name of the design is cut short last.
+- Inside a size nothing is laid out anew. The top bar holds the logo, the name of the design, the steps and
+  the result; Present and the exports live at the heads of Performance and Handover, never in the bar. Where
+  the bar is short of room the steps close up (no separators below desktop), the result moves to a row under
+  the stage on tablet, and the name of the design is cut short last.
 - Touch targets are at least 44 by 44 on phone and tablet.
 - No horizontal page scroll at any width from 360 up. A row that must scroll sideways (vitals on phone) shows
   part of the next item so it is seen to scroll.
@@ -135,8 +136,8 @@
 - The stage draws what the engine answered: the positions of `/layout`, its kept-clear areas, its setback. A sloped
   roof is drawn pitched about the line through its centroid; the engine's numbers are its own (the board "Roof types
   in 3D"). Plan is the same scene seen straight down, north up, and what stands in without WebGL.
-- The line under the lens's title counts what the layout answered: on the Roof lens the roof's area, the area inside
-  the setback and the obstacles; on the Array lens the positions, the tables, the rows and the area of all the
+- The line under the step's title counts what the layout answered: on the Roof step the roof's area, the area inside
+  the setback and the obstacles; on the Array step the positions, the tables, the rows and the area of all the
   positions.
 - While a layout is on its way the modules of before stay and the line under the title is dimmed with a ring; a
   layout that failed is a callout on the stage with the engine's sentence and Try again, and the last good modules

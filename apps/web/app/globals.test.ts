@@ -363,13 +363,6 @@ describe("lines", () => {
 });
 
 describe("the shell", () => {
-  test("the columns of the vitals bar are tokens", async () => {
-    const made = oneLine(await utilitiesOf(["grid-cols-vitals", "grid-cols-vitals-waiting"]));
-
-    expect(made).toContain(".grid-cols-vitals { grid-template-columns: var(--columns-vitals); }");
-    expect(made).toContain(".grid-cols-vitals-waiting { grid-template-columns: var(--columns-vitals-waiting); }");
-  });
-
   test("the drawer has its shadow", async () => {
     expect(oneLine(await utilitiesOf(["shadow-drawer"]))).toContain("--tw-shadow: var(--shadow-drawer);");
   });

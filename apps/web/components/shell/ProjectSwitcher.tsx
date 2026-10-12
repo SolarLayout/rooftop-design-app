@@ -21,8 +21,6 @@ import { useDocsHome } from "./use-docs-home";
 type Design = {
   /** The name of the design that is open; null while none is. */
   name: string | null;
-  /** Where it is, as it is shown: "18.52° N · 73.86° E". */
-  place: string | null;
 };
 
 const TRIGGER = classNames(
@@ -38,7 +36,7 @@ const TRIGGER_OPEN = "border-line bg-surface-2";
 type TriggerProps = Omit<ComponentProps<"button">, "children" | "name"> & Design & { open: boolean; saving?: Saving };
 
 /** What opens the project switcher: the mark of the state of saving, the name of the design, on desktop where it is, a chevron. */
-export function ProjectTrigger({ name, place, open, saving, className, ...rest }: TriggerProps) {
+export function ProjectTrigger({ name, open, saving, className, ...rest }: TriggerProps) {
   return (
     <button
       type="button"
@@ -54,7 +52,6 @@ export function ProjectTrigger({ name, place, open, saving, className, ...rest }
       ) : (
         <span className="min-w-0 truncate font-medium desktop:font-medium">{name}</span>
       )}
-      {place === null ? null : <span className="hidden type-body-touch desktop:type-body text-text-3 desktop-wide:inline">{place}</span>}
       <Icon name={open ? "chevron-up" : "chevron-down"} size={16} className="text-text-3" />
     </button>
   );
@@ -242,7 +239,7 @@ export function ProjectMenu({ name, saving, onOpenNotes, onImport, onOpenProject
 type Props = Design & Pick<MenuProps, "saving" | "onOpenNotes" | "onImport" | "onOpenProject" | "onSaveACopy" | "onRename" | "designs" | "onOpenDesign">;
 
 /** The design that is open, and the way to another one. On phone and tablet it opens as a bottom sheet. */
-export function ProjectSwitcher({ name, place, saving, onOpenNotes, onImport, onOpenProject, onSaveACopy, onRename, designs, onOpenDesign }: Props) {
+export function ProjectSwitcher({ name, saving, onOpenNotes, onImport, onOpenProject, onSaveACopy, onRename, designs, onOpenDesign }: Props) {
   const [floating, trigger] = useFloating({ side: "below", align: "start", gap: LIST_GAP });
   const panel = useRef<HTMLDivElement>(null);
 
@@ -259,7 +256,6 @@ export function ProjectSwitcher({ name, place, saving, onOpenNotes, onImport, on
           ref={trigger}
           name={name}
           saving={saving}
-          place={place}
           open={floating.isOpen}
           onClick={() => (floating.isOpen ? floating.close() : open())}
           onKeyDown={(event) => {

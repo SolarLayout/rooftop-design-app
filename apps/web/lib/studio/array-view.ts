@@ -33,7 +33,7 @@ export function azimuthLineOf(array: ArraySpec, layout: LayoutResponse | null, r
 export function slopedTiltLineOf(roof: Pick<Roof, "slope_deg" | "slope_azimuth_deg">): { value: string; line: string } {
   return {
     value: withUnit(shown(roof.slope_deg, 0), "°"),
-    line: `Follows the roof pitch · ${withUnit(shown(roof.slope_deg, 0), "°")} facing ${bearingOf(roof.slope_azimuth_deg)} · set in the Roof lens`,
+    line: `Follows the roof pitch · ${withUnit(shown(roof.slope_deg, 0), "°")} facing ${bearingOf(roof.slope_azimuth_deg)} · set in the Roof step`,
   };
 }
 

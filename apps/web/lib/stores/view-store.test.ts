@@ -27,21 +27,21 @@ describe("the view", () => {
     expect(store.getState()).toBe(before);
   });
 
-  test("the sun path is drawn in the Sun lens alone, while its switch is on", () => {
+  test("the sun path is drawn in the Sun view alone, while its switch is on", () => {
     const store = createViewStore();
     expect(showsSunPathOf(store.getState())).toBe(false);
 
-    store.getState().showLens("sun");
+    store.getState().showSunView(true);
     expect(showsSunPathOf(store.getState())).toBe(true);
 
     store.getState().showOnTheRoof("sunPath", false);
     expect(showsSunPathOf(store.getState())).toBe(false);
   });
 
-  test("the camera frames the sun path's dome in the Sun lens with the path on, and through the whole of Present, every scene (D72)", () => {
+  test("the camera frames the sun path's dome in the Sun view with the path on, and through the whole of Present, every scene (D72)", () => {
     const store = createViewStore();
     expect(framesTheDomeOf(store.getState())).toBe(false);
-    store.getState().showLens("sun");
+    store.getState().showSunView(true);
     expect(framesTheDomeOf(store.getState())).toBe(true);
     store.getState().showOnTheRoof("sunPath", false);
     expect(framesTheDomeOf(store.getState())).toBe(false);
@@ -50,28 +50,28 @@ describe("the view", () => {
     expect(framesTheDomeOf(store.getState())).toBe(true);
   });
 
-  test("under Present the presentation says whether the sun path is drawn, whatever the lens and its switch (D72)", () => {
+  test("under Present the presentation says whether the sun path is drawn, whatever the view and its switch (D72)", () => {
     const store = createViewStore();
     store.getState().setPresentation({ reveal: { building: 1, obstacles: 1, modules: 1 }, colouring: null, sunPath: true });
     expect(showsSunPathOf(store.getState())).toBe(true);
 
     store.getState().setPresentation({ reveal: { building: 1, obstacles: 1, modules: 1 }, colouring: null, sunPath: false });
-    store.getState().showLens("sun");
+    store.getState().showSunView(true);
     expect(showsSunPathOf(store.getState())).toBe(false);
   });
 
-  // The tab of the Sun lens (plan/phase-06-plan.md, decisions 12 and 16): of the view; the shade map is shown
-  // in the Sun lens alone, and leaving the lens leaves it off.
-  test("the shade map is shown in the Sun lens while its tab is taken, and the lens left takes it off", () => {
+  // The tab of the Sun view (plan/phase-06-plan.md, decisions 12 and 16): of the view; the shade map is shown
+  // in the Sun view alone, and leaving the view leaves it off.
+  test("the shade map is shown in the Sun view while its tab is taken, and the view left takes it off", () => {
     const store = createViewStore();
-    store.getState().showLens("sun");
+    store.getState().showSunView(true);
     expect(sunTabOf(store.getState())).toBe("shadows");
     expect(isShadeMapShownOf(store.getState())).toBe(false);
 
     store.getState().showSunTab("shade-map");
     expect(isShadeMapShownOf(store.getState())).toBe(true);
 
-    store.getState().showLens("array");
+    store.getState().showSunView(false);
     expect(isShadeMapShownOf(store.getState())).toBe(false);
     expect(sunTabOf(store.getState())).toBe("shadows");
   });
@@ -141,12 +141,12 @@ describe("the view", () => {
 
   test("a change of one leaves the others", () => {
     const store = createViewStore();
-    store.getState().showLens("sun");
+    store.getState().showSunView(true);
     store.getState().setSunTime({ day: "design_day", hour: 9 });
 
     store.getState().setCamera("sun-eye");
 
-    expect(lensOf(store.getState())).toBe("sun");
+    expect(store.getState().isSunView).toBe(true);
     expect(sunTimeOf(store.getState())).toEqual({ day: "design_day", hour: 9 });
   });
 });
@@ -415,14 +415,14 @@ describe("the presentation", () => {
     expect(stringsShownByOf(store.getState())).toBe("inverter");
   });
 
-  test("under a presentation no string is lit, the shade map and the sun path are not drawn, whatever the lens holds", () => {
+  test("under a presentation no string is lit, the shade map and the sun path are not drawn, whatever the view holds", () => {
     const store = createViewStore();
     store.getState().showLens("strings");
     store.getState().select({ kind: "string", label: "S12" });
     store.getState().setPresentation({ ...PRESENTING, colouring: "mppt" });
     expect(litStringsOf(store.getState())).toEqual([]);
 
-    store.getState().showLens("sun");
+    store.getState().showSunView(true);
     store.getState().showSunTab("shade-map");
     expect(isShadeMapShownOf(store.getState())).toBe(false);
     expect(showsSunPathOf(store.getState())).toBe(false);
@@ -455,5 +455,46 @@ describe("the presentation", () => {
     // Without a key or a location there is no imagery: the plain grid, whatever the switch says (D57).
     expect(groundDrawnOf("imagery", false)).toBe("plain");
     expect(groundDrawnOf("plain", false)).toBe("plain");
+  });
+});
+
+// V2 (D95, D99): Sun is a view of the stage on every step, no lens; the work column can be hidden on desktop.
+describe("the Sun view and the panel (V2)", () => {
+  test("the Sun view is off at first and turns on over any step; the lens stays", () => {
+    const view = createViewStore();
+    view.getState().showLens("array");
+    expect(view.getState().isSunView).toBe(false);
+    view.getState().showSunView(true);
+    expect(view.getState().isSunView).toBe(true);
+    expect(view.getState().lens).toBe("array");
+  });
+
+  test("the shade map, the sun path and the dome follow the Sun view, not the lens", () => {
+    const view = createViewStore();
+    view.getState().showLens("strings");
+    view.getState().showSunTab("shade-map");
+    expect(isShadeMapShownOf(view.getState())).toBe(false);
+    expect(showsSunPathOf(view.getState())).toBe(false);
+    view.getState().showSunView(true);
+    expect(isShadeMapShownOf(view.getState())).toBe(true);
+    expect(showsSunPathOf(view.getState())).toBe(true);
+    expect(framesTheDomeOf(view.getState())).toBe(true);
+  });
+
+  test("leaving the Sun view takes its tab back to the shadows", () => {
+    const view = createViewStore();
+    view.getState().showSunView(true);
+    view.getState().showSunTab("shade-map");
+    view.getState().showSunView(false);
+    expect(view.getState().sunTab).toBe("shadows");
+  });
+
+  test("the panel hides and shows; an object selected on the roof shows it again", () => {
+    const view = createViewStore();
+    expect(view.getState().isPanelHidden).toBe(false);
+    view.getState().hidePanel(true);
+    expect(view.getState().isPanelHidden).toBe(true);
+    view.getState().select({ kind: "obstacle", index: 0 });
+    expect(view.getState().isPanelHidden).toBe(false);
   });
 });

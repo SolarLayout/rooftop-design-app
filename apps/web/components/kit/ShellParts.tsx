@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { LensNav } from "@/components/shell/LensNav";
 import { NotesDrawer, NotesPanel } from "@/components/shell/NotesDrawer";
 import { ProjectMenu, ProjectSwitcher, ProjectTrigger } from "@/components/shell/ProjectSwitcher";
 import { SaveState } from "@/components/shell/SaveState";
-import { Export, Present, TopBar } from "@/components/shell/TopBar";
-import { Vitals } from "@/components/shell/Vitals";
-import { TabBar, WorkspaceNav } from "@/components/shell/WorkspaceNav";
+import { ResultChip } from "@/components/shell/ResultChip";
+import { resultChipOf, summaryOf } from "@/components/shell/result-view";
+import { StepNav, StepTabBar } from "@/components/shell/StepNav";
+import { Present, TopBar } from "@/components/shell/TopBar";
+import type { Step, StepState } from "@/lib/flow/steps";
 import { Example, Row, Section } from "./Example";
 import { DESIGN, NO_NOTES, NOTES, ON_THIS_DEVICE, VITALS } from "./shell-examples";
 
@@ -27,21 +28,24 @@ function Wide({ name, caption, children }: { name: string; caption: string; chil
   );
 }
 
-// The vitals stand on the ground of the stage, which the bar floats over.
-const STAGE = "-mx-4 rounded-row bg-ground py-4 tablet:mx-0 desktop:p-5";
+// The order of work in a few of its states (D95): on Find before Build, half way with a step that waits, near the end.
+const ON_FIND: Record<Step, StepState> = { roof: "to-do", array: "closed", strings: "closed", performance: "closed", handover: "closed" };
+const HALF_WAY: Record<Step, StepState> = { roof: "done", array: "done", strings: "needs-you", performance: "to-do", handover: "to-do" };
+const NEAR_THE_END: Record<Step, StepState> = { roof: "done", array: "done", strings: "done", performance: "done", handover: "to-do" };
 
 export function TopBars({ onPress }: Props) {
   return (
-    <Section title="Top bar and navigation">
-      <Wide name="topbar" caption="The top bar: 56 on desktop and phone, 60 on tablet">
+    <Section title="Top bar and the order of work">
+      <Wide name="topbar" caption="The top bar: the mark, the design, the five steps, the result, Docs; 56 on desktop and phone, 60 on tablet">
         {/* As wide as the screen, as the top bar is: out of the card and of the page around it. */}
         <div className="-mx-10.25 bg-ground tablet:-mx-11.25 desktop:-mx-16.25">
           <TopBar
             {...DESIGN}
-            workspace="studio"
-            lens="array"
             saving="not-kept"
-            notes={1}
+            step="array"
+            states={HALF_WAY}
+            result={resultChipOf(VITALS.design)}
+            summary={summaryOf(VITALS.design)}
             onOpenNotes={() => onPress(OPEN_THE_NOTES)}
             onImport={() => onPress("Import a drawing")}
             onOpenProject={() => onPress("Open a project")}
@@ -50,75 +54,50 @@ export function TopBars({ onPress }: Props) {
           />
         </div>
       </Wide>
-      <Row label="The workspaces: in the top bar on desktop and tablet, a tab bar at the bottom of the phone">
-        <Example name="workspaces" caption="In the top bar">
-          <WorkspaceNav current="studio" lens="array" />
+      <Row label="The steps in the top bar of desktop and tablet: a tick when done, the note mark when it needs you, else the number">
+        <Example name="steps-find" caption="On Find, before Build: the steps after Roof cannot be gone to">
+          <StepNav current="roof" states={ON_FIND} />
         </Example>
-        <Wide name="tabbar" caption="The tab bar of the phone">
-          <div className="-mx-4 tablet:mx-0">
-            <TabBar current="studio" lens="array" />
-          </div>
-        </Wide>
+        <Example name="steps-half-way" caption="On Array: Roof done, Strings needs you">
+          <StepNav current="array" states={HALF_WAY} />
+        </Example>
+        <Example name="steps-near-the-end" caption="On Handover">
+          <StepNav current="handover" states={NEAR_THE_END} />
+        </Example>
       </Row>
-      <Row label="The lenses of the Studio: a rail on desktop, a row on tablet, a switch in the sheet of the phone">
-        <Wide name="lenses" caption="The lens that is open is in the accent">
-          <LensNav current="array" look="rail" className="hidden self-start rounded-row py-3.5 desktop:flex" />
-          <LensNav current="array" look="row" className="hidden self-start tablet:flex desktop:hidden" />
-          <LensNav current="array" look="switch" className="grid tablet:hidden" />
-        </Wide>
-      </Row>
-      <Row label="Present and Export">
+      <Wide name="tabbar" caption="The steps at the foot of the phone">
+        <div className="-mx-4 tablet:mx-0">
+          <StepTabBar current="array" states={HALF_WAY} />
+        </div>
+      </Wide>
+      <Row label="Present, at the head of Performance and Handover">
         <Example name="present" caption="Leads to Present, the tour on the whole screen">
           <Present />
-        </Example>
-        <Example name="export" caption="Leads to Handover">
-          <Export />
         </Example>
       </Row>
     </Section>
   );
 }
 
-export function VitalsStates({ onPress }: Props) {
+export function ResultStates({ onPress }: Props) {
   const openNotes = () => onPress(OPEN_THE_NOTES);
+  const examples = [
+    { name: "result", caption: "The result: the energy of year 1; pressed, the summary", view: VITALS.nothingToReview },
+    { name: "result-review", caption: "With a note to review", view: VITALS.design },
+    { name: "result-updating", caption: "A new result on its way: the last one dimmed, the ring", view: VITALS.updating },
+    { name: "result-computing", caption: "The first result on its way", view: VITALS.loading },
+    { name: "result-problem", caption: "The run failed", view: { ...VITALS.failed, cells: [], kind: "layout" as const } },
+  ];
 
   return (
-    <Section title="Vitals">
-      <Wide name="vitals-design" caption="The design: seven values, and the notes to review">
-        <div className={STAGE}>
-          <Vitals view={VITALS.design} onOpenNotes={openNotes} />
-        </div>
-      </Wide>
-      <Wide name="vitals-updating" caption="Updating: the values of before stay, dimmed; the last cell says the step and how far">
-        <div className={STAGE}>
-          <Vitals view={VITALS.updating} onOpenNotes={openNotes} />
-        </div>
-      </Wide>
-      <Wide name="vitals-loading" caption="First load: no value was ever there">
-        <div className={STAGE}>
-          <Vitals view={VITALS.loading} onOpenNotes={openNotes} />
-        </div>
-      </Wide>
-      <Wide name="vitals-failed" caption="The run failed: the last good values stay, not dimmed">
-        <div className={STAGE}>
-          <Vitals view={VITALS.failed} onOpenNotes={openNotes} />
-        </div>
-      </Wide>
-      <Wide name="vitals-waiting" caption="Before a system voltage: the roof and the positions, and what is waited for">
-        <div className={STAGE}>
-          <Vitals view={VITALS.waiting} onOpenNotes={openNotes} />
-        </div>
-      </Wide>
-      <Wide name="vitals-nothing-to-review" caption="Nothing to review">
-        <div className={STAGE}>
-          <Vitals view={VITALS.nothingToReview} onOpenNotes={openNotes} />
-        </div>
-      </Wide>
-      <Wide name="vitals-outside-target" caption="DC/AC outside the target: an exclamation mark, never a cross">
-        <div className={STAGE}>
-          <Vitals view={VITALS.outsideTarget} onOpenNotes={openNotes} />
-        </div>
-      </Wide>
+    <Section title="The result">
+      <Row label="At the top bar's right, on every step (D95)">
+        {examples.map(({ name, caption, view }) => (
+          <Example key={name} name={name} caption={caption}>
+            <ResultChip chip={resultChipOf(view)} summary={summaryOf(view)} onOpenNotes={openNotes} />
+          </Example>
+        ))}
+      </Row>
     </Section>
   );
 }

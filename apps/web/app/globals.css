@@ -135,7 +135,6 @@
   --breakpoint-desktop-wide: 1360px;
   --size-topbar: 56px;
   --size-topbar-tablet: 60px;
-  --size-rail: 72px;
   --size-inspector: 384px;
   --size-handover-list: 440px;
   --size-find-panel: 380px;
@@ -147,8 +146,6 @@
   --size-tabbar-on-screen: calc(var(--size-tabbar) - var(--size-tabbar-foot) + var(--size-tabbar-foot-on-screen));
   --size-touch: 44px;
   --size-sheet-peek: 84px;
-  --columns-vitals: 1.25fr 1.15fr 0.85fr 0.85fr 1fr 0.8fr 1.25fr 1.55fr;
-  --columns-vitals-waiting: 1fr 1fr 1fr 2.4fr;
   --columns-p-values-phone: 1fr 1fr 1.5fr;
   --columns-loss-chain: 210px 100px 64px 216px minmax(0, 1fr);
   --columns-loss-chain-tablet: 220px 112px 72px 190px minmax(0, 1fr);
@@ -362,7 +359,6 @@
   --spacing-grid: var(--space-grid);
   --spacing-topbar: var(--size-topbar);
   --spacing-topbar-tablet: var(--size-topbar-tablet);
-  --spacing-rail: var(--size-rail);
   --spacing-inspector: var(--size-inspector);
   --spacing-handover-list: var(--size-handover-list);
   --spacing-find-panel: var(--size-find-panel);
@@ -375,8 +371,6 @@
   --spacing-touch: var(--size-touch);
   --spacing-sheet-peek: var(--size-sheet-peek);
 
-  --grid-template-columns-vitals: var(--columns-vitals);
-  --grid-template-columns-vitals-waiting: var(--columns-vitals-waiting);
   --grid-template-columns-p-values-phone: var(--columns-p-values-phone);
   --grid-template-columns-loss-chain: var(--columns-loss-chain);
   --grid-template-columns-loss-chain-tablet: var(--columns-loss-chain-tablet);

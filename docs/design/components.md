@@ -52,7 +52,7 @@ and the segmented control shows it with its words (see "System voltage").
 In code: `Segmented`. It is a group of radio buttons to a screen reader (`radiogroup`, `radio`). The keyboard
 stops at it once, at the choice that is taken; the arrows go through the choices and around the ends, Home and
 End to the first and the last; each takes the choice it goes to. A choice that cannot be taken is dim and is
-passed over. On phone and tablet the items are 44 and the text `type-body-touch`. With `fill` the choices share the width in equal parts (the lens switch on phone). With
+passed over. On phone and tablet the items are 44 and the text `type-body-touch`. With `fill` the choices share the width in equal parts. With
 `disabled` the whole control is dim and takes neither pointer nor key; only then may nothing be taken
 (`value` null), where the choice does not apply yet: the units of a drawing before the file is a DXF.
 A choice may carry a status mark after its label (`mark`: a tick or a note of 14, never a cross), where the
@@ -187,7 +187,7 @@ In code: `TextField`; its words in `text-entry.ts`.
 Equipment card (module, inverter): glyph 44 by 56 to 60, name in Geist 600, one or two lines of facts in
 `type-body`, file name in Geist Mono, a secondary button (Change, which opens the picker of "Choose a module or an
 inverter"; its tooltip on desktop "Choose from 119 modules, or use a PAN file", the count the library's). The maker is
-named as people know it (`makerOf`, D75). In its lens the card stands under a section heading, Module or Inverter (D76).
+named as people know it (`makerOf`, D75). In its step the card stands under a section heading, Module or Inverter (D76).
 Selected card: `note-surface`, accent border, `halo-selected`.
 Compact card: radius `radius-card-s`, padding `space-card-compact`.
 
@@ -216,18 +216,19 @@ scene in the place of its final value; two figures in the look `scene-small` bes
 area, its latitude and longitude. Roof: the obstacles as they rise, the roof's length by width (its corners for a roof
 drawn), the parapet. Array: the positions as the rows fill, the rows, the tilt and the orientation. Sun: the solar
 time, the sun's height and bearing; the stage draws the sun path and the sun along it with the hour marks of the Sun
-lens, without its callout. Strings: the DC capacity, strings × modules in series, inverters × kW. Energy: the energy
+view, without its callout. Strings: the DC capacity, strings × modules in series, inverters × kW. Energy: the energy
 of year 1, the specific yield, the PR, and the chain's cascade from the array's nominal energy to the grid. A scene
 whose facts are not there yet has no panel. It fades in with its scene (`appearing`). Through the whole tour the
 camera frames the sun path's dome, and on a canvas taller than wide it stands back by the aspect.
 
-## Vitals bar
-Desktop: floating, `surface-1`, `radius-bar`, `shadow-float`, height 78, cells separated by 1 px lines. Order:
-Energy year 1 (display size), DC capacity, AC capacity, DC/AC with its mark, Modules "638 of 790", PR, Yield,
-then the notes cell on `note-surface`.
-Tablet: grid of 4 by 2, cells 72 high. Phone: one row of cards 64 high that scrolls sideways.
-When the run has no options (no string length fits, too few positions): Roof, Positions, "If all were used" and a wide
-note cell that says why, in the words of the API.
+## The result (top bar)
+V2 (D95; the board "V2 · 2"): the vitals bar over the stage is gone. The result is a chip at the top bar's right on
+desktop and phone, a row under the stage on tablet: the energy of year 1 in `type-strong` with `MWh a year` (`MWh` on
+phone) in `text-2`; beside it, after a line, the note mark and `N to review` when notes wait. While a new result comes the
+figure is dimmed with the ring beside it; before the first, the ring and `Computing the energy`; a run that failed, or no
+option that fits, the note mark and its title. Pressed, a card under it: `The result`, seven figures in plain names, the
+notes' button when some wait, `Open Performance`. In code: `ResultChip`, its words from `resultChipOf` and `summaryOf`
+(`components/shell/result-view.ts`).
 
 ## Status marks
 Tick: `color-ok`, stroke 2.4. Note: exclamation mark in a circle, accent. Size 14 to 22. Each has a text
@@ -243,7 +244,7 @@ preselected. Below it, the list of what is waiting and what is done. Its one use
 (Phase 16): the pattern is kept for a choice that comes to need it, and is in no screen today.
 
 ## System voltage
-The Strings lens's section (the boards "System voltage · Set by the user's country"; D87, D88). The heading with its
+The Strings step\'s section (the boards "System voltage · Set by the user's country"; D87, D88). The heading with its
 ? disc, and at the right in `type-body` `text-3` who set the voltage: `Set for <country>` (the app, for the user's
 country), `Set by the app` (the app's value is not the default of the country the user is in now), `Your choice`. Under
 it the segmented control of 600, 1000 and 1500 V, filling the width. Then, each only when it applies:
@@ -272,20 +273,15 @@ The chip stands over its dot on a line of 40; where it would rise into the stage
 controls, on phone the time) it hangs under the dot. On phone there is none while the selected obstacle's handles
 stand, as the board "Obstacle edited on the roof" draws it: the handles and the time fill the top of a stage of 252.
 
-## Lens rail and lens switch
-Rail item 56 by 56, radius 12, icon 20 over a label of 11. Active: `control-active`, accent icon and label,
-`shadow-segment`. On tablet the four lenses are a floating segmented row of 44; on phone a four-column segmented
-control in the sheet.
-
 ## Bottom sheet (phone)
 `color-chrome`, top radius `radius-panel`, top border `line`, drag handle 40 by 4 in `line-strong`, 8 over it
-and 4 under it. Holds the lens switch and the inspector as a list of rows 64 to 68 high divided by
+and 4 under it. Holds the step's sections and its primary as a list of rows 64 to 68 high divided by
 `line-subtle`. Three stops: peek, half, full.
 
 In code: `Sheet`; its stops in `sheet-stops.ts`. It stands at the bottom of the room it is put into.
 
-- Peek is `size-sheet-peek` high: the handle and the lens switch. Half is half the room, full all of it.
-  A sheet may be given another share of the room for half: the Studio's sheet at half meets the foot of the vitals on
+- Peek is `size-sheet-peek` high: the handle and the top of the step. Half is half the room, full all of it.
+  A sheet may be given another share of the room for half: the Studio's sheet at half meets the foot of the stage on
   a phone of any height (the boards draw it so at 844; #148, the owner's choice of 2026-10-08), the stage staying 252.
 - The sheet follows a drag of its handle. Let go, it goes to the nearest stop, and to the next one in the
   direction of the drag when the drag went a quarter of the way there. It goes in `duration-panel`.
@@ -352,7 +348,7 @@ right, 44 high, 132 wide (148 for the CO₂ factor, 52 for each level).
 In code: `Assumptions`, of fields `assumption-fields.ts`. The card stands before the summary, and when the run
 has no options under the API's words: the assumptions are inputs and can be set before (decision 15).
 
-## Timeline (Sun lens)
+## Timeline (Sun view)
 Floating bar 64 high, `surface-1`, border `line`, radius `radius-bar`, `shadow-float`: round play button 44, time
 in `type-title-touch` over "solar time", the slider of the time over the day's hours with the
 shade-free window filled in accent, handle at the time, ticks at sunrise, the window's ends (text-2), noon and
@@ -367,11 +363,11 @@ under them with ticks at sunrise, noon and sunset. The boards "Studio, Sun lens"
 - Play moves a quarter hour every 250 ms to sunset and stops; Play at sunset begins at sunrise; under reduced motion
   an hour a second. A drag, a key or Pause stops it; while it plays the button is Pause, two bars of
   `--stroke-pause`.
-- Keys in every lens, not while a field, a slider or a menu has the focus: `,` and `.` an hour, `[` and `]` a day.
+- Keys in every step, not while a field, a slider or a menu has the focus: `,` and `.` an hour, `[` and `]` a day.
   The tooltip of the track names them (`Tooltip` with `shortcuts`).
 - A day the sun stays up or down runs from 00:00 to 24:00, and the line under the time says which.
 
-## Sun path on the stage (Sun lens)
+## Sun path on the stage (Sun view)
 The board "Sun path and shadow outlines". The day's positions of `/sun` on a dome of 1.3 times the roof's radius about
 its centroid, from the horizon at sunrise to the horizon at sunset: a line of 2 px in the scene's `sun` (1.5 on phone),
 the shade-free window's part 5 px (4 on phone), unlit. The marker at the view's hour is DOM placed by projection: a
@@ -381,17 +377,17 @@ with a chip in the look of the stage's labels ("06:33 sunrise", "09:00", "12:00"
 marker's callout ("16:00 · end of the shade-free window", "Sun 18.0° high, 56.6° W of south") stands to its right,
 to its left past 60 % of the stage, under it while the marker is in the stage's top 140, and only while the marker
 is on the canvas; the mark at the marker's hour gives way to it; the callout of what is selected wins over it.
-Nothing is drawn below the horizon. In the Sun lens alone, while the switch Sun path is on; the window's part while
+Nothing is drawn below the horizon. In the Sun view alone, while the switch Sun path is on; the window's part while
 Shade-free window is on.
 
-## Shadow outlines (Sun lens)
+## Shadow outlines (Sun view)
 The engine's shadows of the parapet and the obstacles on the roof surface at the view's time (`/sun` with `shadows`,
 the roof alone), dashed in `keepOutLine` without a fill, on the roof under the modules and over the rendered
 shadows: where the two agree, the view is true. Asked once the time has stood still for `TIME_REST`, shown only while
 the time is the one they are of; off at first.
 
-## Shade map (Sun lens)
-The board "Shade map". The Sun lens's tab Shade map colours the glass of every position by its near shading over the
+## Shade map (Sun view)
+The board "Shade map". The Sun view's tab Shade map colours the glass of every position by its near shading over the
 year (`Shading.near_pct_by_module` of the design run), in the five steps of `--color-shade-1` to `-5` from 0 to the
 next round value over the largest loss (1, 2, 5, 10, 20 %); the frames stay. Only while the run is of the layout
 shown; otherwise the modules are their blue and the legend says "The shade map follows the design run" with the
@@ -400,15 +396,15 @@ year", five swatches of 40 by 10 (24 on phone) with the marks of the scale under
 ("0 1 2 3 4 5 %"; on phone the ends alone), and "Of all 790 positions". The inspector in the tab: what the map
 colours ("Select a module for its value", "Tap" on touch) and each step with its range and its count, then Shading
 over the year. A module selected says its loss and its string's: "Position 423 · row 4", "Near shading 3.57 % over
-the year · string S12, 5.00 %", or "· not used by option A"; without an option no string. Leaving the Sun lens takes
+the year · string S12, 5.00 %", or "· not used by option A"; without an option no string. Leaving the Sun view takes
 the map off.
 
-## Strings on the roof (Strings lens)
-The boards "Strings on the roof" and "Studio, Strings lens" on three sizes. The Strings lens colours the glass of
+## Strings on the roof (Strings step)
+The boards "Strings on the roof" and "Studio, Strings lens" on three sizes. The Strings step colours the glass of
 every position by the chosen option's strings (`system.strings` of the design run): by string, by MPPT (at first)
 or by inverter, in the series colours in their fixed order; the positions the option does not use `moduleUnused`;
 the frames stay. Only while the run is of the layout shown; otherwise the modules are their blue and the legend says
-"The strings follow the design run" with the ring. Leaving the Strings lens takes the colours off.
+"The strings follow the design run" with the ring. Leaving the Strings step takes the colours off.
 
 The colour switch is a Segmented control "Colour the strings by": String, MPPT, Inverter. On desktop it stands with
 the legend in a card of 48 (`surface-1`, border `line`, `radius-card-s`, `shadow-float`) at the stage's bottom left,
@@ -435,19 +431,19 @@ the cable schedule; its line and dot in the accent. Escape clears it. A press on
 module. The text equivalent says the strings, what they are coloured by with each colour's strings, the positions
 not used, the inverters and where, and the string selected.
 
-## Shading over the year (Sun lens)
+## Shading over the year (Sun view)
 Four stat tiles, two to a row: Near, linear; Electrical, beyond linear; Far, horizon (in %); Kept clear (m²). With an
 option they are its loss chain's ("Of the 638 modules of option A"); without, near and far over all positions ("Of
 all 790 positions") and Electrical says what it waits for, in the API's words. Under them the engine's note on the
 horizon as it says it. Before any run, skeletons on the tiles.
 
-## Time pill (every lens)
-The time on the stage of the Roof, Array and Strings lenses, as the approved Array boards draw it: a pill of 44
+## Time pill (every step)
+The time on the stage of the Roof, Array and Strings steps, as the approved Array boards draw it: a pill of 44
 (48 on tablet), `surface-1`, border `line`, `shadow-raised`: round play 32 (36 on tablet), the day and the time in
 mono ("21 Dec · 10:30"), a short slider of the time (180, 200 on tablet) filled to the time, and "solar time" on
 desktop. Desktop at the bottom left over the vitals, tablet at the bottom left of the stage. On phone it is the
 play button alone, at the top left of the stage, `control`: a press plays and pauses; the time is moved on the
-timeline of the Sun lens. In the Sun lens the timeline stands instead, on tablet and desktop.
+timeline of the Sun view. In the Sun view the timeline stands instead, on tablet and desktop.
 
 ## Find's first step (D85)
 The panel of Find before a place is found (`components/find/FirstStep.tsx`, the words in `lib/outline/first-step.ts`).
@@ -493,7 +489,7 @@ touch), `DetectedCallout` the callout of Detect building. Every rule of drawing 
   its name and its height under its lowest point. The selected one has handles: its corners, or the edge of a
   tank; Delete removes it. The panel lists them under the measurements, "Obstacles · n", each with its size (a
   box by its sides, a tank by its diameter, a wall by its length, a building by its area) and its height, a press
-  on a row selects it, Remove takes it. The card of the Roof lens counts them. In code: `ObstacleList`,
+  on a row selects it, Remove takes it. The card of the Roof step counts them. In code: `ObstacleList`,
   `HeightDialog`, the obstacles in `lib/outline/obstacles.ts` and the reducer.
 
 ## Move and turn the roof and its obstacles (Find's map) — approved, built
@@ -616,9 +612,9 @@ Find's two tips, the words by device (a press on touch, a click with a pointer):
 In code: `components/ui/Tip.tsx` (the card); which tip shows and when one is done in `lib/outline/tips.ts`; what the device
 remembers in `lib/device/tips-seen.ts`.
 
-## Obstacles on the roof (Studio, Roof lens)
+## Obstacles on the roof (Studio, Roof step)
 The board "Obstacle edited on the roof". The obstacles of the document are edited on the 3D roof and in the list of
-the Roof lens, which share one selection. A press selects (the roof, an obstacle, a kept-clear area, a module);
+the Roof step, which share one selection. A press selects (the roof, an obstacle, a kept-clear area, a module);
 hover is a lighter outline on pointer devices; Escape clears; the parapet is not selectable. The selected obstacle
 has an accent outline (2 px on its silhouette, 1.5 px on the edges of its top), its callout ("Stair room · selected",
 "5.0 × 4.0 m · 3.0 m high · drag to move") anchored by the 9 px dot at the middle of the east edge of its top, and
@@ -653,8 +649,8 @@ The roof is drawn as it is typed. With a map it stands on the imagery at the pla
 its corners are shown, not dragged: the fields are the truth of it; "Draw on the map instead" goes back to the
 tools. Without a map the stage draws the plan: north up, on a grid of 10 m, the outline in the accent with its edge
 labels, a north mark, the scale bar, and the reason there is no map where the attribution stands. Build sends the
-corners in WGS84 about the place, as for a roof drawn, with the source "coordinates": the card of the Roof lens
-says "Entered by hand". Obstacles by hand come with the Roof lens.
+corners in WGS84 about the place, as for a roof drawn, with the source "coordinates": the card of the Roof step
+says "Entered by hand". Obstacles by hand come with the Roof step.
 
 In code (`apps/web/components/find`): `ByHandPanel` the fields, `PlanView` the plan, the rectangle and the table in
 `apps/web/lib/outline/by-hand.ts`, the roof entered as one event of the reducer (`entered`).
@@ -668,7 +664,7 @@ m suggested. A DXF holds nothing of where the roof is, and the place sets the su
 DXF the dialog asks "Place": the search field of Find (an address, coordinates or a maps link), then Latitude and
 Longitude, empty, filled by the search or typed, as the roof entered by hand has them; nothing is guessed (the desktop
 app put every DXF at its own default). A KMZ or KML carries its place and shows no Place block. "Open the roof" waits
-until a file is there, and for a DXF until its place is too. After the import the Roof lens's card says "From a file · 6
+until a file is there, and for a DXF until its place is too. After the import the Roof step\'s card says "From a file · 6
 corners · 4 obstacles" with the file name in mono; a note under it (`note-surface`, accent border, the note mark)
 carries the engine's sentence "These obstacles have no height in the file and were set to 1.0 m.", "3 to review" and
 Review; the open card of an obstacle to review has the hint "Enter the real height. The file gave none; 1.0 m stands
@@ -690,7 +686,7 @@ line is not drawn). The engine's notes on the files a format 1 file names withou
 word for word, each on `note-surface` with the border `note-line` and the note mark of 16 ("The module file Test.PAN (PAN)
 is not included in this project. Choose it again.", the inverter's, the CSV weather's); nothing is added to them, and
 Open stays live. Open keeps the project on this device as a new design under a new id and opens it in the Studio at its
-last lens with no second request; it runs again there, as the results are never in the file (D5). A file the API refuses
+last step with no second request; it runs again there, as the results are never in the file (D5). A file the API refuses
 is the drop's "Refused" state at drop time: `note-surface`, the note of 20, "This file was not loaded", the API's words
 ("The file is not a project file (.rtd): it is not JSON.", "This project file is format 3. This version reads formats 1
 and 2. Open it with a newer version of the app."), "Choose another"; Open waits, and the design that is open stays as it
@@ -704,7 +700,7 @@ lines of a file read, the refusal from an error); the design is kept by `keepAnd
 
 ## Choose a module or an inverter (the equipment picker)
 The boards "UI fixes · Choose a module or an inverter" and "UI fixes · Where the picker opens" (D75). Change on the module
-card (Array lens) opens "Choose a module"; on the inverter card (Strings lens) "Choose an inverter". The dialog is the kit's,
+card (Array step) opens "Choose a module"; on the inverter card (Strings lens) "Choose an inverter". The dialog is the kit's,
 wide: 760 on desktop, 680 on tablet; on phone the bottom sheet at its full height, 48 under the top of the screen. In it:
 the title, the filters, the count, the list, the file of one's own, the foot; no sentence under the title (the owner: "not
 needed").
@@ -783,7 +779,7 @@ secondary button of 44 with an arrow. The capacity and the energy are the engine
 this device, remembered under one key of localStorage when that run lands (`lib/device/demo-run.ts`); until the demo has run
 here they are absent and "Capacity and energy come with the run in the Studio" stands in their place (decision 5: nothing
 is typed). Open the demo hands the demo document to the flow, which opens it without a second request, and leads to the
-Studio's last lens: one press from a cold start. While the demo is on its way the card holds skeletons; a demo that does not
+Studio's last step: one press from a cold start. While the demo is on its way the card holds skeletons; a demo that does not
 come says the API's words in the card. On phone the card is stacked: the words, the two numbers side by side, the button as
 wide as the card.
 
@@ -992,7 +988,7 @@ block's right, 8 from it (`side="right"`), so that no other block is hidden; the
 ## Toast
 A choice of stringing an edit took away is said in a toast with a note (D77): "The stringing you chose, 18 in series × 84
 strings on 7 inverters, no longer fits this design. Option A, Recommended, is used instead: 23 in series × 67 strings on 7
-inverters." with the action Choose another, which leads to the Strings lens; `choiceGoneWords` in `lib/flow/choice-gone.ts`.
+inverters." with the action Choose another, which leads to the Strings step; `choiceGoneWords` in `lib/flow/choice-gone.ts`.
 
 `surface-1`, border `line-strong`, radius `radius-row`, `shadow-float`, 48 high or more, padding 8 8 8 14,
 gap 10. A status mark (tick 18 or note 20), the words, then an action in accent, Geist 500 (height 32), or a
@@ -1082,33 +1078,6 @@ In code: `Skeleton`, of the kind `label`, `value`, `lead` or `text`. Who uses it
 nothing to a screen reader: what is waited for is said in words beside it. On a stat tile, which is `surface-2`
 itself, the block is `control-active` (`onTile`; the board "Shade map").
 
-## Vitals: states
-| State | What is shown |
-|---|---|
-| Updating | Every value at opacity 0.55. A turning ring of 16 beside the energy. The last cell, on `surface-1`, has the ring of 20 with its arc, "Updating energy" in Geist 500, 13, and the step of the engine in `type-body` |
-| First load | Skeletons in every cell. The last cell has the ring of 20, "Opening" and the name of the project, and the step of the engine |
-| The run failed | The last good values, not dimmed. The last cell is a note: "Energy was not updated", "Values are of the design before · Try again". It opens the notes |
-| No options, desktop | Three cells, Roof, Positions, "If all were used", and the note on `note-surface`, in the words of the API ("No string length fits this inverter", and its message). It leads to the Strings lens. Drawn first for a missing system voltage (D37), which a design the app makes no longer has (D87) |
-| No options, tablet | The three cells in a row, 72 high. Under them, across the width, the note, 72 high, with the same words and an arrow |
-| No options, phone | The note is the first card of the row, with the title of the API alone, on two lines. Then Roof, Positions, "If all were used" |
-
-In code: `Vitals` draws what `vitalsOf` (`components/shell/vitals-view.ts`) makes of the results and their
-status. It is one element, laid out for each size.
-
-- The words of what is waited for are the title and the message of `no_options` of the API, for each of its
-  reasons (decision D37). The web app writes none of its own.
-- The mark of DC/AC says what the engine says of the option: "In target", "Below the DC/AC target", "Above
-  the DC/AC target", "Heavy clipping".
-- No notes: the last cell has a tick of 20, "Nothing to review", "Every check of the design fits.", on the
-  surface of the bar. It opens the notes all the same.
-- In the last cell the first line may take two lines; the second is cut short with an ellipsis.
-- While the design itself is opened, before its name is known, the last cell says "Opening the design".
-- The run failed at the first load: the roof and the positions if the layout gave them, and the note "Energy
-  was not computed", "There are no values yet · Try again".
-- Phone: the row is Energy, DC capacity, DC/AC, Modules, AC capacity, PR, Yield, as `StudioPhone.dc.html`
-  begins it. The notes are a button of the top bar, not a card of the row. What is updated, what failed and
-  what is waited for is the first card of the row, 240 wide at the most.
-- Tablet: what is updated and what failed stand in the last place of the grid, as the notes do.
 
 ## Notes to review, the drawer
 Desktop and tablet: from the right, 384 wide, over the inspector, `color-chrome`, a line `line` at its left,
@@ -1134,7 +1103,7 @@ In code: `NotesDrawer`, and `NotesPanel` for what is seen of it; the notes are m
 - The API gives no title. The title is what the note is about: its words before its first number or its verb
   ("Voc coefficient", "Unit gap"), four at the most. A note that begins otherwise is named by where it came
   from: "Module", "Layout", "Weather".
-- Where a note leads: module and layout to the Array lens, weather to Performance, the option to the Strings
+- Where a note leads: module and layout to the Array step, weather to Performance, the option to the Strings
   lens. A call that failed has "Try again".
 - An action of a note closes the drawer.
 - It comes and goes in `duration-panel`, eased as a sheet is (`drawer-motion`): the panel slides in from the right on
@@ -1194,28 +1163,37 @@ In code: `SaveState` (the menu's), `SaveMark` (the trigger's), `SAVING_WORDS`. B
 project switcher the words are `type-body`.
 
 ## Top bar and navigation
-As `Main.dc.html`, `StudioTablet.dc.html` and `StudioPhone.dc.html` draw them.
+V2 (D95, D99; the board "V2 · 2 · The progression").
 
-In code: `TopBar`, `WorkspaceNav`, `TabBar`, `LensNav`, `Shell`, `Studio` (`components/shell`).
+In code: `TopBar`, `StepNav`, `StepTabBar`, `ResultChip`, `Shell` (`components/shell`), the steps' logic in
+`lib/flow/steps.ts`, what the device remembers in `lib/device/progression.ts`.
 
 - The shell is as high as the screen. The top bar and the tab bar stay; what is between them scrolls.
-- The workspaces and the lenses are places with an address, so they are links in a `nav`, and the one that is
-  open says so (`aria-current`). They look as the segmented control and the rail of the mockups.
-- The Studio is entered at the lens that was opened last.
-- On tablet a link of the workspaces is 36 high and takes the pointer 44 high.
-- Present is a link to `/present` in the look of a secondary button (`plan/phase-10-plan.md`, decision 8): the tour
-  of the design on the whole screen, without the shell, left by any key, pointer or touch to the Studio's last lens
-  (the board "Present"). On desktop with its word, on tablet the icon alone, 44. The phone has no Present.
-- Export is a link to Handover. It shows its icon alone on phone, and on tablet under 820 wide.
+- The bar: the mark (to Home), the design's name with its saved mark, the five steps, the result, Docs.
+- The steps are places with an address, so they are links in a `nav` ("Steps"); the one in hand says so
+  (`aria-current="step"`) and is pressed (`control-active`, `shadow-segment`). Each has its mark: a tick when done (gone
+  past, nothing in it waits), the note mark when something in it waits for the user (a note that leads there, no option
+  that fits), else its number; a screen reader hears the state after the name. On desktop a step's tooltip says its line
+  (D96). On Find, before Build, the steps after Roof are dim and are no links. On phone the steps are the tab bar, each its
+  icon with the mark at its corner.
+- One primary per step, named for the next (`Continue to Array`, `Continue to Strings`, `Continue to Performance`): at the
+  foot of the work column, pinned; on Performance `Continue to Handover` at the head beside Present; on Handover
+  `Download all` at the head beside Present. Under it `Next: <step>, <its line>` until that step has been opened once on
+  this device.
+- The app's own words (D96): the line under a page's title the first time the user meets it on this device
+  (`FirstMeeting`, `lib/words/explain.ts`), then behind the ? and the tooltip.
+- Hide panel (D99): a quiet icon button at the work column's top right, and ⌘ \ (Ctrl \), hide it on desktop; the stage
+  takes the width, `Show panel` stands beside the view controls and the step's primary floats at the stage's foot. The
+  column shows again on a design's first open on the device, when the step in hand needs the user, and when an object on
+  the roof is selected; hidden is remembered on the device.
+- Sun is a toggle of the view controls on every step (D95): pressed, the work column holds the Sun view's sections and the
+  stage its shadows, its time and the sun's arc; `/studio/sun` turns it on over the step in hand. On phone it stands alone
+  at the stage's top right, 3D or Plan and Layers on a line under it, clear of the time at the top left.
 - Where the top bar is short of room: `guidelines.md`, "Responsive rules".
-- The Layers button of the rail, the view controls and the time control belong to the stage and come with it
-  (Phase 5).
-- The inspector is a placeholder. It stands three times in the page, once for each size; how the real one is
-  mounted is decided with it (Phase 5).
 
 ## Layers button (the stage)
 The board "Stage, Layers" (`mockups/StageLayers.dc.html`). The fourth control of the view, after Fit and the north
-button, 8 from it, in any lens: a secondary icon button of 38 (44 on tablet and phone), `control` with the line,
+button, 8 from it, in any step: a secondary icon button of 38 (44 on tablet and phone), `control` with the line,
 `radius-control` (`radius-row` on touch), `shadow-raised`, the icon of three stacked sheets 20 (22 on touch) in text-2;
 its name is "Layers". States as the icon button's: hover (`control-hover`, `line-hover`, raised by 1,
 `shadow-raised-hover`, the icon in text), pressed, focus (the ring), and open (`control-pressed`, `line-strong`,

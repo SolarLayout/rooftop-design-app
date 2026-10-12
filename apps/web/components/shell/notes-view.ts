@@ -88,7 +88,7 @@ function noteOfTheOption(design: DesignResult): Note[] {
       id: "option",
       title: wordsOfTheTarget(option),
       reason: withTrueMinus(option.verdict.detail),
-      where: `Option ${option.letter} · Strings lens`,
+      where: `Option ${option.letter} · Strings step`,
       action: TO_STRINGS,
     },
   ];
@@ -96,8 +96,8 @@ function noteOfTheOption(design: DesignResult): Note[] {
 
 export function notesOf({ design, layoutNotes, designFailure, layoutFailure, savingFailure }: Asked): Note[] {
   const notes: Note[] = [];
-  if (design) notes.push(...notesOfA("Module", design.equipment.module_notes, "Module · Array lens", TO_ARRAY));
-  notes.push(...notesOfA("Layout", layoutNotes ?? design?.layout.notes ?? [], "Layout · Array lens", TO_ARRAY));
+  if (design) notes.push(...notesOfA("Module", design.equipment.module_notes, "Module · Array step", TO_ARRAY));
+  notes.push(...notesOfA("Layout", layoutNotes ?? design?.layout.notes ?? [], "Layout · Array step", TO_ARRAY));
   if (design) {
     notes.push(...notesOfA("Weather", design.weather_notes, "Weather · Performance", TO_PERFORMANCE));
     notes.push(...noteOfTheOption(design));

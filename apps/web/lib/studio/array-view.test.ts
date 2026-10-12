@@ -51,9 +51,9 @@ describe("the azimuth, decided by the engine or given", () => {
 });
 
 describe("the tilt of a sloped roof", () => {
-  test("follows the pitch set in the Roof lens", () => {
+  test("follows the pitch set in the Roof step", () => {
     const roof = { slope_deg: 10, slope_azimuth_deg: 180 } as Roof;
-    expect(slopedTiltLineOf(roof)).toEqual({ value: "10°", line: "Follows the roof pitch · 10° facing 180° S · set in the Roof lens" });
+    expect(slopedTiltLineOf(roof)).toEqual({ value: "10°", line: "Follows the roof pitch · 10° facing 180° S · set in the Roof step" });
   });
 });
 

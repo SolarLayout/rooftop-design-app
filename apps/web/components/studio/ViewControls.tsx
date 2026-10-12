@@ -17,7 +17,7 @@ import { Switch } from "@/components/ui/Switch";
 import { useFloating } from "@/components/ui/use-floating";
 import { northWordsOf } from "@/lib/scene/projection";
 import { bearingDegOf, type StageStore } from "@/lib/scene/stage-store";
-import { cameraOf, groundOf } from "@/lib/stores/view-store";
+import { cameraOf, groundOf, isPanelHiddenOf, isSunViewOf } from "@/lib/stores/view-store";
 
 type Props = { stage: StageStore; className?: string };
 
@@ -39,17 +39,19 @@ export const OFF_THE_PLAIN_GRID = "Off: the plain grid";
 
 /**
  * The controls of the view, at the top right of the stage (docs/design/mockups/Main.dc.html): 3D or
- * Plan, Fit, the north control whose needle shows where north is and which turns the view north up, and
- * the Layers button (the board "Stage, Layers") on every size.
+ * Plan, Fit, the north control whose needle shows where north is and which turns the view north up, Sun (the Sun view,
+ * D95), the Layers button (the board "Stage, Layers") on every size, and Show panel while the work column is hidden (D99).
  */
 export function ViewControls({ stage, className }: Props) {
   const { view } = useStores();
   const preset = useView(cameraOf);
   const bearingDeg = useStore(stage, bearingDegOf);
   const look: Look = preset === "plan" ? "plan" : "3d";
+  const isSunView = useView(isSunViewOf);
+  const isPanelHidden = useView(isPanelHiddenOf);
 
   return (
-    <div className={classNames("absolute z-stage-overlay flex items-center gap-2", className)}>
+    <div className={classNames("absolute z-stage-overlay flex flex-wrap items-center justify-end gap-2 tablet:flex-nowrap", className)}>
       <Segmented label="View" options={LOOKS} value={look} onChange={(chosen) => view.getState().setCamera(chosen)} />
       <div className={NOT_ON_PHONE}>
         <Button size="s" aria-label="Fit the roof" onClick={() => view.getState().setCamera("fit")}>
@@ -67,7 +69,20 @@ export function ViewControls({ stage, className }: Props) {
           </span>
         </button>
       </div>
+      {/* Sun is a view of the stage on every step (D95): pressed, its shadows, its time, the sun's arc and the shade map.
+          On phone it stands alone at the top right, the others on a line under it, clear of the time at the top left. */}
+      <div className="-order-1 flex basis-full justify-end tablet:order-none tablet:basis-auto">
+        <Button size="s" icon="sun" aria-pressed={isSunView} onClick={() => view.getState().showSunView(!isSunView)} className={isSunView ? "bg-control-active" : undefined}>
+          Sun
+        </Button>
+      </div>
       <Layers />
+      {/* The work column hidden on desktop: its way back, beside the view controls (D99). */}
+      {isPanelHidden ? (
+        <Button size="s" icon="panel" onClick={() => view.getState().hidePanel(false)} className="hidden desktop:inline-flex">
+          Show panel
+        </Button>
+      ) : null}
     </div>
   );
 }

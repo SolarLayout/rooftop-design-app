@@ -1,3 +1,7 @@
+import { FirstMeeting } from "@/components/shell/FirstMeeting";
+import { Present } from "@/components/shell/TopBar";
+import { ButtonLink } from "@/components/ui/ButtonLink";
+import { HANDOVER } from "@/lib/routes";
 import type { ReactNode } from "react";
 import { classNames } from "@/components/ui/class-names";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -33,6 +37,7 @@ export function PerformanceHeader({ header, isLoading, isDimmed, under, weather,
     <header className={classNames("flex flex-col gap-3 tablet:gap-4 desktop:flex-row desktop:gap-4", note ? "desktop:items-start" : "desktop:items-end")}>
       <div className="flex min-w-0 flex-col gap-1">
         <h1 className="type-title-touch desktop:type-title">Performance</h1>
+        <FirstMeeting word="Performance" />
         {header ? (
           <>
             <p data-testid="run-line" className={classNames("type-body-touch desktop:type-body text-text-2", isDimmed && "opacity-updating")}>
@@ -53,6 +58,13 @@ export function PerformanceHeader({ header, isLoading, isDimmed, under, weather,
       </div>
       {header ? (
         <div className="flex flex-col gap-2 desktop:ml-auto desktop:shrink-0 desktop:items-end">
+          {/* The page's own actions at its head (D95): Present, and the primary that leads on. */}
+          <div className="flex items-center gap-2 tablet:gap-3">
+            <Present />
+            <ButtonLink kind="primary" size="m" icon="arrow-right" href={HANDOVER} className="grow flex-row-reverse tablet:grow-0" data-testid="step-primary">
+              Continue to Handover
+            </ButtonLink>
+          </div>
           <div className="flex flex-col gap-2 tablet:flex-row tablet:items-center tablet:gap-3">
             {header.chosen === null ? null : <OptionSwitch items={header.items} chosen={header.chosen} onChoose={onChoose} />}
             <div data-testid="weather-select" className="flex desktop:order-first">

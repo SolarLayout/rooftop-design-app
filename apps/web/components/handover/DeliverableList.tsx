@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { FirstMeeting } from "@/components/shell/FirstMeeting";
+import { Present } from "@/components/shell/TopBar";
 import { Button } from "@/components/ui/Button";
 import { classNames } from "@/components/ui/class-names";
 import { ProgressRing } from "@/components/ui/ProgressRing";
@@ -66,18 +68,22 @@ export function DeliverableList({ rows, item, shown, downloads, onSaveACopy, all
       <div className={HEAD}>
         <div className="flex flex-col gap-1">
           <h1 className="type-title-touch desktop:type-title">Handover</h1>
-          <p className="type-body-touch desktop:type-body text-text-2">Everything the installer, the client and the utility need</p>
+          <FirstMeeting word="Handover" />
         </div>
         <div data-testid="download-all" className={DOWNLOAD_ALL}>
-          <Button
-            icon={isAllOnItsWay ? undefined : "download"}
-            aria-disabled={canDownloadAll && !isAllOnItsWay ? undefined : "true"}
-            onClick={canDownloadAll && !isAllOnItsWay ? onDownloadAll : undefined}
-            className="w-full tablet:w-auto"
-          >
-            {isAllOnItsWay ? <ProgressRing size={16} /> : null}
-            Download all
-          </Button>
+          <div className="flex items-center gap-2 tablet:gap-3">
+            <Present />
+            <Button
+              kind="primary"
+              icon={isAllOnItsWay ? undefined : "download"}
+              aria-disabled={canDownloadAll && !isAllOnItsWay ? undefined : "true"}
+              onClick={canDownloadAll && !isAllOnItsWay ? onDownloadAll : undefined}
+              className="w-full tablet:w-auto"
+            >
+              {isAllOnItsWay ? <ProgressRing size={16} /> : null}
+              Download all
+            </Button>
+          </div>
           <span className="type-body-touch desktop:type-body text-text-2">{zipFacts}</span>
         </div>
       </div>
