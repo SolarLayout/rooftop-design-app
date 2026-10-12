@@ -23,12 +23,12 @@ from build_v2_parts import (  # noqa: E402
 
 ISSUES = "Answers V2-13 · V2-61 · V2-71 · V2-88 · V2-89 · V2-97 · V2-114 · V2-119"
 LINES = [
-    "Performance leads with the one number and what it depends on: 617.8 MWh in year 1, with the option and the weather "
-    "as its subtitle, each a select beside it. Under it Likely and Conservative, the P-values' plain names, and three "
-    "figures a buyer reads: the system's size, the yield and the performance ratio, each with one line of what it means.",
-    "The loss chain becomes Where the energy goes: eleven steps in plain words, from the sunlight on the modules to the "
-    "grid, each a bar. The steps the user may change are fields, with who set them. The 21 steps of the engine are behind "
-    "All 21 steps. The charts label their axes; the values stand beside the bars, in the text colour.",
+    "Performance answers one question at first sight: how much energy, and how good the system is. The number with what it "
+    "depends on beside it (the option, the weather), its likely and conservative values, and three figures. The page fits the "
+    "screen; nothing scrolls.",
+    "Everything else waits under it, one view at a time, in four tabs: By month, Over 25 years, Where the energy goes, "
+    "Assumptions; the tab opened last is remembered. Where the energy goes shows eleven plain steps in two columns, before the "
+    "modules and in the system; the steps the user may change are fields. The engine's 21 steps are behind All 21 steps.",
 ]
 DONE = {"Roof": "done", "Array": "done", "Strings": "done"}
 MONTHS = [("Jan", 62.0), ("Feb", 58.8), ("Mar", 68.4), ("Apr", 64.1), ("May", 54.9), ("Jun", 46.9), ("Jul", 31.5),
@@ -51,7 +51,7 @@ CHAIN = [("Sunlight on the tilted modules", "+9.60 %", "1,998 kWh/m² a year, 9.
 def select(label: str, value: str, touch: bool) -> str:
     return (f'<label style="display: flex; flex-direction: column; gap: 4px">{text("body", label, touch, TEXT_2)}'
             f'<span style="display: inline-flex; align-items: center; justify-content: space-between; gap: 12px; height: {44 if touch else 40}px; '
-            f'padding: 0 12px; min-width: 200px; box-sizing: border-box; background: {CONTROL}; border: 1px solid {LINE_STRONG}; '
+            f'padding: 0 12px; min-width: {0 if touch else 200}px; box-sizing: border-box; background: {CONTROL}; border: 1px solid {LINE_STRONG}; '
             f'border-radius: {RADIUS["control"]}px; box-shadow: {SHADOW_RAISED}">{text("strong", value, touch)}{icon(ICON["chevron-down"], 16, TEXT_2)}</span></label>')
 
 
@@ -63,7 +63,7 @@ def lead(touch: bool, updating: bool = False) -> str:
               f'{text("body", "Likely", touch, TEXT_2)}{text("strong", ("613.6" if updating else "617.8") + " MWh", touch)}'
               f'{text("body", "Conservative (P90)", touch, TEXT_2)}{text("strong", ("580.3" if updating else "584.2") + " MWh", touch)}'
               f'<span style="display: inline-flex; align-items: center; gap: 4px">{text("body", "9 years in 10 at least", touch, TEXT_3)}</span></div>')
-    sels = (f'<div style="display: flex; gap: 12px; flex-wrap: wrap">{select("Option", "A · Recommended", touch)}'
+    sels = (f'<div style="display: {"grid; grid-template-columns: 1fr 1fr" if touch else "flex"}; gap: 12px">{select("Option", "A" if touch else "A · Recommended", touch)}'
             f'{select("Weather", "Typical year", touch)}</div>')
     head = (f'<div style="display: flex; align-items: center; gap: 8px">{text("body", "Energy to the grid in year 1", touch, TEXT_2)}'
             + (ring(14) + text("body", "Updating", touch, TEXT_2) if updating else "") + '</div>')
@@ -74,17 +74,22 @@ def lead(touch: bool, updating: bool = False) -> str:
 
 
 def kpis(touch: bool, cols: int) -> str:
-    items = [("System size", "357.28", "kWp", "275 kW of inverter · DC/AC ratio 1.30"),
-             ("Yield", "1,729", "kWh/kWp", "Energy a year for each kWp installed"),
-             ("Performance ratio (PR)", "86.6", "%", "How much of its rated output the system gives in this sunlight")]
+    items = [("System size", "357.28", "kWp", "275 kW of inverter"),
+             ("Yield", "1,729", "kWh/kWp", "A year, for each kWp"),
+             ("Performance ratio (PR)", "86.6", "%", "Of its rated output, in this sunlight")]
     tiles = "".join(f'<div style="display: flex; flex-direction: column; gap: 6px; padding: 16px; background: {SURFACE_1}; border: 1px solid {LINE}; '
                     f'border-radius: {RADIUS["row"]}px; min-width: 0">{text("body", a, touch, TEXT_2)}'
                     f'<div style="display: flex; align-items: baseline; gap: 6px">{text("figure", b, touch)}{text("body", u, touch, TEXT_2)}</div>'
                     f'{text("body", d, touch, TEXT_2)}</div>' for a, b, u, d in items)
     more = (f'<a href="#" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; {style("strong", touch, TEXT_2)}">'
             f'All figures: capacity factor, sunlight on the modules, CO₂ avoided{icon(ICON["chevron-right"], 14, TEXT_2)}</a>')
-    return (f'<div style="display: flex; flex-direction: column; gap: 12px"><div style="display: grid; grid-template-columns: repeat({cols}, minmax(0, 1fr)); '
-            f'gap: 16px">{tiles}</div>{more}</div>')
+    if cols == 1:
+        rows = "".join(f'<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid {LINE_SUBTLE}">'
+                       f'<span style="display: flex; flex-direction: column">{text("body", a, touch)}{text("body", d, touch, TEXT_2)}</span>'
+                       f'<span style="display: inline-flex; align-items: baseline; gap: 4px">{text("heading", b, touch)}{text("unit", u, False, TEXT_2)}</span></div>'
+                       for a, b, u, d in items)
+        return f'<div>{rows}</div>'
+    return f'<div style="display: grid; grid-template-columns: repeat({cols}, minmax(0, 1fr)); gap: 16px">{tiles}</div>'
 
 
 def chain(touch: bool, edited: bool = False) -> str:
@@ -185,12 +190,6 @@ def page_head(touch: bool, phone: bool = False) -> str:
             f'<div style="display: flex; flex-direction: column; gap: 4px">{text("title", "Performance", touch, TEXT, "h1")}{explained("Performance", touch)}</div>{acts}</div>')
 
 
-def desktop_page(edited: bool = False) -> str:
-    body = (f'<div style="position: absolute; left: 0; top: 56px; width: 1440px; padding: 40px; box-sizing: border-box; display: flex; flex-direction: column; gap: 40px">'
-            f'{page_head(False)}{lead(False, edited)}{kpis(False, 3)}'
-            f'<div style="display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 40px; align-items: start">'
-            f'{chain(False, edited)}<div style="display: flex; flex-direction: column; gap: 40px">{month_chart(560, False)}{years_chart(560, False)}{assumptions(False)}</div></div></div>')
-    return top_bar(DONE, "Performance", 1440, result="613.6" if edited else "617.8") + body
 
 
 CHANGES = [
@@ -198,9 +197,11 @@ CHANGES = [
      "Under the lead number, as its subtitle: Option and Weather, each a select of 40", "V2-88"),
     ("Performance · the P-values", "P50 617.8 · P75 600.2 · P90 · σ 4.24 % 584.2", "Likely 617.8 · Conservative (P90) 584.2, 9 years in 10 at least; σ in the assumptions", "V2-89"),
     ("Performance · KPIs", "Six tiles: PR, Specific yield, Capacity factor AC · 19.7 % DC, In-plane, CO₂ …",
-     "Three: System size, Yield, Performance ratio (PR), each with its line; the rest behind All figures", "V2-88"),
+     "Three: System size, Yield, Performance ratio (PR), each with a short line; the rest in the result's summary", "V2-88"),
+    ("Performance · the page", "One page of 2,025 px: figures, chain, months, 25 years, assumptions, all at once",
+     "One screen: the number, three figures, four tabs under them, one view at a time, the last remembered", "V2-13, V2-108"),
     ("components.md · Loss chain", "21 engine steps in a table, the editable ones marked by a border",
-     "Where the energy goes: eleven plain steps with bars, fields where the user may change, who set them; All 21 steps", "V2-88"),
+     "Where the energy goes: eleven plain steps in two columns, fields where the user may change, who set them; All 21 steps", "V2-88"),
     ("guidelines.md · Charts", "Labels on the extremes only, no axis; labels on the bar in white",
      "Axes labelled; values beside the marks in the text colour; Chart and Table at the chart's head", "V2-71, V2-119"),
     ("One value, one home", "Roof albedo on Roof and Performance; degradation in two cards",
@@ -209,15 +210,91 @@ CHANGES = [
 ]
 
 
+TABS = ["By month", "Over 25 years", "Where the energy goes", "Assumptions"]
+
+
+def tabs(active: int, touch: bool) -> str:
+    items = "".join(f'<a href="#" aria-selected="{"true" if i == active else "false"}" style="display: inline-flex; align-items: center; '
+                    f'height: {44 if touch else 48}px; padding: 0 2px; margin-right: {20 if touch else 28}px; text-decoration: none; white-space: nowrap; '
+                    f'border-bottom: 2px solid {TEXT if i == active else "transparent"}; box-sizing: border-box; '
+                    f'{style("strong" if i == active else "body", touch, TEXT if i == active else TEXT_2)}">{t}</a>' for i, t in enumerate(TABS))
+    fade = "mask-image: linear-gradient(90deg, #000 85%, transparent);" if touch else ""
+    return f'<div role="tablist" style="display: flex; border-bottom: 1px solid {LINE}; overflow: hidden; {fade}">{items}</div>'
+
+
+def chain_compact(touch: bool, edited: bool = False) -> str:
+    """Where the energy goes in two columns, before the modules and in the system; fields where the user may change."""
+    def row(name: str, change: str, fld) -> str:
+        if edited and name.startswith("Dirt"):
+            change, fld = "−3.00 %", ("3.00", "Yours")
+        pct = float(change.replace("−", "-").replace("+", "").replace(" %", ""))
+        w = min(abs(pct) / 10, 1) * 96
+        bar = (f'<span style="display: inline-block; width: 96px; height: 6px; border-radius: 3px; background: {WELL}; position: relative; flex: none">'
+               f'<span style="position: absolute; left: 0; top: 0; height: 6px; width: {w:.0f}px; border-radius: 3px; '
+               f'background: {GAIN if pct > 0 else LOSS}"></span></span>')
+        f_html = ""
+        if fld:
+            f_html = (f'<span style="display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 8px; background: {WELL}; '
+                      f'border: 1px solid {LINE_STRONG}; border-radius: {RADIUS["control"]}px">{text("mono", fld[0])}{text("unit", "%", False, TEXT_2)}</span>'
+                      f'{text("unit", fld[1], False, TEXT_3)}')
+        return (f'<div style="display: flex; align-items: center; gap: 12px; min-height: 40px; border-top: 1px solid {LINE_SUBTLE}">'
+                f'<span style="flex: 1; min-width: 0">{text("body", name, touch)}</span>{f_html}'
+                f'<span style="width: 60px; text-align: right; {style("strong", touch)}">{change}</span>{bar}</div>')
+    before = "".join(row(n, c, f) for n, c, _, f in CHAIN[:5])
+    system = "".join(row(n, c, f) for n, c, _, f in CHAIN[5:])
+
+    def total(a: str, b: str) -> str:
+        return (f'<div style="display: flex; justify-content: space-between; padding: 10px 12px; margin-top: 8px; background: {SURFACE_2}; '
+                f'border-radius: {RADIUS["control"]}px">{text("strong", a, touch)}{text("strong", b, touch)}</div>')
+
+    def col(t: str, rows: str, tot: str) -> str:
+        return f'<div style="display: flex; flex-direction: column; min-width: 0">{text("body", t, touch, TEXT_2, "h4", "margin: 0 0 8px")}{rows}{tot}</div>'
+    link = (f'<a href="#" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; {style("strong", touch, TEXT_2)}">'
+            f'All 21 steps{icon(ICON["chevron-right"], 14, TEXT_2)}</a>')
+    cols = "1fr" if touch else "1fr 1fr"
+    grid_to = ("613.6" if edited else "617.8") + " MWh"
+    return (f'<div style="display: flex; flex-direction: column; gap: 12px"><div style="display: grid; grid-template-columns: {cols}; gap: 40px">'
+            + col("Before the modules", before, total("The modules' rated output", "706.4 MWh"))
+            + col("In the system", system, total("To the grid", grid_to)) + f'</div>{link}</div>')
+
+
+def assumptions_grid(touch: bool) -> str:
+    rows = [("Weather", "Typical year · PVGIS · 1,822.9 kWh/m² on the ground", "Default"),
+            ("Roof albedo", "0.20 · how much light the roof reflects", "Default"),
+            ("Ageing", "0.7 % less each year", "Default"), ("Uncertainty", "4.24 % · sets Likely and Conservative", "Default"),
+            ("Grid CO₂ per MWh", "0.716 t · India's grid", "Set for India")]
+    cells = "".join(summary_row(a, b, touch, state=c) for a, b, c in rows)
+    return f'<div style="display: grid; grid-template-columns: {"1fr" if touch else "1fr 1fr"}; column-gap: 40px">{cells}</div>'
+
+
+def tab_body(active: int, w: int, touch: bool, edited: bool = False) -> str:
+    if active == 0:
+        return month_chart(w, touch).replace(section_title("Energy by month", touch), text("body", "Energy to the grid each month of year 1", touch, TEXT_2))
+    if active == 1:
+        return years_chart(w, touch).replace(section_title("25 years", touch), text("body", "Energy each year", touch, TEXT_2))
+    if active == 2:
+        return chain_compact(touch, edited)
+    return assumptions_grid(touch)
+
+
+def desktop_page(active: int = 0, edited: bool = False) -> str:
+    body = (f'<div style="position: absolute; left: 0; top: 56px; width: 1440px; padding: 32px 40px 0; box-sizing: border-box; '
+            f'display: flex; flex-direction: column; gap: 24px">{page_head(False)}{lead(False, edited)}{kpis(False, 3)}'
+            f'<section style="display: flex; flex-direction: column; gap: 20px; padding: 0 24px 24px; background: {SURFACE_1}; border: 1px solid {LINE}; '
+            f'border-radius: {RADIUS["card"]}px">{tabs(active, False)}{tab_body(active, 1310, False, edited)}</section></div>')
+    return top_bar(DONE, "Performance", 1440, result="613.6" if edited else "617.8") + body
+
+
 def build_desktop() -> None:
     w = 1440
     hd = board_head("V2 · 8 · Performance", LINES, False, ISSUES)
-    screens = (frame("1 · Performance: the number, what it depends on beside it, three figures, where the energy goes, the year by month and over 25 years",
-                     desktop_page(), w, 1560)
-               + frame("2 · Dirt on the glass changed to 3.00 %: the field says Yours with its default and Reset; the number updates where it stands",
-                       desktop_page(True), w, 820))
+    screens = (frame("1 · At first sight, the whole screen and no scroll: the number and what it depends on, three figures, By month under them",
+                     desktop_page(0), w, 900)
+               + frame("2 · Where the energy goes, opened: eleven plain steps in two columns; Dirt on the glass changed to 3.00 %, the number updating where it stands",
+                       desktop_page(2, True), w, 900)
+               + frame("3 · Assumptions, opened: one line each, with who set it", desktop_page(3), w, 900))
     body = f'<div style="padding: 40px; display: flex; flex-direction: column; gap: 40px">{hd}{screens}{changes(CHANGES)}</div>'
-    write_board(OUT, "V2Performance.dc.html", "V2 · 8 · Performance · desktop 1440", 1520, 3320, body)
+    write_board(OUT, "V2Performance.dc.html", "V2 · 8 · Performance · desktop 1440", 1520, 3760, body)
 
 
 def touch_page(size: str) -> str:
@@ -227,8 +304,8 @@ def touch_page(size: str) -> str:
     phone = size == "phone"
     cw = w - 2 * side
     content = (f'<div style="position: absolute; left: 0; top: {60 if size == "tablet" else 56}px; width: {w}px; padding: 24px {side}px; box-sizing: border-box; '
-               f'display: flex; flex-direction: column; gap: 32px">{page_head(True, phone)}{lead(True)}{kpis(True, 1 if phone else 3)}'
-               f'{chain(True)}{month_chart(cw, True)}{years_chart(cw, True)}{assumptions(True)}</div>')
+               f'display: flex; flex-direction: column; gap: 24px">{page_head(True, phone)}{lead(True)}{kpis(True, 1 if phone else 3)}'
+               f'<section style="display: flex; flex-direction: column; gap: 16px">{tabs(0, True)}{tab_body(0, cw, True)}</section></div>')
     out = bar + content
     if phone:
         out += (f'<div style="position: absolute; left: 0; bottom: 72px; width: 390px; padding: 12px 16px; box-sizing: border-box; background: {CHROME}; '
@@ -240,13 +317,13 @@ def touch_page(size: str) -> str:
 def build_touch(size: str) -> None:
     w = 834 if size == "tablet" else 390
     side = 20 if size == "tablet" else 16
-    fh = 2880 if size == "tablet" else 3500
+    fh = 1194 if size == "tablet" else 1320
     hd = board_head("V2 · 8 · Performance", LINES, True, ISSUES)
-    words = ("The whole page, one column: the number and its selects, the three figures in a row, the chain, the charts"
-             if size == "tablet" else "The whole page; Continue to Handover pinned over the tab bar; the chain's rows stacked")
+    words = ("The number and its selects, the three figures in a row, the tabs under them, By month opened" if size == "tablet"
+             else "The number, the three figures, the tabs; Continue to Handover pinned over the tab bar")
     body = (f'<div style="padding: 40px 0; display: flex; flex-direction: column; gap: 40px"><div style="padding: 0 {side}px">{hd}</div>'
             f'{frame(words, touch_page(size), w, fh)}<div style="padding: 0 {side}px">{changes(CHANGES, True)}</div></div>')
-    write_board(OUT, f"V2Performance{size.capitalize()}.dc.html", f"V2 · 8 · Performance · {size} {w}", w, fh + (1380 if size == "tablet" else 1810), body)
+    write_board(OUT, f"V2Performance{size.capitalize()}.dc.html", f"V2 · 8 · Performance · {size} {w}", w, 2680 if size == "tablet" else 3320, body)
 
 
 if __name__ == "__main__":
