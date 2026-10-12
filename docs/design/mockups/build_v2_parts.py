@@ -290,16 +290,29 @@ def project_name(name: str = "Pune demo roof", touch: bool = False, width: str =
             f'{icon(ICON["chevron-down"], 16, TEXT_2)}</button>')
 
 
-def result_chip(energy: str = "617.8", note: int = 0) -> str:
-    """The design's one result in the top bar: the energy of year 1, a note mark when something waits; it opens the summary."""
+def ring(size: int = 16, color: str = TEXT_2) -> str:
+    """The progress ring beside a value that is on its way."""
+    return (f'<svg width="{size}" height="{size}" viewBox="0 0 24 24" fill="none" aria-hidden="true">'
+            f'<circle cx="12" cy="12" r="9" stroke="{LINE_STRONG}" stroke-width="2.4"></circle>'
+            f'<path d="M12 3a9 9 0 019 9" stroke="{color}" stroke-width="2.4" stroke-linecap="round"></path></svg>')
+
+
+def result_chip(energy: str = "617.8", note: int = 0, open_: bool = False, compact: bool = False) -> str:
+    """The design's one result in the top bar: the energy of year 1, a note mark when something waits; it opens the summary.
+    energy "" means the energy is on its way."""
+    if not energy:
+        return (f'<button type="button" style="display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; '
+                f'background: transparent; border: 1px solid {LINE}; border-radius: {RADIUS["control"]}px">'
+                f'{ring()}{text("body", "Computing" if compact else "Computing the energy", False, TEXT_2)}</button>')
     lead = (mark("note", 16) + text("strong", f"{note} to review")
             + f'<span style="width: 1px; height: 16px; background: {LINE}"></span>') if note else ""
     return (f'<button type="button" aria-label="Result: {energy} MWh in year 1" style="display: inline-flex; align-items: center; gap: 8px; '
-            f'height: 40px; padding: 0 12px; background: transparent; border: 1px solid {LINE}; border-radius: {RADIUS["control"]}px">'
-            f'{lead}{text("strong", energy)}{text("body", "MWh a year", False, TEXT_2)}</button>')
+            f'height: 40px; padding: 0 12px; background: {CONTROL_ACTIVE if open_ else "transparent"}; border: 1px solid {LINE_STRONG if open_ else LINE}; border-radius: {RADIUS["control"]}px">'
+            f'{lead}{text("strong", energy)}{text("body", "MWh" if compact else "MWh a year", False, TEXT_2)}'
+            f'{icon(ICON["chevron-down"], 14, TEXT_2) if not compact else ""}</button>')
 
 
-def top_bar(states: dict, current: str, width: int, size: str = "desktop", result: str = "617.8", note: int = 0) -> str:
+def top_bar(states: dict, current: str, width: int, size: str = "desktop", result="617.8", note: int = 0, open_: bool = False) -> str:
     """V2's top bar: the logo (Home), the design's name with its saved mark, the steps; Docs at the right on desktop."""
     h = {"desktop": 56, "tablet": 60, "phone": 56}[size]
     touch = size != "desktop"
@@ -309,13 +322,15 @@ def top_bar(states: dict, current: str, width: int, size: str = "desktop", resul
              + '</a>')
     divider = f'<span style="width: 1px; height: 24px; background: {LINE}; flex: none"></span>'
     left = (f'<div style="display: flex; align-items: center; gap: 12px; min-width: 0">{brand}{divider}'
-            f'{project_name("Pune demo roof", touch, "150px" if size != "desktop" else "220px")}</div>')
+            f'{project_name("Pune demo roof", touch, {"desktop": "220px", "tablet": "150px", "phone": "128px"}[size])}</div>')
     mid = progression(states, current, False, size == "tablet") if size != "phone" else ""
     docs = (button("Docs", "quiet", "standard", False, icon(STEP_ICON["book"], 16, TEXT_2)) if size == "desktop" else "")
     if size == "desktop":
         return (f'<header style="height: {h}px; box-sizing: border-box; padding: 0 16px; display: grid; grid-template-columns: 1fr auto 1fr; '
                 f'align-items: center; gap: 16px; background: {CHROME}; border-bottom: 1px solid {LINE_SUBTLE}">{left}{mid}'
-                f'<div style="display: flex; justify-content: flex-end; gap: 8px">{result_chip(result, note) if result else ""}{docs}</div></header>')
+                f'<div style="display: flex; justify-content: flex-end; gap: 8px">{result_chip(result, note, open_) if result is not None else ""}{docs}</div></header>')
+    if size == "phone" and result is not None:
+        mid = result_chip(result, note, compact=True)
     return (f'<header style="height: {h}px; box-sizing: border-box; padding: 0 {16 if size == "phone" else 20}px; display: flex; '
             f'align-items: center; justify-content: space-between; gap: 12px; background: {CHROME}; '
             f'border-bottom: 1px solid {LINE_SUBTLE}">{left}{mid}</header>')
