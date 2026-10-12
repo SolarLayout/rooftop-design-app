@@ -19,7 +19,7 @@ describe("tableAsText: a table as tab-separated lines with a header line, for a 
     expect(lines[0]).toBe("Item\tSpecification\tQty\tUnit");
     expect(lines[1]).toBe("PV module\tINSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560, 560 Wp, bifacial 0.80\t638\tpcs");
     expect(lines[4]).toBe("DC cable\t4 mm² Cu, 1500 V DC, red + black\t1,681\tm");
-    expect(lines[7]).toBe("AC distribution board\t1 incomer(s), 1 outgoing\t1\tpcs");
+    expect(lines[7]).toBe("AC distribution board\t1 incomer, 1 outgoing\t1\tpcs");
   });
 
   test("no line ends with a tab, and the text ends without a newline", () => {
