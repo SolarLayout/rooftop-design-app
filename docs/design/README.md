@@ -92,6 +92,7 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | UI fixes · Handover after a first run that failed (issue 179) | `HandoverFailed.dc.html`, `HandoverFailedTablet.dc.html`, `HandoverFailedPhone.dc.html` (the shots in `handover_failed/`) | none: the boards are the shots | desktop, tablet, phone |
 | System voltage · Set by the user's country (Phase 16) | `SystemVoltage.dc.html`, `SystemVoltageTablet.dc.html`, `SystemVoltagePhone.dc.html` (the shots in `system_voltage/`) | `system-voltage-desktop.jpg`, `system-voltage-tablet.jpg`, `system-voltage-phone.jpg` | desktop, tablet, phone |
 | V2 · 1 · Principles (approved, D94) | `V2Principles.dc.html`, `V2PrinciplesTablet.dc.html`, `V2PrinciplesPhone.dc.html` | none: the boards are the specimen | desktop, tablet, phone |
+| V2 · 2 · The progression (approved, D95, D96) | `V2Progression.dc.html`, `V2ProgressionTablet.dc.html`, `V2ProgressionPhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
 
 Screens still to draw are listed in `plan/phase-00-design.md`.
 

@@ -89,8 +89,9 @@ def words_strip(touch: bool) -> str:
     rows = "".join(f'<div style="display: flex; flex-direction: column; gap: 2px; padding: 12px 0; border-top: 1px solid {LINE_SUBTLE}">'
                    f'{text("strong", w, touch)}{text("body", EXPLAIN[w] + ".", touch, TEXT_2)}</div>'
                    for w in ("Roof", "Array", "Strings", "Performance", "Handover", "Sun"))
-    where = text("body", "Each step's line stands in three places: under the page's title, after Next under the primary, and "
-                 "in the step's tooltip on desktop. One sentence, in secondary text, never a paragraph.", touch, TEXT_2, "p", "max-width: 640px")
+    where = text("body", "One sentence, in secondary text, never a box on screen by default (D96): the step's tooltip on desktop; "
+                 "the line under the page's title the first time the user meets the word, then behind the ? disc; "
+                 "Next under the primary until that step has been opened once.", touch, TEXT_2, "p", "max-width: 640px")
     return (f'<section style="display: flex; flex-direction: column; gap: 16px">{text("heading", "The app\'s own words, explained", touch, TEXT, "h2")}'
             f'{where}{tip}<div style="display: grid; grid-template-columns: {"1fr" if touch else "repeat(3, minmax(0, 1fr))"}; column-gap: 24px">{rows}</div></section>')
 

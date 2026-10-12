@@ -247,6 +247,21 @@ theirs (MPPT, Voc, DC/AC, PR, kWp).
   holds, and the lengths that fit at your voltage."
 - Pictures and clips show the step the text names; the caption is the step's imperative.
 
+## 12 · The app's own words, explained in place (D96)
+
+A word the app invented (Handover, Options, Your own option, To review, Project file, Design day, Present, Sun as a view)
+is explained where the user meets it, in one sentence of secondary text: what it is, in plain words. Never a paragraph,
+never a box on screen by default, never a pop-up to close.
+
+| Where | When | Example |
+|---|---|---|
+| Tooltip of a step or a section's name | Desktop, the pointer resting on it | Handover · The files for the client, the installer and the utility. |
+| The line under a page's or a section's title | The first time the user meets the word on this device; then behind the ? disc | Options · Ways to wire the modules to the inverter, the best first. |
+| "Next:" under the primary | Until that step has been opened once | Next: Handover, the files for the client, the installer and the utility. |
+
+The sentence is written once and used in every place, the help included. A trade term (MPPT, Voc, DC/AC) follows §6
+instead: the plain name beside it.
+
 ## 10 · Checklist for a pull request
 
 Every pull request that adds or changes a word the user meets answers these under "How it was checked":
@@ -259,6 +274,7 @@ Every pull request that adds or changes a word the user meets answers these unde
 6. No sentence where a label does (§3). No narration of what the app will do.
 7. Numbers, units and punctuation as §7.
 8. The help's topic for the changed control says the same words as the control (`docs/help-upkeep.md`).
+9. Every word the app invented that the change shows has its one line (§12), and no more.
 
 ## 11 · The register, in three screens
 
