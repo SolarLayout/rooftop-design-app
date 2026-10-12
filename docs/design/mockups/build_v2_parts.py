@@ -230,3 +230,151 @@ def board_head(title: str, lines: list, touch: bool = False, issues: str = "") -
     tag = text("unit", issues, False, TEXT_3, "p", "letter-spacing: 0.02em") if issues else ""
     return (f'<header style="display: flex; flex-direction: column; gap: 8px">{tag}'
             f'{text("title", title, touch, TEXT, "h1")}<div style="display: flex; flex-direction: column; gap: 8px">{paras}</div></header>')
+
+
+# ---- The shell of V2: the progression, the top bar, the tab bar, the roof (shared by the boards from "V2 · 2") ----
+
+STEPS = ["Roof", "Array", "Strings", "Performance", "Handover"]
+STEP_ICON = {
+    "Roof": '<path d="M3 11l9-6 9 6"></path><path d="M5 10v9h14v-9"></path>',
+    "Array": '<rect x="3.5" y="5" width="17" height="14" rx="1.5"></rect><path d="M3.5 12h17"></path><path d="M9.5 5v14"></path><path d="M14.5 5v14"></path>',
+    "Strings": '<path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"></path>',
+    "Performance": '<path d="M4 20V10"></path><path d="M10 20V4"></path><path d="M16 20v-7"></path><path d="M21 20H3"></path>',
+    "Handover": '<path d="M12 4v11"></path><path d="M7 10.5l5 5 5-5"></path><path d="M5 19.5h14"></path>',
+    "Sun": '<circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2"></path><path d="M12 19.5v2"></path><path d="M2.5 12h2"></path><path d="M19.5 12h2"></path><path d="M5.3 5.3l1.4 1.4"></path><path d="M17.3 17.3l1.4 1.4"></path><path d="M5.3 18.7l1.4-1.4"></path><path d="M17.3 6.7l1.4-1.4"></path>',
+    "book": '<path d="M5 4.5h9.5a3 3 0 013 3V20H8a3 3 0 01-3-3z"></path><path d="M5 17a3 3 0 013-3h9.5"></path>',
+}
+LOGO = ('<svg width="26" height="26" viewBox="0 0 26 26" fill="none" role="img" aria-label="SolarLayout Rooftop">'
+        '<rect width="26" height="26" rx="7" fill="#FFB020"></rect><path d="M6 15.5l7-6 7 6" stroke="#1A1204" stroke-width="2.2" '
+        'stroke-linecap="round" stroke-linejoin="round"></path><path d="M8.5 14v5h9v-5" stroke="#1A1204" stroke-width="2.2" '
+        'stroke-linecap="round" stroke-linejoin="round"></path></svg>')
+
+
+def step_mark(state: str, n: int, size: int = 16) -> str:
+    """A step's mark: done (a tick), needs you (a note), or its number (to do, or where the user is)."""
+    if state == "done":
+        return mark("fits", size)
+    if state == "needs":
+        return mark("note", size)
+    col = TEXT if state == "current" else TEXT_3
+    return (f'<span style="width: {size}px; height: {size}px; border-radius: 50%; border: 1px solid {col}; color: {col}; '
+            f'display: inline-flex; align-items: center; justify-content: center; font-family: {SANS_FAMILY}; font-size: 11px; '
+            f'font-weight: 600; box-sizing: border-box; flex: none">{n}</span>')
+
+
+def progression(states: dict, current: str, touch: bool = False, compact: bool = False) -> str:
+    """The order of work as one row of steps: each a link with its mark; the one the user is in pressed."""
+    items = []
+    for i, name in enumerate(STEPS, 1):
+        st = states.get(name, "todo")
+        here = name == current
+        look = (f'background: {CONTROL_ACTIVE}; box-shadow: {SHADOW_SEGMENT}; ' if here else '')
+        col = TEXT if (here or st in ("done", "needs")) else TEXT_2
+        items.append(
+            f'<a href="#" aria-current="{"step" if here else "false"}" style="{look}display: inline-flex; align-items: center; gap: 8px; '
+            f'height: 32px; padding: 0 {8 if compact else 12}px; border-radius: {RADIUS["control"]}px; text-decoration: none; '
+            f'{style("strong" if here else "body", touch, col)}; white-space: nowrap">'
+            f'{step_mark("current" if here and st == "todo" else st, i)}{name}</a>')
+    sep = f'<span style="width: {4 if compact else 12}px; height: 1px; background: {LINE_STRONG}; flex: none"></span>'
+    return (f'<nav aria-label="Steps" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px; height: 40px; '
+            f'box-sizing: border-box; background: {WELL}; border: 1px solid {LINE}; border-radius: {RADIUS["row"]}px; '
+            f'box-shadow: {SHADOW_WELL}">' + sep.join(items) + '</nav>')
+
+
+def project_name(name: str = "Pune demo roof", touch: bool = False, width: str = "auto") -> str:
+    return (f'<button type="button" style="display: inline-flex; align-items: center; gap: 8px; height: {44 if touch else 40}px; '
+            f'padding: 0 12px; background: transparent; border: 0; border-radius: {RADIUS["control"]}px; max-width: {width}; '
+            f'{style("strong", touch)}">'
+            f'<span style="width: 8px; height: 8px; border-radius: 50%; background: {OK}; flex: none" aria-label="Saved on this device"></span>'
+            f'<span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{name}</span>'
+            f'{icon(ICON["chevron-down"], 16, TEXT_2)}</button>')
+
+
+def result_chip(energy: str = "617.8", note: int = 0) -> str:
+    """The design's one result in the top bar: the energy of year 1, a note mark when something waits; it opens the summary."""
+    lead = (mark("note", 16) + text("strong", f"{note} to review")
+            + f'<span style="width: 1px; height: 16px; background: {LINE}"></span>') if note else ""
+    return (f'<button type="button" aria-label="Result: {energy} MWh in year 1" style="display: inline-flex; align-items: center; gap: 8px; '
+            f'height: 40px; padding: 0 12px; background: transparent; border: 1px solid {LINE}; border-radius: {RADIUS["control"]}px">'
+            f'{lead}{text("strong", energy)}{text("body", "MWh a year", False, TEXT_2)}</button>')
+
+
+def top_bar(states: dict, current: str, width: int, size: str = "desktop", result: str = "617.8", note: int = 0) -> str:
+    """V2's top bar: the logo (Home), the design's name with its saved mark, the steps; Docs at the right on desktop."""
+    h = {"desktop": 56, "tablet": 60, "phone": 56}[size]
+    touch = size != "desktop"
+    brand = (f'<a href="#" aria-label="Home" style="display: inline-flex; align-items: center; gap: 10px; text-decoration: none; '
+             f'height: 40px">{LOGO}' + (f'<span style="font-family: {DISPLAY_FAMILY}; font-weight: 600; font-size: 17px; color: {TEXT}; '
+                                        f'letter-spacing: -0.01em; white-space: nowrap">SolarLayout Rooftop</span>' if size == "desktop" else "")
+             + '</a>')
+    divider = f'<span style="width: 1px; height: 24px; background: {LINE}; flex: none"></span>'
+    left = (f'<div style="display: flex; align-items: center; gap: 12px; min-width: 0">{brand}{divider}'
+            f'{project_name("Pune demo roof", touch, "150px" if size != "desktop" else "220px")}</div>')
+    mid = progression(states, current, False, size == "tablet") if size != "phone" else ""
+    docs = (button("Docs", "quiet", "standard", False, icon(STEP_ICON["book"], 16, TEXT_2)) if size == "desktop" else "")
+    if size == "desktop":
+        return (f'<header style="height: {h}px; box-sizing: border-box; padding: 0 16px; display: grid; grid-template-columns: 1fr auto 1fr; '
+                f'align-items: center; gap: 16px; background: {CHROME}; border-bottom: 1px solid {LINE_SUBTLE}">{left}{mid}'
+                f'<div style="display: flex; justify-content: flex-end; gap: 8px">{result_chip(result, note) if result else ""}{docs}</div></header>')
+    return (f'<header style="height: {h}px; box-sizing: border-box; padding: 0 {16 if size == "phone" else 20}px; display: flex; '
+            f'align-items: center; justify-content: space-between; gap: 12px; background: {CHROME}; '
+            f'border-bottom: 1px solid {LINE_SUBTLE}">{left}{mid}</header>')
+
+
+def tab_bar(states: dict, current: str) -> str:
+    """V2's phone tab bar: the five steps, each with its icon and its mark."""
+    cells = ""
+    for i, name in enumerate(STEPS, 1):
+        st = states.get(name, "todo")
+        here = name == current
+        col = ACCENT if here else (TEXT if st in ("done", "needs") else TEXT_2)
+        badge = ""
+        if st in ("done", "needs"):
+            badge = (f'<span style="position: absolute; right: -8px; top: -6px; background: {CHROME}; border-radius: 50%; '
+                     f'display: inline-flex; padding: 1px">{step_mark(st, i, 14)}</span>')
+        cells += (f'<a href="#" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; '
+                  f'gap: 4px; height: 62px; text-decoration: none; {style("unit", True, col)}; font-weight: {600 if here else 500}">'
+                  f'<span style="position: relative; display: inline-flex">{icon(STEP_ICON[name], 22, col, 1.7)}{badge}</span>{name}</a>')
+    return (f'<nav aria-label="Steps" style="height: 72px; box-sizing: border-box; padding: 0 4px 10px; display: flex; '
+            f'background: {CHROME}; border-top: 1px solid {LINE_SUBTLE}">{cells}</nav>')
+
+
+def roof_svg(width: int, source: str = "Main.dc.html", label: str = "") -> str:
+    """The approved boards' drawing of the Pune demo roof in 3D, scaled to a width."""
+    import re
+    s = (HERE / source).read_text(encoding="utf-8")
+    m = re.search(r'<svg viewBox="0 50 940 480" width="\d+" height="\d+"[\s\S]*?</svg>', s)
+    svg = m.group(0)
+    h = round(width * 480 / 940)
+    svg = re.sub(r'width="\d+" height="\d+"', f'width="{width}" height="{h}"', svg, count=1)
+    if label:
+        svg = re.sub(r'aria-label="[^"]*"', f'aria-label="{label}"', svg, count=1)
+    return svg
+
+
+def changes(rows: list, touch: bool = False, title: str = "Rules this board changes") -> str:
+    """The rules of the approved documents a board changes: rule, today, V2, the issues it answers."""
+    if touch:
+        body = "".join(
+            f'<div style="display: flex; flex-direction: column; gap: 4px; padding: 12px 0; border-top: 1px solid {LINE_SUBTLE}">'
+            f'{text("strong", a, touch)}{text("body", "Today: " + b, touch, TEXT_2)}{text("body", "V2: " + c, touch)}'
+            f'{text("unit", d, False, TEXT_3)}</div>' for a, b, c, d in rows)
+    else:
+        head = "".join(f'<th style="text-align: left; padding: 8px 12px 8px 0; {style("unit", False, TEXT_3)}; font-weight: 400">{h}</th>'
+                       for h in ("Rule", "Today", "V2", "Answers"))
+        body = (f'<table style="border-collapse: collapse; width: 100%"><thead><tr>{head}</tr></thead><tbody>'
+                + "".join(f'<tr style="border-top: 1px solid {LINE_SUBTLE}">'
+                          f'<td style="padding: 12px 12px 12px 0; {style("strong", False)}; vertical-align: top; width: 260px">{a}</td>'
+                          f'<td style="padding: 12px 12px 12px 0; {style("body", False, TEXT_2)}; vertical-align: top">{b}</td>'
+                          f'<td style="padding: 12px 12px 12px 0; {style("body", False)}; vertical-align: top">{c}</td>'
+                          f'<td style="padding: 12px 0; {style("unit", False, TEXT_2)}; vertical-align: top; white-space: nowrap">{d}</td></tr>'
+                          for a, b, c, d in rows) + '</tbody></table>')
+    return (f'<section style="display: flex; flex-direction: column; gap: 8px">{text("heading", title, touch, TEXT, "h2")}{body}</section>')
+
+
+def frame(caption: str, inner: str, width: int, height: int) -> str:
+    """A screen on the board at its size, with its caption over it."""
+    return (f'<figure style="margin: 0; display: flex; flex-direction: column; gap: 8px; width: {width}px">'
+            f'<figcaption style="{style("body", False, TEXT_2)}">{caption}</figcaption>'
+            f'<div style="position: relative; width: {width}px; height: {height}px; overflow: hidden; background: {GROUND}; '
+            f'border: 1px solid {LINE}; border-radius: {RADIUS["row"]}px; box-sizing: border-box">{inner}</div></figure>')
