@@ -11,7 +11,7 @@ import { measures } from "@/components/ui/measures";
  * A numbered mark of the accent, in the light of the ? disc. Its line is the digit's own height (leading-none): the label's
  * line of 20 is taller than a mark of 16 or 20, and set the digit low in it.
  */
-export const MARK = "grid shrink-0 place-items-center rounded-full bg-accent font-semibold text-accent-ink tabular-nums shadow-primary type-label-s leading-none";
+export const MARK = "grid shrink-0 place-items-center rounded-full bg-accent font-semibold text-accent-ink tabular-nums shadow-primary type-unit leading-none";
 
 export type MarkProps = { n: number; x: number; y: number; ring?: boolean; children: ReactNode };
 
@@ -31,7 +31,7 @@ export function MarkWords({ marks }: { marks: readonly MarkProps[] }) {
   return (
     <ol className="flex flex-col gap-1">
       {marks.map(({ n, children: words }) => (
-        <li key={n} className="flex items-start gap-2 type-small text-text-2">
+        <li key={n} className="flex items-start gap-2 type-body-touch desktop:type-body text-text-2">
           <span aria-hidden="true" className={classNames(MARK, "mt-0.5 size-4")}>
             {n}
           </span>

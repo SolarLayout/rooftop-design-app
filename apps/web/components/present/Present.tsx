@@ -136,11 +136,11 @@ function Words({ tour, facts, waiting }: { tour: Tour; facts: string; waiting: s
   const line = waiting ?? sceneWords;
   return (
     <div className="pointer-events-none absolute bottom-safe-7 left-10 z-stage-overlay flex flex-col gap-0.5">
-      <p data-testid="present-words" className="type-small text-text-2">
+      <p data-testid="present-words" className="type-body-touch desktop:type-body text-text-2">
         {facts}
       </p>
       {line ? (
-        <p data-testid="present-scene" className="type-caption text-text-3">
+        <p data-testid="present-scene" className="type-body-touch desktop:type-body text-text-3">
           {line}
         </p>
       ) : null}
@@ -156,7 +156,7 @@ function Attribution({ stage }: { stage: StageStore }) {
   const attribution = attributionOf(useStore(stage, groundOf), ATTRIBUTION);
   if (!attribution) return null;
   return (
-    <p data-testid="present-attribution" className="pointer-events-none absolute bottom-safe-1.5 left-10 z-stage-overlay max-w-full truncate type-label-s text-text-on-imagery on-imagery">
+    <p data-testid="present-attribution" className="pointer-events-none absolute bottom-safe-1.5 left-10 z-stage-overlay max-w-full truncate type-unit text-text-on-imagery on-imagery">
       {attribution}
     </p>
   );
@@ -166,7 +166,7 @@ function Attribution({ stage }: { stage: StageStore }) {
 function Hint({ tour }: { tour: Tour }) {
   const loop = useStore(tour.view, (state) => state.loop);
   return (
-    <p data-testid="present-hint" data-state={loop > 0 ? "faded" : "shown"} className={classNames("pointer-events-none absolute right-10 bottom-safe-7 z-stage-overlay type-caption text-text-3 transition-opacity duration-panel ease-out", loop > 0 && "opacity-gone")}>
+    <p data-testid="present-hint" data-state={loop > 0 ? "faded" : "shown"} className={classNames("pointer-events-none absolute right-10 bottom-safe-7 z-stage-overlay type-body-touch desktop:type-body text-text-3 transition-opacity duration-panel ease-out", loop > 0 && "opacity-gone")}>
       {HINT}
     </p>
   );

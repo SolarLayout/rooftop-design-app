@@ -31,18 +31,18 @@ export function DemoCard({ demo, onOpen, className }: Props) {
   return (
     <article aria-label={DEMO_PROJECT} data-testid="demo-card" data-state={demo.kind} className={classNames(CARD, className)}>
       <div className="flex min-w-0 flex-col gap-0.5 tablet:grow desktop:grow-0">
-        <span className="type-caption text-text-2">{DEMO_PROJECT}</span>
+        <span className="type-body-touch desktop:type-body text-text-2">{DEMO_PROJECT}</span>
         {card ? (
-          <span data-testid="demo-name" className="type-title">
+          <span data-testid="demo-name" className="type-section">
             {card.name}
           </span>
         ) : (
           <Skeleton kind="value" className="w-36" />
         )}
         {card ? (
-          <span className="type-small text-text-2">{card.roofWords}</span>
+          <span className="type-body-touch desktop:type-body text-text-2">{card.roofWords}</span>
         ) : demo.kind === "failed" ? (
-          <span role="status" className="type-small text-text-2">
+          <span role="status" className="type-body-touch desktop:type-body text-text-2">
             {demo.words}
           </span>
         ) : (
@@ -56,7 +56,7 @@ export function DemoCard({ demo, onOpen, className }: Props) {
         </Stats>
       ) : (
         // Until the demo has run here its numbers do not exist: the reason stands in their place, never a figure (guidelines.md).
-        <p className="type-small text-text-2 tablet:max-w-44">{RUNS_IN_THE_STUDIO}</p>
+        <p className="type-body-touch desktop:type-body text-text-2 tablet:max-w-44">{RUNS_IN_THE_STUDIO}</p>
       )}
       <Button kind="secondary" size="l" onClick={onOpen} className="w-full tablet:w-auto">
         {OPEN_THE_DEMO}

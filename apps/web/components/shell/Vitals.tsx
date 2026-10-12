@@ -17,12 +17,12 @@ type Props = {
 // Phone: one row of cards that scrolls sideways. Tablet: a grid. Desktop: a floating bar.
 const BAR = classNames(
   "flex shrink-0 gap-2 overflow-x-auto pr-4 pb-3.5 pl-4 whitespace-nowrap no-scrollbar",
-  "tablet:mx-5 tablet:grid tablet:gap-0 tablet:overflow-visible tablet:rounded-bar tablet:border tablet:border-line",
+  "tablet:mx-5 tablet:grid tablet:gap-0 tablet:overflow-visible tablet:rounded-card tablet:border tablet:border-line",
   "tablet:bg-surface-1 tablet:p-0 tablet:shadow-card",
   "desktop:mx-0 desktop:h-vitals desktop:shadow-float",
 );
 
-const CARD = "h-16 shrink-0 rounded-card-s border border-line bg-surface-1 px-4 shadow-card";
+const CARD = "h-16 shrink-0 rounded-row border border-line bg-surface-1 px-4 shadow-card";
 const CELL = classNames(
   "tablet:h-18 tablet:rounded-none tablet:border-0 tablet:bg-transparent tablet:px-4.5 tablet:shadow-none",
   "desktop:h-auto desktop:px-3.5",
@@ -87,9 +87,9 @@ function Cell({ vital, index, perRow, dimmed }: { vital: Vital; index: number; p
 }
 
 const LAST = classNames(
-  "order-first flex h-16 max-w-60 shrink-0 items-center gap-2.5 rounded-card-s border px-3.5 text-left",
+  "order-first flex h-16 max-w-60 shrink-0 items-center gap-2.5 rounded-row border px-3.5 text-left",
   "tablet:order-none tablet:h-18 tablet:max-w-none tablet:min-w-0 tablet:gap-3 tablet:rounded-none tablet:border-0 tablet:px-4.5",
-  "desktop:h-auto desktop:min-w-0 desktop:gap-2.5 desktop:rounded-r-bar desktop:border-t-0 desktop:border-l desktop:px-4",
+  "desktop:h-auto desktop:min-w-0 desktop:gap-2.5 desktop:rounded-r-card desktop:border-t-0 desktop:border-l desktop:px-4",
 );
 const ON_NOTE = "border-note-line bg-note-surface";
 const ON_SURFACE = "border-line bg-surface-1 tablet:bg-transparent";
@@ -110,9 +110,9 @@ function TwoLines({ first, second, large = false, short = false }: Lines) {
       {/* In a cell the first line may take two lines; the second gives way. */}
       <span
         className={classNames(
-          "type-small font-medium tablet:line-clamp-2 tablet:whitespace-normal",
+          "type-body-touch desktop:type-body font-medium tablet:line-clamp-2 tablet:whitespace-normal",
           short ? "line-clamp-2 whitespace-normal" : "truncate",
-          large && "tablet:type-body-touch tablet:font-medium desktop:type-small desktop:font-medium",
+          large && "type-body-touch desktop:type-body tablet:font-medium desktop:font-medium",
         )}
       >
         {first}
@@ -120,9 +120,9 @@ function TwoLines({ first, second, large = false, short = false }: Lines) {
       {second === null ? null : (
         <span
           className={classNames(
-            "truncate type-caption text-text-2",
+            "truncate type-body-touch desktop:type-body text-text-2",
             short && "hidden tablet:block",
-            large && "tablet:type-small desktop:type-caption",
+            large && "type-body-touch desktop:type-body",
           )}
         >
           {second}
@@ -136,8 +136,8 @@ function Last({ last, view, onOpenNotes }: { last: LastCell; view: VitalsView; o
   // Under the cells on tablet: in their last place when they are seven, across the width otherwise.
   const isAcross = view.kind === "layout" && !view.isLoading;
   const place = isAcross
-    ? "tablet:col-span-full tablet:rounded-b-bar tablet:border-t desktop:col-span-1 desktop:rounded-bl-none"
-    : "tablet:rounded-br-bar tablet:border-t tablet:border-l";
+    ? "tablet:col-span-full tablet:rounded-b-card tablet:border-t desktop:col-span-1 desktop:rounded-bl-none"
+    : "tablet:rounded-br-card tablet:border-t tablet:border-l";
 
   if (last.kind === "run") {
     return (

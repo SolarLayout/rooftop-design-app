@@ -133,9 +133,9 @@ export function Stage({ lens, name, className }: Props) {
       {cannotDraw ? null : <Callout stage={stage} />}
       {cannotDraw ? null : <Handles stage={stage} />}
       <div className="pointer-events-none absolute inset-x-4 top-4 z-stage-overlay flex flex-col gap-0.5 tablet:inset-x-5 desktop:top-5 desktop:left-6">
-        <h1 className="sr-only desktop:not-sr-only desktop:type-lens">{name}</h1>
+        <h1 className="sr-only desktop:not-sr-only type-title-touch desktop:type-title">{name}</h1>
         {line ? (
-          <p data-testid="stage-subline" data-state={line.isUpdating ? "updating" : "settled"} className="hidden items-center gap-2 type-small text-text-2 desktop:flex">
+          <p data-testid="stage-subline" data-state={line.isUpdating ? "updating" : "settled"} className="hidden items-center gap-2 type-body-touch desktop:type-body text-text-2 desktop:flex">
             <span className={classNames(line.isUpdating && "opacity-updating")}>{line.words}</span>
             {line.isUpdating ? <ProgressRing size={16} /> : null}
           </p>
@@ -148,7 +148,7 @@ export function Stage({ lens, name, className }: Props) {
       {cannotDraw || size === null ? null : <ShadeLegend size={size} className={SHADE_LEGEND} />}
       {cannotDraw || size === null ? null : <StringLegend size={size} className={STRING_LEGEND} />}
       {cannotDraw ? null : attribution ? (
-        <p data-testid="stage-attribution" className="pointer-events-none absolute bottom-1 left-4 z-stage-overlay max-w-full truncate type-label-s text-text-on-imagery on-imagery tablet:left-5 desktop:bottom-safe-1.5 desktop:left-6">
+        <p data-testid="stage-attribution" className="pointer-events-none absolute bottom-1 left-4 z-stage-overlay max-w-full truncate type-unit text-text-on-imagery on-imagery tablet:left-5 desktop:bottom-safe-1.5 desktop:left-6">
           {attribution}
         </p>
       ) : null}

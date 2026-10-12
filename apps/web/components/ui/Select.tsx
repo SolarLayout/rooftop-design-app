@@ -27,8 +27,8 @@ export type SelectOption<T extends string> = {
 const TYPED_TOGETHER = 600;
 
 const TRIGGER = classNames(
-  "inline-flex h-touch shrink-0 cursor-pointer items-center gap-2 rounded-row border px-3.5 whitespace-nowrap select-none",
-  "press-motion focus-ring desktop:h-10 desktop:rounded-control",
+  "inline-flex h-touch shrink-0 cursor-pointer items-center gap-2 rounded-control border px-3.5 whitespace-nowrap select-none",
+  "press-motion focus-ring desktop:h-10",
   "disabled:cursor-default disabled:opacity-disabled disabled:flat",
 );
 const TRIGGER_CLOSED = classNames(

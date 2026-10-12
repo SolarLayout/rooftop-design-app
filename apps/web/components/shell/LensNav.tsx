@@ -14,7 +14,7 @@ type Props = {
 
 const ICON: Record<Lens, IconName> = { roof: "roof", array: "array", sun: "sun", strings: "strings" };
 
-const WELL = "gap-1 rounded-card-s border border-line bg-well p-1 shadow-well";
+const WELL = "gap-1 rounded-row border border-line bg-well p-1 shadow-well";
 
 const FRAME: Record<LensLook, string> = {
   rail: "w-rail shrink-0 flex-col items-center gap-1.5 border-r border-line-subtle bg-chrome py-3.5",
@@ -23,9 +23,9 @@ const FRAME: Record<LensLook, string> = {
 };
 
 const ITEM: Record<LensLook, string> = {
-  rail: "size-14 flex-col justify-center gap-1 rounded-row type-label-s",
+  rail: "size-14 flex-col justify-center gap-1 rounded-row type-unit",
   row: "h-touch gap-2 rounded-control px-3.5",
-  switch: "h-touch justify-center rounded-control type-body",
+  switch: "h-touch justify-center rounded-control type-body-touch desktop:type-body",
 };
 
 const TAKEN = "bg-control-active text-accent shadow-segment";

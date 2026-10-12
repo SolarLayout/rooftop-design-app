@@ -25,12 +25,12 @@ export function DetectedCallout({ detected, onUse, onClose }: Props) {
   return (
     <div role="status" data-testid="detected" className={CALLOUT} style={measures({ x: detected.at.x + CALLOUT_GAP, y: detected.at.y + CALLOUT_GAP })}>
       <div className="flex items-start gap-2">
-        <span className="grow type-small font-medium">
+        <span className="grow type-body-touch desktop:type-body font-medium">
           {detected.found ? `Footprint found · ${detected.corners} corners · ${shown(Math.round(detected.area), 0)} m²` : "No footprint known here"}
         </span>
         <IconButton label="Close" icon="close" iconSize={14} kind="quiet" size="xs" onClick={onClose} className="-mt-1 -mr-1" />
       </div>
-      <span className="type-caption text-text-2">
+      <span className="type-body-touch desktop:type-body text-text-2">
         {detected.found
           ? `From Overture Maps · approximate, about ${shown(FOOTPRINTS_QUANTISED_M, 1)} m. Accept it, or drag the corners to the roof edge you see.`
           : "Outline the roof by corners or by a rectangle instead."}

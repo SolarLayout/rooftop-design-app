@@ -46,11 +46,11 @@ export function MpptTable({ table, onEnterCurrent }: Props) {
         <SectionHeading id={heading} help="studio.section.mppt-loading">
           MPPT loading
         </SectionHeading>
-        <span className="ml-auto type-caption whitespace-nowrap text-text-3">{table.of}</span>
+        <span className="ml-auto type-body-touch desktop:type-body whitespace-nowrap text-text-3">{table.of}</span>
       </div>
       <Table caption={table.caption} columns={COLUMNS} rows={table.rows} keyOf={(row) => row.key} dense cardColumns={2} />
       {table.note ? (
-        <div data-testid="mppt-note" className="flex flex-col gap-1.5 rounded-item border border-note-line bg-note-surface px-2.5 py-2 type-caption text-text-2">
+        <div data-testid="mppt-note" className="flex flex-col gap-1.5 rounded-control border border-note-line bg-note-surface px-2.5 py-2 type-body-touch desktop:type-body text-text-2">
           <p>{table.note}</p>
           <button type="button" className="inline-flex min-h-11 cursor-pointer items-center gap-1.5 self-start font-medium text-text focus-ring desktop:min-h-0" onClick={onEnterCurrent}>
             Enter the current per MPPT

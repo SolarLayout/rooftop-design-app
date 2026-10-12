@@ -39,7 +39,7 @@ export function StringColourSwitch({ fill = false, className }: { fill?: boolean
 
 function Item({ entry, compact = false }: { entry: LegendEntry; compact?: boolean }) {
   return (
-    <span className={classNames("flex items-center whitespace-nowrap text-text-2", compact ? "gap-1 type-value-xs" : "gap-1.5 type-caption")}>
+    <span className={classNames("flex items-center whitespace-nowrap text-text-2", compact ? "gap-1 type-body-touch desktop:type-body" : "gap-1.5 type-body-touch desktop:type-body")}>
       <span aria-hidden="true" className={classNames("block shrink-0 rounded-key", compact ? "size-2.5" : "size-3", swatchClassOf(entry.swatch))} />
       {entry.words}
     </span>
@@ -57,7 +57,7 @@ function Compact({ legend }: { legend: ReturnType<typeof stringLegendOf> }) {
   const last = legend.compact.items.at(-1);
   return (
     <div role="img" aria-label={legend.label} data-testid="string-legend" className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1">
-      {legend.compact.lead ? <span className="type-caption text-text-2">{legend.compact.lead}</span> : null}
+      {legend.compact.lead ? <span className="type-body-touch desktop:type-body text-text-2">{legend.compact.lead}</span> : null}
       {leading.map((entry) => (
         <Item key={entry.words} entry={entry} compact={numbered} />
       ))}
@@ -92,19 +92,19 @@ export function StringLegend({ size, className }: { size: Size; className?: stri
   if (colouring === null || option === null) return null;
   const legend = run ? stringLegendOf(run.strings, colouring, positions - run.strings.reduce((sum, string) => sum + string.modules.length, 0)) : null;
   const follows = (
-    <span data-testid="string-legend" className="flex items-center gap-2 type-caption whitespace-nowrap text-text-2">
+    <span data-testid="string-legend" className="flex items-center gap-2 type-body-touch desktop:type-body whitespace-nowrap text-text-2">
       <ProgressRing size={16} />
       The strings follow the design run
     </span>
   );
 
-  const card = "rounded-card-s border border-line bg-surface-1 shadow-float";
+  const card = "rounded-row border border-line bg-surface-1 shadow-float";
   if (size === "phone") {
     return <div className={classNames("flex min-h-8 items-center rounded-control border border-line bg-surface-1 px-3 py-1.5 shadow-float", className)}>{legend ? <Compact legend={legend} /> : follows}</div>;
   }
   if (size === "tablet") {
     return (
-      <div role="group" aria-label="Strings on the roof" className={classNames("flex w-96 flex-col gap-2 rounded-bar border border-line bg-surface-1 px-1.5 pt-1.5 pb-2.5 shadow-float", className)}>
+      <div role="group" aria-label="Strings on the roof" className={classNames("flex w-96 flex-col gap-2 rounded-card border border-line bg-surface-1 px-1.5 pt-1.5 pb-2.5 shadow-float", className)}>
         <StringColourSwitch fill />
         <div className="flex justify-center">{legend ? <Compact legend={legend} /> : follows}</div>
       </div>
@@ -124,7 +124,7 @@ export function StringLegend({ size, className }: { size: Size; className?: stri
       <div role="group" aria-label="Strings on the roof" className={classNames("flex w-fit flex-col gap-2 pt-1.5 pr-4 pb-2.5 pl-1.5", card, className)}>
         <div className="flex items-center gap-3.5 whitespace-nowrap">
           <StringColourSwitch />
-          <span className="type-caption text-text-2">{legend.note}</span>
+          <span className="type-body-touch desktop:type-body text-text-2">{legend.note}</span>
         </div>
         {entries}
       </div>

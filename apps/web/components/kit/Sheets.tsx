@@ -11,7 +11,7 @@ const ROWS = ["Module", "Tilt", "Orientation", "Row pitch", "Azimuth", "Shade-fr
 function Room({ children }: { children: ReactNode }) {
   return (
     <div data-testid="room" className="relative h-120 w-full overflow-hidden rounded-row border border-line bg-ground">
-      <p className="p-4 type-small text-text-3">The stage</p>
+      <p className="p-4 type-body-touch desktop:type-body text-text-3">The stage</p>
       {children}
     </div>
   );
@@ -42,7 +42,7 @@ export function Sheets() {
                 <Inspector />
               </Sheet>
             </Room>
-            <p role="status" className="type-small text-text-2">
+            <p role="status" className="type-body-touch desktop:type-body text-text-2">
               The sheet is at <span data-testid="stop">{stop}</span>
             </p>
           </Example>

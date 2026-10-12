@@ -21,7 +21,7 @@ type Props = {
 // The board "Sun path and shadow outlines": a ring of the sun at each hour mark, and its chip beside it in
 // the look of the stage's labels; none on phone.
 const RING = "placed hidden size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-outline border-accent bg-ground tablet:block";
-const CHIP = "placed hidden -translate-x-1/2 -translate-y-1/2 rounded-xs bg-ground px-1.75 type-tick whitespace-nowrap text-text-2 shadow-tooltip select-none tablet:block";
+const CHIP = "placed hidden -translate-x-1/2 -translate-y-1/2 rounded-control bg-ground px-1.75 type-unit whitespace-nowrap text-text-2 shadow-tooltip select-none tablet:block";
 
 // The marker: a disc of the sun with its core and its glow, 20 across (14 on phone), the core half of it.
 const MARKER = "placed flex size-3.5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-accent shadow-halo-sun tablet:size-5";
@@ -85,11 +85,11 @@ export function SunMarks({ stage, callout = true }: Props) {
               ROW_CHIP[row] ?? classNames("top-0 -translate-y-1/2", CHIP_SIDE[side]),
             )}
           >
-            <span className="flex items-center gap-2 type-small font-medium whitespace-nowrap text-text">
+            <span className="flex items-center gap-2 type-body-touch desktop:type-body font-medium whitespace-nowrap text-text">
               <Icon name="sun" size={16} className="text-accent" />
               {words.title}
             </span>
-            <span className="type-caption whitespace-nowrap text-text-2">{words.detail}</span>
+            <span className="type-body-touch desktop:type-body whitespace-nowrap text-text-2">{words.detail}</span>
           </div>
         </div>
       ) : null}

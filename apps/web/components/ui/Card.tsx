@@ -13,7 +13,7 @@ export function Card({ compact = false, selected = false, className, children, .
     <div
       className={classNames(
         "border",
-        compact ? "rounded-card-s p-card-compact" : "rounded-card p-card",
+        compact ? "rounded-row p-card-compact" : "rounded-card p-card",
         selected ? "border-accent bg-note-surface shadow-halo-selected" : "border-line bg-surface-1 shadow-card",
         className,
       )}

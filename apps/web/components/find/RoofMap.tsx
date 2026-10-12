@@ -146,14 +146,14 @@ export function RoofMap({ imagery, view, onState, onMap, outline, moreAttributio
       <div className="pointer-events-none absolute bottom-7 left-5 flex flex-col gap-2 text-text desktop:bottom-safe-7">
         {scale ? (
           <div data-testid="scale-bar" className={SCALE_BAR}>
-            <code className="type-value-xs on-imagery">{scale.label}</code>
+            <code className="type-body-touch desktop:type-body on-imagery">{scale.label}</code>
             <div className="w-31">
               <div className="h-1.25 w-span border-x border-b border-text" style={measures({ span: scale.widthPx / SCALE_BAR_MAX })} />
             </div>
           </div>
         ) : null}
         {/* On desktop the toolbar stands beside it: the words wrap into a narrow column. */}
-        <p className="type-label-s text-text-on-imagery on-imagery desktop:max-w-44">
+        <p className="type-unit text-text-on-imagery on-imagery desktop:max-w-44">
           {imagery.attribution}
           {moreAttribution ? <span className="block">{moreAttribution}</span> : null}
         </p>

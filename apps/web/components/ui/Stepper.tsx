@@ -22,9 +22,9 @@ type Props = {
 };
 
 const BUTTON = classNames(
-  "inline-flex size-touch shrink-0 cursor-pointer items-center justify-center rounded-seg-touch bg-transparent text-text-2",
+  "inline-flex size-touch shrink-0 cursor-pointer items-center justify-center rounded-control bg-transparent text-text-2",
   "press-motion focus-ring hovered:bg-surface-2 hovered:text-text pressed:lowered-by-press",
-  "desktop:size-7.5 desktop:rounded-seg",
+  "desktop:size-8",
   "disabled:cursor-default disabled:opacity-disabled",
 );
 
@@ -49,12 +49,12 @@ export function Stepper({ label, value, onCommit, range, fewer = "Fewer", more =
   return (
     <div className={className}>
       <div className="flex min-h-10 items-center justify-between gap-row">
-        <label id={names.label} htmlFor={id} className="text-text-2">
+        <label id={names.label} htmlFor={id} className="text-text">
           {label}
         </label>
         <div
           data-testid="well"
-          className={classNames("flex items-center gap-0.5 rounded-row p-0.75 desktop:rounded-control", WELL, disabled && "opacity-disabled")}
+          className={classNames("flex items-center gap-0.5 rounded-row p-1", WELL, disabled && "opacity-disabled")}
         >
           {button(fewer, "minus", "down", value <= range.min)}
           <input
@@ -66,7 +66,7 @@ export function Stepper({ label, value, onCommit, range, fewer = "Fewer", more =
             disabled={disabled}
             aria-labelledby={names.label}
             aria-describedby={names.said}
-            className={classNames(INPUT, "h-touch w-9 text-center desktop:h-7.5")}
+            className={classNames(INPUT, "h-touch w-9 text-center desktop:h-8")}
             {...entry.input}
           />
           {button(more, "plus", "up", value >= range.max)}

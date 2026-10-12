@@ -24,7 +24,7 @@ export function NoOptionsCard({ decision, testId = "energy-waits" }: Props) {
       <div className="flex min-w-0 grow items-start gap-3 tablet:items-center tablet:gap-4">
         <Icon name="note" size={22} className="mt-0.5 shrink-0 text-accent tablet:mt-0" />
         <div className="flex min-w-0 grow flex-col gap-1">
-          <h2 id={heading} className="type-title">
+          <h2 id={heading} className="type-section">
             {decision.title}
           </h2>
           <p className="text-text-2">{decision.message}</p>

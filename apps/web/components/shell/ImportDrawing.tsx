@@ -122,7 +122,7 @@ export function ImportDrawing({ open, onClose }: Props) {
         <div className="flex items-center gap-3">
           <div className="flex grow flex-col gap-0.5">
             <span className="text-text">DXF units</span>
-            <span className="type-caption text-text-3">{isDxf ? "Suggested for this file. Change it if the drawing is in millimetres" : "Chosen once the file is a DXF"}</span>
+            <span className="type-body-touch desktop:type-body text-text-3">{isDxf ? "Suggested for this file. Change it if the drawing is in millimetres" : "Chosen once the file is a DXF"}</span>
           </div>
           <Segmented label="DXF units" options={UNITS} value={units} onChange={setUnits} disabled={!isDxf} />
         </div>
@@ -130,7 +130,7 @@ export function ImportDrawing({ open, onClose }: Props) {
           <div data-testid="import-place" className="flex flex-col gap-2">
             <div className="flex flex-col gap-0.5">
               <span className="text-text">Place</span>
-              <span className="type-caption text-text-3">
+              <span className="type-body-touch desktop:type-body text-text-3">
                 {place.found === null ? "The drawing does not say where the roof is. Search the place, or type its coordinates" : "From the search. Change it if the drawing is elsewhere"}
               </span>
             </div>

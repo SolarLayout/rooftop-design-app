@@ -31,7 +31,7 @@ type Props = {
 };
 
 const HEAD = "flex items-center gap-3";
-const FACTS = "type-caption text-text-2";
+const FACTS = "type-body-touch desktop:type-body text-text-2";
 
 /**
  * The frame of an item's preview (the boards "Handover" on three sizes and "Handover, states"): the head with the item's
@@ -48,7 +48,7 @@ export function Preview({ row, view, onTryAgain, onAction, isOnItsWay = false, a
     <>
       <div className={HEAD}>
         <div className="flex min-w-0 grow flex-col gap-0.5">
-          <h2 className="type-lens-touch tablet:type-title">{row.name}</h2>
+          <h2 className="type-title-touch tablet:type-section">{row.name}</h2>
           {row.about === null ? (
             <Skeleton kind="text" className="my-1 w-44" />
           ) : (
@@ -95,7 +95,7 @@ export function Preview({ row, view, onTryAgain, onAction, isOnItsWay = false, a
       {body === "decision" && view.decision ? (
         <NoOptionsCard decision={view.decision} testId="files-wait" />
       ) : body === "skeleton" ? (
-        (skeleton ?? <div data-testid="preview-skeleton" aria-hidden="true" className="h-80 w-full rounded-xs bg-surface-2 breathing tablet:h-96" />)
+        (skeleton ?? <div data-testid="preview-skeleton" aria-hidden="true" className="h-80 w-full rounded-control bg-surface-2 breathing tablet:h-96" />)
       ) : body === "body" ? (
         children
       ) : null}

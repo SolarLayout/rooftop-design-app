@@ -38,10 +38,10 @@ export function Slider({ label, value, onCommit, scale, decimals = 0, unit, hint
         <div className="flex items-center justify-between gap-row">
           <span className="text-text-2">{label}</span>
           <span className="flex items-baseline gap-1">
-            <span data-testid="value" className="type-value desktop:type-value-s">
+            <span data-testid="value" className="type-mono-touch desktop:type-mono">
               {shownNumber(now, decimals)}
             </span>
-            {unit ? <span className="type-caption text-text-2">{unit}</span> : null}
+            {unit ? <span className="type-body-touch desktop:type-body text-text-2">{unit}</span> : null}
           </span>
         </div>
         <SliderTrack
@@ -54,7 +54,7 @@ export function Slider({ label, value, onCommit, scale, decimals = 0, unit, hint
           disabled={disabled}
           shownAs={shownAs}
         />
-        {hint ? <p className="type-caption text-text-3">{hint}</p> : null}
+        {hint ? <p className="type-body-touch desktop:type-body text-text-3">{hint}</p> : null}
       </div>
     </div>
   );

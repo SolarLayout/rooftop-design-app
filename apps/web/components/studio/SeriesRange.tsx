@@ -33,7 +33,7 @@ export function SeriesRange({ view, isUpdating = false }: { view: Sized; isUpdat
             <ProgressRing size={16} />
           </span>
         ) : null}
-        {bar ? <span className={classNames("ml-auto type-value-xs text-text-2", isUpdating && "opacity-updating")}>{bar.fits}</span> : null}
+        {bar ? <span className={classNames("ml-auto type-body-touch desktop:type-body text-text-2", isUpdating && "opacity-updating")}>{bar.fits}</span> : null}
       </div>
       {bar ? (
         <div data-testid="series-bar" className={classNames("relative h-11", isUpdating && "opacity-updating")}>
@@ -44,19 +44,19 @@ export function SeriesRange({ view, isUpdating = false }: { view: Sized; isUpdat
             ? bar.ends.map((end) => <span key={end.words} className="absolute top-1 left-at h-4 w-px -translate-x-1/2 bg-text-3" style={measures({ at: end.share })} />)
             : null}
           {bar.ends.map((end) => (
-            <span key={end.words} data-testid="series-end" className={classNames("absolute top-6.5 left-at -translate-x-1/2 type-tick whitespace-nowrap", end.isChosen ? "text-text" : "text-text-2")} style={measures({ at: end.share })}>
+            <span key={end.words} data-testid="series-end" className={classNames("absolute top-6.5 left-at -translate-x-1/2 type-unit whitespace-nowrap", end.isChosen ? "text-text" : "text-text-2")} style={measures({ at: end.share })}>
               {end.words}
             </span>
           ))}
         </div>
       ) : (
-        <p role="status" className="flex h-11 items-center gap-2.5 type-caption text-text-2">
+        <p role="status" className="flex h-11 items-center gap-2.5 type-body-touch desktop:type-body text-text-2">
           <ProgressRing size={16} />
           Sizing the strings for {view.voltage} V
         </p>
       )}
       {verdict ? (
-        <p data-testid="series-verdict" className={classNames("flex items-start gap-2 type-caption text-text-2", isUpdating && "opacity-updating")}>
+        <p data-testid="series-verdict" className={classNames("flex items-start gap-2 type-body-touch desktop:type-body text-text-2", isUpdating && "opacity-updating")}>
           <StatusMark kind={verdict.ok ? "fits" : "note"} label={verdict.ok ? "Fits" : verdict.title} wordsShown={false} size={16} />
           <span className="flex flex-col gap-0.5">
             {verdict.ok ? null : <span className="font-medium text-text">{verdict.title}</span>}

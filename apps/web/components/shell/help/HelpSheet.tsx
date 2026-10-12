@@ -5,7 +5,7 @@ import { useEffect, useId, useRef } from "react";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
 import { IconButton } from "@/components/ui/IconButton";
-import { HEADING_LIGHT, SECTION } from "@/components/ui/section-look";
+import { SECTION } from "@/components/ui/section-look";
 import { SheetGrip } from "@/components/ui/SheetGrip";
 import { inTheDocsOf, type DocsPlace } from "@/lib/docs/docs";
 import { ALIASES, MANIFEST } from "@/lib/help/manifest.gen";
@@ -76,12 +76,12 @@ export function HelpSheet() {
           <SheetGrip onClose={close} className="tablet:hidden" />
           <div className="flex h-12 shrink-0 items-center gap-1 border-b border-line-subtle pr-2 pl-2.5">
             {help.canGoBack ? <IconButton label="Back" icon="chevron-left" iconSize={18} kind="quiet" size="s" onClick={help.back} /> : <span className="w-2.5" />}
-            <span className="grow truncate type-section text-text-3 uppercase">{whereOf(shown.entry.kind, pathname)}</span>
+            <span className="grow truncate type-body text-text-2">{whereOf(shown.entry.kind, pathname)}</span>
             <IconButton data-close label="Close help" icon="close" iconSize={18} kind="quiet" size="s" onClick={close} />
           </div>
           <div ref={scroller} className="flex min-h-0 grow flex-col gap-4 overflow-y-auto px-5 pt-4.5 pb-safe-6">
             <div className="flex flex-col gap-1.5">
-              <h2 id={titleId} className={classNames("type-lens-touch desktop:type-lens", HEADING_LIGHT)}>
+              <h2 id={titleId} className="type-title-touch text-text desktop:type-title">
                 {shown.entry.title}
               </h2>
               <p className="text-text-2">{shown.entry.summary}</p>
@@ -94,9 +94,9 @@ export function HelpSheet() {
                     <li key={id} aria-current={isChosen || undefined} className={classNames("flex flex-col gap-0.5 px-3.5 py-2.5", index > 0 && "border-t border-line", isChosen && "bg-note-surface")}>
                       <span className="flex items-center gap-2 font-medium">
                         {label}
-                        {isChosen ? <span className="rounded-xs bg-accent px-1.5 type-label-s font-semibold text-accent-ink">{help.mark}</span> : null}
+                        {isChosen ? <span className="rounded-control bg-accent px-1.5 type-unit font-semibold text-accent-ink">{help.mark}</span> : null}
                       </span>
-                      <span className="type-small text-text-2">{meaning}</span>
+                      <span className="type-body-touch desktop:type-body text-text-2">{meaning}</span>
                     </li>
                   );
                 })}
@@ -118,7 +118,7 @@ export function HelpSheet() {
                         <button type="button" onClick={() => help.follow(key)} className="flex w-full items-center gap-3 rounded-row px-2 py-2.5 text-left hovered:bg-surface-2 focus-ring">
                           <span className="flex min-w-0 grow flex-col gap-0.5">
                             <span className="font-medium">{related.title}</span>
-                            <span className="line-clamp-2 type-small text-text-2">{related.summary}</span>
+                            <span className="line-clamp-2 type-body-touch desktop:type-body text-text-2">{related.summary}</span>
                           </span>
                           <Icon name="chevron-right" size={16} className="shrink-0 text-text-3" />
                         </button>
@@ -150,7 +150,7 @@ function InTheDocs({ place }: { place: DocsPlace | undefined }) {
         <Icon name="book" size={18} stroke="light" className="shrink-0 text-text-2" />
         <span className="flex min-w-0 grow flex-col gap-0.5">
           <span className="font-medium">{row.title}</span>
-          <span className="line-clamp-2 type-small text-text-2">{row.section}</span>
+          <span className="line-clamp-2 type-body-touch desktop:type-body text-text-2">{row.section}</span>
         </span>
         <Icon name="external" size={16} className="shrink-0 text-text-3" />
       </a>

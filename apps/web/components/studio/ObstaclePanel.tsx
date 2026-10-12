@@ -82,7 +82,7 @@ function NameField({ name, onCommit }: { name: string; onCommit: (name: string) 
         if (event.key === "Enter") commit();
         if (event.key === "Escape") setTyped(null);
       }}
-      className="min-w-0 grow rounded-xs border-0 bg-transparent font-semibold text-text outline-none focus-ring"
+      className="min-w-0 grow rounded-control border-0 bg-transparent font-semibold text-text outline-none focus-ring"
     />
   );
 }
@@ -95,7 +95,7 @@ function PointsTable<Kind extends Obstacle | DraftObstacle>({ obstacle, onChange
   const atTheFewest = obstacle.points.length <= fewest;
   return (
     <div className="flex flex-col gap-1.5" data-testid="points-table">
-      <div className="flex items-center gap-2 type-caption text-text-3">
+      <div className="flex items-center gap-2 type-body-touch desktop:type-body text-text-3">
         <span className="w-10 shrink-0">Point</span>
         <span className="grow basis-0 pr-6 text-right">East</span>
         <span className="grow basis-0 pr-6 text-right">North</span>
@@ -103,7 +103,7 @@ function PointsTable<Kind extends Obstacle | DraftObstacle>({ obstacle, onChange
       </div>
       {obstacle.points.map(([east, north], index) => (
         <div key={index} data-testid="point-row" className="flex items-center gap-2">
-          <span className="w-10 shrink-0 type-small">{index + 1}</span>
+          <span className="w-10 shrink-0 type-body-touch desktop:type-body">{index + 1}</span>
           <NumberField label={`East of point ${index + 1}`} labelHidden value={east} unit="m" range={POINT} labelInside onCommit={(value) => onChange(withPoint(obstacle, index, [value, north]))} className="grow basis-0" />
           <NumberField label={`North of point ${index + 1}`} labelHidden value={north} unit="m" range={POINT} labelInside onCommit={(value) => onChange(withPoint(obstacle, index, [east, value]))} className="grow basis-0" />
           <IconButton label={`Remove point ${index + 1}`} icon="bin" iconSize={16} kind="quiet" size="s" disabled={atTheFewest} onClick={() => onChange(withPointRemoved(obstacle, index))} className="shrink-0" />
@@ -112,7 +112,7 @@ function PointsTable<Kind extends Obstacle | DraftObstacle>({ obstacle, onChange
       <Button size="s" icon="plus" onClick={() => onChange(withPointAdded(obstacle))} className="self-start">
         Add a point
       </Button>
-      <p className="type-caption text-text-3">
+      <p className="type-body-touch desktop:type-body text-text-3">
         Metres east and north of the middle of the roof, in order. {fewest === FEWEST_POINTS.wall ? "Two" : "Three"} at least.
       </p>
     </div>
@@ -154,7 +154,7 @@ export function ObstacleCard<Kind extends Obstacle | DraftObstacle>({ obstacle, 
       <div className="flex items-center gap-2.5">
         <Icon name={ICON_OF_KIND[obstacle.kind]} size={20} stroke="light" className="text-accent" />
         <NameField name={obstacle.name} onCommit={(name) => onChange({ ...obstacle, name })} />
-        <span className="type-caption text-text-2">{wordOfKind(obstacle.kind)}</span>
+        <span className="type-body-touch desktop:type-body text-text-2">{wordOfKind(obstacle.kind)}</span>
         {onRemove ? <IconButton label={`Remove ${obstacle.name}`} icon="bin" iconSize={16} kind="quiet" size="xs" onClick={onRemove} /> : null}
       </div>
       <div className={fieldsLayoutOf(size)}>
@@ -185,7 +185,7 @@ function ObstacleRow({ obstacle, isToReview, onSelect }: { obstacle: Obstacle; i
     <button type="button" data-testid="obstacle-row" onClick={onSelect} className={ROW}>
       <Icon name={ICON_OF_KIND[obstacle.kind]} size={20} stroke="light" className="text-text-2" />
       <span className="grow truncate font-medium">{obstacle.name}</span>
-      <code className="type-caption whitespace-nowrap text-text-2">{factsOf(obstacle)}</code>
+      <code className="type-body-touch desktop:type-body whitespace-nowrap text-text-2">{factsOf(obstacle)}</code>
       {isToReview ? <StatusMark kind="note" label={HEIGHT_TO_REVIEW} wordsShown={false} size={14} /> : null}
     </button>
   );
@@ -197,7 +197,7 @@ const HEIGHT_TO_REVIEW = "Height to review";
 /** The hint in the open card of an obstacle whose height came from the import, not from the file. */
 function ReviewHint() {
   return (
-    <p data-testid="review-hint" className="flex items-start gap-2 type-caption text-text-3">
+    <p data-testid="review-hint" className="flex items-start gap-2 type-body-touch desktop:type-body text-text-3">
       <Icon name="note" size={14} className="mt-0.75 shrink-0 text-accent" />
       {REVIEW_HINT}
     </p>
@@ -356,7 +356,7 @@ export function ObstaclePanel({ roof, size }: Props) {
           />
         </form>
       ) : null}
-      {own.length === 0 && !draft ? <p className="type-small text-text-2">None yet. Add a box, a tank, a wall, a tree or a building.</p> : null}
+      {own.length === 0 && !draft ? <p className="type-body-touch desktop:type-body text-text-2">None yet. Add a box, a tank, a wall, a tree or a building.</p> : null}
       <ul className="flex flex-col gap-2.5">
         {own.map(({ obstacle, index }) => {
           const isToReview = toReview.includes(obstacle.name);
@@ -389,10 +389,10 @@ export function ObstaclePanel({ roof, size }: Props) {
         })}
       </ul>
       {roof.parapet_h > 0 ? (
-        <div data-testid="parapet-row" className="flex h-10 items-center gap-2.5 px-3 type-small text-text-3">
+        <div data-testid="parapet-row" className="flex h-10 items-center gap-2.5 px-3 type-body-touch desktop:type-body text-text-3">
           <Icon name="parapet" size={20} stroke="light" />
           <span className="grow">Parapet, all edges</span>
-          <code className="type-caption">h {shown(roof.parapet_h, 1)} m</code>
+          <code className="type-body-touch desktop:type-body">h {shown(roof.parapet_h, 1)} m</code>
         </div>
       ) : null}
     </section>

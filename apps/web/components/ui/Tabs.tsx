@@ -40,8 +40,8 @@ type Props<T extends string> = {
 const KEYS = new Set(["ArrowLeft", "ArrowRight", "Home", "End"]);
 
 const TAB = classNames(
-  "flex h-touch shrink-0 cursor-pointer items-center rounded-xs bg-transparent px-4 whitespace-nowrap select-none",
-  "type-body-touch press-motion focus-ring desktop:h-10 desktop:px-3.5 desktop:type-small",
+  "flex h-touch shrink-0 cursor-pointer items-center rounded-control bg-transparent px-4 whitespace-nowrap select-none",
+  "type-body-touch desktop:type-body press-motion focus-ring desktop:h-10 desktop:px-3.5",
   "disabled:cursor-default disabled:opacity-disabled",
 );
 // The weight is said again for desktop: the type style of desktop, which comes later, sets one too.
@@ -51,7 +51,7 @@ const NOT_TAKEN = "text-text-2 hovered:text-text";
 // The line under a tab is as wide as its words, and lies on the line of the row.
 const LINE = "-mb-px flex items-center gap-1.5 self-stretch border-b-tab";
 
-const COUNT = "flex h-4.5 items-center rounded-full bg-surface-2 px-1.5 type-value-xs text-text-2";
+const COUNT = "flex h-4.5 items-center rounded-full bg-surface-2 px-1.5 type-unit text-text-2";
 
 /** Parts of one card or one panel, of which one is shown. */
 export function Tabs<T extends string>({ label, head, tabs, value, onChange, children, shownAs, className }: Props<T>) {
@@ -131,7 +131,7 @@ export function Tabs<T extends string>({ label, head, tabs, value, onChange, chi
       ) : (
         row
       )}
-      <div role="tabpanel" id={panel} aria-labelledby={tabOf(value)} tabIndex={0} className="mt-4 rounded-xs focus-ring">
+      <div role="tabpanel" id={panel} aria-labelledby={tabOf(value)} tabIndex={0} className="mt-4 rounded-control focus-ring">
         {children}
       </div>
     </div>

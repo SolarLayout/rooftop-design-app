@@ -32,10 +32,10 @@ export function PerformanceHeader({ header, isLoading, isDimmed, under, weather,
   return (
     <header className={classNames("flex flex-col gap-3 tablet:gap-4 desktop:flex-row desktop:gap-4", note ? "desktop:items-start" : "desktop:items-end")}>
       <div className="flex min-w-0 flex-col gap-1">
-        <h1 className="type-lens-touch tablet:type-page">Performance</h1>
+        <h1 className="type-title-touch desktop:type-title">Performance</h1>
         {header ? (
           <>
-            <p data-testid="run-line" className={classNames("type-small text-text-2 tablet:type-body-touch desktop:type-body", isDimmed && "opacity-updating")}>
+            <p data-testid="run-line" className={classNames("type-body-touch desktop:type-body text-text-2", isDimmed && "opacity-updating")}>
               {header.runLine}
             </p>
             {header.notes.length > 0 ? (

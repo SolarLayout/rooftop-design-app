@@ -39,7 +39,7 @@ export function RoofTypeChoice({ value, onChange, className }: Props) {
             <RoofTypeIcon id={id} taken={id === value} />
             <span className="flex grow flex-col">
               <span className="font-medium">{name}</span>
-              <span className="type-caption text-text-2">{caption}</span>
+              <span className="type-body-touch desktop:type-body text-text-2">{caption}</span>
             </span>
           </button>
         ))}

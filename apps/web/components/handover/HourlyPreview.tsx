@@ -22,15 +22,15 @@ type Props = {
 // rows in mono 13, the time column in text-2, the figures at the right; the caption under the table. The card scrolls sideways
 // where the six columns do not fit, never the page.
 const CARD = "overflow-x-auto rounded-card border border-line bg-surface-1 px-6 pt-3 pb-5 shadow-card";
-const HEAD = "h-9 border-b border-line px-2 type-value-small font-medium whitespace-nowrap text-text-2";
-const CELL = "h-9 border-b border-line-subtle px-2 type-value-small whitespace-nowrap";
+const HEAD = "h-9 border-b border-line px-2 type-mono-touch desktop:type-mono font-medium whitespace-nowrap text-text-2";
+const CELL = "h-9 border-b border-line-subtle px-2 type-mono-touch desktop:type-mono whitespace-nowrap";
 const TIME = 0;
 
 function Rows({ head }: { head: CsvHead }) {
   const align = (column: number) => (column === TIME ? "text-left" : "text-right");
   return (
     <table data-testid="csv-table" className="w-full border-collapse">
-      <caption data-testid="csv-caption" className="caption-bottom pt-2.5 text-left type-caption text-text-2">
+      <caption data-testid="csv-caption" className="caption-bottom pt-2.5 text-left type-body-touch desktop:type-body text-text-2">
         {head.caption}
       </caption>
       <thead>

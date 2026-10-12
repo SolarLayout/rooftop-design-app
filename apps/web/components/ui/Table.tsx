@@ -25,12 +25,12 @@ type Props<Row> = {
   className?: string;
 };
 
-const HEAD = "h-9 border-b border-line type-section whitespace-nowrap text-text-3 uppercase";
+const HEAD = "h-9 border-b border-line type-strong whitespace-nowrap text-text-2";
 // The head of a column that sorts is a button across the cell: the active one in text with the arrow of its direction.
-const SORT_HEAD = "flex h-9 w-full cursor-pointer items-center gap-1 rounded-xs type-section uppercase select-none focus-ring";
+const SORT_HEAD = "flex h-9 w-full cursor-pointer items-center gap-1 rounded-control type-strong select-none focus-ring";
 const CELL = "h-11 border-b border-line-subtle whitespace-nowrap";
 const TOTAL_CELL = "h-11 border-t border-line whitespace-nowrap";
-const CAPTION = "type-caption text-text-2";
+const CAPTION = "type-body-touch desktop:type-body text-text-2";
 
 /** A cell of several lines: a quieter line under the value, or lines each with its label (cellLinesOf). */
 function Lines({ lines }: { lines: readonly CellLine[] }) {
@@ -38,8 +38,8 @@ function Lines({ lines }: { lines: readonly CellLine[] }) {
   return (
     <span className="inline-flex flex-col">
       {lines.map((line, index) => (
-        <span key={index} className={line.isBelow ? "type-caption font-normal text-text-3" : line.label ? "type-value-xs" : undefined}>
-          {line.label ? <span className="type-label-s text-text-3">{line.label} </span> : null}
+        <span key={index} className={line.isBelow ? "type-body-touch desktop:type-body font-normal text-text-3" : line.label ? "type-body-touch desktop:type-body" : undefined}>
+          {line.label ? <span className="type-unit text-text-3">{line.label} </span> : null}
           {line.value}
           {line.words ? <span className="font-sans text-text-2"> {line.words}</span> : null}
         </span>
@@ -113,7 +113,7 @@ export function Table<Row>({ caption, columns, rows, keyOf, chosen, total, dense
                   return (
                     <td
                       key={column.key}
-                      className={classNames(cell, padding, column.words ? "type-small whitespace-normal text-text" : "type-value-small", isTotal && "font-medium", column.kind === "number" && "text-right")}
+                      className={classNames(cell, padding, column.words ? "type-body-touch desktop:type-body whitespace-normal text-text" : "type-mono-touch desktop:type-mono", isTotal && "font-medium", column.kind === "number" && "text-right")}
                     >
                       {value}
                     </td>
@@ -140,7 +140,7 @@ export function Table<Row>({ caption, columns, rows, keyOf, chosen, total, dense
                 )}
               >
                 <div className="flex items-center gap-2">
-                  <h3 className="grow type-title">{card.title}</h3>
+                  <h3 className="grow type-section">{card.title}</h3>
                   {card.mark ? <StatusMark kind={card.mark.kind} label={card.mark.label} wordsShown={false} size={18} /> : null}
                 </div>
                 <dl className={classNames("grid gap-x-2 gap-y-2.5", cardColumns === 2 ? "grid-cols-2" : "grid-cols-3")}>
@@ -148,12 +148,12 @@ export function Table<Row>({ caption, columns, rows, keyOf, chosen, total, dense
                     one.words ? (
                       <div key={one.key} className="col-span-full flex min-w-0 flex-col">
                         <dt className="sr-only">{one.label}</dt>
-                        <dd className="type-body-touch text-text-2">{one.value}</dd>
+                        <dd className="type-body-touch desktop:type-body text-text-2">{one.value}</dd>
                       </div>
                     ) : (
                       <div key={one.key} className="flex min-w-0 flex-col gap-0.5">
                         <dt className={CAPTION}>{one.label}</dt>
-                        <dd className="type-value-s">{one.value}</dd>
+                        <dd className="type-mono-touch desktop:type-mono">{one.value}</dd>
                       </div>
                     ),
                   )}

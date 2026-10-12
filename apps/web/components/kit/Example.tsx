@@ -14,7 +14,7 @@ export function Example({ name, caption, children }: Props) {
   return (
     <div data-testid={`kit-${name}`} className="flex min-w-0 flex-col items-start gap-1.5">
       {children}
-      <span className="type-caption text-text-2">{caption}</span>
+      <span className="type-body-touch desktop:type-body text-text-2">{caption}</span>
     </div>
   );
 }
@@ -24,8 +24,8 @@ type SectionProps = { title: string; children: ReactNode };
 /** A card of the kit: a title and what belongs under it. */
 export function Section({ title, children }: SectionProps) {
   return (
-    <Card className="flex flex-col gap-4.5">
-      <h2 className="type-section text-text-3">{title}</h2>
+    <Card className="flex flex-col gap-group">
+      <h2 className="type-section text-text">{title}</h2>
       {children}
     </Card>
   );
@@ -37,7 +37,7 @@ type RowProps = { label: string; children: ReactNode };
 export function Row({ label, children }: RowProps) {
   return (
     <div className="flex flex-col gap-2">
-      <h3 className="type-small text-text-2">{label}</h3>
+      <h3 className="type-body-touch desktop:type-body text-text-2">{label}</h3>
       <div className="flex flex-wrap items-start gap-x-4 gap-y-3">{children}</div>
     </div>
   );

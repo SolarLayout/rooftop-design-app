@@ -22,10 +22,10 @@ const TILE = "flex flex-col gap-0.5 rounded-row border border-line bg-surface-1 
 function Tile({ label, value, unit }: { label: string; value: string; unit?: string }) {
   return (
     <div className={TILE}>
-      <span className="type-caption text-text-2">{label}</span>
-      <code className="type-value-s">
+      <span className="type-body-touch desktop:type-body text-text-2">{label}</span>
+      <code className="type-mono-touch desktop:type-mono">
         {value}
-        {unit ? <span className="type-caption text-text-2"> {unit}</span> : null}
+        {unit ? <span className="type-body-touch desktop:type-body text-text-2"> {unit}</span> : null}
       </code>
     </div>
   );
@@ -69,7 +69,7 @@ export function OutlinePanel({ state, on, className }: Props) {
             ))}
           </div>
         ) : (
-          <p role="status" className="type-small text-text-2">
+          <p role="status" className="type-body-touch desktop:type-body text-text-2">
             {measured.corners === 0
               ? "Click the first corner of the roof."
               : measured.corners < 3
@@ -80,7 +80,7 @@ export function OutlinePanel({ state, on, className }: Props) {
         <div className="flex min-h-11 items-center gap-3">
           <span className="flex grow flex-col gap-0.5">
             <span id="square-the-corners">Square the corners</span>
-            <span className="type-caption text-text-3">Snaps to 90° when you are within 3°</span>
+            <span className="type-body-touch desktop:type-body text-text-3">Snaps to 90° when you are within 3°</span>
           </span>
           <Switch label="Square the corners" on={state.squared} onChange={(squared) => on({ type: "squared", squared })} />
         </div>

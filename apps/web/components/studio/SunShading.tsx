@@ -18,8 +18,8 @@ function FigureTile({ label, figure }: { label: string; figure: Figure }) {
   if (figure.value !== null) return <Stat look="tile" label={label} value={figure.value} unit="%" />;
   return (
     <div className="flex min-w-0 flex-col gap-0.5 rounded-row bg-surface-2 px-3.5 py-2.5">
-      <dt className="type-caption text-text-2">{label}</dt>
-      <dd className="flex min-h-5 items-center">{figure.waits ? <span className="type-caption text-text">{figure.waits}</span> : <Skeleton kind="value" className="w-14" onTile />}</dd>
+      <dt className="type-body-touch desktop:type-body text-text-2">{label}</dt>
+      <dd className="flex min-h-5 items-center">{figure.waits ? <span className="type-body-touch desktop:type-body text-text">{figure.waits}</span> : <Skeleton kind="value" className="w-14" onTile />}</dd>
     </div>
   );
 }
@@ -46,7 +46,7 @@ export function ShadingSection() {
         {figures.keptClear !== null ? <Stat look="tile" label="Kept clear" value={figures.keptClear} unit="m²" /> : <FigureTile label="Kept clear" figure={{ value: null, waits: null }} />}
       </dl>
       {figures.of || figures.horizon ? (
-        <p className="flex flex-col type-caption text-text-3">
+        <p className="flex flex-col type-body-touch desktop:type-body text-text-3">
           {figures.of ? <span data-testid="shading-of">{figures.of}</span> : null}
           {figures.horizon ? <span data-testid="shading-horizon">{figures.horizon}</span> : null}
         </p>
@@ -72,7 +72,7 @@ export function ShadeMapSection({ size }: { size: Size }) {
       <SectionHeading id={heading} help="studio.section.shade-map">
         Shade map
       </SectionHeading>
-      <p className="type-caption text-text-2">
+      <p className="type-body-touch desktop:type-body text-text-2">
         {map
           ? `Each module is coloured by its near shading over the year, of all ${shown(positions, 0)} positions. ${size === "desktop" ? "Select" : "Tap"} a module for its value.`
           : legend.of}
@@ -81,12 +81,12 @@ export function ShadeMapSection({ size }: { size: Size }) {
         <ul className="flex flex-col gap-1.5">
           {map.counts.map((count, step) => (
             <li key={step} data-testid="shade-step" className={classNames("flex items-center gap-3", size !== "desktop" && "min-h-touch")}>
-              <span aria-hidden="true" className={classNames("block h-2.5 w-4 shrink-0 rounded-xs", SWATCHES[step])} />
-              <span className="type-value-xs text-text">
+              <span aria-hidden="true" className={classNames("block h-2.5 w-4 shrink-0 rounded-control", SWATCHES[step])} />
+              <span className="type-body-touch desktop:type-body text-text">
                 {legend.marks[step]} to {legend.marks[step + 1]?.replace(" %", "")} %
               </span>
-              <span className="ml-auto type-caption text-text-2">
-                <span className="type-value-xs text-text">{count}</span> {count === 1 ? "position" : "positions"}
+              <span className="ml-auto type-body-touch desktop:type-body text-text-2">
+                <span className="type-body-touch desktop:type-body text-text">{count}</span> {count === 1 ? "position" : "positions"}
               </span>
             </li>
           ))}

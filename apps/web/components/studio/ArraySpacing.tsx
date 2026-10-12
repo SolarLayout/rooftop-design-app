@@ -52,7 +52,7 @@ function DecidedField({ label, decided, switchLabel, onDecided, field }: Decided
       <div className="flex min-w-0 grow flex-col gap-0.5">
         {field}
         {decided.line === null ? null : (
-          <span data-testid="read-out-line" className="type-caption text-text-3">
+          <span data-testid="read-out-line" className="type-body-touch desktop:type-body text-text-3">
             {decided.line}
           </span>
         )}

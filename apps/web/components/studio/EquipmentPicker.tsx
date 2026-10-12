@@ -81,7 +81,7 @@ function Tag({ look, children }: { look: "here" | "note"; children: ReactNode })
   return (
     <span
       className={classNames(
-        "inline-flex h-4.5 shrink-0 items-center rounded-xs border px-1.5 type-caption-s font-medium",
+        "inline-flex h-4.5 shrink-0 items-center rounded-control border px-1.5 type-unit font-medium",
         look === "note" ? "border-note-line bg-note-surface text-accent" : "border-line-strong bg-surface-2 text-text",
       )}
     >
@@ -195,7 +195,7 @@ export function EquipmentPicker<Read>(props: Props<Read>) {
     { label: reading.kind === "reading" && !reading.isOwn ? "Reading" : words.use, kind: "primary", onPress: () => take(), waits: !canUse, busy: reading.kind === "reading" && !reading.isOwn },
   ];
 
-  const foot = chosen ? <code className="block truncate type-value-xs text-text-3">{chosen}</code> : null;
+  const foot = chosen ? <code className="block truncate type-body-touch desktop:type-body text-text-3">{chosen}</code> : null;
 
   return (
     <Dialog open={open} title={words.title} onClose={close} actions={actions} size="wide" foot={foot} isDescribed={false}>
@@ -247,10 +247,10 @@ export function EquipmentPicker<Read>(props: Props<Read>) {
           }}
         />
         {reading.kind === "refused" ? (
-          <p role="status" className="flex items-start gap-2.5 rounded-row border border-note-line bg-note-surface px-3.5 py-3 type-caption text-text-2">
+          <p role="status" className="flex items-start gap-2.5 rounded-row border border-note-line bg-note-surface px-3.5 py-3 type-body-touch desktop:type-body text-text-2">
             <StatusMark kind="note" label="Note" wordsShown={false} size={18} />
             <span className="flex flex-col gap-0.5">
-              <span className="type-body font-medium text-text">This {words.thing} was not loaded</span>
+              <span className="type-body-touch desktop:type-body font-medium text-text">This {words.thing} was not loaded</span>
               <span>
                 {/[.!?]$/.test(reading.reason) ? reading.reason : `${reading.reason}.`} The {words.thing} of before is kept.
               </span>
@@ -269,7 +269,7 @@ function CountLine<Read>({ words, total, shown, isFiltered, onClearFilters, sort
     </button>
   ) : null;
   return (
-    <div className="flex items-center justify-between gap-3 type-caption text-text-2 tablet:type-small">
+    <div className="flex items-center justify-between gap-3 type-body-touch desktop:type-body text-text-2">
       <span role="status">
         {shown} of {total}
         <span className="hidden tablet:inline"> {words.things}</span>
@@ -283,7 +283,7 @@ function CountLine<Read>({ words, total, shown, isFiltered, onClearFilters, sort
 
 function Heads({ columns, sort, onSort }: { columns: readonly PickerColumn[]; sort: PickerSort; onSort: (key: string) => void }) {
   return (
-    <div role="presentation" className="hidden h-8 shrink-0 items-center gap-3.5 border-b border-line bg-surface-1 pr-3.5 pl-2.5 type-caption text-text-3 tablet:flex tablet:h-touch desktop:h-8">
+    <div role="presentation" className="hidden h-8 shrink-0 items-center gap-3.5 border-b border-line bg-surface-1 pr-3.5 pl-2.5 type-body-touch desktop:type-body text-text-3 tablet:flex tablet:h-touch desktop:h-8">
       <span className="w-4 shrink-0" />
       {columns.map((column, index) => {
         const place = classNames(index === 0 ? "min-w-0 grow justify-start" : classNames(column.width, "shrink-0 justify-end"), column.isDesktopOnly && "hidden desktop:flex");
@@ -294,7 +294,7 @@ function Heads({ columns, sort, onSort }: { columns: readonly PickerColumn[]; so
             key={column.key}
             type="button"
             onClick={() => onSort(column.key)}
-            className={classNames("flex h-full cursor-pointer items-center gap-1 whitespace-nowrap rounded-xs focus-ring", place, isActive ? "font-medium text-text" : "hovered:text-text-2")}
+            className={classNames("flex h-full cursor-pointer items-center gap-1 whitespace-nowrap rounded-control focus-ring", place, isActive ? "font-medium text-text" : "hovered:text-text-2")}
           >
             {column.head}
             {isActive ? <span className="sr-only">, sorted {sort.direction === "ascending" ? "upwards" : "downwards"}</span> : null}
@@ -335,17 +335,17 @@ function Row({ id, row, columns, isChosen, isCurrent, onChoose, onUse }: RowProp
           <span className="truncate font-medium">{row.model}</span>
           {tags}
         </span>
-        <span className="truncate type-caption text-text-2">{row.second}</span>
-        <span className="truncate type-value-xs text-text-2 tablet:hidden">{row.phone}</span>
+        <span className="truncate type-body-touch desktop:type-body text-text-2">{row.second}</span>
+        <span className="truncate type-body-touch desktop:type-body text-text-2 tablet:hidden">{row.phone}</span>
         {row.mark ? (
-          <span className="flex min-w-0 items-center gap-1.5 type-caption text-text-2">
+          <span className="flex min-w-0 items-center gap-1.5 type-body-touch desktop:type-body text-text-2">
             <StatusMark kind="note" label="Rated under the voltage set" wordsShown={false} size={14} />
             <span className="truncate">{row.mark}</span>
           </span>
         ) : null}
       </span>
       {columns.slice(1).map((column, index) => (
-        <span key={column.key} className={classNames("hidden shrink-0 text-right type-value-s whitespace-nowrap tablet:block", column.width, column.isDesktopOnly && "tablet:hidden desktop:block")}>
+        <span key={column.key} className={classNames("hidden shrink-0 text-right type-mono-touch desktop:type-mono whitespace-nowrap tablet:block", column.width, column.isDesktopOnly && "tablet:hidden desktop:block")}>
           {row.cells[index]}
         </span>
       ))}
@@ -378,7 +378,7 @@ function Nothing<Read>({ words, search, onClearSearch, onClearFilters }: Props<R
   return (
     <div className="flex h-full flex-col items-center justify-center gap-3 px-8 py-6 text-center">
       <span>{isSearched ? `No ${words.thing} in the app matches “${search.trim()}”.` : `No ${words.thing} in the app within these filters.`}</span>
-      <span className="type-caption text-text-2">
+      <span className="type-body-touch desktop:type-body text-text-2">
         The search reads the maker, the model and the file’s name. {words.fileKind === "OND" ? "An" : "A"} {words.fileKind} file of your own is taken below.
       </span>
       <Button size="s" onClick={isSearched ? onClearSearch : onClearFilters}>
@@ -431,7 +431,7 @@ function OwnFile({ words, reading, onFile, onChoose }: OwnFileProps) {
       <span role="status" className="min-w-0 grow truncate text-text-2">
         {isReadingOwn ? (
           <>
-            Reading the file <code className="type-value-xs">{reading.file}</code>
+            Reading the file <code className="type-body-touch desktop:type-body">{reading.file}</code>
           </>
         ) : isOver ? (
           "Let go to load the file"

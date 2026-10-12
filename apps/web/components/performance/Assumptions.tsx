@@ -22,10 +22,10 @@ const TITLE = "Assumptions";
 // line of its own under them. From tablet on: a chip of 44 (34 on desktop), raised, the label then the field in a row.
 const CHIP = classNames(
   "flex min-h-13 flex-wrap items-center justify-between gap-x-3",
-  "tablet:min-h-11 tablet:justify-start tablet:gap-x-2 tablet:rounded-chip tablet:border tablet:border-line-strong tablet:bg-control tablet:pr-1.5 tablet:pl-3 tablet:shadow-raised",
-  "desktop:min-h-8.5 desktop:type-small",
+  "tablet:min-h-11 tablet:justify-start tablet:gap-x-2 tablet:rounded-control tablet:border tablet:border-line-strong tablet:bg-control tablet:pr-1.5 tablet:pl-3 tablet:shadow-raised",
+  "desktop:min-h-8.5 type-body-touch desktop:type-body",
 );
-const CAPTION = "type-caption text-text-3 tablet:order-3";
+const CAPTION = "type-body-touch desktop:type-body text-text-3 tablet:order-3";
 // On phone the label takes what the field leaves and wraps inside it ("Rear shading and / mismatch", the board "Weather and
 // assumptions"), so that the field stays on its row; what the field says alone drops under them. From tablet on the label
 // is one word run in the chip.
@@ -77,7 +77,7 @@ function LevelsChip({ field, onLevel }: { field: LevelsField; onLevel: Props["on
         {field.levels.map((level, index) => (
           <Fragment key={index}>
             {index > 0 ? <span className="mx-1 text-text-3">·</span> : null}
-            <span className="type-value-s text-text-2 tablet:type-value-small desktop:type-value-xs">P</span>
+            <span className="type-mono-touch text-text-2 desktop:type-mono">P</span>
             <NumberField form="chip" label={`Exceedance level ${index + 1}`} value={level} range={field.range} onCommit={(entered) => onLevel(index, entered)} className={LEVEL_WIDTH} />
           </Fragment>
         ))}

@@ -51,7 +51,7 @@ export function ByHandPanel({ hand, onChange, state, className }: Props) {
           <NumberField label="Latitude" value={hand.lat} unit="°" range={LATITUDE} labelInside wide onCommit={(lat) => onChange({ lat })} />
           <NumberField label="Longitude" value={hand.lon} unit="°" range={LONGITUDE} labelInside wide onCommit={(lon) => onChange({ lon })} />
         </div>
-        <p className="type-caption text-text-3">From the search above, or typed. Five decimals; north and east are positive.</p>
+        <p className="type-body-touch desktop:type-body text-text-3">From the search above, or typed. Five decimals; north and east are positive.</p>
       </section>
 
       <section className="flex flex-col gap-2.5" aria-label="Shape">
@@ -69,7 +69,7 @@ export function ByHandPanel({ hand, onChange, state, className }: Props) {
           </div>
         ) : (
           <div className="flex flex-col gap-1.5" data-testid="corner-table">
-            <div className="flex items-center gap-2 type-caption text-text-3">
+            <div className="flex items-center gap-2 type-body-touch desktop:type-body text-text-3">
               <span className="w-14 shrink-0">Corner</span>
               <span className="grow basis-0 pr-6 text-right">East</span>
               <span className="grow basis-0 pr-6 text-right">North</span>
@@ -77,7 +77,7 @@ export function ByHandPanel({ hand, onChange, state, className }: Props) {
             </div>
             {rows.map((row, index) => (
               <div key={index} data-testid="corner-row" className="flex items-center gap-2">
-                <span className="w-14 shrink-0 type-small">{index + 1}</span>
+                <span className="w-14 shrink-0 type-body-touch desktop:type-body">{index + 1}</span>
                 <NumberField label={`East of corner ${index + 1}`} labelHidden value={row.east} unit="m" range={CORNER} labelInside onCommit={(east) => changeRow(index, { east })} className="grow basis-0" />
                 <NumberField label={`North of corner ${index + 1}`} labelHidden value={row.north} unit="m" range={CORNER} labelInside onCommit={(north) => changeRow(index, { north })} className="grow basis-0" />
                 <IconButton label={`Remove corner ${index + 1}`} icon="bin" iconSize={16} kind="quiet" size="s" onClick={() => onChange({ rows: rows.filter((_, n) => n !== index) })} className="shrink-0" />
@@ -86,7 +86,7 @@ export function ByHandPanel({ hand, onChange, state, className }: Props) {
             <Button size="s" icon="plus" onClick={() => onChange({ rows: [...rows, { east: null, north: null }] })} className="self-start">
               Add a corner
             </Button>
-            <p className="type-caption text-text-3">Metres east and north of the middle of the roof, in order around it. Three at least.</p>
+            <p className="type-body-touch desktop:type-body text-text-3">Metres east and north of the middle of the roof, in order around it. Three at least.</p>
           </div>
         )}
       </section>

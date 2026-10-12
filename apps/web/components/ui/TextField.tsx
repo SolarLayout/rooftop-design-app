@@ -29,7 +29,7 @@ type Props = TextRules & {
 };
 
 // The label before the field, 72 wide; what is said under the field starts under the field from tablet up.
-const LABEL = "w-18 shrink-0 text-text-2";
+const LABEL = "w-18 shrink-0 text-text";
 const UNDER = "tablet:pl-21";
 
 /** The number field's well for words (docs/design/components.md, "Text field"). */
@@ -70,7 +70,7 @@ export function TextField({ label, value, onCommit, onDraft, onDone, maxLength, 
         {entry.said}
       </p>
       {detail && entry.said === null ? (
-        <p id={names.detail} className={classNames("mt-1.5 type-caption text-text-2", under)}>
+        <p id={names.detail} className={classNames("mt-1.5 type-body-touch desktop:type-body text-text-2", under)}>
           {detail}
         </p>
       ) : null}

@@ -45,7 +45,7 @@ function Chain({ figures, share }: { figures: FiguresView; share: number }) {
   const marks = grownMarksOf(figures.chain, share);
   return (
     <div className="flex shrink-0 flex-col gap-1.5">
-      <span className="type-caption whitespace-nowrap text-text-2">
+      <span className="type-body-touch desktop:type-body whitespace-nowrap text-text-2">
         {figures.first.label} <span className="font-mono text-text">{figures.first.figure}</span>
       </span>
       <div data-testid="present-chain" className="flex flex-col">
@@ -55,7 +55,7 @@ function Chain({ figures, share }: { figures: FiguresView; share: number }) {
           </span>
         ))}
       </div>
-      <span className="type-caption whitespace-nowrap text-text-2">
+      <span className="type-body-touch desktop:type-body whitespace-nowrap text-text-2">
         {figures.last.label} <span className="font-mono text-text">{figures.last.figure}</span>
       </span>
     </div>

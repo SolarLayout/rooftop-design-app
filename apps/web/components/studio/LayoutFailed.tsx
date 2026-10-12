@@ -42,11 +42,11 @@ function FailedChip({ testId, words, failure, className }: ChipProps) {
       role="status"
       className={classNames("flex flex-col gap-1.5 rounded-row border border-note-line bg-surface-1 px-3.5 py-2.5 shadow-float", className)}
     >
-      <span className="flex items-center gap-2 type-small font-medium text-text">
+      <span className="flex items-center gap-2 type-body-touch desktop:type-body font-medium text-text">
         <StatusMark kind="note" label="Note" wordsShown={false} size={16} />
         {words.title}
       </span>
-      <span className="type-caption text-text-2">{words.message}</span>
+      <span className="type-body-touch desktop:type-body text-text-2">{words.message}</span>
       <div className="-mb-1 -ml-3.5 flex">
         <Button kind="quiet" size="s" onClick={flow.tryAgain}>
           {words.action}

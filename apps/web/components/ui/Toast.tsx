@@ -15,7 +15,7 @@ type Props = Omit<ComponentProps<"div">, "children"> & {
 };
 
 const ACTION = classNames(
-  "inline-flex h-touch shrink-0 cursor-pointer items-center rounded-item bg-transparent px-2.5 font-medium text-accent",
+  "inline-flex h-touch shrink-0 cursor-pointer items-center rounded-control bg-transparent px-2.5 font-medium text-accent",
   "press-motion focus-ring hovered:bg-surface-2 pressed:bg-control-pressed",
   "desktop:h-8 desktop:font-medium",
 );

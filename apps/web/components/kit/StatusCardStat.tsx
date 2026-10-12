@@ -35,19 +35,19 @@ export function Cards() {
       <Row label="Card">
         <Example name="card" caption="Card">
           <Card data-testid="card">
-            <p className="type-title">Assumptions</p>
+            <p className="type-section">Assumptions</p>
             <p className="text-text-2">Radius 18, padding 24</p>
           </Card>
         </Example>
         <Example name="card-compact" caption="Compact">
           <Card compact data-testid="card">
-            <p className="type-title">Demo project</p>
+            <p className="type-section">Demo project</p>
             <p className="text-text-2">Radius 14, padding 14</p>
           </Card>
         </Example>
         <Example name="card-selected" caption="Selected">
           <Card compact selected data-testid="card">
-            <p className="type-title">Option A</p>
+            <p className="type-section">Option A</p>
             <p className="text-text-2">The one that is chosen</p>
           </Card>
         </Example>

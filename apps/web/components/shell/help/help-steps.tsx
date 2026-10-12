@@ -112,7 +112,7 @@ export function Picture({ src, alt, width, height, children, clip, length }: Pic
 
 /** A key or a gesture, in the chip of the tips. */
 export function Key({ children }: { children: ReactNode }) {
-  return <kbd className="rounded-xs border border-line-strong px-1.5 type-label-s font-semibold text-text">{children}</kbd>;
+  return <kbd className="rounded-control border border-line-strong px-1.5 type-unit font-semibold text-text">{children}</kbd>;
 }
 
 /** Words for a mouse: shown where the pointer is fine. */

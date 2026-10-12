@@ -17,16 +17,16 @@ type BubbleProps = {
   children: ReactNode;
 };
 
-const KEY = "rounded-key border border-line-strong px-1.25 type-tick text-text-2";
+const KEY = "rounded-key border border-line-strong px-1.25 type-unit text-text-2";
 
 const BUBBLE = classNames(
-  "flex h-7 w-max items-center gap-2 rounded-item border border-line-strong bg-control-active px-2.5",
-  "type-caption whitespace-nowrap text-text shadow-tooltip",
+  "flex h-7 w-max items-center gap-2 rounded-control border border-line-strong bg-control-active px-2.5",
+  "type-body-touch desktop:type-body whitespace-nowrap text-text shadow-tooltip",
 );
 // With a summary (the help's disc, D80): its words wrapping in 264, and under them what a press gives.
 const BUBBLE_WITH_MORE = classNames(
-  "flex w-66 flex-col items-start gap-0.5 rounded-item border border-line-strong bg-control-active px-3 py-2",
-  "type-small text-text shadow-tooltip",
+  "flex w-66 flex-col items-start gap-0.5 rounded-control border border-line-strong bg-control-active px-3 py-2",
+  "type-body-touch desktop:type-body text-text shadow-tooltip",
 );
 
 /** The look of a tooltip: its words, and the key that may follow them. */
@@ -135,7 +135,7 @@ export function Tooltip({ words, more, shortcut, shortcuts, className, children 
         {more ? (
           <>
             <span>{words}</span>
-            <span className="type-caption text-text-3">{more}</span>
+            <span className="type-body-touch desktop:type-body text-text-3">{more}</span>
           </>
         ) : (
           <TooltipBubble shortcut={shortcut} shortcuts={shortcuts}>

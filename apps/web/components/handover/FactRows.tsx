@@ -31,12 +31,12 @@ export function FactRows({ title, rows, mono = false, nameWidth = "s", caption, 
       <dl className="flex flex-col">
         {rows.map((row) => (
           <div key={row.name} data-testid={testId} className={ROW}>
-            <dt className={classNames("shrink-0", NAME_WIDTH[nameWidth], mono ? "type-value-small" : "type-small tablet:type-body")}>{row.name}</dt>
-            <dd className="min-w-0 type-small text-text-2 tablet:type-body">{row.words}</dd>
+            <dt className={classNames("shrink-0", NAME_WIDTH[nameWidth], mono ? "type-mono-touch desktop:type-mono" : "type-body-touch desktop:type-body")}>{row.name}</dt>
+            <dd className="min-w-0 type-body-touch desktop:type-body text-text-2">{row.words}</dd>
           </div>
         ))}
       </dl>
-      {caption ? <p className="type-caption text-text-2">{caption}</p> : null}
+      {caption ? <p className="type-body-touch desktop:type-body text-text-2">{caption}</p> : null}
     </div>
   );
 }

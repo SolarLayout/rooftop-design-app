@@ -34,8 +34,8 @@ const OTHER = "border-line bg-transparent text-text-2";
 const SLOT = "flex h-8.75 w-full items-center justify-center tablet:h-11.25 desktop:h-17.5";
 const THUMB_IMAGE = "block h-auto max-h-full w-auto max-w-full rounded-swatch";
 // The caption: 11 on tablet, where the thumbnail is 72 wide and "5 · Schedule" at 12 would not fit; 12 on desktop, as the board.
-const CAPTION = "hidden max-w-full truncate type-caption-s tablet:block desktop:type-caption";
-const NUMBER = "type-tick tablet:hidden";
+const CAPTION = "hidden max-w-full truncate type-unit tablet:block";
+const NUMBER = "type-unit tablet:hidden";
 /** The row of the phone (the board "Handover, tablet and phone"): previous and next of 44 with the page's words between. */
 const PHONE_ROW = "flex items-center gap-3 tablet:hidden";
 
@@ -49,14 +49,14 @@ const THUMBNAIL_SKELETONS = 6;
 export function ReportSkeleton() {
   return (
     <div data-testid="report-skeleton" aria-hidden="true" className={BODY}>
-      <div className="w-full min-w-0 aspect-paper rounded-xs bg-surface-2 breathing" />
+      <div className="w-full min-w-0 aspect-paper rounded-control bg-surface-2 breathing" />
       <div className={THUMBNAILS}>
         {Array.from({ length: THUMBNAIL_SKELETONS }, (_, index) => (
           <span key={index} className={classNames(THUMBNAIL, OTHER)}>
             <span className={SLOT}>
               <span className="h-full aspect-paper rounded-swatch bg-surface-2 breathing" />
             </span>
-            <span className="hidden h-3 w-2/3 rounded-xs bg-surface-2 breathing tablet:block" />
+            <span className="hidden h-3 w-2/3 rounded-control bg-surface-2 breathing tablet:block" />
           </span>
         ))}
       </div>
@@ -125,7 +125,7 @@ export function ReportPreview({ view, onPage, onTryAgain }: Props) {
         </figure>
         <div className={PHONE_ROW}>
           <PageButton direction="previous" view={view} onPage={onPage} />
-          <span data-testid="page-words" className="grow text-center type-small text-text-2">
+          <span data-testid="page-words" className="grow text-center type-body-touch desktop:type-body text-text-2">
             {view.head}
           </span>
           <PageButton direction="next" view={view} onPage={onPage} />

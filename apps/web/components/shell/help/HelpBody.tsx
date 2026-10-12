@@ -43,7 +43,7 @@ export function HelpBody({ entry }: { entry: HelpEntry }) {
   if (shown.state === "failed") {
     return (
       <div role="status" className="flex flex-col items-start gap-2.5 rounded-row border border-note-line bg-note-surface px-3.5 py-3">
-        <p className="flex items-start gap-2 type-small text-text-2">
+        <p className="flex items-start gap-2 type-body-touch desktop:type-body text-text-2">
           <StatusMark kind="note" label="Note" wordsShown={false} size={16} />
           This part of the help did not load. Check the connection and try again.
         </p>

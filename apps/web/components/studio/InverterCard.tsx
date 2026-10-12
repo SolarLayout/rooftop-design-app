@@ -14,12 +14,12 @@ type Props = {
   onChange: () => void;
 };
 
-const CARD = "flex flex-col gap-2.5 rounded-card-s border border-line bg-surface-1 p-card-compact shadow-card";
+const CARD = "flex flex-col gap-2.5 rounded-row border border-line bg-surface-1 p-card-compact shadow-card";
 
 /** The inverter as a drawing: a box with its three lines, the first in the accent (the board "Studio, Strings lens"). */
 function InverterGlyph() {
   return (
-    <span aria-hidden="true" className="flex h-14 w-11 shrink-0 flex-col items-center justify-center gap-1.25 rounded-xs border-outline border-line-strong bg-surface-2">
+    <span aria-hidden="true" className="flex h-14 w-11 shrink-0 flex-col items-center justify-center gap-1.25 rounded-control border-outline border-line-strong bg-surface-2">
       <span className="h-0.75 w-5.5 rounded-full bg-accent" />
       <span className="h-0.75 w-5.5 rounded-full bg-line-strong" />
       <span className="h-0.75 w-5.5 rounded-full bg-line-strong" />
@@ -50,7 +50,7 @@ export function InverterCard({ inverter, entered, onChange }: Props) {
   }
   const card = inverterCardOf(inverter.inverter, inverter.current, entered);
   const facts = (
-    <p data-testid="inverter-facts" className={card.isCurrentKnown ? "type-value-xs text-text-3" : "flex items-center gap-2 type-caption text-text-2"}>
+    <p data-testid="inverter-facts" className={card.isCurrentKnown ? "type-body-touch desktop:type-body text-text-3" : "flex items-center gap-2 type-body-touch desktop:type-body text-text-2"}>
       {card.isCurrentKnown ? null : <StatusMark kind="note" label="Note" wordsShown={false} size={14} />}
       <span>{card.facts}</span>
     </p>
@@ -64,7 +64,7 @@ export function InverterCard({ inverter, entered, onChange }: Props) {
             <p data-testid="inverter-name" className="truncate font-semibold">
               {card.name}
             </p>
-            <p data-testid="inverter-line" className="type-caption text-text-2">
+            <p data-testid="inverter-line" className="type-body-touch desktop:type-body text-text-2">
               {card.line}
             </p>
             {card.isCurrentKnown ? facts : null}
@@ -73,7 +73,7 @@ export function InverterCard({ inverter, entered, onChange }: Props) {
         </div>
         {card.isCurrentKnown ? null : facts}
       </section>
-      <code data-testid="inverter-file" className="type-value-xs text-text-3">
+      <code data-testid="inverter-file" className="type-body-touch desktop:type-body text-text-3">
         {card.file}
       </code>
     </div>

@@ -40,8 +40,8 @@ type Props = {
   className?: string;
 };
 
-const CHAIN_WELL = "flex h-touch w-28 items-center gap-1 rounded-control px-3 tablet:h-10 tablet:w-full tablet:rounded-xs tablet:px-2 desktop:h-5.5";
-const CHIP_WELL = "flex h-touch shrink-0 items-center justify-end gap-1 rounded-control px-3 tablet:h-8 tablet:justify-start tablet:rounded-xs tablet:px-2 desktop:h-5.5";
+const CHAIN_WELL = "flex h-touch w-28 items-center gap-1 rounded-control px-3 tablet:h-10 tablet:w-full tablet:rounded-control tablet:px-2 desktop:h-5.5";
+const CHIP_WELL = "flex h-touch shrink-0 items-center justify-end gap-1 rounded-control px-3 tablet:h-8 tablet:justify-start tablet:rounded-control tablet:px-2 desktop:h-5.5";
 
 export function NumberField({ label, value, onCommit, range, unit, labelInside = false, labelHidden = false, wide = false, disabled = false, detail = null, shownAs, initialFocus, form, placeholder, className }: Props) {
   const id = useId();
@@ -103,7 +103,7 @@ export function NumberField({ label, value, onCommit, range, unit, labelInside =
           data-shown-as={shownAs}
           className={classNames("flex h-11 items-center gap-2 rounded-control px-3", WELL, dim)}
         >
-          <span id={names.label} className={labelHidden ? "sr-only" : "grow whitespace-nowrap text-text-2"}>
+          <span id={names.label} className={labelHidden ? "sr-only" : "grow whitespace-nowrap text-text"}>
             {label}
           </span>
           {input}
@@ -119,15 +119,15 @@ export function NumberField({ label, value, onCommit, range, unit, labelInside =
       <div className="flex min-h-10 items-center justify-between gap-row">
         {detail ? (
           <span className="flex min-w-0 flex-col gap-0.5">
-            <label id={names.label} htmlFor={id} className="text-text-2">
+            <label id={names.label} htmlFor={id} className="text-text">
               {label}
             </label>
-            <span id={names.detail} className="type-caption text-text-3">
+            <span id={names.detail} className="type-body-touch desktop:type-body text-text-3">
               {detail}
             </span>
           </span>
         ) : (
-          <label id={names.label} htmlFor={id} className="text-text-2">
+          <label id={names.label} htmlFor={id} className="text-text">
             {label}
           </label>
         )}
@@ -136,7 +136,7 @@ export function NumberField({ label, value, onCommit, range, unit, labelInside =
           data-shown-as={shownAs}
           className={classNames(
             // On touch the wells of a column are all as wide, whatever their unit (the board "Studio, Roof lens, phone").
-            "flex h-12 w-33 items-center justify-end gap-1.5 rounded-row px-3.5 desktop:h-9 desktop:w-auto desktop:justify-start desktop:rounded-control desktop:px-3",
+            "flex h-touch w-33 items-center justify-end gap-1.5 rounded-control px-3.5 desktop:h-10 desktop:w-auto desktop:justify-start desktop:px-3",
             WELL,
             dim,
           )}

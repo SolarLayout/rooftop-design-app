@@ -92,7 +92,7 @@ export function Handover({ item }: Props) {
   /** The head of a table: where it stands in the report, and Copy as table; before options the press is shown and cannot be used. */
   const tableActions = (table: { text: string; copied: string } | null) => (
     <>
-      <span className="hidden type-caption text-text-2 tablet:inline">{IN_THE_REPORT}</span>
+      <span className="hidden type-body-touch desktop:type-body text-text-2 tablet:inline">{IN_THE_REPORT}</span>
       <CopyAsTable text={table?.text ?? ""} copied={table?.copied ?? ""} disabled={table === null || !isLive} />
     </>
   );

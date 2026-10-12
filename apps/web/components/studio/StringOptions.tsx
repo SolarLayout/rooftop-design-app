@@ -31,12 +31,12 @@ function Card({ card, onChoose, onKeyDown }: { card: OptionCard; onChoose: () =>
       onClick={onChoose}
       onKeyDown={onKeyDown}
     >
-      <span className={classNames("flex size-6.5 shrink-0 items-center justify-center rounded-item type-value-small font-medium", card.isChosen ? "bg-accent text-accent-ink" : "bg-control-active text-text")}>{card.letter}</span>
+      <span className={classNames("flex size-6.5 shrink-0 items-center justify-center rounded-control type-mono-touch desktop:type-mono font-medium", card.isChosen ? "bg-accent text-accent-ink" : "bg-control-active text-text")}>{card.letter}</span>
       <span className="flex min-w-0 grow flex-col">
-        <span className="truncate type-small font-medium">{card.caption}</span>
-        <span className="truncate type-value-xs text-text-2">{card.numbers}</span>
+        <span className="truncate type-body-touch desktop:type-body font-medium">{card.caption}</span>
+        <span className="truncate type-body-touch desktop:type-body text-text-2">{card.numbers}</span>
       </span>
-      <span className="type-value-small font-medium">{card.energy}</span>
+      <span className="type-mono-touch desktop:type-mono font-medium">{card.energy}</span>
       <StatusMark kind={card.mark.kind} label={card.mark.label} wordsShown={false} size={16} />
     </button>
   );
@@ -68,7 +68,7 @@ export function OptionCards({ cards, onChoose }: { cards: readonly OptionCard[];
         <SectionHeading id={heading} help="studio.section.options">
           Options
         </SectionHeading>
-        <span className="ml-auto type-caption whitespace-nowrap text-text-3">series × strings · kWp · DC/AC · MWh</span>
+        <span className="ml-auto type-body-touch desktop:type-body whitespace-nowrap text-text-3">series × strings · kWp · DC/AC · MWh</span>
       </div>
       <div ref={group} role="radiogroup" aria-labelledby={heading} className="flex flex-col gap-1.5">
         {cards.map((card) => (
@@ -94,16 +94,16 @@ export function NothingFits({ view }: { view: Sized }) {
         Options
       </SectionHeading>
       {change ? (
-        <p data-testid="nothing-fits" className="rounded-row border border-line bg-surface-1 px-4 py-3 text-center type-small text-text-2">
+        <p data-testid="nothing-fits" className="rounded-row border border-line bg-surface-1 px-4 py-3 text-center type-body-touch desktop:type-body text-text-2">
           {change}
         </p>
       ) : (
         // Too few positions, or none: the API's words, the verdict under the bar having none to say (step 21).
-        <p data-testid="no-options" className="flex items-start gap-2.5 rounded-row border border-note-line bg-surface-1 px-4 py-3 type-small">
+        <p data-testid="no-options" className="flex items-start gap-2.5 rounded-row border border-note-line bg-surface-1 px-4 py-3 type-body-touch desktop:type-body">
           <StatusMark kind="note" label={title} wordsShown={false} size={16} />
           <span className="flex flex-col gap-0.5">
             <span className="font-medium">{title}</span>
-            <span className="type-caption text-text-2">{message}</span>
+            <span className="type-body-touch desktop:type-body text-text-2">{message}</span>
           </span>
         </p>
       )}
@@ -111,7 +111,7 @@ export function NothingFits({ view }: { view: Sized }) {
   );
 }
 
-const ADD = "flex h-10 w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-row border border-dashed border-line-strong type-small text-text-2 focus-ring hovered:border-line-hover hovered:text-text";
+const ADD = "flex h-10 w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-row border border-dashed border-line-strong type-body-touch desktop:type-body text-text-2 focus-ring hovered:border-line-hover hovered:text-text";
 
 type YourOwnProps = {
   document: Project;
@@ -129,10 +129,10 @@ function CustomFields({ first, design, action, onSave, onCancel }: { first: Cust
   return (
     <section aria-labelledby={heading} data-testid="custom-fields" className="flex flex-col gap-2 rounded-row border border-line bg-surface-1 p-3.5 shadow-card">
       <div className="flex items-center gap-3">
-        <h3 id={heading} className="type-small font-medium">
+        <h3 id={heading} className="type-body-touch desktop:type-body font-medium">
           Your own
         </h3>
-        <span className="ml-auto type-caption text-text-3">series × strings × inverters</span>
+        <span className="ml-auto type-body-touch desktop:type-body text-text-3">series × strings × inverters</span>
       </div>
       <NumberField label="Series" detail={bounds.series.hint} value={draft[0]} range={bounds.series.range} onCommit={set(0)} initialFocus />
       <NumberField label="Strings" detail={bounds.strings.hint} value={draft[1]} range={bounds.strings.range} onCommit={set(1)} />
@@ -174,12 +174,12 @@ export function YourOwn({ document, design, onSave, onRemove }: YourOwnProps) {
     <div className="flex flex-col gap-1.5">
       {refused ? (
         <div data-testid="custom-refused" className="flex items-start gap-3 rounded-row border border-note-line bg-surface-1 p-3">
-          <span className="flex size-6.5 shrink-0 items-center justify-center rounded-item bg-control-active type-value-small font-medium">{refused.letter}</span>
+          <span className="flex size-6.5 shrink-0 items-center justify-center rounded-control bg-control-active type-mono-touch desktop:type-mono font-medium">{refused.letter}</span>
           <span className="flex min-w-0 grow flex-col gap-1">
-            <span className="type-small font-medium">Your own</span>
-            <span className="type-value-xs text-text-2">{refused.numbers}</span>
-            <span className="type-caption font-medium text-text">{refused.title}</span>
-            <span className="type-caption text-text-2">{refused.detail}</span>
+            <span className="type-body-touch desktop:type-body font-medium">Your own</span>
+            <span className="type-body-touch desktop:type-body text-text-2">{refused.numbers}</span>
+            <span className="type-body-touch desktop:type-body font-medium text-text">{refused.title}</span>
+            <span className="type-body-touch desktop:type-body text-text-2">{refused.detail}</span>
           </span>
           <StatusMark kind="note" label={refused.title} wordsShown={false} size={16} />
         </div>
@@ -204,7 +204,7 @@ export function OptionsNote({ note }: { note: string | null }) {
   if (!note) return null;
   const [about, missed] = note.split(" ! ");
   return (
-    <div data-testid="options-note" className="flex flex-col gap-1.5 type-caption text-text-3">
+    <div data-testid="options-note" className="flex flex-col gap-1.5 type-body-touch desktop:type-body text-text-3">
       <p>{about}</p>
       {missed ? (
         <p className="flex items-start gap-2 text-text-2">

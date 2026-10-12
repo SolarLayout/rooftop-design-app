@@ -11,12 +11,12 @@ type Props = {
 };
 
 const TRACK = classNames(
-  "hidden shrink-0 gap-1 rounded-card-s border border-line-subtle bg-well p-1 shadow-well",
+  "hidden shrink-0 gap-1 rounded-row border border-line-subtle bg-well p-1 shadow-well",
   "tablet:flex desktop:rounded-row",
 );
 const ITEM = classNames(
   "relative flex h-9 items-center rounded-control px-4.5 font-medium whitespace-nowrap select-none",
-  "press-motion focus-ring desktop:h-8 desktop:rounded-item desktop:font-medium",
+  "press-motion focus-ring desktop:h-8 desktop:rounded-control desktop:font-medium",
 );
 const TAKEN = "bg-control-active text-text shadow-segment";
 const NOT_TAKEN = "text-text-2 hovered:text-text";
@@ -44,7 +44,7 @@ export function WorkspaceNav({ current, lens }: Props) {
 const ICON: Record<Workspace, IconName> = { studio: "studio", performance: "performance", handover: "handover" };
 
 const TAB = classNames(
-  "flex flex-col items-center justify-center gap-1 rounded-row type-caption whitespace-nowrap select-none",
+  "flex flex-col items-center justify-center gap-1 rounded-row type-body-touch desktop:type-body whitespace-nowrap select-none",
   "press-motion focus-ring",
 );
 

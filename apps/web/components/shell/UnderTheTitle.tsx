@@ -13,9 +13,9 @@ export function RunRow({ run }: { run: Run }) {
     <div data-testid="run-step" role="status" className="flex flex-col gap-0.5 py-0.5 tablet:h-7 tablet:flex-row tablet:items-center tablet:gap-2.5 tablet:py-0">
       <span className="flex h-6 items-center gap-2.5">
         <ProgressRing size={20} share={run.share ?? undefined} label={run.step ?? run.title} />
-        <span className="type-small font-medium whitespace-nowrap">{run.title}</span>
+        <span className="type-body-touch desktop:type-body font-medium whitespace-nowrap">{run.title}</span>
       </span>
-      {run.step ? <span className="pl-7.5 type-small text-text-2 tablet:pl-0 tablet:type-caption">{run.step}</span> : null}
+      {run.step ? <span className="pl-7.5 type-body-touch desktop:type-body text-text-2 tablet:pl-0">{run.step}</span> : null}
     </div>
   );
 }
@@ -30,13 +30,13 @@ export function FailedRow({ failed, onTryAgain }: { failed: Failed; onTryAgain: 
       <Icon name="note" size={20} className="mt-0.5 shrink-0 text-accent" />
       <div className="flex min-w-0 flex-col gap-0.5">
         <div className="flex flex-wrap items-center gap-x-2.5">
-          <span className="type-small font-medium">{failed.title}</span>
-          <span className="type-caption text-text-2">{failed.detail} ·</span>
-          <Button kind="quiet" size="s" onClick={onTryAgain} className="type-caption font-medium">
+          <span className="type-body-touch desktop:type-body font-medium">{failed.title}</span>
+          <span className="type-body-touch desktop:type-body text-text-2">{failed.detail} ·</span>
+          <Button kind="quiet" size="s" onClick={onTryAgain} className="type-body-touch desktop:type-body font-medium">
             {failed.action}
           </Button>
         </div>
-        <p className="type-caption text-text-2">{failed.message}</p>
+        <p className="type-body-touch desktop:type-body text-text-2">{failed.message}</p>
       </div>
     </div>
   );

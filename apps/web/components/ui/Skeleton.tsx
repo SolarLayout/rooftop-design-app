@@ -22,7 +22,7 @@ export function Skeleton({ kind, className, onTile = false }: Props) {
     <span
       data-testid="skeleton"
       aria-hidden="true"
-      className={classNames("block max-w-full rounded-xs breathing", onTile ? "bg-control-active" : "bg-surface-2", HEIGHT[kind], className)}
+      className={classNames("block max-w-full rounded-control breathing", onTile ? "bg-control-active" : "bg-surface-2", HEIGHT[kind], className)}
     />
   );
 }
