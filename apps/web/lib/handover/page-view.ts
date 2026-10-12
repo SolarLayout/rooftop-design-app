@@ -3,7 +3,7 @@
 // message leading to the Strings lens, every row but the project file waiting; at the first load skeletons; a run that
 // failed the API's words with Try again, the rows of before staying. The web judges nothing itself. Pure.
 import { TRY_AGAIN } from "../../components/shell/vitals-view";
-import type { DesignResult } from "../api";
+import type { DesignResult, ExportKind } from "../api";
 import type { Decision, FailedRow } from "../performance/page-view";
 import type { Failure, Status } from "../stores/results-store";
 import { deliverablesOf, PROJECT_FILE, type Deliverable } from "../flow/deliverables/items";
@@ -14,7 +14,7 @@ export type { Decision, FailedRow };
 export const FILES_NOT_UPDATED = { title: "The files were not updated", detail: "Showing the last result" } as const;
 export const FILES_NOT_MADE = { title: "The files were not made", detail: "There are no files yet" } as const;
 /** The facts of a row that waits once the first run failed (D93): it says why, as a row before options says the API's title. */
-export const NOT_MADE = "Not made · the run failed";
+export const NOT_MADE = "Not made: the run failed";
 
 /** The rows of a first run that failed: each that waits for the design says it was not made; the project file keeps its own. */
 const notMadeOf = (rows: Deliverable[]): Deliverable[] =>
@@ -40,6 +40,8 @@ type Asked = {
   failure: Failure | null;
   /** How many pages the report has, once they are known (pull request 2); null before. */
   pages: number | null;
+  /** The size of each file in bytes, once the zip has told them (V2 · 9). */
+  sizes: Partial<Record<ExportKind, number>>;
 };
 
 function decisionOf(design: DesignResult | null): Decision | null {
@@ -48,8 +50,8 @@ function decisionOf(design: DesignResult | null): Decision | null {
   return { title, message, path: pathOfNoOptions(design.no_options) };
 }
 
-export function pageViewOf({ name, design, designStatus, failure, pages }: Asked): PageView {
-  const rows = deliverablesOf({ name, design, pages });
+export function pageViewOf({ name, design, designStatus, failure, pages, sizes }: Asked): PageView {
+  const rows = deliverablesOf({ name, design, pages, sizes });
   const decision = decisionOf(design);
 
   if (designStatus === "failed") {

@@ -57,8 +57,11 @@ the last opened remembered on the device: By month, Over 25 years, Where the ene
 engine's summary), Assumptions. On phone Continue to Handover is pinned over the tab bar.
 
 ## Handover
-List of deliverables on the left, preview of the selected one on the right, project file at the bottom of the
-list. On phone the list is the screen and a preview opens as a pushed screen.
+V2 · 9 (D105): the head across the page (the title, Present, Download all with the zip's size, the one primary); on
+desktop the list of files by who they are for at the left, 420 wide, the preview of the open file the rest of the width
+in a card, with its own Download. On tablet and phone the list is the screen, Download all pinned at its foot (over the
+tab bar on phone), and a file is pushed over the list. Export and Save a copy are gone: the project file is a file of the
+list.
 
 ## Flow for a new design
 1. Home: type an address, press "Find my roof".

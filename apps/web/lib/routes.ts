@@ -27,11 +27,11 @@ export const HANDOVER_ITEMS = [
   { id: "report", name: "Design report" },
   { id: "single-line-diagram", name: "Single-line diagram" },
   { id: "bill-of-materials", name: "Bill of materials" },
-  { id: "cable-schedule", name: "DC cable schedule" },
+  { id: "cable-schedule", name: "Cable schedule" },
   { id: "cad-layout", name: "CAD layout" },
-  { id: "earth-model", name: "Google Earth model" },
-  { id: "hourly-data", name: "Hourly data" },
   { id: "project-file", name: "Project file" },
+  { id: "hourly-data", name: "Hourly data" },
+  { id: "earth-model", name: "Google Earth model" },
 ] as const;
 
 export type HandoverItem = (typeof HANDOVER_ITEMS)[number]["id"];

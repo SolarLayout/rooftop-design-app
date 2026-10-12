@@ -15,7 +15,7 @@ type Props = {
   disabled?: boolean;
 };
 
-const LABEL = "Copy as table";
+const LABEL = "Copy";
 
 /**
  * "Copy as table" in the head of a table's preview (plan/phase-09-plan.md, decision 7; the board "Handover, states"): a

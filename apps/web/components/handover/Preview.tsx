@@ -24,7 +24,7 @@ type Props = {
   words?: string | null;
   /** What stands in the body's place at the first load: the breathing block, unless the body has a skeleton of its own shape. */
   skeleton?: ReactNode;
-  /** The actions of an item that is a view, in the primary action\'s place on every size: "In the report, page 5" and Copy as table. */
+  /** The tools of a table, before its Download on every size: "In the report, page 5" and Copy. */
   tools?: ReactNode;
   /** The body of the item. It stands unless the item waits for a decision, or nothing was ever there. */
   children: ReactNode;
@@ -48,7 +48,7 @@ export function Preview({ row, view, onTryAgain, onAction, isOnItsWay = false, a
     <>
       <div className={HEAD}>
         <div className="flex min-w-0 grow flex-col gap-0.5">
-          <h2 className="type-title-touch tablet:type-section">{row.name}</h2>
+          <h2 className="type-title-touch tablet:type-heading">{row.name}</h2>
           {row.about === null ? (
             <Skeleton kind="text" className="my-1 w-44" />
           ) : (
@@ -67,29 +67,29 @@ export function Preview({ row, view, onTryAgain, onAction, isOnItsWay = false, a
           )}
         </div>
         {actions ? <div className="hidden shrink-0 items-center gap-2 tablet:flex">{actions}</div> : null}
-        {row.action ? (
-          <div data-testid="preview-action" className="flex shrink-0 items-center gap-2">
-            <span className="flex tablet:hidden">
-              {isOnItsWay ? (
-                <Button kind="primary" size="l" aria-label={row.action} aria-disabled="true" className="w-touch px-0">
-                  <ProgressRing size={16} />
-                </Button>
-              ) : (
-                <IconButton kind="primary" size="l" icon="download" label={row.action} aria-disabled={disabled} onClick={canAct ? onAction : undefined} />
-              )}
-            </span>
-            <span className="hidden tablet:flex">
-              <Button kind="primary" icon={isOnItsWay ? undefined : "download"} aria-disabled={disabled} onClick={canAct ? onAction : undefined}>
-                {isOnItsWay ? <ProgressRing size={16} /> : null}
-                {row.action}
-              </Button>
-            </span>
-          </div>
-        ) : tools ? (
-          <div data-testid="preview-action" className="flex shrink-0 items-center gap-2">
+        {tools ? (
+          <div data-testid="preview-tools" className="flex shrink-0 items-center gap-2">
             {tools}
           </div>
         ) : null}
+        {/* The file's own Download, a secondary press: Download all is the page's one primary (V2 · 9). */}
+        <div data-testid="preview-action" className="flex shrink-0 items-center gap-2">
+          <span className="flex tablet:hidden">
+            {isOnItsWay ? (
+              <Button size="l" aria-label={row.action} aria-disabled="true" className="w-touch px-0">
+                <ProgressRing size={16} />
+              </Button>
+            ) : (
+              <IconButton size="l" icon="download" label={row.action} aria-disabled={disabled} onClick={canAct ? onAction : undefined} />
+            )}
+          </span>
+          <span className="hidden tablet:flex">
+            <Button icon={isOnItsWay ? undefined : "download"} aria-disabled={disabled} onClick={canAct ? onAction : undefined}>
+              {isOnItsWay ? <ProgressRing size={16} /> : null}
+              {row.action}
+            </Button>
+          </span>
+        </div>
       </div>
       {view.failed ? <FailedRow failed={view.failed} onTryAgain={onTryAgain} /> : null}
       {body === "decision" && view.decision ? (

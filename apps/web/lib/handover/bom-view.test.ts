@@ -35,8 +35,8 @@ describe("the bill of materials as a table (plan/phase-09-plan.md, step 15, deci
   });
 
   test("the caption names the option; the toast says what was done", () => {
-    expect(view.caption).toBe("The bill of materials of option A, as the engine lists it");
-    expect(view.copied).toBe("Bill of materials copied as a table");
+    expect(view.caption).toBe("The bill of materials of option A");
+    expect(view.copied).toBe("Copied");
   });
 
   test("the text for the clipboard is the table as shown, with a header line", () => {

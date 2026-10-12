@@ -29,14 +29,14 @@ const COLUMNS: ReadonlyArray<Column<BomLine>> = [
 /** A line by its item and its spec: one item may have a line per size, as the DC cable has since #191. */
 const keyOf = (row: BomLine) => `${row.item} · ${row.spec}`;
 
-export const BOM_COPIED = "Bill of materials copied as a table";
+export const BOM_COPIED = "Copied";
 
 export function bomViewOf(option: DesignOption): BomView {
   return {
     columns: COLUMNS,
     rows: option.bom,
     keyOf,
-    caption: `The bill of materials of option ${option.letter}, as the engine lists it`,
+    caption: `The bill of materials of option ${option.letter}`,
     text: tableAsText(COLUMNS, option.bom),
     copied: BOM_COPIED,
   };

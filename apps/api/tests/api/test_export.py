@@ -27,12 +27,14 @@ OF_THE_DESIGN = {
     "kmz": ("application/vnd.google-earth.kmz", "Pune-demo.kmz"),
     "csv": ("text/csv; charset=utf-8", "Pune-demo-hourly.csv"),
     "sld": ("image/png", "Pune-demo-single-line-diagram.png"),
+    "bom": ("text/csv; charset=utf-8", "Pune-demo-bill-of-materials.csv"),
+    "cables": ("text/csv; charset=utf-8", "Pune-demo-cable-schedule.csv"),
     "zip": ("application/zip", "Pune-demo.zip"),
 }
 # The project file is of the request alone.
 KINDS = {**OF_THE_DESIGN, "rtd": ("application/json", "Pune-demo.rtd")}
-# What the zip holds, in its order: the five files of the design and the project file.
-IN_THE_ZIP = ["pdf", "dxf", "kmz", "csv", "sld", "rtd"]
+# What the zip holds, in its order: the seven files of the design and the project file.
+IN_THE_ZIP = ["pdf", "dxf", "kmz", "csv", "sld", "bom", "cables", "rtd"]
 
 
 @pytest.fixture
@@ -50,7 +52,7 @@ def exported(client, _demo):
     return {kind: client.post(f"/export/{kind}", json=project) for kind in KINDS}
 
 
-# ── the six files ────────────────────────────────────────────────────────────
+# ── the files ────────────────────────────────────────────────────────────────
 @pytest.mark.parametrize("kind", KINDS)
 def test_an_export_is_a_file_to_download_with_its_type_and_name(exported, kind):
     response = exported[kind]
@@ -118,6 +120,35 @@ def test_the_csv_has_the_8760_hours_and_their_columns(exported):
     ]
     assert len(table) == 8760
     assert table["p_ac_kw"].sum() / 1000 == pytest.approx(617.84, abs=0.01)
+
+
+def test_the_bill_of_materials_is_a_csv_of_its_lines(exported):
+    """V2 · 8 (#216): the bill of materials is a file for the installer, as the table of Handover lists it."""
+    table = pd.read_csv(io.BytesIO(exported["bom"].content))
+
+    assert list(table.columns) == ["Item", "Specification", "Quantity", "Unit"]
+    assert table["Item"].tolist()[:3] == ["PV module", "String inverter", "Mounting structure"]
+    assert table.loc[0, "Quantity"] == 638
+    assert table.loc[0, "Unit"] == "pcs"
+
+
+def test_the_cable_schedule_is_a_csv_of_one_row_a_string(exported):
+    table = pd.read_csv(io.BytesIO(exported["cables"].content))
+
+    assert list(table.columns) == [
+        "String",
+        "Inverter",
+        "MPPT",
+        "Modules",
+        "Voc cold (V)",
+        "Isc (A)",
+        "DC cable (m)",
+        "Drop (%)",
+        "Cable",
+    ]
+    assert len(table) == 22
+    assert table.loc[0, "String"] == "S1"
+    assert table["Modules"].unique().tolist() == [29]
 
 
 def test_the_single_line_diagram_is_a_png_of_a4_at_200_dpi(exported):
@@ -258,7 +289,7 @@ def _archive(content: bytes) -> zipfile.ZipFile:
     return zipfile.ZipFile(io.BytesIO(content))
 
 
-def test_the_zip_holds_the_six_files_each_named_as_its_own_download(exported):
+def test_the_zip_holds_the_eight_files_each_named_as_its_own_download(exported):
     with _archive(exported["zip"].content) as archive:
         assert archive.namelist() == [KINDS[kind][1] for kind in IN_THE_ZIP]
         assert all(entry.compress_type == zipfile.ZIP_DEFLATED for entry in archive.infolist())
@@ -269,7 +300,7 @@ def test_each_file_in_the_zip_is_its_own_export(exported):
     with _archive(exported["zip"].content) as archive:
         inside = {kind: archive.read(KINDS[kind][1]) for kind in IN_THE_ZIP}
 
-    for kind in ("csv", "sld", "rtd"):
+    for kind in ("csv", "sld", "bom", "cables", "rtd"):
         assert inside[kind] == exported[kind].content, kind
     assert _pages(inside["pdf"]) == _pages(exported["pdf"].content)
     assert _drawn(inside["dxf"]) == _drawn(exported["dxf"].content)
@@ -379,7 +410,7 @@ def test_a_project_without_weather_is_refused_as_by_the_design_run(client, chose
     assert error_of(response)["code"] == "weather_not_loaded"
 
 
-def test_a_kind_that_is_none_of_the_seven_is_refused(client, chosen):
+def test_a_kind_that_is_none_of_the_nine_is_refused(client, chosen):
     response = client.post("/export/xlsx", json=chosen)
 
     assert response.status_code == 422

@@ -6,22 +6,22 @@ import { csvColumnsOf } from "./csv-columns";
 
 const HEADER = ["time_utc_hour_start", "ghi_w_m2", "poa_eff_w_m2", "t_cell_c", "p_dc_kw", "p_ac_kw"];
 
-describe("the six columns of the engine's CSV", () => {
-  test("each named as the file names it, with the board's words", () => {
-    expect(csvColumnsOf(HEADER).map((row) => [row.name, row.words])).toEqual([
-      ["time_utc_hour_start", "The hour's start, UTC"],
-      ["ghi_w_m2", "Global horizontal irradiance, W/m²"],
-      ["poa_eff_w_m2", "Effective irradiance in the plane of the modules, W/m²"],
-      ["t_cell_c", "Cell temperature, °C"],
-      ["p_dc_kw", "DC power into the inverter, kW"],
-      ["p_ac_kw", "AC power to the grid, kW"],
+describe("the six columns of the hourly data (V2 · 9, audit V2-94)", () => {
+  test("each by its plain name and its unit, the file's own name under it", () => {
+    expect(csvColumnsOf(HEADER)).toEqual([
+      { file: "time_utc_hour_start", name: "Hour", under: "UTC · time_utc_hour_start" },
+      { file: "ghi_w_m2", name: "Sunlight on the ground", under: "W/m² · ghi_w_m2" },
+      { file: "poa_eff_w_m2", name: "Sunlight on the modules", under: "W/m² · poa_eff_w_m2" },
+      { file: "t_cell_c", name: "Cell temperature", under: "°C · t_cell_c" },
+      { file: "p_dc_kw", name: "DC power", under: "kW · p_dc_kw" },
+      { file: "p_ac_kw", name: "AC power", under: "kW · p_ac_kw" },
     ]);
   });
 
-  test("the rows follow the file's header: a column the words do not know is named and said to be the file's", () => {
-    expect(csvColumnsOf(["p_ac_kw", "wind_m_s"]).map((row) => [row.name, row.words])).toEqual([
-      ["p_ac_kw", "AC power to the grid, kW"],
-      ["wind_m_s", "A column of the file, not described here"],
+  test("the columns follow the file's header: one the app does not know is named as the file names it", () => {
+    expect(csvColumnsOf(["p_ac_kw", "wind_m_s"])).toEqual([
+      { file: "p_ac_kw", name: "AC power", under: "kW · p_ac_kw" },
+      { file: "wind_m_s", name: "wind_m_s", under: "" },
     ]);
   });
 });

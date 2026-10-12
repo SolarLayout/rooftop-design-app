@@ -23,7 +23,8 @@ const PLAN = "w-full min-w-0 desktop:w-140 desktop:shrink-0";
 /**
  * The body of the CAD layout (plan/phase-09-plan.md, step 19, decision 8): the engine's plan, the page of the report titled
  * Layout, in the paper frame, a breathing block of its shape while the pages come and the API's words with Try again when
- * they did not; the DXF's layers from the run with what is on each; the line "R2010 · metres · x east, y north".
+ * they did not; behind "What is in the file", the DXF's layers from the run with what is on each and the line "R2010 ·
+ * metres · x east, y north".
  */
 export function CadPreview({ files, report, onTryAgain }: Props) {
   const view = cadViewOf(files);
@@ -42,9 +43,15 @@ export function CadPreview({ files, report, onTryAgain }: Props) {
           <div data-testid="plan-skeleton" aria-hidden="true" className="w-full aspect-paper rounded-control bg-surface-2 breathing" />
         )}
       </div>
-      <div className="min-w-0 grow">
-        <FactRows title="Layers" rows={view.layers} mono caption={view.about} testId="layer" />
-      </div>
+      {/* The DXF's internals stand behind a line, for who opens the file in CAD (V2 · 9, audit V2-92). */}
+      <details data-testid="in-the-file" className="min-w-0 grow">
+        <summary className="flex h-touch cursor-pointer items-center gap-1 rounded-control type-strong-touch desktop:h-8 desktop:type-strong text-text-2 hovered:text-text focus-ring">
+          What is in the file
+        </summary>
+        <div className="pt-2">
+          <FactRows title="Layers" rows={view.layers} mono caption={view.about} testId="layer" />
+        </div>
+      </details>
     </div>
   );
 }

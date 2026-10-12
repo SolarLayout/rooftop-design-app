@@ -30,8 +30,8 @@ describe("the DC cable schedule as a table (plan/phase-09-plan.md, step 16, deci
   });
 
   test("the caption in the engine's order; the toast's words", () => {
-    expect(view.caption).toBe("The DC cable schedule of option A, in the engine's order, by string");
-    expect(view.copied).toBe("DC cable schedule copied as a table");
+    expect(view.caption).toBe("The cable schedule of option A, by string");
+    expect(view.copied).toBe("Copied");
   });
 
   test("the text for the clipboard is what is shown in the order shown, the total row last", () => {
@@ -69,13 +69,13 @@ describe("sorted", () => {
     expect(view.rows[22]!.key).toBe(view.total);
     expect(view.text.split("\n")[1]!.startsWith("S1\t")).toBe(true);
     expect(view.text.split("\n")[2]!.startsWith("S4\t")).toBe(true);
-    expect(view.caption).toBe("Sorted by DC cable (m), downwards. The order of the engine, by string, is the default");
+    expect(view.caption).toBe("Sorted by DC cable (m), downwards. By string unless sorted");
   });
 
   test("by string, upwards, S10 comes after S9: the number, not the words", () => {
     const view = scheduleViewOf(A, { key: "string", direction: "ascending" });
     expect(view.rows.slice(0, 22).map((row) => row.key)).toEqual(A.cable_schedule.map((row) => row.string));
-    expect(view.caption).toBe("Sorted by String, upwards. The order of the engine, by string, is the default");
+    expect(view.caption).toBe("Sorted by String, upwards. By string unless sorted");
   });
 
   test("by MPPT downwards, stable: the strings of MPPT 6 first in the engine's order", () => {

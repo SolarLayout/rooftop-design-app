@@ -13,12 +13,12 @@ export type CsvHead = {
   rows: string[][];
   /** How many rows the file has, the header not counted. */
   count: number;
-  /** "The first 8 of 8,760 rows". */
+  /** "The first 5 of 8,760 hours. Each column is named in the file as under its name here." */
   caption: string;
 };
 
-/** How many rows the preview shows: the board's eight. */
-export const SHOWN_ROWS = 8;
+/** How many rows the preview shows: the board's five (V2 · 9). */
+export const SHOWN_ROWS = 5;
 
 const LINE_END = /\r?\n/;
 
@@ -34,7 +34,21 @@ export function csvHeadOf(text: string, rowsShown = SHOWN_ROWS): CsvHead {
   const header = first === undefined ? [] : first.split(",");
   const rows = rest.slice(0, rowsShown).map((line) => line.split(","));
   const count = rest.length;
-  return { header, rows, count, caption: `The first ${shown(rows.length, 0)} of ${shown(count, 0)} rows` };
+  return { header, rows, count, caption: `The first ${shown(rows.length, 0)} of ${shown(count, 0)} hours. Each column is named in the file as under its name here.` };
+}
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const HOUR = /^\d{4}-(\d{2})-(\d{2})[ T](\d{2}:\d{2})/;
+
+/** A cell as it is read: the hour (the first column) by its day and time, "1 Jan 02:00"; a figure with one decimal. */
+export function cellShownOf(column: number, cell: string): string {
+  if (column === 0) {
+    const hour = HOUR.exec(cell);
+    return hour ? `${Number(hour[2])} ${MONTHS[Number(hour[1]) - 1] ?? ""} ${hour[3]}` : cell;
+  }
+  const value = Number(cell);
+  if (cell.trim() === "" || !Number.isFinite(value)) return cell;
+  return shown(Math.abs(value) < 0.05 ? 0 : value, 1);
 }
 
 export const HOURS_NOT_MADE = { title: "The hourly data was not made", detail: "There is no preview yet" } as const;

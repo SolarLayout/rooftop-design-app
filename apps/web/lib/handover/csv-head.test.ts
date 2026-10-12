@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { csvHeadOf, hourlyFailedOf, SHOWN_ROWS } from "./csv-head";
+import { cellShownOf, csvHeadOf, hourlyFailedOf, SHOWN_ROWS } from "./csv-head";
 
 // The hourly data's preview (plan/phase-09-plan.md, step 20, decision 8; the board "Handover, previews"): the header and the
 // first rows of the CSV as the file holds them, parsed from its first lines; the caption counts the rows of the whole file.
@@ -20,15 +20,23 @@ const hour = (index: number) => `2019-01-01 ${String(index % 24).padStart(2, "0"
 const DEMO = [...HEAD, ...Array.from({ length: 8760 - 8 }, (_, index) => hour(index + 8))].join("\n") + "\n";
 
 describe("the demo's CSV", () => {
-  test("the header's six columns, the first eight rows cell for cell as the file holds them, the count of the file's rows", () => {
+  test("the header's six columns, the first five rows cell for cell as the file holds them, the count of the file's hours (V2 · 9)", () => {
     const head = csvHeadOf(DEMO);
 
-    expect(SHOWN_ROWS).toBe(8);
+    expect(SHOWN_ROWS).toBe(5);
     expect(head.header).toEqual(["time_utc_hour_start", "ghi_w_m2", "poa_eff_w_m2", "t_cell_c", "p_dc_kw", "p_ac_kw"]);
-    expect(head.rows).toEqual(HEAD.slice(1).map((line) => line.split(",")));
+    expect(head.rows).toEqual(HEAD.slice(1, 6).map((line) => line.split(",")));
     expect(head.rows[0]).toEqual(["2019-01-01 00:00:00+00:00", "0.0", "0.0", "19.96", "0.0", "-0.005"]);
     expect(head.count).toBe(8760);
-    expect(head.caption).toBe("The first 8 of 8,760 rows");
+    expect(head.caption).toBe("The first 5 of 8,760 hours. Each column is named in the file as under its name here.");
+  });
+
+  test("a cell as it is read: the hour by its day and time, a figure with one decimal", () => {
+    expect(cellShownOf(0, "2019-01-01 02:00:00+00:00")).toBe("1 Jan 02:00");
+    expect(cellShownOf(0, "2019-07-15 13:00:00+00:00")).toBe("15 Jul 13:00");
+    expect(cellShownOf(2, "332.973")).toBe("333.0");
+    expect(cellShownOf(5, "-0.005")).toBe("0.0");
+    expect(cellShownOf(1, "n/a")).toBe("n/a");
   });
 
   test("the header is not a row: a file with a header alone has no rows", () => {
@@ -37,7 +45,7 @@ describe("the demo's CSV", () => {
     expect(head.header).toHaveLength(6);
     expect(head.rows).toEqual([]);
     expect(head.count).toBe(0);
-    expect(head.caption).toBe("The first 0 of 0 rows");
+    expect(head.caption).toBe("The first 0 of 0 hours. Each column is named in the file as under its name here.");
   });
 });
 
@@ -46,7 +54,7 @@ describe("files of other shapes", () => {
     const head = csvHeadOf(HEAD.slice(0, 4).join("\n") + "\n");
 
     expect(head.rows).toHaveLength(3);
-    expect(head.caption).toBe("The first 3 of 3 rows");
+    expect(head.caption).toBe("The first 3 of 3 hours. Each column is named in the file as under its name here.");
   });
 
   test("without the newline at the end, and with Windows line ends, the same", () => {
@@ -55,7 +63,7 @@ describe("files of other shapes", () => {
   });
 
   test("an empty file: nothing, said as nothing", () => {
-    expect(csvHeadOf("")).toEqual({ header: [], rows: [], count: 0, caption: "The first 0 of 0 rows" });
+    expect(csvHeadOf("")).toEqual({ header: [], rows: [], count: 0, caption: "The first 0 of 0 hours. Each column is named in the file as under its name here." });
   });
 });
 

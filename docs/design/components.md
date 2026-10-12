@@ -855,8 +855,15 @@ the downloads store `saveACopyOf`; the menu's rows and keys are `components/ui/l
 `components/ui/menu-keys.ts`, shared with the project switcher.
 
 ## Deliverable row (Handover)
-Row 64 high: format badge 44 by 28 (accent for the selected row), title, one line of facts, then a download
-icon (file) or a chevron (opens a view).
+V2 · 9 (D105): the files in four groups by who they are for (For the client, For the utility, For the installer, For
+you), each group's title in `type-strong` text-2 over its rows, 24 between groups. Row 60 high (64 on touch), radius
+`radius-row`: the name in `type-strong`, under it what the file is and its size in text-2 ("6 pages, A4 landscape · 98
+KB"); at the right its format alone as a badge (`type-unit` text-2, a `line` border, radius `radius-swatch`) and its own
+Download, a quiet icon button of 40. The open row: `surface-2` with a `line-strong` border. The row opens the file's
+preview; Download beside it saves the file and opens nothing. The sizes are read from the zip of every file, asked once
+per edit (`lib/handover/zip-sizes.ts`); a size not yet known is left out, never guessed.
+
+In code: `DeliverableList`, `DeliverableRow`; the rows, their groups and words in `lib/flow/deliverables/items.ts`.
 
 ## Paper preview
 The design report's pages as the engine draws them, the same drawing as the PDF (plan/phase-09-plan.md, decisions 4
@@ -864,8 +871,8 @@ and 5; the boards "Handover" on three sizes). The paper: `color-paper` sheet, ra
 as high as the page it shows; the page's image at the paper's width with the answer's own size, so that nothing jumps
 while it loads. The thumbnails are buttons, each the page scaled into a slot with its caption under it; the current one
 (`aria-current`) has the accent border on `surface-2`, the others the `line` border; the name of each is "Page 2,
-Layout". On desktop they stand in a column of 132 at the right of the paper, 8 apart, the slot 70 high, the caption
-"2 · Layout"; on tablet in a row of 72 under the paper, 6 apart, the slot 45; on phone in a row of 56, 4 apart, the
+Layout". On desktop they stand in a row of 96 under the paper, 8 apart, the slot 60 high, the caption
+"2 · Layout" (V2 · 9: the report takes the preview's width); on tablet in a row of 72 under the paper, 6 apart, the slot 45; on phone in a row of 56, 4 apart, the
 slot 35, the number alone in mono, a row that scrolls sideways if it must. Previous and next are secondary icon buttons
 of 40 (44 on touch), dim and `aria-disabled` at the ends: on tablet and desktop in the head before the primary action,
 with "Page 1 of 6 · Summary" after the facts; on phone under the paper, with the words between them. Left and Right on

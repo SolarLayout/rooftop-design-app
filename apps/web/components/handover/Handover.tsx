@@ -30,33 +30,36 @@ import { CopyAsTable } from "./CopyAsTable";
 import { ProjectFilePreview } from "./ProjectFilePreview";
 import { PageButton, ReportPreview, ReportSkeleton } from "./ReportPreview";
 import { SingleLineDiagram } from "./SingleLineDiagram";
+import { HandoverHead, PinnedDownloadAll } from "./HandoverHead";
 import { useAskedFile } from "./use-asked-file";
+import { useZipSizes } from "./use-zip-sizes";
 
 type Props = {
   /** The item that is open; null at the list's own address, where desktop and tablet show the first item beside the list. */
   item: HandoverItem | null;
 };
 
-// The two columns of the boards "Handover" on three sizes (plan/phase-09-plan.md, decision 3): on desktop the list is 440
-// wide with a line at its right, on tablet 300 wide beside the preview, on phone the list is the screen and an item is
-// pushed over it. Only one of the two stands on phone.
-const PAGE = "flex min-h-0 grow flex-col tablet:flex-row tablet:gap-5 tablet:p-6 tablet:pb-safe-6 desktop:gap-0 desktop:p-0";
-const LIST = classNames(
-  "flex-col gap-3 px-page-x-phone pt-2 pb-5",
-  "tablet:w-75 tablet:shrink-0 tablet:gap-4.5 tablet:p-0",
-  "desktop:w-handover-list desktop:border-r desktop:border-line-subtle desktop:pt-7 desktop:pr-6 desktop:pb-safe-6 desktop:pl-10",
+// The board "V2 · 9 · Handover and Home" (D105): on desktop the head across the page, the list 420 wide at the left and the
+// preview the rest of the width in a card; on tablet and phone the list is the page with Download all pinned at its foot,
+// and a file is pushed over it. Only one of the two stands on touch.
+const PAGE = "flex grow flex-col desktop:px-page-x-desktop desktop:pt-8 desktop:pb-page-y";
+const COLUMNS = "flex min-h-0 grow flex-col desktop:flex-row desktop:items-start desktop:gap-10";
+const LIST = classNames("flex-col gap-4 px-2 pt-6 pb-6 tablet:px-2", "desktop:w-handover-list desktop:shrink-0 desktop:px-0 desktop:pt-6 desktop:-ml-3");
+const PREVIEW = classNames(
+  "min-w-0 grow flex-col gap-4 px-page-x-phone pt-2 pb-6 tablet:px-page-x-tablet",
+  "desktop:mt-6 desktop:rounded-card desktop:border desktop:border-line desktop:bg-surface-1 desktop:p-6",
 );
-const PREVIEW = classNames("min-w-0 grow flex-col gap-3 px-page-x-phone pt-2 pb-5", "tablet:gap-4 tablet:p-0", "desktop:pt-7 desktop:pr-10 desktop:pb-safe-6 desktop:pl-8");
 /** The name of the back row: the tab bar's link is "Handover" already, and a name is given once. */
 const BACK_TO_THE_LIST = "Back to Handover";
 const BACK = classNames(
   "-ml-2.5 flex h-touch items-center gap-1.5 self-start rounded-row px-2.5 text-text-2 select-none",
-  "press-motion focus-ring hovered:text-text tablet:hidden",
+  "press-motion focus-ring hovered:text-text desktop:hidden",
 );
 
 /**
- * The Handover workspace (the boards "Handover" on three sizes and "Handover, states"): the list of what is delivered, its
- * facts from the run's chosen option, the weather and the document (decision 14), and the preview of the item that is
+ * The Handover workspace (V2 · 9, D105; the boards "V2 · 9 · Handover and Home" and "Handover, states"): the head with
+ * Present and Download all, the one primary, with the zip's size; the files by who they are for, each with what it is and
+ * its size, read from the zip of them all, asked once per edit (`useZipSizes`); and the preview of the file that is
  * open; before options the API's words leading to the Strings lens, at the first load skeletons, a run that failed the
  * API's words with Try again (decision 11). The report's pages are asked for once per edit as soon as the run has an
  * option, whatever item is open, with the reader's day, as its PDF is (decisions 2 and 5): the report's row counts its
@@ -80,10 +83,15 @@ export function Handover({ item }: Props) {
   const designStatus = useResults(designStatusOf);
   const failure = useResults(designFailureOf);
   const pages = keptPages?.answer.pages.length ?? null;
-  const view = useMemo(() => pageViewOf({ name, design, designStatus, failure, pages }), [name, design, designStatus, failure, pages]);
+  // The zip of every file is asked once per edit as soon as the run has an option: its directory gives every file's size,
+  // and Download all saves the same bytes.
+  const hasOption = option !== null && designStatus !== "failed";
+  const zip = useAskedFile("zip", hasOption);
+  const sizes = useZipSizes(zip.file);
+  const view = useMemo(() => pageViewOf({ name, design, designStatus, failure, pages, sizes }), [name, design, designStatus, failure, pages, sizes]);
   const shown = item ?? FIRST_ITEM;
   const row = view.rows.find((one) => one.id === shown) ?? view.rows[0]!;
-  const download = row.kind === null ? undefined : () => void downloads.getState().download(row.id);
+  const download = () => void downloads.getState().download(row.id);
   const isLive = !row.waits && view.kind !== "loading";
   const bom = useMemo(() => (option ? bomViewOf(option) : null), [option]);
   // The schedule's sort is held here, so that the head's copy is of the rows as the body shows them.
@@ -116,8 +124,8 @@ export function Handover({ item }: Props) {
   const report = useMemo(() => reportViewOf({ kept: keptPages, edit, status: pagesStatus, shown: shownPage }), [keptPages, edit, pagesStatus, shownPage]);
   /** The page chosen is kept for these very pages: new pages begin at the first. */
   const showPage = (page: number) => setShownPage(keptPages === null ? null : { edit: keptPages.edit, page });
-  // The .rtd is asked once per edit of the document while its item is open, for its size; Save a copy saves the same bytes
-  // (decision 9). A file that did not come is said by Save a copy, in a toast; here its size is left out.
+  // The .rtd is asked once per edit of the document while its item is open, for its size; its Download saves the same bytes
+  // (decision 9). A file that did not come is said by its Download, in a toast; here its size is left out.
   const [askFailedFor, setAskFailedFor] = useState<number | null>(null);
   useEffect(() => {
     if (!isProjectFileOpen) return;
@@ -131,23 +139,32 @@ export function Handover({ item }: Props) {
     project.getState().commit((before) => withName(before, next));
   }
 
+  const allProps = {
+    canDownload: hasOption && view.rows.some((one) => one.id !== "project-file" && !one.waits),
+    isOnItsWay: all.status === "on-its-way",
+    bytes: sizes.zip ?? null,
+    onDownloadAll: () => void downloads.getState().downloadAll(),
+  };
+
   return (
     <main className={PAGE}>
-      <nav aria-label="Deliverables" className={classNames(LIST, item === null ? "flex" : "hidden tablet:flex")}>
+      <div className={classNames(item === null ? "contents" : "hidden desktop:contents")}>
+        <HandoverHead {...allProps} />
+      </div>
+      <div className={COLUMNS}>
+      <nav aria-label="Deliverables" className={classNames(LIST, item === null ? "flex" : "hidden desktop:flex")}>
         <DeliverableList
           rows={view.rows}
           item={item}
           shown={shown}
           downloads={byItem}
-          onSaveACopy={() => void downloads.getState().download("project-file")}
-          all={all}
-          onDownloadAll={() => void downloads.getState().downloadAll()}
+          onDownload={(id) => void downloads.getState().download(id)}
           note={view.failed ? <FailedRow failed={view.failed} onTryAgain={flow.tryAgain} /> : null}
         />
       </nav>
-      <section aria-label={row.name} data-testid="preview" className={classNames(PREVIEW, item === null ? "hidden tablet:flex" : "flex")}>
-        {/* On phone the item is pushed over the list: the row at the top leads back to it. */}
-        <h1 className="sr-only tablet:hidden">Handover</h1>
+      <section aria-label={row.name} data-testid="preview" className={classNames(PREVIEW, item === null ? "hidden desktop:flex" : "flex")}>
+        {/* On touch the item is pushed over the list: the row at the top leads back to it. */}
+        <h1 className="sr-only desktop:hidden">Handover</h1>
         <Link href={HANDOVER} aria-label={BACK_TO_THE_LIST} className={BACK}>
           <Icon name="chevron-left" size={16} />
           Handover
@@ -191,6 +208,8 @@ export function Handover({ item }: Props) {
           )}
         </Preview>
       </section>
+      </div>
+      {item === null ? <PinnedDownloadAll {...allProps} /> : null}
     </main>
   );
 }

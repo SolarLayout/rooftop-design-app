@@ -1,85 +1,79 @@
 import { describe, expect, test } from "bun:test";
 import type { DesignResult } from "../../api";
-import { deliverablesOf, type Deliverable } from "./items";
-import { A, BEFORE_A_VOLTAGE, D, DEMO } from "../../handover/test-fixtures";
+import { deliverablesOf, groupsOf, sizeOf, type Deliverable } from "./items";
+import { BEFORE_A_VOLTAGE, D, DEMO } from "../../handover/test-fixtures";
 
-const AT_REST = { name: "Pune demo roof", design: DEMO, pages: null } as const;
-const factsOf = (rows: Deliverable[]) => rows.map((row) => [row.id, row.facts]);
+const AT_REST = { name: "Pune demo roof", design: DEMO, pages: null, sizes: {} } as const;
+const linesOf = (rows: Deliverable[]) => rows.map((row) => [row.id, row.facts]);
 
-describe("the eight items and their facts from the run's chosen option, the weather and the document (plan/phase-09-plan.md, decision 14)", () => {
-  test("the board's words, in its order, every number the engine's", () => {
-    const rows = deliverablesOf(AT_REST);
+// The sizes of the demo's files, in bytes, as the zip of the API holds them.
+const SIZES = { pdf: 100_352, sld: 64_512, bom: 1_210, cables: 2_600, dxf: 260_096, rtd: 696_320, csv: 493_568, kmz: 19_456 } as const;
 
-    expect(rows.map((row) => [row.id, row.name, row.badge])).toEqual([
-      ["report", "Design report", "PDF"],
-      ["single-line-diagram", "Single-line diagram", "PNG"],
-      ["bill-of-materials", "Bill of materials", "BOM"],
-      ["cable-schedule", "DC cable schedule", "DC"],
-      ["cad-layout", "CAD layout", "DXF"],
-      ["earth-model", "Google Earth model", "KMZ"],
-      ["hourly-data", "Hourly data", "CSV"],
-      ["project-file", "Project file", "RTD"],
+describe("the files, by who they are for (V2 · 9, D105; audit V2-90)", () => {
+  test("four groups in the board's order and words", () => {
+    expect(groupsOf(deliverablesOf(AT_REST)).map((group) => [group.title, group.rows.map((row) => row.id)])).toEqual([
+      ["For the client", ["report"]],
+      ["For the utility", ["single-line-diagram"]],
+      ["For the installer", ["bill-of-materials", "cable-schedule", "cad-layout"]],
+      ["For you", ["project-file", "hourly-data", "earth-model"]],
     ]);
-    expect(factsOf(rows)).toEqual([
+  });
+
+  test("each a file with its format alone as its badge, and its Download", () => {
+    expect(deliverablesOf(AT_REST).map((row) => [row.id, row.name, row.badge, row.kind, row.action])).toEqual([
+      ["report", "Design report", "PDF", "pdf", "Download PDF"],
+      ["single-line-diagram", "Single-line diagram", "PNG", "sld", "Download PNG"],
+      ["bill-of-materials", "Bill of materials", "CSV", "bom", "Download CSV"],
+      ["cable-schedule", "Cable schedule", "CSV", "cables", "Download CSV"],
+      ["cad-layout", "CAD layout", "DXF", "dxf", "Download DXF"],
+      ["project-file", "Project file", "RTD", "rtd", "Download RTD"],
+      ["hourly-data", "Hourly data", "CSV", "csv", "Download CSV"],
+      ["earth-model", "Google Earth model", "KMZ", "kmz", "Download KMZ"],
+    ]);
+  });
+
+  test("each row says what it is, in plain words, the numbers the run's", () => {
+    expect(linesOf(deliverablesOf(AT_REST))).toEqual([
       ["report", "A4 landscape"],
-      ["single-line-diagram", "22 strings of 29 × 560 Wp · 1 inverter, 6 MPPT"],
-      ["bill-of-materials", "638 modules · 27 tables · 1,681 m DC cable"],
-      ["cable-schedule", "22 strings · Voc cold 1,480 V"],
-      ["cad-layout", "Metres · one layer per string"],
-      ["earth-model", "Roof, obstacles with heights, 638 modules"],
-      ["hourly-data", "8,760 rows · irradiance, temperature, power"],
-      ["project-file", "Pune-demo-roof.rtd · opens again here"],
+      ["single-line-diagram", "1 inverter, 6 MPPT, 22 strings"],
+      ["bill-of-materials", "638 modules, 1 inverter, 7 lines"],
+      ["cable-schedule", "22 strings, 1,681 m of DC cable"],
+      ["cad-layout", "The roof and every string, in metres"],
+      ["project-file", "The whole design, to open again in the app"],
+      ["hourly-data", "8,760 hours of sunlight, temperature and power"],
+      ["earth-model", "The roof and the modules on the map"],
     ]);
   });
 
   test("the report says its pages once they are known", () => {
-    expect(deliverablesOf({ ...AT_REST, pages: 6 })[0]!.facts).toBe("A4 landscape · 6 pages");
+    expect(deliverablesOf({ ...AT_REST, pages: 6 })[0]!.facts).toBe("6 pages, A4 landscape");
   });
 
-  test("each item knows the file the API writes for it, or that it opens a view; what the row shows at its right follows", () => {
-    const rows = deliverablesOf(AT_REST);
-
-    expect(rows.map((row) => [row.id, row.kind, row.opens])).toEqual([
-      ["report", "pdf", "file"],
-      ["single-line-diagram", "sld", "file"],
-      ["bill-of-materials", null, "view"],
-      ["cable-schedule", null, "view"],
-      ["cad-layout", "dxf", "file"],
-      ["earth-model", "kmz", "file"],
-      ["hourly-data", "csv", "file"],
-      ["project-file", "rtd", "file"],
+  test("each file says its size once the zip has told it", () => {
+    const rows = deliverablesOf({ ...AT_REST, pages: 6, sizes: SIZES });
+    expect(rows.map((row) => row.facts)).toEqual([
+      "6 pages, A4 landscape · 98 KB",
+      "1 inverter, 6 MPPT, 22 strings · 63 KB",
+      "638 modules, 1 inverter, 7 lines · 1 KB",
+      "22 strings, 1,681 m of DC cable · 3 KB",
+      "The roof and every string, in metres · 254 KB",
+      "The whole design, to open again in the app · 680 KB",
+      "8,760 hours of sunlight, temperature and power · 482 KB",
+      "The roof and the modules on the map · 19 KB",
     ]);
-    expect(rows.map((row) => row.action)).toEqual(["Download PDF", "Download PNG", null, null, "Download DXF", "Download KMZ", "Download CSV", "Save a copy"]);
+  });
+
+  test("the preview's line says who it is for, then the row's", () => {
+    const rows = deliverablesOf({ ...AT_REST, pages: 6, sizes: SIZES });
+    expect(rows[0]!.about).toBe("For the client · 6 pages, A4 landscape · 98 KB");
+    expect(rows[6]!.about).toBe("For you · 8,760 hours of sunlight, temperature and power · 482 KB");
   });
 
   test("two inverters, and the option's own numbers", () => {
     const rows = deliverablesOf({ ...AT_REST, design: { ...DEMO, chosen_option: D.key } as DesignResult });
 
-    expect(rows[1]!.facts).toBe("27 strings of 26 × 560 Wp · 2 inverters, 6 MPPT");
-    expect(rows[5]!.facts).toBe("Roof, obstacles with heights, 702 modules");
-  });
-
-  test("the DC cable is the metres of every size together (issue 179, item 27)", () => {
-    const sized = A.bom.flatMap((line) =>
-      line.item === "DC cable"
-        ? [{ ...line, spec: "4 mm² Cu, 1500 V DC, red + black", qty: 1044 }, { ...line, spec: "6 mm² Cu, 1500 V DC, red + black", qty: 637 }]
-        : [line],
-    );
-    const design = { ...DEMO, options: [{ ...A, bom: sized }, D] } as DesignResult;
-
-    expect(deliverablesOf({ ...AT_REST, design })[2]!.facts).toBe("638 modules · 27 tables · 1,681 m DC cable");
-  });
-
-  test("the Voc cold is the highest of the schedule", () => {
-    const schedule = [...A.cable_schedule];
-    schedule[3] = { ...schedule[3]!, voc_cold_v: 1491.4 };
-    const design = { ...DEMO, options: [{ ...A, cable_schedule: schedule }, D] } as DesignResult;
-
-    expect(deliverablesOf({ ...AT_REST, design })[3]!.facts).toBe("22 strings · Voc cold 1,491 V");
-  });
-
-  test("the file is named after the design, as the API writes it", () => {
-    expect(deliverablesOf({ ...AT_REST, name: "  Warehouse 7 / Block B  " })[7]!.facts).toBe("Warehouse-7-Block-B.rtd · opens again here");
+    expect(rows[1]!.facts).toBe("2 inverters, 6 MPPT, 27 strings");
+    expect(rows[2]!.facts).toMatch(/^702 modules, 2 inverters, \d+ lines$/);
   });
 
   test("every row is live once there is a chosen option", () => {
@@ -87,49 +81,51 @@ describe("the eight items and their facts from the run's chosen option, the weat
   });
 });
 
+describe("a size", () => {
+  test("in KB under a thousand, at least 1; in MB above, one decimal", () => {
+    expect([sizeOf(100), sizeOf(100_352), sizeOf(1_048_576), sizeOf(3_355_443)]).toEqual(["1 KB", "98 KB", "1.0 MB", "3.2 MB"]);
+  });
+});
+
 describe("before options (decision 11)", () => {
-  test("every row but the project file waits, with the API's title as its facts", () => {
+  test("every row but the project file waits, with the API's title as its line", () => {
     const rows = deliverablesOf({ ...AT_REST, design: BEFORE_A_VOLTAGE });
 
-    for (const row of rows.slice(0, 7)) {
+    for (const row of rows.filter((one) => one.id !== "project-file")) {
       expect(row.waits).toBe(true);
       expect(row.facts).toBe("Choose a system voltage to size the strings");
     }
-    expect(rows[7]).toMatchObject({ waits: false, facts: "Pune-demo-roof.rtd · opens again here" });
+    expect(rows.find((row) => row.id === "project-file")).toMatchObject({ waits: false, facts: "The whole design, to open again in the app" });
   });
 
   test("the preview's line says what is known of the item without an option, else the API's title", () => {
     const rows = deliverablesOf({ ...AT_REST, design: BEFORE_A_VOLTAGE });
 
     expect(rows.map((row) => row.about)).toEqual([
-      "A4 landscape",
+      "For the client · A4 landscape",
       "Choose a system voltage to size the strings",
       "Choose a system voltage to size the strings",
       "Choose a system voltage to size the strings",
-      "Metres · one layer per string",
+      "For the installer · The roof and every string, in metres",
+      "For you · The whole design, to open again in the app",
       "Choose a system voltage to size the strings",
       "Choose a system voltage to size the strings",
-      "Pune-demo-roof.rtd · opens again here",
     ]);
-  });
-
-  test("with an option the preview's line is the row's", () => {
-    expect(deliverablesOf(AT_REST).every((row) => row.about === row.facts)).toBe(true);
   });
 });
 
 describe("the first load", () => {
-  test("no value was ever there: the names stand, the facts are null, every row waits", () => {
-    const rows = deliverablesOf({ name: null, design: null, pages: null });
+  test("no value was ever there: the names stand, the lines are null, every row waits", () => {
+    const rows = deliverablesOf({ name: null, design: null, pages: null, sizes: {} });
 
     expect(rows.map((row) => row.name)).toHaveLength(8);
     expect(rows.every((row) => row.facts === null && row.waits)).toBe(true);
   });
 
-  test("the design that is open is named before it is run: the project file is live and named", () => {
-    const rows = deliverablesOf({ name: "Pune demo roof", design: null, pages: null });
+  test("the design that is open is named before it is run: the project file is live", () => {
+    const rows = deliverablesOf({ name: "Pune demo roof", design: null, pages: null, sizes: {} });
 
-    expect(rows[7]).toMatchObject({ waits: false, facts: "Pune-demo-roof.rtd · opens again here" });
+    expect(rows.find((row) => row.id === "project-file")).toMatchObject({ waits: false, facts: "The whole design, to open again in the app" });
     expect(rows[0]!.facts).toBeNull();
   });
 });

@@ -32,7 +32,7 @@ export type Open = {
 
 /** The project file is the document as the user has it; a file of the design is of the option shown. */
 const THE_DOCUMENT_ITSELF: ExportKind = "rtd";
-/** Download all: the zip of the five files and the project file (decision 10). */
+/** Download all: the zip of the seven files and the project file (decision 10; V2 · 9). */
 const EVERYTHING: ExportKind = "zip";
 
 /**
@@ -55,7 +55,7 @@ export type DownloadsState = {
   pages: KeptPages | null;
   /** The pages on their way, failed with the API's words, or at rest. */
   pagesStatus: DownloadStatus;
-  /** Asks for the item's file and saves it. A second press while it is on its way does nothing; an item without a file nothing. */
+  /** Asks for the item's file and saves it. A second press while it is on its way does nothing. */
   download: (item: HandoverItem) => Promise<void>;
   /** Asks again after a failure. */
   tryAgain: (item: HandoverItem) => Promise<void>;
@@ -171,7 +171,6 @@ export function createDownloadsStore({ api, save = saveBlob, day = todayOfTheBro
 
     function download(item: HandoverItem): Promise<void> {
       const kind = kindOf(item);
-      if (kind === null) return Promise.resolve();
       return saved(kind, statusOf(get(), item), (status) => setStatus(item, status), () => void download(item));
     }
 

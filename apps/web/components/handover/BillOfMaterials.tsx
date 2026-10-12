@@ -9,8 +9,8 @@ type Props = {
   isDimmed?: boolean;
 };
 
-/** The panel of the board "Handover, previews": the table padded 12 24 20 on tablet and desktop, the cards padded 16 on phone. */
-export const TABLE_PANEL = "rounded-card border border-line bg-surface-1 p-4 shadow-card tablet:px-6 tablet:pt-3 tablet:pb-5";
+/** The table's box in the preview (V2 · 9): a line around it, as the hourly data's; it scrolls sideways where it must, never the page. */
+export const TABLE_PANEL = "overflow-x-auto rounded-row border border-line px-3 pt-1 pb-3 tablet:px-4";
 
 /**
  * The bill of materials of the chosen option (the board "Handover, previews"; plan/phase-09-plan.md, step 15): a Table of

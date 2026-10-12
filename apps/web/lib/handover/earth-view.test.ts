@@ -42,19 +42,9 @@ describe("in the file, for the demo's option A", () => {
   });
 });
 
-describe("not in the file", () => {
-  test("the positions not used, the inverter and the wiring, the heights as shapes, in the board's words", () => {
-    expect(named(earthViewOf(AT_REST).notInside)).toEqual([
-      ["Positions not used (152)", "the layout's free positions stay off the model"],
-      ["The inverter and the wiring", "the SLD and the schedule carry them"],
-      ["Heights as shapes", "everything lies flat, the heights are in the names, as the import reads them"],
-    ]);
-  });
-
-  test("the unused count is the layout's positions less the option's modules, with a comma between thousands", () => {
-    const large = { ...DEMO, readouts: { ...DEMO.readouts, positions: 2638 } };
-
-    expect(earthViewOf({ ...AT_REST, design: large }).notInside[0]!.name).toBe("Positions not used (2,000)");
+describe("what the file does not draw (V2 · 9, audit V2-93)", () => {
+  test("one line: the heights are in the names", () => {
+    expect(earthViewOf(AT_REST).flat).toBe("Heights are in the names; Google Earth draws the shapes flat.");
   });
 });
 

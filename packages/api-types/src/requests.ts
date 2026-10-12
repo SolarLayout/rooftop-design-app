@@ -130,9 +130,10 @@ export interface paths {
          *
          *     pdf: the report, A4 landscape. dxf: the layout, R2010 in metres, a layer for every string.
          *     kmz: roof, obstacles and the modules in use, for Google Earth. csv: the 8,760 hours.
-         *     sld: the single-line diagram as a PNG. rtd: the project file, format 2: the request as the engine
-         *     holds it, and nothing of the design. zip: the five files and the
-         *     project file in one archive, each entry named as its own download would be.
+         *     sld: the single-line diagram as a PNG. bom: the bill of materials as CSV. cables: the cable
+         *     schedule as CSV, a row a string. rtd: the project file, format 2: the request as the engine holds
+         *     it, and nothing of the design. zip: the seven files and the project file in one archive, each
+         *     entry named as its own download would be.
          *
          *     day: the reader's day (YYYY-MM-DD), printed on page 1 of the report; without it the server's
          *     today. Every kind takes it; the report reads it, in the zip too.
@@ -2429,7 +2430,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                kind: "pdf" | "dxf" | "kmz" | "csv" | "sld" | "rtd" | "zip";
+                kind: "pdf" | "dxf" | "kmz" | "csv" | "sld" | "bom" | "cables" | "rtd" | "zip";
             };
             cookie?: never;
         };
