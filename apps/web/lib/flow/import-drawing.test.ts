@@ -73,15 +73,15 @@ describe("importing a drawing", () => {
 });
 
 describe("a file held before it is read", () => {
-  test("is said by its kind, its size in whole kilobytes, and when it is read", () => {
-    expect(heldWordsOf("warehouse-roof.dxf", 48 * 1024)).toBe("DXF · 48 KB · read when the roof is opened");
-    expect(heldWordsOf("Roof.KMZ", 1536)).toBe("KMZ · 2 KB · read when the roof is opened");
-    expect(heldWordsOf("roof.kml", 300)).toBe("KML · 1 KB · read when the roof is opened");
+  test("is said by its kind and its size in whole kilobytes", () => {
+    expect(heldWordsOf("warehouse-roof.dxf", 48 * 1024)).toBe("DXF · 48 KB");
+    expect(heldWordsOf("Roof.KMZ", 1536)).toBe("KMZ · 2 KB");
+    expect(heldWordsOf("roof.kml", 300)).toBe("KML · 1 KB");
   });
 
   test("a file of another kind is said by its ending, so that the refusal of the API is no surprise", () => {
-    expect(heldWordsOf("notes.txt", 2048)).toBe("TXT · 2 KB · read when the roof is opened");
-    expect(heldWordsOf("README", 10)).toBe("File · 1 KB · read when the roof is opened");
+    expect(heldWordsOf("notes.txt", 2048)).toBe("TXT · 2 KB");
+    expect(heldWordsOf("README", 10)).toBe("File · 1 KB");
   });
 });
 
@@ -112,6 +112,6 @@ describe("a drawing too large to send", () => {
   });
 
   test("is refused in the dialog's own words, with the size that fits", () => {
-    expect(DRAWING_TOO_LARGE).toBe("This drawing is larger than the app can send, about 4.7 MB. Save it with the roof and its obstacles alone, and choose it again.");
+    expect(DRAWING_TOO_LARGE).toBe("The app can send a drawing of about 4.7 MB at most. Save this one with only the roof and its obstacles, then choose it again.");
   });
 });

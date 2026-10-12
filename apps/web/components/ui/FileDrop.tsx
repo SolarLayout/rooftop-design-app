@@ -139,7 +139,7 @@ export function FileDrop({ title, detail, whenOver, accept, state, onFile, shown
         surface: "border-note-line bg-note-surface",
         mark: <StatusMark kind="note" label="Note" wordsShown={false} size={20} />,
         colourOfMark: "text-accent",
-        title: "This file was not loaded",
+        title: "File not loaded",
         detail: state.reason,
         button: "Choose another",
       };

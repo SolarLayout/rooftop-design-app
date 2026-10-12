@@ -11,7 +11,6 @@ import {
   refusalOf,
   requestBytes,
   requestOf,
-  RUNS_IN_THE_STUDIO,
   TOO_LARGE,
 } from "./open-project";
 
@@ -20,7 +19,10 @@ import {
 // project's name and its notes, word for word; a refusal is the API's words, and may be tried again when the API was not
 // reached.
 
-const PROJECT = { name: "Block B", roof: { lat: 18.52, lon: 73.86, obstacles: [] } } as unknown as Project;
+const PROJECT = {
+  name: "Block B",
+  roof: { lat: 18.52, lon: 73.86, outline: [[-45, -20], [45, -20], [45, 20], [-45, 20]], roof_type: "flat_tilted", obstacles: [] },
+} as unknown as Project;
 
 describe("a project file by its ending", () => {
   test("is an .rtd, whatever the case; anything else is not", () => {
@@ -46,11 +48,10 @@ describe("the request from a file", () => {
 });
 
 describe("the lines of a file read", () => {
-  test("are the project's name and that the capacity and the energy come with the run, for every file: the answer carries neither, and its format is the current one, not the file's", () => {
+  test("are a summary of the file: the project's name and its roof, as a card on Home says it; never its format", () => {
     const opened: OpenedProject = { project: PROJECT, notes: [] };
 
-    expect(linesOf(opened)).toEqual(["Block B", "Capacity and energy come with the run in the Studio"]);
-    expect(RUNS_IN_THE_STUDIO).toBe("Capacity and energy come with the run in the Studio");
+    expect(linesOf(opened)).toEqual(["Block B", "90.0 × 40.0 m flat roof, tilted rows"]);
   });
 });
 
@@ -90,6 +91,6 @@ describe("a file larger than the deployed API takes (#98)", () => {
   });
 
   test("is refused in the dialog's own words: no project the app saves is that large (#162)", () => {
-    expect(TOO_LARGE).toBe("This file is larger than any project this app saves, so it cannot be opened.");
+    expect(TOO_LARGE).toBe("This file is larger than any project file the app saves. Choose another.");
   });
 });
