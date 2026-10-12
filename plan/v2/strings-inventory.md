@@ -33,7 +33,7 @@ There are no first-person strings ("we", "our") anywhere in scope. No user-visib
    - "Not saved on this device" (`W/components/shell/notes-view.ts:126`)
    - "Saved on this device" (`SaveState.tsx:18`)
 4. **"Remove" is the dismiss button of the height dialog.** The new shape is not added yet, so this is really Cancel (`W/components/find/HeightDialog.tsx:59`).
-5. **"The engine" appears in many user strings.** Examples: "The engine's shadows…", "summed up by the engine", "The PNG is the engine's drawing on A4", "in the engine's order". It is an internal term that users are never introduced to.
+5. **"The engine" appears in many user strings.** Examples: "The engine's shadows…", "summed up by the engine", "The PNG is the engine's drawing on A4", "in the engine's order". It is an internal term that users are never introduced to. — done: no string the app or the API puts on the screen says "engine" (the voice's scan, `W/components/words.test.ts`, holds the web's; the API's searched by hand; the help's topics are #219's)
 6. **Unclear unit "mod".** It is the unit of the Roof field "Every" (`W/lib/studio/roof-fields.ts:18`).
 7. **"before" as an adjective reads oddly:** "Values are of the design before", "They are of the design before", "The values shown are of the design before", "The positions shown are of the design before".
 
@@ -615,90 +615,92 @@ Most strings are in W/components/studio/EquipmentPicker.tsx.
 ## Handover (list, previews, downloads, states)
 
 **List** (W/components/handover/DeliverableList.tsx; W/components/handover/Handover.tsx)
-- "Handover" (H1, page title): DeliverableList.tsx:68
-- "Everything the installer, the client and the utility need" [!S tagline]: DeliverableList.tsx:69
-- "Download all" (fact "${n} files · one zip"), "Save a copy": DeliverableList.tsx:62, 79, 108
-- "Deliverables" (aria), "Back to Handover" (aria): Handover.tsx:51, 136
-- Items: "Design report", "Single-line diagram", "Bill of materials", "DC cable schedule", "CAD layout", "Google Earth model", "Hourly data", "Project file": W/lib/routes.ts:25-32
-- Badges: "PDF", "PNG", "BOM", "DC", "DXF", "KMZ", "CSV", "RTD" [!J]: W/lib/flow/deliverables/items.ts:42-49
-- Actions "Download ${badge}" (e.g. "Download PDF"), "Save a copy"; "On its way" (ring aria) [!F]: items.ts:120; W/components/handover/DeliverableRow.tsx:64
+- "Handover" (H1, page title): DeliverableList.tsx:68 — right
+- "Everything the installer, the client and the utility need" [!S tagline]: DeliverableList.tsx:69 — gone
+- "Download all" (fact "${n} files · one zip"), "Save a copy": DeliverableList.tsx:62, 79, 108 — done: "Download all · ${size}" (Save a copy gone)
+- "Deliverables" (aria), "Back to Handover" (aria): Handover.tsx:51, 136 — done: "Files", "Back to Handover"
+- Items: "Design report", "Single-line diagram", "Bill of materials", "DC cable schedule", "CAD layout", "Google Earth model", "Hourly data", "Project file": W/lib/routes.ts:25-32 — done: "Design report", "Single-line diagram", "Bill of materials", "Cable schedule", "CAD layout", "Project file", "Hourly data", "Google Earth model"
+- Badges: "PDF", "PNG", "BOM", "DC", "DXF", "KMZ", "CSV", "RTD" [!J]: W/lib/flow/deliverables/items.ts:42-49 — done: "PDF", "PNG", "CSV", "DXF", "KMZ", "RTD" (the format alone)
+- Actions "Download ${badge}" (e.g. "Download PDF"), "Save a copy"; "On its way" (ring aria) [!F]: items.ts:120; W/components/handover/DeliverableRow.tsx:64 — done: "Download ${badge}"; "Preparing" (ring aria); Save a copy gone
 - Facts (items.ts):
-  - "A4 landscape · ${n} pages"
-  - "${n} strings of ${n} × ${W} Wp · ${n} inverters, ${n} MPPT" [!J]
-  - "${n} modules · ${n} ${unit} · ${m} m DC cable"
-  - "${n} strings · Voc cold ${v} V" [!J]
-  - "Metres · one layer per string"
-  - "Roof, obstacles with heights, ${n} modules"
-  - "${n} rows · irradiance, temperature, power"
-  - "${file}.rtd · opens again here"
+  - "A4 landscape · ${n} pages" — done: "${n} pages, A4 landscape"
+  - "${n} strings of ${n} × ${W} Wp · ${n} inverters, ${n} MPPT" [!J] — done: "${n} inverters, ${n} MPPT, ${n} strings"
+  - "${n} modules · ${n} ${unit} · ${m} m DC cable" — done: "${n} modules, ${n} inverters, ${n} lines"
+  - "${n} strings · Voc cold ${v} V" [!J] — done: "${n} strings, ${m} m of DC cable"
+  - "Metres · one layer per string" — done: "The roof and every string, in metres"
+  - "Roof, obstacles with heights, ${n} modules" — done: "The roof and the modules on the map"
+  - "${n} rows · irradiance, temperature, power" — done: "${n} hours of sunlight, temperature and power"
+  - "${file}.rtd · opens again here" — done: "The whole design, to open again in the app"
   - Lines 54-117
 - States (W/lib/handover/page-view.ts:14-17):
-  - "The files were not updated" / "They are of the design before" [?]
-  - "The files were not made" / "There are no files yet"
-  - "Not made · the run failed"
-- Download failure: toast with the API message + "Try again": W/lib/stores/downloads-store.ts:94, 168, 186
-- "No design is open: open one before its files are asked for.": downloads-store.ts:128
+  - "The files were not updated" / "They are of the design before" [?] — done: "Files not updated" / "Showing the last result"
+  - "The files were not made" / "There are no files yet" — done: "Files not made" (no second line: the API's words under it say why)
+  - "Not made · the run failed" — done: "Not made"
+- Download failure: toast with the API message + "Try again": W/lib/stores/downloads-store.ts:94, 168, 186 — right
+- "No design is open: open one before its files are asked for.": downloads-store.ts:128 — done: "No design is open. Open one to download its files."
 
 **Report preview** (W/lib/handover/report-view.ts; W/components/handover/ReportPreview.tsx)
-- "Page ${n} of ${count} · ${title}", "Page ${n}, ${title}", "${n} · ${title}": report-view.ts:65-95
-- "The pages were not updated" / "They are of the design before"; "The pages were not made" / "There is no preview yet": report-view.ts:11-12
-- "Previous page", "Next page", "Report pages" (aria): ReportPreview.tsx:70-71, 133
+- "Page ${n} of ${count} · ${title}", "Page ${n}, ${title}", "${n} · ${title}": report-view.ts:65-95 — right
+- "The pages were not updated" / "They are of the design before"; "The pages were not made" / "There is no preview yet": report-view.ts:11-12 — done: "Pages not updated" / "Showing the last result"; "Pages not made" (no second line: the API's words under it say why)
+- "Previous page", "Next page", "Report pages" (aria): ReportPreview.tsx:70-71, 133 — right
 
 **Single-line diagram** (W/components/handover/SingleLineDiagram.tsx; W/lib/handover/sld.ts)
-- "The PNG is the engine's drawing on A4" [!J engine]: SingleLineDiagram.tsx:19
-- "The diagram", "The diagram as a list" (aria): SingleLineDiagram.tsx:106, 168
-- Title "Single-line diagram · ${n} strings of ${n} × ${W} Wp": sld.ts:118
-- Blocks: "${n} × ${s} mod", "MPPT ${n} · DC", "MPPT ${n} · not used", "MPPT ${n}, ${n} strings", "Imp ${a} of ${b} A" / "Imp ${a} A · limit not known", "INV-${n}", "${kW} kW · ${n} MPPT" [!J]: sld.ts:64-118
-- Fixed boxes: "AC", "ACDB" [!J], "Net meter", "Grid / LT panel" [!J]: sld.ts:64-68
+- "The PNG is the engine's drawing on A4" [!J engine]: SingleLineDiagram.tsx:19 — done: "The PNG is A4, as in the report"
+- "The diagram", "The diagram as a list" (aria): SingleLineDiagram.tsx:106, 168 — right
+- Title "Single-line diagram · ${n} strings of ${n} × ${W} Wp": sld.ts:118 — right
+- Blocks: "${n} × ${s} mod", "MPPT ${n} · DC", "MPPT ${n} · not used", "MPPT ${n}, ${n} strings", "Imp ${a} of ${b} A" / "Imp ${a} A · limit not known", "INV-${n}", "${kW} kW · ${n} MPPT" [!J]: sld.ts:64-118 — right (the drawing's trade words, held equal to the PNG's)
+- Fixed boxes: "AC", "ACDB" [!J], "Net meter", "Grid / LT panel" [!J]: sld.ts:64-68 — right (the drawing's trade words, held equal to the PNG's)
 
 **Bill of materials** (W/lib/handover/bom-view.ts)
-- Columns "Item", "Specification", "Qty", "Unit": :23-26
-- Caption "The bill of materials of option ${L}, as the engine lists it" [!J engine]: :39
-- "Copy as table"; toasts "Bill of materials copied as a table" and "The table could not be copied. Select it and copy by hand.": W/components/handover/CopyAsTable.tsx:12-18; W/lib/handover/copy-table.ts:8
+- Columns "Item", "Specification", "Qty", "Unit": :23-26 — right
+- Caption "The bill of materials of option ${L}, as the engine lists it" [!J engine]: :39 — done: "The bill of materials of option ${L}"
+- "Copy as table"; toasts "Bill of materials copied as a table" and "The table could not be copied. Select it and copy by hand.": W/components/handover/CopyAsTable.tsx:12-18; W/lib/handover/copy-table.ts:8 — done: "Copy"; "Copied"; "The table could not be copied. Select it and copy by hand." (right)
 
 **Cable schedule** (W/lib/handover/schedule-view.ts)
-- Columns "String", "Inverter", "MPPT", "Modules", "Voc cold (V)" [!J], "Isc (A)" [!J], "DC cable (m)", "Drop (%)" [!J], "Cable": :50-65
-- "${n} strings" (total): :89
-- Caption "The DC cable schedule of option ${L}, in the engine's order, by string": :93
-- Sort note "Sorted by ${head}, upwards/downwards. The order of the engine, by string, is the default" [!S]: :95
-- Drop note "More than 1 % even at 10 mm²: a shorter run, or the inverter nearer, brings it down" [!S]: :44
-- Toast "DC cable schedule copied as a table": :40
+- Columns "String", "Inverter", "MPPT", "Modules", "Voc cold (V)" [!J], "Isc (A)" [!J], "DC cable (m)", "Drop (%)" [!J], "Cable": :50-65 — right (the schedule's trade heads)
+- "${n} strings" (total): :89 — right
+- Caption "The DC cable schedule of option ${L}, in the engine's order, by string": :93 — done: "The cable schedule of option ${L}, by string"
+- Sort note "Sorted by ${head}, upwards/downwards. The order of the engine, by string, is the default" [!S]: :95 — done: "Sorted by ${head}, upwards" / "Sorted by ${head}, downwards"
+- Drop note "More than 1 % even at 10 mm²: a shorter run, or the inverter nearer, brings it down" [!S]: :44 — done: "Over 1 % even at 10 mm². Shorten the run or move the inverter nearer."
+- Toast "DC cable schedule copied as a table": :40 — done: "Copied"
 
 **CAD layout** (W/lib/handover/cad-view.ts; W/components/handover/CadPreview.tsx)
-- "Layers" (fact rows); "Layout"; "R2010 · metres · x east, y north" [!J R2010]: cad-view.ts:25-26; CadPreview.tsx:46
-- Layers: "ROOF" — "the outline"; "SETBACK" — "the inner line"; "OBSTACLES" — "${n} footprints"; "KEEPOUT" [!J]; "MODULES_UNUSED" — "${n} positions"; "INVERTERS"; "TEXT" — "the names and heights, …"; "STRING_S01 to STRING_S${n}" — "${n} each": cad-view.ts:36-47
-- Plan alt "${title} · page ${n} of the report": CadPreview.tsx:37
+- "Layers" (fact rows); "Layout"; "R2010 · metres · x east, y north" [!J R2010]: cad-view.ts:25-26; CadPreview.tsx:46 — done: "Layers" behind "What is in the file"; "AutoCAD 2010 (R2010) · metres · x east, y north"
+- Layers: "ROOF" — "the outline"; "SETBACK" — "the inner line"; "OBSTACLES" — "${n} footprints"; "KEEPOUT" [!J]; "MODULES_UNUSED" — "${n} positions"; "INVERTERS"; "TEXT" — "the names and heights, …"; "STRING_S01 to STRING_S${n}" — "${n} each": cad-view.ts:36-47 — done: the layers keep the file's own names; "ROOF" — "the outline"; "SETBACK" — "the edge margin"; "OBSTACLES" — "${n} outlines" (1 outline); "KEEPOUT" — "the areas kept clear"; "MODULES_UNUSED" — "${n} positions" (1 position); "INVERTERS" — "${n}"; "TEXT" — "the names and heights, INV-1, …"; "STRING_S01 to STRING_S${n}" — "${n} modules each"
+- Plan alt "${title} · page ${n} of the report": CadPreview.tsx:37 — done: "${title}, page ${n} of the report"
 
 **Google Earth model** (W/lib/handover/earth-view.ts; W/components/handover/EarthPreview.tsx:19-20)
-- "In the file" / "Not in the file"
+- "In the file" / "Not in the file" — done: "In the file" (Not in the file gone: one line under the rows)
 - In the file:
-  - "Roof" — "the outline"
-  - "Modules (${n})" — "the positions used, one by one"
-  - "${name} h=${h}" — "the ${kind}'s footprint, its height in the name" [?]
+  - "Roof" — "the outline" — right
+  - "Modules (${n})" — "the positions used, one by one" — right
+  - "${name} h=${h}" — "the ${kind}'s footprint, its height in the name" [?] — done: "${name} h=${h}" — "the ${kind}'s outline, its height in the name"
 - Not in the file:
-  - "Positions not used (${n})" — "the layout's free positions stay off the model"
-  - "The inverter and the wiring" — "the SLD and the schedule carry them" [!J SLD]
-  - "Heights as shapes" — "everything lies flat, the heights are in the names, as the import reads them" [!S]
+  - "Positions not used (${n})" — "the layout's free positions stay off the model" — gone
+  - "The inverter and the wiring" — "the SLD and the schedule carry them" [!J SLD] — gone
+  - "Heights as shapes" — "everything lies flat, the heights are in the names, as the import reads them" [!S] — done: "Google Earth draws the shapes flat. Heights are in the names."
 - Source lines: earth-view.ts:46-61
 
 **Hourly data** (W/components/handover/HourlyPreview.tsx; W/lib/handover/csv-head.ts; W/lib/handover/csv-columns.ts)
-- "The first rows of the file" (aria), "Columns": HourlyPreview.tsx:76, 79
-- "The first ${n} of ${count} rows"; "The hourly data was not made" / "There is no preview yet": csv-head.ts:37-40
+- "The first rows of the file" (aria), "Columns": HourlyPreview.tsx:76, 79 — done: "The first rows of the file" (aria, right); "Columns" gone
+- "The first ${n} of ${count} rows"; "The hourly data was not made" / "There is no preview yet": csv-head.ts:37-40 — done: "First ${n} of ${count} hours"; "Hourly data not made" (no second line: the API's words under it say why)
 - Column descriptions:
-  - "The hour's start, UTC"
-  - "Global horizontal irradiance, W/m²" [!J]
-  - "Effective irradiance in the plane of the modules, W/m²" [!J]
-  - "Cell temperature, °C"
-  - "DC power into the inverter, kW"
-  - "AC power to the grid, kW"
-  - "A column of the file, not described here"
+  - "The hour's start, UTC" — done: "Hour", under it "UTC · time_utc_hour_start"
+  - "Global horizontal irradiance, W/m²" [!J] — done: "Sunlight on the ground", under it "W/m² · ghi_w_m2"
+  - "Effective irradiance in the plane of the modules, W/m²" [!J] — done: "Sunlight on the modules", under it "W/m² · poa_eff_w_m2"
+  - "Cell temperature, °C" — done: "Cell temperature", under it "°C · t_cell_c"
+  - "DC power into the inverter, kW" — done: "DC power", under it "kW · p_dc_kw"
+  - "AC power to the grid, kW" — done: "AC power", under it "kW · p_ac_kw"
+  - "A column of the file, not described here" — gone (a column the app does not know is named as the file names it)
   - csv-columns.ts:7-14
 
 **Project file** (W/components/handover/ProjectFilePreview.tsx; W/lib/handover/project-file.ts)
-- "Project file" (aria), "Name", "What is in it": ProjectFilePreview.tsx:52, 54, 72
-- Facts: "Format 2" [!J], "None yet", "${v} V", "${L} · ${s} × ${n} on ${i} inverter(s)", "${n} KB": project-file.ts:37-58
-- Rows: "Module file", "Inverter file", "Weather" ("${label} · ${n} hours"), "System voltage", "Chosen option": project-file.ts:61-65
-- Shared name validation: "A name is needed": W/lib/flow/name-field.ts:9; W/components/ui/text-entry.ts:6
+- "Project file" (aria), "Name", "What is in it": ProjectFilePreview.tsx:52, 54, 72 — right
+- Facts: "Format 2" [!J], "None yet", "${v} V", "${L} · ${s} × ${n} on ${i} inverter(s)", "${n} KB": project-file.ts:37-58 — done: "Format version 2", "None yet", "${v} V", "${L} · ${s} × ${n} on 1 inverter" / "on ${i} inverters", "${n} KB"; a module or inverter file the document does not name: "The app's sample" (was "the bundled sample")
+- Rows: "Module file", "Inverter file", "Weather" ("${label} · ${n} hours"), "System voltage", "Chosen option": project-file.ts:61-65 — done: "Weather" says the weather's plain name, "Typical year · 8,760 hours" (a file's name for your own file); the other rows right
+- Shared name validation: "A name is needed": W/lib/flow/name-field.ts:9; W/components/ui/text-entry.ts:6 — right
+
+**The note of a failed run** (W/components/shell/UnderTheTitle.tsx, `FailedRow`): a note without a second line no longer draws a lone " ·" before Try again (the three "not made" notes above have none).
 
 ## Present
 
@@ -919,69 +921,71 @@ Section names are listed in docs.ts:30-118.
 ## API refusals and notes (texts that reach the user)
 
 **A/rooftop_api/errors.py**
-- "The server could not finish this request. Try again; if it fails again, report it.": :28
-- "The request body is not valid JSON: ${msg}." [!J JSON]: :108
-- "${field}: ${pydantic msg}" (+ " (and ${n} more faults in this request)") [!J raw validation text]: :109-111
-- Raw `HTTPException.detail` is passed through as the message: :148
-- OpenAPI-only (not in UI): "The request cannot be used; the message says why."; " An outline over ${limit} m² is refused with the code roof_too_large, before any work.": :36-39
+- "The server could not finish this request. Try again; if it fails again, report it.": :28 — done: "The server could not finish this step. Try again."
+- "The request body is not valid JSON: ${msg}." [!J JSON]: :108 — done: "The server cannot read what the app sent: ${msg}."
+- "${field}: ${pydantic msg}" (+ " (and ${n} more faults in this request)") [!J raw validation text]: :109-111 — done: "${field}: ${pydantic msg}" (+ ". 1 more value is refused" / ". ${n} more values are refused"); the validator's own words stay
+- Raw `HTTPException.detail` is passed through as the message: :148 — right (Starlette's words for a route that does not exist; the app never asks one)
+- OpenAPI-only (not in UI): "The request cannot be used; the message says why."; " An outline over ${limit} m² is refused with the code roof_too_large, before any work.": :36-39 — done: "The request is refused. The message says why."; the roof limit's line right
 
 **A/rooftop_api/services/design.py**
-- "No module fits on this roof" / "Inside the edge setback and clear of shadows there is no room for a module. Check the outline, the setback and the obstacles." [!J setback]: :30-32
-- Voltage missing (from readouts): "Choose a system voltage to size the strings" / "600, 1000 or 1500 V. Nothing is sized until you choose.": :34
-- "PVGIS sent no horizon for this site, so far shading is not counted." [!J PVGIS, far shading]: :130
-- "Too few positions for a string" / "The roof holds ${n} position(s), and a string takes ${min} to ${max} modules. ${No string of that length fits. / A string of ${n} would fit: add it as your own option.}": :243-251
-- Not an OND: `ApiError(422, "not_an_ond_file", str(error))` passes the parser's text through: :126
+- "No module fits on this roof" / "Inside the edge setback and clear of shadows there is no room for a module. Check the outline, the setback and the obstacles." [!J setback]: :30-32 — done: "No module fits on this roof" / "The roof has no room for a module inside the edge margin and clear of shade. Check the outline, the edge margin and the obstacles."
+- Voltage missing (from readouts): "Choose a system voltage to size the strings" / "600, 1000 or 1500 V. Nothing is sized until you choose.": :34 — done: "Choose a system voltage to size the strings" / "600, 1000 or 1500 V."
+- "PVGIS sent no horizon for this site, so far shading is not counted." [!J PVGIS, far shading]: :130 — done: "The weather for this site came without a horizon. The run leaves horizon shading out."
+- "Too few positions for a string" / "The roof holds ${n} position(s), and a string takes ${min} to ${max} modules. ${No string of that length fits. / A string of ${n} would fit: add it as your own option.}": :243-251 — done: "Too few positions for a string" / "The roof holds 1 position" or "${n} positions", "and a string takes ${min} to ${max} modules. No string of that length fits." / "… A string of ${n} fits. Add it as your own option."
+- Not an OND: `ApiError(422, "not_an_ond_file", str(error))` passes the parser's text through: :126 — done: the parser's text is "${file} is not an inverter file (OND): PNomConv or VMPPMax is missing." (a PAN's: "${file} is not a module file (PAN): PNom, Voc or Isc is missing."; text it cannot decode: "The app cannot read the file as text: it is in none of ${encodings}.")
 
 **A/rooftop_core/readouts.py**
-- "Choose a system voltage to size the strings": :19
-- "600, 1000 or 1500 V. Nothing is sized until you choose.": :20
-- "No string length fits this inverter": :21
-- "Change your option or remove it.": :22
-- "The OND gives no current limit per MPPT: enter the datasheet value." [!J]: :23
-- Verdict title "${n} in series[ fits]: Vmp ${v} V at STC[, inverter nominal ${v} V]" [!J Vmp, STC]: :73
-- Verdict detail "Voc at ${t} °C is ${v} V (limit ${v} V); Vmp at ${t} °C cell is ${v} V (MPPT minimum ${v} V). ${n} strings on ${n} inverter(s), DC/AC ${x}[ (${note})].[ ${currents}]" [!J heavy] [!S]: :75-81
-- MPPT over limit: "${INV-n · }MPPT … carries/carry ${a} A, over the limit of ${a} A." / "… has/have an Isc of ${a} A, over the limit of ${a} A.": :104-109
-- Option captions: "Recommended", "Your own", "${Note}[, n inverters]", "Fills the inverters/inverter", "Lower clipping" [!J]: :156-165
+- "Choose a system voltage to size the strings": :19 — right
+- "600, 1000 or 1500 V. Nothing is sized until you choose.": :20 — done: "600, 1000 or 1500 V."
+- "No string length fits this inverter": :21 — done: "No string length fits at ${v} V", its detail (A/rooftop_core/stringing.py) "A string needs at least ${n} modules for the inverter's ${v} V MPPT minimum. At most ${n} fit under ${v} V." (was "No string length fits: at least … are needed …, but at most … fit …")
+- "Change your option or remove it.": :22 — right
+- "The OND gives no current limit per MPPT: enter the datasheet value." [!J]: :23 — done: "The inverter file (OND) gives no current limit per MPPT. Enter the datasheet's value."
+- Verdict title "${n} in series[ fits]: Vmp ${v} V at STC[, inverter nominal ${v} V]" [!J Vmp, STC]: :73 — done: "A string of ${n}[ fits]: Vmp ${v} V at STC[, inverter nominal ${v} V]" (Vmp and STC kept: the Strings step's trade terms, the help defines them)
+- Verdict detail "Voc at ${t} °C is ${v} V (limit ${v} V); Vmp at ${t} °C cell is ${v} V (MPPT minimum ${v} V). ${n} strings on ${n} inverter(s), DC/AC ${x}[ (${note})].[ ${currents}]" [!J heavy] [!S]: :75-81 — done: "Voc at ${t} °C is ${v} V, limit ${v} V. Vmp at a cell temperature of ${t} °C is ${v} V, MPPT minimum ${v} V. ${n} strings on 1 inverter / ${n} inverters, DC/AC ratio ${x}[, ${note}].[ ${currents}]"
+- MPPT over limit: "${INV-n · }MPPT … carries/carry ${a} A, over the limit of ${a} A." / "… has/have an Isc of ${a} A, over the limit of ${a} A.": :104-109 — right
+- Option captions: "Recommended", "Your own", "${Note}[, n inverters]", "Fills the inverters/inverter", "Lower clipping" [!J]: :156-165 — done: "Recommended", "Your own option", "${Note}[, ${n} inverters]", "Fills the inverter" / "Fills the inverters", "Less clipping"
 - Custom refused:
-  - "${n} string(s) cannot fill ${n} inverter(s)" / "Each inverter needs a string at least. Change your option or remove it.": :179-180
-  - "At most ${n} fit: Voc at ${t} °C is ${v} V, over the limit of ${v} V.": :184
-  - "At most ${n} fit: Vmp at ${t} °C is ${v} V, over the inverter's MPPT maximum of ${v} V.": :189
-  - "At least ${n} are needed: Vmp at ${t} °C cell is ${v} V, under the MPPT minimum of ${v} V." [!J]: :194
-  - Title "${n} in series does not fit at ${v} V": :199
-- Limit note "Limit ${v} V: the lowest of the system, module (${v} V | ${v} V taken, its file gives none) and inverter (${v} V) ratings.": :223-227
+  - "${n} string(s) cannot fill ${n} inverter(s)" / "Each inverter needs a string at least. Change your option or remove it.": :179-180 — done: "1 string" / "${n} strings cannot fill 1 inverter" / "${n} inverters" / "Each inverter needs at least 1 string. Change your option or remove it."
+  - "At most ${n} fit: Voc at ${t} °C is ${v} V, over the limit of ${v} V.": :184 — right
+  - "At most ${n} fit: Vmp at ${t} °C is ${v} V, over the inverter's MPPT maximum of ${v} V.": :189 — right
+  - "At least ${n} are needed: Vmp at ${t} °C cell is ${v} V, under the MPPT minimum of ${v} V." [!J]: :194 — done: "At least ${n} are needed: Vmp at a cell temperature of ${t} °C is ${v} V, under the MPPT minimum of ${v} V."
+  - Title "${n} in series does not fit at ${v} V": :199 — done: "A string of ${n} does not fit at ${v} V"
+- Limit note "Limit ${v} V: the lowest of the system, module (${v} V | ${v} V taken, its file gives none) and inverter (${v} V) ratings.": :223-227 — done: "Limit ${v} V: the lowest of the system's, the module's (${v} V | ${v} V by default, as its file gives none) and the inverter's (${v} V) ratings."
 - Options note (in the UI under the cards):
-  - "Target DC/AC ${a}–${b}, warning above ${c}. At most ${n} strings per MPPT (${n} × ${imp} A ≤ ${lim} A), so one inverter takes ${n} strings. The least shaded strings in a row are used first, then those across rows." [!J] [!S]
-  - Variant: "The OND gives no current limit per MPPT: one string for each of its ${n} inputs at most, ${n} per MPPT, so one inverter takes ${n} strings. Enter the datasheet value of the current per MPPT."
-  - Missed: " ! ${L}: DC/AC ${x}, ${note}; …." (the " ! " is split off by the UI)
+  - "Target DC/AC ${a}–${b}, warning above ${c}. At most ${n} strings per MPPT (${n} × ${imp} A ≤ ${lim} A), so one inverter takes ${n} strings. The least shaded strings in a row are used first, then those across rows." [!J] [!S] — done: the first two sentences stay word for word, since the web reads its numbers from them (W/lib/studio/options-rules.ts, custom-fields.ts) and says them in its own words; the last: "The run uses the least shaded strings in a row first, then those across rows."
+  - Variant: "The OND gives no current limit per MPPT: one string for each of its ${n} inputs at most, ${n} per MPPT, so one inverter takes ${n} strings. Enter the datasheet value of the current per MPPT." — right (read word for word by W/lib/studio/options-rules.ts, which shows "The inverter file gives no current limit per MPPT: …")
+  - Missed: " ! ${L}: DC/AC ${x}, ${note}; …." (the " ! " is split off by the UI) — right (never shown: the web says the missed options in its own words)
   - Lines :236-251
-- Far shading lines: "Far shading: not counted, PVGIS sent no horizon for this site" / "Far shading: no horizon profile for this weather source" / "Far shading: PVGIS horizon, highest ${x}°" [!J]: :256-260
-- MPPT label "INV-${i} · MPPT ${j}": :280
-- Summary row "Losses": "Clipping ${x} % · LID ${x} % · uncertainty σ ${x} %" [!J]: :320-322
+- Far shading lines: "Far shading: not counted, PVGIS sent no horizon for this site" / "Far shading: no horizon profile for this weather source" / "Far shading: PVGIS horizon, highest ${x}°" [!J]: :256-260 — done: "Horizon not counted: the weather for this site came without one" / "Horizon not counted: this weather has none" / "Horizon from PVGIS, highest ${x}°"
+- MPPT label "INV-${i} · MPPT ${j}": :280 — right
+- Summary row "Losses": "Clipping ${x} % · LID ${x} % · uncertainty σ ${x} %" [!J]: :320-322 — right (the report's trade terms; the plain "uncertainty" leads σ)
 
 **A/rooftop_core/csv_weather.py** (refusals unless noted; ${label} is the file name or "CSV file")
-- "Choose a CSV weather file.": :37
-- "${label} cannot be read as a table of hours: ${parser message}." [!J raw parser text]: :49
-- "${label} has no hours: below its header there is no row.": :78
-- "${label}: the time cannot be read in ${n} rows, the first of them on line ${n} (${raw}). Write it as 2023-06-01 13:00, in UTC.": :84-85
-- "${label}: ${n} hour(s) is/are there more than once, the first of them ${time}. Every hour may be there once." [?]: :92-93
-- Gaps: "${label}: ${column} has no value in ${n} rows, the first of them on line ${n}. ${advice}": :120-121. Advice options:
-  - "Fill the gaps: an hour without its irradiance is not an hour of none." [?]: :104
-  - "Fill the gaps, or leave out both beam and diffuse.": :108
-  - "Fill the gaps, or leave the column out.": :133
-- "${label} has ${n} hours, not the 8,760 of a year (8,784 in a leap year). The energy of a year needs every hour of it: give a whole year.": :142-143
+- "Choose a CSV weather file.": :37 — right
+- "${label} cannot be read as a table of hours: ${parser message}." [!J raw parser text]: :49 — right (the parser's text after the colon is the one detail there is; a Details disclosure for it is the web's)
+- "${label} has no hours: below its header there is no row.": :78 — done: "${label} has a header and no rows of hours."
+- "${label}: the time cannot be read in ${n} rows, the first of them on line ${n} (${raw}). Write it as 2023-06-01 13:00, in UTC.": :84-85 — done: "${label}: the app cannot read the time in ${n} rows. The first is on line ${n}: ${raw}. Write it as 2023-06-01 13:00, in UTC."
+- "${label}: ${n} hour(s) is/are there more than once, the first of them ${time}. Every hour may be there once." [?]: :92-93 — done: "${label}: 1 hour appears" / "${n} hours appear more than once. The first is ${time}. Keep each hour once."
+- Gaps: "${label}: ${column} has no value in ${n} rows, the first of them on line ${n}. ${advice}": :120-121. Advice options: — done: "${label}: ${column} is empty in ${n} rows. The first is on line ${n}. ${advice}"
+  - "Fill the gaps: an hour without its irradiance is not an hour of none." [?]: :104 — done: "Fill the gaps in the irradiance column."
+  - "Fill the gaps, or leave out both beam and diffuse.": :108 — right
+  - "Fill the gaps, or leave the column out.": :133 — right
+- "${label} has ${n} hours, not the 8,760 of a year (8,784 in a leap year). The energy of a year needs every hour of it: give a whole year.": :142-143 — done: "${label} has ${n} hours. A year has 8,760, a leap year 8,784. Give a whole year."
 - Notes (not refusals):
-  - "${label} has no beam and diffuse irradiance. They were worked out from the global irradiance (Erbs model), which is less exact than measured values." [!J Erbs model]: :152-153
-  - "${label} has no air temperature. 25 °C was taken for every hour, so the strings are sized for 25 °C. Enter the site's lowest and highest ambient in the Strings lens.": :159-160
-  - "${label} has no wind speed. 1 m/s was taken for every hour.": :163
-  - "${label} gives the weather every ${n} minutes. Each hour is the average of its rows (the simulation takes a row as an hour).": :168-169
-  - "${label} has irradiance below zero in ${n} rows. It was taken as 0.": :183
-  - "${label} has no air temperature in ${n} rows. It was taken from the hours on either side.": :189-190
+  - "${label} has no beam and diffuse irradiance. They were worked out from the global irradiance (Erbs model), which is less exact than measured values." [!J Erbs model]: :152-153 — done: "${label} has no beam and diffuse irradiance. The app works them out from the global irradiance, less exactly than a measurement (Erbs model)."
+  - "${label} has no air temperature. 25 °C was taken for every hour, so the strings are sized for 25 °C. Enter the site's lowest and highest ambient in the Strings lens.": :159-160 — done: "${label} has no air temperature. The app takes 25 °C for every hour and sizes the strings for 25 °C. In the Strings step, enter the site's lowest and highest ambient."
+  - "${label} has no wind speed. 1 m/s was taken for every hour.": :163 — done: "${label} has no wind speed. The app takes 1 m/s for every hour."
+  - "${label} gives the weather every ${n} minutes. Each hour is the average of its rows (the simulation takes a row as an hour).": :168-169 — done: "${label} gives the weather every ${n} minutes. The app averages the rows of each hour: the run takes one row an hour."
+  - "${label} has irradiance below zero in ${n} rows. It was taken as 0.": :183 — done: "${label} has irradiance below zero in ${n} rows. The app takes it as 0."
+  - "${label} has no air temperature in ${n} rows. It was taken from the hours on either side.": :189-190 — done: "${label} has no air temperature in ${n} rows. The app takes it from the hours on either side."
 
 **A/rooftop_core/placement.py** (layout notes, shown as "Layout · Array lens" notes)
-- "Row pitch ${x} m is under a table's depth on plan plus 0.3 m, so ${y} m is used." [!J "depth on plan"]: :186-187
-- "Unit gap ${g} m keeps east-west units shade-free in the window." [?]: :292
+- "Row pitch ${x} m is under a table's depth on plan plus 0.3 m, so ${y} m is used." [!J "depth on plan"]: :186-187 — done: "Row spacing ${x} m is less than a row's depth plus 0.3 m. The app uses ${y} m."
+- "Unit gap ${g} m keeps east-west units shade-free in the window." [?]: :292 — done: "Unit gap ${g} m keeps east-west units free of shade in the shade-free hours."
 
-**Out of scope but seen in the UI.** Loss step labels from A/rooftop_core/simulation.py:382-409 (listed under Performance). BOM AC cable spec "Inverter to ACDB, sized for ${A} A at ${V} V AC" from A/rooftop_core/bom.py:137 [!J ACDB].
+**Out of scope but seen in the UI.** Loss step labels from A/rooftop_core/simulation.py:382-409 (listed under Performance). BOM AC cable spec "Inverter to ACDB, sized for ${A} A at ${V} V AC" from A/rooftop_core/bom.py:137 [!J ACDB]. — done: "Inverter to ACDB, sized for ${A} A at ${V} V AC" right (the bill's trade words); without the OND's voltage "… at 415 V AC by default, as the inverter file (OND) gives no output voltage" (was "…, taken as the OND gives no output voltage")
+
+**Also said by count or by its one name, not rows above.** The summary's "Stringing" row "${s} in series × ${n} strings on 1 inverter" / "${n} inverters" (was "inverter(s)", A/rooftop_core/export/summary.py); its row "Specific yield" is "Yield" (board 12); the bill of materials' "AC distribution board" "1 incomer" / "${n} incomers, 1 outgoing" (was "incomer(s)", A/rooftop_core/bom.py); a file asked before an option is chosen: "Choose an option first. This design has …" (was "a stringing option", A/rooftop_api/services/export.py).
 
 ## Shared UI controls (appear across screens)
 
