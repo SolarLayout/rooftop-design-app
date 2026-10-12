@@ -5,8 +5,7 @@ import { FailedRow } from "@/components/shell/UnderTheTitle";
 import { classNames } from "@/components/ui/class-names";
 import type { ExportedFile } from "@/lib/api";
 import { csvColumnsOf } from "@/lib/handover/csv-columns";
-import { csvHeadOf, hourlyFailedOf, type CsvHead } from "@/lib/handover/csv-head";
-import { FactRows } from "./FactRows";
+import { cellShownOf, csvHeadOf, hourlyFailedOf, type CsvHead } from "@/lib/handover/csv-head";
 import { useBlobText } from "./use-blob-text";
 
 type Props = {
@@ -18,26 +17,24 @@ type Props = {
   onTryAgain: () => void;
 };
 
-// The board "Handover, previews", the hourly data: the table in a card (surface-1, radius 18, shadow-card), the header and the
-// rows in mono 13, the time column in text-2, the figures at the right; the caption under the table. The card scrolls sideways
-// where the six columns do not fit, never the page.
-const CARD = "overflow-x-auto rounded-card border border-line bg-surface-1 px-6 pt-3 pb-5 shadow-card";
-const HEAD = "h-9 border-b border-line px-2 type-mono-touch desktop:type-mono font-medium whitespace-nowrap text-text-2";
-const CELL = "h-9 border-b border-line-subtle px-2 type-mono-touch desktop:type-mono whitespace-nowrap";
+// The board "V2 · 9 · Handover and Home", the hourly data: the table in a bordered box, each column by its plain name with
+// its unit and the file's own name under it (audit V2-94), the rows in mono, the figures at the right; the caption under the
+// table. The box scrolls sideways where the six columns do not fit, never the page.
+const CARD = "overflow-x-auto rounded-row border border-line";
+const HEAD = "px-3 py-2 align-bottom";
+const CELL = "h-9 border-t border-line-subtle px-3 type-mono-touch desktop:type-mono whitespace-nowrap";
 const TIME = 0;
 
 function Rows({ head }: { head: CsvHead }) {
   const align = (column: number) => (column === TIME ? "text-left" : "text-right");
   return (
-    <table data-testid="csv-table" className="w-full border-collapse">
-      <caption data-testid="csv-caption" className="caption-bottom pt-2.5 text-left type-body-touch desktop:type-body text-text-2">
-        {head.caption}
-      </caption>
+    <table data-testid="csv-table" aria-label="The first hours of the file" className="w-full border-collapse">
       <thead>
         <tr>
-          {head.header.map((name, column) => (
-            <th key={name} scope="col" className={classNames(HEAD, align(column))}>
-              {name}
+          {csvColumnsOf(head.header).map((column, index) => (
+            <th key={column.file} scope="col" className={classNames(HEAD, align(index))}>
+              <span className="block type-strong-touch desktop:type-strong">{column.name}</span>
+              {column.under ? <span className="block type-unit font-normal text-text-3">{column.under}</span> : null}
             </th>
           ))}
         </tr>
@@ -46,8 +43,8 @@ function Rows({ head }: { head: CsvHead }) {
         {head.rows.map((row) => (
           <tr key={row[TIME]} data-testid="csv-row">
             {row.map((cell, column) => (
-              <td key={column} className={classNames(CELL, align(column), column === TIME && "text-text-2")}>
-                {cell}
+              <td key={column} className={classNames(CELL, align(column))}>
+                {cellShownOf(column, cell)}
               </td>
             ))}
           </tr>
@@ -58,8 +55,8 @@ function Rows({ head }: { head: CsvHead }) {
 }
 
 /**
- * The body of the hourly data (plan/phase-09-plan.md, step 20, decision 8): the CSV asked once per edit and kept, its header
- * and first eight rows as the file holds them, the caption counting the file's rows, and under it what each column is. While
+ * The body of the hourly data (plan/phase-09-plan.md, step 20, decision 8; V2 · 9): the CSV asked once per edit and kept,
+ * its columns by their plain names and its first five hours, the caption counting the file's hours. While
  * the file comes, a breathing block of the table's shape; when it did not, the API's words with Try again.
  */
 export function HourlyPreview({ file, failure, onTryAgain }: Props) {
@@ -76,7 +73,9 @@ export function HourlyPreview({ file, failure, onTryAgain }: Props) {
       <section aria-label="The first rows of the file" tabIndex={0} className={classNames(CARD, "focus-ring")}>
         <Rows head={head} />
       </section>
-      <FactRows title="Columns" rows={csvColumnsOf(head.header)} mono nameWidth="m" testId="csv-column" />
+      <p data-testid="csv-caption" className="type-body-touch desktop:type-body text-text-2">
+        {head.caption}
+      </p>
     </div>
   );
 }

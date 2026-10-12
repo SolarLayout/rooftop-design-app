@@ -50,6 +50,8 @@ const FILE_NAMES: Record<ExportKind, string> = {
   kmz: "rooftop-design.kmz",
   csv: "rooftop-design-hourly.csv",
   sld: "rooftop-design-single-line-diagram.png",
+  bom: "rooftop-design-bill-of-materials.csv",
+  cables: "rooftop-design-cable-schedule.csv",
   rtd: "rooftop-design.rtd",
   zip: "rooftop-design.zip",
 };

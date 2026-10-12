@@ -1,5 +1,6 @@
-"""The files of a design: report, drawing, Google Earth model, hourly data, single-line diagram; the
-project file, which is of the request alone; the zip of them all; and the pages of the report as images."""
+"""The files of a design: report, drawing, Google Earth model, hourly data, single-line diagram, bill of
+materials, cable schedule; the project file, which is of the request alone; the zip of them all; and the
+pages of the report as images."""
 
 import base64
 import hashlib
@@ -104,13 +105,15 @@ def rtd_bytes(project: Project) -> bytes:
     return project.to_text().encode("utf-8")
 
 
-# The files, one by one: the five of the design and the project file. The zip holds them all, in this order.
+# The files, one by one: the seven of the design and the project file. The zip holds them all, in this order.
 IN_THE_ZIP: dict[str, Kind] = {
     "pdf": Kind("application/pdf", "-report.pdf", _writer("export_pdf_bytes"), drawn=True, dated=True),
     "dxf": Kind("image/vnd.dxf", "-layout.dxf", _writer("export_dxf_bytes")),
     "kmz": Kind("application/vnd.google-earth.kmz", ".kmz", _writer("export_kmz_bytes")),
     "csv": Kind("text/csv; charset=utf-8", "-hourly.csv", _writer("export_csv_bytes")),
     "sld": Kind("image/png", "-single-line-diagram.png", _writer("export_sld_bytes"), drawn=True),
+    "bom": Kind("text/csv; charset=utf-8", "-bill-of-materials.csv", _writer("export_bom_bytes")),
+    "cables": Kind("text/csv; charset=utf-8", "-cable-schedule.csv", _writer("export_cables_bytes")),
     "rtd": Kind("application/json", ".rtd", rtd_bytes, needs_design=False),
 }
 ZIP = "zip"

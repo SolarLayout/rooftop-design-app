@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { classNames } from "@/components/ui/class-names";
-import { Icon } from "@/components/ui/Icon";
+import { IconButton } from "@/components/ui/IconButton";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { Skeleton } from "@/components/ui/Skeleton";
 import type { Deliverable } from "@/lib/flow/deliverables/items";
@@ -8,7 +8,7 @@ import { pathOfItem } from "@/lib/routes";
 
 /**
  * Whether the row's item is open: at its own address (`here`: the row says so, `aria-current`), or shown beside the list
- * at the list's own address on desktop and tablet (`beside`: the row looks open there, and on phone, where the list
+ * at the list's own address on desktop (`beside`: the row looks open there, and on touch, where the list
  * stands alone, like the others).
  */
 export type Open = "no" | "here" | "beside";
@@ -16,41 +16,33 @@ export type Open = "no" | "here" | "beside";
 type Props = {
   row: Deliverable;
   open: Open;
-  /** The item's file is on its way: a turning ring stands in the icon's place (plan/phase-09-plan.md, decision 12). */
+  /** The item's file is on its way: a turning ring stands in the Download's place (plan/phase-09-plan.md, decision 12). */
   isOnItsWay?: boolean;
+  /** Download was pressed; the press cannot be used while the item waits. */
+  onDownload: () => void;
 };
 
-// The board's row of 64 (components.md, "Deliverable row"): the badge of 44 by 28, the name, a line of facts, then a
-// download icon for a file or a chevron for a view; on phone every row has the chevron, since every row opens a screen.
+// The board's row (V2 · 9, D105): 60 high, 64 on touch, its name and what it is with its size, then its format alone as a
+// badge and its own Download. The row opens the file's preview; the Download beside it saves the file.
 const ROW = classNames(
-  "flex min-h-16 items-center gap-3.5 rounded-row border px-3.5 text-left select-none",
-  "press-motion focus-ring hovered:bg-surface-2",
+  "flex min-h-16 min-w-0 grow flex-col justify-center gap-0.5 rounded-row border px-3 py-2 text-left select-none",
+  "press-motion focus-ring hovered:bg-surface-2 desktop:min-h-15",
 );
 const OPEN: Record<Open, string> = {
   no: "border-transparent bg-transparent",
-  here: "border-note-line bg-surface-2",
-  beside: "border-transparent bg-transparent tablet:border-note-line tablet:bg-surface-2",
+  here: "border-line-strong bg-surface-2",
+  beside: "border-transparent bg-transparent desktop:border-line-strong desktop:bg-surface-2",
 };
-const BADGE = "flex h-7 w-11 shrink-0 items-center justify-center rounded-control type-unit font-medium";
-const BADGE_OPEN: Record<Open, string> = {
-  no: "bg-control-active",
-  here: "bg-accent text-accent-ink",
-  beside: "bg-control-active tablet:bg-accent tablet:text-accent-ink",
-};
-const ICON: Record<Open, string> = { no: "text-text-3", here: "text-text", beside: "text-text-3 tablet:text-text" };
+const BADGE = "rounded-swatch border border-line px-1.5 py-0.5 type-unit text-text-2";
 
-export function DeliverableRow({ row, open, isOnItsWay = false }: Props) {
-  // Before options the download icon is dim: the file cannot be made. The words and the badge stay as they are, since the
-  // row is a link that works and its facts say what is missing (dimmed text would fall under the contrast asked); at the
-  // first load the skeleton says it instead.
-  const isDim = row.waits && row.facts !== null;
+export function DeliverableRow({ row, open, isOnItsWay = false, onDownload }: Props) {
+  // Before options the Download cannot be used: the file cannot be made. The words stay as they are, since the row is a link
+  // that works and its line says what is missing; at the first load the skeleton says it instead.
+  const canDownload = !row.waits && !isOnItsWay;
   return (
-    <Link href={pathOfItem(row.id)} aria-current={open === "here" ? "page" : undefined} data-testid="deliverable" className={classNames(ROW, OPEN[open])}>
-      <span aria-hidden="true" className={classNames(BADGE, BADGE_OPEN[open])}>
-        {row.badge}
-      </span>
-      <span className="flex min-w-0 grow flex-col gap-0.5">
-        <span className="font-medium">{row.name}</span>
+    <div data-testid="deliverable-row" className="relative flex items-center gap-3">
+      <Link href={pathOfItem(row.id)} aria-current={open === "here" ? "page" : undefined} data-testid="deliverable" className={classNames(ROW, OPEN[open], "pr-28")}>
+        <span className="type-strong-touch desktop:type-strong">{row.name}</span>
         {row.facts === null ? (
           <Skeleton kind="text" className="my-1 w-44" />
         ) : (
@@ -58,17 +50,20 @@ export function DeliverableRow({ row, open, isOnItsWay = false }: Props) {
             {row.facts}
           </span>
         )}
-      </span>
-      <span className={classNames("flex shrink-0", ICON[open], isDim && "opacity-disabled")}>
+      </Link>
+      {/* The badge and the Download stand over the row's right end, apart from the link: a press of Download opens nothing. */}
+      <span className="absolute right-2 flex items-center gap-2">
+        <span aria-hidden="true" className={BADGE}>
+          {row.badge}
+        </span>
         {isOnItsWay ? (
-          <ProgressRing size={16} label="On its way" />
+          <span className="flex size-10 items-center justify-center">
+            <ProgressRing size={16} label="On its way" />
+          </span>
         ) : (
-          <>
-            <Icon name="chevron-right" size={18} className={row.opens === "file" ? "tablet:hidden" : undefined} />
-            {row.opens === "file" ? <Icon name="download" size={18} className="hidden tablet:block" /> : null}
-          </>
+          <IconButton kind="quiet" icon="download" label={`Download ${row.name}`} aria-disabled={canDownload ? undefined : "true"} onClick={canDownload ? onDownload : undefined} />
         )}
       </span>
-    </Link>
+    </div>
   );
 }

@@ -49,16 +49,16 @@ describe("the lenses of the Studio", () => {
 });
 
 describe("the items of Handover", () => {
-  test("eight, in the order of the list", () => {
+  test("eight, in the order of the list, by who they are for (V2 · 9)", () => {
     expect(HANDOVER_ITEMS.map((item) => [item.id, item.name])).toEqual([
       ["report", "Design report"],
       ["single-line-diagram", "Single-line diagram"],
       ["bill-of-materials", "Bill of materials"],
-      ["cable-schedule", "DC cable schedule"],
+      ["cable-schedule", "Cable schedule"],
       ["cad-layout", "CAD layout"],
-      ["earth-model", "Google Earth model"],
-      ["hourly-data", "Hourly data"],
       ["project-file", "Project file"],
+      ["hourly-data", "Hourly data"],
+      ["earth-model", "Google Earth model"],
     ]);
   });
 

@@ -172,13 +172,16 @@ describe("a download", () => {
     expect(toasts).toEqual([]);
   });
 
-  test("an item that is a view has no file, and nothing is asked", async () => {
-    const { store, calls } = made();
+  test("the bill of materials and the cable schedule are files too (V2 · 9): each asks for its CSV", async () => {
+    const { store, calls, answer } = made();
 
-    await store.getState().download("bill-of-materials");
+    const first = store.getState().download("bill-of-materials");
+    const second = store.getState().download("cable-schedule");
+    answer(0, "Pune-demo-roof-bill-of-materials.csv");
+    answer(1, "Pune-demo-roof-cable-schedule.csv");
+    await Promise.all([first, second]);
 
-    expect(calls).toEqual([]);
-    expect(statusOf(store.getState(), "bill-of-materials")).toEqual({ status: "idle" });
+    expect(calls.map((call) => call.kind)).toEqual(["bom", "cables"]);
   });
 
   test("while no design is open nothing is asked", async () => {

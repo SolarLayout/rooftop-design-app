@@ -8,16 +8,16 @@ type Props = {
 };
 
 /**
- * The body of the Google Earth model (plan/phase-09-plan.md, step 19, decision 8; the board "Handover, previews"): two
- * columns on desktop, "In the file" in the KML's own names and "Not in the file" in words, one under the other below that.
+ * The body of the Google Earth model (plan/phase-09-plan.md, step 19, decision 8; V2 · 9, audit V2-93): "In the file" in the
+ * KML's own names, and one line under them on what Google Earth does not draw.
  */
 export function EarthPreview({ files }: Props) {
   const view = earthViewOf(files);
 
   return (
-    <div data-testid="earth-model" className="grid items-start gap-6 desktop:grid-cols-2">
+    <div data-testid="earth-model" className="flex flex-col gap-3">
       <FactRows title="In the file" rows={view.inside} mono testId="kml-inside" />
-      <FactRows title="Not in the file" rows={view.notInside} nameWidth="l" testId="kml-not-inside" />
+      <p className="type-body-touch desktop:type-body text-text-2">{view.flat}</p>
     </div>
   );
 }

@@ -17,21 +17,21 @@ type Props = {
 
 // The paper (components.md, "Paper preview"; the boards "Handover" on three sizes) takes the focus, so that Left and Right
 // turn its pages.
-const BODY = "flex min-w-0 flex-col gap-3 tablet:gap-4 desktop:flex-row desktop:items-start";
+const BODY = "flex min-w-0 flex-col gap-3 tablet:gap-4";
 const FOCUSED_PAPER = classNames(PAPER, "focus-ring");
-// The thumbnails: on desktop a column of 132 at the right of the paper, 8 apart; on tablet a row of 72 under the paper, 6
-// apart; on phone a row of 56, 4 apart, that scrolls sideways if it must. Each is a button: the page scaled down in a slot of
+// The thumbnails, under the paper (V2 · 9: the report takes the preview's width): a row of 96 on desktop, 8 apart; of 72 on
+// tablet, 6 apart; on phone of 56, 4 apart, that scrolls sideways if it must. Each is a button: the page scaled down in a slot of
 // 70 (45, 35) and its caption, "2 · Layout" on desktop and tablet, the number alone on phone; the current one has the accent
 // border on surface-2.
-const THUMBNAILS = "flex min-w-0 gap-1 overflow-x-auto tablet:gap-1.5 desktop:w-33 desktop:shrink-0 desktop:flex-col desktop:gap-2 desktop:overflow-visible";
+const THUMBNAILS = "flex min-w-0 gap-1 overflow-x-auto tablet:gap-1.5 desktop:gap-2";
 const THUMBNAIL = classNames(
   "flex w-14 shrink-0 flex-col items-center gap-1.5 rounded-control border p-0.75 text-left select-none",
-  "tablet:w-18 tablet:p-1 desktop:w-33 desktop:items-start desktop:p-2",
+  "tablet:w-18 tablet:p-1 desktop:w-24 desktop:items-start desktop:p-1.5",
   "press-motion focus-ring hovered:bg-surface-2",
 );
 const CURRENT = "border-accent bg-surface-2 text-text";
 const OTHER = "border-line bg-transparent text-text-2";
-const SLOT = "flex h-8.75 w-full items-center justify-center tablet:h-11.25 desktop:h-17.5";
+const SLOT = "flex h-8.75 w-full items-center justify-center tablet:h-11.25 desktop:h-15";
 const THUMB_IMAGE = "block h-auto max-h-full w-auto max-w-full rounded-swatch";
 // The caption: 11 on tablet, where the thumbnail is 72 wide and "5 · Schedule" at 12 would not fit; 12 on desktop, as the board.
 const CAPTION = "hidden max-w-full truncate type-unit tablet:block";

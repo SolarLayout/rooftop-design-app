@@ -3,14 +3,14 @@ import { arePagesWantedOf, NOT_MADE, pageViewOf, previewBodyOf } from "./page-vi
 import { BEFORE_A_VOLTAGE, DEMO } from "./test-fixtures";
 
 const UNREACHABLE = { code: "api_unreachable", message: "The server cannot be reached. Check the connection and try again." };
-const AT_REST = { name: "Pune demo roof", design: DEMO, designStatus: "idle", failure: null, pages: null } as const;
+const AT_REST = { name: "Pune demo roof", design: DEMO, designStatus: "idle", failure: null, pages: null, sizes: {} } as const;
 
 describe("the design (plan/phase-09-plan.md, decision 11)", () => {
   test("at rest: the rows with their facts, nothing dimmed, no decision, nothing failed", () => {
     const view = pageViewOf(AT_REST);
 
     expect(view.kind).toBe("design");
-    expect(view.rows[1]!.facts).toBe("22 strings of 29 × 560 Wp · 1 inverter, 6 MPPT");
+    expect(view.rows[1]!.facts).toBe("1 inverter, 6 MPPT, 22 strings");
     expect(view.rows.every((row) => !row.waits)).toBe(true);
     expect(view.isDimmed).toBe(false);
     expect(view.decision).toBeNull();
@@ -21,7 +21,7 @@ describe("the design (plan/phase-09-plan.md, decision 11)", () => {
     const view = pageViewOf({ ...AT_REST, designStatus });
 
     expect(view.kind).toBe("design");
-    expect(view.rows[2]!.facts).toBe("638 modules · 27 tables · 1,681 m DC cable");
+    expect(view.rows[2]!.facts).toBe("638 modules, 1 inverter, 7 lines");
     expect(view.isDimmed).toBe(true);
   });
 });
@@ -31,13 +31,13 @@ describe("the first load", () => {
     const view = pageViewOf({ ...AT_REST, design: null, designStatus: "running" });
 
     expect(view.kind).toBe("loading");
-    expect(view.rows.slice(0, 7).every((row) => row.facts === null && row.waits)).toBe(true);
-    expect(view.rows[7]).toMatchObject({ facts: "Pune-demo-roof.rtd · opens again here", waits: false });
+    expect(view.rows.filter((row) => row.id !== "project-file").every((row) => row.facts === null && row.waits)).toBe(true);
+    expect(view.rows.find((row) => row.id === "project-file")).toMatchObject({ facts: "The whole design, to open again in the app", waits: false });
     expect(view.isDimmed).toBe(false);
   });
 
   test("before the design itself is there", () => {
-    const view = pageViewOf({ name: null, design: null, designStatus: "idle", failure: null, pages: null });
+    const view = pageViewOf({ name: null, design: null, designStatus: "idle", failure: null, pages: null, sizes: {} });
 
     expect(view.kind).toBe("loading");
     expect(view.rows.every((row) => row.facts === null && row.waits)).toBe(true);
@@ -54,8 +54,8 @@ describe("before options", () => {
       message: "600, 1000 or 1500 V. Nothing is sized until you choose.",
       path: "/studio/strings",
     });
-    expect(view.rows.slice(0, 7).every((row) => row.waits && row.facts === "Choose a system voltage to size the strings")).toBe(true);
-    expect(view.rows[7]!.waits).toBe(false);
+    expect(view.rows.filter((row) => row.id !== "project-file").every((row) => row.waits && row.facts === "Choose a system voltage to size the strings")).toBe(true);
+    expect(view.rows.find((row) => row.id === "project-file")?.waits).toBe(false);
   });
 });
 
@@ -64,7 +64,7 @@ describe("a run that failed", () => {
     const view = pageViewOf({ ...AT_REST, designStatus: "failed", failure: UNREACHABLE });
 
     expect(view.kind).toBe("failed");
-    expect(view.rows[1]!.facts).toBe("22 strings of 29 × 560 Wp · 1 inverter, 6 MPPT");
+    expect(view.rows[1]!.facts).toBe("1 inverter, 6 MPPT, 22 strings");
     expect(view.isDimmed).toBe(false);
     expect(view.failed).toEqual({
       title: "The files were not updated",
@@ -79,7 +79,7 @@ describe("a run that failed", () => {
     const view = pageViewOf({ ...AT_REST, design: null, designStatus: "failed", failure: UNREACHABLE });
 
     expect(view.kind).toBe("failed");
-    expect(view.rows.slice(0, 7).every((row) => row.facts === NOT_MADE && row.waits)).toBe(true);
+    expect(view.rows.filter((row) => row.id !== "project-file").every((row) => row.facts === NOT_MADE && row.waits)).toBe(true);
     expect(view.failed).toMatchObject({ title: "The files were not made", detail: "There are no files yet", action: "Try again" });
   });
 
@@ -87,14 +87,14 @@ describe("a run that failed", () => {
   test("at the first load, every row that waits says it was not made; the project file keeps its own facts", () => {
     const view = pageViewOf({ ...AT_REST, design: null, designStatus: "failed", failure: UNREACHABLE });
 
-    expect(NOT_MADE).toBe("Not made · the run failed");
-    expect(view.rows.slice(0, 7).every((row) => row.facts === NOT_MADE && row.about === NOT_MADE && row.waits)).toBe(true);
-    expect(view.rows[7]).toMatchObject({ facts: "Pune-demo-roof.rtd · opens again here", waits: false });
+    expect(NOT_MADE).toBe("Not made: the run failed");
+    expect(view.rows.filter((row) => row.id !== "project-file").every((row) => row.facts === NOT_MADE && row.about === NOT_MADE && row.waits)).toBe(true);
+    expect(view.rows.find((row) => row.id === "project-file")).toMatchObject({ facts: "The whole design, to open again in the app", waits: false });
   });
 
   test("a project not yet named at the first load: its file waits without saying it was not made", () => {
-    const view = pageViewOf({ name: null, design: null, designStatus: "failed", failure: UNREACHABLE, pages: null });
-    expect(view.rows[7]).toMatchObject({ facts: null, waits: true });
+    const view = pageViewOf({ name: null, design: null, designStatus: "failed", failure: UNREACHABLE, pages: null, sizes: {} });
+    expect(view.rows.find((row) => row.id === "project-file")).toMatchObject({ facts: null, waits: true });
   });
 
   test("with a design of before, the rows keep its facts", () => {
@@ -118,8 +118,7 @@ describe("what an item's preview holds under its head", () => {
   test("a first run that failed: nothing under the note for every item that waits; the project file is still there", () => {
     const view = pageViewOf({ ...AT_REST, design: null, designStatus: "failed", failure: UNREACHABLE });
 
-    for (let index = 0; index < 7; index += 1) expect(previewBodyOf(view, rowOf(view, index))).toBe("nothing");
-    expect(previewBodyOf(view, rowOf(view, 7))).toBe("body");
+    for (const row of view.rows) expect([row.id, previewBodyOf(view, row)]).toEqual([row.id, row.id === "project-file" ? "body" : "nothing"]);
   });
 
   test("a run that failed with a design of before: the bodies of before stay", () => {

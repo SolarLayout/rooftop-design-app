@@ -1,5 +1,6 @@
 # Copied from rooftop-design (SolarLayout/rooftop-design) at commit bf2cb67.
-"""Exports: PDF report, DXF layout, KMZ, hourly CSV and the SLD (decision 18).
+"""Exports: PDF report, DXF layout, KMZ, hourly CSV, the SLD (decision 18), and the bill of materials and
+the cable schedule as CSV (V2 · 9).
 
 Every export comes in two forms: ``export_x_bytes(design)`` returns the file as
 bytes, ``export_x(design, path)`` writes those bytes to a file.
@@ -7,6 +8,7 @@ bytes, ``export_x(design, path)`` writes those bytes to a file.
 
 from __future__ import annotations
 
+import csv
 import io
 import zipfile
 from datetime import date
@@ -23,6 +25,7 @@ from .. import plots  # noqa: E402
 from ..geo import local_to_lonlat  # noqa: E402
 from ..io.pvsyst import Inverter  # noqa: E402
 from ..project import Design  # noqa: E402
+from ..readouts import bill_of_materials, cables  # noqa: E402
 from .report import A4_L, need_option, report_pages  # noqa: E402
 from .report import schedule_pages as schedule_pages  # noqa: E402
 from .summary import structure_label as structure_label  # noqa: E402
@@ -71,6 +74,30 @@ def export_csv_bytes(d: Design) -> bytes:
     df = o.result.hourly.copy()
     df.index.name = "time_utc_hour_start"
     return df.round(3).to_csv(lineterminator="\n").encode("utf-8")
+
+
+def _csv_bytes(head: list[str], rows: list[list[object]]) -> bytes:
+    out = io.StringIO()
+    writer = csv.writer(out, lineterminator="\n")
+    writer.writerow(head)
+    writer.writerows(rows)
+    return out.getvalue().encode("utf-8")
+
+
+def export_bom_bytes(d: Design) -> bytes:
+    """The bill of materials of the chosen option, one line an item, as Handover's table lists it."""
+    o = need_option(d)
+    lines = bill_of_materials(d, o)
+    return _csv_bytes(["Item", "Specification", "Quantity", "Unit"], [[ln.item, ln.spec, f"{ln.qty:g}", ln.unit] for ln in lines])
+
+
+def export_cables_bytes(d: Design) -> bytes:
+    """The cable schedule of the chosen option, one row a string, as Handover's table lists it."""
+    o = need_option(d)
+    head = ["String", "Inverter", "MPPT", "Modules", "Voc cold (V)", "Isc (A)", "DC cable (m)", "Drop (%)", "Cable"]
+    rows = [[r.string, r.inverter, r.mppt, r.modules, f"{r.voc_cold_v:.1f}", f"{r.isc_a:.2f}", f"{r.length_m:.1f}",
+             f"{r.drop_pct:.2f}", r.size] for r in cables(d, o)]
+    return _csv_bytes(head, rows)
 
 
 def export_dxf(d: Design, path: str | Path) -> None:

@@ -37,7 +37,7 @@ export type ScheduleView = {
 };
 
 const TOTAL = "total";
-export const SCHEDULE_COPIED = "DC cable schedule copied as a table";
+export const SCHEDULE_COPIED = "Copied";
 
 /** The most a string's cable drops of its voltage at the maximum power point, as the engine sizes it. */
 const DROP_LIMIT_PCT = 1;
@@ -90,9 +90,9 @@ function totalOf(option: DesignOption): ScheduleLine {
 }
 
 function captionOf(option: DesignOption, sort: Sort | null): string {
-  if (sort === null) return `The DC cable schedule of option ${option.letter}, in the engine's order, by string`;
+  if (sort === null) return `The cable schedule of option ${option.letter}, by string`;
   const head = COLUMNS.find((column) => column.key === sort.key)?.head ?? sort.key;
-  return `Sorted by ${head}, ${sort.direction === "descending" ? "downwards" : "upwards"}. The order of the engine, by string, is the default`;
+  return `Sorted by ${head}, ${sort.direction === "descending" ? "downwards" : "upwards"}. By string unless sorted`;
 }
 
 /** The schedule of *option* in the order of *sort*, the engine's order without one. */

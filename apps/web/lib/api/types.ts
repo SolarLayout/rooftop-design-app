@@ -70,4 +70,4 @@ export type ReportPages = Answers["ReportPages"];
 export type ReportPage = Answers["ReportPage"];
 export type OpenedProject = Answers["OpenedProject"];
 
-export type ExportKind = "pdf" | "dxf" | "kmz" | "csv" | "sld" | "rtd" | "zip";
+export type ExportKind = "pdf" | "dxf" | "kmz" | "csv" | "sld" | "bom" | "cables" | "rtd" | "zip";
