@@ -96,6 +96,7 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | V2 · 3 · The Studio's first open (approved, D97) | `V2FirstOpen.dc.html`, `V2FirstOpenTablet.dc.html`, `V2FirstOpenPhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
 | V2 · 4 · Find (approved, D98) | `V2Find.dc.html`, `V2FindTablet.dc.html`, `V2FindPhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
 | V2 · 5 · Problems (approved, D101) | `V2Problems.dc.html`, `V2ProblemsTablet.dc.html`, `V2ProblemsPhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
+| V2 · 6 · The Strings step (approved, D102) | `V2Strings.dc.html`, `V2StringsTablet.dc.html`, `V2StringsPhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
 
 Screens still to draw are listed in `plan/phase-00-design.md`.
 
