@@ -3,19 +3,16 @@
 import { SectionHeading } from "@/components/shell/help/SectionHeading";
 import { ANY_DATE } from "@/lib/flow/day-choices";
 import { useId, useState } from "react";
-import { useProject, useResults, useStores, useView } from "@/components/shell/stores";
-import { useSun } from "@/components/scene/use-sun";
+import { useProject, useStores, useView } from "@/components/shell/stores";
 import { classNames } from "@/components/ui/class-names";
 import { NumberField } from "@/components/ui/NumberField";
 import { Segmented } from "@/components/ui/Segmented";
 import { Select } from "@/components/ui/Select";
-import { Stat } from "@/components/ui/Stat";
 import { Switch } from "@/components/ui/Switch";
 import { hourOf } from "@/lib/geometry/keepout";
 import { projectOf } from "@/lib/stores/project-store";
-import { sunFailureOf } from "@/lib/stores/results-store";
-import { onTheRoofOf, sunTabOf, type OnTheRoof, type SunTab } from "@/lib/stores/view-store";
-import { dateOf, dayOfChoice, dayOfYearOf, daysOf, designDayLineOf, designDayOfYear, partsOf, sunAtOf } from "@/lib/flow/sun-time";
+import { onTheRoofOf, sunTabOf, type OnTheRoof } from "@/lib/stores/view-store";
+import { dateOf, dayOfChoice, dayOfYearOf, daysOf, designDayLineOf, designDayOfYear, partsOf } from "@/lib/flow/sun-time";
 import { ReadOut } from "./inspector-look";
 import { ShadeMapSection, ShadingSection } from "./SunShading";
 import { SunTimeline } from "./Time";
@@ -79,46 +76,24 @@ function DaySection({ size }: { size: Size }) {
   );
 }
 
-/** Where the sun stands at the time: its height and its bearing, as tiles. */
-function SunAtSection() {
-  const sun = useSun();
-  const time = useTime();
-  const tiles = sunAtOf(sun);
-  const failure = useResults(sunFailureOf);
-  const heading = useId();
-  return (
-    <section aria-labelledby={heading} className="flex flex-col gap-3">
-      <SectionHeading id={heading} help="studio.section.sun-at-the-hour">
-        Sun at {hourOf(time.time.hour)}
-      </SectionHeading>
-      {tiles ? (
-        <dl className="grid grid-cols-2 gap-2">
-          <Stat look="tile" label="Height" value={tiles.height.value} unit={tiles.height.unit} />
-          <Stat look="tile" label="Bearing" value={tiles.bearing.value} unit={tiles.bearing.unit} />
-        </dl>
-      ) : (
-        <p className="type-body-touch desktop:type-body text-text-2">{time.day ? "The sun is down" : failure ? "The sun was not fetched" : "The sun's day is on its way"}</p>
-      )}
-    </section>
-  );
-}
-
-type Switched = { what: keyof OnTheRoof; label: string; line: (window: string) => string };
+type Switched = { what: keyof OnTheRoof | "shadeMap"; label: string; line: (window: string) => string };
 
 const ON_THE_ROOF: readonly Switched[] = [
   { what: "sunPath", label: "Sun path", line: () => "The arc the sun follows on this day" },
-  { what: "window", label: "Shade-free window", line: (window) => `Thick part of the arc, ${window}` },
-  { what: "shadowOutlines", label: "Calculated shadow outlines", line: () => "The engine's shadows, drawn over what you see" },
+  { what: "window", label: "Shade-free hours", line: (window) => `The thick part of the arc, ${window}` },
+  { what: "shadowOutlines", label: "Shadow outlines", line: () => "The shadows the app computed, dashed, to compare" },
+  { what: "shadeMap", label: "Shade map on the modules", line: () => "Each module coloured by its loss to shade" },
 ];
 
 /**
- * What the Sun lens draws on the roof (the boards "Studio, Sun lens" and "Sun path and shadow outlines";
- * plan/phase-06-plan.md, decision 16): the sun path, its window thicker, and the engine's shadow outlines.
- * The window is of the path: it is dim while the path is off. Of the view, not of the design.
+ * What the Sun view draws on the roof (V2 · 7, D103; the board "The Roof and Array steps"; plan/phase-06-plan.md, decision
+ * 16): the sun path, its shade-free hours thicker, the engine's shadow outlines, and the shade map on the modules. The hours
+ * are of the path: they are dim while the path is off. Of the view, not of the design.
  */
 function OnTheRoofSection({ size }: { size: Size }) {
   const { view } = useStores();
   const shown = useView(onTheRoofOf);
+  const tab = useView(sunTabOf);
   const project = useProject(projectOf);
   const heading = useId();
   const window = project ? `${hourOf(project.array.window_start_h)} to ${hourOf(project.array.window_end_h)}` : "";
@@ -127,12 +102,13 @@ function OnTheRoofSection({ size }: { size: Size }) {
       <SectionHeading id={heading} help="studio.section.on-the-roof">
         On the roof
       </SectionHeading>
-      <div className={classNames("flex flex-col", size === "phone" ? "divide-y divide-line-subtle" : "gap-3")}>
+      <div className={classNames("flex flex-col", size === "desktop" ? "gap-3" : "divide-y divide-line-subtle")}>
         {ON_THE_ROOF.map(({ what, label, line }) => {
           const isDim = what === "window" && !shown.sunPath;
+          const on = what === "shadeMap" ? tab === "shade-map" : shown[what];
           return (
-            <ReadOut key={what} label={label} value={null} line={line(window)} className={classNames(size === "phone" && "py-2.5", isDim && "opacity-disabled")}>
-              <Switch label={label} on={shown[what]} disabled={isDim} onChange={(on) => view.getState().showOnTheRoof(what, on)} />
+            <ReadOut key={what} label={label} value={null} line={line(window)} className={classNames(size !== "desktop" && "py-2.5", isDim && "opacity-disabled")}>
+              <Switch label={label} on={on} disabled={isDim} onChange={(next) => (what === "shadeMap" ? view.getState().showSunTab(next ? "shade-map" : "shadows") : view.getState().showOnTheRoof(what, next))} />
             </ReadOut>
           );
         })}
@@ -141,45 +117,21 @@ function OnTheRoofSection({ size }: { size: Size }) {
   );
 }
 
-const TABS = [
-  { value: "shadows", label: "Shadows" },
-  { value: "shade-map", label: "Shade map" },
-] as const satisfies ReadonlyArray<{ value: SunTab; label: string }>;
-
 /**
- * The inspector of the Sun lens (the boards "Studio, Sun lens" on three sizes and "Shade map"): Shadows or
- * Shade map at its top. Shadows: the day, where the sun stands, shading over the year, what is drawn on the
- * roof. Shade map: what the map colours with its steps, and shading over the year. On phone the timeline
- * stands at the top, since the stage of 252 has no room for it. On tablet two columns.
+ * What the Sun view says of the shade, whatever the step (V2 · 7): the energy lost to shade by its cause, the four things the
+ * view draws on the roof, the day, and, while the shade map is on, its steps. On desktop it is the card on the stage; on
+ * tablet and phone it is the work column's content while the view is on.
  */
-export function SunInspector({ size }: { size: Size }) {
-  const { view } = useStores();
+export function SunCardBody({ size }: { size: Size }) {
   const tab = useView(sunTabOf);
-  const tabs = <Segmented label="Sun view" fill options={TABS} value={tab} onChange={(chosen) => view.getState().showSunTab(chosen)} />;
   return (
-    <div className="flex flex-col gap-section tablet:grid tablet:grid-cols-2 tablet:gap-x-8 desktop:flex desktop:flex-col">
+    <div className="flex flex-col gap-section">
+      {/* On phone the stage has no room for the timeline: it heads the sheet. */}
       {size === "phone" ? <SunTimeline size="phone" className="border-b border-line-subtle pb-4" /> : null}
-      {tab === "shadows" ? (
-        <>
-          <div className="flex flex-col gap-section">
-            {tabs}
-            <DaySection size={size} />
-            <SunAtSection />
-          </div>
-          <div className="flex flex-col gap-section">
-            <ShadingSection />
-            <OnTheRoofSection size={size} />
-          </div>
-        </>
-      ) : (
-        <>
-          <div className="flex flex-col gap-section">
-            {tabs}
-            <ShadeMapSection size={size} />
-          </div>
-          <ShadingSection />
-        </>
-      )}
+      <ShadingSection />
+      <OnTheRoofSection size={size} />
+      {tab === "shade-map" ? <ShadeMapSection size={size} /> : null}
+      <DaySection size={size} />
     </div>
   );
 }

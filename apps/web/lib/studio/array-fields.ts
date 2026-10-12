@@ -5,9 +5,10 @@ import type { Range } from "../../components/ui/number-entry";
 import { shown } from "../../components/ui/number-entry";
 import { withUnit } from "../../components/ui/number-entry";
 import type { ArraySpec, LayoutResponse, Roof } from "../api";
+import { dateOf, designDayOfYear } from "../flow/sun-time";
 import { hourOf } from "../geometry/keepout";
 import { ARRAY_DEFAULTS } from "./defaults";
-import { DEFAULT, setByOfValue, type SetBy } from "./set-by";
+import { DEFAULT, hintOf, setByOfValue, type SetBy } from "./set-by";
 
 export type MountingId = "tilt_deg" | "orientation" | "modules_in_tilt" | "clearance_m" | "ew_tilt_deg" | "ew_ridge_gap_m";
 export type SpacingId = "row_pitch_m" | "azimuth_deg";
@@ -27,15 +28,6 @@ export const ARRAY_RANGES: Record<"tilt_deg" | "modules_in_tilt" | "clearance_m"
 
 /** The shade-free window, in solar hours by the quarter: the start from 5 to 12, the end from 12 to 19. */
 export const WINDOW = { start: { min: 5, max: 12 }, end: { min: 12, max: 19 }, step: 0.25 };
-
-/** The tilt the latitude suggests: the latitude itself, held between 5° and 15° (inventory 1.3). */
-export function suggestedTiltOf(latitude: number): number {
-  return Math.round(Math.min(15, Math.max(5, Math.abs(latitude))));
-}
-
-export function tiltHintOf(latitude: number): string {
-  return `Latitude ${shown(Math.abs(latitude), 1)}° ${latitude >= 0 ? "N" : "S"} suggests ${suggestedTiltOf(latitude)}°`;
-}
 
 /** The mounting fields that apply to a roof type, in the order of the board. */
 export function mountingOf(roofType: Roof["roof_type"]): MountingId[] {
@@ -84,6 +76,8 @@ export function withAzimuthDecided(array: ArraySpec, layout: LayoutResponse | nu
 
 export type DesignDay = "winter" | "june" | "march";
 
+const windowWordsOf = (from: number, to: number) => `${hourOf(from)} to ${hourOf(to)}`;
+
 /** The days of the year the board offers beside the winter solstice (inventory 1.3). */
 const DAY_OF: Record<Exclude<DesignDay, "winter">, number> = { june: 172, march: 80 };
 
@@ -131,8 +125,6 @@ export function spacingSetByOf(array: ArraySpec, roofType: Roof["roof_type"]): P
   return Object.fromEntries(spacingOf(roofType).map((id) => [id, array[id] == null ? DEFAULT : { kind: "yours", byDefault: DECIDED_BY_THE_APP[id] }]));
 }
 
-const windowWordsOf = (from: number, to: number) => `${hourOf(from)} to ${hourOf(to)}`;
-
 /** Who set the shade-free window, the design day and whether shaded positions are used. */
 export function windowSetByOf(array: ArraySpec): { window: SetBy; design_day: SetBy; allow_shaded: SetBy } {
   const isDefaultWindow = array.window_start_h === ARRAY_DEFAULTS.window_start_h && array.window_end_h === ARRAY_DEFAULTS.window_end_h;
@@ -151,13 +143,32 @@ export function mountingFactsOf(array: ArraySpec, roof: Pick<Roof, "roof_type" |
   return `Tilt ${shown(array.tilt_deg, 0)}° · ${array.orientation} · ${inTilt}`;
 }
 
-/** The spacing as the last layout used it; null before one came. */
+/** The usual thing, said after Default (V2 · 7): why the app's value is what it is. */
+const USUAL: Partial<Record<MountingId, string>> = { tilt_deg: "low for wind on a flat roof", modules_in_tilt: "one module in each row" };
+
+/** What stands under a mounting field: "Default · low for wind on a flat roof", or the user's "Yours · default 15°". */
+export const mountingHintOf = (id: MountingId, setBy: SetBy): string => (setBy.kind === "default" && USUAL[id] ? `${hintOf(setBy)} · ${USUAL[id]}` : hintOf(setBy));
+
+/** The spacing as the last layout used it, on one line; null before one came. */
 export function spacingFactsOf(array: ArraySpec, layout: LayoutResponse | null, roofType: Roof["roof_type"]): string | null {
   if (!layout) return null;
-  const azimuth = `azimuth ${shown(array.azimuth_deg ?? layout.layout.azimuth, 1)}°`;
-  if (roofType === "flat_tilted") return `Pitch ${shown(array.row_pitch_m ?? layout.layout.pitch, 2)} m · ${azimuth}`;
-  return azimuth[0]?.toUpperCase() + azimuth.slice(1);
+  if (roofType === "flat_tilted") return `Rows ${shown(array.row_pitch_m ?? layout.layout.pitch, 2)} m apart · shade-free ${windowWordsOf(array.window_start_h, array.window_end_h)}`;
+  if (roofType === "sloped_flush") return `Shade-free ${windowWordsOf(array.window_start_h, array.window_end_h)}`;
+  return `Azimuth ${shown(array.azimuth_deg ?? layout.layout.azimuth, 1)}° · shade-free ${windowWordsOf(array.window_start_h, array.window_end_h)}`;
 }
 
-/** The shade-free window in solar time, and its design day. */
-export const windowFactsOf = (array: ArraySpec): string => `${windowWordsOf(array.window_start_h, array.window_end_h)} · ${dayWordsOf(designDayOf(array))}`;
+/** The design days by their date: the winter solstice of the hemisphere, 21 Jun and 21 Mar (V2 · 7). */
+export function designDayLabelsOf(latitude: number): Record<DesignDay, string> {
+  return { winter: dateOf(designDayOfYear(null, latitude)).short, june: "21 Jun", march: "21 Mar" };
+}
+
+/** The one sentence of Spacing: why the rows stand where they do. None before a layout, or where the roof has no row pitch. */
+export function spacingSentenceOf(array: ArraySpec, layout: LayoutResponse | null, roofType: Roof["roof_type"], latitude: number): string | null {
+  if (!layout || roofType !== "flat_tilted") return null;
+  const apart = `${shown(layout.layout.pitch, 2)} m apart`;
+  if (array.row_pitch_m != null) {
+    const free = layout.readouts.shade_free_pitch_m;
+    return `Rows stand ${apart}.${free == null ? "" : ` Shade-free they would stand ${shown(free, 2)} m apart.`}`;
+  }
+  return `Rows stand ${apart} so that they do not shade each other from ${windowWordsOf(array.window_start_h, array.window_end_h)} on ${designDayLabelsOf(latitude)[designDayOf(array)]}.`;
+}

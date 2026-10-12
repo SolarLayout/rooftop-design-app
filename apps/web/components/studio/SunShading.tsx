@@ -25,9 +25,9 @@ function FigureTile({ label, figure }: { label: string; figure: Figure }) {
 }
 
 /**
- * Shading over the year (the board "Studio, Sun lens"; plan/phase-06-plan.md, decision 13): near linear,
- * electrical beyond linear, far (the horizon) and the area kept clear, as tiles; under them what they count
- * and the engine's note on the horizon.
+ * Shade over the year (V2 · 7, D103; plan/phase-06-plan.md, decision 13): the energy lost to shade by its cause, as tiles in
+ * plain names: Rows and obstacles (near shading), Strings (electrical), Horizon (far) and the area kept clear; under them
+ * what they count and the engine's note on the horizon.
  */
 export function ShadingSection() {
   const design = useResults(designOf);
@@ -37,13 +37,14 @@ export function ShadingSection() {
   return (
     <section aria-labelledby={heading} className="flex flex-col gap-3">
       <SectionHeading id={heading} help="studio.section.shading-over-the-year">
-        Shading over the year
+        Shade over the year
       </SectionHeading>
+      <p className="type-body-touch desktop:type-body text-text-2">The energy lost to shade, by its cause.</p>
       <dl className="grid grid-cols-2 gap-2">
-        <FigureTile label="Near, linear" figure={figures.near} />
-        <FigureTile label="Electrical, beyond linear" figure={figures.electrical} />
-        <FigureTile label="Far, horizon" figure={figures.far} />
-        {figures.keptClear !== null ? <Stat look="tile" label="Kept clear" value={figures.keptClear} unit="m²" /> : <FigureTile label="Kept clear" figure={{ value: null, waits: null }} />}
+        <FigureTile label="Rows and obstacles" figure={figures.near} />
+        <FigureTile label="Strings" figure={figures.electrical} />
+        <FigureTile label="Horizon" figure={figures.far} />
+        {figures.keptClear !== null ? <Stat look="tile" label="Area kept clear" value={figures.keptClear} unit="m²" /> : <FigureTile label="Area kept clear" figure={{ value: null, waits: null }} />}
       </dl>
       {figures.of || figures.horizon ? (
         <p className="flex flex-col type-body-touch desktop:type-body text-text-3">

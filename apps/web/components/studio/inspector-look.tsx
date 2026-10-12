@@ -55,13 +55,18 @@ export function ReadOut({ label, value, line, children, className }: ReadOutProp
   );
 }
 
-/** A control with who set its value under it (V2 · 3): "Default", or "Yours · default 15° · Reset". */
-export function WithSetBy({ setBy, onReset, children }: { setBy: SetBy; onReset?: () => void; children: ReactNode }) {
+/**
+ * A control with who set its value under it (V2 · 3): "Default", or "Yours · default 15° · Reset". `words` say it in place of the
+ * plain hint ("Default · low for wind on a flat roof"); `quietWhenDefault` leaves it out while the value is the app's, where the
+ * control already says what the app did.
+ */
+export function WithSetBy({ setBy, words, quietWhenDefault = false, onReset, children }: { setBy: SetBy; words?: string; quietWhenDefault?: boolean; onReset?: () => void; children: ReactNode }) {
+  if (quietWhenDefault && setBy.kind === "default") return <>{children}</>;
   return (
     <div className="flex flex-col gap-1">
       {children}
       <p className="type-body-touch text-text-3 desktop:type-body">
-        <SetByHint setBy={setBy} {...(onReset ? { onReset } : {})} />
+        <SetByHint setBy={setBy} {...(words ? { words } : {})} {...(onReset ? { onReset } : {})} />
       </p>
     </div>
   );

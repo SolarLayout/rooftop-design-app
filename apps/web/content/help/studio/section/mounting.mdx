@@ -13,16 +13,16 @@ docs:
 
 ## The fields by roof type
 
-- `Flat, tilted rows`: `Tilt`, `Orientation`, `Modules in tilt` and `Lower-edge clearance`.
-- `Flat, east-west`: `East-west tilt`, `Ridge gap` and `Lower-edge clearance`.
+- `Flat, tilted rows`: `Tilt`, `Orientation`, `Modules in tilt` and `Clearance under the lower edge`.
+- `Flat, east-west`: `East-west tilt`, `Ridge gap` and `Clearance under the lower edge`.
 - `Sloped, flush`: `Orientation` and `Modules in tilt`. The tilt is the roof's own pitch, set in the Roof step, and the modules lie a small fixed height above the roof.
 
 ## What each field does
 
-- `Tilt`: the angle of the tables. The hint under it suggests a tilt from the site's latitude, kept within a narrow band of low tilts.
+- `Tilt`: the angle of the tables. The app's tilt is low, for the wind on a flat roof.
 - `Orientation`: `Portrait` puts the module's length up the slope, `Landscape` its width.
 - `Modules in tilt`: how many modules stand one above another on a table. A taller table casts a longer shadow, so a shade-free row pitch grows with it.
-- `Lower-edge clearance`: the height of the table's lower edge above the roof. The shadows of obstacles and parapets that keep positions empty are worked out at this height.
+- `Clearance under the lower edge`: the height of the table's lower edge above the roof. The shadows of obstacles and parapets that keep positions empty are worked out at this height.
 - `East-west tilt`: the tilt of each side, away from the ridge. Each side holds one module with its width up the slope, so there is no orientation to choose.
 - `Ridge gap`: the gap between the two sides at the ridge.
 
@@ -30,4 +30,4 @@ docs:
 
 A slider commits when you let go, a choice or a stepper at once, a number on Enter or when you leave the field. Each change lays the roof out again, and the design runs again.
 
-Closed, the section is one line: the tilt, the orientation and the modules in tilt, and who set them. Each field says `Default`, or `Yours` with the default it took the place of and `Reset`, which gives the default back.
+Closed, the section is one line: the tilt, the orientation and the modules in tilt, and who set them. Each field says `Default` with what is usual, or `Yours` with the default it took the place of and `Reset`, which gives the default back.

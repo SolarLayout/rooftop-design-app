@@ -14,6 +14,8 @@ export type SunFigures = {
   far: Figure;
   /** Square metres of the roof inside the setback left empty for shade; null before a layout. */
   keptClear: string | null;
+  /** The three causes added as they are shown, for the folded card; null while one is not there. */
+  total: string | null;
   /** What the figures count. */
   of: string | null;
   /** The engine's note on the horizon, as it says it. */
@@ -28,10 +30,16 @@ const FAR = "Far shading, horizon";
 const NONE: Figure = { value: null, waits: null };
 const percent = (value: number): Figure => ({ value: shown(Math.abs(value), 2), waits: null });
 
+/** The causes added as shown (hundredths), so that the tiles add up to the total; null while one is not there. */
+function totalOf(...figures: Figure[]): string | null {
+  const values = figures.map((one) => (one.value === null ? null : Number(one.value.replace(/,/g, ""))));
+  return values.some((value) => value === null) ? null : shown((values as number[]).reduce((sum, value) => sum + value, 0), 2);
+}
+
 /** The figures of a run, with the area the layout shown keeps clear. */
 export function figuresOf(design: DesignResult | null, keptClearM2: number | null): SunFigures {
   const keptClear = keptClearM2 === null ? null : shown(Math.round(keptClearM2), 0);
-  if (design === null) return { near: NONE, electrical: NONE, far: NONE, keptClear, of: null, horizon: null };
+  if (design === null) return { near: NONE, electrical: NONE, far: NONE, keptClear, total: null, of: null, horizon: null };
   const option = design.options.find((one) => one.key === design.chosen_option);
   const horizon = design.far_shading_note;
   if (option) {
@@ -40,13 +48,15 @@ export function figuresOf(design: DesignResult | null, keptClearM2: number | nul
       const found = step(label);
       return found ? percent(found.pct) : NONE;
     };
-    return { near: figure(NEAR), electrical: figure(ELECTRICAL), far: figure(FAR), keptClear, of: `Of the ${shown(option.n_modules, 0)} modules of option ${option.letter}`, horizon };
+    const [near, electrical, far] = [figure(NEAR), figure(ELECTRICAL), figure(FAR)];
+    return { near, electrical, far, keptClear, total: totalOf(near, electrical, far), of: `Of the ${shown(option.n_modules, 0)} modules of option ${option.letter}`, horizon };
   }
   return {
     near: percent(design.shading.near_pct),
     electrical: { value: null, waits: design.no_options?.title ?? null },
     far: percent(design.shading.far_pct),
     keptClear,
+    total: null,
     of: `Of all ${shown(design.layout.modules.length, 0)} positions`,
     horizon,
   };

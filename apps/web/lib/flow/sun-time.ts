@@ -42,6 +42,15 @@ export function readOutOf(dayOfYear: number, hour: number, sun: Sun | null): str
   return `${when}, sun ${shown(sun.elevationDeg, 1)}° high, ${bearingOf(sun.azimuthDeg)}`;
 }
 
+const POINTS = ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"];
+
+/** The sun at the time, in a line beside the timeline: "Sun 18.0° high, from 237° (south-west)". */
+export function sunWordsOf(sun: Sun | null): string {
+  if (sun === null || sun.elevationDeg <= 0) return "The sun is down";
+  const azimuth = ((sun.azimuthDeg % 360) + 360) % 360;
+  return `Sun ${shown(sun.elevationDeg, 1)}° high, from ${shown(azimuth, 0)}° (${POINTS[Math.round(azimuth / 45) % 8]})`;
+}
+
 /**
  * A mark under the timeline: where it stands on the track, in hours, and what it says. Sunrise and sunset
  * say their time and their word apart too, for where they stand beside the track (tablet).

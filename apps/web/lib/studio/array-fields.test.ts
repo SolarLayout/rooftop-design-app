@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { ArraySpec, LayoutResponse } from "../api";
-import { ARRAY_RANGES, designDayOf, mountingFactsOf, mountingOf, mountingSetByOf, pitchLineOf, spacingFactsOf, spacingOf, spacingSetByOf, tiltHintOf, windowFactsOf, windowSetByOf, withDesignDay, withPitchDecided, withAzimuthDecided } from "./array-fields";
+import { ARRAY_RANGES, designDayOf, mountingFactsOf, mountingOf, mountingSetByOf, designDayLabelsOf, mountingHintOf, pitchLineOf, spacingFactsOf, spacingOf, spacingSentenceOf, spacingSetByOf, windowSetByOf, withDesignDay, withPitchDecided, withAzimuthDecided } from "./array-fields";
 import type { Roof } from "../api";
 
 // The fields of the Array lens (plan/phase-05-plan.md, steps 14 and 15, decisions 16 and 20), from
@@ -25,12 +25,16 @@ const ARRAY: ArraySpec = {
 
 const LAYOUT = { layout: { azimuth: 180, pitch: 6.45, kind: "flat_tilted" }, readouts: { gcr: 0.709, profile_angle_deg: 30.5 } } as unknown as LayoutResponse;
 
-describe("the tilt's hint from the latitude", () => {
-  test("suggests the latitude, held between 5 and 15, in the words of the board", () => {
-    expect(tiltHintOf(18.52)).toBe("Latitude 18.5° N suggests 15°");
-    expect(tiltHintOf(3.2)).toBe("Latitude 3.2° N suggests 5°");
-    expect(tiltHintOf(-33.9)).toBe("Latitude 33.9° S suggests 15°");
-    expect(tiltHintOf(10)).toBe("Latitude 10.0° N suggests 10°");
+describe("what stands under a mounting field (V2 · 7)", () => {
+  test("the app's value is a Default with the usual thing after it; the user's is Yours with the default it took the place of", () => {
+    const by = mountingSetByOf(ARRAY, "flat_tilted");
+
+    expect(mountingHintOf("tilt_deg", by.tilt_deg!)).toBe("Default · low for wind on a flat roof");
+    expect(mountingHintOf("modules_in_tilt", by.modules_in_tilt!)).toBe("Yours · default 1");
+    expect(mountingHintOf("modules_in_tilt", mountingSetByOf({ ...ARRAY, modules_in_tilt: 1 }, "flat_tilted").modules_in_tilt!)).toBe("Default · one module in each row");
+    expect(mountingHintOf("clearance_m", by.clearance_m!)).toBe("Default");
+    const changed = mountingSetByOf({ ...ARRAY, tilt_deg: 20 }, "flat_tilted");
+    expect(mountingHintOf("tilt_deg", changed.tilt_deg!)).toBe("Yours · default 15°");
   });
 });
 
@@ -140,13 +144,37 @@ describe("the facts of the array's sections, on one line (V2 · 3)", () => {
     expect(mountingFactsOf({ ...ARRAY, orientation: "landscape" }, roof("sloped_flush"))).toBe("Flush at 12° · landscape · 2 in tilt");
   });
 
-  test("the spacing: the pitch and the azimuth as the layout used them", () => {
-    expect(spacingFactsOf(ARRAY, LAYOUT, "flat_tilted")).toBe("Pitch 6.45 m · azimuth 180.0°");
+  test("the spacing: how far apart the rows stand and the hours they are free of shade", () => {
+    expect(spacingFactsOf(ARRAY, LAYOUT, "flat_tilted")).toBe("Rows 6.45 m apart · shade-free 09:00 to 16:00");
+    expect(spacingFactsOf(ARRAY, LAYOUT, "flat_ew")).toBe("Azimuth 180.0° · shade-free 09:00 to 16:00");
+    expect(spacingFactsOf(ARRAY, LAYOUT, "sloped_flush")).toBe("Shade-free 09:00 to 16:00");
     expect(spacingFactsOf(ARRAY, null, "flat_tilted")).toBeNull();
   });
+});
 
-  test("the window in solar time and the design day", () => {
-    expect(windowFactsOf(ARRAY)).toBe("09:00 to 16:00 · winter solstice");
-    expect(windowFactsOf({ ...ARRAY, design_doy: 172 })).toBe("09:00 to 16:00 · 21 Jun");
+describe("the one sentence of Spacing (V2 · 7; audit V2-34)", () => {
+  test("says why the rows stand where they do; the profile angle and the ground coverage ratio are in the help", () => {
+    const sentence = spacingSentenceOf(ARRAY, LAYOUT, "flat_tilted", 18.52);
+
+    expect(sentence).toBe("Rows stand 6.45 m apart so that they do not shade each other from 09:00 to 16:00 on 21 Dec.");
+    expect(sentence).not.toMatch(/GCR|profile angle/);
+  });
+
+  test("a spacing typed says so and what shade-free would be", () => {
+    const sentence = spacingSentenceOf({ ...ARRAY, row_pitch_m: 7 }, { ...LAYOUT, layout: { ...LAYOUT.layout, pitch: 7 }, readouts: { ...LAYOUT.readouts, shade_free_pitch_m: 6.45 } } as LayoutResponse, "flat_tilted", 18.52);
+
+    expect(sentence).toBe("Rows stand 7.00 m apart. Shade-free they would stand 6.45 m apart.");
+  });
+
+  test("on the design day of the array, in the other hemisphere too; none before a layout or where no row pitch applies", () => {
+    expect(spacingSentenceOf({ ...ARRAY, design_doy: 172 }, LAYOUT, "flat_tilted", 18.52)).toContain("on 21 Jun.");
+    expect(spacingSentenceOf(ARRAY, LAYOUT, "flat_tilted", -33.9)).toContain("on 21 Jun.");
+    expect(spacingSentenceOf(ARRAY, null, "flat_tilted", 18.52)).toBeNull();
+    expect(spacingSentenceOf(ARRAY, LAYOUT, "flat_ew", 18.52)).toBeNull();
+  });
+
+  test("the design days, named by their date", () => {
+    expect(designDayLabelsOf(18.52)).toEqual({ winter: "21 Dec", june: "21 Jun", march: "21 Mar" });
+    expect(designDayLabelsOf(-33.9).winter).toBe("21 Jun");
   });
 });

@@ -45,12 +45,16 @@ export function northWordsOf(bearingDeg: number): string {
 
 /** One label per edge of the roof, at the edge's middle, at the roof's height there, saying the edge's length. */
 export function labelPlacesOf(outline: readonly XY[], heightAt: (point: XY) => number): LabelPlace[] {
-  return outline.map((a, index) => {
-    const b = outline[(index + 1) % outline.length];
+  const edges = outline.map((a, index) => {
+    const b = outline[(index + 1) % outline.length]!;
     const middle: XY = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
     const length = Math.hypot(b[0] - a[0], b[1] - a[1]);
-    return { words: `${shown(length, 1)} m`, at: [middle[0], middle[1], heightAt(middle)] };
+    return { words: `${shown(length, 1)} m`, middle, direction: [b[0] - a[0], b[1] - a[1]] as XY, length };
   });
+  // Once per pair of edges (V2 · 7): of two parallel edges that read as long, the one further south and west stands.
+  const isParallel = (u: XY, v: XY) => Math.abs(u[0] * v[1] - u[1] * v[0]) <= 1e-6 * Math.hypot(...u) * Math.hypot(...v);
+  const kept = edges.filter((edge) => !edges.some((other) => other !== edge && other.words === edge.words && isParallel(other.direction, edge.direction) && other.middle[0] + other.middle[1] < edge.middle[0] + edge.middle[1]));
+  return kept.map(({ words, middle }) => ({ words, at: [middle[0], middle[1], heightAt(middle)] }));
 }
 
 /** A point of the picture (from -1 to 1 each way, y up) as a pixel of the canvas, from its top left. */

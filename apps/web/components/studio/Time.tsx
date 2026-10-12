@@ -7,8 +7,9 @@ import type { Scale } from "@/components/ui/slider-steps";
 import { Tooltip, type Shortcuts } from "@/components/ui/Tooltip";
 import { useSlide } from "@/components/ui/use-slide";
 import { hourOf } from "@/lib/geometry/keepout";
+import { useSun } from "@/components/scene/use-sun";
 import { QUARTER_HOUR, type DayHours } from "@/lib/flow/sun-day";
-import type { Tick } from "@/lib/flow/sun-time";
+import { sunWordsOf, type Tick } from "@/lib/flow/sun-time";
 import type { Size } from "@/components/shell/use-screen-size";
 import { useTime, type Time } from "./use-time";
 
@@ -167,6 +168,7 @@ export function SunTimeline({ size, className }: { size: Size; className?: strin
   const endsBeside = size === "tablet" && time.hours?.sky === "rises and sets";
   const ticks = trackTicksOf(time.ticks, time.window, endsBeside);
   const sky = skyWordsOf(time.hours);
+  const sun = useSun();
 
   const clock = (
     <div className="flex shrink-0 flex-col">
@@ -223,6 +225,9 @@ export function SunTimeline({ size, className }: { size: Size; className?: strin
       {endsBeside ? <EndBeside tick={time.ticks[0]} align="start" /> : null}
       {track}
       {endsBeside ? <EndBeside tick={time.ticks.at(-1)} align="end" /> : null}
+      <span data-testid="timeline-sun" className="hidden shrink-0 type-body text-text-2 desktop:inline">
+        {sunWordsOf(sun)}
+      </span>
     </div>
   );
 }

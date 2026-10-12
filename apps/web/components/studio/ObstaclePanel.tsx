@@ -1,25 +1,18 @@
 "use client";
 
 import { SectionHeading } from "@/components/shell/help/SectionHeading";
-import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useStores, useView } from "@/components/shell/stores";
 import { Button } from "@/components/ui/Button";
 import { classNames } from "@/components/ui/class-names";
-import { LIST_GAP } from "@/components/ui/design-numbers";
-import { FloatingPanel } from "@/components/ui/FloatingPanel";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { IconButton } from "@/components/ui/IconButton";
-import { indexAfterKey } from "@/components/ui/list-keys";
-import { FACT, LIST, ROW as MENU_ROW, ROW_MARKED } from "@/components/ui/list-look";
 import { NumberField } from "@/components/ui/NumberField";
 import { shown } from "@/components/ui/number-entry";
 import { StatusMark } from "@/components/ui/StatusMark";
-import { useFloating } from "@/components/ui/use-floating";
 import type { Obstacle, Project, Roof } from "@/lib/api";
 import { centroidOf } from "@/lib/geometry/measure";
 import {
-  factOfNewKind,
-  factsOf,
   FEWEST_POINTS,
   fieldsOfObstacle,
   heightToAdd,
@@ -38,6 +31,7 @@ import {
   type ObstacleKind,
 } from "@/lib/geometry/obstacle-fields";
 import { indexToReview, REVIEW_HINT } from "@/lib/studio/review-heights";
+import { obstacleLinesOf, type ObstacleLine } from "@/lib/studio/obstacle-lines";
 import { draftOf, draggingOf, selectionOf, toReviewOf } from "@/lib/stores/view-store";
 import { fieldsLayoutOf } from "./inspector-look";
 import type { Size } from "@/components/shell/use-screen-size";
@@ -55,7 +49,7 @@ export const ICON_OF_KIND: Record<ObstacleKind, IconName> = { box: "box", cylind
 /** A point of a wall or a building: metres east and north, as the corners of "Enter dimensions by hand". */
 const POINT = { min: -5000, max: 5000, decimals: 2 };
 
-const ROW = "flex h-11.5 w-full items-center gap-2.5 rounded-row border border-line bg-surface-1 px-3 text-left cursor-pointer press-motion focus-ring hovered:bg-surface-2";
+const ROW = "flex min-h-14 w-full items-center py-1.5 gap-2.5 rounded-row border border-line bg-surface-1 px-3 text-left cursor-pointer press-motion focus-ring hovered:bg-surface-2";
 const CARD = "flex flex-col gap-2.5 rounded-row border border-accent bg-note-surface p-3 shadow-halo-selected";
 
 /** The design with its roof changed; the same design when the roof is the same. */
@@ -184,13 +178,15 @@ export function ObstacleCard<Kind extends Obstacle | DraftObstacle>({ obstacle, 
   );
 }
 
-/** A row of the list: the icon of the kind, the name, the size and the height, a mark where the height is to be reviewed; a press selects. */
-function ObstacleRow({ obstacle, isToReview, onSelect }: { obstacle: Obstacle; isToReview: boolean; onSelect: () => void }) {
+/** A row of the list (V2 · 7): the icon of the kind, the name and under it what it is, how big and how high in words, a mark where the height is to be reviewed; a press selects. */
+function ObstacleRow({ obstacle, line, isToReview, isSelected, onSelect }: { obstacle: Obstacle; line: ObstacleLine; isToReview: boolean; isSelected: boolean; onSelect: () => void }) {
   return (
-    <button type="button" data-testid="obstacle-row" onClick={onSelect} className={ROW}>
+    <button type="button" data-testid="obstacle-row" aria-current={isSelected || undefined} onClick={onSelect} className={classNames(ROW, isSelected && "border-accent")}>
       <Icon name={ICON_OF_KIND[obstacle.kind]} size={20} stroke="light" className="text-text-2" />
-      <span className="grow truncate font-medium">{obstacle.name}</span>
-      <code className="type-body-touch desktop:type-body whitespace-nowrap text-text-2">{factsOf(obstacle)}</code>
+      <span className="flex min-w-0 grow flex-col">
+        <span className="truncate font-medium">{line.title}</span>
+        <span className="truncate type-body-touch desktop:type-body text-text-2">{line.detail}</span>
+      </span>
       {isToReview ? <StatusMark kind="note" label={HEIGHT_TO_REVIEW} wordsShown={false} size={14} /> : null}
     </button>
   );
@@ -209,71 +205,22 @@ function ReviewHint() {
   );
 }
 
-/** Add opens the kinds, each with the size a new one gets; the chosen kind becomes a draft at the centre of the roof (decision 15). */
-function AddMenu({ onAdd }: { onAdd: (kind: ObstacleKind) => void }) {
-  const [floating, trigger] = useFloating({ side: "below", align: "start", gap: LIST_GAP });
-  const rows = useRef<HTMLUListElement>(null);
-  const [marked, setMarked] = useState<number | null>(null);
-
-  function open() {
-    floating.open();
-    setMarked(0);
-    rows.current?.querySelectorAll<HTMLElement>('[role="menuitem"]')[0]?.focus();
-  }
-
-  function onKeyDown(event: KeyboardEvent<HTMLUListElement>) {
-    const items = [...(rows.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])];
-    const current = items.findIndex((item) => item === document.activeElement);
-    const to = indexAfterKey(items.length, current === -1 ? null : current, event.key, new Set());
-    if (to !== null || ["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) event.preventDefault();
-    if (to !== null) {
-      setMarked(to);
-      items[to]?.focus();
-    }
-  }
-
+/**
+ * Add one (V2 · 7): the kinds stand in view as buttons, under a line that says what to do; the chosen kind becomes a draft
+ * at the centre of the roof, to be placed there and given its height (decision 15).
+ */
+function AddKinds({ onAdd }: { onAdd: (kind: ObstacleKind) => void }) {
   return (
-    <>
-      <Button
-        ref={trigger}
-        size="s"
-        icon="plus"
-        aria-haspopup="menu"
-        aria-expanded={floating.isOpen}
-        onClick={() => (floating.isOpen ? floating.close() : open())}
-        onKeyDown={(event) => {
-          if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
-          event.preventDefault();
-          open();
-        }}
-        className="ml-auto"
-      >
-        Add
-      </Button>
-      <FloatingPanel floating={floating} width="list">
-        <ul ref={rows} role="menu" aria-label="Add an obstacle" onKeyDown={onKeyDown} className={LIST}>
-          {OBSTACLE_KINDS.map(({ id, word }, index) => (
-            <li key={id} role="none">
-              <button
-                type="button"
-                role="menuitem"
-                tabIndex={-1}
-                onPointerEnter={() => setMarked(index)}
-                onClick={() => {
-                  floating.closeAndGoBack();
-                  onAdd(id);
-                }}
-                className={classNames(MENU_ROW, "w-full text-left focus-ring", marked === index && ROW_MARKED)}
-              >
-                <Icon name={ICON_OF_KIND[id]} size={18} stroke="light" className="text-text-2" />
-                <span className="grow">{word}</span>
-                <span className={FACT}>{factOfNewKind(id)}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </FloatingPanel>
-    </>
+    <div data-testid="add-obstacle" className="flex flex-col gap-2">
+      <p className="type-body-touch desktop:type-body text-text-2">Add one: choose its kind, then place it on the roof.</p>
+      <div role="group" aria-label="Add an obstacle" className="flex flex-wrap gap-2">
+        {OBSTACLE_KINDS.map(({ id, word }) => (
+          <Button key={id} size="m" icon="plus" onClick={() => onAdd(id)}>
+            {word}
+          </Button>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -289,8 +236,9 @@ export function ObstaclePanel({ roof, size, isHeaded = true }: Props) {
   const draft = useView(draftOf);
   const toReview = useView(toReviewOf);
   const dragging = useView(draggingOf);
-  const own = roof.obstacles.map((obstacle, index) => ({ obstacle, index })).filter(({ obstacle }) => !obstacle.auto);
   const selected = selection?.kind === "obstacle" ? selection.index : null;
+  const lines = obstacleLinesOf(roof.obstacles, { selected });
+  const own = lines.flatMap((line) => line.indexes);
 
   const commitRoof = (change: (roof: Roof) => Roof) => store.getState().commit((design) => withRoof(design, change(design.roof)));
 
@@ -332,10 +280,11 @@ export function ObstaclePanel({ roof, size, isHeaded = true }: Props) {
 
   return (
     <section aria-label="Obstacles" className="flex flex-col gap-2.5">
-      <div className={classNames("flex items-center", !isHeaded && "justify-end")}>
-        {isHeaded ? <SectionHeading help="app.section.obstacles">Obstacles · {own.length}</SectionHeading> : null}
-        <AddMenu onAdd={add} />
-      </div>
+      {isHeaded ? (
+        <div className="flex items-center">
+          <SectionHeading help="app.section.obstacles">Obstacles · {own.length}</SectionHeading>
+        </div>
+      ) : null}
       {draft ? (
         <form
           onSubmit={(event) => {
@@ -361,13 +310,16 @@ export function ObstaclePanel({ roof, size, isHeaded = true }: Props) {
           />
         </form>
       ) : null}
-      {own.length === 0 && !draft ? <p className="type-body-touch desktop:type-body text-text-2">None yet. Add a box, a tank, a wall, a tree or a building.</p> : null}
+      {own.length === 0 && !draft ? <p className="type-body-touch desktop:type-body text-text-2">None on the roof yet.</p> : null}
       <ul className="flex flex-col gap-2.5">
-        {own.map(({ obstacle, index }) => {
-          const isToReview = toReview.includes(obstacle.name);
+        {lines.map((line) => {
+          const index = line.indexes[0] ?? 0;
+          const obstacle = roof.obstacles[index];
+          if (!obstacle) return null;
+          const isToReview = line.indexes.some((at) => toReview.includes(roof.obstacles[at]?.name ?? ""));
           return (
-            <li key={index}>
-              {selected === index ? (
+            <li key={line.indexes.join("-")}>
+              {line.indexes.length === 1 && selected === index ? (
                 // While a drag lasts the card says the live values, as the board asks.
                 <ObstacleCard
                   obstacle={dragging?.index === index ? dragging.obstacle : obstacle}
@@ -387,12 +339,13 @@ export function ObstaclePanel({ roof, size, isHeaded = true }: Props) {
                   }
                 />
               ) : (
-                <ObstacleRow obstacle={obstacle} isToReview={isToReview} onSelect={() => view.getState().select({ kind: "obstacle", index })} />
+                <ObstacleRow obstacle={obstacle} line={line} isToReview={isToReview} isSelected={line.indexes.includes(selected ?? -1)} onSelect={() => view.getState().select({ kind: "obstacle", index })} />
               )}
             </li>
           );
         })}
       </ul>
+      <AddKinds onAdd={add} />
       {roof.parapet_h > 0 ? (
         <div data-testid="parapet-row" className="flex h-10 items-center gap-2.5 px-3 type-body-touch desktop:type-body text-text-3">
           <Icon name="parapet" size={20} stroke="light" />

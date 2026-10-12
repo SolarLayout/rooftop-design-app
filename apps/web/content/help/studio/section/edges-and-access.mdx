@@ -12,12 +12,13 @@ docs:
 
 ## The fields
 
-- `Parapet`: the height of a parapet wall along every edge of the roof. It casts shadows like an obstacle. Zero means no parapet.
-- `Setback`: the strip along every edge, measured inward, where no module is placed.
-- `Walkway`: the width of each walkway left between modules.
-- `Every`: how often a walkway comes. On tilted rows it is every so many modules along a row, as an aisle across the rows; on east-west units and sloped roofs, every so many rows or units. Zero means no walkway.
-- `Clearance`: the gap kept free of modules around every obstacle.
-- `Albedo`: the share of light the roof reflects, as a fraction: about `0.20` for concrete, about `0.60` for a white membrane. The energy simulation uses it for the light reflected onto the front of the modules, and onto the rear of bifacial ones. It moves no module and no shadow.
+They stand in three groups.
+
+- At the edges: `Parapet height`, the height of a parapet wall along every edge of the roof. It casts shadows like an obstacle; measure it on site. Zero means no parapet. `Edge margin (setback)`, the strip along every edge, measured inward, where no module is placed; the hint under it gives the usual range.
+- Access: `Walkway width`, the width of each walkway left between modules, and `Walkway every`, how often one comes. On tilted rows it is every so many modules along a row, one aisle across each row; on east-west units and sloped roofs, every so many rows or units. Zero means no walkway.
+- Round obstacles: `Clearance`, the gap kept free of modules on every side of every obstacle.
+
+The roof's albedo has one home, the assumptions of Performance; the last line of the section says its value and leads there.
 
 ## On a sloped roof
 
@@ -25,6 +26,6 @@ docs:
 
 ## How it behaves
 
-What you type takes effect when you press Enter or leave the field. Every field but `Albedo` lays out the roof again before the design runs; `Albedo` runs the design alone. The parapet's shadow over the shade-free window of the design day is kept clear of modules like an obstacle's, unless shaded positions are allowed.
+What you type takes effect when you press Enter or leave the field. Every field lays out the roof again before the design runs. The parapet's shadow over the shade-free window of the design day is kept clear of modules like an obstacle's, unless shaded positions are allowed.
 
-Closed, the section is one line: the parapet and the setback, and who set them: `Default` while every field holds the app's value, `Yours` once you change one. Each field says the same under its name; a value of yours says the default it took the place of, and `Reset` gives that default back as one change, which undo takes back.
+Closed, the section is one line: the parapet and the setback, and who set them: `Default` while every field holds the app's value, `Yours` once you change one. Under each field's name stands `Default` with what is usual, as `Default · measure it on site`; a value of yours says the default it took the place of, and `Reset` gives that default back as one change, which undo takes back.

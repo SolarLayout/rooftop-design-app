@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { ROOF_TYPES } from "@/lib/geometry/roof-types";
-import { useProject, useStores, useView } from "@/components/shell/stores";
+import { useProject, useResults, useStores, useView } from "@/components/shell/stores";
+import { readoutsOf } from "@/lib/stores/results-store";
 import { Button } from "@/components/ui/Button";
-import { ButtonLink } from "@/components/ui/ButtonLink";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
 import { NumberField } from "@/components/ui/NumberField";
@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { StatusMark } from "@/components/ui/StatusMark";
 import type { Project, Roof } from "@/lib/api";
 import { roofCardOf, type RoofCard } from "@/lib/geometry/roof-card";
-import { edgesFactsOf, obstaclesFactsOf, placeFactsOf, roofFieldsOf, roofTypeFactsOf, withRoofField, type RoofFieldId } from "@/lib/studio/roof-fields";
+import { albedoLineOf, edgesFactsOf, obstaclesFactsOf, outlineFactsOf, roofFieldsOf, roofGroupsOf, roofTypeFactsOf, withRoofField, type RoofFieldId } from "@/lib/studio/roof-fields";
 import { sectionSetByOf, wordOf, type SetBy } from "@/lib/studio/set-by";
 import { HEIGHTS_SET, indexToReview, namesToReview, toReviewWordsOf } from "@/lib/studio/review-heights";
 import { withRoofType } from "@/lib/geometry/roof-type-rule";
@@ -30,9 +30,6 @@ type Props = {
 };
 
 const YOURS: SetBy = { kind: "yours", byDefault: null };
-
-/** The way back to the map, with the outline of this design shown there. */
-export const EDIT_THE_OUTLINE = "/find?edit=roof";
 
 /** The design with its roof changed; the same design when the roof is the same. */
 function withRoof(design: Project, roof: Roof): Project {
@@ -74,26 +71,17 @@ function CardLines({ card }: { card: RoofCard }) {
 }
 
 /**
- * The card of the roof (the boards "Studio, Roof lens" on three sizes): on tablet and desktop a card with
- * Edit at its right; on phone a row of the sheet that leads to the map as a whole.
+ * The outline's card (V2 · 7, D103): where the roof is and how it was made, and Edit it in Plan, which turns the stage to the
+ * plan with the outline's corners as handles. Find is for a new roof alone.
  */
-function LocationCard({ card, size }: { card: RoofCard | null; size: Size }) {
-  if (size === "phone") {
-    return (
-      <Link href={EDIT_THE_OUTLINE} aria-label="Edit the outline" className="flex min-h-21 items-center gap-3 border-b border-line-subtle text-text focus-ring">
-        <RoofGlyph className="size-11" />
-        {card ? <CardLines card={card} /> : <Skeleton kind="text" className="w-32" />}
-        <Icon name="chevron-right" size={18} className="shrink-0 text-text-3" />
-      </Link>
-    );
-  }
+function OutlineCard({ card, onEdit }: { card: RoofCard | null; onEdit: () => void }) {
   return (
-    <section aria-label="Location and outline" className="flex items-center gap-3.5 rounded-row border border-line bg-surface-1 p-card-compact shadow-card">
+    <section aria-label="Outline" className="flex items-center gap-3.5 rounded-row border border-line bg-surface-1 p-card-compact shadow-card">
       <RoofGlyph />
       {card ? <CardLines card={card} /> : <Skeleton kind="text" className="w-32" />}
-      <ButtonLink href={EDIT_THE_OUTLINE} size="s" className="shrink-0">
-        Edit
-      </ButtonLink>
+      <Button size="s" className="shrink-0" onClick={onEdit}>
+        Edit it in Plan
+      </Button>
     </section>
   );
 }
@@ -130,11 +118,18 @@ export function RoofInspector({ size }: Props) {
   const { project: store, view } = useStores();
   const toReview = useView(toReviewOf);
   const selection = useView(selectionOf);
+  const readouts = useResults(readoutsOf);
   if (!project) return <Skeleton kind="text" className="w-full" />;
   const { roof } = project;
   const card = roofCardOf(roof, project.roof_input.file);
   const reviewing = namesToReview(roof.obstacles, toReview);
   const fields = roofFieldsOf(roof);
+
+  /** The outline edited where it is seen (V2 · 7): the plan, the roof selected, its corners as handles. */
+  function editTheOutline() {
+    view.getState().setCamera("plan");
+    view.getState().select({ kind: "roof" });
+  }
 
   function review() {
     const index = indexToReview(roof.obstacles, toReview);
@@ -159,17 +154,30 @@ export function RoofInspector({ size }: Props) {
         <Segmented label="Roof type" options={ROOF_TYPES.map(({ id, short }) => ({ value: id, label: short }))} value={roof.roof_type} onChange={chooseRoofType} fill />
       </SummaryRow>
       <SummaryRow id="roof.edges" title="Edges and access" help="studio.section.edges-and-access" facts={edgesFactsOf(roof)} setBy={edgesBy && wordOf(edgesBy)}>
-        {fields.map((field) => (
-          <NumberField
-            key={field.id}
-            label={field.label}
-            value={field.value}
-            unit={field.unit}
-            range={field.range}
-            detail={<SetByHint setBy={field.setBy} onReset={() => commitField(field.id, field.byDefault)} />}
-            onCommit={(value) => commitField(field.id, value)}
-          />
-        ))}
+        {/* Fields stand in groups of what belongs together: 8 apart inside a group, 24 between groups (V2 · 7). */}
+        <div className="flex flex-col gap-group">
+          {roofGroupsOf(roof).map((group) => (
+            <section key={group.title} aria-label={group.title} className="flex flex-col gap-2">
+              <h3 className="type-body-touch desktop:type-body text-text-2">{group.title}</h3>
+              {group.fields.map((field) => (
+                <NumberField
+                  key={field.id}
+                  label={field.label}
+                  value={field.value}
+                  unit={field.unit}
+                  range={field.range}
+                  detail={<SetByHint setBy={field.setBy} words={field.hint} onReset={() => commitField(field.id, field.byDefault)} />}
+                  onCommit={(value) => commitField(field.id, value)}
+                />
+              ))}
+            </section>
+          ))}
+          {/* The roof's albedo has one home, Performance's assumptions. */}
+          <Link href="/performance" data-testid="albedo-line" className="flex items-center justify-between gap-2 type-body-touch desktop:type-body text-text-2 focus-ring hovered:text-text">
+            {albedoLineOf(roof)}
+            <Icon name="arrow-right" size={14} className="shrink-0" />
+          </Link>
+        </div>
       </SummaryRow>
       <SummaryRow
         id="roof.obstacles"
@@ -181,8 +189,8 @@ export function RoofInspector({ size }: Props) {
       >
         <ObstaclePanel roof={roof} size={size} isHeaded={false} />
       </SummaryRow>
-      <SummaryRow id="roof.location" title="Location" help="studio.section.location" facts={placeFactsOf(roof)} setBy={null}>
-        <LocationCard card={card} size={size} />
+      <SummaryRow id="roof.location" title="Outline" help="studio.section.location" facts={outlineFactsOf(roof, readouts?.roof_area_m2 ?? null)} setBy={null}>
+        <OutlineCard card={card} onEdit={editTheOutline} />
       </SummaryRow>
     </div>
   );

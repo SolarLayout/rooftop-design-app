@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { Obstacle } from "../api";
 import type { Project, Roof } from "../api";
-import { type DraftObstacle, factOfNewKind, factsOf, FEWEST_POINTS, heightToAdd, fieldsOfObstacle, newObstacleOf, OBSTACLE_KINDS, withDraftAt, withObstacleAdded, withObstacleAt, withObstacleField, withObstacleReplaced, withoutObstacleAt, withPoint, withPointAdded, withPointRemoved } from "./obstacle-fields";
+import { type DraftObstacle, FEWEST_POINTS, heightToAdd, fieldsOfObstacle, newObstacleOf, OBSTACLE_KINDS, withDraftAt, withObstacleAdded, withObstacleAt, withObstacleField, withObstacleReplaced, withoutObstacleAt, withPoint, withPointAdded, withPointRemoved } from "./obstacle-fields";
 
 // The obstacles of the Roof lens (plan/phase-05-plan.md, step 12, decision 15; the board "Obstacle edited
 // on the roof"): the fields of each kind from plan/reference/functional-inventory.md, 1.2, and what a new
@@ -105,28 +105,12 @@ describe("a new obstacle", () => {
   });
 });
 
-describe("the facts of an obstacle in its row", () => {
-  test("a box by its sides and its height, a tank by its diameter, a wall by its length, a building by its area, a tree by its crown", () => {
-    expect(factsOf(box())).toBe("5.0 × 4.0 · h 3.0 m");
-    expect(factsOf(box({ kind: "cylinder", diameter: 2.5, height: 2 }))).toBe("⌀ 2.5 · h 2.0 m");
-    expect(factsOf(box({ kind: "wall", height: 0.8, points: [[0, 0], [12, 0], [12, 6]] }))).toBe("18.0 m · h 0.8 m");
-    expect(factsOf(box({ kind: "building", height: 8, points: [[0, 0], [8, 0], [8, 8], [0, 8]] }))).toBe("64 m² · h 8.0 m");
-    expect(factsOf(box({ kind: "tree", diameter: 4, height: 6 }))).toBe("crown ⌀ 4.0 · h 6.0 m");
-  });
-});
-
 describe("the edit a field makes", () => {
   test("sets the value and leaves the rest", () => {
     const after = withObstacleField(box(), "x", 27.5);
     expect(after.x).toBe(27.5);
     expect(after.name).toBe("Stair room");
     expect(withObstacleField(box(), "x", 22.5)).toEqual(box());
-  });
-});
-
-describe("the Add menu", () => {
-  test("says the size a new one of each kind gets", () => {
-    expect(OBSTACLE_KINDS.map((kind) => factOfNewKind(kind.id))).toEqual(["2.0 × 2.0 m", "⌀ 2.0 m", "6.0 m, points", "crown ⌀ 4.0 m", "beside the roof, points"]);
   });
 });
 
