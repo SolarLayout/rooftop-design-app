@@ -94,6 +94,7 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | V2 · 1 · Principles (approved, D94) | `V2Principles.dc.html`, `V2PrinciplesTablet.dc.html`, `V2PrinciplesPhone.dc.html` | none: the boards are the specimen | desktop, tablet, phone |
 | V2 · 2 · The progression (approved, D95, D96) | `V2Progression.dc.html`, `V2ProgressionTablet.dc.html`, `V2ProgressionPhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
 | V2 · 3 · The Studio's first open (approved, D97) | `V2FirstOpen.dc.html`, `V2FirstOpenTablet.dc.html`, `V2FirstOpenPhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
+| V2 · 4 · Find (approved, D98) | `V2Find.dc.html`, `V2FindTablet.dc.html`, `V2FindPhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
 
 Screens still to draw are listed in `plan/phase-00-design.md`.
 
