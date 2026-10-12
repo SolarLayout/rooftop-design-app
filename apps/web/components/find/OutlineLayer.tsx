@@ -10,7 +10,7 @@ import { metresPerPixel } from "@/lib/map/scale-bar";
 import { frameAt, toLonLat, toMetres, type Frame, type LonLat } from "@/lib/outline/frame";
 import type { Tool } from "@/lib/outline/how-to";
 import { areaOf, centroidOf, midpointsOf, type XY } from "@/lib/geometry/measure";
-import { foldOf, labelOf, type Obstacle, type ObstacleKind, type Shape } from "@/lib/outline/obstacles";
+import { foldOf, isRound, labelOf, type Obstacle, type ObstacleKind, type Shape } from "@/lib/outline/obstacles";
 import { turnedAbout } from "@/lib/outline/rectangle";
 import { ghostOf, liftLabelPlaceOf, turnHandleOfPicked } from "@/lib/outline/lifted";
 import { mapCursorOf } from "@/lib/outline/map-cursor";
@@ -24,6 +24,8 @@ export function kindOfTool(tool: Tool | null): ObstacleKind | null {
       return "box";
     case "tank":
       return "cylinder";
+    case "tree":
+      return "tree";
     case "wall":
       return "wall";
     case "building":
@@ -202,9 +204,9 @@ function lonLatOf(frame: Frame, point: XY): [number, number] {
   return [lon, lat];
 }
 
-/** The outline of a shape as points: a tank as a polygon of many sides. */
+/** The outline of a shape as points: a tank or a tree as a polygon of many sides. */
 function ringOf(shape: Shape): XY[] {
-  if (shape.kind !== "cylinder") return [...shape.points];
+  if (!isRound(shape.kind)) return [...shape.points];
   const [centre] = shape.points;
   const radius = (shape.diameter ?? 0) / 2;
   return Array.from({ length: TANK_SIDES }, (_, n) => {
@@ -231,9 +233,9 @@ function obstaclesGeoJson(frame: Frame | null, obstacles: readonly Obstacle[], l
   return { type: "FeatureCollection", features };
 }
 
-/** The handles of an obstacle: its corners, or the one at the edge of a tank. */
+/** The handles of an obstacle: its corners, or the one at the edge of a tank or a tree. */
 function handlesOf(obstacle: Obstacle): XY[] {
-  if (obstacle.kind !== "cylinder") return [...obstacle.points];
+  if (!isRound(obstacle.kind)) return [...obstacle.points];
   const [centre] = obstacle.points;
   return [{ x: centre.x + (obstacle.diameter ?? 0) / 2, y: centre.y }];
 }
@@ -449,10 +451,11 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
     return listenToDrag(map, onDown, onMove, onUp);
   }, [map, tool]);
 
-  // A drag with the box or the tank in hand draws it on the closed roof, while none awaits its height.
+  // A drag with the box, the tank or the tree in hand draws it on the closed roof, while none awaits its height.
   useEffect(() => {
     const kind = kindOfTool(tool);
-    if (kind !== "box" && kind !== "cylinder") return;
+    if (kind !== "box" && kind !== "cylinder" && kind !== "tree") return;
+    const drawn = kind;
     let from: { at: LonLat; point: { x: number; y: number } } | null = null;
     let drawing = false;
     function lonLatOfEvent(event: MapMouseEvent | MapTouchEvent): LonLat {
@@ -481,7 +484,7 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
       // A press that has not yet moved is a click: it picks, it draws nothing.
       if (!drawing && Math.hypot(event.point.x - from.point.x, event.point.y - from.point.y) < DRAG_FROM_PX) return;
       drawing = true;
-      tell({ type: "shapeDragged", kind: kind as "box" | "cylinder", from: toMetres(now.frame, from.at), to: toMetres(now.frame, lonLatOfEvent(event)) });
+      tell({ type: "shapeDragged", kind: drawn, from: toMetres(now.frame, from.at), to: toMetres(now.frame, lonLatOfEvent(event)) });
     }
     function onUp() {
       if (!from) return;
@@ -683,7 +686,7 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
     }
     handles.forEach((point, index) => obstacleHandles.current[index].setLngLat(lonLatOf(frame, point)));
 
-    const live = state.drawing && state.drawing.kind !== "cylinder" ? state.drawing.points : [];
+    const live = state.drawing && !isRound(state.drawing.kind) ? state.drawing.points : [];
     if (liveHandles.current.length !== live.length) {
       remove(liveHandles.current);
       liveHandles.current = live.map(() => liveHandleMarker(map));

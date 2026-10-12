@@ -5,7 +5,6 @@ import { classNames } from "@/components/ui/class-names";
 import { SCALE_BAR_MAX } from "@/components/ui/design-numbers";
 import { measures } from "@/components/ui/measures";
 import { shown } from "@/components/ui/number-entry";
-import { StatusMark } from "@/components/ui/StatusMark";
 import { useSize } from "@/components/ui/use-size";
 import { scaleBarOf, type ScaleBar } from "@/lib/map/scale-bar";
 import { edgesOf, midpointsOf, type XY } from "@/lib/geometry/measure";
@@ -14,8 +13,6 @@ import { NorthIcon } from "./NorthIcon";
 type Props = {
   /** The corners of the roof, in metres about its place; none before it is entered. */
   corners: readonly XY[];
-  /** Why there is no map, said where the attribution would stand; null when the plan stands in for nothing. */
-  reason: string | null;
   className?: string;
 };
 
@@ -32,10 +29,10 @@ const LABEL = "placed z-stage-overlay -translate-x-1/2 -translate-y-1/2 rounded-
 
 /**
  * The stage without a map: the plan of the roof entered by hand, north up on a grid of 10 m, with its
- * edge labels, a north mark and a scale bar; the reason there is no map where the attribution stands
- * (the board "Enter dimensions by hand").
+ * edge labels, a north mark and a scale bar (the board "Enter dimensions by hand"); why there is no map is said at the
+ * head of the column (V2 · 4).
  */
-export function PlanView({ corners, reason, className }: Props) {
+export function PlanView({ corners, className }: Props) {
   const stage = useRef<HTMLDivElement>(null);
   const size = useSize(stage);
   const drawn = size ? planOf(corners, size) : null;
@@ -75,12 +72,6 @@ export function PlanView({ corners, reason, className }: Props) {
               <div className="h-1.25 w-span border-x border-b border-text" style={measures({ span: drawn.scale.widthPx / SCALE_BAR_MAX })} />
             </div>
           </div>
-        ) : null}
-        {reason ? (
-          <p role="status" className="flex items-center gap-2 type-body-touch desktop:type-body text-text-2">
-            <StatusMark kind="note" label="Note" wordsShown={false} size={16} />
-            {reason}
-          </p>
         ) : null}
       </div>
     </div>

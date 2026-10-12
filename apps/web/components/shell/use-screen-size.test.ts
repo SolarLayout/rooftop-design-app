@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { sizeOf, type Size } from "./use-size";
+import { sizeOf, type Size } from "./use-screen-size";
 
 // The size of the screen, from the breakpoint tokens (plan/phase-05-plan.md, decision 9): the inspector is
 // mounted once, in the container of the size; before the page is in a browser the size is not known.

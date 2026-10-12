@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { cornersOfRectangle, cornersOfTable, isEntered, type ByHand } from "./by-hand";
+import { cornersOfRectangle, cornersOfTable, isEntered, LONG_SIDE_FACES, NOTHING_ENTERED, type ByHand } from "./by-hand";
 import { areaOf, edgesOf, facingOf } from "../geometry/measure";
 
 // The roof entered by hand (plan/phase-04-plan.md, step 15; the board "Enter dimensions by hand"): a
@@ -71,5 +71,21 @@ describe("what is entered", () => {
     ];
     expect(isEntered({ ...entered, shape: "corners", rows })?.corners).toEqual(cornersOfTable(rows));
     expect(isEntered({ ...entered, shape: "corners", rows: rows.slice(0, 2) })).toBeNull();
+  });
+});
+
+// V2 · 4 (the board "Find", by hand): the long side faces one of four directions, south at first.
+describe("where the long side faces", () => {
+  test("four choices in degrees from north, south first as the board has it", () => {
+    expect(LONG_SIDE_FACES).toEqual([
+      { value: 180, label: "South" },
+      { value: 90, label: "East" },
+      { value: 0, label: "North" },
+      { value: 270, label: "West" },
+    ]);
+  });
+
+  test("nothing entered faces south, so that the length and the width draw the roof", () => {
+    expect(NOTHING_ENTERED.faces).toBe(180);
   });
 });

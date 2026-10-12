@@ -11,8 +11,7 @@ import {
   obstacleMovedBy,
   obstaclesOfMap,
   obstacleTurnedAbout,
-  tankOf,
-  treesOfMap,
+  roundOf,
   type Obstacle,
 } from "./obstacles";
 
@@ -89,8 +88,8 @@ describe("a box", () => {
 
 describe("a tank", () => {
   test("dragged from its middle to its edge: the centre and the diameter", () => {
-    expect(tankOf({ x: 10, y: 10 }, { x: 11.25, y: 10 })).toEqual({ kind: "cylinder", points: [{ x: 10, y: 10 }], diameter: 2.5 });
-    expect(tankOf({ x: 10, y: 10 }, { x: 10, y: 10 })).toBeNull();
+    expect(roundOf("cylinder", { x: 10, y: 10 }, { x: 11.25, y: 10 })).toEqual({ kind: "cylinder", points: [{ x: 10, y: 10 }], diameter: 2.5 });
+    expect(roundOf("cylinder", { x: 10, y: 10 }, { x: 10, y: 10 })).toBeNull();
   });
 });
 
@@ -180,12 +179,16 @@ describe("to the API and back", () => {
     expect(back.y).toBeCloseTo(10, 3);
   });
 
-  test("the trees of a roof shown on the map again are kept aside, as they came: the map draws none (#179, item 1)", () => {
+  test("the trees of a roof shown on the map again are drawn as the others are: the map draws trees (V2 · 4)", () => {
     const tree = { name: "Mango", kind: "tree" as const, points: [[73.8601, 18.5201]] as [number, number][], diameter: 4, height: 6 };
     const shapes = [...mapShapesOf(drawn, frame), tree];
 
-    expect(treesOfMap(shapes)).toEqual([tree]);
-    expect(obstaclesOfMap(shapes, frame).map((obstacle) => obstacle.kind)).toEqual(["box", "cylinder", "wall"]);
+    expect(obstaclesOfMap(shapes, frame).map((obstacle) => [obstacle.kind, obstacle.name, obstacle.diameter])).toEqual([
+      ["box", "Box 1", null],
+      ["cylinder", "Tank 1", 2.5],
+      ["wall", "Wall 1", null],
+      ["tree", "Mango", 4],
+    ]);
   });
 
   test("the shapes of a roof shown on the map again become obstacles in the frame, numbered on", () => {

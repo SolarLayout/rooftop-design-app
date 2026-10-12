@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { SetBy } from "@/lib/studio/set-by";
 import { SetByHint } from "./SetByHint";
-import type { Size } from "./use-size";
+import type { Size } from "@/components/shell/use-screen-size";
 
 // The look of what the inspectors of the Studio share (the boards "Studio, Array lens" and "Studio,
 // Roof lens"): the section label, how the fields of a section stand, a row with its control at the

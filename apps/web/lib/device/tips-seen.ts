@@ -1,11 +1,11 @@
-// The tips gone for good on this device (D79, components.md "Tip"): one key of localStorage, the ids of the tips
-// whose Got it was pressed or whose move was done. A per-viewer convenience: a storage that refuses (a private
-// window, a quota) only means the tips show again.
+// The line on Find's map gone for good on this device (V2 · 4; before it the tips of D79): one key of localStorage, the
+// ids of what is gone. An id of before ("obstacle") is left out. A per-viewer convenience: a storage that refuses (a
+// private window, a quota) only means the line shows again.
 import type { TipId } from "../outline/tips";
 
 export const TIPS_KEY = "rooftop.tips-gone";
 
-const TIP_IDS: readonly TipId[] = ["roof", "obstacle"];
+const TIP_IDS: readonly TipId[] = ["roof"];
 const isTipId = (value: unknown): value is TipId => TIP_IDS.includes(value as TipId);
 
 /** The tips gone for good, as the device remembers them; none when it remembers none or refuses. */

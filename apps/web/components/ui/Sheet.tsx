@@ -14,6 +14,8 @@ type Props = {
   /** The share of the room the sheet takes at half, from 0 to 1; half the room when it is not given. */
   half?: number;
   children: ReactNode;
+  /** What stands pinned under what scrolls, at every stop: a step's primary (Find's Build, V2 · 4). */
+  foot?: ReactNode;
   className?: string;
 };
 
@@ -28,7 +30,7 @@ const HEIGHT: Record<Stop, string> = {
  * nearest element that is placed (`relative`), and has three stops: peek, half the room (or the share
  * given), all of it.
  */
-export function Sheet({ label, stop, onStop, half, children, className }: Props) {
+export function Sheet({ label, stop, onStop, half, children, foot, className }: Props) {
   const content = useId();
   const drag = useSheetDrag(stop, onStop, half);
   const isDragged = drag.share !== null;
@@ -74,6 +76,7 @@ export function Sheet({ label, stop, onStop, half, children, className }: Props)
       >
         {children}
       </div>
+      {foot ? <div className="shrink-0 border-t border-line-subtle px-4 pt-3 pb-3">{foot}</div> : null}
     </section>
   );
 }

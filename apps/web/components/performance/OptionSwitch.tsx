@@ -2,7 +2,7 @@
 
 import { Segmented } from "@/components/ui/Segmented";
 import { Select } from "@/components/ui/Select";
-import { useSize } from "@/components/studio/use-size";
+import { useSize } from "@/components/shell/use-screen-size";
 import type { OptionItem } from "@/lib/performance/header";
 
 type Props = {

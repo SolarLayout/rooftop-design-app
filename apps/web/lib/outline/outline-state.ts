@@ -6,7 +6,7 @@ import { frameAt, type Frame, type LonLat } from "./frame";
 import { canRedo, canUndo, historyOf, redone, undone, withNext, type History } from "./history";
 import { areaOf, bearingOf, centroidOf, compassOf, edgesOf, facingOf, isClockwise, type Facing, type XY } from "../geometry/measure";
 import { nudged, nudgeOfKey } from "./nudge";
-import { boxOf as obstacleBoxOf, boxWithCorner, FEWEST_POINTS, nameOf, obstacleMovedBy, obstacleTurnedAbout, tankOf, type Obstacle, type ObstacleKind, type Shape } from "./obstacles";
+import { boxOf as obstacleBoxOf, boxWithCorner, FEWEST_POINTS, nameOf, obstacleMovedBy, obstacleTurnedAbout, roundOf, isRound, type Obstacle, type ObstacleKind, type Shape } from "./obstacles";
 import { rectangleOf, turnedAbout, turnOfHandle } from "./rectangle";
 import { canTurn, movedOnRoof } from "./obstacle-move";
 import { movedBy, turnedBy, turnOfDrag, type Carried, type Lift } from "./roof-move";
@@ -73,7 +73,7 @@ export type OutlineEvent =
   | { type: "footprintTaken"; corners: readonly XY[] }
   | { type: "loaded"; at: LonLat; corners: readonly XY[]; obstacles?: readonly Obstacle[] }
   | { type: "entered"; at: LonLat; corners: readonly XY[] }
-  | { type: "shapeDragged"; kind: "box" | "cylinder"; from: XY; to: XY }
+  | { type: "shapeDragged"; kind: "box" | "cylinder" | "tree"; from: XY; to: XY }
   | { type: "shapeDropped" }
   | { type: "shapePlaced"; kind: "wall" | "building"; at: XY; metresPerPx: number; touch: boolean }
   | { type: "heightGiven"; height: number; name: string }
@@ -368,7 +368,7 @@ export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineS
 
     case "shapeDragged": {
       if (!canDraw(state)) return state;
-      const shape: Shape | null = event.kind === "box" ? boxed(obstacleBoxOf(event.from, event.to)) : tankOf(event.from, event.to);
+      const shape: Shape | null = event.kind === "box" ? boxed(obstacleBoxOf(event.from, event.to)) : roundOf(event.kind, event.from, event.to);
       return { ...state, drawing: shape, selectedObstacle: null };
     }
 
@@ -450,10 +450,10 @@ export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineS
 
 const boxed = (points: XY[] | null): Shape | null => (points ? { kind: "box", points, diameter: null } : null);
 
-/** An obstacle with corner `index` at `at`: a box stays a rectangle, a tank's one handle sets its diameter, a wall or a building bends. */
+/** An obstacle with corner `index` at `at`: a box stays a rectangle, a tank's or a tree's one handle sets its diameter, a wall or a building bends. */
 function withCornerAt(obstacle: Obstacle, index: number, at: XY): Obstacle {
   if (obstacle.kind === "box") return { ...obstacle, points: boxWithCorner(obstacle.points, index, at) };
-  if (obstacle.kind === "cylinder") {
+  if (isRound(obstacle.kind)) {
     const [centre] = obstacle.points;
     const diameter = 2 * Math.hypot(at.x - centre.x, at.y - centre.y);
     return diameter > 0 ? { ...obstacle, diameter } : obstacle;

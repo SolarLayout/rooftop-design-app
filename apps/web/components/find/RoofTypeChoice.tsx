@@ -1,57 +1,74 @@
 "use client";
 
+import { useRef, type KeyboardEvent } from "react";
+import { SectionHeading } from "@/components/shell/help/SectionHeading";
+import { choiceAfterKey } from "@/components/ui/choice-keys";
 import { classNames } from "@/components/ui/class-names";
-import { Segmented } from "@/components/ui/Segmented";
-import { ROOF_TYPES, type RoofType } from "@/lib/geometry/roof-types";
+import type { RoofType } from "@/lib/geometry/roof-types";
+import { roofTypeChoicesOf } from "@/lib/outline/find-head";
 
-type Props = { value: RoofType; onChange: (value: RoofType) => void; className?: string };
+type Props = {
+  value: RoofType;
+  onChange: (value: RoofType) => void;
+  /** The roof's latitude: the rows face the equator of its hemisphere. */
+  latitude: number;
+};
 
-const CARD = classNames(
-  "flex h-13 cursor-pointer items-center gap-3 rounded-row border px-3.5 text-left shadow-raised press-motion focus-ring",
-  "hovered:raised-by-hover hovered:shadow-raised-hover pressed:lowered-by-press",
+const ROW = classNames(
+  "flex min-h-14 w-full cursor-pointer items-start gap-3 rounded-row border px-3.5 py-2.5 text-left press-motion focus-ring",
+  "hovered:border-line-hover",
 );
-const CARD_TAKEN = "border-accent bg-note-surface";
-const CARD_NOT_TAKEN = "border-line bg-control";
 
-/** The drawing of each roof type, as the board draws it: rows, back-to-back rows, a pitched roof. */
-function RoofTypeIcon({ id, taken }: { id: RoofType; taken: boolean }) {
-  const path = id === "flat_tilted" ? "M1 16h26M4 14l6-5M12 14l6-5M20 14l6-5" : id === "flat_ew" ? "M1 16h26M3 14l5-4 5 4M15 14l5-4 5 4" : "M1 16 14 5l13 11M5 10.5l9-7.5 9 7.5";
-  return (
-    <svg viewBox="0 0 28 18" aria-hidden="true" className={classNames("h-4.5 w-7 shrink-0 fill-none stroke-icon-light", taken ? "stroke-accent" : "stroke-text-2")} strokeLinecap="round" strokeLinejoin="round">
-      <path d={path} />
-    </svg>
-  );
-}
+/**
+ * The roof type, a question once the outline is closed (V2 · 4, D98): three choices with a line each, tilted rows the
+ * default. A group of radio buttons: the keyboard stops at the one taken, the arrows go through them.
+ */
+export function RoofTypeChoice({ value, onChange, latitude }: Props) {
+  const choices = roofTypeChoicesOf(latitude);
+  const group = useRef<HTMLDivElement>(null);
 
-/** The roof type: three cards on desktop, a segmented control on phone and tablet (the boards of Find). */
-export function RoofTypeChoice({ value, onChange, className }: Props) {
+  function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    const next = choiceAfterKey(
+      choices.map(({ id }) => id),
+      value,
+      event.key,
+    );
+    if (next === null) return;
+    event.preventDefault();
+    onChange(next);
+    group.current?.querySelectorAll<HTMLButtonElement>('[role="radio"]')[choices.findIndex(({ id }) => id === next)]?.focus();
+  }
+
   return (
-    <div className={className}>
-      <div role="group" aria-label="Roof type" className="hidden flex-col gap-1.5 desktop:flex">
-        {ROOF_TYPES.map(({ id, name, caption }) => (
-          <button
-            key={id}
-            type="button"
-            aria-pressed={id === value}
-            onClick={() => onChange(id)}
-            className={classNames(CARD, id === value ? CARD_TAKEN : CARD_NOT_TAKEN)}
-          >
-            <RoofTypeIcon id={id} taken={id === value} />
-            <span className="flex grow flex-col">
-              <span className="font-medium">{name}</span>
-              <span className="type-body-touch desktop:type-body text-text-2">{caption}</span>
-            </span>
-          </button>
-        ))}
+    <section aria-label="Roof type" className="flex flex-col gap-row">
+      <SectionHeading help="app.section.roof-type" value={value}>
+        Roof type
+      </SectionHeading>
+      <div ref={group} role="radiogroup" aria-label="Roof type" onKeyDown={onKeyDown} className="flex flex-col gap-1.5">
+        {choices.map(({ id, name, line, isDefault }) => {
+          const isTaken = id === value;
+          return (
+            <button
+              key={id}
+              type="button"
+              role="radio"
+              aria-checked={isTaken}
+              tabIndex={isTaken ? 0 : -1}
+              onClick={() => onChange(id)}
+              className={classNames(ROW, isTaken ? "border-line-strong bg-surface-2" : "border-transparent")}
+            >
+              <span aria-hidden="true" className={classNames("mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border", isTaken ? "border-accent" : "border-line-strong")}>
+                {isTaken ? <span className="size-2 rounded-full bg-accent" /> : null}
+              </span>
+              <span className="flex grow flex-col gap-0.5">
+                <span className="font-medium">{name}</span>
+                <span className="type-body-touch text-text-2 desktop:type-body">{line}</span>
+              </span>
+              {isDefault ? <span className="shrink-0 type-unit text-text-3">Default</span> : null}
+            </button>
+          );
+        })}
       </div>
-      <Segmented
-        label="Roof type"
-        options={ROOF_TYPES.map(({ id, short }) => ({ value: id, label: short }))}
-        value={value}
-        onChange={onChange}
-        fill
-        className="desktop:hidden"
-      />
-    </div>
+    </section>
   );
 }

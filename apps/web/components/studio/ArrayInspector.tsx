@@ -13,7 +13,7 @@ import { ArrayMounting, type ArrayChange } from "./ArrayMounting";
 import { ArraySpacing, ShadeFreeWindow } from "./ArraySpacing";
 import { ModuleCard } from "./ModuleCard";
 import { ModulePicker } from "./ModulePicker";
-import { SummaryRow } from "./SummaryRow";
+import { SummaryRow } from "@/components/shell/SummaryRow";
 
 /** The module read from a replaced file, for the design that was open when it was read. */
 type Replaced = ReplacedModule & { openedAt: number | null };

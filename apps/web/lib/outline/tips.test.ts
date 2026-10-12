@@ -1,10 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import type { XY } from "../geometry/measure";
 import { outlineAfter, START, type OutlineEvent, type OutlineState } from "./outline-state";
-import { TIPS, tipDoneBy, tipShownOf } from "./tips";
+import { showsMapLineOf, tipDoneBy } from "./tips";
 
-// Find's tips (D79): one at a time, shown when its move becomes possible, gone for good once its move is done
-// or Got it is pressed.
+// The one line on Find's map for the first outline (V2 · 4; before it the tips of D79): shown once the outline is
+// closed, gone for good once the roof is moved or turned.
 
 const PUNE = { lon: 73.86, lat: 18.52 };
 const PRESS = { metresPerPx: 0.283, touch: false };
@@ -24,29 +24,24 @@ const closed = () => outlineAfter(placed(), { type: "close" });
 const withBox = () =>
   after(closed(), { type: "shapeDragged", kind: "box", from: { x: 10, y: 5 }, to: { x: 15, y: 9 } }, { type: "shapeDropped" }, { type: "heightGiven", height: 3, name: "Stair room" });
 
-describe("the tip shown", () => {
-  test("none while the roof is open", () => {
-    expect(tipShownOf(placed(), NONE)).toBeNull();
+describe("the line on the map", () => {
+  test("not while the roof is open", () => {
+    expect(showsMapLineOf(placed(), NONE)).toBe(false);
   });
 
-  test("the roof's once it is closed", () => {
-    expect(tipShownOf(closed(), NONE)).toBe("roof");
+  test("once it is closed, with obstacles or without", () => {
+    expect(showsMapLineOf(closed(), NONE)).toBe(true);
+    expect(showsMapLineOf(withBox(), NONE)).toBe(true);
   });
 
-  test("the obstacles' once the roof's is gone and there is an obstacle", () => {
-    expect(tipShownOf(withBox(), NONE)).toBe("roof");
-    expect(tipShownOf(withBox(), new Set(["roof" as const]))).toBe("obstacle");
-    expect(tipShownOf(closed(), new Set(["roof" as const]))).toBeNull();
-  });
-
-  test("none while a shape awaits its height", () => {
+  test("not while a shape awaits its height", () => {
     const awaiting = after(closed(), { type: "shapeDragged", kind: "box", from: { x: 0, y: 0 }, to: { x: 2, y: 2 } }, { type: "shapeDropped" });
 
-    expect(tipShownOf(awaiting, NONE)).toBeNull();
+    expect(showsMapLineOf(awaiting, NONE)).toBe(false);
   });
 
-  test("none once both are gone", () => {
-    expect(tipShownOf(withBox(), new Set(["roof" as const, "obstacle" as const]))).toBeNull();
+  test("not once it is gone", () => {
+    expect(showsMapLineOf(closed(), new Set(["roof" as const]))).toBe(false);
   });
 });
 
@@ -57,10 +52,10 @@ describe("a tip done", () => {
     expect(tipDoneBy(lifted, outlineAfter(lifted, { type: "liftDropped" }))).toBe("roof");
   });
 
-  test("the obstacles' when an obstacle is moved or turned and let go", () => {
+  test("not when an obstacle is moved: the line is the roof's", () => {
     const lifted = after(withBox(), { type: "obstacleSelected", id: 1 }, { type: "obstacleMoved", id: 1, by: { x: 1, y: 0 } });
 
-    expect(tipDoneBy(lifted, outlineAfter(lifted, { type: "liftDropped" }))).toBe("obstacle");
+    expect(tipDoneBy(lifted, outlineAfter(lifted, { type: "liftDropped" }))).toBeNull();
   });
 
   test("none for a lift let go where it began, nor for anything else", () => {
@@ -68,18 +63,5 @@ describe("a tip done", () => {
 
     expect(tipDoneBy(still, outlineAfter(still, { type: "liftDropped" }))).toBeNull();
     expect(tipDoneBy(placed(), closed())).toBeNull();
-  });
-});
-
-describe("the words", () => {
-  test("two to four rows, for a pointer and for touch", () => {
-    for (const tip of Object.values(TIPS)) {
-      for (const rows of [tip.pointer, tip.touch]) {
-        expect(rows.length).toBeGreaterThanOrEqual(2);
-        expect(rows.length).toBeLessThanOrEqual(4);
-      }
-    }
-    expect(TIPS.roof.title).toBe("Move or turn the roof");
-    expect(TIPS.obstacle.pointer.map((row) => row.key)).toEqual(["Click", "Drag", "◯", "Delete"]);
   });
 });

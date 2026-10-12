@@ -444,51 +444,66 @@ the stage's foot on tablet and desktop, 28 over its bottom. On phone the pill is
 in mono ("21 Dec · 12:00"), at the top left of the stage: a press plays and pauses; the time is moved on the timeline in
 the sheet.
 
-## Find's first step (D85)
-The panel of Find before a place is found (`components/find/FirstStep.tsx`, the words in `lib/outline/first-step.ts`).
-Under the title and lead, three sections in the section headings' look, no ? on them (the ? stands beside the title):
-**Start here**, the ways to start as cards 52 high in the roof type's look (`bg-control`, raised, the icon 18 in the accent,
-a chevron at the right): Search for the building focuses the search over the map, Use my location does what the button
-beside the search does, Enter dimensions by hand opens the entry by hand; **The search understands**, four rows (44 on
-touch, 36 on desktop) of a name in `type-body` and its example in the figures' mono, a press puts the example into the
-search, which reads it back under the field; **Three steps**, the help's step marks (24), the first lit in the accent, the
-others `surface-2`. Without a map only the card by hand and the steps in its words. The floating search takes
-`border-accent` while it holds the focus.
+## Find's column (V2 · 4, D98)
+The board "V2 · 4 · Find". Find takes the Studio's work column: 384 at the right on desktop, the sheet on touch with the
+map 40 % of the phone's height (440 on tablet) and the sheet at half meeting its foot. The top bar is the Studio's without
+the result: the mark, the design's name ("New design"), the steps with Roof in hand, Docs; the tab bar on phone. The
+column's head follows the step, never the tool (`lib/outline/find-head.ts`): `heading` and one line in `text-2`.
+- **Find the roof**: "Search for the building, then outline its roof on the map." The search first, 48 high, `bg-well`,
+  "Address or coordinates"; while it is empty and has the focus its list shows "Examples": an address, coordinates and a
+  maps link, each pressed into the search. Under it two rows divided by `line-subtle` (64 on touch, 56 on desktop), an icon
+  in `text-2`, the title at 500, a line in `text-2`, a chevron: Use my location (When you are at the building), Enter the
+  roof by hand (Type its length and width). No cards, no Three steps (`components/find/FirstStep.tsx`, the words in
+  `lib/outline/first-step.ts`).
+- **Outline the roof**: "Click each corner of the roof. Click the first corner again to close the outline." (Press on
+  touch.) The tools as a row of small secondary buttons with their icons and words, Corners, Rectangle, Detect building,
+  the one in hand pressed (`control-active`); under them the corners placed ("No corners yet", "1 corner", "3 corners")
+  with Undo and Clear, quiet, with their words.
+- **Add what stands on the roof**: "The roof is outlined: 3,600 m², 4 corners. Add its obstacles, choose its type, then
+  build." Obstacles · n with its ?, "Choose a kind, then drag over it on the map.", the kinds Box, Tank, Wall, Tree and
+  Building as the tools are; what was drawn listed in words ("Stair room · Box · 5.0 × 4.0 m · 3.0 m high"). The roof type
+  a question (`RoofTypeChoice`): three radio rows, each its name at 500 and a line, the one taken on `surface-2` with
+  `line-strong` and an accent dot, "Default" in `unit` `text-3` on the first: Flat, rows facing south (north in the
+  southern hemisphere), Flat, rows facing east and west, Sloped. Then Edges, a summary row: how many edges and where the
+  roof faces; opened, each edge's length and Square the corners.
+- **Enter the roof by hand**: "Type the roof's length and width. Add its obstacles in the Studio." See "Enter the roof by
+  hand" below.
+- **Build this roof · <area>** pinned at the column's foot (the sheet's at every stop on touch) from the closed outline on,
+  a primary of 48 with the arrow, "Opens the roof in 3D with the array on it." under it; a build that failed says why above
+  it. Not shown before the outline closes.
+- A quiet "Enter the roof by hand" closes the column while outlining; "Draw on the map instead" closes it by hand.
+- The keyboard meets the column first, its primary last in it, then the map's controls; icons alone are for zoom and north.
 
 ## Map outline tools (Find and outline)
 Corner handle 18 (22 on touch), white with accent border; the corner being edited pulses. Midpoint handle 10,
 accent. Edge label: mono 13 on `color-ground`, radius 7. Outline: 2 px accent, fill accent at 9 %.
-Toolbar: floating, radius 18, the active tool is a primary button.
+The tools are in the column (V2 · 4): "Find's column" above.
 
 In code (`apps/web/components/find`): `OutlineLayer` draws on the map (MapLibre layers painted in the tokens of
-the container; handles, midpoints and labels as markers), `OutlineTools` is the toolbar, `OutlinePanel` the
-edges, the switch and the tiles, `RoofTypeChoice` the roof type (cards on desktop, a segmented control on
-touch), `DetectedCallout` the callout of Detect building. Every rule of drawing is in
+the container; handles, midpoints and labels as markers), `OutlineTools` the tools of the column, `OutlinePanel` the
+edges and the switch, `RoofTypeChoice` the roof type, `DetectedCallout` the callout of Detect building. Every rule of drawing is in
 `apps/web/lib/outline/outline-state.ts`, a reducer.
-- Every handle takes a press of 44 by 44 around it; the tools have one name on every size, the word shown may
-  be shorter on phone. The phone has no zoom buttons and no scale bar; its toolbar shows Corners, Rectangle,
-  Detect and Undo.
+- Every handle takes a press of 44 by 44 around it. The phone has no zoom buttons and no scale bar.
 - The handle that turns a rectangle stands 44 px above the middle of its top edge, on a stem; the turn snaps to
   north within 3°.
 - On a coarse pointer a corner dragged has a loupe of 104 px, 92 above the finger, twice the imagery, a cross at
   the corner.
 - The footprints that are known show at `--opacity-hint` while Detect building is the tool, with "© Overture
   Maps Foundation, ODbL" under the imagery's attribution; the callout stands at the press.
-- The map says `aria-busy` while it moves; the panel's title and lead follow the step and the tool.
-- The toolbar follows the state of the roof (the board "Obstacles on the map and their heights"). While the
-  outline is open it holds Corners, Rectangle and Detect building; once it is closed it holds the four obstacles,
-  Box, Tank, Wall and Building, with Box in hand. Undo, Redo and Clear stay; Clear takes the obstacles with the
-  roof, and the outline opened again brings the outline tools back. A box is dragged across the thing and kept a
-  rectangle when a corner is dragged; a tank is dragged from its middle to its edge; a wall is pressed point by
-  point and ended by a press on the last point or Enter; a building beside the roof is pressed corner by corner and
-  closed on the first. Each asks its height right after, in a dialog (a sheet on phone): the name of its kind
-  suggested, the height empty, Remove takes the shape off the map.
+- The map says `aria-busy` while it moves; the column's head follows the step, not the tool.
+- The tools follow the state of the roof. While the outline is open the column holds Corners, Rectangle and Detect
+  building; once it is closed the kinds of obstacle, Box, Tank, Wall, Tree and Building, with Box in hand. Clear takes the
+  obstacles with the roof, and the outline opened again brings the outline tools back. A box is dragged across the thing
+  and kept a rectangle when a corner is dragged; a tank or a tree is dragged from its middle to its edge; a wall is
+  pressed point by point and ended by a press on the last point or Enter; a building beside the roof is pressed corner by
+  corner and closed on the first. Each asks its height right after, in a card beside it (`HeightDialog`, 256 wide,
+  `surface-1`, `shadow-float`): its kind, "Height above the roof" with its field empty, Cancel and Add; Add waits for a
+  number, Enter adds, Escape cancels. It takes the name of its kind and its count.
 - Obstacles are drawn light over dark (`--color-obstacle-line`, `--color-obstacle-fill`), so that the roof stays
   the amber thing on the screen; the selected one and the one being drawn are accent. Each carries a label with
   its name and its height under its lowest point. The selected one has handles: its corners, or the edge of a
-  tank; Delete removes it. The panel lists them under the measurements, "Obstacles · n", each with its size (a
-  box by its sides, a tank by its diameter, a wall by its length, a building by its area) and its height, a press
-  on a row selects it, Remove takes it. The card of the Roof step counts them. In code: `ObstacleList`,
+  tank; Delete removes it. The column lists them under "Obstacles · n", each in words, a press on a row selects
+  it, Remove takes it. The card of the Roof step counts them. In code: `ObstacleList`,
   `HeightDialog`, the obstacles in `lib/outline/obstacles.ts` and the reducer.
 
 ## Move and turn the roof and its obstacles (Find's map) — approved, built
@@ -501,10 +516,8 @@ panel's Faces follows. Each move or turn is one step of Undo. An obstacle picked
 kept on the roof), and a box or a building has the same turn handle north of it; a tank and a wall only move; its corners
 still size it. On touch one finger inside what is picked moves it, two fingers move the map; handles take a press of 44. On desktop the handles of an obstacle picked take a press of 24, so that a press inside a small one (a tank of 2.5 m is about 30 px across, zoomed in twice) moves it rather than sizing it; a tank moves and is sized by its one edge handle, never turned.
 Cursor: an open hand over the Studio's stage and Find's map at rest with nothing in hand, a closed hand while either is
-dragged; the crosshair while a drawing tool is in hand; over an obstacle or a handle, theirs. Tips: a card at the map's edge
-(`surface-1`, border `line-strong`, radius 14, `shadow-float`), its title with an accent dot, two to four rows of a key
-or gesture in a bordered chip and what it does, Got it; one at a time, when a move becomes possible, never over what is
-moved; Got it closes it for good on the device, it goes by itself once its move is done; the toolbar's ? shows them again.
+dragged; the crosshair while a drawing tool is in hand; over an obstacle or a handle, theirs. No card of tips (V2 · 4): one
+line on the map for the first outline, "The line on the map" below.
 
 ## Help disc and help sheet (the in-app help, D80)
 The boards "In-App Help · The ? and the help sheet" (the canvas page "In-App Help"). Help on what a section of an input panel
@@ -562,10 +575,9 @@ How-tos with pictures").
 - **Pointer and touch:** a step says what the hand in use does, the words of a mouse where the pointer is fine, of touch
   where it is coarse; a key or a gesture in the chip of the tips (`radius-xs`, a border of `line-strong`,
   `type-unit` at 600).
-- **The ways in (Find):** a ? disc beside the panel's title (6 after its words) opens the how-to of what the hand can do
+- **The ways in (Find):** a ? disc beside the column's title (6 after its words) opens the how-to of what the hand can do
   now: with the roof open, the outline tool in hand; closed, the obstacle tool in hand; the roof picked, moving it; an
-  obstacle picked, moving it (`lib/outline/how-to.ts`; the first that has a topic, none while none has). A tip's Show me how
-  opens its move's. A how-to of Find ends with "Show the tips on the map again".
+  obstacle picked, moving it (`lib/outline/how-to.ts`; the first that has a topic, none while none has).
 - **A clip (Phase 15; the boards "In-App Help · Clips"):** a picture may play a short clip of its step in its frame. At rest
   it is the picture, its callouts and their words, with a play button of the accent in its middle (48, `shadow-primary`, the
   play icon in `accent-ink`) and the clip's length in its lower right (`type-unit` on `ground` at 80 %); nothing of
@@ -579,37 +591,10 @@ How-tos with pictures").
   screen, as a picture opens large: playing from its start, pinched to look closer, its callouts' words under it; × or
   Escape returns to the step.
 
-## Tip (a card of help over the map, D79)
-A small card that shows how to do a move the screen has just made possible (the boards "UI fixes · Move and turn the roof
-and its obstacles"). `surface-1`, border `line-strong`, radius `card-s` (14), `shadow-float`, padding 14 (12 under), rows 10
-apart; 300 wide on desktop and tablet, the width of the sheet on phone. The head: an accent dot of 8, the title
-in 14 at 600, and a quiet close (×) at the right, a press of 44 on touch. Two to four rows, each a key or a gesture in a
-bordered chip (`line-strong`, radius 6, 11 at 600, at least 62 wide, centred) and what it does in 13, `text-2`. The foot:
-Show me how at the left where the move has a how-to (D81: a link in the accent, `type-body` at 500), Got it, a secondary
-button, small, at the right.
-
-- One tip at a time. It shows when its move becomes possible, and never over what is moved: on desktop and tablet at the
-  map's edge, top left under the search (20 in, 88 down); on phone at the top of the sheet, under the lead, the width of the
-  sheet. The phone's map above the sheet is about 460 high, and a card of four rows took half of it, the roof with it (the
-  owner left the phone to the best sense, session 19; the board drew the card floating above the sheet).
-- **Got it** closes it for good on the device (localStorage, a per-viewer convenience; a storage that refuses only means it
-  shows again). It also goes for good by itself once its move is done. The × hides the tips, this one and those after it, until the screen is opened again
-  or the ? is pressed.
-- The toolbar's **?** ("Show the tips") shows them again, from the first. On phone, where the toolbar has room for Undo
-  alone, the ? disc beside the panel's title opens the how-to of what the hand can do now (D81), and each how-to of Find
-  ends with "Show the tips on the map again", which closes the help and shows them.
-- **Show me how** opens the how-to of the tip's move in the help sheet (D81).
-- It is a `role="note"` with its title as its name; Got it and × are buttons; it takes no focus when it appears.
-
-Find's two tips, the words by device (a press on touch, a click with a pointer):
-
-| Tip | Shows when | Rows (desktop) | Rows (touch) | Done when |
-|---|---|---|---|---|
-| Move or turn the roof | the roof is closed | Click · inside the roof to pick it up; Drag · inside it to move it; ◯ · drag the round handle to turn it; ← ↑ → ↓ · nudge 0.1 m, with Shift 1 m | Press · inside the roof to pick it up; Drag · with one finger inside it to move it; ◯ · drag the round handle to turn it; 2 fingers · move the map, as always | the roof is moved or turned |
-| Move or turn an obstacle | the roof's tip is gone and there is an obstacle | Click · an obstacle to pick it; Drag · it to move it; ◯ · turns a box or a building; Delete · removes it | Press · an obstacle to pick it; Drag · it to move it; ◯ · turns a box or a building | an obstacle is moved or turned |
-
-In code: `components/ui/Tip.tsx` (the card); which tip shows and when one is done in `lib/outline/tips.ts`; what the device
-remembers in `lib/device/tips-seen.ts`.
+## The line on the map (V2 · 4)
+No card of tips (D79's moves stay). Once the first outline is closed, one line stands at the top of the map, in the middle,
+`surface-1`, `shadow-float`: "Drag the roof to move it · drag ○ to turn it". It goes for good on this device once the roof is
+moved or turned (localStorage, `lib/device/tips-seen.ts`); the roof's own handles say the rest. In code: `lib/outline/tips.ts`.
 
 ## Obstacles on the roof (Studio, Roof step)
 The board "Obstacle edited on the roof". The obstacles of the document are edited on the 3D roof and in the list of
@@ -634,25 +619,23 @@ centre of the roof as a dashed accent footprint with the callout "Box 7 · draft
 empty and the focus in it and the primary "Add the box" waiting: nothing is preselected, it joins the design when
 its height is typed; Add then a tap on the roof places it there.
 
-## Enter dimensions by hand (Find and outline)
-The way on when there is no map key, no WebGL or no connection, and a way for anyone who has measured the roof
-(the board "Enter dimensions by hand"). "Enter dimensions by hand instead", under Build and in the place of the map
-when there is none, switches the panel to fields: Place (latitude and longitude, five decimals, north and east
-positive, filled by the search or typed), Shape (a segmented control, Rectangle or Corners), then Length, Width
-and "Long side faces" (metres with two decimals; degrees clockwise from north, whole), or the corner table (a row
-per corner, metres east and north of the middle of the roof, Add a corner, Remove, three at least); then the same
-tiles, roof type and Build as for a roof drawn on the map. Nothing is preselected: the fields are empty, the tiles
-say nothing and Build waits until the place and the shape are there.
+## Enter the roof by hand (Find)
+The way on when there is no map key, no WebGL or no connection, and a way for anyone who has measured the roof (the board
+"V2 · 4 · Find"). Without a map the column opens on it, with a note at its head: "The map is not available · Enter the
+roof's measurements instead." (no key), or why the map cannot be shown. The column: Place (latitude and longitude, five
+decimals) only while no place was found; Shape (Rectangle or Corners); Length and Width (metres with two decimals) and
+"The long side faces", South, East, North or West, south at first; or the corner table (a row per corner, metres east and
+north of the middle of the roof, Add a corner, Remove, three at least); the roof type; Build pinned at the foot, waiting
+until the place and the shape are there.
 
-The roof is drawn as it is typed. With a map it stands on the imagery at the place, turned to where it faces, and
-its corners are shown, not dragged: the fields are the truth of it; "Draw on the map instead" goes back to the
-tools. Without a map the stage draws the plan: north up, on a grid of 10 m, the outline in the accent with its edge
-labels, a north mark, the scale bar, and the reason there is no map where the attribution stands. Build sends the
-corners in WGS84 about the place, as for a roof drawn, with the source "coordinates": the card of the Roof step
-says "Entered by hand". Obstacles by hand come with the Roof step.
+The roof is drawn as it is typed. With a map it stands on the imagery at the place, turned to where it faces, and its
+corners are shown, not dragged: the fields are the truth of it; "Draw on the map instead" goes back to the tools. Without
+a map the stage draws the plan: north up, on a grid of 10 m, the outline in the accent with its edge labels, a north
+mark and the scale bar. Build sends the corners in WGS84 about the place, as for a roof drawn, with the source
+"coordinates": the card of the Roof step says "Entered by hand". Obstacles by hand come with the Roof step.
 
-In code (`apps/web/components/find`): `ByHandPanel` the fields, `PlanView` the plan, the rectangle and the table in
-`apps/web/lib/outline/by-hand.ts`, the roof entered as one event of the reducer (`entered`).
+In code (`apps/web/components/find`): `ByHandPanel` the fields, `PlanView` the plan, the rectangle, the table and the four
+facings in `apps/web/lib/outline/by-hand.ts`, the roof entered as one event of the reducer (`entered`).
 
 ## Import a drawing (the project switcher)
 The board "Import with missing heights". A dialog of 440 ("Import a drawing"), one sentence of what is read, the file

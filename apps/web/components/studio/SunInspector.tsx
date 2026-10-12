@@ -19,7 +19,7 @@ import { dateOf, dayOfChoice, dayOfYearOf, daysOf, designDayLineOf, designDayOfY
 import { ReadOut } from "./inspector-look";
 import { ShadeMapSection, ShadingSection } from "./SunShading";
 import { SunTimeline } from "./Time";
-import type { Size } from "./use-size";
+import type { Size } from "@/components/shell/use-screen-size";
 import { useTime } from "./use-time";
 
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
