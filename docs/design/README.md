@@ -97,12 +97,12 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | V2 · 4 · Find (approved, D98) | `V2Find.dc.html`, `V2FindTablet.dc.html`, `V2FindPhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
 | V2 · 5 · Problems (approved, D101) | `V2Problems.dc.html`, `V2ProblemsTablet.dc.html`, `V2ProblemsPhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
 | V2 · 6 · The Strings step (approved, D102) | `V2Strings.dc.html`, `V2StringsTablet.dc.html`, `V2StringsPhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
-| V2 · 7 · The Roof and Array steps, and the Sun view (for approval) | `V2RoofArray.dc.html`, `V2RoofArrayTablet.dc.html`, `V2RoofArrayPhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
-| V2 · 8 · Performance (for approval) | `V2Performance.dc.html`, `V2PerformanceTablet.dc.html`, `V2PerformancePhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
-| V2 · 9 · Handover and Home (for approval) | `V2HandoverHome.dc.html`, `V2HandoverHomeTablet.dc.html`, `V2HandoverHomePhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
-| V2 · 10 · Phone and tablet (for approval) | `V2Touch.dc.html` (an overview), `V2TouchTablet.dc.html`, `V2TouchPhone.dc.html` | none: the boards are the drawing | desktop overview, tablet, phone |
-| V2 · 11 · Help (for approval) | `V2Help.dc.html`, `V2HelpTablet.dc.html`, `V2HelpPhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
-| V2 · 12 · The vocabulary (for approval) | `V2Vocabulary.dc.html`, `V2VocabularyTablet.dc.html`, `V2VocabularyPhone.dc.html` | none: the boards are the table | desktop, tablet, phone |
+| V2 · 7 · The Roof and Array steps, and the Sun view (approved, D103) | `V2RoofArray.dc.html`, `V2RoofArrayTablet.dc.html`, `V2RoofArrayPhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
+| V2 · 8 · Performance (approved, D104) | `V2Performance.dc.html`, `V2PerformanceTablet.dc.html`, `V2PerformancePhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
+| V2 · 9 · Handover and Home (approved, D105) | `V2HandoverHome.dc.html`, `V2HandoverHomeTablet.dc.html`, `V2HandoverHomePhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
+| V2 · 10 · Phone and tablet (approved, D106) | `V2Touch.dc.html` (an overview), `V2TouchTablet.dc.html`, `V2TouchPhone.dc.html` | none: the boards are the drawing | desktop overview, tablet, phone |
+| V2 · 11 · Help (approved, D107) | `V2Help.dc.html`, `V2HelpTablet.dc.html`, `V2HelpPhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
+| V2 · 12 · The vocabulary (approved, D108) | `V2Vocabulary.dc.html`, `V2VocabularyTablet.dc.html`, `V2VocabularyPhone.dc.html` | none: the boards are the table | desktop, tablet, phone |
 
 Screens still to draw are listed in `plan/phase-00-design.md`.
 
