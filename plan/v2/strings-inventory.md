@@ -27,15 +27,15 @@ There are no first-person strings ("we", "our") anywhere in scope. No user-visib
    - "By hand" (docs)
 
    The Roof-lens obstacle panel reuses "Enter dimensions by hand" only in a comment.
-3. **Saving state is worded four ways:**
+3. **Saving state is worded four ways:** — done: "Saved on this device", "Saving", "Not saved", in the bar, the project switcher and the note
    - "Not saved" (`W/components/shell/SaveState.tsx:24`)
    - "Not kept on this device" (`SaveState.tsx:20`)
    - "Not saved on this device" (`W/components/shell/notes-view.ts:126`)
    - "Saved on this device" (`SaveState.tsx:18`)
 4. **"Remove" is the dismiss button of the height dialog.** The new shape is not added yet, so this is really Cancel (`W/components/find/HeightDialog.tsx:59`).
 5. **"The engine" appears in many user strings.** Examples: "The engine's shadows…", "summed up by the engine", "The PNG is the engine's drawing on A4", "in the engine's order". It is an internal term that users are never introduced to.
-6. **Unclear unit "mod".** It is the unit of the Roof field "Every" (`W/lib/studio/roof-fields.ts:18`).
-7. **"before" as an adjective reads oddly:** "Values are of the design before", "They are of the design before", "The values shown are of the design before", "The positions shown are of the design before".
+6. **Unclear unit "mod".** It is the unit of the Roof field "Every" (`W/lib/studio/roof-fields.ts:18`). — right ("Walkway every" ${n} "modules")
+7. **"before" as an adjective reads oddly:** "Values are of the design before", "They are of the design before", "The values shown are of the design before", "The positions shown are of the design before". — right ("Showing the last result", "Showing the last positions", "The result shown is from before the change.")
 
 ---
 
@@ -220,45 +220,45 @@ Plan view (W/components/find/PlanView.tsx):
 ## Studio shell (top bar, lens nav, vitals, notes, project menu, save state)
 
 **Page titles**
-- "${Lens} · Studio · SolarLayout Rooftop": W/app/(workspaces)/studio/[lens]/page.tsx:12
-- Workspaces "Studio", "Performance", "Handover": W/lib/routes.ts:6-8
-- Lenses "Roof", "Array", "Sun", "Strings": routes.ts:15-18
+- "${Lens} · Studio · SolarLayout Rooftop": W/app/(workspaces)/studio/[lens]/page.tsx:12 — right ("${Lens} · SolarLayout Rooftop")
+- Workspaces "Studio", "Performance", "Handover": W/lib/routes.ts:6-8 — right
+- Lenses "Roof", "Array", "Sun", "Strings": routes.ts:15-18 — right (Sun is a view now, D95)
 
 **Top bar** (W/components/shell/TopBar.tsx)
-- "Home" (aria logo): :83
-- "Present": :53
-- "Export": :68
-- "Nothing to review" / "1 note to review" / "${n} notes to review" (aria): :73
+- "Home" (aria logo): :83 — right
+- "Present": :53 — right
+- "Export": :68 — gone
+- "Nothing to review" / "1 note to review" / "${n} notes to review" (aria): :73 — gone (the result chip says "${n} to review")
 
 **Navigation and logo**
-- Nav aria "Workspaces", "Lenses": W/components/shell/WorkspaceNav.tsx:27; W/components/shell/LensNav.tsx:37
-- Inspector aria "${Lens} inspector"; sheet "Inspector": W/components/studio/Studio.tsx:61, 68
-- Logo "SolarLayout Rooftop" / "Rooftop": W/components/shell/Logo.tsx:12, 19
+- Nav aria "Workspaces", "Lenses": W/components/shell/WorkspaceNav.tsx:27; W/components/shell/LensNav.tsx:37 — gone (one nav, "Steps")
+- Inspector aria "${Lens} inspector"; sheet "Inspector": W/components/studio/Studio.tsx:61, 68 — gone ("${Step} work column")
+- Logo "SolarLayout Rooftop" / "Rooftop": W/components/shell/Logo.tsx:12, 19 — right
 
 **Vitals** (W/components/shell/vitals-view.ts; aria "Design vitals" in Vitals.tsx:182)
-- Cells: "Energy, year 1", "DC capacity", "AC capacity", "DC/AC" [!J], "Modules", "PR" [!J], "Yield": :77-88
-- Layout-only cells: "Roof", "Positions", "If all were used" [?]: :95-102
-- "Updating energy", "Opening ${name}" / "Opening the design", "Try again": :64-66
-- "Energy was not updated" / "Values are of the design before" [?]: :67
-- "Energy was not computed" / "There are no values yet": :68
-- "Nothing to review" / "Every check of the design fits." [?]: :111
-- "${detail} · Try again": :129
-- Units: "of ${positions}", "MWh", "kWh/kWp" [!J]: W/lib/format/vitals.ts:15-25
+- Cells: "Energy, year 1", "DC capacity", "AC capacity", "DC/AC" [!J], "Modules", "PR" [!J], "Yield": :77-88 — done: "Energy in year 1", "DC capacity", "AC capacity", "DC/AC ratio", "Modules", "Performance ratio (PR)", "Yield" (the result chip's summary)
+- Layout-only cells: "Roof", "Positions", "If all were used" [?]: :95-102 — done: "Roof", "Positions", "DC capacity, every position used" (no screen shows them now)
+- "Updating energy", "Opening ${name}" / "Opening the design", "Try again": :64-66 — right
+- "Energy was not updated" / "Values are of the design before" [?]: :67 — right ("Energy not updated" / "Showing the last result")
+- "Energy was not computed" / "There are no values yet": :68 — right ("Energy not computed"; Performance's second line "There is no result yet" is Performance's)
+- "Nothing to review" / "Every check of the design fits." [?]: :111 — done: "Nothing to review"; the count "${n} to review"
+- "${detail} · Try again": :129 — gone
+- Units: "of ${positions}", "MWh", "kWh/kWp" [!J]: W/lib/format/vitals.ts:15-25 — right ("Yield 1,729 kWh/kWp": the unit after the number)
 
 **Notes to review** (W/components/shell/NotesDrawer.tsx; W/components/shell/notes-view.ts)
-- "Notes to review" (H2), "Close", "Note" (aria), "Fits" (aria): NotesDrawer.tsx:66, 71, 31, 76
-- "Nothing to review" / "Every check of the design fits.": NotesDrawer.tsx:78-79
-- Actions: "Try again", "Open Array", "Open Strings", "Open Performance": notes-view.ts:39-44
-- Where-lines: "Module · Array lens", "Layout · Array lens", "Weather · Performance", "Option ${L} · Strings lens", "This design · on this device": notes-view.ts:91-128
+- "Notes to review" (H2), "Close", "Note" (aria), "Fits" (aria): NotesDrawer.tsx:66, 71, 31, 76 — right ("Notes to review", or "${n} to review")
+- "Nothing to review" / "Every check of the design fits.": NotesDrawer.tsx:78-79 — done: "Nothing to review"
+- Actions: "Try again", "Open Array", "Open Strings", "Open Performance": notes-view.ts:39-44 — right
+- Where-lines: "Module · Array lens", "Layout · Array lens", "Weather · Performance", "Option ${L} · Strings lens", "This design · on this device": notes-view.ts:91-128 — right ("Module · Array step", "Layout · Array step", "Weather · Performance", "Option ${L} · Strings step", "This design · on this device")
 - Note titles:
-  - "Layout was not updated", with "The positions shown are of the design before" [?] / "There are no positions yet": :108-110
-  - "Energy was not updated" / "Energy was not computed", with "The values shown are of the design before" [?] / "There are no values yet": :117-119
-  - "Not saved on this device": :126
-- Target words: "In target", "Outside the DC/AC target" [!J], "${Below} the DC/AC target": notes-view.ts:68-70
-- Note titles are otherwise built from the API text (the words before the first number or verb, e.g. "Voc coefficient" [!J]).
+  - "Layout was not updated", with "The positions shown are of the design before" [?] / "There are no positions yet": :108-110 — right ("Layout not updated" / "Layout not computed", with "Showing the last positions" / "There are no positions yet")
+  - "Energy was not updated" / "Energy was not computed", with "The values shown are of the design before" [?] / "There are no values yet": :117-119 — right ("Energy not updated" / "Energy not computed", with "Showing the last result" / "There is no result yet")
+  - "Not saved on this device": :126 — done: "Not saved"
+- Target words: "In target", "Outside the DC/AC target" [!J], "${Below} the DC/AC target": notes-view.ts:68-70 — right (the DC/AC target is the Strings step's name for it)
+- Note titles are otherwise built from the API text (the words before the first number or verb, e.g. "Voc coefficient" [!J]). — right (a value outside its range: "${subject} outside the usual range")
 
 **Save state** (W/components/shell/SaveState.tsx)
-- "Saved on this device", "Saving", "Not kept on this device", "Not saved" [? inconsistent with the others]: :18-24
+- "Saved on this device", "Saving", "Not kept on this device", "Not saved" [? inconsistent with the others]: :18-24 — right ("Saved on this device", "Saving", "Not saved")
 
 **Project menu** (W/components/shell/ProjectSwitcher.tsx)
 - "Project" (aria): :47
@@ -268,146 +268,146 @@ Plan view (W/components/find/PlanView.tsx):
 - Actions: "New design" (fact "Find the roof"), "Open a project" (".rtd"), "Import a drawing" ("KMZ, KML, DXF") [!J], "Save a copy" (".rtd"), "Home", "Docs": :72-78
 
 **Other shell**
-- "Open the Strings lens" (decision card button) [? wrong for no_positions, see finding 1]: W/components/shell/NoOptionsCard.tsx:34
-- "This part is not built yet.": W/components/shell/NotBuiltYet.tsx:3
-- Toast "Choose another" (when the chosen stringing is gone): W/components/shell/use-says-choice-gone.ts:10
+- "Open the Strings lens" (decision card button) [? wrong for no_positions, see finding 1]: W/components/shell/NoOptionsCard.tsx:34 — done: "Open Strings" (still wrong for no_positions: finding 1, a bug, not fixed here)
+- "This part is not built yet.": W/components/shell/NotBuiltYet.tsx:3 — done: "Not built yet"
+- Toast "Choose another" (when the chosen stringing is gone): W/components/shell/use-says-choice-gone.ts:10 — right
 - Choice-gone toast words (W/lib/flow/choice-gone.ts:40-48):
-  - "The stringing you chose, ${n} in series × ${s} strings on ${i} inverters, no longer fits this design." / "The stringing you chose no longer fits this design." [!S, long]
-  - "Option ${L}, ${caption}, is used instead: ${instead}."
-- App error: "Something went wrong in the app: ${what}. Try again; if it fails again, report it." [!S] [? exposes internals]: W/lib/flow/design-flow.ts:61; W/components/performance/use-weather-load.ts:23
+  - "The stringing you chose, ${n} in series × ${s} strings on ${i} inverters, no longer fits this design." / "The stringing you chose no longer fits this design." [!S, long] — right ("Your stringing no longer fits. Option ${L} is used.")
+  - "Option ${L}, ${caption}, is used instead: ${instead}." — right (in the one line above)
+- App error: "Something went wrong in the app: ${what}. Try again; if it fails again, report it." [!S] [? exposes internals]: W/lib/flow/design-flow.ts:61; W/components/performance/use-weather-load.ts:23 — gone ("The app could not finish this step.", lib/errors/problem-of.ts)
 - API client:
-  - "The design run ended before its result arrived. Run it again.": W/lib/api/client.ts:44
-  - "The server cannot be reached. Check the connection and try again.": W/lib/api/errors.ts:4
-  - "The server answered ${status} in a form that cannot be read. Try again; if it fails again, report it." [!J status]: W/lib/api/errors.ts:31
+  - "The design run ended before its result arrived. Run it again.": W/lib/api/client.ts:44 — right ("The run ended before its result arrived. Try again.")
+  - "The server cannot be reached. Check the connection and try again.": W/lib/api/errors.ts:4 — done: "The server could not be reached. Check your connection, then try again."
+  - "The server answered ${status} in a form that cannot be read. Try again; if it fails again, report it." [!J status]: W/lib/api/errors.ts:31 — right ("The server did not answer. Try again in a moment.")
 
 ## Roof lens
 
-- Sections: "Location", "Location and outline" (aria), "Roof type", "Edges and access", "Obstacles · ${n}": W/components/studio/RoofInspector.tsx:148-172; W/components/studio/ObstaclePanel.tsx:331
-- "Edit" / "Edit the outline" (aria): RoofInspector.tsx:92, 80
-- Location card facts: "Outlined on satellite", "Entered by hand", "From a file", "From a file"; "${a} × ${b} m" or "${area} m²"; " · faces ${deg}° ${compass}"; "${n} corners · ${n} obstacles": W/lib/geometry/roof-card.ts:21-52
+- Sections: "Location", "Location and outline" (aria), "Roof type", "Edges and access", "Obstacles · ${n}": W/components/studio/RoofInspector.tsx:148-172; W/components/studio/ObstaclePanel.tsx:331 — right ("Roof type", "Edges and access", "Obstacles · ${n}", "Outline")
+- "Edit" / "Edit the outline" (aria): RoofInspector.tsx:92, 80 — right ("Edit it in Plan")
+- Location card facts: "Outlined on satellite", "Entered by hand", "From a file", "From a file"; "${a} × ${b} m" or "${area} m²"; " · faces ${deg}° ${compass}"; "${n} corners · ${n} obstacles": W/lib/geometry/roof-card.ts:21-52 — right ("Outlined on satellite", "By hand", "From a file")
 - Review note (W/lib/studio/review-heights.ts; button at RoofInspector.tsx:111):
-  - "These obstacles have no height in the file and were set to 1.0 m.": :7
-  - "${n} to review": :12
-  - "Review": RoofInspector.tsx:111
-  - Hint "Enter the real height. The file gave none; 1.0 m stands until you do" [!S] [?]: :10
+  - "These obstacles have no height in the file and were set to 1.0 m.": :7 — done: "The file has no height for these obstacles. The app uses 1.0 m."
+  - "${n} to review": :12 — right
+  - "Review": RoofInspector.tsx:111 — right
+  - Hint "Enter the real height. The file gave none; 1.0 m stands until you do" [!S] [?]: :10 — done: "Not in the file. Enter the real height."
 - Edges and access fields (W/lib/studio/roof-fields.ts:15-23):
-  - "Parapet" [!J]
-  - "Setback" [!J]
-  - "Walkway"
-  - "Every" ("mod" [? unclear unit] / "rows") [? label alone is unclear]
-  - "Clearance"
-  - "Albedo" [!J]
-  - "Pitch"
-  - "Faces"
+  - "Parapet" [!J] — right ("Parapet height")
+  - "Setback" [!J] — right ("Edge margin (setback)"); its summary line done: "edge margin ${m} m"
+  - "Walkway" — right ("Walkway width")
+  - "Every" ("mod" [? unclear unit] / "rows") [? label alone is unclear] — right ("Walkway every" ${n} "modules" / "rows")
+  - "Clearance" — right; its group done: "Around obstacles" (was "Round obstacles")
+  - "Albedo" [!J] — done: "Roof albedo" (shown as "Roof albedo ${x} · in Performance, Assumptions")
+  - "Pitch" — done: "Roof pitch"; its group done: "Sloped roof" (was "The slope")
+  - "Faces" — done: "Direction (azimuth)"
 - Obstacle panel (W/components/studio/ObstaclePanel.tsx):
-  - "Add" / menu "Add an obstacle": :246, 249
-  - "Name" (aria), "Remove ${name}", "Height to review", "Remove", "Next", "Add the ${kind}": :76, 158, 195, 349, 378, 352
-  - Empty "None yet. Add a box, a tank, a wall, a tree or a building." [!S]: :359
-  - Points: "Point", "East", "North", "East of point ${n}", "North of point ${n}", "Remove point ${n}", "Add a point": :99-113
-  - "Metres east and north of the middle of the roof, in order. Two/Three at least.": :116
-  - "Parapet, all edges" / "h ${h} m": :394-395
+  - "Add" / menu "Add an obstacle": :246, 249 — right (a button for each kind under "Add one: choose its kind, then place it on the roof.")
+  - "Name" (aria), "Remove ${name}", "Height to review", "Remove", "Next", "Add the ${kind}": :76, 158, 195, 349, 378, 352 — done: the draft's "Remove" is "Cancel"; the others right
+  - Empty "None yet. Add a box, a tank, a wall, a tree or a building." [!S]: :359 — right ("None on the roof yet.")
+  - Points: "Point", "East", "North", "East of point ${n}", "North of point ${n}", "Remove point ${n}", "Add a point": :99-113 — right
+  - "Metres east and north of the middle of the roof, in order. Two/Three at least.": :116 — done: "Type each point in metres east and north of the roof's centre, in order. At least ${n}."
+  - "Parapet, all edges" / "h ${h} m": :394-395 — done: "Parapet, all edges" / "${h} m high"
 - Obstacle kinds and fields (W/lib/geometry/obstacle-fields.ts):
-  - Kinds "Box", "Tank", "Wall", "Tree", "Building": :47-51
-  - Fields "Length", "Width", "Height", "Rotation", "East", "North", "Diameter", "Crown starts at", "Thickness", "Crown ⌀": :26-34, 129
-  - Menu facts "${l} × ${w} m", "⌀ ${d} m", "crown ⌀ ${d} m", "${len} m, points", "beside the roof, points": :59-63
+  - Kinds "Box", "Tank", "Wall", "Tree", "Building": :47-51 — right
+  - Fields "Length", "Width", "Height", "Rotation", "East", "North", "Diameter", "Crown starts at", "Thickness", "Crown ⌀": :26-34, 129 — done: "Crown diameter" (was "Crown ⌀"); the others right
+  - Menu facts "${l} × ${w} m", "⌀ ${d} m", "crown ⌀ ${d} m", "${len} m, points", "beside the roof, points": :59-63 — right ("${l} × ${w} m", "${d} m across", "crown ${d} m across", "${len} m long", "${area} m²", lib/studio/obstacle-lines.ts)
 - Stage callouts for obstacles (W/lib/geometry/obstacles.ts:108-115):
-  - "${name} · draft/selected"
-  - "${size} · type its height to add it"
-  - "${size} · height to review"
-  - "drag to move" / "moved by its points in the list"
-  - "${size} from ${trunk} to ${h} m · …"
-  - "${size} · ${h} m high · …"
-- Drag readouts: "Obstacle edited on the roof", "East ${x} · North ${y}", "Rotation ${deg}°", "${h} high", "crown ⌀ ${d}": W/lib/stores/drag.ts:70-76
+  - "${name} · draft/selected" — right
+  - "${size} · type its height to add it" — done: "${size} · no height yet"
+  - "${size} · height to review" — right
+  - "drag to move" / "moved by its points in the list" — done: "Drag to move it." / "Move it by its points in the list." (a sentence after the facts, not a dot)
+  - "${size} from ${trunk} to ${h} m · …" — done: "crown ${d} m across · ${trunk} to ${h} m high. …"
+  - "${size} · ${h} m high · …" — done: "${size} · ${h} m high. …"; sizes "${d} m across", "crown ${d} m across" (no ⌀); the screen reader the same
+- Drag readouts: "Obstacle edited on the roof", "East ${x} · North ${y}", "Rotation ${deg}°", "${h} high", "crown ⌀ ${d}": W/lib/stores/drag.ts:70-76 — done: "East ${x} · North ${y}", "Rotation ${deg}°", "${h} high", "crown ${d} m across" / "${d} m across"; "Obstacle edited on the roof" is a board's name, not shown
 - Keep-out callouts on stage (W/lib/geometry/keepout.ts:31-34):
-  - "The parapet" / "An obstacle"
-  - "Shaded in the window" / "Kept clear" · "${n} position(s)" / "no whole position" [?]
-  - "${what} shades this area between ${hh:mm} and ${hh:mm}"
-- Roof line under the title: "${area} · ${area} inside the setback · ${n} obstacles" / "no obstacles" [!J setback]: W/components/studio/stage-view.ts:12-22
-- Callout "Roof · selected" / "${shape} · ${area} m²": W/lib/scene/pick.ts:59
+  - "The parapet" / "An obstacle" — right
+  - "Shaded in the window" / "Kept clear" · "${n} position(s)" / "no whole position" [?] — done: "Shaded" / "Kept clear" · "${n} positions" / "0 positions"
+  - "${what} shades this area between ${hh:mm} and ${hh:mm}" — right
+- Roof line under the title: "${area} · ${area} inside the setback · ${n} obstacles" / "no obstacles" [!J setback]: W/components/studio/stage-view.ts:12-22 — done: "${area} · ${area} inside the edge margin · ${n} obstacles"
+- Callout "Roof · selected" / "${shape} · ${area} m²": W/lib/scene/pick.ts:59 — right
 
 **Stage, shared by all lenses**
-- "3D scene" (aria): W/components/scene/Modules.tsx:139
-- View: "3D view", "Plan" ("Plan view"), "View" (aria), "Fit" / "Fit the roof": W/components/studio/ViewControls.tsx:28-56
-- "Layers", "Satellite imagery", "Off: the plain grid", "Close": ViewControls.tsx:36-38, 117
+- "3D scene" (aria): W/components/scene/Modules.tsx:139 — gone
+- View: "3D view", "Plan" ("Plan view"), "View" (aria), "Fit" / "Fit the roof": W/components/studio/ViewControls.tsx:28-56 — right
+- "Layers", "Satellite imagery", "Off: the plain grid", "Close": ViewControls.tsx:36-38, 117 — right ("Imagery", one toggle, board 12)
 - North button aria (W/lib/scene/projection.ts:40-43):
-  - "North: the view looks north"
-  - "North: the view looks south"
-  - "North: the view looks ${n}° east of north"
-  - "North: the view looks ${n}° west of north"
+  - "North: the view looks north" — right
+  - "North: the view looks south" — right
+  - "North: the view looks ${n}° east of north" — right
+  - "North: the view looks ${n}° west of north" — right
 - 3D failure:
-  - "This browser cannot draw the roof in 3D." / "The browser stopped drawing the roof in 3D.": W/components/studio/stage-words.ts:4-5
-  - "Plan of the roof, north up": W/components/studio/PlanFallback.tsx:29
-- Imagery: "The ground: ${n} of ${m} tiles of the imagery did not come; their squares are plain." [?]: W/components/scene/Ground.tsx:81
-- Failed chips (Try again): "The layout was not updated" / "The sun was not updated": W/components/studio/stage-view.ts:79, 85
+  - "This browser cannot draw the roof in 3D." / "The browser stopped drawing the roof in 3D.": W/components/studio/stage-words.ts:4-5 — right
+  - "Plan of the roof, north up": W/components/studio/PlanFallback.tsx:29 — right
+- Imagery: "The ground: ${n} of ${m} tiles of the imagery did not come; their squares are plain." [?]: W/components/scene/Ground.tsx:81 — gone (a console warning for developers, never on screen)
+- Failed chips (Try again): "The layout was not updated" / "The sun was not updated": W/components/studio/stage-view.ts:79, 85 — done: "Layout not updated" / "Sun path not updated"
 - Screen-reader list "On the roof" (W/components/studio/Stage.tsx:195-241):
-  - "Roof, ${n} corners, ${a} m², parapet ${h} m, selected"
-  - ", height to review", ", position ${n} selected"
-  - "The ground is the satellite imagery" / "The ground is plain, with a grid"
-  - "The strings follow the design run"
-  - "The engine's shadow outlines at ${hh}: ${n} polygon(s)" [!J]
+  - "Roof, ${n} corners, ${a} m², parapet ${h} m, selected" — right
+  - ", height to review", ", position ${n} selected" — right
+  - "The ground is the satellite imagery" / "The ground is plain, with a grid" — right
+  - "The strings follow the design run" — done: "Strings appear when the run finishes"
+  - "The engine's shadow outlines at ${hh}: ${n} polygon(s)" [!J] — done: "Shadow outlines at ${hh}: ${n} shadows"
 
 ## Array lens
 
-- "Module" (section): W/components/studio/ArrayInspector.tsx:58
+- "Module" (section): W/components/studio/ArrayInspector.tsx:58 — right
 - Module card (W/lib/studio/module-card.ts):
-  - "${maker} · ${W} Wp" [!J Wp]: :14
-  - "${l} × ${w} m · bifacial ${x}" [!J bifacial]: :15
-  - "Voc ${v} V · Isc ${a} A · ${n} diodes" [!J Voc, Isc, diodes]: :11
-  - "Coefficients (${source}): Voc …, Vmp …, Pmpp … %/°C" [!J]: :17
-- "Reading the module with the first run" [?]: W/components/studio/ModuleCard.tsx:52
-- "Change" (tooltip "Choose a module, or use a PAN file" / "Choose from ${n} modules, or use a PAN file" [!J PAN]): W/components/studio/ChangeButton.tsx:15; W/lib/equipment/card-words.ts:6-13
+  - "${maker} · ${W} Wp" [!J Wp]: :14 — right ("${maker} · ${W} Wp · ${l} × ${w} m")
+  - "${l} × ${w} m · bifacial ${x}" [!J bifacial]: :15 — right (behind Details: "Bifacial, rear gain")
+  - "Voc ${v} V · Isc ${a} A · ${n} diodes" [!J Voc, Isc, diodes]: :11 — right (behind Details: "Open-circuit voltage (Voc)", "Short-circuit current (Isc)"; no diodes)
+  - "Coefficients (${source}): Voc …, Vmp …, Pmpp … %/°C" [!J]: :17 — right (behind Details: "Voc coefficient")
+- "Reading the module with the first run" [?]: W/components/studio/ModuleCard.tsx:52 — done: "Loading the module"
+- "Change" (tooltip "Choose a module, or use a PAN file" / "Choose from ${n} modules, or use a PAN file" [!J PAN]): W/components/studio/ChangeButton.tsx:15; W/lib/equipment/card-words.ts:6-13 — done: "Choose from ${n} modules, or use a module file (PAN)"; the inverter's "… or use an inverter file (OND)"
 - Mounting (W/components/studio/ArrayMounting.tsx):
-  - "Mounting", "Tilt", "East-west tilt" (hint "Each side, away from the ridge"), "Orientation" ("Portrait" / "Landscape"), "Modules in tilt" [? unclear], "Lower-edge clearance", "Ridge gap": :23-65
-  - Tilt hint "Latitude ${x}° N/S suggests ${t}°": W/lib/studio/array-fields.ts:33
-  - Sloped tilt: "Follows the roof pitch · ${deg}° facing ${bearing} · set in the Roof lens": W/lib/studio/array-view.ts:36
+  - "Mounting", "Tilt", "East-west tilt" (hint "Each side, away from the ridge"), "Orientation" ("Portrait" / "Landscape"), "Modules in tilt" [? unclear], "Lower-edge clearance", "Ridge gap": :23-65 — right ("Clearance under the lower edge"; "Modules in tilt" stays, as board V2 · 7 has it, its hint saying what it is)
+  - Tilt hint "Latitude ${x}° N/S suggests ${t}°": W/lib/studio/array-fields.ts:33 — gone
+  - Sloped tilt: "Follows the roof pitch · ${deg}° facing ${bearing} · set in the Roof lens": W/lib/studio/array-view.ts:36 — done: "Roof pitch ${deg}° facing ${bearing}, from the Roof step"
 - Spacing (W/components/studio/ArraySpacing.tsx):
-  - "Spacing", "Row pitch" [!J], "Shade-free row pitch" (switch), "Azimuth" [!J], "Follow the roof edge" (switch): :80-107
-  - Row pitch line "Shade-free · GCR ${x} · profile angle ${y}°" [!J GCR, profile angle]: W/lib/studio/array-fields.ts:59-60
-  - "Shade-free would be ${x} m": array-fields.ts:64
-  - Azimuth lines: "Follows the roof edge closest to the equator"; "The ridges run square to the roof edge closest to the equator" [?]; "The roof edge closest to the equator faces ${bearing}": W/lib/studio/array-view.ts:17-29
+  - "Spacing", "Row pitch" [!J], "Shade-free row pitch" (switch), "Azimuth" [!J], "Follow the roof edge" (switch): :80-107 — right ("Spacing", "Row spacing from the shade-free hours" (switch), "Row spacing", "Direction (azimuth)", "Follow the roof edge" (switch)); the summary line done: "Rows ${x} m apart · shade-free hours ${from} to ${to}", "Direction ${deg}° · shade-free hours …"
+  - Row pitch line "Shade-free · GCR ${x} · profile angle ${y}°" [!J GCR, profile angle]: W/lib/studio/array-fields.ts:59-60 — gone (not shown: the line under the switch says what Off does)
+  - "Shade-free would be ${x} m": array-fields.ts:64 — done: "Shade-free spacing ${x} m"; the sentence "… The shade-free spacing is ${x} m."
+  - Azimuth lines: "Follows the roof edge closest to the equator"; "The ridges run square to the roof edge closest to the equator" [?]; "The roof edge closest to the equator faces ${bearing}": W/lib/studio/array-view.ts:17-29 — done: "From the roof edge nearest the equator"; "Ridges square to the roof edge nearest the equator"; "Roof edge nearest the equator: ${bearing}"
 - Shade-free window:
-  - "Shade-free window" (range, note "solar time" [!J]): ArraySpacing.tsx:111-118
-  - "Design day" ("Winter solstice", "21 Jun", "21 Mar"): ArraySpacing.tsx:25-27, 126-127
-  - "Allow shaded positions": ArraySpacing.tsx:129-130
-  - "On: positions shaded inside the window are used too" / "Off: positions shaded inside the window stay empty" [!S]: array-view.ts:41
-- Array line: "${n} positions · ${n} tables · ${n} rows · ${area} of modules": W/components/studio/stage-view.ts:24
-- Module callout: "Position ${n}" / "${Row/Unit} ${n} · ${tilt}° to the ${toward}": W/lib/scene/pick.ts:43-44
+  - "Shade-free window" (range, note "solar time" [!J]): ArraySpacing.tsx:111-118 — right ("Shade-free hours", note "solar time")
+  - "Design day" ("Winter solstice", "21 Jun", "21 Mar"): ArraySpacing.tsx:25-27, 126-127 — right ("Design day": "21 Dec" or "21 Jun" by hemisphere, "21 Jun", "21 Mar"; "The day the rows are spaced for. ${date} has the longest shadows.")
+  - "Allow shaded positions": ArraySpacing.tsx:129-130 — right
+  - "On: positions shaded inside the window are used too" / "Off: positions shaded inside the window stay empty" [!S]: array-view.ts:41 — right ("On: positions shaded in the shade-free hours are used too" / "Off: … stay empty")
+- Array line: "${n} positions · ${n} tables · ${n} rows · ${area} of modules": W/components/studio/stage-view.ts:24 — right
+- Module callout: "Position ${n}" / "${Row/Unit} ${n} · ${tilt}° to the ${toward}": W/lib/scene/pick.ts:43-44 — right
 
 ## Sun lens
 
-- Tabs: "Shadows", "Shade map"; aria "Sun lens": W/components/studio/SunInspector.tsx:145-158
+- Tabs: "Shadows", "Shade map"; aria "Sun lens": W/components/studio/SunInspector.tsx:145-158 — gone (Sun is a view; "Shade map on the modules" is a switch)
 - Day:
-  - "Day" ("21 Dec", "21 Mar", "21 Jun", "Any date"), "Day", "Month" (January…December): SunInspector.tsx:57-72; W/lib/flow/day-choices.ts:5-11
-  - "Day ${n} · the design day is ${date}": SunInspector.tsx:76
-  - "${date} is the design day: the winter solstice for this hemisphere" / "${date} is the design day of the array": W/lib/flow/sun-time.ts:94
+  - "Day" ("21 Dec", "21 Mar", "21 Jun", "Any date"), "Day", "Month" (January…December): SunInspector.tsx:57-72; W/lib/flow/day-choices.ts:5-11 — right
+  - "Day ${n} · the design day is ${date}": SunInspector.tsx:76 — done: "Day ${n} · design day ${date}"
+  - "${date} is the design day: the winter solstice for this hemisphere" / "${date} is the design day of the array": W/lib/flow/sun-time.ts:94 — done: "Design day: ${date}, the winter solstice in this hemisphere" / "Design day: ${date}, set in the Array step"
 - Sun at the hour:
-  - "Sun at ${hh:mm}", "Height", "Bearing": SunInspector.tsx:92-97
-  - "The sun is down" / "The sun was not fetched" / "The sun's day is on its way" [!F "on its way"] [?]: SunInspector.tsx:100
-  - Bearing words "due south/north/east/west", "${deg}° W/E of south/north": sun-time.ts:23-35
+  - "Sun at ${hh:mm}", "Height", "Bearing": SunInspector.tsx:92-97 — gone
+  - "The sun is down" / "The sun was not fetched" / "The sun's day is on its way" [!F "on its way"] [?]: SunInspector.tsx:100 — gone (the timeline says "The sun is down")
+  - Bearing words "due south/north/east/west", "${deg}° W/E of south/north": sun-time.ts:23-35 — right
 - On the roof (switches):
-  - "Sun path" — "The arc the sun follows on this day"
-  - "Shade-free window" — "Thick part of the arc, ${from} to ${to}"
-  - "Calculated shadow outlines" — "The engine's shadows, drawn over what you see" [!J engine]
-  - SunInspector.tsx:109-128
+  - "Sun path" — "The arc the sun follows on this day" — right
+  - "Shade-free window" — "Thick part of the arc, ${from} to ${to}" — right ("Shade-free hours" — "The thick part of the arc, ${from} to ${to}")
+  - "Calculated shadow outlines" — "The engine's shadows, drawn over what you see" [!J engine] — right ("Shadow outlines" — "The shadows the app computed, dashed, to compare")
+  - SunInspector.tsx:109-128 — right (and "Shade map on the modules" — "Each module coloured by its loss to shade")
 - Shading over the year (W/components/studio/SunShading.tsx):
-  - "Shading over the year": :40
-  - Tiles "Near, linear" [!J], "Electrical, beyond linear" [!J], "Far, horizon" [!J], "Kept clear": :43-46
-  - "Of the ${n} modules of option ${L}" / "Of all ${n} positions": W/lib/studio/sun-figures.ts:43, 50
+  - "Shading over the year": :40 — right ("Shade over the year", "The energy lost to shade, by its cause.")
+  - Tiles "Near, linear" [!J], "Electrical, beyond linear" [!J], "Far, horizon" [!J], "Kept clear": :43-46 — right ("Rows and obstacles", "Strings", "Horizon", "Area kept clear", board V2 · 7; the trade's names in the help)
+  - "Of the ${n} modules of option ${L}" / "Of all ${n} positions": W/lib/studio/sun-figures.ts:43, 50 — right
 - Shade map:
-  - "Shade map"; "Each module is coloured by its near shading over the year, of all ${n} positions. Select/Tap a module for its value." [!S]: SunShading.tsx:73-77
-  - Legend: "Near shading over the year", "${x} %", "Of all ${n} positions", "The shade map follows the design run" [?]: W/lib/scene/shade-map.ts:67-77
-  - Module callout: "Position ${n} · row/unit ${n}" / "Near shading ${x} % over the year" / "… · string ${S}, ${x} %" / "… · not used by option ${L}": shade-map.ts:56-60
-- Line under title: "${date} · winter solstice · shade-free from ${hh} to ${hh}": sun-time.ts:147-156
-- Marker callout: "${hh:mm} · start/end of the shade-free window" / "Sun ${x}° high, ${bearing}": sun-time.ts:166-167
-- Sunrise and sunset marks: "${hh} sunrise" / "sunset ${hh}": W/lib/scene/sun-marks.ts:42-43
+  - "Shade map"; "Each module is coloured by its near shading over the year, of all ${n} positions. Select/Tap a module for its value." [!S]: SunShading.tsx:73-77 — done: "Loss to rows and obstacles over the year, on all ${n} positions. Select/Tap a module for its value."
+  - Legend: "Near shading over the year", "${x} %", "Of all ${n} positions", "The shade map follows the design run" [?]: W/lib/scene/shade-map.ts:67-77 — done: "The shade map follows the run" is "Waits for the run" (the screen reader: "The shade map: waits for the run"); the others right
+  - Module callout: "Position ${n} · row/unit ${n}" / "Near shading ${x} % over the year" / "… · string ${S}, ${x} %" / "… · not used by option ${L}": shade-map.ts:56-60 — right
+- Line under title: "${date} · winter solstice · shade-free from ${hh} to ${hh}": sun-time.ts:147-156 — right
+- Marker callout: "${hh:mm} · start/end of the shade-free window" / "Sun ${x}° high, ${bearing}": sun-time.ts:166-167 — done: "${hh:mm} · start/end of the shade-free hours"
+- Sunrise and sunset marks: "${hh} sunrise" / "sunset ${hh}": W/lib/scene/sun-marks.ts:42-43 — right
 - Timeline (W/components/studio/Time.tsx):
-  - "Time" (aria), "Time of day", "solar time" [!J], "Shade-free"
-  - "Play the day" / "Pause"; "${Play the day/Pause}, ${hh} solar time"
-  - Keys tooltip: "an hour", "a day", "a quarter hour"
-  - "The sun stays below the horizon all day" / "The sun stays above the horizon all day"
-  - Time.tsx:21-23, 42, 87-88, 112, 130-136, 154-155, 201
-- Readout: "${date}, ${hh} solar time, sun ${x}° high, ${bearing}" / "${…}, the sun is down": sun-time.ts:38-42
-- "Sun path of ${date} from ${hh} to ${hh}, the shade-free window from … thicker": sun-time.ts:177-179
+  - "Time" (aria), "Time of day", "solar time" [!J], "Shade-free" — done: "Shade-free hours" (phone); the others right
+  - "Play the day" / "Pause"; "${Play the day/Pause}, ${hh} solar time" — right
+  - Keys tooltip: "an hour", "a day", "a quarter hour" — right
+  - "The sun stays below the horizon all day" / "The sun stays above the horizon all day" — right
+  - Time.tsx:21-23, 42, 87-88, 112, 130-136, 154-155, 201 — right
+- Readout: "${date}, ${hh} solar time, sun ${x}° high, ${bearing}" / "${…}, the sun is down": sun-time.ts:38-42 — right
+- "Sun path of ${date} from ${hh} to ${hh}, the shade-free window from … thicker": sun-time.ts:177-179 — done: "…, the shade-free hours from ${hh} to ${hh} thicker"
 
 ## Strings lens
 
@@ -985,16 +985,16 @@ Section names are listed in docs.ts:30-118.
 
 ## Shared UI controls (appear across screens)
 
-- Dialog close "Close": W/components/ui/Dialog.tsx:57; W/components/ui/SheetGrip.tsx:28
-- Sheet stops "Closed" / "Half open" / "Open" (aria): W/components/ui/sheet-stops.ts:103
-- Stepper "Fewer" / "More": W/components/ui/Stepper.tsx:32
-- Toasts: marks "Done" / "Note", "Close", "Undo", region "What was done": W/components/ui/Toast.tsx:11-49; W/components/ui/Toaster.tsx:30
+- Dialog close "Close": W/components/ui/Dialog.tsx:57; W/components/ui/SheetGrip.tsx:28 — right
+- Sheet stops "Closed" / "Half open" / "Open" (aria): W/components/ui/sheet-stops.ts:103 — right
+- Stepper "Fewer" / "More": W/components/ui/Stepper.tsx:32 — right
+- Toasts: marks "Done" / "Note", "Close", "Undo", region "What was done": W/components/ui/Toast.tsx:11-49; W/components/ui/Toaster.tsx:30 — right
 - Number field errors (W/components/ui/number-entry.ts:77-84):
-  - "${max} is the highest that can be set."
-  - "${min} is the lowest that can be set."
-  - "Enter a number, from ${min} to ${max}."
-  - "Enter a number, ${min} or more."
-  - "Enter a number, ${max} or less."
-  - "Enter a number."
-- Range slider aria "${label}, from" / "${label}, to": W/components/ui/RangeSlider.tsx:65
-- Status mark default words "Fits" / "Below the DC/AC target": W/components/ui/StatusMark.tsx:9
+  - "${max} is the highest that can be set." — done: "The highest is ${max}."
+  - "${min} is the lowest that can be set." — done: "The lowest is ${min}."
+  - "Enter a number, from ${min} to ${max}." — done: "Enter a number from ${min} to ${max}."
+  - "Enter a number, ${min} or more." — done: "Enter ${min} or more."
+  - "Enter a number, ${max} or less." — done: "Enter ${max} or less."
+  - "Enter a number." — right
+- Range slider aria "${label}, from" / "${label}, to": W/components/ui/RangeSlider.tsx:65 — right
+- Status mark default words "Fits" / "Below the DC/AC target": W/components/ui/StatusMark.tsx:9 — gone (every mark is given its words)
