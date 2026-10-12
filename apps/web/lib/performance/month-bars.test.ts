@@ -1,18 +1,26 @@
 import { describe, expect, test } from "bun:test";
 import type { Energy } from "../api";
-import { MONTH_COLUMNS, monthBarsOf, monthRowsOf, YEAR_ROW } from "./month-bars";
+import { MONTH_COLUMNS, monthAxisOf, monthBarsOf, monthRowsOf, YEAR_ROW } from "./month-bars";
 import { A } from "./test-fixtures";
 
 const energy = A.energy;
 
 describe("the bars of the months (plan/phase-08-plan.md, step 12; guidelines.md, \"Charts\")", () => {
-  test("twelve bars, Jan to Dec, each as tall as its share of the highest month, from zero", () => {
+  test("twelve bars, Jan to Dec, each as tall as its share of the axis, from zero (V2 · 8: the axis labelled)", () => {
     const bars = monthBarsOf(energy);
 
     expect(bars.map((bar) => bar.month)).toEqual(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]);
-    expect(bars[2]!.share).toBe(1);
-    expect(bars[6]!.share).toBeCloseTo(31.498840316903788 / 68.3587805746761, 6);
+    expect(bars[2]!.share).toBeCloseTo(68.3587805746761 / 80, 6);
+    expect(bars[6]!.share).toBeCloseTo(31.498840316903788 / 80, 6);
     expect(bars.every((bar) => bar.share > 0 && bar.share <= 1)).toBe(true);
+  });
+
+  test("the axis in MWh from 0 to 80 by 20", () => {
+    expect(monthAxisOf(energy)).toEqual({ low: 0, high: 80, ticks: [0, 20, 40, 60, 80] });
+  });
+
+  test("on touch each month by its initial", () => {
+    expect(monthBarsOf(energy).map((bar) => bar.initial).join("")).toBe("JFMAMJJASOND");
   });
 
   test("the extremes are labelled and no other: March 68.4 the highest, July 31.5 the lowest", () => {
@@ -43,7 +51,7 @@ describe("the bars of the months (plan/phase-08-plan.md, step 12; guidelines.md,
 
     expect(bars.filter((bar) => bar.label !== null)).toHaveLength(1);
     expect(bars[0]!.label).toBe("50.0");
-    expect(bars.every((bar) => bar.share === 1)).toBe(true);
+    expect(bars.every((bar) => bar.share === 50 / 60)).toBe(true);
   });
 });
 

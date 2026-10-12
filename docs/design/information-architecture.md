@@ -11,7 +11,7 @@ separate screens, and there is no Run button.
 | Home | `/` | Start or resume: search for the roof, import KMZ, KML or DXF, open a `.rtd` project, open the demo, designs on this device |
 | Find and outline | `/find` | The first part of the Roof step (V2 · 4): search in the column, outline the roof on satellite imagery, add what stands on it, choose the roof type, build. The Studio's work column at the right (the sheet on touch), Build pinned at its foot |
 | Studio | `/studio/[step]` | Shape the design on the 3D roof, step by step. `step` is `roof`, `array` or `strings`; `/studio/sun`, the Sun lens's old address, turns the Sun view on over the step in hand (D95) |
-| Performance | `/performance` | Prove the energy: KPIs, P-values, loss chain, monthly, 25 years, weather, assumptions |
+| Performance | `/performance` | The energy at first sight: year 1 with Likely and Conservative, three figures; under them By month, Over 25 years, Where the energy goes, Assumptions |
 | Handover | `/handover/[item]` | Deliver: report, single-line diagram, BOM, cable schedule, DXF, KMZ, hourly CSV, project file |
 | Present | `/present` | Show: the design's tour on the whole screen without the shell, from the head of Performance and Handover |
 
@@ -50,8 +50,11 @@ The ground under the building is satellite imagery when the project has a locati
 Layers button switches between them on any step.
 
 ## Performance
-Header (option switch, weather source), KPIs, loss chain with editable losses in place, monthly energy, 25 years,
-assumptions. Twelve-column grid on desktop; single column on phone.
+V2 · 8 (D104): one screen at first sight. The head (the title, Present, Continue to Handover); the energy of year 1 with
+Likely and Conservative, Option and Weather as selects beside it (under it on touch, side by side); three figures (System
+size, Yield, Performance ratio), tiles on desktop and tablet, a list on phone; four tabs under them, one view at a time,
+the last opened remembered on the device: By month, Over 25 years, Where the energy goes (All 21 steps behind it, with the
+engine's summary), Assumptions. On phone Continue to Handover is pinned over the tab bar.
 
 ## Handover
 List of deliverables on the left, preview of the selected one on the right, project file at the bottom of the

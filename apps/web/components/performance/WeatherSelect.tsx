@@ -19,8 +19,8 @@ type Props = {
 export const WEATHER_NOT_LOADED = "The weather was not loaded";
 
 /**
- * The weather source in the header (plan/phase-08-plan.md, decision 12; components.md, "Select"): PVGIS TMY, NASA POWER
- * 2023 and CSV file, each with its fact. PVGIS or NASA chosen is downloaded first, the trigger saying the new name at once
+ * The weather source beside the lead (V2 · 8; plan/phase-08-plan.md, decision 12; components.md, "Select"): Typical year,
+ * 2023, measured and Your file, each with where it comes from (audit V2-97). PVGIS or NASA chosen is downloaded first, the trigger saying the new name at once
  * with a turning ring; the document is edited once when the hours come. A CSV is read by its dialog before anything is
  * committed.
  */
@@ -33,12 +33,13 @@ export function WeatherSelect({ document, load, onCsv, className }: Props) {
   return (
     <Select
       label="Weather"
+      labelAbove
       options={WEATHER_ITEMS}
       value={load.loading ?? document.weather_source}
       valueShown={load.loading ? WEATHER_LABELS[load.loading] : weatherShownOf(document)}
       busy={load.loading !== null}
       onChange={choose}
-      className={classNames("w-full tablet:w-auto", className)}
+      className={classNames("w-full desktop:w-50", className)}
     />
   );
 }

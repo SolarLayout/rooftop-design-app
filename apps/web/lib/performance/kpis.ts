@@ -1,44 +1,53 @@
-// The KPIs of Performance (the board "Performance"; plan/phase-08-plan.md, decision 3): the lead tile of the energy
-// with the exceedance values at the document's levels, and the six tiles, every figure the chosen option's,
-// formatted by the guidelines. Pure.
+// The lead and the three figures of Performance (V2 · 8, D104; audit V2-88, V2-89): the energy to the grid in year 1 with
+// Likely (the P50) and Conservative (the highest level the document asks for, and what it means in years), then System
+// size, Yield and Performance ratio, each with a few words. Every figure the chosen option's, formatted by the
+// guidelines. Pure.
 import type { DesignOption } from "../api";
-import { capacityFactor, capacityFactorDc, co2Avoided, energy, energyOverYears, exceedance, irradiation, performanceRatio, sigma, specificYield } from "../format/performance";
+import { acCapacity, dcCapacity, energy, performanceRatio, specificYield } from "../format/vitals";
 import type { Quantity } from "../format/vitals";
 
-export type KpiId = "pr" | "yield" | "capacity-factor" | "in-plane" | "25-years" | "co2";
+export type FigureId = "size" | "yield" | "pr";
 
-export type Kpi = {
-  id: KpiId;
+export type Figure = { id: FigureId; label: string; quantity: Quantity; words: string };
+
+export type Conservative = { label: string; value: string; meaning: string };
+
+export type Lead = {
   label: string;
   quantity: Quantity;
-  /** What follows the unit: the DC side of the capacity factor. On phone it takes a line of its own. */
-  more?: string;
+  /** The P50: "617.8 MWh". */
+  likely: string;
+  /** The highest level above the P50; null where the document asks for the P50 alone. */
+  conservative: Conservative | null;
 };
 
-/** One exceedance value: "P90 · σ 4.24 %" over "584.2"; the unit is the lead's. */
-export type PCell = { label: string; value: string };
+export type KpisView = { lead: Lead; figures: Figure[] };
 
-export type KpisView = {
-  lead: { label: string; quantity: Quantity };
-  pValues: PCell[];
-  tiles: Kpi[];
-};
+const LIKELY_LEVEL = 50;
 
-export function kpisOf({ energy: figures }: DesignOption): KpisView {
-  const last = figures.p_values.length - 1;
+const said = ({ number, unit }: Quantity) => (unit ? `${number} ${unit}` : number);
+
+const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
+
+/** A level said in years: P90 is "9 years in 10 at least". */
+export function yearsInOf(level: number): string {
+  const common = gcd(level, 100);
+  return `${level / common} years in ${100 / common} at least`;
+}
+
+export function kpisOf({ energy: figures, dc_kwp }: DesignOption): KpisView {
+  const highest = figures.p_values.filter(({ level }) => level > LIKELY_LEVEL).at(-1) ?? null;
   return {
-    lead: { label: "Energy to grid, year 1", quantity: energy(figures.energy_mwh) },
-    pValues: figures.p_values.map(({ level, mwh }, index) => ({
-      label: index === last ? `P${level} · ${sigma(figures.sigma_pct)}` : `P${level}`,
-      value: exceedance(mwh),
-    })),
-    tiles: [
-      { id: "pr", label: "Performance ratio", quantity: performanceRatio(figures.pr) },
-      { id: "yield", label: "Specific yield", quantity: specificYield(figures.specific_yield) },
-      { id: "capacity-factor", label: "Capacity factor, AC", quantity: capacityFactor(figures.cuf_ac_pct), more: capacityFactorDc(figures.cuf_dc_pct) },
-      { id: "in-plane", label: "In-plane irradiation", quantity: irradiation(figures.poa_kwh_m2) },
-      { id: "25-years", label: "Energy over 25 years", quantity: energyOverYears(figures.total_25_years_mwh) },
-      { id: "co2", label: "CO₂ avoided", quantity: co2Avoided(figures.co2_t) },
+    lead: {
+      label: "Energy to the grid in year 1",
+      quantity: energy(figures.energy_mwh),
+      likely: said(energy(figures.energy_mwh)),
+      conservative: highest ? { label: `Conservative (P${highest.level})`, value: said(energy(highest.mwh)), meaning: yearsInOf(highest.level) } : null,
+    },
+    figures: [
+      { id: "size", label: "System size", quantity: dcCapacity(dc_kwp), words: `${said(acCapacity(figures.ac_kw))} of inverter` },
+      { id: "yield", label: "Yield", quantity: specificYield(figures.specific_yield), words: "A year, for each kWp" },
+      { id: "pr", label: "Performance ratio (PR)", quantity: performanceRatio(figures.pr), words: "Of its rated output, in this sunlight" },
     ],
   };
 }

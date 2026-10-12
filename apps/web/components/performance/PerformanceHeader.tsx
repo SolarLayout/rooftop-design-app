@@ -1,79 +1,46 @@
+import type { ReactNode } from "react";
 import { FirstMeeting } from "@/components/shell/FirstMeeting";
 import { Present } from "@/components/shell/TopBar";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { HANDOVER } from "@/lib/routes";
-import type { ReactNode } from "react";
-import { classNames } from "@/components/ui/class-names";
-import { Skeleton } from "@/components/ui/Skeleton";
-import type { HeaderView } from "@/lib/performance/header";
-import { NoteLine } from "./NoteLine";
-import { OptionSwitch } from "./OptionSwitch";
 
 type Props = {
-  /** The header from the run; null while no run ever answered. */
-  header: HeaderView | null;
-  /** No run ever answered and one is on its way: a skeleton stands for the line. */
-  isLoading: boolean;
-  /** The line of the run is of before, and a new run or another weather is on its way. */
-  isDimmed: boolean;
-  /** What stands under the line: a run on its way, or one that failed. */
+  /** What stands under the title: a weather being loaded, or a run that failed. */
   under?: ReactNode;
-  /** The weather select (plan/phase-08-plan.md, decision 12). */
-  weather: ReactNode;
-  /** What stands under the controls: a weather that was not loaded, in the API's words. */
-  note?: ReactNode;
-  onChoose: (key: string) => void;
 };
 
+const CONTINUE = "Continue to Handover";
+
 /**
- * The title, the line of the run and the controls (the board "Performance" on three sizes): on desktop the controls
- * stand at the right of the title, the weather before the options; on tablet under it in a row, the options first;
- * on phone under it, each across the width. The engine's notes on the weather stand under the line; a weather that was
- * not loaded under the controls, at their right; the row then aligns to the top, so that the title stays where it is
- * (the board "Weather and assumptions").
+ * The head of Performance (V2 · 8, D104; D95): the title with its line the first time the word is met (D96), and the page's
+ * own actions at its right, Present and the primary that leads on. On phone the primary is pinned over the tab bar
+ * (`PinnedContinue`); Present stands from tablet up, as on every page.
  */
-export function PerformanceHeader({ header, isLoading, isDimmed, under, weather, note, onChoose }: Props) {
+export function PerformanceHeader({ under }: Props) {
   return (
-    <header className={classNames("flex flex-col gap-3 tablet:gap-4 desktop:flex-row desktop:gap-4", note ? "desktop:items-start" : "desktop:items-end")}>
+    <header className="flex items-start justify-between gap-4">
       <div className="flex min-w-0 flex-col gap-1">
         <h1 className="type-title-touch desktop:type-title">Performance</h1>
         <FirstMeeting word="Performance" />
-        {header ? (
-          <>
-            <p data-testid="run-line" className={classNames("type-body-touch desktop:type-body text-text-2", isDimmed && "opacity-updating")}>
-              {header.runLine}
-            </p>
-            {header.notes.length > 0 ? (
-              <ul data-testid="weather-notes" className={classNames("flex flex-col gap-1.5 py-1", isDimmed && "opacity-updating")}>
-                {header.notes.map((note) => (
-                  <NoteLine key={note} words={note} testId="weather-note" />
-                ))}
-              </ul>
-            ) : null}
-          </>
-        ) : isLoading ? (
-          <Skeleton kind="text" className="my-1 w-140" />
-        ) : null}
         {under}
       </div>
-      {header ? (
-        <div className="flex flex-col gap-2 desktop:ml-auto desktop:shrink-0 desktop:items-end">
-          {/* The page's own actions at its head (D95): Present, and the primary that leads on. */}
-          <div className="flex items-center gap-2 tablet:gap-3">
-            <Present />
-            <ButtonLink kind="primary" size="m" icon="arrow-right" href={HANDOVER} className="grow flex-row-reverse tablet:grow-0" data-testid="step-primary">
-              Continue to Handover
-            </ButtonLink>
-          </div>
-          <div className="flex flex-col gap-2 tablet:flex-row tablet:items-center tablet:gap-3">
-            {header.chosen === null ? null : <OptionSwitch items={header.items} chosen={header.chosen} onChoose={onChoose} />}
-            <div data-testid="weather-select" className="flex desktop:order-first">
-              {weather}
-            </div>
-          </div>
-          {note}
-        </div>
-      ) : null}
+      <div className="hidden shrink-0 items-center gap-3 tablet:flex">
+        <Present />
+        <ButtonLink kind="primary" size="xl" icon="arrow-right" href={HANDOVER} className="flex-row-reverse" data-testid="step-primary">
+          {CONTINUE}
+        </ButtonLink>
+      </div>
     </header>
+  );
+}
+
+/** On phone, the primary across the width over the tab bar, where the thumb is (the board "V2 · 8 · Performance", phone). */
+export function PinnedContinue() {
+  return (
+    <div className="sticky bottom-0 -mx-page-x-phone mt-auto border-t border-line-subtle bg-chrome px-page-x-phone py-3 tablet:hidden">
+      <ButtonLink kind="primary" size="xl" icon="arrow-right" href={HANDOVER} className="w-full flex-row-reverse" data-testid="step-primary-pinned">
+        {CONTINUE}
+      </ButtonLink>
+    </div>
   );
 }

@@ -1,33 +1,13 @@
 import { describe, expect, test } from "bun:test";
-import type { DesignResult, Project } from "../api";
-import { ASSUMPTION_RANGES, assumptionsOf, LEVEL_RANGE, withAssumption, withLevel, type Assumption, type AssumptionField } from "./assumption-fields";
+import type { Project } from "../api";
+import { ASSUMPTION_RANGES, assumptionFieldsOf, LEVEL_RANGE, withAssumption, withLevel } from "./assumption-fields";
+import { DEGRADATION_RANGE } from "./degradation";
 import { DOCUMENT } from "./test-fixtures";
-
-/** The run's sizing for the demo's flat roof: Uc the roof type's. */
-const SIZING = { uc: 29, uc_from: "roof type", uc_default: 29, cell_rise_c: 30, cell_rise_from: "roof type", t_min_c: 11.93, t_min_from: "weather", t_max_c: 39.26, t_max_from: "weather" } as DesignResult["sizing"];
-const SIZING_ENTERED = { ...SIZING, uc: 25, uc_from: "entered" } as DesignResult["sizing"];
 
 const withLosses = (change: Partial<Project["losses"]>): Project => ({ ...DOCUMENT, losses: { ...DOCUMENT.losses, ...change } });
 
-const field = (assumptions: Assumption[], id: AssumptionField["id"]): AssumptionField => {
-  const found = assumptions.find((assumption) => assumption.kind === "field" && assumption.id === id);
-  if (!found || found.kind !== "field") throw new Error(`No field ${id}`);
-  return found;
-};
-
-describe("the assumptions (plan/phase-08-plan.md, decisions 6 and 8; functional-inventory 1.7)", () => {
-  test("seven, in the board's order, each with its range: six fields and the three levels", () => {
-    const assumptions = assumptionsOf(DOCUMENT, SIZING);
-
-    expect(assumptions.map((assumption) => assumption.label)).toEqual([
-      "Thermal Uc",
-      "Rear shading and mismatch",
-      "Roof albedo",
-      "Weather variability",
-      "Model and data",
-      "Exceedance levels",
-      "Grid CO₂",
-    ]);
+describe("the fields of the assumptions, under their rows (V2 · 8, D104)", () => {
+  test("the ranges of the fields and of a level", () => {
     expect(ASSUMPTION_RANGES).toEqual({
       uc: { min: 5, max: 60, decimals: 0 },
       rear_loss_pct: { min: 0, max: 50, decimals: 1 },
@@ -39,39 +19,29 @@ describe("the assumptions (plan/phase-08-plan.md, decisions 6 and 8; functional-
     expect(LEVEL_RANGE).toEqual({ min: 50, max: 99, decimals: 0 });
   });
 
-  test("each field holds the document's value with its unit", () => {
-    const assumptions = assumptionsOf(DOCUMENT, SIZING);
+  test("each row's fields, with the document's values, their units and who set them", () => {
+    const fields = assumptionFieldsOf(DOCUMENT);
 
-    expect(field(assumptions, "rear_loss_pct")).toEqual({ kind: "field", id: "rear_loss_pct", label: "Rear shading and mismatch", unit: "%", range: ASSUMPTION_RANGES.rear_loss_pct, value: 10, detail: null, reset: null });
-    expect(field(assumptions, "albedo")).toMatchObject({ value: 0.2, unit: null, range: { decimals: 2 } });
-    expect(field(assumptions, "weather_sigma_pct")).toMatchObject({ value: 3, unit: "%" });
-    expect(field(assumptions, "model_sigma_pct")).toMatchObject({ value: 3, unit: "%" });
-    expect(field(assumptions, "co2_t_per_mwh")).toMatchObject({ value: 0.716, unit: "t/MWh", range: { decimals: 3 } });
+    expect(fields.albedo).toEqual([{ kind: "field", id: "albedo", label: "Roof albedo", unit: null, range: ASSUMPTION_RANGES.albedo, value: 0.2, hint: "Default" }]);
+    expect(fields.ageing).toEqual([{ kind: "field", id: "degradation_pct", label: "Less each year", unit: "%", range: DEGRADATION_RANGE, value: 0.5, hint: "Default" }]);
+    expect(fields.uncertainty).toEqual([
+      { kind: "field", id: "weather_sigma_pct", label: "Weather variability", unit: "%", range: ASSUMPTION_RANGES.weather_sigma_pct, value: 3, hint: "Default" },
+      { kind: "field", id: "model_sigma_pct", label: "Model and data", unit: "%", range: ASSUMPTION_RANGES.model_sigma_pct, value: 3, hint: "Default" },
+      { kind: "levels", label: "Exceedance levels", levels: [50, 75, 90], range: LEVEL_RANGE },
+    ]);
+    expect(fields.co2).toEqual([{ kind: "field", id: "co2_t_per_mwh", label: "Grid CO₂", unit: "t/MWh", range: ASSUMPTION_RANGES.co2_t_per_mwh, value: 0.716, hint: "Set for India" }]);
   });
 
-  test("Uc is empty while the roof type's holds, and says the run's value and where it comes from", () => {
-    expect(field(assumptionsOf(DOCUMENT, SIZING), "uc")).toEqual({ kind: "field", id: "uc", label: "Thermal Uc", unit: "W/m²K", range: ASSUMPTION_RANGES.uc, value: null, detail: "29 W/m²K by roof type", reset: null });
-  });
+  test("a value the user entered says the default it took the place of", () => {
+    const fields = assumptionFieldsOf({ ...withLosses({ degradation_pct: 0.7, co2_t_per_mwh: 0.82 }), roof: { ...DOCUMENT.roof, albedo: 0.3 } });
 
-  test("Uc before a run says nothing of the default yet", () => {
-    expect(field(assumptionsOf(DOCUMENT, null), "uc")).toMatchObject({ value: null, detail: null, reset: null });
-  });
-
-  test("Uc entered holds its value, says the roof type's beside it (the board \"Weather and assumptions\"), and can be given back", () => {
-    const uc = field(assumptionsOf(withLosses({ uc: 25 }), SIZING_ENTERED), "uc");
-
-    expect(uc).toMatchObject({ value: 25, detail: "29 by roof type", reset: "Use the roof type's" });
-  });
-
-  test("Uc entered before the run answered says nothing of the roof type's yet", () => {
-    expect(field(assumptionsOf(withLosses({ uc: 25 }), null), "uc")).toMatchObject({ value: 25, detail: null, reset: "Use the roof type's" });
+    expect(fields.albedo[0]).toMatchObject({ value: 0.3, hint: "Yours · default 0.20" });
+    expect(fields.ageing[0]).toMatchObject({ value: 0.7, hint: "Yours · default 0.50 %" });
+    expect(fields.co2[0]).toMatchObject({ value: 0.82, hint: "Yours · default 0.716 t/MWh" });
   });
 
   test("the levels are three fields of the document's, an empty one where it has fewer", () => {
-    const levels = assumptionsOf(DOCUMENT, SIZING).find((assumption) => assumption.kind === "levels");
-
-    expect(levels).toEqual({ kind: "levels", label: "Exceedance levels", levels: [50, 75, 90], range: LEVEL_RANGE });
-    expect(assumptionsOf(withLosses({ p_levels: [50, 90] }), SIZING).find((assumption) => assumption.kind === "levels")).toMatchObject({ levels: [50, 90, null] });
+    expect(assumptionFieldsOf(withLosses({ p_levels: [50, 90] })).uncertainty[2]).toMatchObject({ levels: [50, 90, null] });
   });
 });
 

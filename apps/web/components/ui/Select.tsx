@@ -47,10 +47,12 @@ type TriggerProps = Omit<ComponentProps<"button">, "children" | "value"> & {
   open: boolean;
   /** What was chosen is being loaded: a turning ring stands where the chevron was. */
   busy?: boolean;
+  /** The label stands over the trigger (Performance's Option and Weather, V2 · 8): inside, it is for a screen reader alone. */
+  labelAbove?: boolean;
 };
 
 /** What opens the list: the label, the choice that is taken, its mark where it has one, a chevron; a turning ring while busy. */
-export function SelectTrigger({ label, value, mark, open, busy = false, className, ...rest }: TriggerProps) {
+export function SelectTrigger({ label, value, mark, open, busy = false, labelAbove = false, className, ...rest }: TriggerProps) {
   return (
     <button
       type="button"
@@ -59,7 +61,7 @@ export function SelectTrigger({ label, value, mark, open, busy = false, classNam
       className={classNames(TRIGGER, open ? TRIGGER_OPEN : TRIGGER_CLOSED, className)}
       {...rest}
     >
-      <span className="text-text-2">{label}</span>
+      <span className={labelAbove ? "sr-only" : "text-text-2"}>{label}</span>
       <span className="min-w-0 truncate font-medium">{value}</span>
       {mark ? <StatusMark kind={mark.kind} label={mark.label} wordsShown={false} size={16} /> : null}
       {busy ? <ProgressRing size={16} className="ml-auto" /> : <Icon name={open ? "chevron-up" : "chevron-down"} size={16} className="ml-auto text-text-3" />}
@@ -129,11 +131,13 @@ type Props<T extends string> = {
   valueShown?: string;
   /** What was chosen is being loaded: the trigger says it with a turning ring, and the list does not open until it is over. */
   busy?: boolean;
+  /** The label over the trigger, in text-2, rather than inside it. */
+  labelAbove?: boolean;
   className?: string;
 };
 
 /** One of several choices, of which each may need more than a word. For two to four short ones there is Segmented. */
-export function Select<T extends string>({ label, options, value, onChange, disabled = false, valueShown, busy = false, className }: Props<T>) {
+export function Select<T extends string>({ label, options, value, onChange, disabled = false, valueShown, busy = false, labelAbove = false, className }: Props<T>) {
   const id = useId();
   const [floating, trigger] = useFloating({ side: "below", align: "start", gap: LIST_GAP });
   const list = useRef<HTMLUListElement>(null);
@@ -179,25 +183,39 @@ export function Select<T extends string>({ label, options, value, onChange, disa
     if (to !== null) setMarked(to);
   }
 
+  const triggerShown = (
+    <SelectTrigger
+      ref={trigger}
+      label={label}
+      labelAbove={labelAbove}
+      value={valueShown ?? options[taken]?.label ?? ""}
+      mark={options[taken]?.mark}
+      open={floating.isOpen}
+      busy={busy}
+      disabled={disabled}
+      aria-controls={id}
+      className={labelAbove ? "w-full" : className}
+      onClick={() => (floating.isOpen ? floating.close() : open())}
+      onKeyDown={(event) => {
+        if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+        event.preventDefault();
+        open();
+      }}
+    />
+  );
+
   return (
     <>
-      <SelectTrigger
-        ref={trigger}
-        label={label}
-        value={valueShown ?? options[taken]?.label ?? ""}
-        mark={options[taken]?.mark}
-        open={floating.isOpen}
-        busy={busy}
-        disabled={disabled}
-        aria-controls={id}
-        className={className}
-        onClick={() => (floating.isOpen ? floating.close() : open())}
-        onKeyDown={(event) => {
-          if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
-          event.preventDefault();
-          open();
-        }}
-      />
+      {labelAbove ? (
+        <div className={classNames("flex min-w-0 flex-col gap-1", className)}>
+          <span aria-hidden="true" className="type-body-touch desktop:type-body text-text-2">
+            {label}
+          </span>
+          {triggerShown}
+        </div>
+      ) : (
+        triggerShown
+      )}
       <FloatingPanel floating={floating}>
         <OptionList
           ref={list}

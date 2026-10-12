@@ -139,7 +139,7 @@ In code: `NumberField` and `Stepper`; their numbers in `number-entry.ts`.
 | The label before the field | 40 | 44 | A row of the work column |
 | Stepper | 40: buttons of 32 in a well with padding 4, radius row | 52: buttons of 44 | A few whole steps |
 | Inside the loss chain | 22, radius control, mono | Tablet 40, phone 44, radius control | A step of the chain that is the user's; the row's label is its name |
-| Inside a chip | 22, radius control, mono | Tablet 32, phone 44, radius control | An assumption of Performance; the chip's label is its name |
+| Inside a chip | 22, radius control, mono | Tablet 32, phone 44, radius control | A step of Where the energy goes, an exceedance level, the rear side's shading; the row's words are its name |
 
 - What is typed is a draft. Enter or leaving the field commits it; Escape gives it up. The arrows up and down
   step the draft and do not commit. Plus and minus of a stepper commit at once, and cannot be pressed at the
@@ -332,13 +332,31 @@ itself stays, with its verdict, where no string length fits. Track 8 high in `co
 halo; labels under the ends in `type-unit` ("14, MPPT minimum", "29, Voc limit"). The verdict follows with a
 tick or a note and the engine's sentence.
 
-## Loss chain
-Grid of label, editable input (where the step is a user input), change in %, track, running total
+## Where the energy goes (Performance)
+V2 · 8 (D104; the board "V2 · 8 · Performance", state 2): the engine's 21 steps said as eleven plain ones in two columns
+on desktop, 40 apart, one column on touch. Before the modules: Sunlight on the tilted modules, Shade from rows, obstacles
+and the horizon, Dirt on the glass (soiling), Light reflected off the glass, Light on the back of the modules, then a total
+row "The modules' rated output". In the system: Heat, Low light and module quality, Shade on a string, Cables, Inverter,
+Downtime, then "To the grid". Each column has its name in text-2 over it; a row is at least 40, a line `line-subtle` over
+it: the name at the left, then where the user may change the step its field (Number field, "inside a chip", two
+decimals) with who set it in `type-unit` text-3 (Default, Yours), the change in `type-strong`, 64 wide, and a bar 96 by 6
+in a `well` track, its length the change on a scale of 10 %, gain or loss colour, a step of nothing a tick of 1 in
+`data-zero`. A total row: `surface-2`, radius control, padding 10 12, `type-strong`. On touch a row is its name on a line,
+then the field, the change and the bar on the next at the right. The engine's steps a plain step holds are its title.
+The three fields: Soiling, Mismatch between modules (on Low light and module quality), Downtime (100 less the
+availability). Under the columns "All 21 steps" with a chevron, quiet, opens the engine's chain in their place.
+
+In code: `EnergySteps`; the steps, their composed changes and their fields in `lib/performance/energy-steps.ts`.
+
+## Loss chain (All 21 steps)
+Behind Where the energy goes: "Eleven steps" with a chevron to go back, the title "All 21 steps, in the engine's words"
+in text-2, the legend; under the chain the engine's summary (`SummaryTable`). Grid of label, editable input (where the
+step is a user input), change in %, track, running total
 (`columns-loss-chain`). Rows 29 high; totals 32 high, Geist 600, with a 2 px marker on the track. Bars 12
 high, radius `radius-swatch`, gain and loss colours; a step of nothing a tick of 1 in `data-zero`. A legend
 names gain and loss and says that boxed values can be changed. The labels are the engine's, word for word.
 
-In code: `LossChain`, of rows `LossRow`; the bars in `lib/performance/cascade.ts`, the fields in
+In code: `LossChain`, of rows `LossRow`; the bars in `lib/format/cascade.ts`, the fields in
 `loss-fields.ts`, the rows' words in `loss-chain.ts`.
 
 - The track is a cascade on one relative scale: each bar runs from the running total before the step to the
@@ -346,10 +364,12 @@ In code: `LossChain`, of rows `LossRow`; the bars in `lib/performance/cascade.ts
   irradiance ended), fitted to the extremes of the run, with 10 px free at the left of the track and 7 at the
   right. A bar is 2 px wide at the least.
 - A step that is the user's has its field in the second column, 22 high (Number field, "inside the loss
-  chain"); the rear gain a Switch. A field that is empty for its default says the default inside itself
-  ("PAN 0.2 %"); entered, the line under the row says the default and gives the field back ("PAN gives 0.2 %",
-  "Use the PAN's"). What a field says of an entry it changed stands in the same line under the row. With a
-  monofacial module the switch cannot be used and the line under the row says why.
+  chain"): Thermal Uc on Temperature among them; the rear gain a Switch, with the rear side's shading and mismatch
+  in the line under the row, by its name. A field that is empty for its default says the default inside itself
+  ("PAN 0.2 %", "29 W/m²K" for the roof type's Uc); entered, the line under the row says the default and gives the field
+  back ("PAN gives 0.2 %", "Use the PAN's"; "Roof type gives 29 W/m²K", "Use the roof type's"). What a field says of an
+  entry it changed stands in the same line under the row. With a monofacial module the switch cannot be used and the line
+  under the row says why.
 - On tablet rows are 44 and totals 48, bars 14, the field 40 (`columns-loss-chain-tablet`). On phone a row is
   the label on a line of its own, then the field at the left (44 high) with the change and the running total
   at the right, then the track across the width (`columns-loss-chain-phone`).
@@ -362,19 +382,17 @@ In code: `LossChain`, of rows `LossRow`; the bars in `lib/performance/cascade.ts
   fields stay as they are.
 
 ## Assumptions (Performance)
-The card "Assumptions" (the boards "Performance" and "Weather and assumptions"): every assumption a field in a
-chip, the chips wrapped with 8 between them. Chip: height 34 (44 on tablet), padding 0 6 0 12, `control`,
-border `line-strong`, radius `radius-chip`, text 13 (15 on tablet), `shadow-raised`; the label in text-2, then
-the field (Number field, "inside a chip"), its unit after the value. The thermal Uc is empty while the roof
-type's holds and a caption in text-3 says it ("29 W/m²K by roof type"); entered, a quiet press of 26 gives it
-back ("Use the roof type's"). The exceedance levels are three fields of 40 in one chip, each with "P" before it
-in mono and a dot between them; on commit they are sorted and each kept once. The grid CO₂ factor says its unit,
-t/MWh.
-On phone the assumptions are rows of 52: the label at the left with its caption under it, the field at the
-right, 44 high, 132 wide (148 for the CO₂ factor, 52 for each level).
+V2 · 8 (D104; the board "V2 · 8 · Performance", state 3): five summary rows (`SummaryRow`), each its facts on one line and
+who set it, in two columns on desktop read across (a row opened grows its own column), one on touch: Weather ("Typical
+year · PVGIS · 1,822.9 kWh/m² on the ground"; opened, its hours, temperatures and horizon and the engine's notes), Roof
+albedo (its one home, audit V2-61), Ageing (the degradation, "0.5 % less each year"), Uncertainty (the two variabilities
+combined, "4.24 % · sets Likely and Conservative"; opened, Weather variability, Model and data and the exceedance levels,
+three fields of 40, each with "P" before it in mono and a dot between them, sorted on commit and each kept once), Grid CO₂
+per MWh ("0.716 t · India's grid", Set for India). Opened, a row's fields stand in place, each with who set it under its
+label ("Yours · default 0.20").
 
-In code: `Assumptions`, of fields `assumption-fields.ts`. The card stands before the summary, and when the run
-has no options under the API's words: the assumptions are inputs and can be set before (decision 15).
+In code: `Assumptions`; the rows in `assumption-rows.ts`, their fields in `assumption-fields.ts`. The rows stand before
+a system voltage too, under the API's words: the assumptions are inputs and can be set before (decision 15).
 
 ## Timeline (Sun view)
 Floating bar 64 high, `surface-1`, border `line`, radius `radius-bar`, `shadow-float`: round play button 44, time
@@ -882,7 +900,8 @@ with the component that first uses them.
 ## Select
 Trigger: as a secondary button, border `line`, height 40 (44 on touch): label in text-2, the value in Geist
 500, a chevron of 16 in text-3. Open: the trigger looks pressed (`control-pressed`, `shadow-pressed`, border
-`line-strong`) and the chevron is turned. Cannot be used: opacity 0.45, no shadow.
+`line-strong`) and the chevron is turned. Cannot be used: opacity 0.45, no shadow. With `labelAbove` the label stands
+over the trigger in text-2, 4 above it, and the trigger holds the value alone (Performance's Option and Weather, V2 · 8).
 List: floating, `surface-1`, border `line-strong`, radius `radius-card-s`, `shadow-float`, padding 6, rows 2
 apart. Row: height 40, radius 8, padding 0 10; a tick of 16 in accent before the choice that is taken, which
 is in Geist 500; one fact at the right in `type-body`, text-3. The row under the pointer or the keyboard is

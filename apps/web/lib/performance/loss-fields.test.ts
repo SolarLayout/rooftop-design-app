@@ -3,7 +3,7 @@ import type { Project } from "../api";
 import { LOSS_RANGES, lossControlOf, withLoss, type LossControl } from "./loss-fields";
 import { DOCUMENT, MODULE, MONOFACIAL_MODULE } from "./test-fixtures";
 
-const RUN = { energy: { lid_pct: 0.2 }, module: MODULE };
+const RUN = { energy: { lid_pct: 0.2 }, module: MODULE, sizing: { uc: 29, uc_from: "roof type" as const, uc_default: 29 } };
 
 const withLosses = (change: Partial<Project["losses"]>): Project => ({ ...DOCUMENT, losses: { ...DOCUMENT.losses, ...change } });
 
@@ -59,12 +59,12 @@ describe("the fields of the chain (plan/phase-08-plan.md, decision 6; functional
   });
 
   test("the rear gain is a switch, on as the document says", () => {
-    expect(lossControlOf("Bifacial rear gain", DOCUMENT, RUN)).toEqual({ kind: "switch", id: "bifacial", label: "Bifacial rear gain", on: true, disabled: false, note: null });
+    expect(lossControlOf("Bifacial rear gain", DOCUMENT, RUN)).toMatchObject({ kind: "switch", id: "bifacial", label: "Bifacial rear gain", on: true, disabled: false, note: null });
     expect(lossControlOf("Bifacial rear gain", withLosses({ bifacial: false }), RUN)).toMatchObject({ on: false, disabled: false });
   });
 
   test("with a monofacial module the switch cannot be used, and the row says the desktop's words", () => {
-    expect(lossControlOf("Bifacial rear gain", DOCUMENT, { ...RUN, module: MONOFACIAL_MODULE })).toEqual({
+    expect(lossControlOf("Bifacial rear gain", DOCUMENT, { ...RUN, module: MONOFACIAL_MODULE })).toMatchObject({
       kind: "switch",
       id: "bifacial",
       label: "Bifacial rear gain",
@@ -82,8 +82,25 @@ describe("the fields of the chain (plan/phase-08-plan.md, decision 6; functional
     expect(lossControlOf("Bifacial rear gain", flush, { ...RUN, module: MONOFACIAL_MODULE })).toMatchObject({ disabled: true, note: "The module is monofacial: no rear gain." });
   });
 
+  // V2 · 8: the assumptions keep five rows (D104); Uc and the rear shading stand on their own steps of the chain.
+  test("beside the switch, the rear side's shading and mismatch, a field of the document", () => {
+    const rear = lossControlOf("Bifacial rear gain", DOCUMENT, RUN);
+    if (rear?.kind !== "switch") throw new Error("No switch");
+    expect(rear.field).toEqual({ kind: "field", id: "rear_loss_pct", label: "Rear shading and mismatch", unit: "%", range: { min: 0, max: 50, decimals: 1 }, value: 10, detail: null, reset: null });
+  });
+
+  test("Temperature has Uc: empty while the roof type's holds, said inside; entered, the roof type's said and given back", () => {
+    expect(field(lossControlOf("Temperature", DOCUMENT, RUN))).toEqual({ kind: "field", id: "uc", label: "Thermal Uc", unit: "W/m²K", range: { min: 5, max: 60, decimals: 0 }, value: null, detail: "29", reset: null });
+    const entered = { ...RUN, sizing: { uc: 25, uc_from: "entered" as const, uc_default: 29 } };
+    expect(field(lossControlOf("Temperature", withLosses({ uc: 25 }), entered))).toMatchObject({ value: 25, detail: "Roof type gives 29 W/m²K", reset: "Use the roof type's" });
+  });
+
+  test("before a run Uc says nothing of the roof type", () => {
+    expect(field(lossControlOf("Temperature", DOCUMENT, { ...RUN, sizing: null }))).toMatchObject({ value: null, detail: null });
+  });
+
   test("a step of the engine's own has no control", () => {
-    for (const label of ["Global horizontal irradiation", "Transposition to plane (15°)", "IAM", "Temperature", "Inverter clipping", "Energy to grid"]) {
+    for (const label of ["Global horizontal irradiation", "Transposition to plane (15°)", "IAM", "Inverter clipping", "Energy to grid"]) {
       expect(lossControlOf(label, DOCUMENT, RUN)).toBeNull();
     }
   });

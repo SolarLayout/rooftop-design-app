@@ -1,9 +1,8 @@
 "use client";
 
-import { Segmented } from "@/components/ui/Segmented";
 import { Select } from "@/components/ui/Select";
 import { useSize } from "@/components/shell/use-screen-size";
-import type { OptionItem } from "@/lib/performance/header";
+import { optionWordsOf, type OptionItem } from "@/lib/performance/header";
 
 type Props = {
   items: readonly OptionItem[];
@@ -12,28 +11,27 @@ type Props = {
   onChoose: (key: string) => void;
 };
 
-const wordsOf = (item: OptionItem) => (item.caption === "" ? item.letter : `${item.letter} · ${item.caption}`);
-
 /**
- * The stringing options of the run (the board "Performance"; plan/phase-08-plan.md, decision 4): on tablet and
- * desktop a segmented control of the letters, the chosen one with its caption, each with the mark of its verdict;
- * on phone a select whose trigger says the chosen one. A press chooses at once, from the run's answer.
+ * The stringing option beside the lead (V2 · 8, D104; plan/phase-08-plan.md, decision 4): a select under its label, each
+ * option by its letter and caption with the mark of its verdict; on phone the trigger says the chosen one's letter alone.
+ * A press chooses at once, from the run's answer.
  */
 export function OptionSwitch({ items, chosen, onChoose }: Props) {
   const size = useSize();
   if (size === null) return null;
-  if (size === "phone") {
-    const options = items.map((item) => ({ value: item.key, label: wordsOf(item), mark: item.mark }));
-    return (
-      <div data-testid="option-switch" className="contents">
-        <Select label="Option" options={options} value={chosen} onChange={onChoose} className="w-full" />
-      </div>
-    );
-  }
-  const options = items.map((item) => ({ value: item.key, label: item.label, name: item.name, mark: item.mark }));
+  const options = items.map((item) => ({ value: item.key, label: optionWordsOf(item, false), mark: item.mark }));
+  const taken = items.find((item) => item.key === chosen);
   return (
     <div data-testid="option-switch" className="contents">
-      <Segmented label="Stringing option" options={options} value={chosen} onChange={onChoose} />
+      <Select
+        label="Option"
+        labelAbove
+        options={options}
+        value={chosen}
+        valueShown={taken ? optionWordsOf(taken, size === "phone") : undefined}
+        onChange={onChoose}
+        className="w-full desktop:w-50"
+      />
     </div>
   );
 }

@@ -2,7 +2,7 @@
 // every step of the engine in its order and words, its change with two decimals and the true minus, its running
 // total with one decimal and, on the totals, its unit; each with its mark on the cascade. Pure.
 import { shown } from "../../components/ui/number-entry";
-import type { DesignOption, LossStep, Module } from "../api";
+import type { DesignOption, DesignResult, LossStep, Module } from "../api";
 import { cascadeOf, isNothing, type Mark } from "../format/cascade";
 import type { RunOfTheChain } from "./loss-fields";
 
@@ -44,7 +44,7 @@ export function readoutOf(step: LossStep): Readout {
   return { figure: isTotal(step) ? total : `${total} · ${changeOf(step.pct)}`, label: step.label };
 }
 
-export function chainViewOf(option: DesignOption, module: Module): ChainView {
+export function chainViewOf(option: DesignOption, module: Module, sizing: DesignResult["sizing"] | null = null): ChainView {
   const { steps } = option.energy;
   const marks = cascadeOf(steps);
   return {
@@ -52,6 +52,6 @@ export function chainViewOf(option: DesignOption, module: Module): ChainView {
       const total = isTotal(step);
       return { label: step.label, isTotal: total, change: total ? null : changeOf(step.pct), total: shown(step.value, 1), unit: total ? unitOf(step) : null, mark: marks[index]!, readout: readoutOf(step) };
     }),
-    run: { energy: option.energy, module },
+    run: { energy: option.energy, module, sizing },
   };
 }
