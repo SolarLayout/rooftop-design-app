@@ -97,7 +97,6 @@ function flow() {
   const results = createResultsStore();
   const view = createViewStore();
   /** The runs of the untouched demo, as the flow reports them (plan/phase-10-plan.md, step 11). */
-  const demoRuns: DesignResult[] = [];
   /** The choices taken away, as the flow tells them. */
   const gone: ChoiceGone[] = [];
   const designFlow = createDesignFlow({
@@ -106,7 +105,6 @@ function flow() {
     project,
     results,
     view,
-    onDemoRan: (design) => demoRuns.push(design),
     onChoiceGone: (choice) => gone.push(choice),
   });
   designFlow.start();
@@ -115,7 +113,7 @@ function flow() {
     if (!found) throw new Error("Nothing was asked.");
     return found;
   };
-  return { ...time, ...server, project, results, view, designFlow, demoRuns, gone, last };
+  return { ...time, ...server, project, results, view, designFlow, gone, last };
 }
 
 /** The demo is open and its first results are there. */
@@ -343,53 +341,6 @@ describe("the demo handed in", () => {
 
     expect(demos.map((call) => call.signal.aborted)).toEqual([true]);
     expect(project.getState().project).toBe(DEMO);
-  });
-});
-
-describe("the demo's run", () => {
-  test("the run of the untouched demo is reported when it lands, whichever way the demo was opened", async () => {
-    const { demos, runs, designFlow, demoRuns, last } = flow();
-    designFlow.openDemo();
-    last(demos).answer(DEMO);
-    await settled();
-
-    last(runs).answer(design(790));
-    await settled();
-
-    expect(demoRuns).toEqual([design(790)]);
-
-    const handed = flow();
-    handed.designFlow.openDemo(DEMO);
-    handed.last(handed.runs).answer(design(790));
-    await settled();
-    expect(handed.demoRuns).toEqual([design(790)]);
-  });
-
-  test("the run of an edited demo is not the demo's: nothing is reported for it", async () => {
-    const { demos, runs, project, designFlow, demoRuns, pass, last } = flow();
-    designFlow.openDemo();
-    last(demos).answer(DEMO);
-    await settled();
-    last(runs).answer(design(790));
-    await settled();
-
-    project.getState().commit(tilt(20));
-    pass(DESIGN_PAUSE);
-    last(runs).answer(design(700));
-    await settled();
-
-    expect(runs).toHaveLength(2);
-    expect(demoRuns).toEqual([design(790)]);
-  });
-
-  test("a design opened by another way is not the demo: its run is not reported", async () => {
-    const { runs, project, demoRuns, last } = flow();
-
-    project.getState().open({ ...DEMO, name: "Another roof" } as Project);
-    last(runs).answer(design(790));
-    await settled();
-
-    expect(demoRuns).toEqual([]);
   });
 });
 

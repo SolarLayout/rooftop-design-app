@@ -1,33 +1,35 @@
-// Home (plan/phase-10-plan.md, step 11, decision 5; the boards "Home" on three sizes): what the page shows of the demo and
-// of the designs on this device. The demo's card reads its name and its roof from the demo document the API hands out
-// (`roofWordsOf`, as every card says a roof); its capacity and energy are the engine's numbers of the untouched demo's run
-// on this device, or absent until it has run here. Pure: the components draw what this gives.
-import type { Project } from "../api";
-import type { DemoRun } from "../device/demo-run";
-import { roofWordsOf } from "../device/kept-design";
-import { dcCapacity, energy, type Quantity } from "../format/vitals";
+// Home as a start screen (V2 · 9, D105; the board "V2 · 9 · Handover and Home"; audit V2-03, V2-05, V2-09, V2-14, V2-115):
+// one title at the title's size, one line of what the app does, the search the largest thing with Find the roof beside it,
+// the other ways in as links under it; the designs on this device first when there are any, under the search, which stays
+// at the top as the page scrolls; the demo after, its line and Open the demo, no figures. Pure: the components draw it.
+import { shown } from "../../components/ui/number-entry";
 
-export type DemoCard = {
-  name: string;
-  roofWords: string;
-  /** The capacity and the energy of year 1 of the demo's run here; null until it has run on this device. */
-  facts: { capacity: Quantity; energy: Quantity } | null;
-};
+export const HOME = {
+  title: "Rooftop PV design",
+  line: "Outline a roof on the map. The app lays out the modules, the shade, the strings and the energy of a year.",
+  placeholder: "Address or coordinates",
+  find: "Find the roof",
+} as const;
 
-export function demoCardOf(demo: Project, run: DemoRun | null): DemoCard {
-  return {
-    name: demo.name,
-    roofWords: roofWordsOf(demo),
-    facts: run === null ? null : { capacity: dcCapacity(run.dcKwp), energy: energy(run.energyMwh) },
-  };
-}
+export type WayIn = "locate" | "hand" | "import" | "open";
 
-/** The words of "On this device" on the approved board; where designs are kept, in plain words (#168: a run uses the
- * server, so "nothing leaves this browser" was not true). */
-export const APPEAR_HERE = "Designs you save appear here.";
-export const KEPT_HERE = "Your designs are kept on this device.";
+export const WAYS_IN: ReadonlyArray<{ id: WayIn; words: string }> = [
+  { id: "locate", words: "Use my location" },
+  { id: "hand", words: "Enter the roof by hand" },
+  { id: "import", words: "Import a drawing" },
+  { id: "open", words: "Open a project file" },
+];
 
-/** Under the section's label: where the designs appear while there are none; where they are kept, always. */
-export function onThisDeviceWordsOf(count: number): string {
-  return count === 0 ? `${APPEAR_HERE} ${KEPT_HERE}` : KEPT_HERE;
-}
+export const DEMO = {
+  title: "Try the demo",
+  line: "A finished design on a 90 × 40 m roof in Pune, to look around before you start your own.",
+  action: "Open the demo",
+} as const;
+
+export type HomeSection = "designs" | "demo";
+
+/** What stands under the search, in order: the designs on this device first when there are any, the demo after. */
+export const sectionsOf = (designs: number): HomeSection[] => (designs > 0 ? ["designs", "demo"] : ["demo"]);
+
+/** The head of the designs: its title, and how many there are. */
+export const designsHeadOf = (count: number) => ({ title: "Your designs · on this device", count: `${shown(count, 0)} ${count === 1 ? "design" : "designs"}` });

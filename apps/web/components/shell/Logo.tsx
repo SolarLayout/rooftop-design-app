@@ -1,8 +1,8 @@
 import { classNames } from "@/components/ui/class-names";
 
 type Props = {
-  /** Where the name stands beside the mark: on desktop alone (the top bar), or on every size (Home, which has no top bar). */
-  wordmark?: "desktop" | "always";
+  /** Where the name stands beside the mark: on desktop alone (the top bar), or from tablet up (Home, V2 · 9). */
+  wordmark?: "desktop" | "from-tablet";
 };
 
 /** The mark of the product, and its name. */
@@ -15,7 +15,7 @@ export function Logo({ wordmark = "desktop" }: Props) {
         <path d="M9.5 17.5h7" strokeLinecap="round" className="stroke-accent-ink stroke-icon" />
       </svg>
       {/* The mark says the name already. */}
-      <span aria-hidden="true" className={classNames("type-section", wordmark === "desktop" && "hidden desktop:block")}>
+      <span aria-hidden="true" className={classNames("type-section", wordmark === "desktop" ? "hidden desktop:block" : "hidden tablet:block")}>
         SolarLayout <span className="font-medium text-text-2">Rooftop</span>
       </span>
     </span>

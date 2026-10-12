@@ -63,13 +63,13 @@ export function ProjectTrigger({ name, open, saving, className, ...rest }: Trigg
  */
 type Action = { name: string; icon: IconName; fact?: string; href?: string; docs?: true; does?: "open" | "import" | "save" };
 
-// Open a project opens its dialog (plan/phase-10-plan.md, step 9); Save a copy downloads the .rtd the API writes
-// (plan/phase-09-plan.md, step 8).
+// Open a project file opens its dialog (plan/phase-10-plan.md, step 9); Download the project file downloads the .rtd the API
+// writes (plan/phase-09-plan.md, step 8), in the words of the design card's menu (V2 · 9, audit V2-62).
 const ACTIONS: Action[] = [
   { name: "New design", icon: "plus", fact: "Find the roof", href: "/find" },
-  { name: "Open a project", icon: "folder", fact: ".rtd", does: "open" },
+  { name: "Open a project file", icon: "folder", fact: ".rtd", does: "open" },
   { name: "Import a drawing", icon: "upload", fact: "KMZ, KML, DXF", does: "import" },
-  { name: "Save a copy", icon: "download", fact: ".rtd", does: "save" },
+  { name: "Download the project file", icon: "download", fact: ".rtd", does: "save" },
   { name: "Home", icon: "home", href: "/" },
   // The docs, in a new tab so the design stays open (D91).
   { name: "Docs", icon: "book", docs: true },
@@ -87,11 +87,11 @@ type MenuProps = Pick<Design, "name"> & {
   onOpenProject?: () => void;
   /** A row that leads somewhere, or does something, was taken. */
   onTake: () => void;
-  /** Save a copy was taken: the project file is downloaded (plan/phase-09-plan.md, step 8). Without it the row is shown and cannot be used. */
+  /** Download the project file was taken (plan/phase-09-plan.md, step 8). Without it the row is shown and cannot be used. */
   onSaveACopy?: () => void;
   /** The name was edited in the row "This design" (plan/phase-09-plan.md, decision 13). Without it the name cannot be edited here. */
   onRename?: (name: string) => void;
-  /** The designs kept on this device, the newest edited first (plan/phase-10-plan.md, step 5); none shows the words of the board. */
+  /** The other designs kept on this device, the newest edited first (plan/phase-10-plan.md, step 5); none shows the words of the board. */
   designs?: readonly DeviceRow[];
   /** A design of the device was taken: it is opened. */
   onOpenDesign?: (id: string) => void;
@@ -142,24 +142,23 @@ function ThisDesign({ name, saving, onOpenNotes, onTake, onRename, shownAs }: Om
   );
 }
 
-/** The designs kept on this device as rows of the menu, the fact under the name: the open one marked with the tick; a row pressed opens its design. */
+/** The other designs kept on this device as rows of the menu, the card's figures under the name; a row pressed opens its design. The open one is This design. */
 function OnThisDevice({ designs, onTake, onOpenDesign }: Required<Pick<MenuProps, "designs">> & Pick<MenuProps, "onTake" | "onOpenDesign">) {
   return (
     <ul role="menu" aria-label="On this device" onKeyDown={onMenuKeyDown} className="mb-1 flex flex-col gap-0.5">
-      {designs.map(({ id, name, fact, isOpen }) => (
+      {designs.map(({ id, name, fact }) => (
         <li key={id} role="none">
           <button
             type="button"
             role="menuitem"
             tabIndex={-1}
-            aria-current={isOpen ? "true" : undefined}
             onClick={() => {
               onTake();
               onOpenDesign?.(id);
             }}
             className={PRESSABLE_MENU_ROW}
           >
-            {isOpen ? <Icon name="tick" stroke="tick" size={18} className="text-accent" /> : <Icon name="file" size={18} stroke="light" className="text-text-2" />}
+            <Icon name="file" size={18} stroke="light" className="text-text-2" />
             {/* The fact stands under the name, as the board draws it: the names and the roof's words are long, the panel is not. */}
             <span className="flex min-w-0 grow flex-col">
               <span className="truncate">{name}</span>

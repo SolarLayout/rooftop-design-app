@@ -1,50 +1,55 @@
 import { describe, expect, test } from "bun:test";
-import type { Project } from "../api";
-import { APPEAR_HERE, demoCardOf, KEPT_HERE, onThisDeviceWordsOf } from "./home-view";
+import { DEMO, designsHeadOf, HOME, sectionsOf, WAYS_IN } from "./home-view";
 
-// Home (plan/phase-10-plan.md, step 11, decision 5; the boards "Home" on three sizes): the demo's card reads its name and
-// its roof from /demo, and shows the capacity and the energy only once the demo has run on this device, from that run;
-// "On this device" says where the designs appear while there are none.
+// Home as a start screen (V2 · 9, D105; audit V2-03, V2-05, V2-09, V2-14, V2-115): one title, one line of what the app does,
+// the search the largest thing, the other ways in, the designs on this device first when there are any, the demo after.
 
-const RECTANGLE: Project["roof"]["outline"] = [
-  [-45, -20],
-  [45, -20],
-  [45, 20],
-  [-45, 20],
-];
-const DEMO = {
-  name: "Pune demo roof",
-  system_voltage: 1500,
-  roof: { lat: 18.52, lon: 73.86, outline: RECTANGLE, roof_type: "flat_tilted", source: "coordinates", obstacles: [] },
-} as unknown as Project;
-
-describe("the demo's card", () => {
-  test("before the demo has run here: the name and the roof's words of the document, no numbers", () => {
-    expect(demoCardOf(DEMO, null)).toEqual({ name: "Pune demo roof", roofWords: "90.0 × 40.0 m flat roof, tilted rows", facts: null });
+describe("the head and the search", () => {
+  test("the board's words", () => {
+    expect(HOME).toEqual({
+      title: "Rooftop PV design",
+      line: "Outline a roof on the map. The app lays out the modules, the shade, the strings and the energy of a year.",
+      placeholder: "Address or coordinates",
+      find: "Find the roof",
+    });
   });
 
-  test("once the demo has run here: the capacity and the energy of that run, as the vitals say them", () => {
-    expect(demoCardOf(DEMO, { dcKwp: 357.28, energyMwh: 617.8405373922709 })).toEqual({
-      name: "Pune demo roof",
-      roofWords: "90.0 × 40.0 m flat roof, tilted rows",
-      facts: { capacity: { number: "357.28", unit: "kWp" }, energy: { number: "617.8", unit: "MWh" } },
-    });
+  test("the placeholder is short enough never to be cut beside the button (V2-05)", () => {
+    expect(HOME.placeholder.length).toBeLessThanOrEqual(24);
+  });
+
+  test("the other ways in, as links under the search", () => {
+    expect(WAYS_IN.map((way) => [way.id, way.words])).toEqual([
+      ["locate", "Use my location"],
+      ["hand", "Enter the roof by hand"],
+      ["import", "Import a drawing"],
+      ["open", "Open a project file"],
+    ]);
   });
 });
 
-describe("the words of On this device", () => {
-  test("none kept: where the designs appear, and where they are kept", () => {
-    expect(onThisDeviceWordsOf(0)).toBe(`${APPEAR_HERE} ${KEPT_HERE}`);
-    expect(onThisDeviceWordsOf(0)).toBe("Designs you save appear here. Your designs are kept on this device.");
+describe("the order of the page", () => {
+  test("without designs on this device: the demo after the search", () => {
+    expect(sectionsOf(0)).toEqual(["demo"]);
   });
 
-  test("some kept: where they are kept, alone; the cards say the rest", () => {
-    expect(onThisDeviceWordsOf(1)).toBe(KEPT_HERE);
-    expect(onThisDeviceWordsOf(3)).toBe("Your designs are kept on this device.");
+  test("with designs: the designs first, then the demo", () => {
+    expect(sectionsOf(1)).toEqual(["designs", "demo"]);
+    expect(sectionsOf(3)).toEqual(["designs", "demo"]);
   });
 
-  test("never claims that nothing leaves the browser: a run uses the server (#168)", () => {
-    expect(onThisDeviceWordsOf(0)).not.toMatch(/leaves|browser|export/);
-    expect(onThisDeviceWordsOf(2)).not.toMatch(/leaves|browser|export/);
+  test("the designs' head counts them", () => {
+    expect(designsHeadOf(1)).toEqual({ title: "Your designs · on this device", count: "1 design" });
+    expect(designsHeadOf(3)).toEqual({ title: "Your designs · on this device", count: "3 designs" });
+  });
+});
+
+describe("the demo", () => {
+  test("one line of what it is and Open the demo; no figures (V2-09)", () => {
+    expect(DEMO).toEqual({
+      title: "Try the demo",
+      line: "A finished design on a 90 × 40 m roof in Pune, to look around before you start your own.",
+      action: "Open the demo",
+    });
   });
 });

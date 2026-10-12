@@ -40,7 +40,7 @@
 
 - Sentence case everywhere, and nothing in uppercase by style (D94).
 - Plain words. Say what happens: "Kept clear", "Positions not used", "Energy was not updated".
-- Buttons say what they do: "Build this roof", "Find my roof", "Download PDF". Not "OK", not "Submit".
+- Buttons say what they do: "Build this roof", "Find the roof", "Download PDF". Not "OK", not "Submit".
 - A note says what is wrong and what to do: "Voc coefficient -0.164 %/°C is outside the usual -0.35 to
   -0.20 %/°C. Check the datasheet."
 - The engine's user-facing sentences are kept word for word (`plan/reference/functional-inventory.md`, 2.8).

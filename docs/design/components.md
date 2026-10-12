@@ -766,18 +766,18 @@ In code: `EquipmentPicker` (`components/studio`) with `ModulePicker` and `Invert
 parts: the catalog's types and its fetch, the filters, the search, the sorting, the scale of the AC power, the makers.
 
 ## Home
-The boards "Home" (desktop, approved in round 1), "Home · tablet 834" and "Home · phone 390" (plan phase 10, step 11,
-decision 5). Outside the shell: no top bar; the logo and the name at the top left on every size (`Logo` with
-`wordmark="always"`), 72 high (56 on phone), the page's padding 64 on desktop, 24 on tablet, 16 on phone. The headline in
-`type-display` ("Find your roof." and "Design it in 3D." on two lines; `type-title` on phone), the subtitle in `type-body-touch`
-(`text-body-touch` on phone), text-2. The search is Find's own `Search` in its look `hero`: a well of 76 (`color-well`,
-border `line-strong`, `radius-bar`, `shadow-well`; the accent line and the halo with the focus inside) with the primary
-action "Find my roof" inside it at the right, 56 high (`xl`), an arrow after the label; on phone the well is 56 high and
-the action stands under it, as wide as the well, 48 high. "Find my roof" is a link to `/find` while nothing is typed, so
-that it leads there by itself; with words typed it searches them and the places found come under the well as in Find;
-coordinates or a maps link typed, or a place taken from the list, lead to `/find?at=<lat>,<lon>` (and `&place=<label>` for
-a place found by words, so that the design is named after it, D49), where Find begins as if the place had just been found
-there: the map at roof zoom, "Outline the roof".
+V2 · 9 (D105; the board "V2 · 9 · Handover and Home"; audit V2-03, V2-05, V2-14, V2-115): a start screen. Outside the
+shell: a header of 56 (60 on tablet) on `chrome` with a `line-subtle` line under it, the logo with its name from tablet up
+(`Logo wordmark="from-tablet"`) and Docs at the right. The page: a column of 960 at the middle on desktop, 64 from the
+header; the page's padding on tablet and phone. "Rooftop PV design" in `type-title` (`type-title-touch` on touch), one line
+of what the app does under it in text-2. The search is Find's own `Search` in its look `hero`: a well of 56 (`color-well`,
+border `line-strong`, `radius-row`, `shadow-well`; the accent line and the halo with the focus inside), its words "Address
+or coordinates", never cut; "Find the roof", the primary, 56 high, beside it from tablet up and under it on phone, as wide
+as the well. "Find the roof" is a link to `/find` while nothing is typed; with words typed it searches them and the places
+found come under the well as in Find; coordinates or a maps link typed, or a place taken from the list, lead to
+`/find?at=<lat>,<lon>` (and `&place=<label>` for a place found by words, D49). Under the search the other ways in as links
+in `type-strong` with an icon of 16: Use my location (the search's own), Enter the roof by hand (`/find?by=hand`, Find opened
+on its by-hand entry), Import a drawing, Open a project file (their dialogs).
 
 What the search reads (the board "UI fixes · Coordinates in the search", D68; Home, Find and Import a drawing alike):
 decimal degrees with a minus or the letters of the compass; degrees, minutes and seconds as Google Earth copies them, with
@@ -794,65 +794,40 @@ address search is not available right now. Paste coordinates or a maps link inst
 Beside the search (the boards "UI fixes · My location and Search on every size", D78): on Find, one place at the field's
 right, on every size: before anything is typed, Use my location, the square of 48 (`surface-1`, border `line`,
 `radius-card-s`, `shadow-float`; its tooltip "Use my location" on desktop); with something typed, Search, primary, 48 high,
-which does what Enter does; once a place is found, nothing. On Home the well holds Use my location, a quiet icon of 44,
-before Find my roof, while nothing is typed. In code: `besideTheField` in `lib/places/beside-the-field.ts`.
+which does what Enter does; once a place is found, nothing. On Home Use my location is a link under the search (V2 · 9). In
+code: `besideTheField` in `lib/places/beside-the-field.ts`.
 
-Under the search two rows of 76 (`surface-1`, border `line`, `radius-bar`,
-an icon of 22, the title in `text-title`, a line in `type-body` text-2): "Import a drawing" ("KMZ, KML or DXF with the
-roof and its obstacles") opens the dialog of the import, "Open a project" ("A saved .rtd file, from this device or a
-colleague") the dialog of the project file; both are buttons.
+With designs on this device, "Your designs · on this device" comes first under the search, its count at the right ("2
+designs"), the cards under it (below), and the search with its links stays at the top as the page scrolls (sticky, on the
+ground). Then "Try the demo" (`surface-1`, border `line`, `radius-card`, padding 20): its title in `type-section`, "A
+finished design on a 90 × 40 m roof in Pune, to look around before you start your own." in text-2, and Open the demo, a
+secondary button; no figures (audit V2-09). Open the demo asks the flow for the demo and leads to the Studio's last step.
+Without designs the demo stands under the search. Home shows the toasts of the app (a design that could not be opened, a
+file that could not be downloaded) in its own `Toaster`.
 
-The demo's card (`surface-1`, border `line`, `radius-card`, `shadow-card`, padding 18 by 22): "Demo project" in
-`type-body`, the name in `text-title`, the roof's words in `type-body` (the name and the roof of `GET /demo`, the words
-by `roofWordsOf`, as every card says a roof), then Capacity and Energy, year 1 as stat cells, and "Open the demo", a
-secondary button of 44 with an arrow. The capacity and the energy are the engine's numbers of the untouched demo's run on
-this device, remembered under one key of localStorage when that run lands (`lib/device/demo-run.ts`); until the demo has run
-here they are absent and "Capacity and energy come with the run in the Studio" stands in their place (decision 5: nothing
-is typed). Open the demo hands the demo document to the flow, which opens it without a second request, and leads to the
-Studio's last step: one press from a cold start. While the demo is on its way the card holds skeletons; a demo that does not
-come says the API's words in the card. On phone the card is stacked: the words, the two numbers side by side, the button as
-wide as the card.
+In code: `Home`, `DemoCard`, `OnThisDevice` (`components/home`); `lib/home/home-view.ts` holds the words and the order
+(`sectionsOf`, `designsHeadOf`); `lib/routes.ts` the addresses of Find (`pathOfFind`, `placeOfFindAddress`, `FIND_BY_HAND`).
 
-"On this device": the label in `text-section` text-3, then "Designs you save appear here. Your designs are kept on
-this device." while nothing is kept, "Your designs are kept on this device." once something is, then the cards
-(below). On desktop the section stands at the foot at the left and the demo's card at the right while nothing is kept;
-with cards, the demo's card stands at the right over the section, which takes the width. The 3D illustration of the board
-(`HomeIllustration`, the board's own markup, its colours the tokens `--color-scene-*` and `--color-module-*` that mirror the
-3D palette) stands at the right on desktop behind nothing, as a strip under the subtitle fading into the ground on tablet,
-and not at all on phone. Home shows the toasts of the app (a design that could not be opened, a copy that could not be
-saved) in its own `Toaster`.
-
-In code: `Home`, `DemoCard`, `OnThisDevice`, `HomeIllustration` (`components/home`); `lib/home/home-view.ts` holds the
-pure parts (the demo's card from the document and the remembered run, the words of the section); `lib/routes.ts` the address
-of Find with a place (`pathOfFind`, `placeOfFindAddress`).
-
-## Design card (Home, "On this device")
-The board "Home, designs on this device" (plan phase 10, steps 12 and 13, decisions 6 and 7). A card of the compact kind
-(`surface-1`, border `line`, `radius-card`, `shadow-card`, padding `space-card-compact`), three in a row on desktop, two on
-tablet, one on phone. Its tile is the thumbnail: the plan of the kept layout as an SVG of 320 by 180 in its own units
-(`lib/device/thumbnail.ts`, drawn with the maths of the plan without WebGL: the roof on `surface-2` with the accent line,
-the setback dashed, the kept-clear areas, the obstacles in text-2, the modules in `data-gain`, north up, 3 m of ground
-about the roof), kept with the design and written again when a layout lands; a record kept before there were thumbnails
-shows the plan of its roof alone. Under the tile the name in `text-title`, the roof's words in `type-body` text-2, the
-capacity and the energy of year 1 as stat cells, or in their place what they wait for ("Waiting for a system voltage"
-before one is chosen, "Not run yet" after; never a figure), and "Edited …" in `type-body` text-3 ("Edited just now",
-"Edited 2 hours ago", "Edited yesterday", "Edited 24 Sep 2026"; `whenOf`, against the time the saving store last made its
-list). The tile and the name are buttons that open the design: it opens from the device and runs again, in the Studio at
-its last lens. A menu button of 32 (an `IconButton` "Menu", the icon `more`) stands at the top right of the tile; its list
-is the switcher's: rows of 44 (52 on touch) with an icon of 18 and a fact at the right, 240 wide, its right edge in line
-with the button's (a bottom sheet on phone and tablet): Open, Rename, Duplicate, Save a copy (.rtd), Delete. Rename turns
-the name into the text field in place (the name's rules: trimmed, 200 at most, an empty name refused with "A name is
-needed" under the field), Enter or leaving the field commits, Escape gives the name back; the committed name is the
-design's on the device and, for the open design, an edit of the document. Duplicate keeps "Copy of <name>" under a new id
-and opens it at once. Save a copy asks the API for the project file of that design's document as it is and saves it under
-the API's name; a failure is a toast with Try again. Delete asks in a dialog with the board's question word for word
-("Delete <name>?", "It is kept on this device alone."), Cancel with the focus so that Enter by mistake does no harm, Delete
-the primary action; the open design deleted stays open, not kept any more, and its next edit keeps it anew.
+## Design card (Home, "Your designs · on this device")
+V2 · 9 (D105; audit V2-36, V2-60, V2-62). A card (`surface-1`, border `line`, `radius-card`, no shadow), three in a row on
+desktop, two on tablet, one on phone. Its tile across the top, a `line` under it, is the thumbnail: the plan of the kept
+layout as an SVG of 320 by 180 in its own units (`lib/device/thumbnail.ts`), kept with the design and written again when a
+layout lands; a record kept before there were thumbnails shows the plan of its roof alone. Under the tile, padded 16: the
+name in `type-strong` with the menu button of 32 beside it (an `IconButton` "Menu", the icon `more`), the roof's words in
+text-2, the figures of its last run ("613.6 MWh a year · 357.28 kWp", `lib/device/card-figures.ts`; none before a run,
+never 0), and "Edited …" in `type-unit` text-3 (`whenOf`). The tile and the name open the design: it opens from the device
+and runs again, in the Studio at its last step. The menu, rows of 44 with an icon of 18, 240 wide: Open, Rename,
+Duplicate, Download the project file, Delete (`CARD_MENU`). Rename turns the name into the text field in place (trimmed,
+200 at most, an empty name refused with "A name is needed"); Enter or leaving commits, Escape gives the name back.
+Duplicate keeps "Copy of <name>" under a new id and opens it. Download the project file asks the API for that design's
+.rtd and saves it; a failure is a toast with Try again. Delete asks in a dialog ("Delete <name>?", "It is kept on this
+device alone."), Cancel with the focus, Delete the primary action. The project switcher lists the same designs in the
+card's words, the open one once, as This design.
 
 In code: `DesignCard` and `OnThisDevice` (`components/home`); `lib/home/cards.ts` holds the pure parts (the cards, the
-newest edited first; the copy's name; the question); the saving store does `rename` and `remove`, `keepAndOpen` the copy,
-the downloads store `saveACopyOf`; the menu's rows and keys are `components/ui/list-look.ts` (`MENU_ROW`) and
-`components/ui/menu-keys.ts`, shared with the project switcher.
+newest edited first; `CARD_MENU`; the copy's name; the question); the saving store does `rename` and `remove`,
+`keepAndOpen` the copy, the downloads store `saveACopyOf`; the menu's rows and keys are `components/ui/list-look.ts`
+(`MENU_ROW`) and `components/ui/menu-keys.ts`, shared with the project switcher.
 
 ## Deliverable row (Handover)
 V2 · 9 (D105): the files in four groups by who they are for (For the client, For the utility, For the installer, For
@@ -1154,14 +1129,12 @@ In code: `NotesDrawer`, and `NotesPanel` for what is seen of it; the notes are m
 ## Project switcher, open
 The trigger is on `surface-2` with a border `line`, its chevron turned. Panel: 340 wide, `surface-1`, border
 `line-strong`, radius `radius-card-s`, `shadow-float`, padding 6.
-"This design": the name with a tick in accent, and under it the state of saving. "On this device": the designs
-kept here, the newest edited first, each a row of 44 like the actions' (a file icon of 18 in text-2, the name, and
-under it in `type-body`, text-3, the capacity of its last run, "357.28 kWp", or the roof's words before a
-run with a chosen option, "90.0 × 40.0 m flat roof, tilted rows": under the name, not at its right, since the
-names and the roof's words are long and the panel is 340); the design that is open has the tick in accent
-in the place of the icon. Without any, "Designs you save appear here." Then the actions, rows of 44 with an icon
-of 18 in text-2 and a fact at the right in `type-body`, text-3: New design (Find the roof), Open a project
-(.rtd), Import a drawing (KMZ, KML, DXF), Save a copy (.rtd), Home. Sections are divided by a line `line`; their
+"This design": the name with a tick in accent, and under it the state of saving. "On this device": the other designs
+kept here, the newest edited first (the open one is listed once, as This design; V2 · 9), each a row of 44 like the
+actions' (a file icon of 18 in text-2, the name, and under it in `type-body`, text-3, the card's figures, "613.6 MWh a year ·
+357.28 kWp", or the roof's words before a run with a chosen option). Without any, "Designs you save appear here." Then the
+actions, rows of 44 with an icon of 18 in text-2 and a fact at the right in `type-body`, text-3: New design (Find the roof),
+Open a project file (.rtd), Import a drawing (KMZ, KML, DXF), Download the project file (.rtd), Home. Sections are divided by a line `line`; their
 labels are `text-section`.
 On phone and tablet it is a bottom sheet.
 
@@ -1171,12 +1144,12 @@ made by `rowsOnTheDeviceOf` (`components/shell/switcher-view.ts`) of the designs
 - The designs on this device and the actions are each a `menu`: the arrows go through the rows of the menu the
   key is pressed in, Home and End to its ends. Open, the focus is on the first row of the panel. A design's row
   pressed closes the switcher and opens that design from the device, which runs again as the demo does (Phase
-  10, step 5); the open one says so to a screen reader (`aria-current`). A name or a fact too long for the row
+  10, step 5). A name or a fact too long for the row
   is cut with an ellipsis.
 - A row whose doing is not given (the kit's) is shown and cannot be used (`aria-disabled`, opacity
-  `opacity-disabled`). It takes the focus, so that it is found. Open a project opens its dialog (Phase 10, step 9).
-  Import a drawing opens its dialog (Phase 5, step 13). Save a copy downloads the project file, the `.rtd` the API
-  writes, named after the design (Phase 9, step 8); it needs no chosen option and no run.
+  `opacity-disabled`). It takes the focus, so that it is found. Open a project file opens its dialog (Phase 10, step 9).
+  Import a drawing opens its dialog (Phase 5, step 13). Download the project file downloads the `.rtd` the API writes,
+  named after the design (Phase 9, step 8); it needs no chosen option and no run.
 - "This design" carries a quiet Rename (a pencil of 18) that turns the name into the text field; a commit edits the
   document's name, Escape gives it back (Phase 9, decision 13).
 - The icons of the rows have the stroke of the navigation, 1.7; the board draws 1.8.

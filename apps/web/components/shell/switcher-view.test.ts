@@ -25,19 +25,20 @@ describe("the rows on this device", () => {
     expect(rowsOnTheDeviceOf([], null)).toEqual([]);
   });
 
-  test("the newest edited first, the open one marked, the fact the capacity or the roof's words", () => {
+  test("the newest edited first; the open design is listed once, as This design, not here (V2 · 9, audit V2-36)", () => {
     expect(rowsOnTheDeviceOf([DEMO, HINJEWADI, WAREHOUSE], "a")).toEqual([
-      { id: "b", name: "Hinjewadi Phase 2, Pune, Maharashtra", fact: "90.0 × 40.0 m flat roof, tilted rows", isOpen: false },
-      { id: "a", name: "Pune demo roof", fact: "357.28 kWp", isOpen: true },
-      { id: "c", name: "Warehouse 7, Block B", fact: "120.0 × 45.0 m flat roof, east-west", isOpen: false },
+      { id: "b", name: "Hinjewadi Phase 2, Pune, Maharashtra", fact: "90.0 × 40.0 m flat roof, tilted rows" },
+      { id: "c", name: "Warehouse 7, Block B", fact: "120.0 × 45.0 m flat roof, east-west" },
     ]);
   });
 
-  test("the capacity is shown as the vitals show it: two decimals, a comma between thousands", () => {
-    expect(rowsOnTheDeviceOf([kept("d", "Big", 1, { dcKwp: 1234.5 })], null)[0]!.fact).toBe("1,234.50 kWp");
+  test("the fact is the card's on Home: the energy and the capacity once it has run, else the roof's words", () => {
+    expect(rowsOnTheDeviceOf([DEMO, HINJEWADI], "b")).toEqual([{ id: "a", name: "Pune demo roof", fact: "617.8 MWh a year · 357.28 kWp" }]);
+    expect(rowsOnTheDeviceOf([kept("d", "Big", 1, { dcKwp: 1234.5, energyMwh: 2000 })], null)[0]!.fact).toBe("2,000.0 MWh a year · 1,234.50 kWp");
   });
 
-  test("no design is open, or the open one is not kept: none is marked", () => {
-    expect(rowsOnTheDeviceOf([DEMO], null).map((row) => row.isOpen)).toEqual([false]);
+  test("no design is open, or the open one is not kept: every design is listed", () => {
+    expect(rowsOnTheDeviceOf([DEMO], null).map((row) => row.id)).toEqual(["a"]);
+    expect(rowsOnTheDeviceOf([DEMO], "zz").map((row) => row.id)).toEqual(["a"]);
   });
 });

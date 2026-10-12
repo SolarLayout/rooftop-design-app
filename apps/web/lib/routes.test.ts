@@ -9,6 +9,8 @@ import {
   LENSES,
   pathOfItem,
   pathOfFind,
+  FIND_BY_HAND,
+  isByHandAsked,
   pathOfLens,
   placeOfFindAddress,
   pathOfWorkspace,
@@ -113,6 +115,12 @@ describe("the workspaces", () => {
 });
 
 describe("the address of Find", () => {
+  test("Enter the roof by hand from Home (V2 · 9): Find opens on its by-hand column", () => {
+    expect(FIND_BY_HAND).toBe("/find?by=hand");
+    expect(isByHandAsked(new URLSearchParams("by=hand"))).toBe(true);
+    expect(isByHandAsked(new URLSearchParams("at=18.52%2C73.86"))).toBe(false);
+  });
+
   test("without a place it is /find", () => {
     expect(pathOfFind()).toBe("/find");
     expect(pathOfFind(null)).toBe("/find");
