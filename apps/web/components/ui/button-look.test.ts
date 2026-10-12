@@ -65,3 +65,18 @@ describe("the heights of a button", () => {
     }
   });
 });
+
+describe("every target is 44 × 44 on touch (V2 · 10, D106; audit V2-116)", () => {
+  const touchOf = (look: string) => classesOf(look).filter((name) => /^(h|size)-/.test(name));
+  const isTouch = (name: string) => name === "h-touch" || name === "size-touch" || name === "h-12";
+
+  test("each size of button is at least 44 high on touch", () => {
+    for (const size of ["xs", "s", "m", "l", "xl", "sheet"] as const) {
+      for (const kind of ["primary", "secondary", "quiet"] as const) expect([size, kind, touchOf(buttonLook(kind, size)).some(isTouch)]).toEqual([size, kind, true]);
+    }
+  });
+
+  test("each size of icon button is 44 square on touch", () => {
+    for (const size of ["xs", "s", "m", "l"] as const) expect([size, touchOf(iconButtonLook("quiet", size, "square"))]).toEqual([size, ["size-touch"]]);
+  });
+});

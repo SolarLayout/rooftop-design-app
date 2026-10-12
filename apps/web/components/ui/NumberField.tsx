@@ -117,20 +117,17 @@ export function NumberField({ label, value, onCommit, range, unit, labelInside =
   return (
     <div className={className}>
       <div className="flex min-h-10 items-center justify-between gap-row">
-        {detail ? (
-          <span className="flex min-w-0 flex-col gap-0.5">
-            <label id={names.label} htmlFor={id} className="text-text">
-              {label}
-            </label>
+        {/* The label, its hint and the room up to the well are one target that focuses the input (V2 · 10, audit V2-116). */}
+        <label htmlFor={id} className="flex min-h-touch min-w-0 grow cursor-text flex-col justify-center gap-0.5 desktop:min-h-10">
+          <span id={names.label} className="text-text">
+            {label}
+          </span>
+          {detail ? (
             <span id={names.detail} className="type-body-touch desktop:type-body text-text-3">
               {detail}
             </span>
-          </span>
-        ) : (
-          <label id={names.label} htmlFor={id} className="text-text">
-            {label}
-          </label>
-        )}
+          ) : null}
+        </label>
         <label
           data-testid="well"
           data-shown-as={shownAs}

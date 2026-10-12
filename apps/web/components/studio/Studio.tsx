@@ -29,7 +29,8 @@ import { firstOpenLinesOf, showsFirstOpenOf } from "./first-open";
 import { StepHead } from "./StepHead";
 import { stepHeadOf } from "./step-heads";
 import { usePanel } from "./use-panel";
-import { useShareUnder } from "@/components/shell/use-share-under";
+import { usePhoneSheet } from "@/components/shell/use-phone-sheet";
+import { measures } from "@/components/ui/measures";
 import { useNoStringsFit } from "./use-no-strings-fit";
 import { withVoltageChosen } from "@/lib/studio/voltage-choice";
 
@@ -39,7 +40,7 @@ type Props = { lens: Lens };
  * The step's one primary, named for the next step (D95), and under it "Next:" with the next step's line until that step
  * has been opened once (D96).
  */
-function Primary({ lens, isFloating = false }: { lens: Lens; isFloating?: boolean }) {
+function Primary({ lens, isFloating = false, withLine = true }: { lens: Lens; isFloating?: boolean; withLine?: boolean }) {
   const { seen } = useProgressionOfTheShell();
   const { project } = useStores();
   const noStringsFit = useNoStringsFit();
@@ -61,7 +62,7 @@ function Primary({ lens, isFloating = false }: { lens: Lens; isFloating?: boolea
   }
   return (
     <div className={layout}>
-      {seen.includes(next) ? null : <p className="type-body-touch text-text-2 desktop:type-body">{nextLineOf(name as "Array")}</p>}
+      {seen.includes(next) || !withLine ? null : <p className="type-body-touch text-text-2 desktop:type-body">{nextLineOf(name as "Array")}</p>}
       {/* On tablet the primary stands at the right of its line; on phone and desktop the column's width. */}
       <ButtonLink kind="primary" size="xl" icon="arrow-right" href={pathOfStep(next)} className="w-full flex-row-reverse tablet:ml-auto tablet:w-auto desktop:w-full" data-testid="step-primary">
         Continue to {name}
@@ -87,8 +88,8 @@ export function Studio({ lens }: Props) {
   const [stop, setStop] = useState<Stop>("half");
   const room = useRef<HTMLDivElement>(null);
   const stage = useRef<HTMLElement>(null);
-  // On phone the sheet at half meets the foot of the stage, on a phone of any height.
-  const half = useShareUnder(room, stage, size === "phone");
+  // On phone the sheet holds the step at every stop (V2 · 10): the stage takes what the sheet leaves of the room.
+  const shares = usePhoneSheet(room, size === "phone");
   const project = useProject(projectOf);
   const head = project ? stepHeadOf(lens, project.roof.source) : null;
   const chip = resultChipOf(vitals);
@@ -118,8 +119,12 @@ export function Studio({ lens }: Props) {
 
   return (
     <div ref={room} className="relative flex min-h-0 grow flex-col desktop:flex-row">
-      <main ref={stage} className="relative flex shrink-0 flex-col desktop:min-w-0 desktop:shrink desktop:grow">
-        <Stage lens={lens} name={isSunView ? `${name} · Sun` : name} className="h-stage-phone shrink-0 tablet:h-110 desktop:h-auto desktop:grow" />
+      <main
+        ref={stage}
+        className={classNames("relative flex shrink-0 flex-col desktop:min-w-0 desktop:shrink desktop:grow", shares && "h-span sheet-motion")}
+        style={measures(shares ? { span: 1 - shares[stop] } : {})}
+      >
+        <Stage lens={lens} name={isSunView ? `${name} · Sun` : name} className={classNames("shrink-0 tablet:h-110 desktop:h-auto desktop:grow", shares ? "h-full" : "h-stage-phone")} />
         {/* On tablet the result is a row under the stage, the modules and their power at its right; on desktop and phone it is in the top bar (D95). */}
         <div className="hidden items-center justify-between gap-4 border-b border-line-subtle px-5 py-2 tablet:flex desktop:hidden">
           <ResultChip chip={chip} summary={summaryOf(vitals)} onOpenNotes={open} onTryAgain={tryAgain} />
@@ -152,11 +157,10 @@ export function Studio({ lens }: Props) {
       </aside>
 
       <div className="tablet:hidden">
-        <Sheet label="Work column" stop={stop} onStop={setStop} half={half}>
-          <div className="flex flex-col gap-6 px-4 pt-4 pb-6">
-            {size === "phone" ? inspector : null}
-            <Primary lens={lens} />
-          </div>
+        {/* The step's primary is pinned at the sheet's foot, at every stop (V2 · 10). */}
+        {/* On phone the foot holds the button alone, as the board draws it: the step's instruction stays in sight at peek. */}
+        <Sheet label="Work column" stop={stop} onStop={setStop} shares={shares} foot={<Primary lens={lens} withLine={false} />}>
+          <div className="flex flex-col gap-6 px-4 pt-2 pb-6">{size === "phone" ? inspector : null}</div>
         </Sheet>
       </div>
     </div>

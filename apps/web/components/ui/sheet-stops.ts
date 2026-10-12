@@ -31,6 +31,32 @@ export function shareUnder(room: number, above: number): number | null {
   return Math.min(1, Math.max(0, (room - above) / room));
 }
 
+/** The share of the room the sheet takes at each stop, from 0 to 1. */
+export type Shares = Record<Stop, number>;
+
+/** At half the stage keeps this share of the phone's height (V2 · 10, D106). */
+const STAGE_AT_HALF = 0.4;
+/** At full a strip of the roof this high stays above the sheet, so that what is changed is still seen. */
+const STRIP_AT_FULL = 120;
+
+/**
+ * The stops of a step's sheet on a phone `screen` high, in a room `room` high (between the top bar and the tab bar), whose
+ * peek shows `peek` of it (its handle, the step's instruction and its primary): at half the stage above keeps 40 % of the
+ * screen; at full a strip of 120 of the roof stays. The stops never cross; before the room is measured the sheet takes it.
+ */
+export function sharesOnPhone(screen: number, room: number, peek: number): Shares {
+  if (room <= 0) return { peek: 1, half: 1, full: 1 };
+  const full = Math.min(room, Math.max(peek, room - STRIP_AT_FULL));
+  const half = Math.min(full, Math.max(peek, room - Math.round(screen * STAGE_AT_HALF)));
+  const lowest = Math.min(peek, full);
+  return { peek: lowest / room, half: half / room, full: full / room };
+}
+
+/** The heights of the stops in a room `room` high, for a sheet that takes these shares of it. */
+export function heightsOfShares(room: number, shares: Shares): Heights {
+  return { peek: Math.round(shares.peek * room), half: Math.round(shares.half * room), full: Math.round(shares.full * room) };
+}
+
 /** How high the sheet is while it is dragged: it follows the pointer, between peek and full. */
 export function heightAfterDrag(heightAtStart: number, pointerAtStart: number, pointer: number, heights: Heights): number {
   return Math.min(heights.full, Math.max(heights.peek, heightAtStart + pointerAtStart - pointer));

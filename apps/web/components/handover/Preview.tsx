@@ -3,7 +3,6 @@ import { NoOptionsCard } from "@/components/shell/NoOptionsCard";
 import { FailedRow } from "@/components/shell/UnderTheTitle";
 import { Button } from "@/components/ui/Button";
 import { classNames } from "@/components/ui/class-names";
-import { IconButton } from "@/components/ui/IconButton";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { Skeleton } from "@/components/ui/Skeleton";
 import type { Deliverable } from "@/lib/flow/deliverables/items";
@@ -30,7 +29,7 @@ type Props = {
   children: ReactNode;
 };
 
-const HEAD = "flex items-center gap-3";
+const HEAD = "flex flex-wrap items-center gap-3 tablet:flex-nowrap";
 const FACTS = "type-body-touch desktop:type-body text-text-2";
 
 /**
@@ -47,7 +46,8 @@ export function Preview({ row, view, onTryAgain, onAction, isOnItsWay = false, a
   return (
     <>
       <div className={HEAD}>
-        <div className="flex min-w-0 grow flex-col gap-0.5">
+        {/* On phone the presses stand on a line of their own under the name and its line. */}
+        <div className="flex min-w-0 grow basis-full flex-col gap-0.5 tablet:basis-0">
           <h2 className="type-title-touch tablet:type-heading">{row.name}</h2>
           {row.about === null ? (
             <Skeleton kind="text" className="my-1 w-44" />
@@ -74,21 +74,12 @@ export function Preview({ row, view, onTryAgain, onAction, isOnItsWay = false, a
         ) : null}
         {/* The file's own Download, a secondary press: Download all is the page's one primary (V2 · 9). */}
         <div data-testid="preview-action" className="flex shrink-0 items-center gap-2">
-          <span className="flex tablet:hidden">
-            {isOnItsWay ? (
-              <Button size="l" aria-label={row.action} aria-disabled="true" className="w-touch px-0">
-                <ProgressRing size={16} />
-              </Button>
-            ) : (
-              <IconButton size="l" icon="download" label={row.action} aria-disabled={disabled} onClick={canAct ? onAction : undefined} />
-            )}
-          </span>
-          <span className="hidden tablet:flex">
-            <Button icon={isOnItsWay ? undefined : "download"} aria-disabled={disabled} onClick={canAct ? onAction : undefined}>
-              {isOnItsWay ? <ProgressRing size={16} /> : null}
-              {row.action}
-            </Button>
-          </span>
+          {/* With its word on every size (V2 · 10, audit V2-102); on phone "Download" alone, the format is in the head. */}
+          <Button icon={isOnItsWay ? undefined : "download"} aria-label={row.action} aria-disabled={disabled} onClick={canAct ? onAction : undefined}>
+            {isOnItsWay ? <ProgressRing size={16} /> : null}
+            <span className="tablet:hidden">Download</span>
+            <span className="hidden tablet:inline">{row.action}</span>
+          </Button>
         </div>
       </div>
       {view.failed ? <FailedRow failed={view.failed} onTryAgain={onTryAgain} /> : null}

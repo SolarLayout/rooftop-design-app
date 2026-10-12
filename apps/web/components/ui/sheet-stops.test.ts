@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { heightAfterDrag, heightsOf, shareUnder, stopAfterDrag, stopAfterKey, stopAfterRelease, valueOf, wordsOf } from "./sheet-stops";
+import { heightAfterDrag, heightsOf, heightsOfShares, shareUnder, sharesOnPhone, stopAfterDrag, stopAfterKey, stopAfterRelease, valueOf, wordsOf } from "./sheet-stops";
 
 // The room of the Studio on a phone of 390 by 844: what is between the top bar and the tab bar.
 const ROOM = 716;
@@ -143,5 +143,36 @@ describe("what the handle says", () => {
     expect(wordsOf("peek")).toBe("Closed");
     expect(wordsOf("half")).toBe("Half open");
     expect(wordsOf("full")).toBe("Open");
+  });
+});
+
+describe("sharesOnPhone: the sheet of a step on phone (V2 · 10, D106; audit V2-75)", () => {
+  // A phone of 390 by 844: the room between the top bar and the tab bar is 716; the sheet at peek shows its handle, the
+  // step's instruction and its primary, 156.
+  test("peek: the roof has the screen; half: the stage keeps 40 % of the height; full: a strip of 120 of the roof", () => {
+    const shares = sharesOnPhone(844, 716, 156);
+    expect(shares.peek * 716).toBeCloseTo(156, 6);
+    expect(716 - shares.half * 716).toBeCloseTo(338, 6);
+    expect(716 - shares.full * 716).toBeCloseTo(120, 6);
+  });
+
+  test("a taller phone keeps 40 % of its own height at half", () => {
+    const shares = sharesOnPhone(932, 804, 156);
+    expect(804 - shares.half * 804).toBeCloseTo(373, 6);
+  });
+
+  test("a short room: the stops never cross, peek the lowest, full the highest", () => {
+    const shares = sharesOnPhone(500, 300, 156);
+    expect(shares.peek).toBeLessThanOrEqual(shares.half);
+    expect(shares.half).toBeLessThanOrEqual(shares.full);
+    expect(shares.full).toBeLessThanOrEqual(1);
+  });
+
+  test("a room not measured yet: the sheet takes it all at every stop", () => {
+    expect(sharesOnPhone(844, 0, 156)).toEqual({ peek: 1, half: 1, full: 1 });
+  });
+
+  test("the heights of the shares in a room, for a drag", () => {
+    expect(heightsOfShares(716, { peek: 0.25, half: 0.5, full: 1 })).toEqual({ peek: 179, half: 358, full: 716 });
   });
 });

@@ -3,7 +3,7 @@
 import { useId, type ReactNode } from "react";
 import { classNames } from "./class-names";
 import { measures } from "./measures";
-import { valueOf, wordsOf, type Stop } from "./sheet-stops";
+import { valueOf, wordsOf, type Shares, type Stop } from "./sheet-stops";
 import { useSheetDrag } from "./use-sheet-drag";
 
 type Props = {
@@ -13,6 +13,8 @@ type Props = {
   onStop: (stop: Stop) => void;
   /** The share of the room the sheet takes at half, from 0 to 1; half the room when it is not given. */
   half?: number;
+  /** The share of the room the sheet takes at every stop (a step's sheet on phone, V2 · 10); over `half` when given. */
+  shares?: Shares;
   children: ReactNode;
   /** What stands pinned under what scrolls, at every stop: a step's primary (Find's Build, V2 · 4). */
   foot?: ReactNode;
@@ -28,13 +30,13 @@ const HEIGHT: Record<Stop, string> = {
 /**
  * The bottom sheet of the phone. It stands at the bottom of the room it is put into, which is the
  * nearest element that is placed (`relative`), and has three stops: peek, half the room (or the share
- * given), all of it.
+ * given), all of it; or the shares given for each (a step's sheet on phone, V2 · 10: `sharesOnPhone`).
  */
-export function Sheet({ label, stop, onStop, half, children, foot, className }: Props) {
+export function Sheet({ label, stop, onStop, half, shares, children, foot, className }: Props) {
   const content = useId();
-  const drag = useSheetDrag(stop, onStop, half);
+  const drag = useSheetDrag(stop, onStop, half, shares);
   const isDragged = drag.share !== null;
-  const span = drag.share ?? (stop === "half" ? half : undefined);
+  const span = drag.share ?? (shares ? shares[stop] : stop === "half" ? half : undefined);
 
   return (
     <section
@@ -42,7 +44,7 @@ export function Sheet({ label, stop, onStop, half, children, foot, className }: 
       aria-label={label}
       className={classNames(
         "absolute inset-x-0 bottom-0 z-sheet flex max-h-full flex-col rounded-t-panel border-t border-line bg-chrome",
-        isDragged ? "h-span" : classNames("sheet-motion", span === undefined ? HEIGHT[stop] : "h-span min-h-sheet-peek"),
+        isDragged ? "h-span" : classNames("sheet-motion", span === undefined ? HEIGHT[stop] : shares ? "h-span" : "h-span min-h-sheet-peek"),
         className,
       )}
       style={measures(span === undefined ? {} : { span })}

@@ -420,6 +420,7 @@ and the file equal.
 | `DIM_TOWARD_STAGE` | `55` | Percent that the glass of every other position is mixed toward the stage's colour while a string is traced or selected (decision 13 of plan/phase-07-plan.md) |
 | `MARKER_RADIUS` | `4` | Pixels: the marker of a point under the pointer is 8 across |
 | `MARKER_RING` | `2` | Pixels of the ring in the surface colour around a marker, so that it stays legible on the line |
+| `SHEET_PEEK_OF_A_STEP` | `156` | Pixels the sheet of a step shows of itself at peek on phone (V2 · 10): its handle, the step's instruction and its primary |
 | `SAVE_DEBOUNCE` | `600` | Milliseconds after the last committed edit before the design is written to the device: edits shortly after each other are one write, and "Saving" is seen for the write, not for every keystroke (decision 3 of plan/phase-10-plan.md) |
 
 ## Layers

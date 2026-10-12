@@ -292,13 +292,18 @@ stand, as the board "Obstacle edited on the roof" draws it: the handles and the 
 ## Bottom sheet (phone)
 `color-chrome`, top radius `radius-panel`, top border `line`, drag handle 40 by 4 in `line-strong`, 8 over it
 and 4 under it. Holds the step's sections and its primary as a list of rows 64 to 68 high divided by
-`line-subtle`. Three stops: peek, half, full.
+`line-subtle`. Three stops: peek, half, full. What stands in `foot` is pinned under what scrolls, at every stop.
 
 In code: `Sheet`; its stops in `sheet-stops.ts`. It stands at the bottom of the room it is put into.
 
 - Peek is `size-sheet-peek` high: the handle and the top of the step. Half is half the room, full all of it.
-  A sheet may be given another share of the room for half: the Studio's sheet at half meets the foot of the stage on
-  a phone of any height (the boards draw it so at 844; #148, the owner's choice of 2026-10-08), the stage staying 252.
+  A sheet may be given another share of the room for half (Find's on tablet meets the foot of the map), or its share at
+  every stop (`shares`).
+- A step's sheet on phone (V2 · 10, D106; the Studio's and Find's; `sharesOnPhone`, `usePhoneSheet`) holds the step at
+  every stop, its primary pinned at its foot (the button alone, the "Next:" line left to the larger sizes): at peek
+  `SHEET_PEEK_OF_A_STEP` (156: the handle, the step's instruction, the primary) and the roof has the rest of the screen;
+  at half the stage keeps 40 % of the phone's height (338 of 844); at full a strip of 120 of the roof stays. The stage
+  takes what the sheet leaves of the room, at each stop.
 - The sheet follows a drag of its handle. Let go, it goes to the nearest stop, and to the next one in the
   direction of the drag when the drag went a quarter of the way there. It goes in `duration-panel`.
 - A press on the handle opens the sheet one stop further, and closes it from full.
