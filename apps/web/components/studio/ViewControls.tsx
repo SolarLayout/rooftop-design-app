@@ -119,7 +119,7 @@ function Layers() {
           <div className="flex min-h-12 items-center gap-3 px-2.5 pt-0.5 pb-1.5 desktop:min-h-11">
             <div className="flex min-w-0 grow flex-col gap-0.5">
               <span>{SATELLITE_IMAGERY}</span>
-              <span className="type-caption text-text-3">{OFF_THE_PLAIN_GRID}</span>
+              <span className="type-body-touch desktop:type-body text-text-3">{OFF_THE_PLAIN_GRID}</span>
             </div>
             <Switch label={SATELLITE_IMAGERY} on={ground === "imagery"} onChange={(on) => view.getState().setGround(on ? "imagery" : "plain")} />
           </div>

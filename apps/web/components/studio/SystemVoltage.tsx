@@ -31,25 +31,25 @@ export function SystemVoltage({ voltage, words, onChoose }: Props) {
         <SectionHeading id={heading} help="studio.section.system-voltage" value={voltage === null ? undefined : String(voltage)} mark={words?.who}>
           System voltage
         </SectionHeading>
-        {words ? <span className="ml-auto type-caption text-text-3">{words.who}</span> : null}
+        {words ? <span className="ml-auto type-body-touch desktop:type-body text-text-3">{words.who}</span> : null}
       </div>
       <Segmented label="System voltage" fill options={VOLTAGE_OPTIONS} value={voltage === null ? null : (String(voltage) as `${Volts}`)} onChange={(value) => onChoose(Number(value) as Volts)} />
-      {words?.line ? <p className="type-caption text-text-2">{words.line}</p> : null}
-      {words?.limit ? <p className="type-caption text-text-2">{words.limit}</p> : null}
+      {words?.line ? <p className="type-body-touch desktop:type-body text-text-2">{words.line}</p> : null}
+      {words?.limit ? <p className="type-body-touch desktop:type-body text-text-2">{words.limit}</p> : null}
       {words?.note ? (
-        <div data-testid="voltage-note" className="flex items-start gap-2.5 rounded-row border border-note-line bg-surface-1 px-4 py-3 type-small">
+        <div data-testid="voltage-note" className="flex items-start gap-2.5 rounded-row border border-note-line bg-surface-1 px-4 py-3 type-body-touch desktop:type-body">
           <StatusMark kind="note" label="Sized to the equipment" wordsShown={false} size={16} />
           <span className="flex grow flex-col gap-2">
             <span className="flex flex-col gap-0.5">
               <span className="font-medium">{words.note.title}</span>
-              <span className="type-caption text-text-2">{words.note.detail}</span>
+              <span className="type-body-touch desktop:type-body text-text-2">{words.note.detail}</span>
             </span>
             {words.note.use !== null ? <UseButton volts={words.note.use} onChoose={onChoose} className="self-start" /> : null}
           </span>
         </div>
       ) : null}
       {words?.offer ? (
-        <div data-testid="voltage-offer" className="flex items-center gap-3 type-caption text-text-2">
+        <div data-testid="voltage-offer" className="flex items-center gap-3 type-body-touch desktop:type-body text-text-2">
           <span className="grow">{words.offer.words}</span>
           <UseButton volts={words.offer.use} onChoose={onChoose} />
         </div>

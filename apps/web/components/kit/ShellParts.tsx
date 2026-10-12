@@ -22,7 +22,7 @@ function Wide({ name, caption, children }: { name: string; caption: string; chil
   return (
     <div data-testid={`kit-${name}`} className="flex w-full min-w-0 flex-col gap-1.5">
       {children}
-      <span className="type-caption text-text-2">{caption}</span>
+      <span className="type-body-touch desktop:type-body text-text-2">{caption}</span>
     </div>
   );
 }

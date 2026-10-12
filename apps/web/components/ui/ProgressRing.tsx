@@ -52,7 +52,7 @@ export function ProgressRing({ size = 16, share, label, numberShown = false, cla
   return (
     <span className={classNames("relative inline-flex shrink-0 items-center justify-center", SIDE[size], className)}>
       <span className="absolute inset-0 flex">{ring}</span>
-      <span aria-hidden="true" className="type-tick font-medium">
+      <span aria-hidden="true" className="type-unit font-medium">
         {percentOf(share)}
       </span>
     </span>

@@ -21,7 +21,7 @@ const SWATCH = "size-2.5 rounded-swatch";
 /** Gain, loss, and that the boxed values are the user's to change. */
 function Legend() {
   return (
-    <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 type-caption text-text-2 tablet:ml-auto">
+    <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 type-body-touch desktop:type-body text-text-2 tablet:ml-auto">
       <li className="flex items-center gap-1.5">
         <span aria-hidden="true" className={classNames(SWATCH, "bg-data-gain")} />
         Gain
@@ -53,7 +53,7 @@ export function LossChain({ view, isDimmed, className }: Props) {
   return (
     <section data-testid="loss-chain" aria-labelledby={heading} className={classNames(CARD, className)}>
       <div className="flex flex-col gap-1.5 tablet:flex-row tablet:items-center tablet:gap-4">
-        <h2 id={heading} className="type-title">
+        <h2 id={heading} className="type-section">
           From sunlight to the grid
         </h2>
         <Legend />

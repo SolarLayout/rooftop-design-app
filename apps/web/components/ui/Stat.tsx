@@ -18,33 +18,33 @@ const FRAME: Record<StatLook, string> = {
 };
 
 const LABEL: Record<StatLook, string> = {
-  cell: "type-caption",
-  lead: "type-caption",
-  tile: "type-caption",
-  hero: "type-small tablet:type-body-touch desktop:type-body",
-  figure: "type-small tablet:type-body-touch desktop:type-body",
-  scene: "type-small",
-  "scene-small": "type-small",
+  cell: "type-body-touch desktop:type-body",
+  lead: "type-body-touch desktop:type-body",
+  tile: "type-body-touch desktop:type-body",
+  hero: "type-body-touch desktop:type-body",
+  figure: "type-body-touch desktop:type-body",
+  scene: "type-body-touch desktop:type-body",
+  "scene-small": "type-body-touch desktop:type-body",
 };
 
 const VALUE: Record<StatLook, string> = {
-  cell: "type-value tablet:type-value-l desktop:type-value",
-  lead: "type-number-vital-touch tablet:type-number-vital",
-  tile: "type-value",
-  hero: "type-number-hero",
-  figure: "type-number-vital tablet:type-number-tile",
-  scene: "type-number-scene-touch desktop:type-number-scene",
-  "scene-small": "type-number-vital-touch",
+  cell: "type-mono-touch desktop:type-mono",
+  lead: "type-figure-touch",
+  tile: "type-mono-touch desktop:type-mono",
+  hero: "type-display-touch desktop:type-display",
+  figure: "type-figure-touch desktop:type-figure",
+  scene: "type-figure-touch desktop:type-figure",
+  "scene-small": "type-figure-touch desktop:type-figure",
 };
 
 const UNIT: Record<StatLook, string> = {
-  cell: "type-caption",
-  lead: "type-caption tablet:type-small",
-  tile: "type-caption",
-  hero: "type-unit-hero",
-  figure: "type-small tablet:type-body",
-  scene: "type-body-touch desktop:type-title",
-  "scene-small": "type-small",
+  cell: "type-body-touch desktop:type-body",
+  lead: "type-body-touch desktop:type-body",
+  tile: "type-body-touch desktop:type-body",
+  hero: "type-heading",
+  figure: "type-body-touch desktop:type-body",
+  scene: "type-body-touch desktop:type-section",
+  "scene-small": "type-body-touch desktop:type-body",
 };
 
 type Props = Omit<ComponentProps<"div">, "children"> & {
@@ -88,7 +88,7 @@ export function Stat({ label, value, holds, unit, more, mark, dimmed = false, be
         </span>
         {beside}
         {more ? <span className={classNames("hidden text-text-2 tablet:inline", UNIT[look])}>· {more}</span> : null}
-        {more ? <span className="basis-full type-caption text-text-2 tablet:hidden">{more}</span> : null}
+        {more ? <span className="basis-full type-body-touch desktop:type-body text-text-2 tablet:hidden">{more}</span> : null}
       </dd>
     </div>
   );

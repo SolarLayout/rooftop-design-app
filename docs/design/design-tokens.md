@@ -59,7 +59,6 @@ theme (`:root`).
 | `--color-accent-ink` | `#1A1204` | Text and icons on accent (10.1:1) |
 | `--color-note-surface` | `#1E1A10` | Background of a note or of a selected card |
 | `--color-note-line` | `#3A3220` | Border of a note |
-| `--color-heading` | `#FFB020` | A section's heading in an input panel (the inspectors, Find's panels), in the primary action's orange; weight 600 |
 | `--color-ok` | `#3DD6A0` | Tick, saved dot, feasible band |
 | `--color-sun-core` | `#FFD36B` | The middle of the sun's marker over the stage: the 3D palette's `sunCore`, round the accent's disc |
 | `--color-outline-fill` | `rgba(255,176,32,.09)` | The fill of the outline on the map: accent at 9 % |
@@ -211,63 +210,54 @@ machine. Licence of all three: SIL Open Font License 1.1.
 
 ### Type styles
 
-Each style is one utility, `type-` and its name (`type-page`, `type-value`). It sets family, weight, size, line
-height and tracking together.
+V2 (D94): six sizes (12, 14, 16, 20, 26, 36) and two display sizes (48, 64) in nine styles, at most eight on a screen;
+14 the floor for reading on desktop and 15 on touch, 12 for a unit, a tick or a badge alone; mono in tables and fields
+alone; no uppercase. Each style is one utility, `type-` and its name (`type-title`, `type-body`); a `-touch` style is
+the same on phone and tablet (`type-body-touch desktop:type-body`). It sets family, weight, size, line height and
+tracking together.
 
 | Token | Family | Weight | Size | Line height | Tracking | Use |
 |---|---|---|---|---|---|---|
-| `--text-hero` | `--font-display` | `600` | `72px` | `74px` | `-0.035em` | Home headline |
-| `--text-number-hero` | `--font-display` | `600` | `76px` | `80px` | `-0.03em` | Energy on Performance |
-| `--text-unit-hero` | `--font-sans` | `400` | `22px` | `28px` | `0` | The unit beside the energy on Performance |
-| `--text-page` | `--font-display` | `600` | `30px` | `36px` | `-0.02em` | Page title |
-| `--text-lens` | `--font-display` | `600` | `26px` | `32px` | `-0.02em` | Lens title, panel title |
-| `--text-lens-touch` | `--font-display` | `600` | `22px` | `28px` | `-0.02em` | Lens title, panel title on phone |
-| `--text-brand` | `--font-display` | `600` | `17px` | `20px` | `-0.01em` | The name of the product in the top bar |
-| `--text-number-scene` | `--font-display` | `600` | `44px` | `48px` | `-0.02em` | The lead figure of a scene of Present, on desktop |
-| `--text-number-scene-touch` | `--font-display` | `600` | `40px` | `44px` | `-0.02em` | The lead figure of a scene of Present, on tablet |
-| `--text-number-tile` | `--font-display` | `600` | `34px` | `38px` | `-0.02em` | KPI tiles |
-| `--text-number-vital` | `--font-display` | `600` | `26px` | `30px` | `-0.02em` | Energy in the vitals on desktop and tablet |
-| `--text-number-vital-touch` | `--font-display` | `600` | `22px` | `26px` | `-0.02em` | Energy in the vitals on phone |
-| `--text-title` | `--font-sans` | `600` | `16px` | `20px` | `0` | Card titles |
-| `--text-body` | `--font-sans` | `400` | `14px` | `20px` | `0` | Body on desktop |
-| `--text-body-touch` | `--font-sans` | `400` | `15px` | `20px` | `0` | Body on phone and tablet |
-| `--text-lead` | `--font-sans` | `400` | `18px` | `27px` | `0` | The subtitle under the headline of Home, on tablet and desktop |
-| `--text-small` | `--font-sans` | `400` | `13px` | `20px` | `0` | Secondary lines |
-| `--text-caption` | `--font-sans` | `400` | `12px` | `20px` | `0` | Hints, labels of values, units |
-| `--text-caption-s` | `--font-sans` | `400` | `11px` | `16px` | `0` | The caption of a thumbnail where 12 does not fit (the report's pages on tablet, 72 wide) |
-| `--text-section` | `--font-sans` | `500` | `12px` | `20px` | `0.06em` | Section labels, uppercase: in text-3 on tables and panels; in the input panels a heading, `color-heading` at 600 with the glow `shadow-heading` under its words |
-| `--text-value-l` | `--font-mono` | `500` | `17px` | `20px` | `0` | Values in the vitals on tablet |
-| `--text-value` | `--font-mono` | `500` | `16px` | `20px` | `0` | Values in the vitals on desktop and phone |
-| `--text-value-s` | `--font-mono` | `500` | `15px` | `20px` | `0` | A value beside its label; the choices of a decision card |
-| `--text-value-field` | `--font-mono` | `500` | `14px` | `20px` | `0` | The value inside a field on desktop (`--text-value-s` on touch) |
-| `--text-value-small` | `--font-mono` | `400` | `13px` | `20px` | `0` | Table values, chips, the time of the time control |
-| `--text-value-xs` | `--font-mono` | `400` | `12px` | `20px` | `0` | Coordinates, file names, facts in mono |
-| `--text-tick` | `--font-mono` | `400` | `11px` | `20px` | `0` | Axis ticks, slider ticks, format badges |
-| `--text-label-s` | `--font-sans` | `400` | `11px` | `20px` | `0` | The label under an icon of the lens rail |
+| `--text-display` | `--font-display` | `600` | `64px` | `68px` | `-0.03em` | The one lead number of a page: the energy on Performance |
+| `--text-display-touch` | `--font-display` | `600` | `48px` | `52px` | `-0.03em` | The same on phone and tablet |
+| `--text-figure` | `--font-display` | `600` | `36px` | `40px` | `-0.02em` | A figure a buyer reads: the KPIs, the figure of a scene of Present, the energy in a status |
+| `--text-figure-touch` | `--font-display` | `600` | `26px` | `32px` | `-0.02em` | The same on phone and tablet |
+| `--text-title` | `--font-display` | `600` | `26px` | `32px` | `-0.02em` | Page and lens titles, Home's title |
+| `--text-title-touch` | `--font-display` | `600` | `20px` | `26px` | `-0.02em` | The same on phone and tablet |
+| `--text-heading` | `--font-sans` | `600` | `20px` | `28px` | `0` | The step's question at the head of the work column, a dialog's title, the unit beside the lead number |
+| `--text-section` | `--font-sans` | `600` | `16px` | `24px` | `0` | A section's name, a card's title: sentence case, primary text |
+| `--text-body` | `--font-sans` | `400` | `14px` | `20px` | `0` | Labels, values, facts, prose on desktop (72 characters a line at most) |
+| `--text-body-touch` | `--font-sans` | `400` | `15px` | `22px` | `0` | The same on phone and tablet |
+| `--text-strong` | `--font-sans` | `500` | `14px` | `20px` | `0` | Button labels, a read-out's value, the active item, on desktop |
+| `--text-strong-touch` | `--font-sans` | `500` | `15px` | `22px` | `0` | The same on phone and tablet |
+| `--text-mono` | `--font-mono` | `400` | `14px` | `20px` | `0` | Tables, a field's value, the cable schedule, on desktop. Nowhere else |
+| `--text-mono-touch` | `--font-mono` | `400` | `15px` | `22px` | `0` | The same on phone and tablet |
+| `--text-unit` | `--font-sans` | `400` | `12px` | `16px` | `0` | A unit beside its figure, a chart's tick, a badge, a key in a tooltip |
 
-The line height is 20 px wherever the mockups state none: they set it once, on the page.
-Emphasis inside a style is a weight utility beside it (`type-body font-medium`).
-A unit follows its number in `type-caption`, colour text-2, separated by a space.
-Numbers are set with tabular figures.
+Emphasis inside a text is `type-strong` (500), never a heavier size.
+A unit follows its number in `type-body` or `type-unit`, colour text-2, separated by a space.
+Numbers are set with tabular figures, in Geist; mono is for tables, fields and the cable schedule.
 
 ## Spacing
 
-Base 2 px. Steps in use: 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 56, 64.
+V2 (D94): seven steps on a base of 4: 4, 8, 12, 16, 24, 40, 64. 8 inside a group, 24 between groups, 40 between
+sections. A half step of the utilities (2 px) is for the inside of a control alone.
 
 | Token | Value | Use |
 |---|---|---|
 | `--spacing` | `4px` | The unit of the spacing and size utilities: `gap-2` is 8 px, `h-10` is 40 px, a half step is 2 px |
 | `--space-inline` | `8px` | Icon to label |
 | `--space-field` | `8px` | Between fields in a grid |
-| `--space-row` | `12px` | Between rows in a section |
-| `--space-section` | `22px` | Between sections in the inspector |
+| `--space-row` | `8px` | Inside a group: label to field, row to row |
+| `--space-group` | `24px` | Between groups of a section |
+| `--space-section` | `40px` | Between sections |
 | `--space-card` | `24px` | Card padding |
-| `--space-card-compact` | `14px` | Padding of compact cards |
-| `--space-panel` | `20px` | Inspector padding; inset of floating elements from the stage edge |
+| `--space-card-compact` | `12px` | Padding of compact cards and rows |
+| `--space-panel` | `24px` | The work column's padding on desktop; inset of floating elements from the stage edge |
 | `--space-page-x-phone` | `16px` | Page side padding on phone |
 | `--space-page-x-tablet` | `20px` | Page side padding on tablet |
 | `--space-page-x-desktop` | `40px` | Page side padding on desktop |
-| `--space-page-y` | `28px` | Page top padding |
+| `--space-page-y` | `24px` | Page top padding |
 | `--space-grid` | `16px` | Gap between cards |
 | `--safe-top` | `env(safe-area-inset-top, 0px)` | The safe area at the top: the clock and the notch of an installed app (issue 147) |
 | `--safe-right` | `env(safe-area-inset-right, 0px)` | The safe area at the right: the notch, the phone on its side |
@@ -299,30 +289,26 @@ Base 2 px. Steps in use: 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48,
 | `--columns-vitals` | `1.25fr 1.15fr 0.85fr 0.85fr 1fr 0.8fr 1.25fr 1.55fr` | The columns of the vitals bar on desktop: seven values and the last cell |
 | `--columns-vitals-waiting` | `1fr 1fr 1fr 2.4fr` | The same before there are options: three values and what is waited for |
 | `--columns-p-values-phone` | `1fr 1fr 1.5fr` | The three exceedance values of the lead tile on phone: the last cell, which carries the sigma too, is wider |
-| `--columns-loss-chain` | `210px 84px 64px 232px minmax(0, 1fr)` | A row of the loss chain on desktop: the label, the field where the step is the user's, the change, the track, the running total |
-| `--columns-loss-chain-tablet` | `230px 96px 72px 196px minmax(0, 1fr)` | The same on tablet |
+| `--columns-loss-chain` | `210px 100px 64px 216px minmax(0, 1fr)` | A row of the loss chain on desktop: the label, the field where the step is the user's, the change, the track, the running total |
+| `--columns-loss-chain-tablet` | `220px 112px 72px 190px minmax(0, 1fr)` | The same on tablet |
 | `--columns-loss-chain-phone` | `minmax(0, 1fr) auto auto` | On phone: the field, then the change and the running total at the right; the label over them and the track under them take the width |
 
 Reference widths: 390, 834, 1440.
 
 ## Radius
 
+Four radii and full (D94): inside one another, the inner is the outer less the padding between them. The three
+small ones under them draw marks, not boxes.
+
 | Token | Value | Use |
 |---|---|---|
 | `--radius-swatch` | `3px` | The bars of the loss chain and the swatches of its legend |
 | `--radius-key` | `4px` | The box around a key in a tooltip |
 | `--radius-bar-end` | `4px` | The data end of a bar in a chart; its end on the baseline is square |
-| `--radius-xs` | `6px` | Inputs inside tables and the loss chain, format badges |
-| `--radius-seg` | `7px` | Item inside a segmented control |
-| `--radius-item` | `8px` | Rows of a list that floats, tooltips, the action of a toast |
-| `--radius-seg-touch` | `9px` | The same on phone and tablet |
-| `--radius-chip` | `9px` | A chip of Performance's assumptions: a label with its field |
-| `--radius-control` | `10px` | Buttons, fields, segmented track |
-| `--radius-row` | `12px` | List rows, option cards, stat tiles |
-| `--radius-card-s` | `14px` | Compact cards, floating controls |
-| `--radius-bar` | `16px` | Vitals bar, Home action cards, timeline |
-| `--radius-card` | `18px` | Cards |
-| `--radius-panel` | `22px` | Floating panels, top corners of the bottom sheet |
+| `--radius-control` | `8px` | Buttons, fields, the items of a segmented control, list rows that float, tooltips, badges, inputs in tables |
+| `--radius-row` | `12px` | List rows, option cards, stat tiles, the track of a segmented control, compact cards |
+| `--radius-card` | `16px` | Cards, the bars and timelines that float, Home's cards |
+| `--radius-panel` | `24px` | Floating panels, the top corners of the bottom sheet |
 | `--radius-full` | `9999px` | Pills, switches, round buttons |
 
 ## Lines
@@ -354,7 +340,7 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--shadow-primary` | `inset 0 1px 0 rgba(255,255,255,.45), inset 0 -1px 0 rgba(0,0,0,.18), 0 1px 2px rgba(0,0,0,.5), 0 8px 22px rgba(255,176,32,.24)` | Primary button |
 | `--shadow-primary-pressed` | `inset 0 2px 4px rgba(0,0,0,.3), 0 1px 1px rgba(0,0,0,.5)` | Primary, pressed |
 | `--shadow-help-ring` | `0 0 0 3px rgba(14,18,24,.55), 0 0 14px rgba(255,176,32,.6)` | A how-to's picture: the ring round what to act on (D81), set apart from the picture by a dark rim and glowing in the accent |
-| `--shadow-help-held` | `inset 0 2px 4px rgba(0,0,0,.3), 0 0 0 2px #0E1218, 0 0 0 4px rgba(255,176,32,.45)` | The help's disc held in while its topic is shown (D80): pressed, ringed two away in the accent at 45 % |
+| `--shadow-help-held` | `0 0 0 2px #0E1218, 0 0 0 4px rgba(255,176,32,.45)` | The help's disc while its topic is shown (D80, D94): ringed two away in the accent at 45 % |
 | `--shadow-primary-hover` | `inset 0 1px 0 rgba(255,255,255,.5), inset 0 -1px 0 rgba(0,0,0,.18), 0 2px 4px rgba(0,0,0,.5), 0 12px 30px rgba(255,176,32,.36)` | Primary, hover |
 | `--shadow-segment` | `inset 0 1px 0 rgba(255,255,255,.10), 0 1px 3px rgba(0,0,0,.55)` | Active segment |
 | `--shadow-well` | `inset 0 1px 3px rgba(0,0,0,.65), 0 1px 0 rgba(255,255,255,.04)` | Fields, segmented track |
@@ -370,7 +356,6 @@ Light comes from above. Raised things carry a highlight on their top edge. Field
 | `--shadow-knob` | `0 1px 3px rgba(0,0,0,.5)` | Switch knob |
 | `--shadow-handle` | `0 2px 6px rgba(0,0,0,.6)` | Map and slider handles |
 | `--shadow-text-on-imagery` | `0 1px 3px rgba(0,0,0,.9)` | Under text that stands on the satellite imagery: the scale, the attribution |
-| `--shadow-heading` | `0 4px 6px rgba(255,176,32,.4), 0 6px 14px rgba(255,176,32,.22)` | The faint glow of the heading's orange under a section's heading in an input panel, let down under its words |
 | `--halo-focus` | `0 0 0 3px rgba(255,176,32,.18)` | Focused field (with an accent border) |
 | `--halo-selected` | `0 0 0 3px rgba(255,176,32,.14)` | Selected card (with an accent border) |
 | `--halo-decision` | `0 0 0 4px rgba(255,176,32,.14)` | A choice only the user can make: the decision card (with an accent border) |
@@ -495,12 +480,11 @@ layer of their own.
 | `--duration-panel`, `--ease-out` | `sheet-motion` | on a sheet that goes to its stop |
 | `--duration-panel`, `--ease-out` | `drawer-motion` | on the dialog of a drawer: its panel slides and its dim fades, and it stays until they have left |
 | `--stroke-*` | `stroke-icon`, `stroke-icon-light`, `stroke-tick`; `stroke-chart`, `stroke-hair`, `stroke-wire` | on the `svg` of an icon; on the line, the gridlines and the crosshair of a chart; on the DC lines of the single-line diagram |
-| `--radius-xs` | `rx-xs` | the corners of a box drawn in an `svg`: the single-line diagram |
+| `--radius-control` | `rx-control` | the corners of a box drawn in an `svg`: the single-line diagram |
 | `--safe-*` | `pt-safe-`, `pb-safe-`, `pl-safe-`, `pr-safe-`, `px-safe-`, `top-safe-`, `bottom-safe-`, and `h-safe-` (a height grown by the home bar), each with a step or a name of the spacing: the value and the inset of its edge | `h-safe-tabbar pb-safe-2.5`, `top-safe-3`, `pt-safe-topbar`; the body keeps clear of the sides |
 | `--z-*` | `z-` and the name | `z-float` |
 | `--border-*` | `border-` and the name; `border-b-tab` for the line under a tab | `border-handle-touch desktop:border-handle`, `border-dot`, `border-corner`, `border-outline` |
 | `--shadow-text-on-imagery` | `on-imagery` | on text that stands on the satellite imagery |
-| `--shadow-heading` | `heading-glow` | on a section's heading in an input panel |
 | `--x`, `--y`, `--turn` (numbers of the data, set with `measures()`) | `placed`, `turned` | a label of the stage where its point of the scene falls; the needle of the north control |
 
 Tailwind's own palette, sizes of type, radii and shadows do not exist in this app: a utility that is not made

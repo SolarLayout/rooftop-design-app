@@ -11,7 +11,7 @@ import { projectOf } from "@/lib/stores/project-store";
 import { designOf } from "@/lib/stores/results-store";
 import { SIZING_RANGES, sizingFieldsOf, sizingRowOf, withSizing, type SizingField } from "@/lib/studio/sizing-fields";
 
-const ROW = "flex h-11 w-full cursor-pointer items-center gap-2.5 px-3 text-left type-small focus-ring";
+const ROW = "flex h-11 w-full cursor-pointer items-center gap-2.5 px-3 text-left type-body-touch desktop:type-body focus-ring";
 
 /** A field with its default beside it, the press that gives it back, and the engine's note on it. */
 function Field({ field, onCommit }: { field: SizingField; onCommit: (value: number | null) => void }) {
@@ -24,7 +24,7 @@ function Field({ field, onCommit }: { field: SizingField; onCommit: (value: numb
         </Button>
       ) : null}
       {field.note ? (
-        <p data-testid="voc-note" className="flex items-start gap-2 rounded-row border border-note-line bg-note-surface px-3 py-2.5 type-caption text-text">
+        <p data-testid="voc-note" className="flex items-start gap-2 rounded-row border border-note-line bg-note-surface px-3 py-2.5 type-body-touch desktop:type-body text-text">
           <StatusMark kind="note" label="Note" wordsShown={false} size={16} />
           {field.note}
         </p>
@@ -52,7 +52,7 @@ export function SizingTemperatures() {
     <section aria-label="Sizing temperatures" className={classNames("rounded-row border border-line bg-surface-1", isOpen ? "shadow-card" : "shadow-row")}>
       <button type="button" aria-expanded={isOpen} aria-controls={body} className={ROW} onClick={() => setOpen(!isOpen)}>
         <span className={classNames("grow", isOpen ? "font-medium text-text" : "text-text-2")}>Sizing temperatures</span>
-        {row ? <span className="type-value-xs whitespace-nowrap">{row}</span> : null}
+        {row ? <span className="type-body-touch desktop:type-body whitespace-nowrap">{row}</span> : null}
         <Icon name={isOpen ? "chevron-down" : "chevron-right"} size={16} />
       </button>
       {isOpen ? (

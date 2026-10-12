@@ -28,7 +28,7 @@ const GRID_M = 10;
 /** The extent the scale is worked out for at least, in metres: a small roof is not blown up. */
 const EXTENT_MIN_M = 20;
 
-const LABEL = "placed z-stage-overlay -translate-x-1/2 -translate-y-1/2 rounded-seg bg-ground px-2.25 py-0.75 type-value-small font-medium text-text shadow-tooltip select-none";
+const LABEL = "placed z-stage-overlay -translate-x-1/2 -translate-y-1/2 rounded-control bg-ground px-2.25 py-0.75 type-mono-touch desktop:type-mono font-medium text-text shadow-tooltip select-none";
 
 /**
  * The stage without a map: the plan of the roof entered by hand, north up on a grid of 10 m, with its
@@ -61,7 +61,7 @@ export function PlanView({ corners, reason, className }: Props) {
       {drawn && drawn.points.length < 3 ? (
         <p className="absolute inset-x-10 top-1/2 flex -translate-y-1/2 flex-col items-center gap-1.5 text-center text-text-2">
           <span className="font-medium text-text">The plan of the roof is drawn here</span>
-          <span className="type-small">Enter its length and width, or its corners.</span>
+          <span className="type-body-touch desktop:type-body">Enter its length and width, or its corners.</span>
         </p>
       ) : null}
       <span aria-hidden="true" className="absolute top-safe-21 right-5 flex size-touch items-center justify-center rounded-row border border-line bg-surface-1 shadow-float desktop:top-safe-5 desktop:right-find-stage-inset desktop:mr-5">
@@ -70,14 +70,14 @@ export function PlanView({ corners, reason, className }: Props) {
       <div className="pointer-events-none absolute bottom-7 left-5 flex flex-col gap-2 text-text desktop:bottom-safe-7">
         {drawn?.scale ? (
           <div data-testid="plan-scale" className="flex flex-col gap-0.75">
-            <code className="type-value-xs">{drawn.scale.label}</code>
+            <code className="type-body-touch desktop:type-body">{drawn.scale.label}</code>
             <div className="w-31">
               <div className="h-1.25 w-span border-x border-b border-text" style={measures({ span: drawn.scale.widthPx / SCALE_BAR_MAX })} />
             </div>
           </div>
         ) : null}
         {reason ? (
-          <p role="status" className="flex items-center gap-2 type-small text-text-2">
+          <p role="status" className="flex items-center gap-2 type-body-touch desktop:type-body text-text-2">
             <StatusMark kind="note" label="Note" wordsShown={false} size={16} />
             {reason}
           </p>

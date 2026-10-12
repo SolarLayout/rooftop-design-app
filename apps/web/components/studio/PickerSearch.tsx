@@ -25,7 +25,7 @@ export function PickerSearch({ value, onChange, className }: Props) {
         className={classNames("grow type-body-touch desktop:type-body", INPUT_WORDS)}
       />
       {value ? (
-        <button type="button" aria-label="Clear the search" onClick={() => onChange("")} className="flex cursor-pointer rounded-xs text-text-2 hovered:text-text focus-ring">
+        <button type="button" aria-label="Clear the search" onClick={() => onChange("")} className="flex cursor-pointer rounded-control text-text-2 hovered:text-text focus-ring">
           <Icon name="close" size={16} />
         </button>
       ) : null}

@@ -20,7 +20,7 @@ const CARD = classNames(
   "flex min-h-13 w-full cursor-pointer items-center gap-3 rounded-row border border-line bg-control px-3.5 py-2.5 text-left shadow-raised press-motion focus-ring",
   "hovered:raised-by-hover hovered:shadow-raised-hover pressed:lowered-by-press",
 );
-const EXAMPLE = "flex h-11 w-full cursor-pointer items-center gap-3 rounded-item px-2.5 text-left focus-ring hovered:bg-surface-2 desktop:h-9";
+const EXAMPLE = "flex h-11 w-full cursor-pointer items-center gap-3 rounded-control px-2.5 text-left focus-ring hovered:bg-surface-2 desktop:h-9";
 // The steps to come are numbered in the marks of the help's steps, quiet; the one in hand is lit.
 const MARK_TO_COME = "bg-surface-2 text-text-2 shadow-none";
 
@@ -38,7 +38,7 @@ export function FirstStep({ panel, onWay, onExample, className }: Props) {
               <Icon name={ICONS[way]} size={18} className="shrink-0 text-accent" />
               <span className="flex grow flex-col">
                 <span className="font-medium">{title}</span>
-                <span className="type-caption text-text-2">{words}</span>
+                <span className="type-body-touch desktop:type-body text-text-2">{words}</span>
               </span>
               <Icon name="chevron-right" size={16} className="shrink-0 text-text-3" />
             </button>
@@ -53,13 +53,13 @@ export function FirstStep({ panel, onWay, onExample, className }: Props) {
             {EXAMPLES.map((example) => (
               <li key={example.what}>
                 <button type="button" aria-label={`${example.what}: ${example.shown}`} onClick={() => onExample(example.text)} className={EXAMPLE}>
-                  <span className="w-22 shrink-0 type-small text-text-2">{example.what}</span>
-                  <code className="min-w-0 truncate type-value-small text-text">{example.shown}</code>
+                  <span className="w-22 shrink-0 type-body-touch desktop:type-body text-text-2">{example.what}</span>
+                  <code className="min-w-0 truncate type-mono-touch desktop:type-mono text-text">{example.shown}</code>
                 </button>
               </li>
             ))}
           </ul>
-          <p className="type-caption text-text-3">Press one to put it in the search.</p>
+          <p className="type-body-touch desktop:type-body text-text-3">Press one to put it in the search.</p>
         </section>
       ) : null}
 
@@ -69,7 +69,7 @@ export function FirstStep({ panel, onWay, onExample, className }: Props) {
           {panel.steps.map((step, index) => (
             <li key={step.name} aria-current={index === 0 ? "step" : undefined} className="flex items-center gap-3">
               <span className={classNames(MARK, "size-6", index > 0 && MARK_TO_COME)}>{index + 1}</span>
-              <span className="type-small text-text-2">
+              <span className="type-body-touch desktop:type-body text-text-2">
                 <span className="font-medium text-text">{step.name}</span>: {step.words}
               </span>
             </li>

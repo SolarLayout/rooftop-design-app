@@ -49,7 +49,7 @@ export function DialogPanel({ title, children, actions, onClose, names, size = "
     <div data-testid="dialog-panel" className={panelLook(size)}>
       <SheetGrip onClose={onClose} className="tablet:hidden" />
       <div className="flex items-start gap-row">
-        <h2 id={names.title} className="grow type-lens-touch">
+        <h2 id={names.title} className="grow type-title-touch desktop:type-title">
           {title}
         </h2>
         {/* On phone the sheet has its handle, and the first action closes it as well. */}

@@ -26,7 +26,7 @@ export function ObstacleList({ state, on, className }: Props) {
     <section aria-label="Obstacles" className={classNames("flex flex-col gap-2.5", className)}>
       <SectionHeading help="app.section.obstacles">Obstacles · {obstacles.length}</SectionHeading>
       {obstacles.length === 0 ? (
-        <p className="type-small text-text-2">None yet. Draw a box, a tank, a wall or a building with the tools on the map. Each asks its height.</p>
+        <p className="type-body-touch desktop:type-body text-text-2">None yet. Draw a box, a tank, a wall or a building with the tools on the map. Each asks its height.</p>
       ) : (
         <ul className="flex flex-col gap-1.5">
           {obstacles.map((obstacle) => (
@@ -49,7 +49,7 @@ function ObstacleRow({ obstacle, selected, on }: { obstacle: Obstacle; selected:
       >
         <Icon name={ICON_OF_KIND[obstacle.kind]} size={18} className={selected ? "text-accent" : "text-text-2"} />
         <span className="grow truncate font-medium">{obstacle.name}</span>
-        <code className="type-caption whitespace-nowrap text-text-2">{factsOf(obstacle)}</code>
+        <code className="type-body-touch desktop:type-body whitespace-nowrap text-text-2">{factsOf(obstacle)}</code>
       </button>
       <IconButton label={`Remove ${obstacle.name}`} icon="bin" iconSize={16} kind="quiet" size="s" onClick={() => on({ type: "obstacleRemoved", id: obstacle.id })} />
     </li>

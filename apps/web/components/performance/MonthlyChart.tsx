@@ -22,9 +22,9 @@ const TITLE = "Energy to grid by month";
 // Twelve columns with the board's gaps: 10 on desktop, 6 on tablet, 4 on phone, and the plot's padding at the sides.
 const COLUMNS = "grid grid-cols-12 gap-1 px-0.5 tablet:gap-1.5 tablet:px-1 desktop:gap-2.5";
 // The whole column is the target of a bar; it lifts the bar under the pointer and carries its name.
-const HIT = "relative flex h-full min-w-0 cursor-default items-end rounded-xs focus-ring";
+const HIT = "relative flex h-full min-w-0 cursor-default items-end rounded-control focus-ring";
 const BAR = "relative block w-full rounded-t-bar-end bg-data-gain h-span";
-const LABEL = "absolute -inset-x-2.5 -top-4.5 text-center type-tick text-text";
+const LABEL = "absolute -inset-x-2.5 -top-4.5 text-center type-unit text-text";
 const GRIDLINE = "absolute inset-x-0 border-t border-line-subtle";
 
 /**
@@ -144,7 +144,7 @@ export function MonthlyChart({ energy, isDimmed }: Props) {
                 </div>
               </div>
             </div>
-            <div aria-hidden="true" className={classNames(COLUMNS, "text-center type-label-s text-text-2 desktop:type-caption")}>
+            <div aria-hidden="true" className={classNames(COLUMNS, "text-center type-unit text-text-2")}>
               {view.map((bar) => (
                 <span key={bar.month} className="min-w-0 truncate">
                   {bar.month}

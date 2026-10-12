@@ -40,7 +40,7 @@ function withRoof(design: Project, roof: Roof): Project {
 function RoofGlyph({ className }: { className?: string }) {
   return (
     <span aria-hidden="true" className={classNames("flex size-14 shrink-0 items-center justify-center rounded-control bg-surface-2", className)}>
-      <span className="block h-3.5 w-8 rounded-xs border border-accent bg-outline-fill" />
+      <span className="block h-3.5 w-8 rounded-control border border-accent bg-outline-fill" />
     </span>
   );
 }
@@ -49,20 +49,20 @@ function RoofGlyph({ className }: { className?: string }) {
 function CardLines({ card }: { card: RoofCard }) {
   return (
     <span className="flex min-w-0 grow flex-col gap-0.5">
-      <code data-testid="roof-place" className="type-value-xs whitespace-nowrap text-text">
+      <code data-testid="roof-place" className="type-body-touch desktop:type-body whitespace-nowrap text-text">
         {card.place}
       </code>
-      <span data-testid="roof-how" className="type-caption text-text-2">
+      <span data-testid="roof-how" className="type-body-touch desktop:type-body text-text-2">
         {card.how}
       </span>
-      <span data-testid="roof-count" className="type-caption text-text-2">
+      <span data-testid="roof-count" className="type-body-touch desktop:type-body text-text-2">
         {card.count}
       </span>
-      <span data-testid="roof-size" className="type-caption text-text-2">
+      <span data-testid="roof-size" className="type-body-touch desktop:type-body text-text-2">
         {card.size}
       </span>
       {card.file === null ? null : (
-        <code data-testid="roof-file" className="type-value-xs truncate text-text-2">
+        <code data-testid="roof-file" className="type-body-touch desktop:type-body truncate text-text-2">
           {card.file}
         </code>
       )}
@@ -85,7 +85,7 @@ function LocationCard({ card, size }: { card: RoofCard | null; size: Size }) {
     );
   }
   return (
-    <section aria-label="Location and outline" className="flex items-center gap-3.5 rounded-card-s border border-line bg-surface-1 p-card-compact shadow-card">
+    <section aria-label="Location and outline" className="flex items-center gap-3.5 rounded-row border border-line bg-surface-1 p-card-compact shadow-card">
       <RoofGlyph />
       {card ? <CardLines card={card} /> : <Skeleton kind="text" className="w-32" />}
       <ButtonLink href={EDIT_THE_OUTLINE} size="s" className="shrink-0">
@@ -106,7 +106,7 @@ function ReviewNote({ count, onReview }: { count: number; onReview: () => void }
       <div className="flex grow flex-col gap-2">
         <span className="font-medium text-text">{HEIGHTS_SET}</span>
         <div className="flex items-center gap-3">
-          <span className="grow type-caption text-text-2">{toReviewWordsOf(count)}</span>
+          <span className="grow type-body-touch desktop:type-body text-text-2">{toReviewWordsOf(count)}</span>
           <Button kind="primary" size="s" onClick={onReview}>
             Review
           </Button>

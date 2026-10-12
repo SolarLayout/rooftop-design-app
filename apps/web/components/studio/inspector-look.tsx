@@ -34,15 +34,15 @@ export function ReadOut({ label, value, line, children, className }: ReadOutProp
       <div className="flex items-center gap-row">
         <div className="flex min-w-0 grow flex-col gap-0.5">
           <span className="flex items-baseline gap-2">
-            <span className="text-text-2">{label}</span>
+            <span className="text-text">{label}</span>
             {value === null ? null : (
-              <span data-testid="read-out-value" className="type-value desktop:type-value-s">
+              <span data-testid="read-out-value" className="type-mono-touch desktop:type-mono">
                 {value}
               </span>
             )}
           </span>
           {line === null ? null : (
-            <span data-testid="read-out-line" className="type-caption text-text-3">
+            <span data-testid="read-out-line" className="type-body-touch desktop:type-body text-text-3">
               {line}
             </span>
           )}

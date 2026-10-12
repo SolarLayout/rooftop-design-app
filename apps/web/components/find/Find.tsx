@@ -82,7 +82,7 @@ const WORDS: Record<Exclude<Step, "find"> | Exclude<Tool, "corners"> | "hand", {
 // On phone and tablet the panel is a sheet of 384 at the bottom; the map ends above it.
 const STAGE = "absolute inset-x-0 top-0 bottom-safe-96 desktop:bottom-0";
 const OVER_THE_STAGE = "pointer-events-none absolute inset-x-0 top-0 bottom-safe-96 desktop:bottom-0 desktop:right-find-stage-inset";
-const FLOATING_BUTTON = classNames(iconButtonLook("secondary", "l", "square"), "size-12 rounded-card-s bg-surface-1 shadow-float");
+const FLOATING_BUTTON = classNames(iconButtonLook("secondary", "l", "square"), "size-12 rounded-row bg-surface-1 shadow-float");
 
 type Building = { kind: "idle" } | { kind: "building" } | { kind: "failed"; message: string };
 
@@ -357,10 +357,10 @@ export function Find() {
               <div className="flex items-center gap-3">
                 {/* The ? beside the title stands for the toolbar's on phone, which has room for Undo alone (D81). */}
                 <span className="flex items-center gap-1.5">
-                  <h1 className="type-lens-touch desktop:type-lens">{words.title}</h1>
+                  <h1 className="type-title-touch desktop:type-title">{words.title}</h1>
                   {howTo ? <HelpDisc topic={howTo} /> : null}
                 </span>
-                <span className="ml-auto type-small text-text-2 desktop:hidden">Step {["find", "outline", "build"].indexOf(step) + 1} of 3</span>
+                <span className="ml-auto type-body-touch desktop:type-body text-text-2 desktop:hidden">Step {["find", "outline", "build"].indexOf(step) + 1} of 3</span>
               </div>
               <p className="text-text-2">{words.lead}</p>
             </div>
@@ -390,7 +390,7 @@ export function Find() {
                 </section>
                 <div className="mt-auto flex flex-col gap-2.5">
                   {building.kind === "failed" ? (
-                    <p role="status" className="flex items-start gap-2 type-small text-text-2">
+                    <p role="status" className="flex items-start gap-2 type-body-touch desktop:type-body text-text-2">
                       <StatusMark kind="note" label="Note" wordsShown={false} size={16} />
                       {building.message}
                     </p>

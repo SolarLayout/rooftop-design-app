@@ -51,7 +51,7 @@ const NO_LOCATION = "Your location is not available. Allow it in the browser, or
 const MY_LOCATION = "Use my location";
 
 // The floating field takes the accent line while it holds the focus, as every well does (D85).
-const BOX = "flex h-12 min-w-0 items-center gap-3 rounded-card-s border border-line bg-surface-1 px-4 shadow-float focused:border-accent";
+const BOX = "flex h-12 min-w-0 items-center gap-3 rounded-row border border-line bg-surface-1 px-4 shadow-float focused:border-accent";
 const FIELD = "flex h-10 min-w-0 items-center gap-2.5 rounded-control border border-line bg-well px-3 shadow-well";
 // A note may run to two lines (the board "Coordinates in the search"): its mark stays by the first.
 const NOTE = "flex min-h-11 items-start gap-2.5 px-2.5 py-3 text-text-2";
@@ -63,10 +63,10 @@ const NOTE_MARK = "flex shrink-0 pt-0.5";
 // tablet up the form inside the well drops its own, or it would draw a second box.
 const HERO = classNames(
   "relative flex min-w-0 flex-col gap-2.5 tablet:h-19 tablet:flex-row tablet:items-center tablet:gap-3 tablet:pr-2.5 tablet:pl-5",
-  "tablet:rounded-bar tablet:border tablet:border-line-strong tablet:bg-well tablet:shadow-well tablet:focused:border-accent tablet:focused:shadow-well-focus",
+  "tablet:rounded-card tablet:border tablet:border-line-strong tablet:bg-well tablet:shadow-well tablet:focused:border-accent tablet:focused:shadow-well-focus",
 );
 const HERO_FORM = classNames(
-  "relative flex h-14 min-w-0 items-center gap-3 rounded-bar border border-line-strong bg-well px-4 shadow-well focused:border-accent focused:shadow-well-focus",
+  "relative flex h-14 min-w-0 items-center gap-3 rounded-card border border-line-strong bg-well px-4 shadow-well focused:border-accent focused:shadow-well-focus",
   "tablet:static tablet:h-auto tablet:grow tablet:rounded-none tablet:border-0 tablet:bg-transparent tablet:px-0 tablet:shadow-none tablet:focused:shadow-none",
 );
 const HERO_ANCHOR = "pointer-events-none absolute inset-x-0 bottom-0";
@@ -241,7 +241,7 @@ export function Search({ provider, near, onPlace, found, look = "floating", hero
           value={typed}
           onChange={(event) => onType(event.target.value)}
           onKeyDown={onKeyDown}
-          className={classNames("min-w-0 grow truncate border-0 bg-transparent text-text outline-none placeholder:text-text-3", isHero ? "text-(length:--text-title)" : "type-body-touch desktop:type-body")}
+          className={classNames("min-w-0 grow truncate border-0 bg-transparent text-text outline-none placeholder:text-text-3", isHero ? "text-(length:--text-section)" : "type-body-touch desktop:type-body")}
         />
         {state.kind === "searching" ? (
           <ProgressRing size={16} label="Searching" />
@@ -259,7 +259,7 @@ export function Search({ provider, near, onPlace, found, look = "floating", hero
             </button>
           </Tooltip>
         ) : found !== null ? (
-          <span data-testid="found-at" className="hidden max-w-40 truncate type-small text-text-2 tablet:inline">
+          <span data-testid="found-at" className="hidden max-w-40 truncate type-body-touch desktop:type-body text-text-2 tablet:inline">
             {found}
           </span>
         ) : null}
@@ -284,7 +284,7 @@ export function Search({ provider, near, onPlace, found, look = "floating", hero
             aria-label={MY_LOCATION}
             aria-busy={isLocating}
             onClick={useMyLocation}
-            className="flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-card-s border border-line bg-surface-1 text-text shadow-float press-motion focus-ring hovered:bg-control-hover"
+            className="flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-row border border-line bg-surface-1 text-text shadow-float press-motion focus-ring hovered:bg-control-hover"
           >
             {locateMark}
           </button>
@@ -292,7 +292,7 @@ export function Search({ provider, near, onPlace, found, look = "floating", hero
       ) : null}
       {beside === "search" ? (
         // With something typed, the action that Enter is: the words searched, coordinates or a link taken.
-        <Button type="submit" form={formId} kind="primary" className="h-12 shrink-0 rounded-card-s px-4 desktop:h-12 desktop:rounded-card-s">
+        <Button type="submit" form={formId} kind="primary" className="h-12 shrink-0 rounded-row px-4 desktop:h-12 desktop:rounded-row">
           Search
         </Button>
       ) : null}

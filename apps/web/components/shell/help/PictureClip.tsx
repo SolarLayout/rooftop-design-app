@@ -104,7 +104,7 @@ export function PictureClip({ clip, length, poster, alt, width, height, marks }:
             </span>
           )}
           {state === "rest" || state === "loading" ? (
-            <span aria-hidden="true" className="absolute right-2 bottom-2 rounded-xs bg-ground/80 px-2 type-value-xs text-text">
+            <span aria-hidden="true" className="absolute right-2 bottom-2 rounded-control bg-ground/80 px-2 type-unit text-text">
               {length}
             </span>
           ) : null}
@@ -128,7 +128,7 @@ export function PictureClip({ clip, length, poster, alt, width, height, marks }:
           </button>
         ) : null}
       </div>
-      {state === "failed" ? <p className="type-small text-text-3">The clip did not load. The picture shows the step.</p> : null}
+      {state === "failed" ? <p className="type-body-touch desktop:type-body text-text-3">The clip did not load. The picture shows the step.</p> : null}
       {large ? (
         <PictureLarge src={poster} alt={alt} width={width} height={height} marks={null} words={<MarkWords marks={marks} />} clip={clip} once={still} onClose={() => setLarge(false)} />
       ) : null}

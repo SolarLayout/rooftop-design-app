@@ -49,7 +49,7 @@ export function WeatherNote({ message }: { message: string }) {
     <div
       data-testid="weather-failed"
       role="status"
-      className="flex max-w-140 items-start gap-2.5 rounded-control border border-note-line bg-note-surface py-2.5 pr-3 pl-3 type-small text-text-2"
+      className="flex max-w-140 items-start gap-2.5 rounded-control border border-note-line bg-note-surface py-2.5 pr-3 pl-3 type-body-touch desktop:type-body text-text-2"
     >
       <Icon name="note" size={18} className="mt-px shrink-0 text-accent" />
       <span>

@@ -4,7 +4,7 @@
 import type { ComponentProps } from "react";
 
 /** The paper: the page's image stands at its width with its own size, so that nothing jumps while it loads. */
-export const PAPER = "block w-full min-w-0 overflow-hidden rounded-xs bg-paper shadow-panel";
+export const PAPER = "block w-full min-w-0 overflow-hidden rounded-control bg-paper shadow-panel";
 export const PAGE_IMAGE = "block h-auto w-full";
 
 /** The engine's page as the browser's own img: a data URL the API answered, which next/image could neither fetch nor size better. */

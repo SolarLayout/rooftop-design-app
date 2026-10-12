@@ -8,7 +8,7 @@ import { useHelp } from "./HelpProvider";
 // with Show the tips on the map again, which closes the sheet and brings the tips back (on phone, the toolbar's ? is gone:
 // the ? beside the panel's title took its place).
 
-const LINK = "cursor-pointer self-start type-small font-medium text-accent underline decoration-accent/40 underline-offset-2 focus-ring";
+const LINK = "cursor-pointer self-start type-body-touch desktop:type-body font-medium text-accent underline decoration-accent/40 underline-offset-2 focus-ring";
 
 /** A tip's way into the how-to of its move. */
 export function ShowMeHow({ topic }: { topic: HelpKey }) {

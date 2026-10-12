@@ -31,7 +31,7 @@ const LAST_YEAR = 25;
 // The keys that move the year under the focus.
 const STEP: Record<string, number> = { ArrowLeft: -1, ArrowDown: -1, ArrowRight: 1, ArrowUp: 1 };
 
-const PLOT = "absolute inset-0 cursor-crosshair rounded-xs focus-ring";
+const PLOT = "absolute inset-0 cursor-crosshair rounded-control focus-ring";
 
 /**
  * The energy over 25 years (the board "25 years"; plan/phase-08-plan.md, step 14): the degradation as a field of the
@@ -160,8 +160,8 @@ export function YearsChart({ energy, degradation, onDegradation, isDimmed }: Pro
             <div className="grid grid-cols-6 gap-2">
               {labels.map((label, index) => (
                 <div key={label.year} data-testid="year-label" className={classNames("flex min-w-0 flex-col gap-0.5", index === labels.length - 1 && "text-right")}>
-                  <span className="type-caption text-text-2">{label.label}</span>
-                  <span data-testid="year-value" className="type-value-small">
+                  <span className="type-body-touch desktop:type-body text-text-2">{label.label}</span>
+                  <span data-testid="year-value" className="type-mono-touch desktop:type-mono">
                     {label.mwh}
                   </span>
                 </div>

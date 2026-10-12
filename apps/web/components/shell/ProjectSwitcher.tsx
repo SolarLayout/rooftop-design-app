@@ -54,7 +54,7 @@ export function ProjectTrigger({ name, place, open, saving, className, ...rest }
       ) : (
         <span className="min-w-0 truncate font-medium desktop:font-medium">{name}</span>
       )}
-      {place === null ? null : <span className="hidden type-value-xs text-text-3 desktop-wide:inline">{place}</span>}
+      {place === null ? null : <span className="hidden type-body-touch desktop:type-body text-text-3 desktop-wide:inline">{place}</span>}
       <Icon name={open ? "chevron-up" : "chevron-down"} size={16} className="text-text-3" />
     </button>
   );
@@ -78,7 +78,7 @@ const ACTIONS: Action[] = [
   { name: "Docs", icon: "book", docs: true },
 ];
 
-const LABEL = "px-2.5 pt-2 pb-1 type-section text-text-3 uppercase";
+const LABEL = "px-2.5 pt-2 pb-1 type-body text-text-2";
 const DIVIDER = "mx-1 h-px shrink-0 bg-line";
 
 type MenuProps = Pick<Design, "name"> & {
@@ -187,7 +187,7 @@ export function ProjectMenu({ name, saving, onOpenNotes, onImport, onOpenProject
       <span className={DIVIDER} />
       <span className={LABEL}>On this device</span>
       {designs.length === 0 ? (
-        <p className="px-2.5 pt-0.5 pb-2.5 type-small text-text-2">Designs you save appear here.</p>
+        <p className="px-2.5 pt-0.5 pb-2.5 type-body-touch desktop:type-body text-text-2">Designs you save appear here.</p>
       ) : (
         <OnThisDevice designs={designs} onTake={onTake} onOpenDesign={onOpenDesign} />
       )}

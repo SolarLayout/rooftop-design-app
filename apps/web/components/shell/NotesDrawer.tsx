@@ -32,9 +32,9 @@ function NoteRow({ note, onClose, onTryAgain }: { note: Note } & Pick<PanelProps
       </span>
       <span className="flex min-w-0 grow flex-col gap-1">
         <span className="font-medium">{note.title}</span>
-        <span className="type-small text-text-2">{note.reason}</span>
+        <span className="type-body-touch desktop:type-body text-text-2">{note.reason}</span>
         <span className="mt-1.5 flex items-center gap-2.5">
-          <span className="grow type-caption text-text-3">{note.where}</span>
+          <span className="grow type-body-touch desktop:type-body text-text-3">{note.where}</span>
           {action.kind === "open" ? (
             <ButtonLink size="s" href={action.path} onClick={onClose}>
               {action.label}
@@ -62,10 +62,10 @@ export function NotesPanel({ notes, onClose, onTryAgain, titleId }: PanelProps) 
     <div data-testid="notes-panel" data-drawer-panel className={PANEL}>
       <SheetGrip onClose={onClose} className="tablet:hidden" />
       <div className="flex shrink-0 items-center gap-2.5 pt-3 pr-2.5 pb-3 pl-4 tablet:pt-4.5 tablet:pr-3.5 tablet:pl-5">
-        <h2 id={titleId} className="grow type-lens-touch">
+        <h2 id={titleId} className="grow type-title-touch desktop:type-title">
           Notes to review
         </h2>
-        <span data-testid="notes-count" className="type-value-small text-text-2">
+        <span data-testid="notes-count" className="type-mono-touch desktop:type-mono text-text-2">
           {notes.length}
         </span>
         <IconButton data-close kind="quiet" size="s" icon="close" iconSize={18} label="Close" onClick={onClose} />
@@ -76,7 +76,7 @@ export function NotesPanel({ notes, onClose, onTryAgain, titleId }: PanelProps) 
             <Icon name="tick" stroke="tick" size={20} label="Fits" className="text-ok" />
             <span className="flex flex-col gap-0.5">
               <span className="font-medium">Nothing to review</span>
-              <span className="type-small text-text-2">Every check of the design fits.</span>
+              <span className="type-body-touch desktop:type-body text-text-2">Every check of the design fits.</span>
             </span>
           </li>
         ) : (

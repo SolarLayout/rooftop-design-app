@@ -23,7 +23,7 @@ const WORDS: Record<Exclude<Saving, "not-saved">, string> = {
 /** The state of saving in words: what its mark is named, the tooltip of the project switcher (D74). */
 export const SAVING_WORDS: Record<Saving, string> = { ...WORDS, "not-saved": "Not saved" };
 
-const TYPE = { bar: "type-small", menu: "type-caption" };
+const TYPE = { bar: "type-body-touch desktop:type-body", menu: "type-body-touch desktop:type-body" };
 const DOT = "size-1.75 shrink-0 rounded-full";
 
 const NOT_SAVED = classNames(

@@ -39,7 +39,7 @@ export function CadPreview({ files, report, onTryAgain }: Props) {
         ) : report.failed ? (
           <FailedRow failed={report.failed} onTryAgain={onTryAgain} />
         ) : (
-          <div data-testid="plan-skeleton" aria-hidden="true" className="w-full aspect-paper rounded-xs bg-surface-2 breathing" />
+          <div data-testid="plan-skeleton" aria-hidden="true" className="w-full aspect-paper rounded-control bg-surface-2 breathing" />
         )}
       </div>
       <div className="min-w-0 grow">

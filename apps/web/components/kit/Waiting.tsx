@@ -46,7 +46,7 @@ export function Waiting() {
       <Row label="Skeleton: in the place of values that were never there">
         <div className="w-full max-w-97.5">
           <Example name="skeleton-values" caption="A label over its value">
-            <div className="grid h-vitals w-full grid-cols-3 rounded-bar border border-line bg-surface-1">
+            <div className="grid h-vitals w-full grid-cols-3 rounded-card border border-line bg-surface-1">
               {CELLS.map((cell, index) => (
                 <div
                   key={cell.value}

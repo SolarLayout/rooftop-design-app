@@ -15,12 +15,12 @@ type Props = {
   onChange: () => void;
 };
 
-const CARD = "flex flex-col gap-2.5 rounded-card-s border border-line bg-surface-1 p-card-compact shadow-card";
+const CARD = "flex flex-col gap-2.5 rounded-row border border-line bg-surface-1 p-card-compact shadow-card";
 
 /** The module as a drawing: the glass in its frame, in two halves (the boards of the Studio). */
 function ModuleGlyph() {
   return (
-    <span aria-hidden="true" className="flex h-14 w-11 shrink-0 flex-col rounded-xs border border-module-frame bg-module-glass">
+    <span aria-hidden="true" className="flex h-14 w-11 shrink-0 flex-col rounded-control border border-module-frame bg-module-glass">
       <span className="grow" />
       <span className="h-px shrink-0 bg-module-frame" />
       <span className="grow" />
@@ -47,7 +47,7 @@ export function ModuleCard({ shown, onChange }: Props) {
         </div>
         <Skeleton kind="label" className="w-65" />
         <Skeleton kind="label" className="w-75" />
-        <p role="status" className="flex items-center gap-2.5 type-caption text-text-2">
+        <p role="status" className="flex items-center gap-2.5 type-body-touch desktop:type-body text-text-2">
           <ProgressRing size={16} />
           Reading the module with the first run
         </p>
@@ -64,21 +64,21 @@ export function ModuleCard({ shown, onChange }: Props) {
           <span data-testid="module-title" className="font-semibold">
             {card.title}
           </span>
-          <span className="type-caption text-text-2">{card.maker}</span>
-          <span className="type-caption text-text-3">{card.size}</span>
+          <span className="type-body-touch desktop:type-body text-text-2">{card.maker}</span>
+          <span className="type-body-touch desktop:type-body text-text-3">{card.size}</span>
         </div>
       </div>
-      <code className="type-value-xs text-text-2">{card.facts}</code>
-      <p className="flex items-start gap-2 type-caption text-text-2">
+      <code className="type-body-touch desktop:type-body text-text-2">{card.facts}</code>
+      <p className="flex items-start gap-2 type-body-touch desktop:type-body text-text-2">
         {shown.notes.length > 0 ? <StatusMark kind="note" label="Note" wordsShown={false} size={14} className="mt-0.75" /> : null}
         <span>{card.coefficients}</span>
       </p>
       {shown.notes.map((note) => (
-        <p key={note} data-testid="module-note" className="rounded-item border border-note-line bg-note-surface px-2.5 py-2 type-caption text-text-2">
+        <p key={note} data-testid="module-note" className="rounded-control border border-note-line bg-note-surface px-2.5 py-2 type-body-touch desktop:type-body text-text-2">
           {withTrueMinus(note)}
         </p>
       ))}
-      <code data-testid="module-file" className="type-value-xs text-text-3">
+      <code data-testid="module-file" className="type-body-touch desktop:type-body text-text-3">
         {card.file}
       </code>
       <div className="flex justify-end">

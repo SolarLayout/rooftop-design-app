@@ -33,7 +33,7 @@ function Content({ row }: { row: ContentRow }) {
       {row.value === null ? (
         <Skeleton kind="text" className="my-2 w-40" />
       ) : (
-        <span className={classNames("min-w-0 break-words", row.isFileName && "type-value-small text-text")}>{row.value}</span>
+        <span className={classNames("min-w-0 break-words", row.isFileName && "type-mono-touch desktop:type-mono text-text")}>{row.value}</span>
       )}
     </div>
   );
@@ -54,18 +54,18 @@ export function ProjectFilePreview({ document, design, bytes, isWaitingForBytes,
         <TextField label="Name" value={document.name} {...NAME_RULES} onCommit={onRename} onDraft={setDraft} />
         <div className={UNDER_THE_FIELD}>
           <span className="flex items-baseline gap-2.5">
-            <code data-testid="file-name" className="type-value-small font-medium">
+            <code data-testid="file-name" className="type-mono-touch desktop:type-mono font-medium">
               {view.fileName}
             </code>
             {view.size !== null ? (
-              <span data-testid="file-size" className="type-caption text-text-2">
+              <span data-testid="file-size" className="type-body-touch desktop:type-body text-text-2">
                 {view.size}
               </span>
             ) : isWaitingForBytes ? (
               <Skeleton kind="text" className="w-12" />
             ) : null}
           </span>
-          <span className="type-caption text-text-2">{view.format}</span>
+          <span className="type-body-touch desktop:type-body text-text-2">{view.format}</span>
         </div>
       </div>
       <div className="flex flex-col gap-2.5">

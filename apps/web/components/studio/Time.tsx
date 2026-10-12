@@ -117,7 +117,7 @@ export function TimePill({ size, className }: { size: Size; className?: string }
         <span className={classNames(PLAY_LOOK, "size-8")}>
           <Icon name={time.isPlaying ? "pause" : "play"} size={14} stroke="pause" />
         </span>
-        <span className="type-value-xs whitespace-nowrap">{words}</span>
+        <span className="type-body-touch desktop:type-body whitespace-nowrap">{words}</span>
       </button>
     );
   }
@@ -131,9 +131,9 @@ export function TimePill({ size, className }: { size: Size; className?: string }
       className={classNames(PILL, "gap-3 bg-surface-1 pl-1.5", isTablet ? "h-12 pr-3" : "h-11 pr-2", className)}
     >
       <PlayButton time={time} size={isTablet ? "m" : "s"} />
-      <span className={classNames("whitespace-nowrap", isTablet ? "type-value-small" : "type-value-xs")}>{words}</span>
+      <span className={classNames("whitespace-nowrap", isTablet ? "type-mono-touch desktop:type-mono" : "type-body-touch desktop:type-body")}>{words}</span>
       <div className={classNames("shrink-0", isTablet ? "w-50" : "w-45")}>{time.hours ? <TimeSlider time={time} hours={time.hours} /> : null}</div>
-      {isTablet ? null : <span className="pr-2 type-caption text-text-3">solar time</span>}
+      {isTablet ? null : <span className="pr-2 type-body-touch desktop:type-body text-text-3">solar time</span>}
     </div>
   );
 }
@@ -143,8 +143,8 @@ function EndBeside({ tick, align }: { tick: Tick | undefined; align: "start" | "
   if (!tick?.end) return null;
   return (
     <div aria-hidden="true" className={classNames("flex shrink-0 flex-col gap-1", align === "start" ? "items-start" : "items-end")}>
-      <span className="type-value-xs text-text-2">{tick.end.clock}</span>
-      <span className="type-label-s text-text-3">{tick.end.word}</span>
+      <span className="type-body-touch desktop:type-body text-text-2">{tick.end.clock}</span>
+      <span className="type-unit text-text-3">{tick.end.word}</span>
     </div>
   );
 }
@@ -171,12 +171,12 @@ export function SunTimeline({ size, className }: { size: Size; className?: strin
   const clock = (
     <div className="flex shrink-0 flex-col">
       <span className="flex items-baseline gap-1.5">
-        <span data-testid="timeline-time" className="type-lens-touch">
+        <span data-testid="timeline-time" className="type-title-touch desktop:type-title">
           {time.clock}
         </span>
-        {sky ? <span className="type-caption text-text-2">solar time</span> : null}
+        {sky ? <span className="type-body-touch desktop:type-body text-text-2">solar time</span> : null}
       </span>
-      <span className="type-caption text-text-2">{sky ?? "solar time"}</span>
+      <span className="type-body-touch desktop:type-body text-text-2">{sky ?? "solar time"}</span>
     </div>
   );
   const track = time.hours ? (
@@ -196,10 +196,10 @@ export function SunTimeline({ size, className }: { size: Size; className?: strin
           <PlayButton time={time} size="l" />
           {clock}
           {time.window ? (
-            <span className="ml-auto flex items-center gap-2 type-caption text-text-2">
+            <span className="ml-auto flex items-center gap-2 type-body-touch desktop:type-body text-text-2">
               <span aria-hidden="true" className="h-1 w-3 rounded-full bg-accent" />
               Shade-free
-              <span className="type-value-xs text-text">
+              <span className="type-body-touch desktop:type-body text-text">
                 {hourOf(time.window.from)} – {hourOf(time.window.to)}
               </span>
             </span>
@@ -215,7 +215,7 @@ export function SunTimeline({ size, className }: { size: Size; className?: strin
       data-testid="sun-timeline"
       role="group"
       aria-label="Time"
-      className={classNames("flex h-16 items-center rounded-bar border border-line bg-surface-1 pl-2.5 shadow-float", endsBeside ? "gap-3.5 pr-4.5" : "gap-4 pr-5", className)}
+      className={classNames("flex h-16 items-center rounded-card border border-line bg-surface-1 pl-2.5 shadow-float", endsBeside ? "gap-3.5 pr-4.5" : "gap-4 pr-5", className)}
     >
       <PlayButton time={time} size="l" />
       {clock}

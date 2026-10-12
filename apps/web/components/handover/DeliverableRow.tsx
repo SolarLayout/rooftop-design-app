@@ -23,7 +23,7 @@ type Props = {
 // The board's row of 64 (components.md, "Deliverable row"): the badge of 44 by 28, the name, a line of facts, then a
 // download icon for a file or a chevron for a view; on phone every row has the chevron, since every row opens a screen.
 const ROW = classNames(
-  "flex min-h-16 items-center gap-3.5 rounded-card-s border px-3.5 text-left select-none",
+  "flex min-h-16 items-center gap-3.5 rounded-row border px-3.5 text-left select-none",
   "press-motion focus-ring hovered:bg-surface-2",
 );
 const OPEN: Record<Open, string> = {
@@ -31,7 +31,7 @@ const OPEN: Record<Open, string> = {
   here: "border-note-line bg-surface-2",
   beside: "border-transparent bg-transparent tablet:border-note-line tablet:bg-surface-2",
 };
-const BADGE = "flex h-7 w-11 shrink-0 items-center justify-center rounded-xs type-tick font-medium";
+const BADGE = "flex h-7 w-11 shrink-0 items-center justify-center rounded-control type-unit font-medium";
 const BADGE_OPEN: Record<Open, string> = {
   no: "bg-control-active",
   here: "bg-accent text-accent-ink",
@@ -54,7 +54,7 @@ export function DeliverableRow({ row, open, isOnItsWay = false }: Props) {
         {row.facts === null ? (
           <Skeleton kind="text" className="my-1 w-44" />
         ) : (
-          <span data-testid="deliverable-facts" className="type-caption text-text-2">
+          <span data-testid="deliverable-facts" className="type-body-touch desktop:type-body text-text-2">
             {row.facts}
           </span>
         )}

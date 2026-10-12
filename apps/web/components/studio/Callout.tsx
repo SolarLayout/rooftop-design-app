@@ -121,11 +121,11 @@ export function Callout({ stage }: Props) {
           )}
           style={measures({ x: shift })}
         >
-          <span className={classNames("flex items-center gap-2 type-small font-medium text-text", !isPhone && "whitespace-nowrap")}>
+          <span className={classNames("flex items-center gap-2 type-body-touch desktop:type-body font-medium text-text", !isPhone && "whitespace-nowrap")}>
             {words.swatch === undefined ? null : <span aria-hidden="true" className={classNames("block size-3 shrink-0 rounded-key", swatchClassOf(words.swatch))} />}
             {words.title}
           </span>
-          <span className={classNames("text-text-2", !isPhone && "whitespace-nowrap", words.swatch === undefined ? "type-caption" : "type-value-xs")}>{words.detail}</span>
+          <span className={classNames("text-text-2", !isPhone && "whitespace-nowrap", words.swatch === undefined ? "type-body-touch desktop:type-body" : "type-body-touch desktop:type-body")}>{words.detail}</span>
         </div>
       </div>
     </div>

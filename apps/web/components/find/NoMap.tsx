@@ -11,7 +11,7 @@ export function NoMap({ state, onByHand }: Props) {
       <StatusMark kind="note" label="Note" wordsShown={false} size={22} />
       <div className="flex flex-col gap-1">
         <span className="font-medium">{state.title}</span>
-        <span className="type-small text-text-2">{state.reason}</span>
+        <span className="type-body-touch desktop:type-body text-text-2">{state.reason}</span>
       </div>
       <Button onClick={onByHand}>Enter dimensions by hand instead</Button>
     </div>

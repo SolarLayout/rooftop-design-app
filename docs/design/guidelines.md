@@ -19,18 +19,26 @@
 ## Visual language
 
 - Ground is near-black with a cool tone. The roof and the satellite ground are the brightest things on screen.
-- One accent, amber: the sun, the primary action, selection, focus, notes. Do not add a second accent.
+- One accent, amber, on 3 to 5 things a screen (D94): the primary action, the selection, the notes, the focus ring, and
+  the sun on the Sun view. Section headings, help discs, tabs and secondary actions are not in it. No second accent.
 - Depth has three levels: flat (tiles, rows), raised (buttons, cards), floating (anything over the roof or map).
   Light comes from above: raised things have a bright top edge; fields are recessed.
-- Shadows are for depth only. No glow except the soft amber under the primary button and around the sun.
+- Shadows are for depth only. Nothing glows but the primary button and the sun.
 - No gradients as decoration. The only gradients are the vignette of the stage and the sun's glow.
-- Borders are 1 px. Radius grows with size: controls 10, cards 18, panels 22.
+- Borders are 1 px. Four radii (D94): controls 8, rows 12, cards 16, panels 24; inside one another the inner is the
+  outer less the padding.
+- Type on nine styles (D94, `design-tokens.md`): 14 the floor for reading on desktop and 15 on touch; 12 for a unit, a
+  tick or a badge alone. Primary text for what the user reads (labels and values), `text-2` for what qualifies it
+  (units, sources, hints), `text-3` for placeholders and chart ticks alone. A label is at its value's weight.
+- Spacing on seven steps (4, 8, 12, 16, 24, 40, 64): 8 inside a group, 24 between groups, 40 between sections.
+- Control heights: 32, 40 and 48 on desktop, 44, 44 and 48 on touch. One row, one height.
 - Display type (Bricolage Grotesque) is for titles and lead numbers only. Everything else is Geist.
-- Numbers are in Geist Mono with tabular figures, so columns and changing values do not jump.
+- Numbers are set with tabular figures, so columns and changing values do not jump: in Geist in text, in Geist Mono
+  in tables, fields and the cable schedule alone.
 
 ## Writing
 
-- Sentence case everywhere. Section labels are uppercase by style, written in sentence case.
+- Sentence case everywhere, and nothing in uppercase by style (D94).
 - Plain words. Say what happens: "Kept clear", "Positions not used", "Energy was not updated".
 - Buttons say what they do: "Build this roof", "Find my roof", "Download PDF". Not "OK", not "Submit".
 - A note says what is wrong and what to do: "Voc coefficient -0.164 %/°C is outside the usual -0.35 to

@@ -25,9 +25,9 @@ type Props = {
 // One line from tablet up: 29 high on desktop, 44 on tablet; a total 32 and 48. On phone each cell has its own line.
 const LINE = "tablet:h-11 desktop:h-7.25";
 const TOTAL_LINE = "tablet:h-12 desktop:h-8";
-const ROW = "loss-row items-center gap-x-2.5 whitespace-nowrap -mx-2 rounded-xs px-2 py-1 tablet:py-0 hovered:bg-surface-2";
-const LABEL = "area-label flex items-center type-body-touch tablet:type-body desktop:type-small";
-const FIGURE = "type-value-small text-right";
+const ROW = "loss-row items-center gap-x-2.5 whitespace-nowrap -mx-2 rounded-control px-2 py-1 tablet:py-0 hovered:bg-surface-2";
+const LABEL = "area-label flex items-center type-body-touch desktop:type-body";
+const FIGURE = "type-mono-touch desktop:type-mono text-right";
 // The track keeps 8 free at the left and 6 at the right on phone, 10 and 7 from tablet up, as the boards draw it.
 const TRACK = "area-track relative block pl-2 pr-1.5 tablet:pl-2.5 tablet:pr-1.75";
 const BAR = "absolute top-1/2 h-3 -translate-y-1/2 left-at tablet:h-3.5";
@@ -53,7 +53,7 @@ function Control({ control, onField, onSwitch }: Pick<Props, "control" | "onFiel
     return (
       <>
         <Switch label={control.label} on={control.on} disabled={control.disabled} onChange={onSwitch} className="area-field justify-self-start" />
-        {control.note ? <p className="area-under type-caption text-text-2">{control.note}</p> : null}
+        {control.note ? <p className="area-under type-body-touch desktop:type-body text-text-2">{control.note}</p> : null}
       </>
     );
   }
@@ -62,7 +62,7 @@ function Control({ control, onField, onSwitch }: Pick<Props, "control" | "onFiel
     <>
       <NumberField form="chain" label={label} value={value} unit={unit} range={range} placeholder={value === null ? (detail ?? undefined) : undefined} onCommit={(entered) => onField(id, entered)} />
       {value !== null && (detail || reset) ? (
-        <div className="area-under flex items-center gap-2 type-caption text-text-3">
+        <div className="area-under flex items-center gap-2 type-body-touch desktop:type-body text-text-3">
           {detail ? <span>{detail}</span> : null}
           {reset ? (
             <Button kind="quiet" size="s" onClick={() => onField(id, null)}>
@@ -76,8 +76,8 @@ function Control({ control, onField, onSwitch }: Pick<Props, "control" | "onFiel
 }
 
 const READOUT = classNames(
-  "pointer-events-none placed flex flex-col rounded-item border border-line-strong bg-control-active px-2.5 py-1",
-  "type-caption whitespace-nowrap text-text shadow-tooltip",
+  "pointer-events-none placed flex flex-col rounded-control border border-line-strong bg-control-active px-2.5 py-1",
+  "type-body-touch desktop:type-body whitespace-nowrap text-text shadow-tooltip",
 );
 
 /** The readout over the row (decision 18), in the tooltip's look: the figure, then the label. Never the only place. */
@@ -92,7 +92,7 @@ function Readout({ ref, place, words }: { ref: RefObject<HTMLDivElement | null>;
       className={classNames(READOUT, place === null && "invisible")}
       style={measures(place === null ? {} : { x: place.x, y: place.y })}
     >
-      <span className="type-value-xs font-medium">{words.figure}</span>
+      <span className="type-body-touch desktop:type-body font-medium">{words.figure}</span>
       <span className="text-text-2">{words.label}</span>
     </div>
   );

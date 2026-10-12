@@ -31,7 +31,7 @@ const CORNER = "block size-5.5 rounded-full border-corner-touch border-accent bg
 const TURN = "flex size-touch items-center justify-center rounded-full border border-accent bg-surface-1 text-accent shadow-float desktop:size-8";
 // The live label stands beside the pointer, in the look of the labels of the stage (Labels.tsx): to the right
 // of its point, or to the left where the point is in the right half of the canvas, so that it stays on the stage.
-const LIVE = "placed block -translate-y-1/2 rounded-seg bg-ground px-2.25 py-0.75 type-value-small font-medium whitespace-nowrap text-text shadow-tooltip select-none";
+const LIVE = "placed block -translate-y-1/2 rounded-control bg-ground px-2.25 py-0.75 type-mono-touch desktop:type-mono font-medium whitespace-nowrap text-text shadow-tooltip select-none";
 const LIVE_RIGHT = "translate-x-5";
 const LIVE_LEFT = "-translate-x-full -ml-5";
 

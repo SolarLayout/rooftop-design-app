@@ -35,12 +35,12 @@ type Props<T extends string> = {
   className?: string;
 };
 
-const TRACK = "gap-0.5 rounded-row border border-line bg-well p-0.75 shadow-well desktop:rounded-control";
+const TRACK = "gap-0.5 rounded-row border border-line bg-well p-1 shadow-well";
 
 const ITEM = classNames(
-  "inline-flex h-touch cursor-pointer items-center justify-center gap-1.5 rounded-seg-touch px-3.5 whitespace-nowrap select-none",
-  "type-body press-motion focus-ring",
-  "desktop:h-7.5 desktop:rounded-seg desktop:type-small",
+  "inline-flex h-touch cursor-pointer items-center justify-center gap-1.5 rounded-control px-3.5 whitespace-nowrap select-none",
+  "type-body-touch desktop:type-body press-motion focus-ring",
+  "desktop:h-8 type-body-touch desktop:type-body",
   "disabled:cursor-default disabled:opacity-disabled",
 );
 // The weight is said again for desktop: the type style of desktop, which comes later, sets one too.

@@ -145,7 +145,7 @@ describe("the tokens in Tailwind", () => {
 
   test("every type style is one utility that sets all of it", async () => {
     const styles = [...documented.keys()].filter((name) => /^--text-[\w-]+--font-family$/.test(name));
-    expect(styles.length).toBeGreaterThan(15);
+    expect(styles.length).toBeGreaterThanOrEqual(9); // nine styles (D94), six of them with a size for touch
 
     for (const variable of styles) {
       const token = variable.replace("--font-family", "");

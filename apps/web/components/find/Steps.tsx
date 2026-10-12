@@ -14,8 +14,8 @@ export const indexOfStep = (step: Step) => STEPS.findIndex((one) => one.id === s
 
 type Props = { current: Step; className?: string };
 
-const PILL = "flex h-12 shrink-0 gap-1 rounded-card-s border border-line bg-surface-1 p-1.25 shadow-float";
-const ITEM = "flex items-center gap-2 rounded-seg-touch px-3.5 whitespace-nowrap";
+const PILL = "flex h-12 shrink-0 gap-1 rounded-row border border-line bg-surface-1 p-1.25 shadow-float";
+const ITEM = "flex items-center gap-2 rounded-control px-3.5 whitespace-nowrap";
 const CURRENT = "bg-control-active font-medium text-text shadow-segment";
 
 /** Where the user is: the steps done have a tick, the one in hand is raised, those to come their number. */
@@ -28,7 +28,7 @@ export function Steps({ current, className }: Props) {
           {index < at ? (
             <Icon name="tick" stroke="tick" size={16} className="text-ok" label="Done" />
           ) : (
-            <code className={classNames("type-value-small", id === current && "text-accent")}>{index + 1}</code>
+            <code className={classNames("type-mono-touch desktop:type-mono", id === current && "text-accent")}>{index + 1}</code>
           )}
           {name}
         </li>

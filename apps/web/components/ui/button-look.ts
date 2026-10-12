@@ -6,12 +6,13 @@ import { classNames } from "./class-names";
 export type ButtonKind = "primary" | "secondary" | "quiet";
 
 /**
- * Heights on desktop: 26, 36, 40, 44, 56. On phone and tablet nothing is lower than 44. `xs` is the quiet press
- * inside a chip; `sheet` is for the actions of a dialog: 40 on desktop, 44 on tablet, and on phone 48, a quiet one 44.
+ * V2's heights (D94): compact 32 (`xs`, `s`), standard 40 (`m`, `l`), primary 48 (`xl`) on desktop; on phone and tablet
+ * nothing is lower than 44, and the primary is 48. `sheet` is for the actions of a dialog: 40 on desktop, 44 on tablet,
+ * and on phone 48, a quiet one 44. One row, one height. Every button has the control's radius, 8.
  */
 export type ButtonSize = "xs" | "s" | "m" | "l" | "xl" | "sheet";
 
-/** Sides on desktop: 32, 38, 40, 44. On phone and tablet nothing is smaller than 44. */
+/** Sides on desktop: 32 (`xs`), 40 (`s`, `m`); 44 on phone and tablet, and `l` everywhere. */
 export type IconButtonSize = "xs" | "s" | "m" | "l";
 
 const PRESSABLE = classNames(
@@ -41,18 +42,18 @@ const KIND: Record<ButtonKind, string> = {
 };
 
 const HEIGHT: Record<ButtonSize, string> = {
-  xs: "h-touch rounded-row desktop:h-6.5 desktop:rounded-item",
-  s: "h-touch rounded-row desktop:h-9 desktop:rounded-control",
-  m: "h-touch rounded-row desktop:h-10 desktop:rounded-control",
-  l: "h-touch rounded-row",
-  xl: "h-14 rounded-card-s text-(length:--text-title)",
-  sheet: "h-12 rounded-row tablet:h-touch desktop:h-10 desktop:rounded-control",
+  xs: "h-touch desktop:h-8",
+  s: "h-touch desktop:h-8",
+  m: "h-touch desktop:h-10",
+  l: "h-touch desktop:h-10",
+  xl: "h-12 text-(length:--text-section)",
+  sheet: "h-12 tablet:h-touch desktop:h-10",
 };
-const HEIGHT_OF_A_QUIET_ACTION = "h-touch rounded-row desktop:h-10 desktop:rounded-control";
+const HEIGHT_OF_A_QUIET_ACTION = "h-touch desktop:h-10";
 
 const SIDE: Record<IconButtonSize, string> = {
   xs: "size-touch desktop:size-8",
-  s: "size-touch desktop:size-9.5",
+  s: "size-touch desktop:size-10",
   m: "size-touch desktop:size-10",
   l: "size-touch",
 };
@@ -62,7 +63,7 @@ const PADDING: Record<ButtonKind, string> = { primary: "px-4", secondary: "px-3.
 export function buttonLook(kind: ButtonKind, size: ButtonSize): string {
   const border = kind === "secondary" && "border-line-strong pressed:border-line-strong";
   const height = size === "sheet" && kind === "quiet" ? HEIGHT_OF_A_QUIET_ACTION : HEIGHT[size];
-  return classNames(PRESSABLE, "gap-inline", KIND[kind], border, height, size === "xl" ? "px-5" : PADDING[kind]);
+  return classNames(PRESSABLE, "gap-inline rounded-control", KIND[kind], border, height, size === "xl" ? "px-5" : PADDING[kind]);
 }
 
 /** The look of a button while the panel it opens is open: pressed, and staying so, as the trigger of a Select does. */
@@ -75,6 +76,6 @@ const OPEN: Record<ButtonKind, string> = {
 /** `isOpen`: the button opens a panel that is open now (the Layers button of the stage); it looks pressed until the panel closes. */
 export function iconButtonLook(kind: ButtonKind, size: IconButtonSize, shape: "square" | "round", isOpen = false): string {
   const border = kind === "secondary" && "border-line pressed:border-line";
-  const corners = shape === "round" ? "rounded-full" : "rounded-row desktop:rounded-control";
+  const corners = shape === "round" ? "rounded-full" : "rounded-control";
   return isOpen ? classNames(PRESSABLE, OPEN[kind], SIDE[size], corners) : classNames(PRESSABLE, KIND[kind], border, SIDE[size], corners);
 }

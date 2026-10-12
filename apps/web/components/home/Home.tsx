@@ -48,7 +48,7 @@ const nothingToHear = () => () => undefined;
 const noRunOnTheServer = () => null;
 
 const WAY = classNames(
-  "flex min-h-19 w-full cursor-pointer items-center gap-4 rounded-bar border border-line bg-surface-1 px-5 py-3.5 text-left text-text",
+  "flex min-h-19 w-full cursor-pointer items-center gap-4 rounded-card border border-line bg-surface-1 px-5 py-3.5 text-left text-text",
   "press-motion focus-ring hovered:bg-surface-2 pressed:bg-control-pressed",
 );
 /** The page's padding at the sides: 16 on phone, 24 on tablet, 64 on desktop, as the boards have them. */
@@ -132,7 +132,7 @@ export function Home() {
       <header className={classNames("relative box-content flex h-14 shrink-0 items-center justify-between pt-safe-0 tablet:h-18", SIDES)}>
         <Logo wordmark="always" />
         {/* The docs, in a new tab (D91): Home has no project menu, where the rest of the app finds them. */}
-        <a href={docsHome} target="_blank" rel="noopener" className="-mr-2 flex h-11 items-center gap-2 rounded-row px-3 type-body text-text-2 hovered:bg-surface-2 hovered:text-text focus-ring">
+        <a href={docsHome} target="_blank" rel="noopener" className="-mr-2 flex h-11 items-center gap-2 rounded-row px-3 type-body-touch desktop:type-body text-text-2 hovered:bg-surface-2 hovered:text-text focus-ring">
           <Icon name="book" size={18} stroke="light" />
           Docs
           <Icon name="external" size={14} className="text-text-3" />
@@ -140,12 +140,12 @@ export function Home() {
       </header>
       <main className={classNames("relative flex grow flex-col pt-5 pb-safe-10 tablet:pt-7 tablet:pb-safe-12 desktop:pt-19 desktop:pb-safe-14", SIDES)}>
         <div className="flex flex-col gap-3 tablet:gap-5.5 desktop:w-140">
-          <h1 className="type-page text-balance tablet:type-hero">
+          <h1 className="type-title-touch text-balance tablet:type-title">
             {HEADLINE[0]}
             <br />
             {HEADLINE[1]}
           </h1>
-          <p className="type-body-touch text-text-2 tablet:type-lead tablet:max-w-140 desktop:max-w-118">{SUBTITLE}</p>
+          <p className="type-body-touch desktop:type-body text-text-2 tablet:max-w-140 desktop:max-w-118">{SUBTITLE}</p>
         </div>
         <div className="relative mt-4 hidden w-full overflow-hidden tablet:block desktop:hidden">
           <HomeIllustration view="strip" />
@@ -158,8 +158,8 @@ export function Home() {
             <button key={way.id} type="button" onClick={take[way.id]} className={WAY}>
               <Icon name={way.icon} size={22} stroke="light" />
               <span className="flex min-w-0 grow flex-col gap-0.5">
-                <span className="type-title">{way.title}</span>
-                <span className="type-small text-text-2">{way.detail}</span>
+                <span className="type-section">{way.title}</span>
+                <span className="type-body-touch desktop:type-body text-text-2">{way.detail}</span>
               </span>
             </button>
           ))}

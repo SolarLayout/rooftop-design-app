@@ -101,7 +101,7 @@ export function FileDrop({ title, detail, whenOver, accept, state, onFile, shown
         surface: "border-line bg-surface-2",
         mark: <Icon name="file" size={20} stroke="light" />,
         colourOfMark: "text-accent",
-        title: <code className="type-value-s">{state.file}</code>,
+        title: <code className="type-mono-touch desktop:type-mono">{state.file}</code>,
         detail: state.detail,
         button: "Choose another",
       };
@@ -111,7 +111,7 @@ export function FileDrop({ title, detail, whenOver, accept, state, onFile, shown
         surface: "border-line bg-surface-2",
         mark: <Icon name="file" size={20} stroke="light" />,
         colourOfMark: "text-accent",
-        title: <code className="type-value-s">{state.file}</code>,
+        title: <code className="type-mono-touch desktop:type-mono">{state.file}</code>,
         detail: (
           <>
             {state.lines.map((line) => (
@@ -130,7 +130,7 @@ export function FileDrop({ title, detail, whenOver, accept, state, onFile, shown
         mark: <ProgressRing size={20} />,
         colourOfMark: "text-text-2",
         title: "Reading the file",
-        detail: <span className="type-value-xs">{state.file}</span>,
+        detail: <span className="type-body-touch desktop:type-body">{state.file}</span>,
         button: null,
       };
     }
@@ -168,7 +168,7 @@ export function FileDrop({ title, detail, whenOver, accept, state, onFile, shown
         </span>
         <p role="status" className="flex min-w-0 grow flex-col gap-0.5">
           <span className="font-medium">{look.title}</span>
-          <span className="type-caption break-words text-text-2">{look.detail}</span>
+          <span className="type-body-touch desktop:type-body break-words text-text-2">{look.detail}</span>
         </p>
       </div>
       {look.button ? (

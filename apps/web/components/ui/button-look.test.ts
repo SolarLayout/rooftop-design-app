@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { iconButtonLook } from "./button-look";
+import { buttonLook, iconButtonLook } from "./button-look";
 
 // The look of an icon button (docs/design/components.md, "Buttons"): raised at rest, answering to the pointer;
 // open, while the panel it opens is open, it looks pressed and stays so, as the trigger of a Select does (the
@@ -28,13 +28,40 @@ describe("the look of an icon button", () => {
     expect(classes.some((name) => name.startsWith("hovered:"))).toBe(false);
   });
 
-  test("open or closed, the size and the corners are the same: 44 on touch, 38 on desktop, the row's radius then the control's", () => {
+  test("open or closed, the size and the corners are the same: 44 on touch, 40 on desktop, the control's radius", () => {
     for (const isOpen of [false, true]) {
       const classes = classesOf(iconButtonLook("secondary", "s", "square", isOpen));
       expect(classes).toContain("size-touch");
-      expect(classes).toContain("desktop:size-9.5");
-      expect(classes).toContain("rounded-row");
-      expect(classes).toContain("desktop:rounded-control");
+      expect(classes).toContain("desktop:size-10");
+      expect(classes).toContain("rounded-control");
+      expect(classes.filter((name) => name.includes("rounded-row"))).toEqual([]);
+    }
+  });
+});
+
+// V2's heights (D94): 32 compact, 40 standard, 48 primary on desktop; 44, 44 and 48 on touch; the control's radius, 8.
+describe("the heights of a button", () => {
+  const heightsOf = (look: string) => classesOf(look).filter((name) => /(^|:)(h|size)-/.test(name));
+
+  test("compact: 32 on desktop, 44 on touch", () => {
+    for (const size of ["xs", "s"] as const) expect(heightsOf(buttonLook("secondary", size))).toEqual(["h-touch", "desktop:h-8"]);
+    expect(heightsOf(iconButtonLook("quiet", "xs", "square"))).toEqual(["size-touch", "desktop:size-8"]);
+  });
+
+  test("standard: 40 on desktop, 44 on touch", () => {
+    for (const size of ["m", "l"] as const) expect(heightsOf(buttonLook("secondary", size))).toEqual(["h-touch", "desktop:h-10"]);
+    expect(heightsOf(buttonLook("quiet", "sheet"))).toEqual(["h-touch", "desktop:h-10"]);
+  });
+
+  test("primary: 48 at every size", () => {
+    expect(heightsOf(buttonLook("primary", "xl"))).toEqual(["h-12"]);
+    expect(heightsOf(buttonLook("primary", "sheet"))).toEqual(["h-12", "tablet:h-touch", "desktop:h-10"]);
+  });
+
+  test("every button has the control's radius, 8, at every size", () => {
+    for (const size of ["xs", "s", "m", "l", "xl", "sheet"] as const) {
+      const corners = classesOf(buttonLook("primary", size)).filter((name) => name.includes("rounded"));
+      expect(corners).toEqual(["rounded-control"]);
     }
   });
 });

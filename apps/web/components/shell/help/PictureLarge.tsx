@@ -75,7 +75,7 @@ export function PictureLarge({ src, alt, width, height, marks, words, clip, once
       className="fixed inset-0 size-full max-h-none max-w-none flex-col bg-ground p-0 pt-safe-0 px-safe-0 text-text outline-none backdrop:bg-dim open:flex"
     >
       <div className="flex shrink-0 items-center gap-3 border-b border-line-subtle py-1 pr-1 pl-4">
-        <span className="grow type-small text-text-3">Pinch to look closer</span>
+        <span className="grow type-body-touch desktop:type-body text-text-3">Pinch to look closer</span>
         <IconButton label="Close the picture" icon="close" iconSize={18} kind="quiet" size="l" onClick={() => dialog.current?.close()} />
       </div>
       <div

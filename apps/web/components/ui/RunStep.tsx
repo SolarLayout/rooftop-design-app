@@ -16,7 +16,7 @@ export function RunStep({ step, share, className }: Props) {
     <div data-testid="run" className={classNames("flex min-h-13 items-center gap-row rounded-row bg-surface-2 px-3.5", className)}>
       <ProgressRing size={20} share={share} label={step} />
       <span className="grow">{step}</span>
-      <span className="type-value-small text-text-2">{percentOf(share)} %</span>
+      <span className="type-mono-touch desktop:type-mono text-text-2">{percentOf(share)} %</span>
     </div>
   );
 }

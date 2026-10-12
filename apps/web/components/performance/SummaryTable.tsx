@@ -16,7 +16,7 @@ export function SummaryTable({ rows, isDimmed }: Props) {
   const heading = useId();
   return (
     <section data-testid="summary-table" aria-labelledby={heading} className={CARD}>
-      <h2 id={heading} className="type-title">
+      <h2 id={heading} className="type-section">
         Summary
       </h2>
       <Table caption="The design, summed up by the engine" columns={SUMMARY_COLUMNS} rows={rows} keyOf={(row) => row.key} className={classNames(isDimmed && "opacity-updating")} />

@@ -25,7 +25,7 @@ export function KitPage({ path, lastPressed, children }: Props) {
   return (
     <main className="flex flex-col gap-7 px-page-x-phone py-page-y tablet:px-page-x-tablet desktop:px-page-x-desktop">
       <header className="flex flex-col gap-2">
-        <h1 className="type-page">{page.heading}</h1>
+        <h1 className="type-title-touch desktop:type-title">{page.heading}</h1>
         <p className="max-w-130 text-text-2">{page.lead}</p>
         <nav aria-label="Pages of the kit" className="flex flex-wrap gap-1">
           {PAGES.map((one) => (
@@ -42,7 +42,7 @@ export function KitPage({ path, lastPressed, children }: Props) {
             </Link>
           ))}
         </nav>
-        <p data-testid="kit-last-pressed" role="status" className="type-small text-text-2">
+        <p data-testid="kit-last-pressed" role="status" className="type-body-touch desktop:type-body text-text-2">
           Last pressed: {lastPressed ?? "nothing yet"}
         </p>
       </header>

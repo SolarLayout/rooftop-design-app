@@ -44,18 +44,18 @@ export function RangeSlider({ label, value, onCommit, scale, apart = scale.step,
           <div className="flex items-baseline justify-between gap-row">
             <span className="whitespace-nowrap text-text-2">{label}</span>
             <span className="whitespace-nowrap">
-              <span data-testid="value" className="type-value desktop:type-value-s">
+              <span data-testid="value" className="type-mono-touch desktop:type-mono">
                 {format(from)} – {format(to)}
               </span>
-              {note ? <span className="type-caption text-text-2"> {note}</span> : null}
+              {note ? <span className="type-body-touch desktop:type-body text-text-2"> {note}</span> : null}
             </span>
           </div>
         ) : (
           <div className="flex items-baseline justify-between gap-row">
-            <span data-testid="value" className="type-value desktop:type-value-s">
+            <span data-testid="value" className="type-mono-touch desktop:type-mono">
               {format(from)} – {format(to)}
             </span>
-            {note ? <span className="type-caption text-text-3">{note}</span> : null}
+            {note ? <span className="type-body-touch desktop:type-body text-text-3">{note}</span> : null}
           </div>
         )}
         <SliderTrack

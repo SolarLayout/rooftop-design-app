@@ -21,7 +21,7 @@ type Props = {
 export function CableSchedule({ view, sort, onSort, isDimmed = false }: Props) {
   return (
     <div data-testid="cable-schedule" className={classNames("flex flex-col gap-2.5", isDimmed && "opacity-updating")}>
-      <span className="type-caption text-text-2 tablet:hidden">{IN_THE_REPORT}</span>
+      <span className="type-body-touch desktop:type-body text-text-2 tablet:hidden">{IN_THE_REPORT}</span>
       <Table caption={view.caption} columns={view.columns} rows={view.rows} keyOf={view.keyOf} total={view.total} sort={sort} onSort={onSort} className={TABLE_PANEL} />
     </div>
   );

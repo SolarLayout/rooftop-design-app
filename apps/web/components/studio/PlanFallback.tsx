@@ -44,7 +44,7 @@ export function PlanFallback({ roof, layout, reason, className }: Props) {
       <span aria-hidden="true" className="absolute top-5 right-5 flex size-touch items-center justify-center rounded-row border border-line bg-surface-1 shadow-float">
         <NorthIcon />
       </span>
-      <p role="status" className="absolute inset-x-4 bottom-2 type-small text-text-2">
+      <p role="status" className="absolute inset-x-4 bottom-2 type-body-touch desktop:type-body text-text-2">
         {reason}
       </p>
     </div>

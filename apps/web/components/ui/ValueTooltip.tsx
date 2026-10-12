@@ -20,7 +20,7 @@ type Props = {
 };
 
 const BUBBLE = classNames(
-  "flex w-max flex-col rounded-item border border-line-strong bg-control-active px-2.5 py-1",
+  "flex w-max flex-col rounded-control border border-line-strong bg-control-active px-2.5 py-1",
   "whitespace-nowrap shadow-tooltip pointer-events-none placed",
 );
 
@@ -70,8 +70,8 @@ export function ValueTooltip({ anchor, value, label, onLeave, side = "above" }: 
     // The popover's own display is overridden by its classes while it is closed: it is kept from the eye and from the
     // accessibility tree by being invisible, as the chain's readout is.
     <div ref={bubble} role="tooltip" popover="manual" data-testid="value-tooltip" className={classNames(BUBBLE, !isShown && "invisible")}>
-      <span className="type-value-xs font-medium text-text">{value}</span>
-      <span className="type-caption text-text-2">{label}</span>
+      <span className="type-body-touch desktop:type-body font-medium text-text">{value}</span>
+      <span className="type-body-touch desktop:type-body text-text-2">{label}</span>
     </div>
   );
 }

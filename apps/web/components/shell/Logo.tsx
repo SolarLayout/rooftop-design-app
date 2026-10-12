@@ -15,7 +15,7 @@ export function Logo({ wordmark = "desktop" }: Props) {
         <path d="M9.5 17.5h7" strokeLinecap="round" className="stroke-accent-ink stroke-icon" />
       </svg>
       {/* The mark says the name already. */}
-      <span aria-hidden="true" className={classNames("type-brand", wordmark === "desktop" && "hidden desktop:block")}>
+      <span aria-hidden="true" className={classNames("type-section", wordmark === "desktop" && "hidden desktop:block")}>
         SolarLayout <span className="font-medium text-text-2">Rooftop</span>
       </span>
     </span>

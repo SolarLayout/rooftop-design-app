@@ -37,7 +37,7 @@ const DOWNLOAD_ALL = "flex flex-col gap-1 tablet:flex-row tablet:items-center ta
 // The project file as the card at the end of the list: at the bottom on desktop, across the width with its press under
 // its words on phone.
 const CARD = classNames(
-  "flex flex-col gap-3.5 rounded-card-s border border-line bg-surface-1 p-4 shadow-card",
+  "flex flex-col gap-3.5 rounded-row border border-line bg-surface-1 p-4 shadow-card",
   "tablet:flex-row tablet:items-center desktop:mt-auto",
 );
 
@@ -65,8 +65,8 @@ export function DeliverableList({ rows, item, shown, downloads, onSaveACopy, all
     <>
       <div className={HEAD}>
         <div className="flex flex-col gap-1">
-          <h1 className="type-lens-touch tablet:type-page">Handover</h1>
-          <p className="type-small text-text-2 tablet:type-body-touch desktop:type-body">Everything the installer, the client and the utility need</p>
+          <h1 className="type-title-touch desktop:type-title">Handover</h1>
+          <p className="type-body-touch desktop:type-body text-text-2">Everything the installer, the client and the utility need</p>
         </div>
         <div data-testid="download-all" className={DOWNLOAD_ALL}>
           <Button
@@ -78,7 +78,7 @@ export function DeliverableList({ rows, item, shown, downloads, onSaveACopy, all
             {isAllOnItsWay ? <ProgressRing size={16} /> : null}
             Download all
           </Button>
-          <span className="type-caption text-text-2">{zipFacts}</span>
+          <span className="type-body-touch desktop:type-body text-text-2">{zipFacts}</span>
         </div>
       </div>
       {note ? <div className="tablet:hidden">{note}</div> : null}
@@ -98,7 +98,7 @@ export function DeliverableList({ rows, item, shown, downloads, onSaveACopy, all
             {projectFile.facts === null ? (
               <Skeleton kind="text" className="my-1 w-44" />
             ) : (
-              <span data-testid="deliverable-facts" className="type-caption text-text-2">
+              <span data-testid="deliverable-facts" className="type-body-touch desktop:type-body text-text-2">
                 {projectFile.facts}
               </span>
             )}

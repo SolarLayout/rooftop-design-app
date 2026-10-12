@@ -34,7 +34,7 @@ type Props = {
 const HALF_A_HANDLE = "px-3.25 desktop:px-2.25";
 const BESIDE_THE_RAIL = "w-3.25 desktop:w-2.25";
 const LINE = "absolute top-1/2 h-1 -translate-y-1/2";
-const TICK = "absolute type-tick whitespace-nowrap";
+const TICK = "absolute type-unit whitespace-nowrap";
 
 const HANDLE = classNames(
   "absolute top-1/2 left-at size-6.5 -translate-x-1/2 -translate-y-1/2 rounded-full",

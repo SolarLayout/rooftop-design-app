@@ -123,11 +123,11 @@ export function DesignCard({ card, onOpen, onRename, onDuplicate, onSaveACopy, o
             <TextField label="Name" labelHidden value={card.name} {...NAME_RULES} initialFocus onCommit={onRename} onDone={(said) => said === null && setRenaming(false)} />
           </div>
         ) : (
-          <button type="button" onClick={onOpen} className={classNames("min-w-0 truncate rounded-xs text-left type-title", PRESS, "hovered:text-text-2")}>
+          <button type="button" onClick={onOpen} className={classNames("min-w-0 truncate rounded-control text-left type-section", PRESS, "hovered:text-text-2")}>
             {card.name}
           </button>
         )}
-        <span className="type-caption text-text-2">{card.roofWords}</span>
+        <span className="type-body-touch desktop:type-body text-text-2">{card.roofWords}</span>
       </div>
       <div className="px-1">
         {card.facts ? (
@@ -137,12 +137,12 @@ export function DesignCard({ card, onOpen, onRename, onDuplicate, onSaveACopy, o
           </Stats>
         ) : (
           // The numbers cannot exist yet: what they wait for stands in their place, never a figure (guidelines.md).
-          <p data-testid="card-waiting" className="flex min-h-10.5 items-center type-small text-text-2">
+          <p data-testid="card-waiting" className="flex min-h-10.5 items-center type-body-touch desktop:type-body text-text-2">
             {card.waiting}
           </p>
         )}
       </div>
-      <p className="px-1 type-caption text-text-3">{card.edited}</p>
+      <p className="px-1 type-body-touch desktop:type-body text-text-3">{card.edited}</p>
     </article>
   );
 }

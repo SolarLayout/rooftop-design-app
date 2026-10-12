@@ -20,21 +20,21 @@ const CAPTION = "The PNG is the engine's drawing on A4";
 
 // The panel of the board "Handover, previews": the title, the drawing at the width of the panel, the line under it.
 const CARD = "flex flex-col gap-4 rounded-card border border-line bg-surface-1 p-4 shadow-card tablet:p-6";
-const BOX = "fill-surface-2 stroke-line-strong stroke-hair rx-xs";
+const BOX = "fill-surface-2 stroke-line-strong stroke-hair rx-control";
 const LINE: Record<"dc" | "ac", string> = { dc: "stroke-text-2 stroke-wire", ac: "stroke-text stroke-chart" };
 /** The words of the drawing, each in its type style, in the text colours: never in a series colour (guidelines.md, "Charts"). */
 const TEXT: Record<Look, string> = {
-  name: "type-small font-semibold fill-text",
-  caption: "type-caption fill-text-2",
-  "caption-s": "type-label-s fill-text-2",
-  value: "type-caption font-medium fill-text",
-  words: "type-small fill-text",
+  name: "type-body-touch desktop:type-body font-semibold fill-text",
+  caption: "type-body-touch desktop:type-body fill-text-2",
+  "caption-s": "type-unit fill-text-2",
+  value: "type-body-touch desktop:type-body font-medium fill-text",
+  words: "type-body-touch desktop:type-body fill-text",
 };
 /** The series colours by their number, as the Strings lens's legend has them: the tokens the palette equals. */
 const SERIES: Record<number, string> = { 1: "fill-series-1", 2: "fill-series-2", 3: "fill-series-3", 4: "fill-series-4", 5: "fill-series-5", 6: "fill-series-6" };
 const INK: Record<Ink, string> = { dark: "fill-series-ink", light: "fill-series-ink-light" };
 /** A block is a target: its words in the middle, lifted under the pointer or with the focus, the ring of every control. */
-const BLOCK = "cursor-default outline-none focus-ring rounded-xs";
+const BLOCK = "cursor-default outline-none focus-ring rounded-control";
 
 const keyOf = (block: SldBlock) => `${block.inverter}-${block.mppt.number}`;
 
@@ -96,7 +96,7 @@ export function SingleLineDiagram({ option, equipment, isDimmed = false }: Props
 
   return (
     <section data-testid="sld" aria-label={sld.title} className={classNames(CARD, isDimmed && "opacity-updating")}>
-      <h3 className="type-title">{sld.title}</h3>
+      <h3 className="type-section">{sld.title}</h3>
       <div ref={frame} className="w-full">
         {layout ? (
           <svg
@@ -152,9 +152,9 @@ export function SingleLineDiagram({ option, equipment, isDimmed = false }: Props
                     y={block.y}
                     width={block.w}
                     height={block.h}
-                    className={classNames("rx-xs", SERIES[block.mppt.series], active === key && "lifted")}
+                    className={classNames("rx-control", SERIES[block.mppt.series], active === key && "lifted")}
                   />
-                  <text x={block.text.x} y={block.text.y} textAnchor="middle" dominantBaseline="middle" className={classNames("type-caption font-medium pointer-events-none", INK[block.mppt.ink])}>
+                  <text x={block.text.x} y={block.text.y} textAnchor="middle" dominantBaseline="middle" className={classNames("type-body-touch desktop:type-body font-medium pointer-events-none", INK[block.mppt.ink])}>
                     {block.mppt.block}
                   </text>
                 </g>
@@ -163,7 +163,7 @@ export function SingleLineDiagram({ option, equipment, isDimmed = false }: Props
           </svg>
         ) : null}
       </div>
-      <p className="type-caption text-text-2">{CAPTION}</p>
+      <p className="type-body-touch desktop:type-body text-text-2">{CAPTION}</p>
       {/* The drawing as words: every inverter with every MPPT, for those who do not see it. */}
       <ul data-testid="sld-list" aria-label="The diagram as a list" className="sr-only">
         {sld.inverters.map((inverter) => (

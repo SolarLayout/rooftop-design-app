@@ -18,8 +18,8 @@ type Props = {
   className?: string;
 };
 
-const CARD = "flex flex-col gap-2.5 rounded-card-s border border-line-strong bg-surface-1 px-3.5 pt-3.5 pb-3 shadow-float";
-const CHIP = "min-w-15.5 shrink-0 rounded-xs border border-line-strong px-1.5 text-center type-label-s font-semibold text-text";
+const CARD = "flex flex-col gap-2.5 rounded-row border border-line-strong bg-surface-1 px-3.5 pt-3.5 pb-3 shadow-float";
+const CHIP = "min-w-15.5 shrink-0 rounded-control border border-line-strong px-1.5 text-center type-unit font-semibold text-text";
 
 /**
  * A small card that shows how to do a move the screen has just made possible (components.md, "Tip"; D79): the title
@@ -31,14 +31,14 @@ export function Tip({ title, rows, onGotIt, onClose, howTo, className }: Props) 
     <section role="note" aria-label={title} className={classNames(CARD, className)}>
       <div className="flex items-center gap-2">
         <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-accent" />
-        <h2 className="grow type-body font-semibold text-text">{title}</h2>
+        <h2 className="grow type-body-touch desktop:type-body font-semibold text-text">{title}</h2>
         <IconButton label="Hide the tips" icon="close" iconSize={14} kind="quiet" size="xs" onClick={onClose} className="-my-2 -mr-2 text-text-3" />
       </div>
       <ul className="flex flex-col gap-2.5">
         {rows.map(({ key, does }) => (
           <li key={key} className="flex items-start gap-2.5">
             <kbd className={CHIP}>{key}</kbd>
-            <span className="type-small text-text-2">{does}</span>
+            <span className="type-body-touch desktop:type-body text-text-2">{does}</span>
           </li>
         ))}
       </ul>

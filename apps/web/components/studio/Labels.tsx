@@ -14,13 +14,13 @@ type Props = { stage: StageStore };
 // The look of the map's edge labels (components/find/OutlineLayer.tsx), in text-2 as the boards draw them
 // on the stage; on phone in the size of a tick. Each is centred on the point it is anchored to.
 const LABEL = classNames(
-  "placed block -translate-x-1/2 -translate-y-1/2 rounded-seg bg-ground px-2.25 py-0.75 font-medium text-text-2 shadow-tooltip select-none",
-  "type-tick tablet:type-value-small",
+  "placed block -translate-x-1/2 -translate-y-1/2 rounded-control bg-ground px-2.25 py-0.75 font-medium text-text-2 shadow-tooltip select-none",
+  "type-unit tablet:type-body",
 );
 
 // The chip of an inverter (plan/phase-07-plan.md, decision 13; the board "Strings on the roof"): "INV-1" in the
 // accent, its foot 4 over the top of its box on the roof, centred on where the Projector says the top falls.
-const CHIP = "absolute bottom-1 left-0 block -translate-x-1/2 rounded-xs bg-accent px-2 type-tick font-medium whitespace-nowrap text-accent-ink shadow-tooltip select-none";
+const CHIP = "absolute bottom-1 left-0 block -translate-x-1/2 rounded-control bg-accent px-2 type-unit font-medium whitespace-nowrap text-accent-ink shadow-tooltip select-none";
 
 /** What was measured of a label or a chip: its size, and how far its foot stands over its point (0 for a label, centred on it). */
 type Measured = Size & { foot: number };

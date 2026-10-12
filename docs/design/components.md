@@ -8,27 +8,31 @@ focus ring. An icon-only button has an `aria-label`.
 
 ## Buttons
 
+V2 (D94): three heights on desktop, 32 compact, 40 standard, 48 primary; on phone and tablet 44, 44 and 48. One row, one
+height. Every button has the control's radius, 8.
+
 | Kind | Height | Surface | Text | Shadow | Use |
 |---|---|---|---|---|---|
-| Primary | 36 to 40 in bars, 44 in toolbars, 56 for the main action of a panel | accent | accent-ink, Geist 600 | primary | One per view: Export, Find my roof, Build this roof, Download |
-| Secondary | 36 to 40 (44 on touch) | control, border line-strong | text, Geist 500 | raised | Change, Edit, Add, Present, Save a copy |
-| Quiet | 40 to 44 | none | text-2 (text on hover) | none | Undo, Clear, tools beside a primary tool, "Enter dimensions by hand instead" |
-| Icon | 38 to 48 square | as secondary or quiet | icon 16 to 22 | as kind | Fit, north, zoom, back, remove |
-| Round | 32 to 44 | accent | icon accent-ink | primary | Play |
+| Primary | 48 for the one action of a step or a page; 40 in a bar | accent | accent-ink, Geist 600 | primary | One per view: Continue to …, Build this roof, Download all |
+| Secondary | 32 or 40 (44 on touch) | control, border line-strong | text, Geist 500 | raised | Change, Add, Present |
+| Quiet | 32 or 40 (44 on touch) | none | text-2 (text on hover) | none | Undo, Clear, Cancel, a tool beside a primary tool |
+| Icon | 32 or 40 square (44 on touch) | as secondary or quiet | icon 16 to 20 | as kind | Close, zoom, north; any other action carries its word (V2-117) |
+| Round | 40 to 48 | accent | icon accent-ink | primary | Play |
 
 States: rest; hover (raised 1 px, brighter, `shadow-*-hover`); pressed (lowered 1 px, `shadow-pressed`, scale
-0.985); focus (focus ring); disabled (opacity 0.45, no shadow, no pointer). Radius `radius-control`
-(12 to 14 for the 56 px action).
+0.985); focus (focus ring); disabled (opacity 0.45, no shadow, no pointer).
 
-In code (`apps/web/components/ui`): `Button`, `ButtonLink` (a link that looks like a button) and `IconButton`.
+In code (`apps/web/components/ui`): `Button`, `ButtonLink` (a link that looks like a button) and `IconButton`
+(`button-look.ts`).
 
-| Size | Button, height on desktop | Icon button, side on desktop | Radius | On phone and tablet |
-|---|---|---|---|---|
-| `xs` | 26, the quiet press inside a chip ("Use the roof type's") | 32 | item for the button, control for the icon button | 44, radius row |
-| `s` | 36 | 38 | control | 44, radius row |
-| `m` | 40 | 40 | control | 44, radius row |
-| `l` | 44 | 44 | row | the same |
-| `xl` | 56, label in the size of `text-title` | | card-s | the same |
+| Size | Button, height on desktop | Icon button, side on desktop | On phone and tablet |
+|---|---|---|---|
+| `xs` | 32 | 32 | 44 |
+| `s` | 32 | 40 | 44 |
+| `m` | 40 | 40 | 44 |
+| `l` | 40 | 44 | 44 |
+| `xl` | 48, its label in `type-section` | | 48 |
+| `sheet` | 40, the actions of a dialog | | 44 on tablet; 48 on phone, a quiet one 44 |
 
 Padding at the sides: 16 primary, 14 secondary and quiet, 20 for `xl`. Icon to label: `space-inline`.
 The border of a secondary button is `line-strong`; of a secondary icon button `line`.
@@ -36,8 +40,8 @@ An icon button takes its name from `label`, which it cannot be without.
 The kit shows a state without a pointer or a keyboard by `shownAs`; a screen never sets it.
 
 ## Segmented control
-Track: `color-well`, border `line`, `shadow-well`, padding 3, radius `radius-control`.
-Items: height 30 (34 to 36 in panels, 44 on touch); active item `control-active`, `shadow-segment`, text, Geist
+Track: `color-well`, border `line`, `shadow-well`, padding 4, radius `radius-row` (12).
+Items: height 32 on desktop, so that the track is 40, the standard height (44 on touch), radius `radius-control` (8); active item `control-active`, `shadow-segment`, text, Geist
 500; others transparent, text-2. Use for 2 to 4 exclusive choices with short labels: 3D or Plan, Portrait or
 Landscape, design day, roof type, system voltage, colour by.
 
@@ -48,18 +52,22 @@ and the segmented control shows it with its words (see "System voltage").
 In code: `Segmented`. It is a group of radio buttons to a screen reader (`radiogroup`, `radio`). The keyboard
 stops at it once, at the choice that is taken; the arrows go through the choices and around the ends, Home and
 End to the first and the last; each takes the choice it goes to. A choice that cannot be taken is dim and is
-passed over. On phone and tablet the track has radius `radius-row`, the items `radius-seg-touch` and the size
-of body text. With `fill` the choices share the width in equal parts (the lens switch on phone). With
+passed over. On phone and tablet the items are 44 and the text `type-body-touch`. With `fill` the choices share the width in equal parts (the lens switch on phone). With
 `disabled` the whole control is dim and takes neither pointer nor key; only then may nothing be taken
 (`value` null), where the choice does not apply yet: the units of a drawing before the file is a DXF.
 A choice may carry a status mark after its label (`mark`: a tick or a note of 14, never a cross), where the
 choices are results with a verdict: the stringing options of Performance, "A · Recommended" with a tick, "D"
 with a note. The mark's words go into the choice's `name` for a screen reader ("D, below the DC/AC target").
 
+## Section heading
+V2 (D94; D76 reversed): a section's name in `type-section` (Geist 16 at 600) in `text`, sentence case, nothing glowing, no
+line under it; its ? beside it (the help disc, quiet). In code: `SECTION` (`components/ui/section-look.ts`) and
+`SectionHeading` (`components/shell/help`).
+
 ## Tabs
 The board "Tabs" (`mockups/Tabs.dc.html`), approved on 2026-09-29 (decision D35).
 Row: on a line `line`, tabs 4 apart. Tab: height 40 (44 on touch), padding 0 14 (0 16 on touch), radius
-`radius-xs`, `text-small` (body text on touch) in text-2, no surface. The tab that is taken: text, Geist 500,
+`radius-xs`, `type-body` (body text on touch) in text-2, no surface. The tab that is taken: text, Geist 500,
 a line of `border-tab` in accent that lies on the line of the row and is as wide as the words. Under the
 pointer: text, the line in `line-hover`. Cannot be taken: opacity 0.45. A count may follow the words: mono 12
 in text-2 on `surface-2`, 18 high, radius full. The panel begins 16 under the row.
@@ -91,9 +99,9 @@ In code: `Switch`. Its name is its `label`. The knob slides in `duration-press`.
 ## Slider and range slider
 Track 4 high, `color-line`, radius full; the filled part accent. Handle 18 round (26 on touch), `color-text`
 with an accent border of `border-handle` (3; `border-handle-touch`, 4, on touch), `shadow-handle`. The value
-is shown above the track in `text-value-s` (`text-value` on touch) with its unit, never only on the handle;
+is shown above the track in `type-mono` (`type-mono-touch` on touch) with its unit, never only on the handle;
 a slider has its label at the left of the value. One line of hint may follow under the track, in
-`text-caption`, text-3. Ticks in `text-tick`, text-3, each under its value. The range slider (shade-free
+`type-body`, text-3. Ticks in `type-unit`, text-3, each under its value. The range slider (shade-free
 window) has two handles and fills between them; its two values stand at the left, a note ("solar time") at
 the right.
 
@@ -118,19 +126,20 @@ timeline), and a tick at an end of the track may stand from that end inward (`al
 
 ## Number field
 Recessed: `color-well`, border `line`, `shadow-well`, radius `radius-control`, height 40 (44 on touch, 22 inside
-the loss chain). Label left in text-2, value right in `text-value`, unit after the value in text-2.
+the loss chain). Label left in `text`, at the value's weight (D94); value right in `type-mono` (400), unit after the value in
+text-2.
 Focus: accent border and `halo-focus`. The value commits on Enter or blur, not on every key.
-A stepper is a number field with minus and plus buttons of 30 (44 on touch).
+A stepper is a number field with minus and plus buttons of 32 (44 on touch).
 
 In code: `NumberField` and `Stepper`; their numbers in `number-entry.ts`.
 
 | Form | Height on desktop | On phone and tablet | Use |
 |---|---|---|---|
 | The label inside, at the left | 44 | 44 | A field of its own, as on the kit board |
-| The label before the field | 36, radius control | 48, radius row | A row of the inspector |
-| Stepper | 38: buttons of 30 in a well with padding 3 | 52: buttons of 44 | A few whole steps |
-| Inside the loss chain | 22, radius xs, mono 12 | Tablet 40, radius xs; phone 44, radius control | A step of the chain that is the user's; the row's label is its name |
-| Inside a chip | 22, radius xs, mono 12 | Tablet 32, radius xs; phone 44, radius control | An assumption of Performance; the chip's label is its name |
+| The label before the field | 40 | 44 | A row of the work column |
+| Stepper | 40: buttons of 32 in a well with padding 4, radius row | 52: buttons of 44 | A few whole steps |
+| Inside the loss chain | 22, radius control, mono | Tablet 40, phone 44, radius control | A step of the chain that is the user's; the row's label is its name |
+| Inside a chip | 22, radius control, mono | Tablet 32, phone 44, radius control | An assumption of Performance; the chip's label is its name |
 
 - What is typed is a draft. Enter or leaving the field commits it; Escape gives it up. The arrows up and down
   step the draft and do not commit. Plus and minus of a stepper commit at once, and cannot be pressed at the
@@ -138,13 +147,13 @@ In code: `NumberField` and `Stepper`; their numbers in `number-entry.ts`.
 - A field that has no value yet (the height of an obstacle drawn on the map) is empty, with its label and its
   unit, and says nothing until a number is typed; nothing is preselected. In code: `value` null.
 - A number outside the range is brought to the nearest limit. What is no number leaves the value as it was.
-  In both cases the field says under itself what happened, in `text-caption`: "5.00 m is the highest that can
+  In both cases the field says under itself what happened, in `type-body`, text-2: "5.00 m is the highest that can
   be set.", "Enter a number, from 0.00 to 5.00 m.". The next good entry takes the words away.
 - The field shows its number with the decimals of the quantity, a comma between thousands and a true minus
   sign; it reads either minus sign and the comma.
 - With the focus inside: accent border and `shadow-well-focus`. The input has no ring of its own.
 - Where the label stands before the field, a line under the label may say where the value comes from, in
-  `text-caption`, text-3: "11.9 °C from the weather", "entered" (the board "Inverter and sizing"). In code: `detail`.
+  `type-body`, text-2: "11.9 °C from the weather", "entered" (the board "Inverter and sizing"). In code: `detail`.
 - Inside the loss chain there is no line under the label: a field that is empty for its default says the
   default inside itself, in text-3 ("PAN 0.2 %"). In code: `placeholder`.
 - Inside a chip the field is a cell of the chip, as in the chain (`form="chip"`); what it says of an entry it
@@ -167,7 +176,7 @@ In code: `TextField`; its words in `text-entry.ts`.
 - What is typed is a draft. Enter or leaving the field commits it, trimmed and cut to `maxLength`; Escape gives the
   value back.
 - An empty or blank entry is not committed: the field gives the value of before back and says why under itself, in
-  `text-caption`, in the caller's words ("A name is needed"). The next good entry takes the words away.
+  `type-body`, in the caller's words ("A name is needed"). The next good entry takes the words away.
 - A hint may stand under the field in the same style (`detail`): what the words are for. What the field says stands in
   its place while there is something to say.
 - `maxLength` is the input's too, so nothing longer can be typed.
@@ -176,22 +185,22 @@ In code: `TextField`; its words in `text-entry.ts`.
 ## Cards
 `surface-1`, border `line`, radius `radius-card`, `shadow-card`, padding `space-card`.
 Equipment card (module, inverter): glyph 44 by 56 to 60, name in Geist 600, one or two lines of facts in
-`text-caption`, file name in Geist Mono, a secondary button (Change, which opens the picker of "Choose a module or an
+`type-body`, file name in Geist Mono, a secondary button (Change, which opens the picker of "Choose a module or an
 inverter"; its tooltip on desktop "Choose from 119 modules, or use a PAN file", the count the library's). The maker is
 named as people know it (`makerOf`, D75). In its lens the card stands under a section heading, Module or Inverter (D76).
 Selected card: `note-surface`, accent border, `halo-selected`.
 Compact card: radius `radius-card-s`, padding `space-card-compact`.
 
 ## Stat tile and vitals cell
-Label in `text-caption`, text-2. Value in `text-value` (or a display size for the lead value) with its unit.
+Label in `type-body`, text-2. Value in `type-mono-touch` (or a display size for the lead value) with its unit.
 A status mark may follow the value. Tiles inside a card are flat: `surface-2`, radius `radius-row`, padding
 10 by 14.
 
 In code: `Stats` is the list, `Stat` one label with its value. Looks: `cell` (vitals: value 16, 17 on tablet),
 `lead` (the energy: display 26, 22 on phone), `tile`, `hero` (the energy on Performance: display 76, its unit
-`text-unit-hero`, the label in body text) and `figure` (a KPI tile of Performance, a card of its own: display 34,
-26 on phone, the label in body text), `scene` (the lead figure of a panel of Present: `text-number-scene`, 44 on
-desktop, 40 on tablet, the label in `text-small`) and `scene-small` (the panel's other figures: display 22). A
+`type-heading`, the label in body text) and `figure` (a KPI tile of Performance, a card of its own: display 34,
+26 on phone, the label in body text), `scene` (the lead figure of a panel of Present: `type-figure`, 44 on
+desktop, 40 on tablet, the label in `type-body`) and `scene-small` (the panel's other figures: display 22). A
 quieter figure may follow the unit (`more`: "· 19.7 % DC"); on phone it takes a line under the value. A value that
 counts toward a final one (`holds`) stands from the start in the final one's width, at its right, in tabular
 figures: it neither wiggles nor pushes what is beside it.
@@ -235,17 +244,17 @@ preselected. Below it, the list of what is waiting and what is done. Its one use
 
 ## System voltage
 The Strings lens's section (the boards "System voltage · Set by the user's country"; D87, D88). The heading with its
-? disc, and at the right in `text-caption` `text-3` who set the voltage: `Set for <country>` (the app, for the user's
+? disc, and at the right in `type-body` `text-3` who set the voltage: `Set for <country>` (the app, for the user's
 country), `Set by the app` (the app's value is not the default of the country the user is in now), `Your choice`. Under
 it the segmented control of 600, 1000 and 1500 V, filling the width. Then, each only when it applies:
-- for the app's value, one line in `text-caption` `text-2`: where it comes from ("1000 V, the usual limit for rooftops in
+- for the app's value, one line in `type-body` `text-2`: where it comes from ("1000 V, the usual limit for rooftops in
   India. Change it if the site needs another.");
 - for the app's value with equipment rated under it, a second line, plain, no mark: "Strings sized to 800 V, this
   inverter's limit.";
 - for the user's value with equipment rated under it, a note: `surface-1`, border `note-line`, `radius-row`, padding 12
-  by 16, the note mark of 16, a title in Geist 500 and the detail in `text-caption` `text-2`, then a small secondary
+  by 16, the note mark of 16, a title in Geist 500 and the detail in `type-body` `text-2`, then a small secondary
   button `Use <n> V` (the highest of the three at or under the rating, where there is one);
-- an offer, where the equipment takes more: the words in `text-caption` `text-2` with a small secondary button
+- an offer, where the equipment takes more: the words in `type-body` `text-2` with a small secondary button
   `Use <n> V` at the right ("This inverter takes up to 1500 V. Raise it only if the site's code allows."; where no
   length fits, the lowest voltage at which one does).
 The app never moves the value; every button is the user's choice, an edit undone in one step. Numbers and their unit stay
@@ -289,14 +298,14 @@ In code: `Sheet`; its stops in `sheet-stops.ts`. It stands at the bottom of the 
 
 ## Option card (stringing options)
 Row 52 high, radius `radius-row`. Letter badge 26, title (Recommended, or the verdict), one mono line
-"series x strings, kWp, DC/AC", energy at the right in `text-value`, then the status mark. Selected: as the
+"series x strings, kWp, DC/AC", energy at the right in `type-mono-touch`, then the status mark. Selected: as the
 selected card. "Add your own" is a dashed quiet button. With no options because the roof holds too few positions, yet
 one string fits on it, the button stands under the engine's words, its fields set to that string
 (the board "UI fixes · Your own when the roof holds too few positions").
 
 ## Series range bar
 Track 8 high in `color-well`; feasible band in `color-ok` at 55 %; chosen length as a 4 px accent marker with a
-halo; labels under the ends in `text-tick` ("14, MPPT minimum", "29, Voc limit"). The verdict follows with a
+halo; labels under the ends in `type-unit` ("14, MPPT minimum", "29, Voc limit"). The verdict follows with a
 tick or a note and the engine's sentence.
 
 ## Loss chain
@@ -345,7 +354,7 @@ has no options under the API's words: the assumptions are inputs and can be set 
 
 ## Timeline (Sun lens)
 Floating bar 64 high, `surface-1`, border `line`, radius `radius-bar`, `shadow-float`: round play button 44, time
-in display 22 (`type-lens-touch`) over "solar time", the slider of the time over the day's hours with the
+in `type-title-touch` over "solar time", the slider of the time over the day's hours with the
 shade-free window filled in accent, handle at the time, ticks at sunrise, the window's ends (text-2), noon and
 sunset; sunrise and sunset stand from the ends of the track inward ("06:33 sunrise", "sunset 17:27"). On tablet
 they stand beside the track instead, their time over their word, after a line of 36. On phone the timeline is
@@ -446,7 +455,7 @@ Under the title and lead, three sections in the section headings' look, no ? on 
 **Start here**, the ways to start as cards 52 high in the roof type's look (`bg-control`, raised, the icon 18 in the accent,
 a chevron at the right): Search for the building focuses the search over the map, Use my location does what the button
 beside the search does, Enter dimensions by hand opens the entry by hand; **The search understands**, four rows (44 on
-touch, 36 on desktop) of a name in `type-small` and its example in the figures' mono, a press puts the example into the
+touch, 36 on desktop) of a name in `type-body` and its example in the figures' mono, a press puts the example into the
 search, which reads it back under the field; **Three steps**, the help's step marks (24), the first lit in the accent, the
 others `surface-2`. Without a map only the card by hand and the steps in its words. The floating search takes
 `border-accent` while it holds the focus.
@@ -507,11 +516,7 @@ The boards "In-App Help · The ? and the help sheet" (the canvas page "In-App He
 is, its choices and what they do, in the app's own words; the core is solarlayout's `packages/help` (topics in MDX keyed by
 their path, a typed manifest, a gate of tests), the look and the places ours.
 
-**The disc.** Beside a section heading, 6 after its words, vertically on their middle: a disc of the primary action, its
-`accent`, its light and its shadow (`shadow-primary`), a ? in `accent-ink` drawn as a stroke of 3. 16 on desktop in a press
-of 24; 20 on touch in a press of 44. Hover lifts it as the primary buttons lift (`accent-hover`, `shadow-primary-hover`);
-pressed it sinks (`accent-pressed`, `shadow-primary-pressed`); the focus ring is the app's. While its topic is shown it stays
-held in, with a ring of the accent at 45 % two away (`shadow-help-held`). A disc is drawn only where its topic exists (its key is a type). A real
+**The disc.** Beside a section heading, 6 after its words, vertically on their middle (V2, D94: quiet). A ring of 20 in `line-strong`, no fill, a ? in `text-3` drawn as a stroke of 3, in a press of 24 on desktop and 44 on touch. Hover lifts the ring to `text-3` and the ? to `text-2`; the focus ring is the app's. While its topic is shown it rings in the accent: the ring and the ? in `accent`, with a ring of the accent at 45 % two away (`shadow-help-held`). In code its look is `help-disc-look.ts`. A disc is drawn only where its topic exists (its key is a type). A real
 button: "Help: <title>", `aria-haspopup="dialog"`, `aria-expanded` while its topic is shown. On a pointer device the Tooltip
 "with a summary" says the topic's summary and "Click for more"; touch has none, a press opens the sheet.
 
@@ -520,18 +525,17 @@ button: "Help: <title>", `aria-haspopup="dialog"`, `aria-expanded` while its top
 bottom, the whole height but 48, `rounded-t-panel`, with the grip. It comes and goes as the drawers do (`drawer-motion`); it
 holds the focus; Escape, the ×, a press beside it close it, and the focus goes back to the disc.
 - The head, 48 high, a line of `line-subtle` under it: Back (‹, quiet, only once a link was followed), where it was opened in
-  `type-section` `text-3` ("Section · Strings lens"), Close (×).
-- Then, 20 in, 18 down, with 16 between: the title (`type-lens`, `type-lens-touch` on touch, in the light of a section
-  heading: `color-heading` with `heading-glow`; the owner, session 19), the summary (`text-2`); for a
-  one-choice section its options in a bordered list (`radius-row`), each its label (500) and what it means (`type-small`,
+  `type-body` `text-2` ("Section · Strings lens"), Close (×).
+- Then, 20 in, 18 down, with 16 between: the title (`type-title`, `type-title-touch` on touch, in `text`; D94), the summary (`text-2`); for a
+  one-choice section its options in a bordered list (`radius-row`), each its label (500) and what it means (`type-body`,
   `text-2`), the section's own on `note-surface` with "Your choice" (`accent` on `accent-ink`, 11 at 600), or the words the section
   gives of who set it (the system voltage: `Set for India`, `Set by the app`; D87, #159); the body: headings
-  (`type-title`, in the same light), words (`text-2`), the user's own on-screen words in mono on `surface-2`, a note (`note-surface`, the note
+  (`type-section`, `text`), words (`text-2`), the user's own on-screen words in mono on `surface-2`, a note (`note-surface`, the note
   mark), a link to another topic in the accent, underlined; while the body loads, three lines of skeleton; when it cannot
   load, "This part of the help did not load. Check the connection and try again." and Try again. Then "Related" (a section heading:
-  `type-section`, 600, uppercase, in the same light) and a row per topic: its title (500), its summary in two lines at most (`type-small`, `text-2`), a chevron.
+  `type-section`, `text`) and a row per topic: its title (500), its summary in two lines at most (`type-body`, `text-2`), a chevron.
   Last, "In the docs" (the same heading) and one row: a book (18, light), the docs page's title (500), the section under it
-  (`type-small`, `text-2`), and the mark of a link that leaves the app (`external`, 16, `text-3`); it opens the docs at that section
+  (`type-body`, `text-2`), and the mark of a link that leaves the app (`external`, 16, `text-3`); it opens the docs at that section
   in a new tab (D91, the boards "UI fixes · The docs from the app").
 - A related topic or a link opens in the sheet; Back returns, as many steps as were taken; a disc pressed starts afresh.
 - The topic shown is in the address (`?help=<key>`), read when the page opens, so a shared link opens it; nothing else of the
@@ -546,34 +550,34 @@ the shell and Find), `HelpDisc`, `HelpSheet`, `HelpBody` and the components a bo
 A how-to in the help sheet: numbered steps, each with a picture of the app and callouts on it (the boards "In-App Help ·
 How-tos with pictures").
 
-- **Steps:** an ordered list. Each step: its number in a mark of the accent, 24 (`accent` on `accent-ink`, `type-label-s`
+- **Steps:** an ordered list. Each step: its number in a mark of the accent, 24 (`accent` on `accent-ink`, `type-unit`
   at 600, `shadow-primary`), a line of `line` 1 wide down from it to the next step; beside it, 12 apart, the step's title
   (600, `text`) and, 8 under it, its words (`text-2`) and its picture. 24 between steps.
 - **Picture:** the app as it is (`docs/help-content.md`, "Pictures"), the width of the step's column, its height by its
   own proportions; `radius-row`, a border of `line`, on `surface-2`. Over it, at most three callouts: a mark of the accent,
   20, at the place, its number in it; where it marks what to act on, a ring of 40 round the place (2 of `accent`,
   `shadow-help-ring`) with the mark at its lower right. Under the picture, 8 apart, the callouts' words, each after a mark
-  of 16 with its number (`type-small`, `text-2`). The picture has its words for a screen reader; the marks are not read,
+  of 16 with its number (`type-body`, `text-2`). The picture has its words for a screen reader; the marks are not read,
   their words are.
 - **Opened large (touch):** on phone and tablet a picture is a button, a magnifier in a round chip of `surface-1` at its
   lower right (28, `shadow-float`). Pressed, it opens over the sheet, the whole screen on `ground`: a head with "Pinch to
-  look closer" (`type-small`, `text-3`) and ×; the picture the screen's width, in the middle, pinched up to three times and
+  look closer" (`type-body`, `text-3`) and ×; the picture the screen's width, in the middle, pinched up to three times and
   moved with a finger, its callouts scaling with it; their words under it. × or Escape returns to the step, the sheet as it
   was.
 - **Pointer and touch:** a step says what the hand in use does, the words of a mouse where the pointer is fine, of touch
   where it is coarse; a key or a gesture in the chip of the tips (`radius-xs`, a border of `line-strong`,
-  `type-label-s` at 600).
+  `type-unit` at 600).
 - **The ways in (Find):** a ? disc beside the panel's title (6 after its words) opens the how-to of what the hand can do
   now: with the roof open, the outline tool in hand; closed, the obstacle tool in hand; the roof picked, moving it; an
   obstacle picked, moving it (`lib/outline/how-to.ts`; the first that has a topic, none while none has). A tip's Show me how
   opens its move's. A how-to of Find ends with "Show the tips on the map again".
 - **A clip (Phase 15; the boards "In-App Help · Clips"):** a picture may play a short clip of its step in its frame. At rest
   it is the picture, its callouts and their words, with a play button of the accent in its middle (48, `shadow-primary`, the
-  play icon in `accent-ink`) and the clip's length in its lower right (`type-value-xs` on `ground` at 80 %); nothing of
+  play icon in `accent-ink`) and the clip's length in its lower right (`type-unit` on `ground` at 80 %); nothing of
   the clip loads until it is pressed. Pressed: a ring in the button while it comes; playing, muted and looping, a line of
   the accent along its foot shows how far, and a press pauses it; the callouts step aside while it plays, their words stay
   under it. Paused: the play button again. Failed: the picture and its callouts, an exclamation mark in the button, and
-  "The clip did not load. The picture shows the step." (`type-small`, `text-3`). Under `prefers-reduced-motion` it plays
+  "The clip did not load. The picture shows the step." (`type-body`, `text-3`). Under `prefers-reduced-motion` it plays
   once and stops on its last frame, play again. The whole frame is one button: "Play the clip: " or "Pause the clip: " and
   the picture's words. On touch, a magnifier in a round chip of `surface-1` at its upper right (28 in a press of
   44, `shadow-float`; "Open the clip larger: " and the picture's words) opens the clip over the sheet at the width of the
@@ -586,7 +590,7 @@ and its obstacles"). `surface-1`, border `line-strong`, radius `card-s` (14), `s
 apart; 300 wide on desktop and tablet, the width of the sheet on phone. The head: an accent dot of 8, the title
 in 14 at 600, and a quiet close (×) at the right, a press of 44 on touch. Two to four rows, each a key or a gesture in a
 bordered chip (`line-strong`, radius 6, 11 at 600, at least 62 wide, centred) and what it does in 13, `text-2`. The foot:
-Show me how at the left where the move has a how-to (D81: a link in the accent, `type-small` at 500), Got it, a secondary
+Show me how at the left where the move has a how-to (D81: a link in the accent, `type-body` at 500), Got it, a secondary
 button, small, at the right.
 
 - One tip at a time. It shows when its move becomes possible, and never over what is moved: on desktop and tablet at the
@@ -739,7 +743,7 @@ parts: the catalog's types and its fetch, the filters, the search, the sorting, 
 The boards "Home" (desktop, approved in round 1), "Home · tablet 834" and "Home · phone 390" (plan phase 10, step 11,
 decision 5). Outside the shell: no top bar; the logo and the name at the top left on every size (`Logo` with
 `wordmark="always"`), 72 high (56 on phone), the page's padding 64 on desktop, 24 on tablet, 16 on phone. The headline in
-`text-hero` ("Find your roof." and "Design it in 3D." on two lines; `text-page` on phone), the subtitle in `text-lead`
+`type-display` ("Find your roof." and "Design it in 3D." on two lines; `type-title` on phone), the subtitle in `type-body-touch`
 (`text-body-touch` on phone), text-2. The search is Find's own `Search` in its look `hero`: a well of 76 (`color-well`,
 border `line-strong`, `radius-bar`, `shadow-well`; the accent line and the halo with the focus inside) with the primary
 action "Find my roof" inside it at the right, 56 high (`xl`), an arrow after the label; on phone the well is 56 high and
@@ -768,12 +772,12 @@ which does what Enter does; once a place is found, nothing. On Home the well hol
 before Find my roof, while nothing is typed. In code: `besideTheField` in `lib/places/beside-the-field.ts`.
 
 Under the search two rows of 76 (`surface-1`, border `line`, `radius-bar`,
-an icon of 22, the title in `text-title`, a line in `text-small` text-2): "Import a drawing" ("KMZ, KML or DXF with the
+an icon of 22, the title in `text-title`, a line in `type-body` text-2): "Import a drawing" ("KMZ, KML or DXF with the
 roof and its obstacles") opens the dialog of the import, "Open a project" ("A saved .rtd file, from this device or a
 colleague") the dialog of the project file; both are buttons.
 
 The demo's card (`surface-1`, border `line`, `radius-card`, `shadow-card`, padding 18 by 22): "Demo project" in
-`text-caption`, the name in `text-title`, the roof's words in `text-small` (the name and the roof of `GET /demo`, the words
+`type-body`, the name in `text-title`, the roof's words in `type-body` (the name and the roof of `GET /demo`, the words
 by `roofWordsOf`, as every card says a roof), then Capacity and Energy, year 1 as stat cells, and "Open the demo", a
 secondary button of 44 with an arrow. The capacity and the energy are the engine's numbers of the untouched demo's run on
 this device, remembered under one key of localStorage when that run lands (`lib/device/demo-run.ts`); until the demo has run
@@ -803,9 +807,9 @@ tablet, one on phone. Its tile is the thumbnail: the plan of the kept layout as 
 (`lib/device/thumbnail.ts`, drawn with the maths of the plan without WebGL: the roof on `surface-2` with the accent line,
 the setback dashed, the kept-clear areas, the obstacles in text-2, the modules in `data-gain`, north up, 3 m of ground
 about the roof), kept with the design and written again when a layout lands; a record kept before there were thumbnails
-shows the plan of its roof alone. Under the tile the name in `text-title`, the roof's words in `text-caption` text-2, the
+shows the plan of its roof alone. Under the tile the name in `text-title`, the roof's words in `type-body` text-2, the
 capacity and the energy of year 1 as stat cells, or in their place what they wait for ("Waiting for a system voltage"
-before one is chosen, "Not run yet" after; never a figure), and "Edited …" in `text-caption` text-3 ("Edited just now",
+before one is chosen, "Not run yet" after; never a figure), and "Edited …" in `type-body` text-3 ("Edited just now",
 "Edited 2 hours ago", "Edited yesterday", "Edited 24 Sep 2026"; `whenOf`, against the time the saving store last made its
 list). The tile and the name are buttons that open the design: it opens from the device and runs again, in the Studio at
 its last lens. A menu button of 32 (an `IconButton` "Menu", the icon `more`) stands at the top right of the tile; its list
@@ -855,7 +859,7 @@ layers of the DXF, what is in the KMZ and what is not, the columns of the CSV). 
 then a row of 28 for each fact with a line `line-subtle` under it: the name at the left in a column of its own (168,
 200 or 220 wide, as the board draws each list), what it is in words in text-2. A name that is the file's own (a layer,
 a placemark, a column) stands in mono 13; a name in words (the "Not in the file" rows) in Geist. A caption may follow
-the rows in `text-caption` text-2 ("R2010 · metres · x east, y north"). On phone the words take the next line under
+the rows in `type-body` text-2 ("R2010 · metres · x east, y north"). On phone the words take the next line under
 the name. A description list: the names are the terms.
 
 In code: `FactRows` (`components/handover/FactRows.tsx`); the rows of each file in `lib/handover/cad-view.ts`,
@@ -873,7 +877,7 @@ Trigger: as a secondary button, border `line`, height 40 (44 on touch): label in
 `line-strong`) and the chevron is turned. Cannot be used: opacity 0.45, no shadow.
 List: floating, `surface-1`, border `line-strong`, radius `radius-card-s`, `shadow-float`, padding 6, rows 2
 apart. Row: height 40, radius 8, padding 0 10; a tick of 16 in accent before the choice that is taken, which
-is in Geist 500; one fact at the right in `text-caption`, text-3. The row under the pointer or the keyboard is
+is in Geist 500; one fact at the right in `type-body`, text-3. The row under the pointer or the keyboard is
 on `surface-2`.
 On phone and tablet the list is a bottom sheet with rows of 52.
 `listbox` with `option`; the arrows go through the choices, Enter takes one, Escape closes and gives the focus
@@ -915,7 +919,7 @@ are in `list-keys.ts`.
 
 ## File drop
 Height 88, radius `radius-row`, padding 0 18, gap 14. An icon of 20, a title in Geist 500 and one line in
-`text-caption`; at the right a secondary button of 36.
+`type-body`; at the right a secondary button of 36.
 
 | State | Surface and line | Content |
 |---|---|---|
@@ -941,7 +945,7 @@ than 88.
 Over a dimmed screen (`rgba(5,7,10,.72)`), in its middle. Panel: width 340 to 440 (wide: 760 on desktop, 680 on tablet, for
 the equipment picker), `surface-1`, border
 `line-strong`, radius `radius-panel`, `shadow-panel`, padding 22. Title in the display face, 22 / 28
-(`text-lens-touch`), a quiet icon button of 32 to close at its right; body in text-2; actions at the right
+(`type-title-touch`), a quiet icon button of 32 to close at its right; body in text-2; actions at the right
 with 8 between them: quiet, secondary, primary, the primary one last.
 Phone: a bottom sheet with the drag handle; the actions under each other, 48 high, the primary one on top,
 the quiet one (44) last.
@@ -980,7 +984,7 @@ In code: `Tooltip`, around its control. Radius `radius-item`, the key in `radius
 
 The value of a chart under the pointer, the finger or the keyboard focus (the board "Charts, tooltip and table"; plan
 phase 8, decision 18) is a tooltip of two lines, padding 4 10: the value first, in mono 12 Geist Mono 500 in text
-("68.4 MWh · 191 kWh/kWp"), then what it is of in `text-caption` text-2 ("Mar"). It stands over the bar or the marker,
+("68.4 MWh · 191 kWh/kWp"), then what it is of in `type-body` text-2 ("Mar"). It stands over the bar or the marker,
 8 from it, at once; on touch a tap brings it, and a scroll takes it away. In code: `ValueTooltip`. It is never the
 only place: the Table tab of the chart holds every value. Beside a block of the single-line diagram it stands at the
 block's right, 8 from it (`side="right"`), so that no other block is hidden; the list under the diagram holds every block.
@@ -1011,9 +1015,9 @@ store without React.
 Head: height 36, padding 0 8, `text-section` in text-3, a line `line` under it. Rows: height 44, padding 0 8,
 a line `line-subtle` under each. The first column in Geist 500, numbers at the right in mono 13, a status mark
 of 16 after the number it belongs to. The row that is chosen is on `surface-2`. A caption under the table in
-`text-caption`. Real `table`, `th` with `scope`.
+`type-body`. Real `table`, `th` with `scope`.
 Phone: each row is a card on `surface-2`, radius `radius-row`, padding 14: the name in `text-title` with its
-mark, then the values as a list of three columns, label in `text-caption` over the value in mono 15.
+mark, then the values as a list of three columns, label in `type-body` over the value in mono 15.
 
 In code: `Table`; a row as a card in `table-cells.ts`.
 
@@ -1023,8 +1027,8 @@ In code: `Table`; a row as a card in `table-cells.ts`.
 - The row that is chosen says so to a screen reader (`aria-current`). Its card has the line and the halo
   of a selected card.
 - The cards are a list with the caption of the table as its name; the caption stands under them.
-- A cell can hold a quieter second line under its value, in `text-caption` text-3 (the inverter under its MPPT),
-  or lines of its own, each with its label in `text-label-s` text-3 before a value in mono 12 and words after it
+- A cell can hold a quieter second line under its value, in `type-body` text-3 (the inverter under its MPPT),
+  or lines of its own, each with its label in `type-unit` text-3 before a value in mono 12 and words after it
   in Geist text-2 ("Imp 54.3 of 65.0 A", "Isc 57.2 A of not known"); in the table only, the card shows the value
   (the board "Inverter and sizing").
 - A table at the inspector's width pads its cells 6 rather than 8 (`dense`); a card whose values are long lays
@@ -1081,7 +1085,7 @@ itself, the block is `control-active` (`onTile`; the board "Shade map").
 ## Vitals: states
 | State | What is shown |
 |---|---|
-| Updating | Every value at opacity 0.55. A turning ring of 16 beside the energy. The last cell, on `surface-1`, has the ring of 20 with its arc, "Updating energy" in Geist 500, 13, and the step of the engine in `text-caption` |
+| Updating | Every value at opacity 0.55. A turning ring of 16 beside the energy. The last cell, on `surface-1`, has the ring of 20 with its arc, "Updating energy" in Geist 500, 13, and the step of the engine in `type-body` |
 | First load | Skeletons in every cell. The last cell has the ring of 20, "Opening" and the name of the project, and the step of the engine |
 | The run failed | The last good values, not dimmed. The last cell is a note: "Energy was not updated", "Values are of the design before · Try again". It opens the notes |
 | No options, desktop | Three cells, Roof, Positions, "If all were used", and the note on `note-surface`, in the words of the API ("No string length fits this inverter", and its message). It leads to the Strings lens. Drawn first for a missing system voltage (D37), which a design the app makes no longer has (D87) |
@@ -1112,8 +1116,8 @@ shadow `-16px 0 40px rgba(0,0,0,.5)`, layer `z-sheet`. Phone: a bottom sheet.
 Head: "Notes to review" in the display face 22 / 28, the count in mono 13, a quiet icon button to close (38,
 44 on phone). Padding 20 (16 on phone); notes 10 apart.
 A note: `note-surface`, border `note-line`, radius `radius-row`, padding 14: the mark of 20, a title in Geist
-500, the reason in `text-small`, text-2, in the words of the engine; under them where it belongs, in
-`text-caption`, text-3, and a secondary button of 36 that leads there ("Open Array") or acts ("Try again").
+500, the reason in `type-body`, text-2, in the words of the engine; under them where it belongs, in
+`type-body`, text-3, and a secondary button of 36 that leads there ("Open Array") or acts ("Try again").
 Nothing to review: one row on `surface-1` with a tick of 20: "Nothing to review", "Every check of the design
 fits."
 
@@ -1141,11 +1145,11 @@ The trigger is on `surface-2` with a border `line`, its chevron turned. Panel: 3
 `line-strong`, radius `radius-card-s`, `shadow-float`, padding 6.
 "This design": the name with a tick in accent, and under it the state of saving. "On this device": the designs
 kept here, the newest edited first, each a row of 44 like the actions' (a file icon of 18 in text-2, the name, and
-under it in `text-caption`, text-3, the capacity of its last run, "357.28 kWp", or the roof's words before a
+under it in `type-body`, text-3, the capacity of its last run, "357.28 kWp", or the roof's words before a
 run with a chosen option, "90.0 × 40.0 m flat roof, tilted rows": under the name, not at its right, since the
 names and the roof's words are long and the panel is 340); the design that is open has the tick in accent
 in the place of the icon. Without any, "Designs you save appear here." Then the actions, rows of 44 with an icon
-of 18 in text-2 and a fact at the right in `text-caption`, text-3: New design (Find the roof), Open a project
+of 18 in text-2 and a fact at the right in `type-body`, text-3: New design (Find the roof), Open a project
 (.rtd), Import a drawing (KMZ, KML, DXF), Save a copy (.rtd), Home. Sections are divided by a line `line`; their
 labels are `text-section`.
 On phone and tablet it is a bottom sheet.
@@ -1177,7 +1181,7 @@ made by `rowsOnTheDeviceOf` (`components/shell/switcher-view.ts`) of the designs
 Its mark before the design's name in the project switcher's trigger, on every size (the boards "UI fixes · The state
 of saving, a mark before the name", D74): a slot of 14, whatever the state, so that the name never moves; the words
 are the trigger's tooltip and description, never in the top bar. In the switcher's menu, under the name, mark and
-words as below (`text-caption`), Not saved a button that opens the notes.
+words as below (`type-body`), Not saved a button that opens the notes.
 
 | State | Mark | Words |
 |---|---|---|
@@ -1187,7 +1191,7 @@ words as below (`text-caption`), Not saved a button that opens the notes.
 | Could not be saved | A note of 16 (14 in the trigger's slot) | Not saved. It is a button and opens the notes |
 
 In code: `SaveState` (the menu's), `SaveMark` (the trigger's), `SAVING_WORDS`. Before Phase 10 the shell shows "Not kept on this device" for every design. In the
-project switcher the words are `text-caption`.
+project switcher the words are `type-body`.
 
 ## Top bar and navigation
 As `Main.dc.html`, `StudioTablet.dc.html` and `StudioPhone.dc.html` draw them.
@@ -1220,7 +1224,7 @@ beside 3D or Plan alone. Pressed, it opens a floating panel of 240 (the `Floatin
 `surface-1`, border `line-strong`, `radius-card-s`, `shadow-float`, padding 6) 6 under it with their right edges in
 line, on every size, not a bottom sheet: the title "Layers" in `text-section` with a close at its right (the icon
 button `quiet` `xs`, the close icon of 18, "Close"; D70), and one row of 44 (48 on touch) with the
-switch "Satellite imagery", off by default (D70), its hint "Off: the plain grid" in `text-caption` text-3. On: the imagery
+switch "Satellite imagery", off by default (D70), its hint "Off: the plain grid" in `type-body` text-3. On: the imagery
 under the building with its attribution at the stage's bottom left. Off: the plain ground of the 3D palette with its
 grid, and no attribution. The switch takes effect at once; Escape, the close, the button and a press beside the panel close it,
 and the focus goes back to the button. What it sets is of the view (the view store), not of the design.

@@ -20,7 +20,7 @@ export const TABLE_PANEL = "rounded-card border border-line bg-surface-1 p-4 sha
 export function BillOfMaterials({ view, isDimmed = false }: Props) {
   return (
     <div data-testid="bom" className={classNames("flex flex-col gap-2.5", isDimmed && "opacity-updating")}>
-      <span className="type-caption text-text-2 tablet:hidden">{IN_THE_REPORT}</span>
+      <span className="type-body-touch desktop:type-body text-text-2 tablet:hidden">{IN_THE_REPORT}</span>
       <Table caption={view.caption} columns={view.columns} rows={view.rows} keyOf={view.keyOf} className={TABLE_PANEL} />
     </div>
   );

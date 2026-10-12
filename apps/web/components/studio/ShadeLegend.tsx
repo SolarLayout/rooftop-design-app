@@ -27,23 +27,23 @@ export function ShadeLegend({ size, className }: { size: Size; className?: strin
 
   return (
     <div data-testid="shade-legend" className={classNames("flex flex-col gap-1.5 rounded-row border border-line bg-surface-1 px-3 py-2.5 shadow-float", className)}>
-      <span className="type-caption font-medium text-text">{legend.title}</span>
+      <span className="type-body-touch desktop:type-body font-medium text-text">{legend.title}</span>
       {map ? (
         <>
           <span className="flex gap-0.5" aria-hidden="true">
             {SWATCHES.map((swatch) => (
-              <span key={swatch} className={classNames("block h-2.5 rounded-xs", size === "phone" ? "w-6" : "w-10", swatch)} />
+              <span key={swatch} className={classNames("block h-2.5 rounded-control", size === "phone" ? "w-6" : "w-10", swatch)} />
             ))}
           </span>
-          <span className="flex justify-between type-tick text-text-3" aria-hidden="true">
+          <span className="flex justify-between type-unit text-text-3" aria-hidden="true">
             {marks.map((mark, index) => (
               <span key={index}>{mark}</span>
             ))}
           </span>
-          {size === "phone" ? null : <span className="type-caption text-text-2">{legend.of}</span>}
+          {size === "phone" ? null : <span className="type-body-touch desktop:type-body text-text-2">{legend.of}</span>}
         </>
       ) : (
-        <span className="flex items-center gap-2 type-caption text-text-2">
+        <span className="flex items-center gap-2 type-body-touch desktop:type-body text-text-2">
           <ProgressRing size={16} />
           {legend.of}
         </span>

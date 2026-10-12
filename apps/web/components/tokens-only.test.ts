@@ -51,7 +51,7 @@ describe("what counts as a raw value", () => {
   test.each([
     '<div className="bg-accent text-accent-ink shadow-primary rounded-control" />',
     '<div className="h-10 gap-2 px-3.5 size-9.5" />',
-    '<div className="h-(--size-vitals) text-(length:--text-title)" />',
+    '<div className="h-(--size-vitals) text-(length:--text-section)" />',
     '<div className="disabled:opacity-disabled z-float duration-press" />',
     '<path d="M12 3v12m0 0-4-4m4 4 4-4M4 19h16" />',
     "const [first] = items[0];",

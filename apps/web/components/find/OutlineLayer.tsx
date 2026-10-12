@@ -80,7 +80,7 @@ const CORNER_EDITED = "pulsing-corner";
 const OBSTACLE_TARGET = classNames(TARGET, "desktop:size-6");
 // The ring of a midpoint is as wide as the line of the outline.
 const MIDPOINT = "block size-2.5 rounded-full border-outline border-accent-ink bg-accent";
-const LABEL = "block rounded-seg bg-ground px-2.25 py-0.75 type-value-small font-medium text-text shadow-tooltip select-none";
+const LABEL = "block rounded-control bg-ground px-2.25 py-0.75 type-mono-touch desktop:type-mono font-medium text-text shadow-tooltip select-none";
 // The handle that turns a box: a round button above its top edge, this many pixels up.
 const TURN = classNames(
   "flex size-touch cursor-grab items-center justify-center rounded-full border border-accent bg-surface-1 text-accent shadow-float",

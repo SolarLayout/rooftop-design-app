@@ -72,7 +72,7 @@ function DaySection({ size }: { size: Size }) {
           <Select label="Month" options={MONTH_OPTIONS} value={String(parts.month)} onChange={(month) => setDay(dayOfYearOf(parts.day, Number(month)))} className="grow" />
         </div>
       ) : null}
-      <p className="type-caption text-text-3">
+      <p className="type-body-touch desktop:type-body text-text-3">
         {chosen === ANY_DATE.id ? `Day ${shownDay} · the design day is ${dateOf(designDayOfYear(designDoy, lat)).long}` : designDayLineOf(designDoy, lat)}
       </p>
     </section>
@@ -97,7 +97,7 @@ function SunAtSection() {
           <Stat look="tile" label="Bearing" value={tiles.bearing.value} unit={tiles.bearing.unit} />
         </dl>
       ) : (
-        <p className="type-caption text-text-2">{time.day ? "The sun is down" : failure ? "The sun was not fetched" : "The sun's day is on its way"}</p>
+        <p className="type-body-touch desktop:type-body text-text-2">{time.day ? "The sun is down" : failure ? "The sun was not fetched" : "The sun's day is on its way"}</p>
       )}
     </section>
   );
