@@ -1,6 +1,6 @@
 # V2 · Voice: the standard for every word the user meets
 
-The second deliverable of the V2 project. It applies to the app's interface, its help, its errors, the engine's
+The voice V2 applies, and every pull request after it keeps. It applies to the app's interface, its help, its errors, the engine's
 sentences that reach the screen, the deliverables' captions, and Present. The docs site takes it too when V2 lands.
 It replaces the "Writing" section of `docs/design/guidelines.md` once V2's first screens are approved; until then
 both hold, this one where they differ.

@@ -95,9 +95,8 @@ referrers now hold `http://localhost:4710` and `http://127.0.0.1:4710` beside 47
 places, one picked opened Find at it with the imagery (findAddressCandidates and the World_Imagery tiles all 200). The screen pictures' baselines are darwin only, so their tests cannot pass on Linux.
 The owner (2026-10-11): the browser tests are set aside; they are broken and will be fixed later. Until then no browser
 group runs, here or in the cloud, and `bun check --skip=e2e` is the check.
-**Next:** the owner reads `plan/v2/audit.md` and `plan/v2/voice.md` and agrees the order of work; then the first
-V2 screens are designed as boards (the first open of the Studio, Find's first step, the problem states) and approved
-before they are built. The map from the cloud works (search, Find and its imagery on `localhost:4710`). Later, the browser tests fixed (#157's suites, #151's mobile fixes, the Strings lens pictures whose options
+**Next:** the V2 design session, resume prompt `plan/resume/020-v2-design.md`: the boards of V2 on a page of the canvas,
+one set at a time for the owner's approval, then the epic and its issues on GitHub. Nothing of V2 is built before that. The map from the cloud works (search, Find and its imagery on `localhost:4710`). Later, the browser tests fixed (#157's suites, #151's mobile fixes, the Strings lens pictures whose options
 D and E #160 changed, the kit and shell failures above).
 
 ## Where we are
@@ -127,11 +126,12 @@ D and E #160 changed, the kit and shell failures above).
 ## In flight
 
 **V2** (opened 2026-10-12, `plan/v2/README.md`): the product made usable by a new user alone. Delivered the same day: the
-audit of the whole app at three sizes and of every user-facing string (`plan/v2/audit.md`, 103 issues in eleven categories,
+audit of the whole app at three sizes and of every user-facing string (`plan/v2/audit.md`, 121 issues in twelve categories,
 11 of them P0, the ten that matter most in order) and the voice (`plan/v2/voice.md`: five rules, instructions in the
 imperative and the active voice as the owner set out, problems as cause then remedy, one name per thing, a checklist for
-pull requests), with the strings' inventory as evidence. Nothing built yet; the audit's directions are proposals for
-boards. Before it: #114 done (2026-10-11): the boards "UI fixes · The strings' legend with many MPPT" drawn
+pull requests), with the strings' inventory as evidence. The audit's category L measures type, spacing, placement and colour on the live app. Nothing built yet; the
+audit's directions are proposals for boards; the resume prompt for the design session is `plan/resume/020-v2-design.md`.
+Before it: #114 done (2026-10-11): the boards "UI fixes · The strings' legend with many MPPT" drawn
 (`docs/design/mockups/build_ui_fixes_strings_legend.py`, its prototype a local branch of the cloud container, never merged),
 approved (D92), built and merged (#199); the three boards on the canvas (version 52). Then #179's rest, in six pull
 requests, each test-first with the help kept true: #200 (items 6, 7, 8: files too large refused in the app's words, the

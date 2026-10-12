@@ -1,13 +1,13 @@
 # V2 · UX audit of SolarLayout Rooftop
 
-The first deliverable of the V2 project (`plan/v2/README.md`). The whole app was walked and read, screen by screen, at
+The issues V2 fixes (`plan/v2/README.md`). The whole app was walked and read, screen by screen, at
 desktop 1440 × 900, tablet 834 × 1194 and phone 390 × 844, on the test stack at `main` dc34cf4 (2026-10-12): Home, Find
 in every state, the by-hand path, the four lenses of the Studio with their pickers, menus and help, Performance,
 Handover's eight items, Present, a run that failed, and Home with designs on the device. Beside the walk, every
 user-facing string of the web app and the API was inventoried and read against the bar set for V2. The measurements
 quoted (what is in view, what scrolls) are from the walk's own script.
 
-The second deliverable, the voice, is `plan/v2/voice.md`. Every language issue below points to a rule there.
+The voice V2 applies is `plan/v2/voice.md`. Every language issue below points to a rule there.
 
 ## How to read it
 
@@ -20,7 +20,7 @@ The second deliverable, the voice, is `plan/v2/voice.md`. Every language issue b
 | P2 | Friction for everyone; the user recovers. |
 | P3 | Polish. |
 
-**Categories** A to K below. Each issue has an id (V2-nn), a priority, where it is, what is wrong, and the direction.
+**Categories** A to L below. Each issue has an id (V2-nn), a priority, where it is, what is wrong, and the direction.
 The direction is a proposal to design against, not a decision: V2's screens are designed and approved before they
 are built, as every screen of this product is.
 
@@ -39,7 +39,8 @@ are built, as every screen of this product is.
 | I · Help | 0 | 2 | 3 | 0 | 5 |
 | J · Performance, Handover and Present | 0 | 3 | 6 | 2 | 11 |
 | K · Accessibility | 0 | 1 | 3 | 1 | 5 |
-| Total | 11 | 43 | 40 | 9 | 103 |
+| L · Placement, spacing, proportion, type and colour | 0 | 9 | 7 | 2 | 18 |
+| Total | 11 | 52 | 47 | 11 | 121 |
 
 **The ten that matter most**, in order:
 
@@ -531,6 +532,120 @@ aria names; the visible affordance is the icon. Direction: a label on hover and 
 **V2-103 · P3 · Reduced motion** stops the sun's play but the Present tour still moves the camera. Direction: Present
 under reduced motion shows the scenes as stills.
 
+## L · Placement, spacing, proportion, type and colour
+
+Measured on the live app at the three sizes (`vis.mjs` in the session's scratchpad: every visible text element's
+family, size, weight and colour; the effective background and the contrast; every control's size and position by
+thirds of the window; the gaps between siblings; the characters per 1,000 px² of each region; the elements in the
+accent). The judgements are against what is known of reading and attention: the eye enters at the top left and
+sweeps in an F on a dense page and a Z on a sparse one; it comes to rest at the bottom right (the terminal area);
+things near each other are read as one (proximity), things alike as one kind (similarity), the odd one out is seen
+first (contrast); a target's cost is its distance over its size (Fitts); choices cost by their count (Hick); a line
+reads best at 45 to 75 characters; a scale reads as a scale when its steps are at least a quarter apart.
+
+**V2-104 · P1 · The eye's path is broken on every Studio lens.** The title is at the top left of the stage (x 96,
+y 77), the inputs at the right (the first field at x 1,149, y 365), the figures at the bottom left (the vitals), the
+primary at the top right (Export, x 1,320). Each corner holds something and the path between them crosses the roof
+twice. On Find it is the same: the title and the panel at the right (x 1,065), the search field at the top left (x
+121), 950 px apart, though the panel is what explains the search. Direction: one path: the question at the top of
+the inputs, the inputs down the column, the action at the column's foot (the terminal area of that column); what
+is not the step's business out of the corners.
+
+**V2-105 · P1 · The primary is the smallest important thing.** Export is 100 × 36 px at the top right; an obstacle
+row is 46 px, an option card 52 px, Build this roof on Find 330 × 56. The guidelines' one accent should make the
+primary the heaviest thing on the screen; the measured 15 to 19 accent elements per lens (V2-110) make it one
+amber thing among many. Direction: one primary per screen at 44 to 56 px, in the terminal area of the work column;
+Export a secondary on Handover.
+
+**V2-106 · P1 · Eleven control heights on one screen.** On the Roof lens at 1440: 20 (a field's input), 24 (help
+disc), 30 (segment), 32 (workspace tab), 36 (Present, Export, Fit), 38 (north, Layers), 40 (project name), 44, 46
+(obstacle row), 52 (option card), 56 (field box). The top bar alone has 32, 36 and 40 in one row. Direction: three
+heights: 32 compact (in tables and the stage's floating controls), 40 standard, 48 primary; one row, one height.
+
+**V2-107 · P1 · The spacing scale is used at its small end only.** Between siblings in the inspectors the measured
+gaps are 2, 6, 10 and 22 px; on Performance 0 px (15 pairs of rows touching), 6 and 20. The section gap, 22, is
+under twice the row gap, 12, so sections do not separate; the grid of Edges and access (8 px both ways) reads as
+one 6-cell table, not as pairs. Proximity needs a ratio of about 3 between the inside of a group and the outside.
+Direction: 8 inside a group, 24 between groups, 40 between sections; the number of steps in use halved.
+
+**V2-108 · P1 · Density, by region.** Characters per 1,000 px² in view: the Roof inspector 1.4, the Array 2.5, the
+Strings 4.6 (desktop); the phone's Studio main region 8.8 to 10.8, the Find sheet 4.2 at the half stop. The Strings
+inspector is three times as dense as the Roof's and holds no white space between its sections beyond the 22 px.
+Handover's preview region is at 0.56 with a 133 px empty band under the bill of materials and most of the right
+half empty. Direction: a density budget per region (about 2 at desktop, 4 on phone), met by collapsing (D · V2-25)
+and by moving the proofs behind disclosures; the empty half of Handover given to the preview.
+
+**V2-109 · P1 · 12 px is the body.** The most frequent text style on every Studio lens is Geist 12 px regular (28
+elements on the Roof lens, 25 on Strings, 23 on Array), over 14 px regular (23, 20, 23). On phone it is the same:
+12 px first (12 to 16 elements), the 15 px body third or fourth. The tokens name 12 px "caption: hints, labels of
+values, units"; in use it carries labels, facts, notes and the options' line of rules. Direction: 14 (desktop) and
+15 (touch) are the floor for anything the user must read; 12 for a unit beside a figure and nothing else; 11 px
+(the ticks, the Esri line at 32 characters a line, the lens rail's labels) only where print would use it.
+
+**V2-110 · P1 · The accent is on 15 to 19 things per lens.** Counted at 1440: Roof 15, Array 17, Strings 19 (phone
+Strings 17): the five section headings in amber with a glow (`--shadow-heading`), the help discs, Export, Play, the
+sun, the time pill's fill, the selected option's ring, the legend's inverter chip, the obstacles' Add. The
+guidelines allow the accent for the sun, the primary, selection, focus and notes, and no glow but the sun's and the
+primary's; the headings' glow is a second sun on every panel. Direction: the accent on the primary, the selection
+and the notes alone (3 to 5 things per screen); headings in `text-3` at 500, no glow; the discs in the line colour.
+
+**V2-111 · P1 · Secondary text outnumbers primary.** Of the visible text elements, `text-2` (#A9B2C0) is the
+majority on most screens: Performance 80 to 46, the Roof lens 48 to 43, Find by hand 22 to 10. When most text is
+grey, grey no longer means secondary, and the hierarchy of the page flattens to two greys. Direction: primary text
+for what the user reads (labels, values, captions of cards), secondary for what qualifies it (units, sources,
+hints), in a ratio near 3 to 1.
+
+**V2-112 · P1 · Four typographic voices on one screen.** Bricolage 600 for the title, Geist 400 and 500 for text,
+Geist Mono 400 and 500 for figures and file names, and Geist 600 uppercase tracked for the section labels: on the
+Strings lens 18 distinct family-size-weight combinations in view (Performance 18, Array 16, Roof 15; the phone's
+Strings 15). The sizes in use across the app are 11, 12, 13, 14, 15, 16, 17, 22, 26, 30, 34, 44, 72 and 76: steps of
+one pixel at the small end, where a scale should step by a quarter. Direction: a scale of six (12, 14, 16, 20, 26,
+36) plus two display sizes; mono only in tables, fields and the schedule; uppercase dropped; at most eight styles on
+a screen.
+
+**V2-113 · P2 · Values heavier than their labels.** In the input panels the label is Geist 14 regular in `text-2`
+and the value Geist Mono 14 medium in `text`: the value is darker and heavier than the thing it belongs to, so the
+eye lands on "0.90 m" and must look back for "Parapet". It is right for a read-out and wrong for a form. Direction:
+in a form, label and value at one weight, the label in primary text; in a read-out, the value leads.
+
+**V2-114 · P2 · Lines too long and too short.** Performance's subtitle runs to 101 characters at 14 px on one line
+(1,360 px); the Find lead on tablet to 106 characters at 15 px; the Esri attribution wraps at 32 characters at 11
+px. Direction: prose capped at 72 characters (about 560 px at 14 px); the attribution one line at the map's foot.
+
+**V2-115 · P2 · The hero scale on Home.** 72 px display over 18 px lead over 16 px cards: a ratio of 4.5 between the
+first two steps, a marketing page's scale, for a screen whose job is a search field (A · V2-03). On phone the same
+headline at 30 px takes a third of the first screen before the field. Direction: the page title at 30 (desktop)
+and 22 (phone), the field the largest thing after it.
+
+**V2-116 · P2 · Touch targets on phone.** The help discs are 16 px wide by 44 high (nine of them on the Studio's
+sheet); the Array lens's tilt stepper is 26 × 26; the fields' inputs 64 × 20 inside a 44 box that is not all
+tappable. Direction: 44 × 44 for every target, discs included; the whole field box focuses its input.
+
+**V2-117 · P2 · Icon-only controls at the eye's entry.** At 1440 Find shows 11 icon-only buttons (back, north, zoom
+in, zoom out, undo, redo, clear, square the corners, three help discs) and the Studio 8 (north, Layers, Play, the
+time, four discs); on tablet Present is a bare triangle. The first thing the eye meets at the top left of Find is
+an icon-only back arrow and a search field whose placeholder is cut. Direction: words on the actions a new user
+takes (Undo, Clear), icons alone for what is universal (zoom, close); the back arrow with "Home".
+
+**V2-118 · P2 · The stage's proportions.** Desktop: rail 72, stage 984, inspector 384 (5 : 68 : 27 of the width);
+the top bar 57 and the vitals 78 take 15 % of the height, so the roof has 708 px. Phone: the stage 252 of 844 (30
+%), the vitals 87, the sheet's peek 84: the roof is the smallest region on the one screen whose idea is that the
+roof is the interface. Tablet: the stage 508 (43 %) and the inputs begin at 740. Direction: the stage not under
+40 % of the height on phone (the vitals folded into the sheet's head); on desktop the vitals as a row of the
+inspector's head, the stage whole.
+
+**V2-119 · P2 · Low contrast in the charts.** The month chart's value labels (11 px, white on the gain blue) measure
+3.3 : 1, under the 4.5 floor for text that size; the shade map's lightest step over the stage and the loss chain's
+zero marks are near the line. Direction: chart labels in the text colour on the surface, beside the bar, not on it.
+
+**V2-120 · P3 · Rounding.** Radii 6, 7, 8, 9, 10, 12, 14, 16, 18, 22 and full: eleven, where the nesting of controls in
+rows in cards in panels needs four (control, row, card, panel) with the inner radius the outer's less the padding.
+Direction: four radii and the rule.
+
+**V2-121 · P3 · The glow and the fill of the time pill.** The time pill's track is filled in the accent to the
+thumb and the heading glows: the two brightest amber things on the Roof lens are the time (which the lens does
+not use) and the headings (which are not actions). Direction: V2-32 and V2-110.
+
 ## What was not audited
 
 - The PDF report's pages beyond their words (a design task of its own).
@@ -543,6 +658,10 @@ under reduced motion shows the scenes as stills.
 - Walk: a Playwright script in the scratchpad, run against the test stack, 57 states at 1440, the same at 834 and
   390; for each state a picture, the primary buttons' position against the window, the scrollers' visible and total
   height, the controls in view, the headings and the page's text.
+- Visual: a second script measured every visible text element (family, size, weight, colour, contrast against
+  the effective background), every control (size, position by thirds of the window, icon-only or not), the gaps
+  between siblings, the characters per 1,000 px² of each region and the elements in the accent, on nine states at
+  each size (category L).
 - Copy: every string of `apps/web` (components, lib, content/help) and of `apps/api/src` that reaches the user,
   marked for jargon, sentence-where-a-label-does, flowery, tautological, inconsistent.
 - The bar: the owner's words of 2026-10-12 ("standard, direct; not tautological, flowery, emotional, dramatic,
