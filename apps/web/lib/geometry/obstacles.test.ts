@@ -216,10 +216,10 @@ test("what the engine added itself is skipped: the scene draws the parapet from 
 describe("the words of an obstacle", () => {
   test.each<[Obstacle, string]>([
     [STAIR_ROOM, "Stair room, box 5.0 × 4.0 m, 3.0 m high"],
-    [WATER_TANK, "Water tank, tank ⌀ 2.5 m, 2.0 m high"],
+    [WATER_TANK, "Water tank, tank 2.5 m across, 2.0 m high"],
     [AC_UNITS[0], "AC unit 1, box 1.5 × 1.0 m, 1.2 m high"],
     [WALL, "Wall 1, wall 30.0 m long, 2.5 m high"],
-    [TREE, "Tree 1, tree, crown ⌀ 4.0 m, 6.0 m high"],
+    [TREE, "Tree 1, tree, crown 4.0 m across, 6.0 m high"],
     [BUILDING, "Building 1, building 64 m², 8.0 m high"],
   ])("%o", (of, words) => {
     expect(wordsOf(of)).toBe(words);
@@ -237,26 +237,26 @@ describe("the words of an obstacle", () => {
 // with missing heights"), and where it is hung: the top of the obstacle at its centre.
 describe("the callout of an obstacle", () => {
   test("selected: its name, then its size and its height, and that a drag moves it (the board \"Obstacle edited on the roof\")", () => {
-    expect(calloutOfObstacle(STAIR_ROOM, "selected")).toEqual({ title: "Stair room · selected", detail: "5.0 × 4.0 m · 3.0 m high · drag to move" });
-    expect(calloutOfObstacle(WATER_TANK, "selected")).toEqual({ title: "Water tank · selected", detail: "⌀ 2.5 m · 2.0 m high · drag to move" });
+    expect(calloutOfObstacle(STAIR_ROOM, "selected")).toEqual({ title: "Stair room · selected", detail: "5.0 × 4.0 m · 3.0 m high. Drag to move it." });
+    expect(calloutOfObstacle(WATER_TANK, "selected")).toEqual({ title: "Water tank · selected", detail: "2.5 m across · 2.0 m high. Drag to move it." });
   });
 
   test("a wall or a building is moved by its points in the list, not by a drag: the callout says so", () => {
-    expect(calloutOfObstacle(WALL, "selected").detail).toBe("30.0 m long · 2.5 m high · moved by its points in the list");
-    expect(calloutOfObstacle(BUILDING, "selected").detail).toBe("64 m² · 8.0 m high · moved by its points in the list");
+    expect(calloutOfObstacle(WALL, "selected").detail).toBe("30.0 m long · 2.5 m high. Move it by its points in the list.");
+    expect(calloutOfObstacle(BUILDING, "selected").detail).toBe("64 m² · 8.0 m high. Move it by its points in the list.");
   });
 
   test("a tree: its crown from where it starts to its height", () => {
-    expect(calloutOfObstacle(TREE, "selected")).toEqual({ title: "Tree 1 · selected", detail: "crown ⌀ 4.0 m from 2.0 to 6.0 m · drag to move" });
+    expect(calloutOfObstacle(TREE, "selected")).toEqual({ title: "Tree 1 · selected", detail: "crown 4.0 m across · 2.0 to 6.0 m high. Drag to move it." });
   });
 
   test("to review: the height is said to be waited for", () => {
     expect(calloutOfObstacle(STAIR_ROOM, "to-review")).toEqual({ title: "Stair room · selected", detail: "5.0 × 4.0 m · height to review" });
   });
 
-  test("a draft: no height yet, and what adds it", () => {
+  test("a draft: its size, and no height yet", () => {
     const draft = { ...STAIR_ROOM, name: "Box 7", length: 2, width: 2, height: null };
-    expect(calloutOfObstacle(draft, "draft")).toEqual({ title: "Box 7 · draft", detail: "2.0 × 2.0 m · type its height to add it" });
+    expect(calloutOfObstacle(draft, "draft")).toEqual({ title: "Box 7 · draft", detail: "2.0 × 2.0 m · no height yet" });
   });
 
   test("is hung at the middle of the east edge of the obstacle's top, clear of the height handle; a wall half way along it, a building over its centroid; a draft at the roof, over its centre", () => {

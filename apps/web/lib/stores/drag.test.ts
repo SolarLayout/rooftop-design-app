@@ -65,8 +65,8 @@ describe("the live words of a drag", () => {
     expect(liveWordsOf({ index: 0, by: "corner", obstacle: { ...STAIR_ROOM, length: 6, width: 4.5 } })).toBe("6.0 × 4.5 m");
     expect(liveWordsOf({ index: 0, by: "turn", obstacle: { ...STAIR_ROOM, rotation_deg: 15 } })).toBe("Rotation 15°");
     expect(liveWordsOf({ index: 0, by: "height", obstacle: { ...STAIR_ROOM, height: 3.5 } })).toBe("3.5 m high");
-    expect(liveWordsOf({ index: 0, by: "edge", obstacle: { ...STAIR_ROOM, kind: "cylinder", diameter: 2.5 } })).toBe("⌀ 2.5 m");
-    expect(liveWordsOf({ index: 0, by: "edge", obstacle: { ...STAIR_ROOM, kind: "tree", diameter: 4 } })).toBe("crown ⌀ 4.0 m");
+    expect(liveWordsOf({ index: 0, by: "edge", obstacle: { ...STAIR_ROOM, kind: "cylinder", diameter: 2.5 } })).toBe("2.5 m across");
+    expect(liveWordsOf({ index: 0, by: "edge", obstacle: { ...STAIR_ROOM, kind: "tree", diameter: 4 } })).toBe("crown 4.0 m across");
   });
 
   test("a place west or south of the middle of the roof is written with the true minus sign", () => {

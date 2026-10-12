@@ -22,7 +22,7 @@ export function hourOf(hour: number): string {
 }
 
 function positionsOf(count: number): string {
-  if (count === 0) return "no whole position";
+  if (count === 0) return "0 positions";
   return `${count} ${count === 1 ? "position" : "positions"}`;
 }
 
@@ -30,7 +30,7 @@ function positionsOf(count: number): string {
 export function calloutOf(part: Keepout, window: Window): Callout {
   const what = part.cause === "parapet" ? "The parapet" : (part.obstacle ?? "An obstacle");
   return {
-    title: `${window.allowShaded ? "Shaded in the window" : "Kept clear"} · ${positionsOf(part.positions)}`,
+    title: `${window.allowShaded ? "Shaded" : "Kept clear"} · ${positionsOf(part.positions)}`,
     detail: `${what} shades this area between ${hourOf(window.from)} and ${hourOf(window.to)}`,
   };
 }

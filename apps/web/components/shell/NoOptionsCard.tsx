@@ -31,7 +31,7 @@ export function NoOptionsCard({ decision, testId = "energy-waits" }: Props) {
         </div>
       </div>
       <ButtonLink href={decision.path} className="tablet:shrink-0">
-        Open the Strings lens
+        Open Strings
         <Icon name="arrow-right" size={16} className="text-text-2" />
       </ButtonLink>
     </section>

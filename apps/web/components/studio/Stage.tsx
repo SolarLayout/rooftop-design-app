@@ -240,11 +240,11 @@ function OnTheRoof({ stage, isScene }: { stage: StageStore; isScene: boolean }) 
           ) : null}
         </>
       ) : stringsShownBy && option ? (
-        <li data-testid="on-the-roof-strings">The strings follow the run</li>
+        <li data-testid="on-the-roof-strings">Strings appear when the run finishes</li>
       ) : null}
       {outlines && onTheRoof.shadowOutlines && isSunView ? (
         <li data-testid="on-the-roof-shadow-outlines">
-          {`Shadow outlines at ${hourOf(outlines.hour)}: ${outlines.polygons.length} ${outlines.polygons.length === 1 ? "polygon" : "polygons"}`}
+          {`Shadow outlines at ${hourOf(outlines.hour)}: ${outlines.polygons.length} ${outlines.polygons.length === 1 ? "shadow" : "shadows"}`}
         </li>
       ) : null}
       {layout?.layout.keepout.map((part, index) => (

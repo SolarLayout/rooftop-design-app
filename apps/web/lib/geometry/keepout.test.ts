@@ -18,13 +18,13 @@ describe("the callout of a kept-clear area", () => {
     expect(calloutOf(PARAPET, WINDOW).detail).toBe("The parapet shades this area between 09:00 and 16:00");
   });
 
-  test("one position is singular; none says so", () => {
+  test("one position is singular; none is counted as 0", () => {
     expect(calloutOf({ ...STAIR_ROOM, positions: 1 }, WINDOW).title).toBe("Kept clear · 1 position");
-    expect(calloutOf({ ...STAIR_ROOM, positions: 0 }, WINDOW).title).toBe("Kept clear · no whole position");
+    expect(calloutOf({ ...STAIR_ROOM, positions: 0 }, WINDOW).title).toBe("Kept clear · 0 positions");
   });
 
   test("with shaded positions allowed the area is used and the words say so", () => {
-    expect(calloutOf(STAIR_ROOM, { ...WINDOW, allowShaded: true }).title).toBe("Shaded in the window · 18 positions");
+    expect(calloutOf(STAIR_ROOM, { ...WINDOW, allowShaded: true }).title).toBe("Shaded · 18 positions");
   });
 
   test("a quarter hour is written as minutes", () => {

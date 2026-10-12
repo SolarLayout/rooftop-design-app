@@ -47,9 +47,9 @@ describe("the fields", () => {
 
   test("a sloped roof has its pitch and where it faces, after the edges", () => {
     const fields = roofFieldsOf({ ...DEMO, roof_type: "sloped_flush", slope_deg: 10 });
-    expect(fields.slice(-2).map((field) => [field.id, field.value, field.unit])).toEqual([
-      ["slope_deg", 10, "°"],
-      ["slope_azimuth_deg", 180, "°"],
+    expect(fields.slice(-2).map((field) => [field.id, field.label, field.value, field.unit])).toEqual([
+      ["slope_deg", "Roof pitch", 10, "°"],
+      ["slope_azimuth_deg", "Direction (azimuth)", 180, "°"],
     ]);
   });
 
@@ -104,8 +104,8 @@ describe("the facts of each section, on one line (V2 · 3)", () => {
   });
 
   test("the edges: the parapet and the setback", () => {
-    expect(edgesFactsOf(DEMO)).toBe("Parapet 0.90 m · setback 1.00 m");
-    expect(edgesFactsOf({ ...DEMO, parapet_h: 0 })).toBe("No parapet · setback 1.00 m");
+    expect(edgesFactsOf(DEMO)).toBe("Parapet 0.90 m · edge margin 1.00 m");
+    expect(edgesFactsOf({ ...DEMO, parapet_h: 0 })).toBe("No parapet · edge margin 1.00 m");
   });
 
   test("the obstacles by name, those of one kind counted", () => {
@@ -130,7 +130,7 @@ describe("the groups of Edges and access", () => {
     expect(groups.map((group) => [group.title, group.fields.map((field) => field.id)])).toEqual([
       ["At the edges", ["parapet_h", "setback_m"]],
       ["Access", ["walkway_m", "walkway_every_modules"]],
-      ["Round obstacles", ["obstacle_clearance_m"]],
+      ["Around obstacles", ["obstacle_clearance_m"]],
     ]);
   });
 
@@ -150,7 +150,7 @@ describe("the groups of Edges and access", () => {
   });
 
   test("a sloped roof adds the slope as a group of its own", () => {
-    expect(roofGroupsOf({ ...DEMO, roof_type: "sloped_flush" }).map((group) => group.title)).toEqual(["At the edges", "Access", "Round obstacles", "The slope"]);
+    expect(roofGroupsOf({ ...DEMO, roof_type: "sloped_flush" }).map((group) => group.title)).toEqual(["At the edges", "Access", "Around obstacles", "Sloped roof"]);
   });
 });
 

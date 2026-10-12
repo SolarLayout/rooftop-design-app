@@ -163,7 +163,7 @@ describe("the notes to review", () => {
     expect(notes.map((note) => note.id)).toEqual(["module-0", "not-saved"]);
     expect(notes[1]).toEqual({
       id: "not-saved",
-      title: "Not saved on this device",
+      title: "Not saved",
       reason: NOT_KEPT,
       where: "This design · on this device",
       action: { kind: "try-again", label: "Try again" },

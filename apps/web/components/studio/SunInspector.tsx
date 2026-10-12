@@ -70,7 +70,7 @@ function DaySection({ size }: { size: Size }) {
         </div>
       ) : null}
       <p className="type-body-touch desktop:type-body text-text-3">
-        {chosen === ANY_DATE.id ? `Day ${shownDay} · the design day is ${dateOf(designDayOfYear(designDoy, lat)).long}` : designDayLineOf(designDoy, lat)}
+        {chosen === ANY_DATE.id ? `Day ${shownDay} · design day ${dateOf(designDayOfYear(designDoy, lat)).long}` : designDayLineOf(designDoy, lat)}
       </p>
     </section>
   );

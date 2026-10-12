@@ -63,7 +63,7 @@ describe("the refusal", () => {
   });
 
   test("an API that was not reached, or an answer that was not its, may be tried again", () => {
-    expect(refusalOf(ApiError.unreachable(new TypeError("fetch failed")))).toEqual({ words: "The server cannot be reached. Check the connection and try again.", canTryAgain: true });
+    expect(refusalOf(ApiError.unreachable(new TypeError("fetch failed")))).toEqual({ words: "The server could not be reached. Check your connection, then try again.", canTryAgain: true });
     expect(refusalOf(ApiError.unexpected(500))).toMatchObject({ canTryAgain: true });
   });
 
