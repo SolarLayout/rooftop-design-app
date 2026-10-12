@@ -84,6 +84,14 @@ export type PlaceInAddress = {
 
 const AT = "at";
 const PLACE = "place";
+const BY = "by";
+const HAND = "hand";
+
+/** Find opened on its by-hand column: Home's "Enter the roof by hand" (V2 · 9). */
+export const FIND_BY_HAND = `${FIND}?${BY}=${HAND}`;
+
+/** Whether an address of Find asks for its by-hand column. */
+export const isByHandAsked = (params: URLSearchParams): boolean => params.get(BY) === HAND;
 
 /** The address of Find: with a place, `/find?at=<lat>,<lon>`, and for a place found by words `&place=<label>` as well. */
 export function pathOfFind(place: PlaceInAddress | null = null): string {

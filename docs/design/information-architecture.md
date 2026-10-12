@@ -8,7 +8,7 @@ separate screens, and there is no Run button.
 
 | Place | Route | Job |
 |---|---|---|
-| Home | `/` | Start or resume: search for the roof, import KMZ, KML or DXF, open a `.rtd` project, open the demo, designs on this device |
+| Home | `/` | A start screen (V2 · 9): the search for the roof first, the other ways in under it, the designs on this device, then the demo |
 | Find and outline | `/find` | The first part of the Roof step (V2 · 4): search in the column, outline the roof on satellite imagery, add what stands on it, choose the roof type, build. The Studio's work column at the right (the sheet on touch), Build pinned at its foot |
 | Studio | `/studio/[step]` | Shape the design on the 3D roof, step by step. `step` is `roof`, `array` or `strings`; `/studio/sun`, the Sun lens's old address, turns the Sun view on over the step in hand (D95) |
 | Performance | `/performance` | The energy at first sight: year 1 with Likely and Conservative, three figures; under them By month, Over 25 years, Where the energy goes, Assumptions |
@@ -64,7 +64,7 @@ tab bar on phone), and a file is pushed over the list. Export and Save a copy ar
 list.
 
 ## Flow for a new design
-1. Home: type an address, press "Find my roof".
+1. Home: type an address, press "Find the roof".
 2. Find and outline: the map goes to the address; outline the roof by corners, by rectangle, or by accepting a
    detected footprint; add what stands on it; choose the roof type, a question with a default; "Build this roof · <area>",
    pinned at the column's foot from the closed outline on (V2 · 4, D98).

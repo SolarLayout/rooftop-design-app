@@ -91,7 +91,6 @@ export const NO_NOTES: Note[] = [];
  * demo with the capacity of its run, two built here before a run with a chosen option, said by their roofs.
  */
 export const ON_THIS_DEVICE: DeviceRow[] = [
-  { id: "demo", name: "Pune demo roof", fact: "357.28 kWp", isOpen: true },
-  { id: "hinjewadi", name: "Hinjewadi Phase 2, Pune, Maharashtra", fact: "62.0 × 28.0 m flat roof, tilted rows", isOpen: false },
-  { id: "warehouse", name: "Warehouse 7, Block B", fact: "120.0 × 45.0 m flat roof, east-west", isOpen: false },
+  { id: "hinjewadi", name: "Hinjewadi Phase 2, Pune, Maharashtra", fact: "62.0 × 28.0 m flat roof, tilted rows" },
+  { id: "warehouse", name: "Warehouse 7, Block B", fact: "120.0 × 45.0 m flat roof, east-west" },
 ];

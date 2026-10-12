@@ -27,8 +27,6 @@ type Options = {
   view: ViewStore;
   api?: FlowApi;
   clock?: Clock;
-  /** Hears the run of the untouched demo when it lands (plan/phase-10-plan.md, step 11): Home's card shows its numbers. */
-  onDemoRan?: (design: DesignResult) => void;
   /** Hears a choice of stringing an edit took away, once the document is brought to the option shown. */
   onChoiceGone?: (gone: ChoiceGone) => void;
 };
@@ -60,10 +58,9 @@ export function failureOf(error: unknown): Failure {
   return { code: "unexpected_fault", message: "The app could not finish this step.", status: null, details: what };
 }
 
-export function createDesignFlow({ project, results, view, api = apiOfTheApp, clock = CLOCK_OF_THE_BROWSER, onDemoRan, onChoiceGone }: Options): DesignFlow {
+export function createDesignFlow({ project, results, view, api = apiOfTheApp, clock = CLOCK_OF_THE_BROWSER, onChoiceGone }: Options): DesignFlow {
   let followed = 0;
   /** The edit at which the demo was opened: the run of that edit is the untouched demo's. Edits only grow, so no later edit is it. */
-  let demoEdit: number | null = null;
   /** The document of the edit followed last: what the next edit is compared with. */
   let documentFollowed: Project | null = null;
   let sunCall: AbortController | null = null;
@@ -214,7 +211,6 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
     // The edit that the demo will be: until then the results say that it is on its way.
     const edit = project.getState().edit + 1;
     if (given !== undefined) {
-      demoEdit = edit;
       project.getState().open(given);
       return;
     }
@@ -227,7 +223,6 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
       .then(
         (demo) => {
           if (call.signal.aborted) return;
-          demoEdit = edit;
           project.getState().open(demo);
         },
         (error: unknown) => {
@@ -309,7 +304,6 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
           // An option chosen while the run was on its way is the one the run lands with (plan/phase-07-plan.md, decision 3).
           results.getState().designArrived(edit, withTheChoice(design, project.getState().project?.chosen_option));
           if (designEditOf(results.getState()) === edit) bringTheChoiceToTheRun(design);
-          if (edit === demoEdit) onDemoRan?.(design);
         },
         (error: unknown) => {
           if (call.signal.aborted) return;

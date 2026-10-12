@@ -5,7 +5,6 @@ import { useStore } from "zustand";
 import { createToasts, type Toasts } from "@/components/ui/toast-queue";
 import { api } from "@/lib/api";
 import { createDesignFlow, type DesignFlow } from "@/lib/flow/design-flow";
-import { demoRunOf, rememberDemoRunIn } from "@/lib/device/demo-run";
 import { designsDb } from "@/lib/device/designs-db";
 import { rememberIn } from "@/lib/device/remembered";
 import { createSaving, failureOf as savingFailureOf, type SavingState, type SavingStore } from "@/lib/device/saving";
@@ -88,11 +87,6 @@ function createStores(): Stores {
     project,
     results,
     view,
-    // The untouched demo's run is remembered on this device, so that Home's card shows its numbers (plan/phase-10-plan.md, decision 5).
-    onDemoRan: (design) => {
-      const run = demoRunOf(design);
-      if (run !== null) rememberDemoRunIn(window.localStorage)(run);
-    },
     onChoiceGone: (gone) => choicesGone.getState().heard(gone),
   });
   return { project, results, view, flow, play, toasts, downloads, saving, choicesGone, country };

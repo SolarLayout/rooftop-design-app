@@ -67,18 +67,6 @@ theme (`:root`).
 | `--color-obstacle-fill` | `rgba(11,14,19,.55)` | The fill of an obstacle drawn on the map: the ground at 55 % |
 | `--color-module-glass` | `#16294D` | The glass of the module glyph on the equipment card: the module's blue of the 3D palette |
 | `--color-module-frame` | `#33558C` | The frame of the module glyph, and the line between its two halves |
-| `--color-module-cell-line` | `#2A4675` | The line between the cells of a module drawn in the DOM: the 3D palette's `moduleCellLine` |
-| `--color-scene-roof` | `#D3D6DB` | The roof slab of the 3D view drawn in the DOM (the illustration of Home): the 3D palette's `roof` |
-| `--color-scene-roof-edge` | `#ECEEF0` | Its edges and the parapet's cap: the palette's `roofEdge` |
-| `--color-scene-parapet-lit` | `#B9BEC6` | The parapet toward the light: the palette's `parapetLit` |
-| `--color-scene-parapet-shade` | `#8E95A0` | The parapet away from it: the palette's `parapetShade` |
-| `--color-scene-wall-lit` | `#4A5262` | The building's wall toward the light: the palette's `wallLit` |
-| `--color-scene-wall-shade` | `#2E3440` | The wall away from it: the palette's `wallShade` |
-| `--color-scene-obstacle-top` | `#F1F2F4` | The top of an obstacle: the palette's `obstacleTop` |
-| `--color-scene-obstacle-lit` | `#C2C7CF` | An obstacle's face toward the light: the palette's `obstacleLit` |
-| `--color-scene-obstacle-shade` | `#868D99` | Its face away from it: the palette's `obstacleShade` |
-| `--color-scene-grid` | `#1B222D` | The grid of the ground: the palette's `gridLine` |
-| `--color-scene-ground-dark` | `#20242C` | The far edge of a wall in shade: the palette's `lightGround` |
 
 There is no error red. A result that does not fit is a note: exclamation mark in a circle, accent colour, with
 the reason.

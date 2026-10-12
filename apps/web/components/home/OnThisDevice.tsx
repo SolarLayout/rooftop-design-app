@@ -4,7 +4,7 @@ import { useState } from "react";
 import { classNames } from "@/components/ui/class-names";
 import { Dialog } from "@/components/ui/Dialog";
 import { deleteQuestionOf, type DesignCard as Card } from "@/lib/home/cards";
-import { onThisDeviceWordsOf } from "@/lib/home/home-view";
+import { designsHeadOf } from "@/lib/home/home-view";
 import { DesignCard } from "./DesignCard";
 
 /** What is done with a design of the device, by its id. */
@@ -12,7 +12,7 @@ export type DeviceActions = {
   onOpen: (id: string) => void;
   onRename: (id: string, name: string) => void;
   onDuplicate: (id: string) => void;
-  onSaveACopy: (id: string) => void;
+  onDownload: (id: string) => void;
   /** Delete was confirmed in the dialog. */
   onDelete: (id: string) => void;
 };
@@ -23,23 +23,24 @@ type Props = DeviceActions & {
   className?: string;
 };
 
-export const ON_THIS_DEVICE = "On this device";
-
 /**
- * The section "On this device" of the approved board: its label, its words, and the cards of the designs kept here, three in
- * a row on desktop, two on tablet, one on phone. Delete asks first (decision 7): the dialog with the board's question, Cancel
+ * Your designs · on this device (V2 · 9, D105): the head with how many, and the cards of the designs kept here, three in a
+ * row on desktop, two on tablet, one on phone. Delete asks first (decision 7): the dialog with the board's question, Cancel
  * with the focus so that Enter by mistake does no harm, Delete the primary action.
  */
-export function OnThisDevice({ cards, onOpen, onRename, onDuplicate, onSaveACopy, onDelete, className }: Props) {
+export function OnThisDevice({ cards, onOpen, onRename, onDuplicate, onDownload, onDelete, className }: Props) {
   const [asked, setAsked] = useState<Card | null>(null);
   const question = asked ? deleteQuestionOf(asked.name) : null;
+  const head = designsHeadOf(cards.length);
 
   return (
-    <section aria-label={ON_THIS_DEVICE} className={classNames("flex flex-col gap-1.5", className)}>
-      <h2 className="type-section text-text-3">{ON_THIS_DEVICE}</h2>
-      <p className="text-text-2">{onThisDeviceWordsOf(cards.length)}</p>
+    <section aria-label={head.title} data-testid="your-designs" className={classNames("flex flex-col gap-3", className)}>
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 className="type-section">{head.title}</h2>
+        <span className="type-body-touch desktop:type-body text-text-2">{head.count}</span>
+      </div>
       {cards.length > 0 ? (
-        <div className="mt-2.5 grid gap-3 tablet:grid-cols-2 tablet:gap-4 desktop:grid-cols-3">
+        <div className="grid gap-4 tablet:grid-cols-2 desktop:grid-cols-3">
           {cards.map((card) => (
             <DesignCard
               key={card.id}
@@ -47,7 +48,7 @@ export function OnThisDevice({ cards, onOpen, onRename, onDuplicate, onSaveACopy
               onOpen={() => onOpen(card.id)}
               onRename={(name) => onRename(card.id, name)}
               onDuplicate={() => onDuplicate(card.id)}
-              onSaveACopy={() => onSaveACopy(card.id)}
+              onDownload={() => onDownload(card.id)}
               onDelete={() => setAsked(card)}
             />
           ))}

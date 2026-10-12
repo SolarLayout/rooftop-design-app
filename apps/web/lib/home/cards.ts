@@ -1,38 +1,42 @@
-// The cards of the designs kept on this device (plan/phase-10-plan.md, step 12, decisions 6 and 7; the board "Home, designs on
-// this device"): what each card says, the newest edited first; the name of a copy; the question before a delete. Pure: the
-// components draw what this gives, and the saving store does what the menu asks.
+// The cards of the designs kept on this device (plan/phase-10-plan.md, step 12, decisions 6 and 7; V2 · 9, D105): what each
+// card says, the newest edited first: its name, the roof's words, its figures once it has run, when it was edited; its menu;
+// the name of a copy; the question before a delete. Pure: the components draw what this gives, and the saving store does what
+// the menu asks.
 import type { KeptDesign } from "../device/kept-design";
 import { whenOf } from "../device/kept-design";
 import { thumbnailOf } from "../device/thumbnail";
 import { LONGEST_NAME } from "../flow/name-field";
-import { dcCapacity, energy, type Quantity } from "../format/vitals";
+import { cardFiguresOf } from "../device/card-figures";
 
 export type DesignCard = {
   id: string;
   name: string;
   roofWords: string;
-  /** The capacity and the energy of year 1 of the last run; null while they cannot exist yet. */
-  facts: { capacity: Quantity; energy: Quantity } | null;
-  /** What the numbers wait for, in the place of the numbers; null when they are there (guidelines.md: absent with its reason, never 0). */
-  waiting: string | null;
+  /** "617.8 MWh a year · 357.28 kWp", of the last run; null before one (never 0). */
+  figures: string | null;
   /** "Edited 2 hours ago". */
   edited: string;
   /** The plan of the kept layout as an SVG (decision 6); for a record kept before there were thumbnails, the plan of its roof alone. */
   thumbnail: string;
 };
 
-export const WAITING_FOR_A_VOLTAGE = "Waiting for a system voltage";
-export const NOT_RUN_YET = "Not run yet";
+/** What a card's menu does, in its order (audit V2-60, V2-62): the project file is downloaded, never "saved as a copy". */
+export const CARD_MENU = [
+  { name: "Open", does: "open" },
+  { name: "Rename", does: "rename" },
+  { name: "Duplicate", does: "duplicate" },
+  { name: "Download the project file", does: "download" },
+  { name: "Delete", does: "delete" },
+] as const;
+
+export type CardDoing = (typeof CARD_MENU)[number]["does"];
 
 function cardOf({ id, name, document, facts, thumbnail, editedAt }: KeptDesign, now: number): DesignCard {
-  const { dcKwp, energyMwh } = facts;
-  const numbers = dcKwp !== null && energyMwh !== null ? { capacity: dcCapacity(dcKwp), energy: energy(energyMwh) } : null;
   return {
     id,
     name,
     roofWords: facts.roofWords,
-    facts: numbers,
-    waiting: numbers !== null ? null : document.system_voltage === null ? WAITING_FOR_A_VOLTAGE : NOT_RUN_YET,
+    figures: cardFiguresOf(facts),
     edited: whenOf(editedAt, now),
     thumbnail: thumbnail ?? thumbnailOf(document.roof, null),
   };

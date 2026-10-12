@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { Project } from "../api";
 import type { KeptDesign } from "../device/kept-design";
-import { cardsOf, copyNameOf, deleteQuestionOf, NOT_RUN_YET, WAITING_FOR_A_VOLTAGE } from "./cards";
+import { CARD_MENU, cardsOf, copyNameOf, deleteQuestionOf } from "./cards";
 
 // The cards of the designs kept on this device (plan/phase-10-plan.md, step 12, decisions 6 and 7; the board "Home, designs on
 // this device"): the newest edited first, each with its name, the roof's words, the capacity and the energy of its last run
@@ -36,8 +36,7 @@ describe("the cards", () => {
         id: "a1",
         name: "Pune demo roof",
         roofWords: "90.0 × 40.0 m flat roof, tilted rows",
-        facts: { capacity: { number: "357.28", unit: "kWp" }, energy: { number: "617.8", unit: "MWh" } },
-        waiting: null,
+        figures: "617.8 MWh a year · 357.28 kWp",
         edited: "Edited 2 hours ago",
         thumbnail: expect.stringMatching(/^<svg /),
       },
@@ -51,20 +50,11 @@ describe("the cards", () => {
     expect(drawn).not.toContain("data-module");
   });
 
-  test("before a system voltage is chosen the numbers cannot exist: the card says what waits, never 0", () => {
+  test("before a run the card says no figure, never 0 (V2 · 9)", () => {
     const card = cardsOf([kept({ facts: { roofWords: "62 × 28 m flat roof", dcKwp: null, energyMwh: null }, document: { system_voltage: null } })], NOW)[0]!;
 
-    expect(card.facts).toBeNull();
-    expect(card.waiting).toBe(WAITING_FOR_A_VOLTAGE);
-    expect(card.waiting).toBe("Waiting for a system voltage");
-  });
-
-  test("with a voltage but no run yet: Not run yet", () => {
-    const card = cardsOf([kept({ facts: { roofWords: "120 × 45 m flat roof, east-west", dcKwp: null, energyMwh: null } })], NOW)[0]!;
-
-    expect(card.facts).toBeNull();
-    expect(card.waiting).toBe(NOT_RUN_YET);
-    expect(card.waiting).toBe("Not run yet");
+    expect(card.figures).toBeNull();
+    expect(card.roofWords).toBe("62 × 28 m flat roof");
   });
 
   test("the newest edited first, whatever order they came in", () => {
@@ -76,6 +66,12 @@ describe("the cards", () => {
       ["Pune demo roof", "Edited 2 hours ago"],
       ["Block B", "Edited yesterday"],
     ]);
+  });
+});
+
+describe("the card's menu (V2 · 9, audit V2-60, V2-62)", () => {
+  test("Open, Rename, Duplicate, Download the project file, Delete", () => {
+    expect(CARD_MENU.map((row) => row.name)).toEqual(["Open", "Rename", "Duplicate", "Download the project file", "Delete"]);
   });
 });
 

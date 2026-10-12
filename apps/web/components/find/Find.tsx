@@ -31,7 +31,7 @@ import { howTosOf, type Tool } from "@/lib/outline/how-to";
 import { isClosedAndSettled, measurementsOf, outlineAfter, START } from "@/lib/outline/outline-state";
 import { showsMapLineOf, tipDoneBy, type TipId } from "@/lib/outline/tips";
 import { rememberTipsGone, tipsGoneOf } from "@/lib/device/tips-seen";
-import { pathOfLens, placeOfFindAddress } from "@/lib/routes";
+import { isByHandAsked, pathOfLens, placeOfFindAddress } from "@/lib/routes";
 import { latitudeOf, longitudeOf, projectOf } from "@/lib/stores/project-store";
 import { stepStatesOf } from "@/lib/flow/steps";
 import { StepTabBar } from "@/components/shell/StepNav";
@@ -187,6 +187,14 @@ export function Find() {
     const at = foundAt ?? (outline.frame ? { lat: outline.frame.centre.lat, lon: outline.frame.centre.lon } : null);
     changeHand({ lat: hand.lat ?? at?.lat ?? null, lon: hand.lon ?? at?.lon ?? null }, true);
   }
+
+  // From Home's "Enter the roof by hand" (V2 · 9): Find opens on the by-hand entry, once.
+  const isByHandFromHome = useRef(isByHandAsked(params));
+  useEffect(() => {
+    if (!isByHandFromHome.current) return;
+    isByHandFromHome.current = false;
+    enterByHand();
+  });
 
   // Edit from the Roof step: the outline of the design that is open is shown on the map, where it is.
   useEffect(() => {

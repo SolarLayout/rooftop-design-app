@@ -39,9 +39,9 @@ type Props = {
   /** What the search reads, shown in its list while it is empty and has the focus (Find's column); pressed, put into it. */
   examples?: readonly { what: string; text: string; shown: string }[];
   /**
-   * The primary action of Home's search (the board "Home"): a link to *href* while nothing is typed, so that it leads to
-   * Find by itself; with words typed it searches them, with coordinates or a link it takes them. On phone it stands under
-   * the well, as wide as it.
+   * The primary action of Home's search (V2 · 9, D105): beside the well, 56 high, a link to *href* while nothing is typed, so
+   * that it leads to Find by itself; with words typed it searches them, with coordinates or a link it takes them. On phone it
+   * stands under the well, as wide as it.
    */
   hero?: { label: string; href: string };
   ref?: Ref<SearchHandle>;
@@ -61,20 +61,15 @@ const FIELD = "flex h-10 min-w-0 items-center gap-2.5 rounded-control border bor
 const NOTE = "flex min-h-11 items-start gap-2.5 px-2.5 py-3 text-text-2";
 const NOTE_MARK = "flex shrink-0 pt-0.5";
 
-// Home's well: 76 high with the action inside at the right from tablet up; on phone the form alone is the well, 56 high,
-// and the action stands under it. The places float under the well, as wide as it: their anchor is the well's bottom edge,
-// held by whichever element is the well at the size (HERO_ANCHOR). The focus inside gives the well the accent line and the halo, as every well has; from
-// tablet up the form inside the well drops its own, or it would draw a second box.
-const HERO = classNames(
-  "relative flex min-w-0 flex-col gap-2.5 tablet:h-19 tablet:flex-row tablet:items-center tablet:gap-3 tablet:pr-2.5 tablet:pl-5",
-  "tablet:rounded-card tablet:border tablet:border-line-strong tablet:bg-well tablet:shadow-well tablet:focused:border-accent tablet:focused:shadow-well-focus",
-);
-const HERO_FORM = classNames(
-  "relative flex h-14 min-w-0 items-center gap-3 rounded-card border border-line-strong bg-well px-4 shadow-well focused:border-accent focused:shadow-well-focus",
-  "tablet:static tablet:h-auto tablet:grow tablet:rounded-none tablet:border-0 tablet:bg-transparent tablet:px-0 tablet:shadow-none tablet:focused:shadow-none",
-);
+// Home's well (V2 · 9, D105): 56 high, the largest thing on the page, with Find the roof beside it from tablet up and under it
+// on phone, as wide as it; the field's words never cut by the button (audit V2-05). The places float under the well, as wide
+// as it. The focus inside gives the well the accent line and the halo, as every well has.
+const HERO = "relative flex min-w-0 flex-col gap-3 tablet:flex-row tablet:items-stretch";
+const HERO_FORM = "relative flex h-14 min-w-0 items-center gap-3 rounded-row border border-line-strong bg-well px-4 shadow-well focused:border-accent focused:shadow-well-focus";
 const HERO_ANCHOR = "pointer-events-none absolute inset-x-0 bottom-0";
-const HERO_ACTION = "w-full max-tablet:h-12 max-tablet:rounded-row tablet:w-auto";
+const HERO_ACTION = "w-full tablet:h-14 tablet:w-auto";
+/** Home's field's words: short, so that they are never cut (V2 · 9). */
+const HERO_LABEL = "Address or coordinates";
 
 /** The field of the search: words for the geocoder, coordinates, or a maps link; the places found under it. */
 export function Search({ provider, near, onPlace, found, look = "column", examples, hero, ref, className }: Props) {
@@ -233,7 +228,7 @@ export function Search({ provider, near, onPlace, found, look = "column", exampl
         }}
       >
         {isHero ? <span ref={anchor} aria-hidden className={HERO_ANCHOR} /> : null}
-        <Icon name="search" size={isHero ? 22 : 18} className="text-text-2" />
+        <Icon name="search" size={isHero ? 20 : 18} className="text-text-2" />
         <input
           ref={field}
           type="text"
@@ -243,7 +238,7 @@ export function Search({ provider, near, onPlace, found, look = "column", exampl
           aria-expanded={isListOpen}
           aria-controls={listId}
           aria-activedescendant={marked !== null ? `${listId}-${marked}` : undefined}
-          placeholder={look === "column" ? COLUMN_LABEL : SEARCH_LABEL}
+          placeholder={look === "column" ? COLUMN_LABEL : isHero ? HERO_LABEL : SEARCH_LABEL}
           autoComplete="off"
           enterKeyHint="search"
           value={typed}
@@ -253,23 +248,10 @@ export function Search({ provider, near, onPlace, found, look = "column", exampl
           // light dismiss would otherwise take for a press outside it.
           onFocus={showExamples}
           onClick={showExamples}
-          className={classNames("min-w-0 grow truncate border-0 bg-transparent text-text outline-none placeholder:text-text-3", isHero ? "text-(length:--text-section)" : "type-body-touch desktop:type-body")}
+          className="min-w-0 grow truncate border-0 bg-transparent type-body-touch text-text outline-none placeholder:text-text-3 desktop:type-body"
         />
         {state.kind === "searching" ? (
           <ProgressRing size={16} label="Searching" />
-        ) : isHero && beside === "locate" ? (
-          // Home's well holds my location before Find my roof, while nothing is typed.
-          <Tooltip words={MY_LOCATION}>
-            <button
-              type="button"
-              aria-label={MY_LOCATION}
-              aria-busy={isLocating}
-              onClick={useMyLocation}
-              className="-mr-1.5 flex size-touch shrink-0 cursor-pointer items-center justify-center rounded-row text-text-2 press-motion focus-ring hovered:bg-control-hover hovered:text-text tablet:mr-0"
-            >
-              {locateMark}
-            </button>
-          </Tooltip>
         ) : found !== null ? (
           <span data-testid="found-at" className="hidden max-w-40 truncate type-body-touch desktop:type-body text-text-2 tablet:inline">
             {found}
@@ -280,12 +262,10 @@ export function Search({ provider, near, onPlace, found, look = "column", exampl
         hasWords ? (
           <Button type="submit" form={formId} kind="primary" size="xl" className={HERO_ACTION}>
             {hero.label}
-            <Icon name="arrow-right" size={18} />
           </Button>
         ) : (
           <ButtonLink kind="primary" size="xl" href={hero.href} className={HERO_ACTION}>
             {hero.label}
-            <Icon name="arrow-right" size={18} />
           </ButtonLink>
         )
       ) : null}

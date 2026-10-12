@@ -14,7 +14,7 @@ import { lensOf } from "@/lib/stores/view-store";
 
 type Props = { open: boolean; onClose: () => void };
 
-export const OPEN_A_PROJECT = "Open a project";
+export const OPEN_A_PROJECT = "Open a project file";
 const WHAT_IT_IS = "A project saved by this app. It opens in the Studio and runs again here.";
 
 /** What the dialog holds of the file chosen last: the file, and what the API answered for it once it has. */
