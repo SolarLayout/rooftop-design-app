@@ -48,13 +48,17 @@ def summarise(pre: Precomputed, modules: Sequence[int] | None = None) -> ShadeSu
         past_near[here] = beam_past_near + float(diffuse.sum()) * seen
     return ShadeSummary(
         modules=[int(i) for i in chosen],
-        near_pct_by_module=_lost_pct(past_near, past_horizon),
-        near_pct=float(_lost_pct(past_near.sum(), past_horizon.sum())),
-        far_pct=float(_lost_pct(past_horizon.sum(), open_sky.sum())),
+        near_pct_by_module=lost_pct(past_near, past_horizon),
+        near_pct=float(lost_pct(past_near.sum(), past_horizon.sum())),
+        far_pct=float(lost_pct(past_horizon.sum(), open_sky.sum())),
     )
 
 
-def _lost_pct(left: np.ndarray | float, of: np.ndarray | float) -> np.ndarray:
-    """What is missing in *left* against *of*, in percent; nothing where there was nothing to lose."""
+def lost_pct(left: np.ndarray | float, of: np.ndarray | float) -> np.ndarray:
+    """What is missing in *left* against *of*, in percent; nothing where there was nothing to lose.
+
+    Never below zero: shade gains no light. A hair of a gain is the rounding of the float32 hidden sky
+    against the float64 horizon's share, for a position with no near shading.
+    """
     left, of = np.asarray(left, dtype=float), np.asarray(of, dtype=float)
-    return (1.0 - np.divide(left, of, out=np.ones_like(left), where=of > 0)) * 100.0
+    return np.maximum((1.0 - np.divide(left, of, out=np.ones_like(left), where=of > 0)) * 100.0, 0.0)

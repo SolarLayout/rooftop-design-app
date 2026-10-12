@@ -84,3 +84,12 @@ def test_the_sky_behind_the_horizon_is_far_shading_not_near(demo_design):
         lost_far += count * (beam_behind + float(diffuse.sum()) * pre.shading.sky_far)
 
     assert summary.far_pct == pytest.approx(100.0 * lost_far / open_sky, rel=1e-9)
+
+
+def test_a_loss_that_rounding_takes_under_zero_is_no_loss():
+    """The hidden sky (float32) and the horizon's share (float64) round apart for a position with no
+    near shading: -2.2e-14 % on macOS, 0 on Linux. Shade never gains light, so such a loss is none."""
+    lost = shade_summary.lost_pct(np.array([1000.0 * (1 + 2e-16), 990.0]), np.array([1000.0, 1000.0]))
+
+    assert lost[0] == 0.0
+    assert lost[1] == pytest.approx(1.0)
