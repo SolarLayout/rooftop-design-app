@@ -100,7 +100,7 @@ export function daysOf(designDoy: number | null, lat: number): DayChoice[] {
 /** The line under the Day control: which day is the design day, and why. */
 export function designDayLineOf(designDoy: number | null, lat: number): string {
   const { long } = dateOf(designDayOfYear(designDoy, lat));
-  return designDoy === null ? `${long} is the design day: the winter solstice for this hemisphere` : `${long} is the design day of the array`;
+  return designDoy === null ? `Design day: ${long}, the winter solstice in this hemisphere` : `Design day: ${long}, set in the Array step`;
 }
 
 /** The day of the view that a chosen day sets: the design day as such, so that it follows the array's. */
@@ -172,7 +172,7 @@ export function sunLineOf(dayOfYear: number, lat: number, window: { from: number
 export function sunCalloutOf(hour: number, sun: Sun | null, window: { from: number; to: number }): Callout | null {
   if (sun === null || sun.elevationDeg <= 0) return null;
   const clock = hourOf(hour);
-  const title = hour === window.to ? `${clock} · end of the shade-free window` : hour === window.from ? `${clock} · start of the shade-free window` : clock;
+  const title = hour === window.to ? `${clock} · end of the shade-free hours` : hour === window.from ? `${clock} · start of the shade-free hours` : clock;
   return { title, detail: `Sun ${shown(sun.elevationDeg, 1)}° high, ${bearingOf(sun.azimuthDeg)}` };
 }
 
@@ -185,5 +185,5 @@ export function sunPathLineOf(day: SunDay, window: { from: number; to: number } 
   if (sky === "stays down") return null;
   const of = `Sun path of ${dateOf(day.dayOfYear).short}`;
   const path = day.sunriseH === null || day.sunsetH === null ? `${of}, the sun up the whole day` : `${of} from ${hourOf(day.sunriseH)} to ${hourOf(day.sunsetH)}`;
-  return window ? `${path}, the shade-free window from ${hourOf(window.from)} to ${hourOf(window.to)} thicker` : path;
+  return window ? `${path}, the shade-free hours from ${hourOf(window.from)} to ${hourOf(window.to)} thicker` : path;
 }

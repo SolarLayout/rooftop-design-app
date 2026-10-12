@@ -57,7 +57,7 @@ export function pitchLineOf(array: ArraySpec, layout: LayoutResponse | null): De
   }
   // The layout is at the pitch given: what shade-free would be is the engine's own, from the readouts (#179, item 9).
   const free = layout.readouts.shade_free_pitch_m;
-  return { value: `${shown(array.row_pitch_m as number, 2)} m`, line: free == null ? null : `Shade-free would be ${shown(free, 2)} m`, isEngine };
+  return { value: `${shown(array.row_pitch_m as number, 2)} m`, line: free == null ? null : `Shade-free spacing ${shown(free, 2)} m`, isEngine };
 }
 
 /** The switch of the pitch: off fills the field with the engine's last pitch, on hands it back to the engine. */
@@ -152,9 +152,9 @@ export const mountingHintOf = (id: MountingId, setBy: SetBy): string => (setBy.k
 /** The spacing as the last layout used it, on one line; null before one came. */
 export function spacingFactsOf(array: ArraySpec, layout: LayoutResponse | null, roofType: Roof["roof_type"]): string | null {
   if (!layout) return null;
-  if (roofType === "flat_tilted") return `Rows ${shown(array.row_pitch_m ?? layout.layout.pitch, 2)} m apart · shade-free ${windowWordsOf(array.window_start_h, array.window_end_h)}`;
-  if (roofType === "sloped_flush") return `Shade-free ${windowWordsOf(array.window_start_h, array.window_end_h)}`;
-  return `Azimuth ${shown(array.azimuth_deg ?? layout.layout.azimuth, 1)}° · shade-free ${windowWordsOf(array.window_start_h, array.window_end_h)}`;
+  if (roofType === "flat_tilted") return `Rows ${shown(array.row_pitch_m ?? layout.layout.pitch, 2)} m apart · shade-free hours ${windowWordsOf(array.window_start_h, array.window_end_h)}`;
+  if (roofType === "sloped_flush") return `Shade-free hours ${windowWordsOf(array.window_start_h, array.window_end_h)}`;
+  return `Direction ${shown(array.azimuth_deg ?? layout.layout.azimuth, 1)}° · shade-free hours ${windowWordsOf(array.window_start_h, array.window_end_h)}`;
 }
 
 /** The design days by their date: the winter solstice of the hemisphere, 21 Jun and 21 Mar (V2 · 7). */
@@ -168,7 +168,7 @@ export function spacingSentenceOf(array: ArraySpec, layout: LayoutResponse | nul
   const apart = `${shown(layout.layout.pitch, 2)} m apart`;
   if (array.row_pitch_m != null) {
     const free = layout.readouts.shade_free_pitch_m;
-    return `Rows stand ${apart}.${free == null ? "" : ` Shade-free they would stand ${shown(free, 2)} m apart.`}`;
+    return `Rows stand ${apart}.${free == null ? "" : ` The shade-free spacing is ${shown(free, 2)} m.`}`;
   }
   return `Rows stand ${apart} so that they do not shade each other from ${windowWordsOf(array.window_start_h, array.window_end_h)} on ${designDayLabelsOf(latitude)[designDayOf(array)]}.`;
 }

@@ -200,7 +200,7 @@ export function SunTimeline({ size, className }: { size: Size; className?: strin
           {time.window ? (
             <span className="ml-auto flex items-center gap-2 type-body-touch desktop:type-body text-text-2">
               <span aria-hidden="true" className="h-1 w-3 rounded-full bg-accent" />
-              Shade-free
+              Shade-free hours
               <span className="type-body-touch desktop:type-body text-text">
                 {hourOf(time.window.from)} – {hourOf(time.window.to)}
               </span>

@@ -3,8 +3,8 @@ import { shown } from "../../components/ui/number-entry";
 import type { Kind } from "./catalog";
 
 const OF: Record<Kind, { many: string; one: string; file: string }> = {
-  modules: { many: "modules", one: "a module", file: "a PAN file" },
-  inverters: { many: "inverters", one: "an inverter", file: "an OND file" },
+  modules: { many: "modules", one: "a module", file: "a module file (PAN)" },
+  inverters: { many: "inverters", one: "an inverter", file: "an inverter file (OND)" },
 };
 
 /** What Change does, in its tooltip; *count* is the library's, null while the catalog is not in. */

@@ -26,18 +26,18 @@ const ARRAY: ArraySpec = {
 const LAYOUT = { layout: { azimuth: 180, pitch: 6.45 }, readouts: { gcr: 0.709 } } as unknown as LayoutResponse;
 
 describe("the azimuth, decided by the engine or given", () => {
-  test("on tilted rows the engine follows the roof edge closest to the equator", () => {
-    expect(azimuthLineOf(ARRAY, LAYOUT, "flat_tilted")).toEqual({ value: "180° S", line: "Follows the roof edge closest to the equator", isEngine: true });
+  test("on tilted rows the app follows the roof edge nearest the equator", () => {
+    expect(azimuthLineOf(ARRAY, LAYOUT, "flat_tilted")).toEqual({ value: "180° S", line: "From the roof edge nearest the equator", isEngine: true });
   });
 
   test("on an east-west roof the ridges run square to it, as the engine lays them (#171)", () => {
-    expect(azimuthLineOf(ARRAY, LAYOUT, "flat_ew")).toEqual({ value: "180° S", line: "The ridges run square to the roof edge closest to the equator", isEngine: true });
+    expect(azimuthLineOf(ARRAY, LAYOUT, "flat_ew")).toEqual({ value: "180° S", line: "Ridges square to the roof edge nearest the equator", isEngine: true });
   });
 
   test("given, the line says where that edge faces", () => {
     // The layout of an azimuth given faces it: the line reads the roof edge's, from the readouts (#179, item 9).
     const given = { layout: { ...LAYOUT.layout, azimuth: 170 }, readouts: { ...LAYOUT.readouts, edge_azimuth_deg: 180 } } as unknown as LayoutResponse;
-    expect(azimuthLineOf({ ...ARRAY, azimuth_deg: 170 }, given, "flat_tilted")).toEqual({ value: "170° S", line: "The roof edge closest to the equator faces 180° S", isEngine: false });
+    expect(azimuthLineOf({ ...ARRAY, azimuth_deg: 170 }, given, "flat_tilted")).toEqual({ value: "170° S", line: "Roof edge nearest the equator: 180° S", isEngine: false });
   });
 
   test("an azimuth that is no whole degree keeps its decimal", () => {
@@ -53,7 +53,7 @@ describe("the azimuth, decided by the engine or given", () => {
 describe("the tilt of a sloped roof", () => {
   test("follows the pitch set in the Roof step", () => {
     const roof = { slope_deg: 10, slope_azimuth_deg: 180 } as Roof;
-    expect(slopedTiltLineOf(roof)).toEqual({ value: "10°", line: "Follows the roof pitch · 10° facing 180° S · set in the Roof step" });
+    expect(slopedTiltLineOf(roof)).toEqual({ value: "10°", line: "Roof pitch 10° facing 180° S, from the Roof step" });
   });
 });
 
