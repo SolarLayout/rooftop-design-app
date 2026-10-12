@@ -3,7 +3,7 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-12 (V2 opened: the audit and the voice in `plan/v2/`). Before it, 2026-10-11 (#179's rest, #200 to #205, and D93, #206: merged and deployed to staging and production at dc34cf4; before it #114: the strings' legend, one entry per colour, D92, #199; before it the map seen working from the cloud, resume 019). Before it, 2026-10-11 (Claude Code cloud sessions set up, #198). Before it, 2026-10-10 (the skill product-video reviewed, #197; the Sun lens video, #196; the launch video and the skill product-video, #195; #187 to #192 deployed; see the end of the paragraph below). Earlier, 2026-10-08, session 22: **Phase 16 built**, the system voltage set by the user's country (D87: 600 V
+**Last updated:** 2026-10-12 (V2's design: twelve board sets on the canvas page "V2", 1 to 6 approved, D94 to D102; 7 to 12 drawn for the owner's review in one sitting). Before it, 2026-10-12 (V2 opened: the audit and the voice in `plan/v2/`). Before it, 2026-10-11 (#179's rest, #200 to #205, and D93, #206: merged and deployed to staging and production at dc34cf4; before it #114: the strings' legend, one entry per colour, D92, #199; before it the map seen working from the cloud, resume 019). Before it, 2026-10-11 (Claude Code cloud sessions set up, #198). Before it, 2026-10-10 (the skill product-video reviewed, #197; the Sun lens video, #196; the launch video and the skill product-video, #195; #187 to #192 deployed; see the end of the paragraph below). Earlier, 2026-10-08, session 22: **Phase 16 built**, the system voltage set by the user's country (D87: 600 V
 in the US and Canada, 1000 V elsewhere; the request's country, else the time zone, else India; D88: the equipment never
 moves the voltage, the app never raises it). #153 (who set it, engine and API), #154 (`/country`, `lib/country`, the store),
 #155 (the Strings lens and the picker to the boards), #156 (the help), #157 (the browser suites, changed by reading); then
@@ -125,13 +125,7 @@ D and E #160 changed, the kit and shell failures above).
 
 ## In flight
 
-**V2** (opened 2026-10-12, `plan/v2/README.md`): the product made usable by a new user alone. Delivered the same day: the
-audit of the whole app at three sizes and of every user-facing string (`plan/v2/audit.md`, 121 issues in twelve categories,
-11 of them P0, the ten that matter most in order) and the voice (`plan/v2/voice.md`: five rules, instructions in the
-imperative and the active voice as the owner set out, problems as cause then remedy, one name per thing, a checklist for
-pull requests), with the strings' inventory as evidence. The audit's category L measures type, spacing, placement and colour on the live app. Nothing built yet; the
-audit's directions are proposals for boards; the resume prompt for the design session is `plan/resume/020-v2-design.md`.
-Before it: #114 done (2026-10-11): the boards "UI fixes · The strings' legend with many MPPT" drawn
+**V2** (opened 2026-10-12, `plan/v2/README.md`): the product made usable by a new user alone. The audit (`plan/v2/audit.md`, 121 issues) and the voice (`plan/v2/voice.md`, with §12, the app's own words, D96) are written. **The design (resume prompt 020):** twelve board sets on the canvas page "V2" (canvas version 64), each drawn in three sizes by a `docs/design/mockups/build_v2_*.py` with the numbers of `build_v2_parts.py`: 1 Principles (D94; D76 reversed), 2 The progression (D95, D96; the panel hides on desktop, D99), 3 The Studio's first open (D97), 4 Find (D98), 5 Problems (D101), 6 The Strings step (D102) approved; 7 The Roof and Array steps and the Sun view, 8 Performance, 9 Handover and Home, 10 Phone and tablet, 11 Help (required by D100: the help kept and every topic rewritten in the voice), 12 The vocabulary drawn and waiting: the owner asked for all of them in one stretch and reviews them together. Nothing of V2 is built. **Next:** the owner's review of 7 to 12; then Part 2 of resume prompt 020: the epic "V2" and one issue per board set on GitHub (the vocabulary's renames and the help's rewrite as issues of their own), in board order. Before it: #114 done (2026-10-11): the boards "UI fixes · The strings' legend with many MPPT" drawn
 (`docs/design/mockups/build_ui_fixes_strings_legend.py`, its prototype a local branch of the cloud container, never merged),
 approved (D92), built and merged (#199); the three boards on the canvas (version 52). Then #179's rest, in six pull
 requests, each test-first with the help kept true: #200 (items 6, 7, 8: files too large refused in the app's words, the
@@ -222,7 +216,8 @@ run; the report's six pages as images about 1 s and 940 KB; the zip of everythin
 
 ## Next, in order
 
-1. What the owner names next on Find (UX, CX and UI). Alongside: the owner plays the help's clips in Safari on an iPhone or
+1. V2: the owner's review of the board sets 7 to 12 on the canvas page "V2"; then the epic "V2" and its issues on GitHub (resume prompt
+   020, Part 2); then the build, one pull request per issue. Alongside: the owner plays the help's clips in Safari on an iPhone or
    iPad (Phase 15's last check).
 2. #99 and #100 when the owner needs them (advised: the budget alarm soon, the rate limit before the site is promoted).
 3. When browser tests come back: update the suites that use the old words (Replace and its dialogs, the top bar's words,
