@@ -91,6 +91,7 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | UI fixes · The strings' legend with many MPPT (#114) | `StringsLegend.dc.html`, `StringsLegendTablet.dc.html`, `StringsLegendPhone.dc.html` (the shots in `strings_legend/`) | none: the boards are the shots | desktop, tablet, phone |
 | UI fixes · Handover after a first run that failed (issue 179) | `HandoverFailed.dc.html`, `HandoverFailedTablet.dc.html`, `HandoverFailedPhone.dc.html` (the shots in `handover_failed/`) | none: the boards are the shots | desktop, tablet, phone |
 | System voltage · Set by the user's country (Phase 16) | `SystemVoltage.dc.html`, `SystemVoltageTablet.dc.html`, `SystemVoltagePhone.dc.html` (the shots in `system_voltage/`) | `system-voltage-desktop.jpg`, `system-voltage-tablet.jpg`, `system-voltage-phone.jpg` | desktop, tablet, phone |
+| V2 · 1 · Principles (approved, D94) | `V2Principles.dc.html`, `V2PrinciplesTablet.dc.html`, `V2PrinciplesPhone.dc.html` | none: the boards are the specimen | desktop, tablet, phone |
 
 Screens still to draw are listed in `plan/phase-00-design.md`.
 
@@ -230,6 +231,10 @@ Screens still to draw are listed in `plan/phase-00-design.md`.
   And the boards "In-App Help · Clips" (Phase 15; desktop, tablet, phone; under them): a clip in a step's frame, its states
   (at rest, loading, playing, paused, failed), the hand as a dot inside a clip, how a clip behaves and is made; approved
   on 2026-10-07. Drawn by a prototype on the local branch `design/help-clips`, never merged, with the spike's clip.
+- V2 (`plan/v2/`): the boards on the canvas page "V2", one set per part of the audit, each drawn by a `mockups/build_v2_*.py`
+  in three sizes with the numbers of `mockups/build_v2_parts.py` (the V2 tokens of the board "V2 · 1 · Principles", D94) and the
+  Pune demo's real numbers; every word follows `plan/v2/voice.md`. Each board says what changed, the audit's issues it answers
+  (V2-nn) and the rules of these documents it changes. The documents change with V2's first pull request, not before.
 - A preview is the board rendered at its `$preview` size (the tail of each `.dc.html`) by a scratch Playwright script outside the
   repo: Chromium from `e2e/node_modules/@playwright/test`, the fonts served from `apps/web/app/fonts` and `apps/web/node_modules/geist`
   in place of the Google link in the board's `helmet`, `support.js` stubbed, everything else off the machine refused.
