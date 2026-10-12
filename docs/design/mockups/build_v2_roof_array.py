@@ -30,8 +30,10 @@ LINES = [
     "The module card names the module as a buyer does: model, maker, power, size, and Change. Its electrical figures are "
     "behind Details. Spacing says in one sentence why the rows stand where they do. Roof albedo has one home, Performance's "
     "assumptions; the roof's line here points to it.",
-    "The Sun view names its figures for what they are: Rows and obstacles, Strings, Horizon, Area kept clear. The time "
-    "and its timeline belong to this view alone. Layers is one toggle, Imagery, in the view controls.",
+    "The Sun view names its figures for what they are: Rows and obstacles, Strings, Horizon, Area kept clear. Over the roof "
+    "it draws the sun's arc for the day, its shade-free hours thicker, the hour marks and the sun at the time, as the "
+    "approved Sun lens does; On the roof switches each one. The time and its timeline belong to this view alone. Layers is "
+    "one toggle, Imagery, in the view controls.",
 ]
 DONE = {"Roof": "done"}
 
@@ -135,7 +137,7 @@ def controls_v2(touch: bool, sun: bool = False) -> str:
     return view_controls(touch, sun_on=sun)
 
 
-def stage(step: str, facts: str, sun: bool = False, labels: bool = False) -> str:
+def stage(step: str, facts: str, sun: bool = False, labels: bool = False, folded: bool = False) -> str:
     out = (f'<div style="position: absolute; left: 0; top: 56px; width: 1056px; height: 844px; overflow: hidden">'
            f'<div style="position: absolute; left: 40px; top: 32px; display: flex; flex-direction: column; gap: 4px">{text("title", step)}'
            f'{text("body", facts, False, TEXT_2)}</div>'
@@ -147,34 +149,100 @@ def stage(step: str, facts: str, sun: bool = False, labels: bool = False) -> str
                 f'<div style="position: absolute; left: 92px; top: 520px; padding: 2px 8px; background: {SURFACE_1}; border: 1px solid {LINE_STRONG}; '
                 f'border-radius: 6px; {style("body", False)}">40.0 m</div>')
     if sun:
-        tiles = [("Rows and obstacles", "0.35 %"), ("Strings", "0.56 %"), ("Horizon", "0.01 %"), ("Area kept clear", "150 m²")]
-        t = "".join(f'<div style="display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; background: {SURFACE_2}; border-radius: {RADIUS["control"]}px">'
-                    f'{text("body", a, False, TEXT_2)}{text("strong", b)}</div>' for a, b in tiles)
-        card = (f'<div style="position: absolute; left: 40px; top: 120px; width: 300px; padding: 16px; box-sizing: border-box; background: {SURFACE_1}; '
-                f'border: 1px solid {LINE}; border-radius: {RADIUS["card"]}px; box-shadow: {SHADOW_FLOAT}; display: flex; flex-direction: column; gap: 12px">'
-                f'{section_title("Shade over the year")}{text("body", "The energy lost to shade, by its cause.", False, TEXT_2)}'
-                f'<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">{t}</div>'
-                f'<label style="display: flex; align-items: center; justify-content: space-between">{text("body", "Shade map on the modules")}'
-                f'<span style="width: 40px; height: 24px; border-radius: 9999px; background: {WELL}; border: 1px solid {LINE_STRONG}; position: relative">'
-                f'<span style="position: absolute; left: 2px; top: 2px; width: 18px; height: 18px; border-radius: 50%; background: {TEXT_2}"></span></span></label></div>')
-        timeline = (f'<div style="position: absolute; left: 40px; right: 24px; bottom: 24px; height: 64px; padding: 0 16px; box-sizing: border-box; background: {SURFACE_1}; '
-                    f'border: 1px solid {LINE}; border-radius: {RADIUS["card"]}px; display: flex; align-items: center; gap: 16px">'
-                    f'<button type="button" aria-label="Play" style="width: 40px; height: 40px; border-radius: 50%; border: 0; background: {ACCENT}; display: inline-flex; '
-                    f'align-items: center; justify-content: center">{icon(ICON["play"], 16, ACCENT_INK)}</button>'
-                    f'{text("strong", "21 Dec · 10:30")}{text("body", "solar time", False, TEXT_2)}'
-                    f'<span style="flex: 1; position: relative; height: 4px; border-radius: 2px; background: {LINE_STRONG}">'
-                    f'<span style="position: absolute; left: 36%; top: -8px; width: 20px; height: 20px; border-radius: 50%; background: #FFFFFF; border: 3px solid {ACCENT}; box-sizing: border-box"></span></span>'
-                    f'{text("body", "Sun 42.6° high, from 152° (south-east)", False, TEXT_2)}</div>')
-        out += card + timeline
+        out = out.replace(f'<div style="position: absolute; left: 48px; top: 190px">{roof_svg(960, label="3D view of the Pune demo roof")}</div>',
+                          f'<div style="position: absolute; left: 316px; top: 236px">{sun_scene(720)}</div>')
+        out += (sun_chip("position: absolute; left: 40px; top: 120px") if folded
+                else sun_card(False, "position: absolute; left: 40px; top: 120px; width: 320px")) + timeline(False)
     return out + '</div>'
+
+
+SUN_LABEL = ("3D view of the roof at 16:00 solar time on 21 December, with long shadows to the north-east and the sun's arc "
+             "across the sky, its shade-free hours thicker")
+
+
+def sun_scene(width: int, source: str = "SunLens.dc.html") -> str:
+    """The roof under the sun's arc (Phase 6, decision 10, kept in V2): the day's arc, the shade-free hours thicker, the hour
+    marks, the sun at the view's time and the shadows it casts: the approved Sun lens's drawing at 16:00 on 21 December. The
+    arc is that board's overlay over its stage, carried into the scene's own coordinates so that it scales with the roof."""
+    import re
+    board = (HERE / source).read_text(encoding="utf-8")
+    i = board.find('<svg width="984" height="844"')
+    overlay = board[board.index("<defs>", i):board.index("</svg>", i)]
+    overlay = overlay.replace('stroke-linecap="round"', 'stroke-linecap="round" vector-effect="non-scaling-stroke"')
+    k = 964 / 940  # the approved board drew the scene 964 wide, its overlay in the stage's pixels, the scene at (10, 104)
+    marks = "".join(f'<g transform="translate({x} {y})"><rect x="{-w / 2}" y="-12" width="{w}" height="24" rx="6" fill="{SURFACE_1}"/>'
+                    f'<text text-anchor="middle" y="5" font-family="Geist Mono, monospace" font-size="14" fill="{TEXT_2}">{t}</text></g>'
+                    for x, y, w, t in ((660, 163, 64, "12:00"), (112, 615, 124, "sunset 17:27")))
+    group = f'<g transform="matrix({1 / k:.5f} 0 0 {1 / k:.5f} {-10 / k:.3f} {50 - 104 / k:.3f})">{overlay}{marks}</g>'
+    scene = roof_svg(width, source, SUN_LABEL)
+    return scene.replace('style="position: absolute; left: 0; top: 0"', 'style="overflow: visible"', 1).replace("</svg>", group + "</svg>")
+
+
+def sun_figures(touch: bool) -> str:
+    tiles = [("Rows and obstacles", "0.35 %"), ("Strings", "0.56 %"), ("Horizon", "0.01 %"), ("Area kept clear", "150 m²")]
+    t = "".join(f'<div style="display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; background: {SURFACE_2}; border-radius: {RADIUS["control"]}px">'
+                f'{text("body", a, touch, TEXT_2)}{text("strong", b, touch)}</div>' for a, b in tiles)
+    return f'<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">{t}</div>'
+
+
+def on_the_roof(touch: bool) -> str:
+    """What the Sun view draws over the roof: the arc and its shade-free hours on, as the approved Sun lens set them."""
+    return group("On the roof", switch("Sun path", "The arc the sun follows on this day", True, touch)
+                 + switch("Shade-free hours", "The thick part of the arc, 09:00 to 16:00", True, touch)
+                 + switch("Shadow outlines", "The shadows the app computed, dashed, to compare", False, touch)
+                 + switch("Shade map on the modules", "Each module coloured by its loss to shade", False, touch), touch)
+
+
+def close_button() -> str:
+    return (f'<button type="button" aria-label="Close Shade over the year" style="width: 32px; height: 32px; margin: -6px -6px 0 0; border: 0; '
+            f'border-radius: {RADIUS["control"]}px; background: transparent; display: inline-flex; align-items: center; justify-content: center; flex: none">'
+            f'{icon(ICON["x"], 16, TEXT_2)}</button>')
+
+
+def sun_card(touch: bool, place: str) -> str:
+    """The Sun view's card over the stage on desktop; × folds it to its chip (sun_chip), the view stays on."""
+    return (f'<div style="{place}; padding: 16px; box-sizing: border-box; background: {SURFACE_1}; '
+            f'border: 1px solid {LINE}; border-radius: {RADIUS["card"]}px; box-shadow: {SHADOW_FLOAT}; display: flex; flex-direction: column; gap: 12px">'
+            f'<div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px">{section_title("Shade over the year", touch)}{close_button()}</div>'
+            f'{text("body", "The energy lost to shade, by its cause.", touch, TEXT_2)}'
+            f'{sun_figures(touch)}{on_the_roof(touch)}</div>')
+
+
+def sun_chip(place: str) -> str:
+    """The card folded: one chip at the card's place, the year's shade in it; pressed, the card opens again."""
+    return (f'<button type="button" style="{place}; height: 40px; padding: 0 12px; display: inline-flex; align-items: center; gap: 8px; '
+            f'background: {SURFACE_1}; border: 1px solid {LINE}; border-radius: {RADIUS["control"]}px; box-shadow: {SHADOW_FLOAT}">'
+            f'{text("strong", "Shade over the year")}{text("body", "0.92 %", False, TEXT_2)}{icon(ICON["chevron-down"], 14, TEXT_2)}</button>')
+
+
+def sun_column(touch: bool) -> str:
+    """On touch the Sun view's card is the sheet's content while the view is on; the step's primary stays at its foot."""
+    return (f'<div style="display: flex; flex-direction: column; gap: 12px">{text("heading", "Shade over the year", touch, TEXT, "h2")}'
+            f'{text("body", "The energy lost to shade, by its cause.", touch, TEXT_2)}{sun_figures(touch)}{on_the_roof(touch)}</div>')
+
+
+def timeline(touch: bool, place: str = "left: 40px; right: 24px; bottom: 24px", compact: bool = False) -> str:
+    """The day's timeline, in the Sun view alone: Play, the time, the track from sunrise to sunset, where the sun is."""
+    where = text("body", "Sun 18.0° high, from 237° (south-west)", touch, TEXT_2)
+    return (f'<div style="position: absolute; {place}; min-height: 64px; padding: 8px 16px; box-sizing: border-box; background: {SURFACE_1}; '
+            f'border: 1px solid {LINE}; border-radius: {RADIUS["card"]}px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px">'
+            f'<button type="button" aria-label="Play the day" style="width: {44 if touch else 40}px; height: {44 if touch else 40}px; border-radius: 50%; border: 0; background: {ACCENT}; display: inline-flex; '
+            f'align-items: center; justify-content: center; flex: none">{icon(ICON["play"], 16, ACCENT_INK)}</button>'
+            f'<span style="display: flex; align-items: baseline; gap: 8px">{text("strong", "21 Dec · 16:00", touch)}{"" if compact else text("body", "solar time", touch, TEXT_2)}</span>'
+            f'<span style="flex: 1; min-width: {80 if compact else 160}px; display: flex; flex-direction: column; gap: 4px">'
+            f'<span style="position: relative; height: 4px; border-radius: 2px; background: {LINE_STRONG}">'
+            f'<span style="position: absolute; left: 87%; top: -8px; width: 20px; height: 20px; border-radius: 50%; background: #FFFFFF; border: 3px solid {ACCENT}; box-sizing: border-box"></span></span>'
+            + ("" if compact else f'<span style="display: flex; justify-content: space-between">{text("unit", "06:33 sunrise", touch, TEXT_3)}{text("unit", "sunset 17:27", touch, TEXT_3)}</span>')
+            + '</span>'
+            f'{"" if touch else where}</div>')
 
 
 def foot(next_step: str) -> str:
     return button(f"Continue to {next_step} " + icon(ICON["arrow-right"], 18, ACCENT_INK), "primary", "primary", False, full=True)
 
 
-def screen(step: str, column: str, next_step: str, states: dict, facts: str, sun: bool = False, labels: bool = False) -> str:
-    return top_bar(states, step, 1440) + stage(step, facts, sun, labels) + work_column(column, foot(next_step))
+def screen(step: str, column: str, next_step: str, states: dict, facts: str, sun: bool = False, labels: bool = False, folded: bool = False) -> str:
+    return top_bar(states, step, 1440) + stage(step, facts, sun, labels, folded) + work_column(column, foot(next_step))
 
 
 CHANGES = [
@@ -188,6 +256,8 @@ CHANGES = [
      "One sentence: rows 6.45 m apart so they do not shade each other from 09:00 to 16:00 on 21 Dec; GCR in the help", "V2-34"),
     ("Sun lens · shading tiles", "Near, linear · Electrical, beyond linear · Far, horizon · Kept clear",
      "Rows and obstacles · Strings · Horizon · Area kept clear, in a card of the Sun view", "V2-33"),
+    ("Sun lens · the sun path (Phase 6, decision 10)", "The day's arc over the roof, the shade-free window thicker, the hour marks, the sun at the time",
+     "Kept as it is, in the Sun view on every step; On the roof: Sun path, Shade-free hours, Shadow outlines, Shade map", "kept"),
     ("components.md · Layers button", "A popover with one switch, Satellite imagery", "One toggle in the view controls, Imagery", "V2-35"),
     ("Stage labels", "The roof's dimensions on every lens", "On the Roof step alone, once per pair of edges", "V2-70"),
     ("Roof lens · Location, Edit", "Edit goes back to Find; the modules vanish", "Outline · Edit it in Plan: the corners on the stage, seen from above", "V2-59"),
@@ -205,13 +275,15 @@ def build_desktop() -> None:
                        screen("Array", array_column("module", False), "Strings", DONE, "790 positions · 28 tables · 6 rows"), w, 900)
                + frame("4 · Array, Spacing opened: why the rows stand where they do, in one sentence; the design day explained once",
                        screen("Array", array_column("spacing", False), "Strings", DONE, "790 positions · 28 tables · 6 rows"), w, 900)
-               + frame("5 · The Sun view on the Array step: the shade over the year in plain names, the time and its timeline here alone",
-                       screen("Array", array_column("details", False), "Strings", DONE, "790 positions · 28 tables · 6 rows", sun=True), w, 900))
+               + frame("5 · The Sun view on the Array step at 16:00: the sun's arc over the roof with its shade-free hours thicker, the shade over the year in plain names, the timeline here alone",
+                       screen("Array", array_column("details", False), "Strings", DONE, "790 positions · 28 tables · 6 rows", sun=True), w, 900)
+               + frame("6 · The card closed with its ×: a chip at its place keeps the year's shade and opens the card again; the arc and the timeline stay",
+                       screen("Array", array_column("details", False), "Strings", DONE, "790 positions · 28 tables · 6 rows", sun=True, folded=True), w, 900))
     body = f'<div style="padding: 40px; display: flex; flex-direction: column; gap: 40px">{hd}{screens}{changes(CHANGES)}</div>'
-    write_board(OUT, "V2RoofArray.dc.html", "V2 · 7 · The Roof and Array steps · desktop 1440", 1520, 5740, body)
+    write_board(OUT, "V2RoofArray.dc.html", "V2 · 7 · The Roof and Array steps · desktop 1440", 1520, 6860, body)
 
 
-def touch_screen(size: str, step: str, column: str, next_step: str, states: dict) -> str:
+def touch_screen(size: str, step: str, column: str, next_step: str, states: dict, sun: bool = False) -> str:
     w, h = (834, 1194) if size == "tablet" else (390, 844)
     bar = top_bar(states, step, w, size)
     stage_h = 440 if size == "tablet" else 330
@@ -220,7 +292,11 @@ def touch_screen(size: str, step: str, column: str, next_step: str, states: dict
     roof_w = 740 if size == "tablet" else 390
     st = (f'<div style="position: absolute; left: 0; top: {top}px; width: {w}px; height: {stage_h}px; overflow: hidden">'
           f'<div style="position: absolute; left: {side}px; top: 16px">{text("title", step, True)}</div>'
-          f'<div style="position: absolute; left: {(w - roof_w) // 2}px; top: {96 if size == "tablet" else 100}px">{roof_svg(roof_w, label="3D view of the Pune demo roof")}</div></div>')
+          + (f'<div style="position: absolute; left: {(w - roof_w) // 2}px; top: {96 if size == "tablet" else 100}px">{roof_svg(roof_w, label="3D view of the Pune demo roof")}</div>'
+           if not sun else
+           f'<div style="position: absolute; left: {170 if size == "tablet" else 64}px; top: {56 if size == "tablet" else 48}px">{sun_scene(560 if size == "tablet" else 300)}</div>'
+           + timeline(True, f"left: {side}px; right: {side}px; bottom: {28 if size == 'phone' else 12}px", compact=size == "phone"))
+          + '</div>')
     tab = 72 if size == "phone" else 0
     sheet_top = top + stage_h - (16 if size == "phone" else 0)
     sheet = (f'<div style="position: absolute; left: 0; top: {sheet_top}px; width: {w}px; height: {h - sheet_top - tab}px; background: {CHROME}; '
@@ -238,10 +314,12 @@ def build_touch(size: str) -> None:
     side = 20 if size == "tablet" else 16
     hd = board_head("V2 · 7 · The Roof and Array steps, and the Sun view", LINES, True, ISSUES)
     screens = (frame("Roof, Edges and access opened: the groups and their hints at touch size", touch_screen(size, "Roof", roof_column("edges", True), "Array", {}), w, h)
-               + frame("Array, Spacing opened", touch_screen(size, "Array", array_column("spacing", True), "Strings", DONE), w, h))
+               + frame("Array, Spacing opened", touch_screen(size, "Array", array_column("spacing", True), "Strings", DONE), w, h)
+               + frame("The Sun view on the Array step: the sun's arc over the roof, the timeline on the stage, the shade and what is drawn in the sheet",
+                       touch_screen(size, "Array", sun_column(True), "Strings", DONE, sun=True), w, h))
     body = (f'<div style="padding: 40px 0; display: flex; flex-direction: column; gap: 40px"><div style="padding: 0 {side}px">{hd}</div>'
             f'{screens}<div style="padding: 0 {side}px">{changes(CHANGES, True)}</div></div>')
-    write_board(OUT, f"V2RoofArray{size.capitalize()}.dc.html", f"V2 · 7 · The Roof and Array steps · {size} {w}", w, 4020 if size == "tablet" else 3820, body)
+    write_board(OUT, f"V2RoofArray{size.capitalize()}.dc.html", f"V2 · 7 · The Roof and Array steps · {size} {w}", w, 5500 if size == "tablet" else 5060, body)
 
 
 if __name__ == "__main__":

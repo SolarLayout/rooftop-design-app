@@ -105,6 +105,7 @@ def icon(path: str, size: int = 16, color: str = "currentColor", stroke: float =
 ICON = {
     "chevron-right": '<path d="M9 6l6 6-6 6"></path>',
     "chevron-down": '<path d="M6 9l6 6 6-6"></path>',
+    "x": '<path d="M6 6l12 12M18 6L6 18"></path>',
     "tick": '<path d="M5 12.5l4.5 4.5L19 7.5"></path>',
     "note": '<circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5"></path><path d="M12 16.5v.01"></path>',
     "download": '<path d="M12 4v11"></path><path d="M7 10.5l5 5 5-5"></path><path d="M5 19.5h14"></path>',

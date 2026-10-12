@@ -37,7 +37,8 @@ asks for one. Paste the block inside the file into a new session started in this
 | 017 | `017-move-and-turn.md` | D79: move and turn the roof and its obstacles on Find's map, the grab cursor, the tips | 2026-10-07 | used by session 19, 2026-10-07. D79 built (#117 to #122); the session went on to Phases 14 and 15 |
 | 018 | `018-find-first-step.md` | Find's first step: a panel that tells the user what to do (the owner's screenshot); design first | 2026-10-07 | used by session 20, 2026-10-07. Boards approved (D85), built (#143 to #145) |
 | 019 | `019-cloud-session-check.md` | The first new cloud session: the map seen to work from localhost:4710 with the regenerated Esri key, then the owner's next task | 2026-10-11 | used by the first new cloud session, 2026-10-11. The map works from localhost:4710 (search, Find, imagery); the next task is the owner's |
-| 020 | `020-v2-design.md` | V2: the boards of the new version on a page of the canvas, one set at a time for approval, then the epic and its issues on GitHub | 2026-10-12 | in use: the twelve board sets drawn (1 to 6 approved, 7 to 12 waiting for the owner's review); Part 2, the epic and its issues, not started |
+| 020 | `020-v2-design.md` | V2: the boards of the new version on a page of the canvas, one set at a time for approval, then the epic and its issues on GitHub | 2026-10-12 | used by the cloud session of 2026-10-12: thirteen board sets drawn (1 to 12 approved, D94 to D108; the sun's arc restored, D109; Present, board 13, and the help's topics in V2 for approval), the epic #207 and its sub-issues #208 to #220 filed with the label v2 |
+| 021 | `021-v2-build.md` | V2: the build, the epic's issues one after the other, one pull request each, without stopping | 2026-10-12 | open |
 
 ## Shape of a prompt file
 

@@ -142,6 +142,75 @@ def failed_picture(w: int, touch: bool) -> str:
             f'{button("Try again", "secondary", "standard", touch)}</div>')
 
 
+# Every topic of the help in V2: where its ? sits (V2's screen and section), its title in V2 (today's after it where it
+# changes), its kind (an answer, or a how-to of numbered steps), and its summary in V2's voice: one sentence of what it
+# does for the user, under 20 words. The topics' bodies follow the model of Edges and access and Options above.
+TOPICS = [
+    ("Find", [
+        ("Find the roof", "", "How-to", "Search an address, paste coordinates or a maps link, then outline the roof on the map."),
+        ("Outline by its corners", "", "How-to", "Click each corner of the roof, then the first corner again to close the outline."),
+        ("Draw a rectangle", "", "How-to", "Drag from one corner of the roof to the opposite one, then turn it to fit."),
+        ("Detect the building", "", "How-to", "Click inside the building to get its outline, then drag the corners onto the roof."),
+        ("Move or turn the roof", "", "How-to", "Drag the roof to move it, or its round handle to turn it. Its obstacles move with it."),
+        ("Add a box", "Draw a box", "How-to", "Drag over a stair room or a plant room, then type its height above the roof."),
+        ("Add a tank", "Draw a tank", "How-to", "Drag from the middle of a round tank to its edge, then type its height."),
+        ("Add a wall", "Draw a wall", "How-to", "Click each point of the wall, end on the last one, then type its height."),
+        ("Add a building beside the roof", "Draw a building beside the roof", "How-to", "Outline a building next to the roof and type its height, so its shadow on the roof counts."),
+        ("Move, turn or remove an obstacle", "", "How-to", "Select an obstacle on the map, then drag it, turn it by its handle, or remove it."),
+        ("Edges", "", "Answer", "Type a length you measured to correct one edge of the outline."),
+        ("Place", "", "Answer", "Set where a roof entered by hand stands: search for it, or type its latitude and longitude."),
+        ("Shape", "", "Answer", "Type the roof's length and width, or its corners in metres."),
+        ("Roof type", "", "Answer", "Choose how the modules sit: rows facing south, rows facing east and west, or flush on a slope."),
+        ("Obstacles", "", "Answer", "Add what stands on the roof with its height, so modules keep clear of it and its shade counts."),
+    ]),
+    ("Roof", [
+        ("Outline", "Location", "Answer", "Where the roof is, its size and its corners. Edit the corners in Plan."),
+        ("Edges and access", "", "Answer", "Set the parapet height and the strips kept free of modules at the edges and round obstacles."),
+    ]),
+    ("Array", [
+        ("Module", "", "Answer", "Choose the module. Its size sets the layout; its ratings set the strings and the energy."),
+        ("Mounting", "", "Answer", "Set the modules' tilt, their orientation, and how many stand in each row's height."),
+        ("Spacing", "", "Answer", "How far apart the rows stand so they do not shade each other in the shade-free hours."),
+        ("Shade-free hours", "Shade-free window", "Answer", "Set the hours of the design day in which rows and obstacles must not shade the modules."),
+        ("Design day", "Day", "Answer", "The day the rows are spaced for. 21 December has the longest shadows."),
+    ]),
+    ("Sun view", [
+        ("Shade over the year", "Shading over the year", "Answer", "How much energy shade costs in a year, by its cause: rows and obstacles, strings, the horizon."),
+        ("On the roof", "", "Answer", "Choose what the Sun view draws: the sun's arc, its shade-free hours, shadow outlines, the shade map."),
+        ("Shade map", "", "Answer", "Each module coloured by its loss to shade over the year, to see where shade costs most."),
+        ("The sun at the time", "Sun at the hour", "Answer", "Where the sun stands at the time on the timeline: how high, and from which direction."),
+    ]),
+    ("Strings", [
+        ("Options", "", "Answer", "Choose how the modules are wired to the inverter. The best option comes first."),
+        ("Inverter", "", "Answer", "Choose the inverter the strings are sized for, from the library or your own file (OND)."),
+        ("System voltage", "", "Answer", "The highest DC voltage of the system. It caps the modules in a string; it starts from your country."),
+        ("Modules a string", "Modules in series", "Answer", "How many modules one string can hold at your system voltage, and what limits it."),
+        ("MPPT loading", "", "Answer", "The strings on each input of the inverter, and their current against its limit."),
+    ]),
+]
+
+
+def topic_index(touch: bool) -> str:
+    """Every topic in V2 by where its ? sits: the title (today's struck through where it changes), its kind, its summary."""
+    groups = ""
+    for where, rows in TOPICS:
+        lines = ""
+        for title, was, kind, summary in rows:
+            old = (f' <span style="{style("body", touch, TEXT_3)}; text-decoration: line-through">{was}</span>' if was else "")
+            if touch:
+                lines += (f'<div style="display: flex; flex-direction: column; gap: 4px; padding: 12px 0; border-top: 1px solid {LINE_SUBTLE}">'
+                          f'<span>{text("strong", title, touch)}{old}</span>{text("unit", kind, touch, TEXT_3)}{text("body", summary, touch, TEXT_2)}</div>')
+            else:
+                lines += (f'<div style="display: grid; grid-template-columns: 340px 80px 1fr; gap: 24px; padding: 12px 0; border-top: 1px solid {LINE_SUBTLE}; align-items: baseline">'
+                          f'<span>{text("strong", title)}{old}</span>{text("unit", kind, False, TEXT_3)}{text("body", summary, False, TEXT_2)}</div>')
+        groups += f'<section style="display: flex; flex-direction: column">{text("heading", where, touch, TEXT, "h3", "margin-bottom: 8px")}{lines}</section>'
+    n = sum(len(r) for _, r in TOPICS)
+    lead = text("body", f"All {n} topics of the help in V2, by where their ? sits: the title as the screen names the section (today's struck "
+                        "through where it changes), the kind, and the summary, the sheet's first line. Each body follows the two models above. "
+                        "A section V2 adds with a ? gets its topic in the same pull request (D80's gate).", touch, TEXT_2, "p", "max-width: 820px")
+    return (f'<section style="display: flex; flex-direction: column; gap: 24px">{text("title", "The topics", touch, TEXT, "h2")}{lead}{groups}</section>')
+
+
 CHANGES = [
     ("help-content.md · a topic's order", "What the control is, then how the engine behaves; the answer last or missing",
      "What to set first, then What it changes, then When to change it (voice §9)", "V2-83"),
@@ -163,9 +232,9 @@ def build_desktop() -> None:
           f'<div style="padding: 20px; background: {CHROME}; border: 1px solid {LINE}; border-radius: {RADIUS["row"]}px; width: 440px; box-sizing: border-box">{failed_picture(440, False)}</div></div></div>')
     screens = (frame("1 · The ? of Edges and access pressed: the disc held in the accent; the sheet answers what to set first", roof_screen_with_help(), 1440, 900)
                + f'<figure style="margin: 0; display: flex; flex-direction: column; gap: 8px">{text("body", "2 · The topic Options, today and in V2", False, TEXT_2)}{today_v2(False)}</figure>'
-               + ht)
+               + ht + topic_index(False))
     body = f'<div style="padding: 40px; display: flex; flex-direction: column; gap: 40px">{hd}{screens}{changes(CHANGES)}</div>'
-    write_board(OUT, "V2Help.dc.html", "V2 · 11 · Help · desktop 1440", 1520, 3180, body)
+    write_board(OUT, "V2Help.dc.html", "V2 · 11 · Help · desktop 1440", 1520, 5120, body)
 
 
 def touch_help(size: str) -> str:
@@ -180,15 +249,30 @@ def touch_help(size: str) -> str:
     return bar + dim + sh
 
 
+def touch_howto(size: str) -> str:
+    w, hh = (834, 1194) if size == "tablet" else (390, 844)
+    bar = top_bar({}, "Roof", w, size)
+    dim = f'<div style="position: absolute; inset: 0; background: rgba(5,7,10,.72)"></div>'
+    if size == "tablet":
+        return bar + dim + f'<div style="position: absolute; right: 0; top: 0">{sheet("Outline by its corners", howto(True, 480), 480, hh, True, back="1")}</div>'
+    return (bar + dim + f'<div style="position: absolute; left: 0; top: 64px; width: 390px; height: 780px; background: {CHROME}; border-radius: 24px 24px 0 0; '
+            f'border-top: 1px solid {LINE}; overflow: hidden">{sheet("Outline by its corners", howto(True, 390), 390, 780, True, back="1")}</div>')
+
+
 def build_touch(size: str) -> None:
     w, hh = (834, 1194) if size == "tablet" else (390, 844)
     side = 20 if size == "tablet" else 16
     hd = board_head("V2 · 11 · Help", LINES, True, ISSUES)
     words = "The sheet from the right edge, the whole height" if size == "tablet" else "The sheet from the bottom, as D80 set it"
     body = (f'<div style="padding: 40px 0; display: flex; flex-direction: column; gap: 40px"><div style="padding: 0 {side}px">{hd}</div>'
-            f'{frame(words, touch_help(size), w, hh)}<div style="padding: 0 {side}px">{today_v2(True)}</div>'
+            f'{frame(words, touch_help(size), w, hh)}'
+            f'{frame("A how-to from the ? of Outline the roof: numbered steps, each a picture; Back to the topic", touch_howto(size), w, hh)}'
+            f'<div style="padding: 0 {side}px; display: flex; flex-direction: column; gap: 8px">{text("body", "A picture that did not load", True, TEXT_2)}'
+            f'{failed_picture(w - 2 * side + 40, True)}</div>'
+            f'<div style="padding: 0 {side}px">{today_v2(True)}</div>'
+            f'<div style="padding: 0 {side}px">{topic_index(True)}</div>'
             f'<div style="padding: 0 {side}px">{changes(CHANGES, True)}</div></div>')
-    write_board(OUT, f"V2Help{size.capitalize()}.dc.html", f"V2 · 11 · Help · {size} {w}", w, 3340 if size == "tablet" else 3500, body)
+    write_board(OUT, f"V2Help{size.capitalize()}.dc.html", f"V2 · 11 · Help · {size} {w}", w, 8360 if size == "tablet" else 8800, body)
 
 
 if __name__ == "__main__":
