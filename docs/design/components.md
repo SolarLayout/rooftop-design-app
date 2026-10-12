@@ -199,27 +199,47 @@ A status mark may follow the value. Tiles inside a card are flat: `surface-2`, r
 In code: `Stats` is the list, `Stat` one label with its value. Looks: `cell` (vitals: value 16, 17 on tablet),
 `lead` (the energy: display 26, 22 on phone), `tile`, `hero` (the energy on Performance: display 76, its unit
 `type-heading`, the label in body text) and `figure` (a KPI tile of Performance, a card of its own: display 34,
-26 on phone, the label in body text), `scene` (the lead figure of a panel of Present: `type-figure`, 44 on
-desktop, 40 on tablet, the label in `type-body`) and `scene-small` (the panel's other figures: display 22). A
+26 on phone, the label in body text). A
 quieter figure may follow the unit (`more`: "· 19.7 % DC"); on phone it takes a line under the value. A value that
 counts toward a final one (`holds`) stands from the start in the final one's width, at its right, in tabular
 figures: it neither wiggles nor pushes what is beside it.
 
 ## Present, the panel of a scene
-The boards "UI fixes · Present, the figures of each scene" (`mockups/PresentStats.dc.html`,
-`mockups/PresentStatsTablet.dc.html`; D72). In each of the tour's six scenes one panel at the stage's top left (24 on
-tablet, 40 on desktop), the stage seen through it: `color-dim-panel` over `backdrop-blur-panel`, the edge
-`line-glass`, `radius-card`, `shadow-float`, padding 18 by 22; 304 wide on tablet, 340 on desktop, the energy's 580
-there with the chain beside its figures (under them on tablet). The scene's number and name in `text-section` text-3
-("4 · The sun, 21 December"); the lead figure in the look `scene`, counting over the first three quarters of its
-scene in the place of its final value; two figures in the look `scene-small` beside each other. Place: the roof's
-area, its latitude and longitude. Roof: the obstacles as they rise, the roof's length by width (its corners for a roof
-drawn), the parapet. Array: the positions as the rows fill, the rows, the tilt and the orientation. Sun: the solar
-time, the sun's height and bearing; the stage draws the sun path and the sun along it with the hour marks of the Sun
-view, without its callout. Strings: the DC capacity, strings × modules in series, inverters × kW. Energy: the energy
-of year 1, the specific yield, the PR, and the chain's cascade from the array's nominal energy to the grid. A scene
-whose facts are not there yet has no panel. It fades in with its scene (`appearing`). Through the whole tour the
-camera frames the sun path's dome, and on a canvas taller than wide it stands back by the aspect.
+V2 · 13 (D110; `mockups/V2Present.dc.html`, `V2PresentTablet.dc.html`, `V2PresentPhone.dc.html`), in D72's place and
+look. In each of the tour's six scenes one panel at the stage's top left (16 from the edges on phone, 40 on tablet and
+desktop), the stage seen through it: `color-dim-panel` over `backdrop-blur-panel`, the edge `line-glass`, `radius-card`,
+`shadow-float`, padding 16 by 20, at least 200 wide (240 from tablet). Three lines: the scene's name in `type-strong`
+text-2, its one figure in `type-figure` (26 on touch), the figure's label in `type-body` text-2. The six: The place ·
+`18.52° N · 73.86° E` · `Latitude · longitude`; The roof · `3,600 m²` · `Roof area · 6 obstacles`; The array · `790` ·
+`Module positions · 6 rows`; The sun · 21 December · `10:30` · `Solar time · sun 42.6° high` (the time moves with the
+day); The strings · `357.28 kWp` · `22 strings of 29 modules`; The energy · `617.8 MWh` · `Energy to the grid in year 1`,
+counting up over six seconds in the place of its final value (`HeldValue`). Nothing else counts: no obstacle or
+position as it rises (V2-96). The day scene's stage draws the sun's arc, its shade-free hours thicker, the sun along it
+with the hour marks of the Sun view, without its callout; through the whole tour the camera frames the arc's dome, and
+on a canvas taller than wide it stands back by the aspect. A scene whose facts are not there yet has no panel. It fades
+in with its scene (`appearing`). In code: `PresentPanel`, its words from `scenePanelOf` (`lib/present/scene-panel.ts`).
+
+The foot's left: the design and its facts in `type-strong` (`Pune demo roof · 357.28 kWp · 617.8 MWh a year`), under
+them the scene as a noun in `type-body` text-2 (The roof from above, The roof in 3D, The array, Shadows over the day,
+The strings, Energy over the year; V2-40), the imagery's attribution under them while the imagery shows. 40 over the
+foot, 112 while the controls show (120 on phone).
+
+## Present, the presenter's controls
+V2 · 13 (D110; V2-102). A `toolbar` named Present at the foot, 16 from the edges on phone (24 over the foot from
+tablet, 40 from the sides): `color-dim-panel` blurred, `line-glass`, `radius-card`, `shadow-float`, padding 8 by 12 (16
+from tablet). In it: Scene before (chevron), Pause or Play (48, round, `text` with the icon in `ground`), Scene after,
+`Paused` in `type-body` text-2 while paused, the six scenes as segments, and `Leave` (secondary, border `line-strong`;
+`Esc` beside it in a `kbd` on desktop). Round buttons are 40 on desktop, 44 on touch; each is named on hover and focus
+with its key (`Tooltip`). A segment is 4 high, `track-glass` with `text` filling it: the done ones full, the current as
+far as it has played, the rest empty; its name under it in `type-unit` (text for the current, text-2) on tablet and
+desktop, the bars alone on phone; each a press to its scene, from its beginning (`aria-current="step"` on the current).
+Shown on a move of the pointer, a press or a touch, and on Tab (the focus goes to Scene before); hidden 3 s after while
+the tour plays, fading (`duration-panel`), then out of the way of the pointer and the focus; always shown while paused or
+while the focus is in it. Keys: Space pauses and plays, ← and → the scene before and after, Esc leaves (and leaving the
+browser's full screen leaves Present); any other key does nothing. On the first loop, while the bar is hidden, the keys'
+line `Space pauses · ← → move between scenes · Esc leaves` at the foot's right on desktop, then gone. In code:
+`PresentControls`, the keys and the timing in `lib/present/controls.ts`, the tour's pause, play and moves in
+`lib/present/create-tour.ts`.
 
 ## The result (top bar)
 V2 (D95; the board "V2 · 2"): the vitals bar over the stage is gone. The result is a chip at the top bar's right on

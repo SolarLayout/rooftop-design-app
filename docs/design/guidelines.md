@@ -112,7 +112,10 @@
 - Everything works by keyboard. Focus is always visible (2 px accent ring). Order follows reading order.
 - The 3D has a text equivalent: the inspector lists every object, and selection works from the list.
 - Charts have a table view.
-- Motion stops under reduced motion. Nothing flashes.
+- Motion stops under reduced motion. Nothing flashes. Present's tour plays its scenes as stills, each held for its
+  time and changed with a fade of the ground (`unveiling`, the one fade kept under reduced motion): the camera cuts and
+  never moves, the reveal stands whole, the day stands at the Studio's hour under the sun's arc, the energy at its value
+  (V2-103).
 - Form fields have labels; icon buttons have names; regions have landmarks (`nav`, `main`, `aside`).
 
 ## Charts
