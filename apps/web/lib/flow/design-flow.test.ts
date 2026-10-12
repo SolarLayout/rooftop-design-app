@@ -253,7 +253,7 @@ describe("the demo is opened", () => {
 
     expect(project.getState().project).toBeNull();
     expect(designStatusOf(results.getState())).toBe("failed");
-    expect(designFailureOf(results.getState())).toEqual({ code: "api_unreachable", message: UNREACHABLE });
+    expect(designFailureOf(results.getState())).toMatchObject({ code: "api_unreachable", message: UNREACHABLE });
   });
 
   test("tried again, it is asked for once more", async () => {
@@ -696,7 +696,7 @@ describe("a call that fails", () => {
     expect(designOf(results.getState())?.readouts.positions).toBe(790);
     expect(designEditOf(results.getState())).toBe(1);
     expect(designStatusOf(results.getState())).toBe("failed");
-    expect(designFailureOf(results.getState())).toEqual({ code: "api_unreachable", message: UNREACHABLE });
+    expect(designFailureOf(results.getState())).toMatchObject({ code: "api_unreachable", message: UNREACHABLE });
   });
 
   test("the layout: the same", async () => {
@@ -708,7 +708,7 @@ describe("a call that fails", () => {
 
     expect(layoutOf(results.getState())?.readouts.positions).toBe(790);
     expect(layoutStatusOf(results.getState())).toBe("failed");
-    expect(layoutFailureOf(results.getState())).toEqual({
+    expect(layoutFailureOf(results.getState())).toMatchObject({
       code: "roof_too_small",
       message: "The roof has no room for a module. Make it larger.",
     });
@@ -736,7 +736,9 @@ describe("a call that fails", () => {
     expect(designStatusOf(results.getState())).toBe("failed");
     expect(designFailureOf(results.getState())).toEqual({
       code: "unexpected_fault",
-      message: "Something went wrong in the app: result.options is not iterable. Try again; if it fails again, report it.",
+      message: "The app could not finish this step.",
+      status: null,
+      details: "TypeError: result.options is not iterable",
     });
   });
 });
@@ -1187,7 +1189,7 @@ describe("weather for a design that has none", () => {
     await settled();
 
     expect(designStatusOf(results.getState())).toBe("failed");
-    expect(designFailureOf(results.getState())).toEqual({ code: "no_weather_for_site", message: OVER_THE_SEA });
+    expect(designFailureOf(results.getState())).toMatchObject({ code: "no_weather_for_site", message: OVER_THE_SEA });
     expect(runs).toHaveLength(1);
     expect(project.getState().project?.weather_json).toBeNull();
   });
@@ -1228,7 +1230,7 @@ describe("weather for a design that has none", () => {
 
     expect(weathers).toHaveLength(1);
     expect(designStatusOf(results.getState())).toBe("failed");
-    expect(designFailureOf(results.getState())).toEqual({ code: "weather_not_loaded", message: NO_WEATHER_YET });
+    expect(designFailureOf(results.getState())).toMatchObject({ code: "weather_not_loaded", message: NO_WEATHER_YET });
   });
 
   test("tried again after that, the run is asked once more and may load again", async () => {

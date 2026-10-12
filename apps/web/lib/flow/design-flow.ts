@@ -54,12 +54,10 @@ const isForWantOfWeather = (error: unknown): boolean => error instanceof ApiErro
 
 /** What failed, in the API's words, or in words of the app for a fault that is not the API's. */
 export function failureOf(error: unknown): Failure {
-  if (error instanceof ApiError) return { code: error.code, message: error.message };
-  const what = error instanceof Error ? error.message : String(error);
-  return {
-    code: "unexpected_fault",
-    message: `Something went wrong in the app: ${what}. Try again; if it fails again, report it.`,
-  };
+  if (error instanceof ApiError) return { code: error.code, message: error.message, status: error.status, details: null };
+  // A fault of the app: what it was goes behind Details alone (V2 · 5, voice §5).
+  const what = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+  return { code: "unexpected_fault", message: "The app could not finish this step.", status: null, details: what };
 }
 
 export function createDesignFlow({ project, results, view, api = apiOfTheApp, clock = CLOCK_OF_THE_BROWSER, onDemoRan, onChoiceGone }: Options): DesignFlow {

@@ -16,11 +16,10 @@ export type WeatherLoad = {
   take: (chosen: WeatherChosen) => void;
 };
 
-/** Why the weather was not loaded: the API's words, or what went wrong in the app. */
+/** Why the weather was not loaded: the API's words, or the app's, with no word of the machine (V2 · 5, voice §5). */
 function reasonOf(error: unknown): string {
   if (error instanceof ApiError) return error.message;
-  const what = error instanceof Error ? error.message : String(error);
-  return `Something went wrong in the app: ${what}. Try again; if it fails again, report it.`;
+  return "The app could not finish this step. Try again.";
 }
 
 /**
