@@ -48,13 +48,13 @@ describe("the notes to review", () => {
     expect(notesOf({ ...NOTHING, design: design({}) })).toEqual([]);
   });
 
-  test("the demo has one, of its module: it leads to the Array lens", () => {
+  test("the demo has one, of its module: it leads to the Array step", () => {
     expect(notesOf({ ...NOTHING, design: design({ module: [VOC] }) })).toEqual([
       {
         id: "module-0",
         title: "Voc coefficient",
         reason: VOC_SHOWN,
-        where: "Module · Array lens",
+        where: "Module · Array step",
         action: { kind: "open", label: "Open Array", path: "/studio/array" },
       },
     ]);
@@ -64,7 +64,7 @@ describe("the notes to review", () => {
     const notes = notesOf({ ...NOTHING, design: design({ layout: [UNIT_GAP], weather: [NO_BEAM] }) });
 
     expect(notes.map((note) => [note.id, note.title, note.where, note.action])).toEqual([
-      ["layout-0", "Unit gap", "Layout · Array lens", { kind: "open", label: "Open Array", path: "/studio/array" }],
+      ["layout-0", "Unit gap", "Layout · Array step", { kind: "open", label: "Open Array", path: "/studio/array" }],
       ["weather-0", "weather.csv", "Weather · Performance", { kind: "open", label: "Open Performance", path: "/performance" }],
     ]);
   });
@@ -89,7 +89,7 @@ describe("the notes to review", () => {
         id: "option",
         title: "Below the DC/AC target",
         reason: "27 strings on 2 inverter(s), DC/AC 0.71 (below target).",
-        where: "Option D · Strings lens",
+        where: "Option D · Strings step",
         action: { kind: "open", label: "Open Strings", path: "/studio/strings" },
       },
     ]);

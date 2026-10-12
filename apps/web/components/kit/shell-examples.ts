@@ -70,7 +70,7 @@ function shown(result: DesignResult | null, status: "idle" | "running" | "failed
   return vitalsOf({ name: NAME, design: result, readouts: result?.readouts ?? null, designStatus: status, progress, notes });
 }
 
-export const DESIGN = { name: NAME, place: "18.52° N · 73.86° E" };
+export const DESIGN = { name: NAME };
 
 export const VITALS: Record<"design" | "updating" | "loading" | "failed" | "waiting" | "nothingToReview" | "outsideTarget", VitalsView> = {
   design: shown(DEMO, "idle", null),

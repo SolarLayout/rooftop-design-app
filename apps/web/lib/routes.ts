@@ -10,13 +10,15 @@ export const WORKSPACES = [
 
 export type Workspace = (typeof WORKSPACES)[number]["id"];
 
-/** The lenses of the Studio, in the order of the work. */
+/** The steps of the order of work that are in the Studio (D95). Sun is a view of the stage on each, no lens. */
 export const LENSES = [
   { id: "roof", name: "Roof" },
   { id: "array", name: "Array" },
-  { id: "sun", name: "Sun" },
   { id: "strings", name: "Strings" },
 ] as const;
+
+/** The address the Sun lens had: it leads to the step that was in hand, with the Sun view on (D95). */
+export const SUN_OF_BEFORE = "/studio/sun";
 
 export type Lens = (typeof LENSES)[number]["id"];
 

@@ -132,7 +132,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
   },
   "find.tool.move-an-obstacle": {
     title: "Move, turn or remove an obstacle",
-    summary: "Pick an obstacle on the map, then drag it, turn a box or a building by its handle, or remove it. Its height is changed in the Roof lens.",
+    summary: "Pick an obstacle on the map, then drag it, turn a box or a building by its handle, or remove it. Its height is changed in the Roof step.",
     kind: "tool",
     related: ["find.tool.move-the-roof","app.section.obstacles"],
     aliases: [],
@@ -177,7 +177,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
   },
   "studio.section.day": {
     title: "Day",
-    summary: "The day whose sun, sun path and shadows the Sun lens shows. It changes what you see, not the design.",
+    summary: "The day whose sun, sun path and shadows the Sun view shows. It changes what you see, not the design.",
     kind: "section",
     values: [{"id":"355","label":"21 Dec","meaning":"21 December, the winter solstice north of the equator and the summer solstice south of it."},{"id":"80","label":"21 Mar","meaning":"21 March, the equinox."},{"id":"172","label":"21 Jun","meaning":"21 June, the summer solstice north of the equator and the winter solstice south of it."},{"id":"any","label":"Any date","meaning":"Any day of the year, by its day and its month."}],
     related: ["studio.section.sun-at-the-hour","studio.section.on-the-roof"],
@@ -250,7 +250,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
   },
   "studio.section.on-the-roof": {
     title: "On the roof",
-    summary: "What the Sun lens draws over the roof, the sun's path, its shade-free window and the engine's own shadow outlines.",
+    summary: "What the Sun view draws over the roof, the sun's path, its shade-free window and the engine's own shadow outlines.",
     kind: "section",
     related: ["studio.section.day","studio.section.sun-at-the-hour","app.section.obstacles"],
     aliases: [],

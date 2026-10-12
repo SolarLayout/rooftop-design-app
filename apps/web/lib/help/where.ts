@@ -10,7 +10,7 @@ const SCREEN: Record<string, string> = { find: "Find", performance: "Performance
 /** "Section · Strings lens": the kind of the topic, then the screen of the address. */
 export function whereOf(kind: HelpKind, pathname: string): string {
   const [workspace = "", lens = ""] = pathname.split("/").filter(Boolean);
-  const screen = workspace === "studio" && isLens(lens) ? `${LENSES.find(({ id }) => id === lens)?.name} lens` : (SCREEN[workspace] ?? "Studio");
+  const screen = workspace === "studio" && isLens(lens) ? `${LENSES.find(({ id }) => id === lens)?.name} step` : (SCREEN[workspace] ?? "Studio");
   return `${KIND[kind]} · ${screen}`;
 }
 

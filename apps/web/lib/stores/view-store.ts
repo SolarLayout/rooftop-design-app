@@ -64,7 +64,7 @@ export type ViewState = {
   /** Whether the time plays (plan/phase-06-plan.md, decision 4): of the view, as the time is. */
   isPlaying: boolean;
   onTheRoof: OnTheRoof;
-  /** The tab of the Sun lens; leaving the lens takes it back to the shadows. */
+  /** The tab of the Sun view; leaving the view takes it back to the shadows. */
   sunTab: SunTab;
   selection: Selection | null;
   /** What the Strings lens colours the strings by (plan/phase-07-plan.md, decision 12): by MPPT at first, as the board. */
@@ -82,9 +82,17 @@ export type ViewState = {
   dragging: Dragging | null;
   /** Present's tour over the view; null in the Studio. */
   presentation: Presentation | null;
+  /** The Sun view over the stage of the step in hand (D95): its shadows, its time, the sun path, the shade map. */
+  isSunView: boolean;
+  /** The work column hidden on desktop, the stage the whole width (D99). */
+  isPanelHidden: boolean;
   /** The ground under the roof, as the Layers panel of the stage sets it: the plain grid at first (D57, D70). */
   ground: GroundChoice;
   showLens: (lens: Lens) => void;
+  /** The Sun view on or off; leaving it takes its tab back to the shadows. */
+  showSunView: (on: boolean) => void;
+  /** The work column hidden or shown (D99). */
+  hidePanel: (hidden: boolean) => void;
   setToReview: (names: readonly string[]) => void;
   reviewed: (name: string) => void;
   select: (selection: Selection | null) => void;
@@ -112,7 +120,7 @@ export type ViewState = {
 export type ViewStore = ReturnType<typeof createViewStore>;
 
 // As the approved mockups open: the first lens, in 3D, the design day at 10:30.
-const AT_THE_START = { lens: "roof", camera: "3d", cameraRequest: 0, cameraFrom: "3d", cameraMove: 0, northRequest: 0, sunTime: { day: "design_day", hour: 10.5 }, isPlaying: false, onTheRoof: { sunPath: true, window: true, shadowOutlines: false }, sunTab: "shadows", selection: null, stringColouring: "mppt", tracedString: null, draft: null, toReview: [] as string[], dragging: null, presentation: null as Presentation | null, ground: "plain" as GroundChoice } as const;
+const AT_THE_START = { lens: "roof", camera: "3d", cameraRequest: 0, cameraFrom: "3d", cameraMove: 0, northRequest: 0, sunTime: { day: "design_day", hour: 10.5 }, isPlaying: false, onTheRoof: { sunPath: true, window: true, shadowOutlines: false }, sunTab: "shadows", selection: null, stringColouring: "mppt", tracedString: null, draft: null, toReview: [] as string[], dragging: null, presentation: null as Presentation | null, ground: "plain" as GroundChoice, isSunView: false, isPanelHidden: false } as const;
 
 function refuseWhatIsNoTime({ day, hour }: SunTime): void {
   if (!(hour >= 0 && hour <= 24)) throw new RangeError(`${hour} is no hour of a day: from 0 to 24.`);
@@ -132,8 +140,11 @@ export function createViewStore() {
     // Leaving a lens takes back its tab of the Sun lens, and the string traced and selected of the Strings lens:
     // the strings are drawn there alone.
     showLens: (lens) =>
-      set((state) => (lens === state.lens ? state : { lens, sunTab: "shadows", tracedString: null, selection: state.selection?.kind === "string" ? null : state.selection })),
-    select: (selection) => set({ selection, draft: null }),
+      set((state) => (lens === state.lens ? state : { lens, tracedString: null, selection: state.selection?.kind === "string" ? null : state.selection })),
+    showSunView: (isSunView) => set((state) => (state.isSunView === isSunView ? state : isSunView ? { isSunView } : { isSunView, sunTab: "shadows" })),
+    hidePanel: (isPanelHidden) => set((state) => (state.isPanelHidden === isPanelHidden ? state : { isPanelHidden })),
+    // An object selected on the roof shows the panel again: its fields are there (D99).
+    select: (selection) => set(selection === null ? { selection, draft: null } : { selection, draft: null, isPanelHidden: false }),
     clearSelection: () => set({ selection: null, draft: null }),
     setDraft: (draft) => set(draft === null ? { draft } : { draft, selection: null }),
     setDragging: (dragging) =>
@@ -171,15 +182,15 @@ export const sunTimeOf = (state: ViewState) => state.sunTime;
 export const isPlayingOf = (state: ViewState) => state.isPlaying;
 export const onTheRoofOf = (state: ViewState) => state.onTheRoof;
 export const sunTabOf = (state: ViewState) => state.sunTab;
-/** Whether the modules are coloured by their shade: in the Sun lens alone, while its Shade map tab is taken; never under a presentation. */
-export const isShadeMapShownOf = (state: ViewState) => state.presentation === null && state.lens === "sun" && state.sunTab === "shade-map";
-/** Whether the stage draws the sun path: in the Sun lens alone, while its switch is on (decision 16); under a presentation, as it says (D72). */
+/** Whether the modules are coloured by their shade: in the Sun view alone, while its Shade map tab is taken; never under a presentation. */
+export const isShadeMapShownOf = (state: ViewState) => state.presentation === null && state.isSunView && state.sunTab === "shade-map";
+/** Whether the stage draws the sun path: in the Sun view alone, on any step, while its switch is on (decision 16); under a presentation, as it says (D72). */
 /**
- * Whether the camera frames the sun path's dome: in the Sun lens with the path on; and through the whole of Present, every
+ * Whether the camera frames the sun path's dome: in the Sun view with the path on; and through the whole of Present, every
  * scene alike, so that the sun of the day scene stays on the screen and the camera never jumps between scenes (D72).
  */
-export const framesTheDomeOf = (state: ViewState) => state.presentation !== null || (state.lens === "sun" && state.onTheRoof.sunPath);
-export const showsSunPathOf = (state: ViewState) => (state.presentation ? state.presentation.sunPath : state.lens === "sun" && state.onTheRoof.sunPath);
+export const framesTheDomeOf = (state: ViewState) => state.presentation !== null || (state.isSunView && state.onTheRoof.sunPath);
+export const showsSunPathOf = (state: ViewState) => (state.presentation ? state.presentation.sunPath : state.isSunView && state.onTheRoof.sunPath);
 export const selectionOf = (state: ViewState) => state.selection;
 export const stringColouringOf = (state: ViewState) => state.stringColouring;
 export const tracedStringOf = (state: ViewState) => state.tracedString;
@@ -206,3 +217,5 @@ export const groundOf = (state: ViewState) => state.ground;
  * otherwise. Without a map key, or without a location, there is no imagery, whatever the switch says (D57).
  */
 export const groundDrawnOf = (ground: GroundChoice, hasImagery: boolean): GroundChoice => (hasImagery ? ground : "plain");
+export const isSunViewOf = (state: ViewState) => state.isSunView;
+export const isPanelHiddenOf = (state: ViewState) => state.isPanelHidden;

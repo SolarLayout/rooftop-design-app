@@ -1,31 +1,37 @@
 "use client";
 
 import { HelpProvider } from "./help/HelpProvider";
-import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { shouldWarnBeforeLeaving } from "@/lib/device/leaving";
 import { openFromTheSwitcher } from "@/lib/device/opening";
 import { idOf, keptDesignsOf, savingOf } from "@/lib/device/saving";
-import { placeInShort } from "@/lib/format/place";
 import { withName } from "@/lib/flow/name-field";
-import { workspaceOf } from "@/lib/routes";
-import { latitudeOf, longitudeOf, nameOf } from "@/lib/stores/project-store";
-import { lensOf } from "@/lib/stores/view-store";
+import { nameOf } from "@/lib/stores/project-store";
 import { OpenProject } from "@/components/shell/OpenProject";
 import { Toaster } from "@/components/ui/Toaster";
 import { ImportDrawing } from "./ImportDrawing";
 import { NotesDrawer } from "./NotesDrawer";
 import type { Note } from "./notes-view";
-import { useDownloads, useNotes, useProject, useSaving, useStores, useToasts, useView } from "./stores";
+import { resultChipOf, summaryOf } from "./result-view";
+import { StepTabBar } from "./StepNav";
+import { useDownloads, useNotes, useProject, useSaving, useStores, useToasts, useVitals } from "./stores";
+import { useProgression, type Progression } from "./use-progression";
 import { rowsOnTheDeviceOf } from "./switcher-view";
 import { TopBar } from "./TopBar";
 import { useOpensWhatBelongs } from "./use-opens-what-belongs";
 import { useSaysChoiceGone } from "./use-says-choice-gone";
-import { TabBar } from "./WorkspaceNav";
 
 type Notes = { notes: readonly Note[]; open: () => void };
 
 const NotesContext = createContext<Notes | null>(null);
+const ProgressionContext = createContext<Progression | null>(null);
+
+/** The order of work as the shell has it: the step in hand, the state of each, the steps opened (D95). */
+export function useProgressionOfTheShell(): Progression {
+  const progression = useContext(ProgressionContext);
+  if (progression === null) throw new Error("The steps are read outside the shell: put the component inside Shell.");
+  return progression;
+}
 
 /** The notes to review, and what opens their drawer. */
 export function useNotesOfTheShell(): Notes {
@@ -35,7 +41,6 @@ export function useNotesOfTheShell(): Notes {
 }
 
 function Frame({ children }: { children: ReactNode }) {
-  const workspace = workspaceOf(usePathname());
   const { flow, project, downloads, saving } = useStores();
   useOpensWhatBelongs();
   const name = useProject(nameOf);
@@ -43,10 +48,9 @@ function Frame({ children }: { children: ReactNode }) {
   const kept = useSaving(keptDesignsOf);
   const keptId = useSaving(idOf);
   const shouldWarn = useDownloads(shouldWarnBeforeLeaving);
-  const latitude = useProject(latitudeOf);
-  const longitude = useProject(longitudeOf);
-  const lens = useView(lensOf);
   const notes = useNotes();
+  const vitals = useVitals(notes);
+  const progression = useProgression();
   const toasts = useToasts();
   const [areNotesOpen, setNotesOpen] = useState(false);
   const [isImportOpen, setImportOpen] = useState(false);
@@ -72,22 +76,22 @@ function Frame({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("pagehide", flush);
   }, [saving]);
 
-  const place = latitude === null || longitude === null ? null : placeInShort(latitude, longitude);
   const ofTheShell = useMemo(() => ({ notes, open: () => setNotesOpen(true) }), [notes]);
   const designs = useMemo(() => rowsOnTheDeviceOf(kept, keptId), [kept, keptId]);
   const say = (words: string) => void toasts.show({ kind: "note", words });
 
   return (
     <NotesContext.Provider value={ofTheShell}>
+      <ProgressionContext.Provider value={progression}>
       {/* The container of the top bar's widths, tablet-wide and desktop-wide: its room, the sides kept clear left out. */}
       <div className="@container/shell flex h-dvh flex-col overflow-hidden">
         <TopBar
           name={name}
-          place={place}
-          workspace={workspace}
-          lens={lens}
           saving={savingState}
-          notes={notes.length}
+          step={progression.current}
+          states={progression.states}
+          result={resultChipOf(vitals)}
+          summary={summaryOf(vitals)}
           onOpenNotes={ofTheShell.open}
           onImport={() => setImportOpen(true)}
           onOpenProject={() => setOpenProjectOpen(true)}
@@ -100,7 +104,7 @@ function Frame({ children }: { children: ReactNode }) {
         <div data-workspace-frame className="relative flex min-h-0 grow flex-col overflow-y-auto">
           <HelpProvider>{children}</HelpProvider>
         </div>
-        <TabBar current={workspace} lens={lens} />
+        <StepTabBar current={progression.current} states={progression.states} />
       </div>
       {/* Try again asks again for what failed, whichever it was: a call of the API, or the write to the device. Each does nothing when nothing of its failed. */}
       <NotesDrawer
@@ -116,11 +120,12 @@ function Frame({ children }: { children: ReactNode }) {
       <OpenProject open={isOpenProjectOpen} onClose={() => setOpenProjectOpen(false)} />
       {/* What the app says, in the page from the start: a download that failed (plan/phase-09-plan.md, decision 12). */}
       <Toaster toasts={toasts} aboveTheTabBar />
+      </ProgressionContext.Provider>
     </NotesContext.Provider>
   );
 }
 
-/** What the three workspaces share: one design, the top bar, the navigation, the notes. */
+/** What the steps after Find share: one design, the top bar with the steps and the result, the notes. */
 export function Shell({ children }: { children: ReactNode }) {
   return <Frame>{children}</Frame>;
 }

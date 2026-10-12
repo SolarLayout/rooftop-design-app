@@ -35,8 +35,7 @@ describe("the line under the title", () => {
     expect(subLineOf("array", { ...DEMO, module_area_m2: 2038.2 }, 6)).toBe("790 positions · 28 tables · 6 rows · 2,038 m² of modules");
   });
 
-  test("the Sun and Strings lenses say nothing yet", () => {
-    expect(subLineOf("sun", DEMO, 6)).toBeNull();
+  test("the Strings lens says nothing yet", () => {
     expect(subLineOf("strings", DEMO, 6)).toBeNull();
   });
 
