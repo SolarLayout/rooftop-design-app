@@ -4,6 +4,7 @@
 import { shown } from "../../components/ui/number-entry";
 import type { DesignResult, Project } from "../api";
 import { projectFileNameOf } from "../flow/deliverables/file-name";
+import { weatherShownOf } from "../flow/weather-source";
 
 export type ContentRow = {
   label: string;
@@ -33,8 +34,8 @@ type Asked = {
 
 const BYTES_IN_A_KB = 1024;
 /** What the module or the inverter is read from when the document names no file. */
-const BUNDLED_SAMPLE = "the bundled sample";
-export const FORMAT = "Format 2";
+const BUNDLED_SAMPLE = "The app's sample";
+export const FORMAT = "Format version 2";
 const NO_OPTION_YET = "None yet";
 
 const fileRow = (label: string, path: string): ContentRow => (path === "" ? { label, value: BUNDLED_SAMPLE, isFileName: false } : { label, value: path, isFileName: true });
@@ -60,7 +61,7 @@ export function projectFileViewOf({ document, design, bytes, draft }: Asked): Pr
     contents: [
       fileRow("Module file", document.pan_path),
       fileRow("Inverter file", document.ond_path),
-      { label: "Weather", value: design ? `${design.weather.label} · ${shown(design.weather.hours, 0)} hours` : null, isFileName: false },
+      { label: "Weather", value: design ? `${weatherShownOf(document)} · ${shown(design.weather.hours, 0)} hours` : null, isFileName: false },
       { label: "System voltage", value: voltageOf(document, design), isFileName: false },
       { label: "Chosen option", value: optionOf(design), isFileName: false },
     ],

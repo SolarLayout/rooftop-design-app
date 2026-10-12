@@ -4060,7 +4060,7 @@
                 }
               }
             },
-            "description": "The request cannot be used; the message says why. An outline over 30,000 m\u00b2 is refused with the code roof_too_large, before any work."
+            "description": "The request is refused. The message says why. An outline over 30,000 m\u00b2 is refused with the code roof_too_large, before any work."
           }
         },
         "summary": "Design",
@@ -4102,7 +4102,7 @@
                 }
               }
             },
-            "description": "The request cannot be used; the message says why."
+            "description": "The request is refused. The message says why."
           }
         },
         "summary": "Inverter",
@@ -4144,7 +4144,7 @@
                 }
               }
             },
-            "description": "The request cannot be used; the message says why."
+            "description": "The request is refused. The message says why."
           }
         },
         "summary": "Module",
@@ -4205,7 +4205,7 @@
                 }
               }
             },
-            "description": "The request cannot be used; the message says why. An outline over 30,000 m\u00b2 is refused with the code roof_too_large, before any work."
+            "description": "The request is refused. The message says why. An outline over 30,000 m\u00b2 is refused with the code roof_too_large, before any work."
           }
         },
         "summary": "Report Pages",
@@ -4323,7 +4323,7 @@
                 }
               }
             },
-            "description": "The request cannot be used; the message says why. An outline over 30,000 m\u00b2 is refused with the code roof_too_large, before any work."
+            "description": "The request is refused. The message says why. An outline over 30,000 m\u00b2 is refused with the code roof_too_large, before any work."
           }
         },
         "summary": "Export",
@@ -4387,7 +4387,7 @@
                 }
               }
             },
-            "description": "The request cannot be used; the message says why. An outline over 30,000 m\u00b2 is refused with the code roof_too_large, before any work."
+            "description": "The request is refused. The message says why. An outline over 30,000 m\u00b2 is refused with the code roof_too_large, before any work."
           }
         },
         "summary": "Layout",
@@ -4429,7 +4429,7 @@
                 }
               }
             },
-            "description": "The request cannot be used; the message says why. An outline over 30,000 m\u00b2 is refused with the code roof_too_large, before any work."
+            "description": "The request is refused. The message says why. An outline over 30,000 m\u00b2 is refused with the code roof_too_large, before any work."
           }
         },
         "summary": "Open Project",
@@ -4471,7 +4471,7 @@
                 }
               }
             },
-            "description": "The request cannot be used; the message says why. An outline over 30,000 m\u00b2 is refused with the code roof_too_large, before any work."
+            "description": "The request is refused. The message says why. An outline over 30,000 m\u00b2 is refused with the code roof_too_large, before any work."
           }
         },
         "summary": "Roof From Map",
@@ -4513,7 +4513,7 @@
                 }
               }
             },
-            "description": "The request cannot be used; the message says why. An outline over 30,000 m\u00b2 is refused with the code roof_too_large, before any work."
+            "description": "The request is refused. The message says why. An outline over 30,000 m\u00b2 is refused with the code roof_too_large, before any work."
           }
         },
         "summary": "Import Roof",
@@ -4555,7 +4555,7 @@
                 }
               }
             },
-            "description": "The request cannot be used; the message says why. An outline over 30,000 m\u00b2 is refused with the code roof_too_large, before any work."
+            "description": "The request is refused. The message says why. An outline over 30,000 m\u00b2 is refused with the code roof_too_large, before any work."
           }
         },
         "summary": "Roof On Map",
@@ -4597,7 +4597,7 @@
                 }
               }
             },
-            "description": "The request cannot be used; the message says why. An outline over 30,000 m\u00b2 is refused with the code roof_too_large, before any work."
+            "description": "The request is refused. The message says why. An outline over 30,000 m\u00b2 is refused with the code roof_too_large, before any work."
           }
         },
         "summary": "Sun",
@@ -4639,7 +4639,7 @@
                 }
               }
             },
-            "description": "The request cannot be used; the message says why."
+            "description": "The request is refused. The message says why."
           },
           "502": {
             "content": {

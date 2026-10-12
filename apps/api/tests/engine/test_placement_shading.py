@@ -112,7 +112,7 @@ def test_a_row_pitch_entered_under_the_table_s_depth_is_raised_and_says_so(modul
     used = raised.slope_len * math.cos(math.radians(raised.tilt)) + 0.3  # a table's depth on plan, plus 0.3 m
     assert raised.pitch == pytest.approx(used)
     assert raised.notes == [
-        f"Row pitch 1.00 m is under a table's depth on plan plus 0.3 m, so {used:.2f} m is used."
+        f"Row spacing 1.00 m is less than a row's depth plus 0.3 m. The app uses {used:.2f} m."
     ]
     assert kept.pitch == 7.0 and kept.notes == []
 
@@ -125,4 +125,4 @@ def test_an_east_west_layout_names_its_unit_gap_only_when_there_is_one(module):
     north.lat = 45.0
 
     assert place(pune, ArraySpec(), module).notes == []
-    assert place(north, ArraySpec(), module).notes == ["Unit gap 2.55 m keeps east-west units shade-free in the window."]
+    assert place(north, ArraySpec(), module).notes == ["Unit gap 2.55 m keeps east-west units free of shade in the shade-free hours."]

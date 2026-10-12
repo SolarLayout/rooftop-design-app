@@ -58,7 +58,7 @@ export function DeliverableRow({ row, open, isOnItsWay = false, onDownload }: Pr
         </span>
         {isOnItsWay ? (
           <span className="flex size-10 items-center justify-center">
-            <ProgressRing size={16} label="On its way" />
+            <ProgressRing size={16} label="Preparing" />
           </span>
         ) : (
           <IconButton kind="quiet" icon="download" label={`Download ${row.name}`} aria-disabled={canDownload ? undefined : "true"} onClick={canDownload ? onDownload : undefined} />

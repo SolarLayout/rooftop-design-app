@@ -367,8 +367,7 @@ def test_without_a_chosen_option_nothing_is_exported(client, demo, kind):
     assert response.status_code == 422
     assert error_of(response) == {
         "code": "no_option_chosen",
-        "message": "Choose a stringing option first. This design has 29x22x1, 26x24x1, 28x22x1, 28x28x2 "
-        "and 29x27x2.",
+        "message": "Choose an option first. This design has 29x22x1, 26x24x1, 28x22x1, 28x28x2 and 29x27x2.",
         "field": "chosen_option",
     }
 
@@ -395,8 +394,7 @@ def test_without_a_system_voltage_the_export_says_what_is_missing(client, chosen
     assert response.status_code == 422
     assert error_of(response) == {
         "code": "system_voltage_missing",
-        "message": "Choose a system voltage to size the strings. 600, 1000 or 1500 V. Nothing is sized "
-        "until you choose.",
+        "message": "Choose a system voltage to size the strings. 600, 1000 or 1500 V.",
         "field": "system_voltage",
     }
 

@@ -152,7 +152,7 @@ export function Handover({ item }: Props) {
         <HandoverHead {...allProps} />
       </div>
       <div className={COLUMNS}>
-      <nav aria-label="Deliverables" className={classNames(LIST, item === null ? "flex" : "hidden desktop:flex")}>
+      <nav aria-label="Files" className={classNames(LIST, item === null ? "flex" : "hidden desktop:flex")}>
         <DeliverableList
           rows={view.rows}
           item={item}

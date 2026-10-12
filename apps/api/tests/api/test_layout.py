@@ -193,7 +193,7 @@ def test_a_pan_in_the_project_that_is_none_is_refused(client, light_demo):
     assert response.status_code == 422
     assert error_of(response) == {
         "code": "not_a_pan_file",
-        "message": "notes.PAN: not a PVsyst module file (PNom, Voc or Isc missing)",
+        "message": "notes.PAN is not a module file (PAN): PNom, Voc or Isc is missing.",
         "field": "pan_text",
     }
 

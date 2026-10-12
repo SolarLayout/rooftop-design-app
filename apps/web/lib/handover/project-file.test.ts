@@ -13,11 +13,11 @@ describe("the demo at 1500 V", () => {
 
     expect(view.fileName).toBe("Pune-demo-roof.rtd");
     expect(view.size).toBe("680 KB");
-    expect(view.format).toBe("Format 2");
+    expect(view.format).toBe("Format version 2");
     expect(view.contents).toEqual([
       { label: "Module file", value: "insolation-ina-144mhc-tf-560.PAN", isFileName: true },
       { label: "Inverter file", value: "wattpower-wp-330ktl-h1.OND", isFileName: true },
-      { label: "Weather", value: "PVGIS TMY · 8,760 hours", isFileName: false },
+      { label: "Weather", value: "Typical year · 8,760 hours", isFileName: false },
       { label: "System voltage", value: "1500 V", isFileName: false },
       { label: "Chosen option", value: "A · 29 × 22 on 1 inverter", isFileName: false },
     ]);
@@ -38,11 +38,11 @@ describe("the demo at 1500 V", () => {
     expect(view.contents[4]!.value).toBe("D · 26 × 27 on 2 inverters");
   });
 
-  test("the bundled sample where the document names no file", () => {
+  test("the app's sample where the document names no file", () => {
     const view = projectFileViewOf({ ...AT_REST, document: { ...DOCUMENT, pan_path: "", ond_path: "" } as Project });
 
-    expect(view.contents[0]).toEqual({ label: "Module file", value: "the bundled sample", isFileName: false });
-    expect(view.contents[1]).toEqual({ label: "Inverter file", value: "the bundled sample", isFileName: false });
+    expect(view.contents[0]).toEqual({ label: "Module file", value: "The app's sample", isFileName: false });
+    expect(view.contents[1]).toEqual({ label: "Inverter file", value: "The app's sample", isFileName: false });
   });
 });
 

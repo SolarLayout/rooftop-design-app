@@ -41,7 +41,7 @@ export const SCHEDULE_COPIED = "Copied";
 
 /** The most a string's cable drops of its voltage at the maximum power point, as the engine sizes it. */
 const DROP_LIMIT_PCT = 1;
-const OVER_THE_LIMIT: Mark = { kind: "note", label: "More than 1 % even at 10 mm²: a shorter run, or the inverter nearer, brings it down" };
+const OVER_THE_LIMIT: Mark = { kind: "note", label: "Over 1 % even at 10 mm². Shorten the run or move the inverter nearer." };
 
 /** The number of a string from its label, so that S10 sorts after S9. */
 const numberOfString = (label: string) => Number(label.match(/\d+$/)?.[0] ?? 0);
@@ -92,7 +92,7 @@ function totalOf(option: DesignOption): ScheduleLine {
 function captionOf(option: DesignOption, sort: Sort | null): string {
   if (sort === null) return `The cable schedule of option ${option.letter}, by string`;
   const head = COLUMNS.find((column) => column.key === sort.key)?.head ?? sort.key;
-  return `Sorted by ${head}, ${sort.direction === "descending" ? "downwards" : "upwards"}. By string unless sorted`;
+  return `Sorted by ${head}, ${sort.direction === "descending" ? "downwards" : "upwards"}`;
 }
 
 /** The schedule of *option* in the order of *sort*, the engine's order without one. */

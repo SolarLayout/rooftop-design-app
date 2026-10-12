@@ -25,7 +25,7 @@ logger = logging.getLogger("rooftop_api")
 
 UNPROCESSABLE = 422
 BAD_GATEWAY = 502
-INTERNAL_MESSAGE = "The server could not finish this request. Try again; if it fails again, report it."
+INTERNAL_MESSAGE = "The server could not finish this step. Try again."
 ENGINE_CODES: dict[type[EngineError], str] = {
     MissingEquipmentFile: "equipment_file_missing",
     WeatherNotLoaded: "weather_not_loaded",
@@ -33,7 +33,7 @@ ENGINE_CODES: dict[type[EngineError], str] = {
     UnusableWeatherFile: "not_a_weather_csv",
     RoofTooLarge: "roof_too_large",
 }
-REFUSED = "The request cannot be used; the message says why."
+REFUSED = "The request is refused. The message says why."
 # Said by every route that takes an outline: on the map, in a file, or in a project.
 ROOF_LIMIT_NOTE = (
     f" An outline over {ROOF_AREA_LIMIT_M2:,.0f} m² is refused with the code roof_too_large, before any work."
@@ -105,10 +105,11 @@ def validation_message(errors: Sequence[dict[str, Any]]) -> tuple[str, str | Non
     first = errors[0]
     field = field_path(first.get("loc", ()))
     if first.get("type") == "json_invalid":
-        return f"The request body is not valid JSON: {first.get('msg', 'it cannot be read')}.", None
+        return f"The server cannot read what the app sent: {first.get('msg', 'it is not JSON')}.", None
     message = f"{field}: {first['msg']}" if field else str(first["msg"])
     if len(errors) > 1:
-        message += f" (and {len(errors) - 1} more faults in this request)"
+        others = len(errors) - 1
+        message += f". {others} more {'value is' if others == 1 else 'values are'} refused"
     return message, field
 
 

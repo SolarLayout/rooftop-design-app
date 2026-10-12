@@ -2311,7 +2311,7 @@ export interface operations {
                     "text/event-stream": unknown;
                 };
             };
-            /** @description The request cannot be used; the message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */
+            /** @description The request is refused. The message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2344,7 +2344,7 @@ export interface operations {
                     "application/json": components["schemas"]["InverterResponse"];
                 };
             };
-            /** @description The request cannot be used; the message says why. */
+            /** @description The request is refused. The message says why. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2377,7 +2377,7 @@ export interface operations {
                     "application/json": components["schemas"]["ModuleResponse"];
                 };
             };
-            /** @description The request cannot be used; the message says why. */
+            /** @description The request is refused. The message says why. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2412,7 +2412,7 @@ export interface operations {
                     "application/json": components["schemas"]["ReportPages"];
                 };
             };
-            /** @description The request cannot be used; the message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */
+            /** @description The request is refused. The message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2455,7 +2455,7 @@ export interface operations {
                     "text/csv": string;
                 };
             };
-            /** @description The request cannot be used; the message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */
+            /** @description The request is refused. The message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2508,7 +2508,7 @@ export interface operations {
                     "application/json": components["schemas"]["LayoutResponse"];
                 };
             };
-            /** @description The request cannot be used; the message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */
+            /** @description The request is refused. The message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2541,7 +2541,7 @@ export interface operations {
                     "application/json": components["schemas"]["OpenedProject"];
                 };
             };
-            /** @description The request cannot be used; the message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */
+            /** @description The request is refused. The message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2574,7 +2574,7 @@ export interface operations {
                     "application/json": components["schemas"]["Project"];
                 };
             };
-            /** @description The request cannot be used; the message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */
+            /** @description The request is refused. The message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2607,7 +2607,7 @@ export interface operations {
                     "application/json": components["schemas"]["ImportedRoof"];
                 };
             };
-            /** @description The request cannot be used; the message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */
+            /** @description The request is refused. The message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2640,7 +2640,7 @@ export interface operations {
                     "application/json": components["schemas"]["RoofOnMap"];
                 };
             };
-            /** @description The request cannot be used; the message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */
+            /** @description The request is refused. The message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2673,7 +2673,7 @@ export interface operations {
                     "application/json": components["schemas"]["SunResponse"];
                 };
             };
-            /** @description The request cannot be used; the message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */
+            /** @description The request is refused. The message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2706,7 +2706,7 @@ export interface operations {
                     "application/json": components["schemas"]["WeatherResponse"];
                 };
             };
-            /** @description The request cannot be used; the message says why. */
+            /** @description The request is refused. The message says why. */
             422: {
                 headers: {
                     [name: string]: unknown;
