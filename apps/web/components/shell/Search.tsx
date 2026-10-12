@@ -33,8 +33,10 @@ type Props = {
   onPlace: (place: FoundPlace) => void;
   /** The label of the place that was found, beside the field. */
   found: string | null;
-  /** Floating over the map (Find), a field of a form (the import of a drawing), or the well of Home with its primary action inside (`hero`). */
-  look?: "floating" | "field" | "hero";
+  /** First in Find's column (V2 · 4), a field of a form (the import of a drawing), or the well of Home with its primary action inside (`hero`). */
+  look?: "column" | "field" | "hero";
+  /** What the search reads, shown in its list while it is empty and has the focus (Find's column); pressed, put into it. */
+  examples?: readonly { what: string; text: string; shown: string }[];
   /**
    * The primary action of Home's search (the board "Home"): a link to *href* while nothing is typed, so that it leads to
    * Find by itself; with words typed it searches them, with coordinates or a link it takes them. On phone it stands under
@@ -46,12 +48,14 @@ type Props = {
 };
 
 export const SEARCH_LABEL = "Search an address or paste coordinates";
+/** The field's words in Find's column (the board "Find"). */
+const COLUMN_LABEL = "Address or coordinates";
 const NO_KEY = "Words cannot be searched for without a map key. Paste coordinates or a maps link instead.";
 const NO_LOCATION = "Your location is not available. Allow it in the browser, or search for the address.";
 const MY_LOCATION = "Use my location";
 
-// The floating field takes the accent line while it holds the focus, as every well does (D85).
-const BOX = "flex h-12 min-w-0 items-center gap-3 rounded-row border border-line bg-surface-1 px-4 shadow-float focused:border-accent";
+// The field of Find's column, 48 high, takes the accent line while it holds the focus, as every well does (D85).
+const BOX = "flex h-12 min-w-0 items-center gap-3 rounded-row border border-line bg-well px-4 shadow-well focused:border-accent focused:shadow-well-focus";
 const FIELD = "flex h-10 min-w-0 items-center gap-2.5 rounded-control border border-line bg-well px-3 shadow-well";
 // A note may run to two lines (the board "Coordinates in the search"): its mark stays by the first.
 const NOTE = "flex min-h-11 items-start gap-2.5 px-2.5 py-3 text-text-2";
@@ -73,7 +77,7 @@ const HERO_ANCHOR = "pointer-events-none absolute inset-x-0 bottom-0";
 const HERO_ACTION = "w-full max-tablet:h-12 max-tablet:rounded-row tablet:w-auto";
 
 /** The field of the search: words for the geocoder, coordinates, or a maps link; the places found under it. */
-export function Search({ provider, near, onPlace, found, look = "floating", hero, ref, className }: Props) {
+export function Search({ provider, near, onPlace, found, look = "column", examples, hero, ref, className }: Props) {
   const id = useId();
   const field = useRef<HTMLInputElement>(null);
   const [typed, setTyped] = useState("");
@@ -149,6 +153,10 @@ export function Search({ provider, near, onPlace, found, look = "floating", hero
     }
     if (state.kind === "refused") dispatch({ type: "closed" });
     if (state.kind === "idle" || state.kind === "refused") floating.close();
+  }
+
+  function showExamples() {
+    if (examples && typed === "" && state.kind === "idle") floating.open();
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLInputElement>) {
@@ -235,12 +243,16 @@ export function Search({ provider, near, onPlace, found, look = "floating", hero
           aria-expanded={isListOpen}
           aria-controls={listId}
           aria-activedescendant={marked !== null ? `${listId}-${marked}` : undefined}
-          placeholder={SEARCH_LABEL}
+          placeholder={look === "column" ? COLUMN_LABEL : SEARCH_LABEL}
           autoComplete="off"
           enterKeyHint="search"
           value={typed}
           onChange={(event) => onType(event.target.value)}
           onKeyDown={onKeyDown}
+          // The examples show while the field is empty: on the focus from the keyboard, and on the press, which the panel's
+          // light dismiss would otherwise take for a press outside it.
+          onFocus={showExamples}
+          onClick={showExamples}
           className={classNames("min-w-0 grow truncate border-0 bg-transparent text-text outline-none placeholder:text-text-3", isHero ? "text-(length:--text-section)" : "type-body-touch desktop:type-body")}
         />
         {state.kind === "searching" ? (
@@ -300,7 +312,21 @@ export function Search({ provider, near, onPlace, found, look = "floating", hero
       {/* The places float under the field on every size: a sheet would stand under the keyboard of a phone. */}
       <FloatingPanel floating={floating} width="control" onTouch="floating">
         <div className={FLOATING_SURFACE}>
-          {readBack ? (
+          {examples && typed === "" && state.kind === "idle" ? (
+            <div className="flex flex-col gap-0.5">
+              <p className="px-2.5 pt-1 pb-0.5 type-unit text-text-3">Examples</p>
+              <ul aria-label="Examples" className="flex flex-col gap-0.5">
+                {examples.map((example) => (
+                  <li key={example.what}>
+                    <button type="button" onClick={() => onType(example.text)} className={classNames(ROW, "w-full text-left hovered:bg-surface-2")}>
+                      <code className="min-w-0 grow truncate type-mono-touch desktop:type-mono">{example.shown}</code>
+                      <span className={classNames(FACT, "shrink-0 whitespace-nowrap")}>{example.what}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : readBack ? (
             <ul id={listId} role="listbox" aria-label="Places found" className="flex flex-col gap-0.5">
               <PlaceOption id={`${listId}-0`} label={placeInFull(readBack.lat, readBack.lon)} fact="Coordinates" isMarked onTake={() => takeAt(readBack)} />
             </ul>

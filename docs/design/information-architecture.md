@@ -9,7 +9,7 @@ separate screens, and there is no Run button.
 | Place | Route | Job |
 |---|---|---|
 | Home | `/` | Start or resume: search for the roof, import KMZ, KML or DXF, open a `.rtd` project, open the demo, designs on this device |
-| Find and outline | `/find` | Search the map, outline the roof on satellite imagery, choose the roof type, build |
+| Find and outline | `/find` | The first part of the Roof step (V2 · 4): search in the column, outline the roof on satellite imagery, add what stands on it, choose the roof type, build. The Studio's work column at the right (the sheet on touch), Build pinned at its foot |
 | Studio | `/studio/[step]` | Shape the design on the 3D roof, step by step. `step` is `roof`, `array` or `strings`; `/studio/sun`, the Sun lens's old address, turns the Sun view on over the step in hand (D95) |
 | Performance | `/performance` | Prove the energy: KPIs, P-values, loss chain, monthly, 25 years, weather, assumptions |
 | Handover | `/handover/[item]` | Deliver: report, single-line diagram, BOM, cable schedule, DXF, KMZ, hourly CSV, project file |
@@ -60,7 +60,8 @@ list. On phone the list is the screen and a preview opens as a pushed screen.
 ## Flow for a new design
 1. Home: type an address, press "Find my roof".
 2. Find and outline: the map goes to the address; outline the roof by corners, by rectangle, or by accepting a
-   detected footprint; choose the roof type; "Build this roof".
+   detected footprint; add what stands on it; choose the roof type, a question with a default; "Build this roof · <area>",
+   pinned at the column's foot from the closed outline on (V2 · 4, D98).
 3. Studio opens on the Roof step and says what happened (V2 · 3, D97): `Check the roof`, the line of what the app set,
    `The array is on the roof` with its modules and kWp, then `Computing the energy`, then the energy of year 1; one
    primary, `Continue to Array`. The status is said until the user continues. The stage draws the design day's noon.

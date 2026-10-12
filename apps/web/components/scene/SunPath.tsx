@@ -3,7 +3,7 @@
 import { Line } from "@react-three/drei";
 import { memo, useEffect, useMemo } from "react";
 import { useProject, useResults, useView } from "@/components/shell/stores";
-import { useSize } from "@/components/studio/use-size";
+import { useSize } from "@/components/shell/use-screen-size";
 import { toScene, type XY, type XYZ } from "@/lib/geometry/adapter";
 import { hourMarksOf, marksShownOf, type HourMark } from "@/lib/scene/sun-marks";
 import { arcOf, markerOf } from "@/lib/scene/sun-path";

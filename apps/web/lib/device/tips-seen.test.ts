@@ -50,6 +50,8 @@ describe("the tips gone", () => {
 
   test("what is not a tip, or not a list, is ignored", () => {
     expect([...tipsGoneOf(memory({ [TIPS_KEY]: '["roof","sun",3]' }))]).toEqual(["roof"]);
+    // The obstacles' tip of before (D79) is gone with V2 · 4: its id is left out.
+    expect([...tipsGoneOf(memory({ [TIPS_KEY]: '["obstacle"]' }))]).toEqual([]);
     expect([...tipsGoneOf(memory({ [TIPS_KEY]: "{oops" }))]).toEqual([]);
     expect([...tipsGoneOf(memory({ [TIPS_KEY]: '{"roof":true}' }))]).toEqual([]);
   });

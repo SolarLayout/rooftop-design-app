@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { StatusMark } from "@/components/ui/StatusMark";
 import { Key, Mark, Picture, Pointer, Step, Steps, Touch } from "./help-steps";
 import { useHelp } from "./HelpProvider";
-import { ShowTheTips } from "./ways-in";
 
 // What a help topic's body is drawn with (D80): short headings, plain words, the user's own on-screen words in mono, a note
 // in the note's colours; a how-to's steps and pictures (D81, ./help-steps). Only these; a topic imports nothing.
@@ -43,5 +42,4 @@ export const HELP_KIT: MDXComponents = {
   Key,
   Pointer,
   Touch,
-  ShowTheTips,
 };

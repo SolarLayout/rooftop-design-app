@@ -17,7 +17,7 @@ import { wheelInitOf } from "@/lib/scene/wheel-forward";
 import { projectOf } from "@/lib/stores/project-store";
 import { draggingOf, selectionOf } from "@/lib/stores/view-store";
 import { withObstacleReplaced } from "@/lib/geometry/obstacle-fields";
-import { useSize } from "./use-size";
+import { useSize } from "@/components/shell/use-screen-size";
 
 type Props = { stage: StageStore };
 

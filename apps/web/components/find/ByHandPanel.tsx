@@ -7,15 +7,12 @@ import { classNames } from "@/components/ui/class-names";
 import { IconButton } from "@/components/ui/IconButton";
 import { NumberField } from "@/components/ui/NumberField";
 import { Segmented } from "@/components/ui/Segmented";
-import type { ByHand, Row } from "@/lib/outline/by-hand";
-import type { OutlineState } from "@/lib/outline/outline-state";
-import { MeasurementTiles } from "./OutlinePanel";
+import { LONG_SIDE_FACES, type ByHand, type Row } from "@/lib/outline/by-hand";
 
 type Props = {
   hand: ByHand;
   /** What changed of what is entered; the screen makes the roof of it. */
   onChange: (change: Partial<ByHand>) => void;
-  state: OutlineState;
   className?: string;
 };
 
@@ -24,18 +21,15 @@ const LATITUDE = { min: -90, max: 90, decimals: 5 };
 const LONGITUDE = { min: -180, max: 180, decimals: 5 };
 /** Lengths in a field: two decimals; the range of the desktop app (plan/reference/functional-inventory.md, 1.1). */
 const LENGTH = { min: 0.1, max: 2000, decimals: 2 };
-/** An angle that is set: a whole number, clockwise from north. */
-const FACES = { min: 0, max: 359, decimals: 0 };
 /** A corner: metres east and north of the middle of the roof. */
 const CORNER = { min: -5000, max: 5000, decimals: 2 };
 
 
 /**
- * The roof entered by its measurements (the board "Enter dimensions by hand"): the place, then a
- * rectangle by its length, its width and where its long side faces, or a table of corners; then the
- * same tiles as for a roof drawn on the map.
+ * The roof entered by its measurements (V2 · 4; the board "Find", by hand): its length, its width and where its long side
+ * faces, south, east, north or west; or a table of corners. The place is the one found; without one, it is typed first.
  */
-export function ByHandPanel({ hand, onChange, state, className }: Props) {
+export function ByHandPanel({ hand, onChange, className }: Props) {
   const rows = hand.rows;
 
   function changeRow(index: number, change: Partial<Row>) {
@@ -44,15 +38,17 @@ export function ByHandPanel({ hand, onChange, state, className }: Props) {
 
   return (
     <div className={classNames("flex flex-col gap-4 desktop:gap-5", className)}>
-      <section className="flex flex-col gap-2.5" aria-label="Place">
-        <SectionHeading help="find.section.place">Place</SectionHeading>
-        {/* One under the other: a coordinate with five decimals and its label need the whole row. */}
-        <div className="grid grid-cols-1 gap-field">
-          <NumberField label="Latitude" value={hand.lat} unit="°" range={LATITUDE} labelInside wide onCommit={(lat) => onChange({ lat })} />
-          <NumberField label="Longitude" value={hand.lon} unit="°" range={LONGITUDE} labelInside wide onCommit={(lon) => onChange({ lon })} />
-        </div>
-        <p className="type-body-touch desktop:type-body text-text-3">From the search above, or typed. Five decimals; north and east are positive.</p>
-      </section>
+      {hand.lat !== null && hand.lon !== null ? null : (
+        <section className="flex flex-col gap-2.5" aria-label="Place">
+          <SectionHeading help="find.section.place">Place</SectionHeading>
+          {/* One under the other: a coordinate with five decimals and its label need the whole row. */}
+          <div className="grid grid-cols-1 gap-field">
+            <NumberField label="Latitude" value={hand.lat} unit="°" range={LATITUDE} labelInside wide onCommit={(lat) => onChange({ lat })} />
+            <NumberField label="Longitude" value={hand.lon} unit="°" range={LONGITUDE} labelInside wide onCommit={(lon) => onChange({ lon })} />
+          </div>
+          <p className="type-body-touch desktop:type-body text-text-3">Five decimals; north and east are positive.</p>
+        </section>
+      )}
 
       <section className="flex flex-col gap-2.5" aria-label="Shape">
         <SectionHeading help="find.section.shape" value={hand.shape}>
@@ -61,11 +57,18 @@ export function ByHandPanel({ hand, onChange, state, className }: Props) {
         <Segmented label="Shape" options={SHAPES} value={hand.shape} onChange={(shape) => onChange({ shape })} fill />
         {hand.shape === "rectangle" ? (
           <div className="flex flex-col gap-field">
-            <div className="grid grid-cols-2 gap-field">
-              <NumberField label="Length" value={hand.length} unit="m" range={LENGTH} labelInside onCommit={(length) => onChange({ length })} />
-              <NumberField label="Width" value={hand.width} unit="m" range={LENGTH} labelInside onCommit={(width) => onChange({ width })} />
+            <NumberField label="Length" value={hand.length} unit="m" range={LENGTH} onCommit={(length) => onChange({ length })} />
+            <NumberField label="Width" value={hand.width} unit="m" range={LENGTH} onCommit={(width) => onChange({ width })} />
+            <div className="flex flex-col gap-1.5 pt-1">
+              <span className="text-text-2">The long side faces</span>
+              <Segmented
+                label="The long side faces"
+                options={LONG_SIDE_FACES.map(({ value, label }) => ({ value: String(value), label }))}
+                value={hand.faces === null ? null : String(hand.faces)}
+                onChange={(faces) => onChange({ faces: Number(faces) })}
+                fill
+              />
             </div>
-            <NumberField label="Long side faces" value={hand.faces} unit="°" range={FACES} labelInside onCommit={(faces) => onChange({ faces })} />
           </div>
         ) : (
           <div className="flex flex-col gap-1.5" data-testid="corner-table">
@@ -90,8 +93,6 @@ export function ByHandPanel({ hand, onChange, state, className }: Props) {
           </div>
         )}
       </section>
-
-      <MeasurementTiles state={state} />
     </div>
   );
 }

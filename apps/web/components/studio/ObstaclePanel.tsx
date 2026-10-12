@@ -40,7 +40,7 @@ import {
 import { indexToReview, REVIEW_HINT } from "@/lib/studio/review-heights";
 import { draftOf, draggingOf, selectionOf, toReviewOf } from "@/lib/stores/view-store";
 import { fieldsLayoutOf } from "./inspector-look";
-import type { Size } from "./use-size";
+import type { Size } from "@/components/shell/use-screen-size";
 
 type Props = {
   roof: Roof;

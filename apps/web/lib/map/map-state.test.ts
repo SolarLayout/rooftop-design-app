@@ -10,7 +10,7 @@ describe("the state of the map", () => {
     expect(mapStateOf({ hasKey: false, hasWebGL: true, tilesFailed: false })).toEqual({
       kind: "no-key",
       title: "The map is not available",
-      reason: "This app has no key for the imagery. The roof can still be entered by its measurements.",
+      reason: "Enter the roof's measurements instead.",
     });
   });
 

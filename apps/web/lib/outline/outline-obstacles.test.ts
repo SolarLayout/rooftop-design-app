@@ -231,3 +231,15 @@ describe("an obstacle on the map", () => {
     expect(loaded.history.past).toHaveLength(0);
   });
 });
+
+// V2 · 4 (the board "Find"): the tree is drawn as the tank is, from its middle to its edge, and is a tree.
+describe("a tree", () => {
+  test("dragged from its middle to its edge it is round, of that diameter; its height given, it is Tree 1", () => {
+    const dropped = after(closed(), { type: "shapeDragged", kind: "tree", from: { x: 20, y: 5 }, to: { x: 22, y: 5 } }, { type: "shapeDropped" });
+    expect(dropped.pending).toMatchObject({ kind: "tree", points: [{ x: 20, y: 5 }], diameter: 4 });
+
+    const state = outlineAfter(dropped, { type: "heightGiven", height: 6, name: "" });
+
+    expect(state.obstacles[0]).toMatchObject({ kind: "tree", name: "Tree 1", diameter: 4, height: 6 });
+  });
+});

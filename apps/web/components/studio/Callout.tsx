@@ -20,7 +20,7 @@ import { chosenOptionOf, designOf, layoutOf } from "@/lib/stores/results-store";
 import { draftOf, draggingOf, selectionOf, toReviewOf, type Selection } from "@/lib/stores/view-store";
 import type { DraftObstacle } from "@/lib/geometry/obstacle-fields";
 import { swatchClassOf } from "./StringLegend";
-import { useSize } from "./use-size";
+import { useSize } from "@/components/shell/use-screen-size";
 
 type Props = { stage: StageStore };
 

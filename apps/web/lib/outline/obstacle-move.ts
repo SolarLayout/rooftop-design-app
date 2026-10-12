@@ -4,7 +4,7 @@
 import { NUDGE_MM } from "../../components/ui/design-numbers";
 import { shown } from "../../components/ui/number-entry";
 import type { XY } from "../geometry/measure";
-import { obstacleMovedBy, sizeOf, type Obstacle, type ObstacleKind } from "./obstacles";
+import { isRound, obstacleMovedBy, sizeOf, type Obstacle, type ObstacleKind } from "./obstacles";
 import { isInside, moveLabelOf, type Lift } from "./roof-move";
 
 // A drag moves an obstacle in the steps of a nudge, 0.1 m, as the Studio's drag snaps it.
@@ -14,7 +14,7 @@ const TANK_SIDES = 16;
 
 /** The points of an obstacle's footprint: its own, or a tank's round edge. */
 export function footprintOf(obstacle: Obstacle): readonly XY[] {
-  if (obstacle.kind !== "cylinder") return obstacle.points;
+  if (!isRound(obstacle.kind)) return obstacle.points;
   const [centre] = obstacle.points;
   const radius = (obstacle.diameter ?? 0) / 2;
   return Array.from({ length: TANK_SIDES }, (_, n) => {

@@ -1,5 +1,5 @@
 // The obstacles drawn on the map, in the frame of the outline: a box by its four corners, a round tank
-// by its centre and its diameter, a wall by the points of its line, a building beside the roof by its
+// or tree by its centre and its diameter, a wall by the points of its line, a building beside the roof by its
 // corners (the board "Obstacles on the map and their heights"). Their height is asked, never read from
 // the imagery. Pure functions; the reducer of the outline holds them.
 import { shown } from "../../components/ui/number-entry";
@@ -8,7 +8,10 @@ import { toLonLat, toMetres, type Frame } from "./frame";
 import { areaOf, edgesOf, type XY } from "../geometry/measure";
 import { rectangleOf, turnedAbout } from "./rectangle";
 
-export type ObstacleKind = "box" | "cylinder" | "wall" | "building";
+export type ObstacleKind = "box" | "cylinder" | "wall" | "tree" | "building";
+
+/** A tank and a tree are round: drawn from the middle to the edge, kept as their middle and their diameter. */
+export const isRound = (kind: ObstacleKind): kind is "cylinder" | "tree" => kind === "cylinder" || kind === "tree";
 
 /** A shape on the map before it has its height. */
 export type Shape = { kind: ObstacleKind; points: readonly XY[]; diameter: number | null };
@@ -16,10 +19,10 @@ export type Shape = { kind: ObstacleKind; points: readonly XY[]; diameter: numbe
 export type Obstacle = Shape & { id: number; name: string; height: number };
 
 /** The words of each kind, as the API names a new one. */
-export const WORD_OF_KIND: Record<ObstacleKind, string> = { box: "Box", cylinder: "Tank", wall: "Wall", building: "Building" };
+export const WORD_OF_KIND: Record<ObstacleKind, string> = { box: "Box", cylinder: "Tank", wall: "Wall", tree: "Tree", building: "Building" };
 
 /** Fewest points a shape of the kind needs. */
-export const FEWEST_POINTS: Record<ObstacleKind, number> = { box: 4, cylinder: 1, wall: 2, building: 3 };
+export const FEWEST_POINTS: Record<ObstacleKind, number> = { box: 4, cylinder: 1, wall: 2, tree: 1, building: 3 };
 
 /** The height of an obstacle above the roof, in metres (plan/reference/functional-inventory.md, 1.2). */
 export const HEIGHT = { min: 0.05, max: 200, decimals: 2 };
@@ -70,11 +73,11 @@ export function obstacleTurnedAbout(obstacle: Obstacle, centre: XY, degrees: num
   return { ...obstacle, points: turnedAbout(obstacle.points, centre, degrees) };
 }
 
-/** The tank dragged from its middle to its edge; null while there is no size. */
-export function tankOf(centre: XY, edge: XY): Shape | null {
+/** A tank or a tree dragged from its middle to its edge; null while there is no size. */
+export function roundOf(kind: "cylinder" | "tree", centre: XY, edge: XY): Shape | null {
   const radius = Math.hypot(edge.x - centre.x, edge.y - centre.y);
   if (radius === 0) return null;
-  return { kind: "cylinder", points: [centre], diameter: 2 * radius };
+  return { kind, points: [centre], diameter: 2 * radius };
 }
 
 /** The name of a new obstacle of the kind: the word and the count of that kind, as the API names them. */
@@ -89,7 +92,7 @@ export function sizeOf(shape: Shape): string {
     const edges = edgesOf(points);
     return `${shown(edges[0] ?? 0, 1)} × ${shown(edges[1] ?? 0, 1)}`;
   }
-  if (kind === "cylinder") return `⌀ ${shown(shape.diameter ?? 0, 1)}`;
+  if (isRound(kind)) return `⌀ ${shown(shape.diameter ?? 0, 1)}`;
   if (kind === "wall") {
     const along = points.slice(1).reduce((sum, point, n) => sum + Math.hypot(point.x - points[n].x, point.y - points[n].y), 0);
     return `${shown(along, 1)} m`;
@@ -109,7 +112,7 @@ export function labelOf(obstacle: Obstacle): string {
 
 /** The point of a shape its label stands under: the lowest, and of those the leftmost. */
 export function foldOf(shape: Shape): XY {
-  if (shape.kind === "cylinder") {
+  if (isRound(shape.kind)) {
     const [centre] = shape.points;
     return { x: centre.x, y: centre.y - (shape.diameter ?? 0) / 2 };
   }
@@ -130,24 +133,14 @@ export function mapShapesOf(obstacles: readonly Obstacle[], frame: Frame): MapSh
   }));
 }
 
-/**
- * The trees of a roof shown on the map again, as they came: the map draws none ("Trees come with the Roof lens"), so they
- * are kept aside and go back with the build where they stand (#179, item 1).
- */
-export function treesOfMap(shapes: readonly MapShapeRequest[]): MapShapeRequest[] {
-  return shapes.filter((shape) => shape.kind === "tree");
-}
-
-/** The shapes of a roof shown on the map again, as obstacles in the frame, numbered from one; its trees are not. */
+/** The shapes of a roof shown on the map again, as obstacles in the frame, numbered from one. */
 export function obstaclesOfMap(shapes: readonly MapShapeRequest[], frame: Frame): Obstacle[] {
-  return shapes
-    .filter((shape): shape is MapShapeRequest & { kind: ObstacleKind } => shape.kind !== "tree")
-    .map((shape, index) => ({
-      id: index + 1,
-      kind: shape.kind ?? "box",
-      name: shape.name ?? "",
-      points: shape.points.map(([lon, lat]) => toMetres(frame, { lon, lat })),
-      diameter: shape.diameter ?? null,
-      height: shape.height,
-    }));
+  return shapes.map((shape, index) => ({
+    id: index + 1,
+    kind: shape.kind ?? "box",
+    name: shape.name ?? "",
+    points: shape.points.map(([lon, lat]) => toMetres(frame, { lon, lat })),
+    diameter: shape.diameter ?? null,
+    height: shape.height,
+  }));
 }

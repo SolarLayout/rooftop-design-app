@@ -21,7 +21,7 @@ import { inverterRowOf, kwShown, ratedUnderOf } from "@/lib/equipment/rows";
 import { EquipmentPicker, type PickerColumn, type PickerRow, type PickerWords } from "./EquipmentPicker";
 import { PickerSearch } from "./PickerSearch";
 import { useEquipmentCatalog } from "./use-equipment-catalog";
-import { useSize } from "./use-size";
+import { useSize } from "@/components/shell/use-screen-size";
 
 type Props = {
   /** The design's system voltage: an inverter rated under it is marked (D88). */

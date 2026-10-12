@@ -26,10 +26,10 @@ import { SizingTemperatures } from "./SizingTemperatures";
 import { StringColourSwitch } from "./StringLegend";
 import { InverterPicker } from "./InverterPicker";
 import { NothingFits, OptionCards, OptionsNote, YourOwn } from "./StringOptions";
-import { SummaryRow } from "./SummaryRow";
+import { SummaryRow } from "@/components/shell/SummaryRow";
 import { SystemVoltage } from "./SystemVoltage";
-import { useSectionOpen } from "./use-section-open";
-import { useSize } from "./use-size";
+import { useSectionOpen } from "@/components/shell/use-section-open";
+import { useSize } from "@/components/shell/use-screen-size";
 
 /** The inverter read from a replaced file, for the design that was open when it was read. */
 type Replaced = ReplacedInverter & { openedAt: number | null };

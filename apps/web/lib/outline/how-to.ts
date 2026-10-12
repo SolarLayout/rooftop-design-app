@@ -2,8 +2,8 @@
 // the first of these that has a topic (find.tool.<how-to>).
 import type { OutlineState } from "./outline-state";
 
-/** The tools of the map's toolbar: three ways to outline while the roof is open, four obstacles once it is closed. */
-export type Tool = "corners" | "rectangle" | "detect" | "box" | "tank" | "wall" | "building";
+/** The tools of Find's column: three ways to outline while the roof is open, the obstacles once it is closed. */
+export type Tool = "corners" | "rectangle" | "detect" | "box" | "tank" | "wall" | "tree" | "building";
 
 export type HowTo = Tool | "move-the-roof" | "move-an-obstacle";
 

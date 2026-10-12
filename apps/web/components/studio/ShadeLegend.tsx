@@ -7,7 +7,7 @@ import { ProgressRing } from "@/components/ui/ProgressRing";
 import { legendOf } from "@/lib/scene/shade-map";
 import { layoutOf } from "@/lib/stores/results-store";
 import { isShadeMapShownOf } from "@/lib/stores/view-store";
-import type { Size } from "./use-size";
+import type { Size } from "@/components/shell/use-screen-size";
 
 /** The five steps of the map, from the least shaded to the most. */
 const SWATCHES = ["bg-shade-1", "bg-shade-2", "bg-shade-3", "bg-shade-4", "bg-shade-5"];

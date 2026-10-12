@@ -9,7 +9,7 @@ import { useSlide } from "@/components/ui/use-slide";
 import { hourOf } from "@/lib/geometry/keepout";
 import { QUARTER_HOUR, type DayHours } from "@/lib/flow/sun-day";
 import type { Tick } from "@/lib/flow/sun-time";
-import type { Size } from "./use-size";
+import type { Size } from "@/components/shell/use-screen-size";
 import { useTime, type Time } from "./use-time";
 
 // The time on the stage (the boards "Time on the stage" and "Studio, Sun lens" on three sizes;

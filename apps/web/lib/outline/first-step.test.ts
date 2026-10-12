@@ -1,18 +1,23 @@
 import { describe, expect, test } from "bun:test";
 import { placeInputOf } from "../places/place-input";
-import { entryAfterPlace, EXAMPLES, firstStepOf } from "./first-step";
+import { entryAfterPlace, EXAMPLES, WAYS } from "./first-step";
 
-// Find's first step (D85): the ways to start, what the search understands, the three steps; without a map, by hand alone.
+// Find's first step (V2 · 4, D98; before it D85): the search first, its examples in its list while it is empty, and the
+// two other ways under it.
 
-describe("the examples of what the search understands", () => {
+describe("the examples in the search's list", () => {
   const read = (what: string) => placeInputOf(EXAMPLES.find((example) => example.what === what)?.text ?? "");
 
-  test("an address is words, for the geocoder", () => {
-    expect(read("Address").kind).toBe("words");
+  test("an address, coordinates and a maps link, as the board names them", () => {
+    expect(EXAMPLES.map(({ what }) => what)).toEqual(["An address", "Coordinates", "A maps link"]);
   });
 
-  test("coordinates, degrees and a maps link are each read as the same place", () => {
-    for (const what of ["Coordinates", "Degrees", "Maps link"]) {
+  test("an address is words, for the geocoder", () => {
+    expect(read("An address").kind).toBe("words");
+  });
+
+  test("coordinates and a maps link are each read as the same place", () => {
+    for (const what of ["Coordinates", "A maps link"]) {
       const input = read(what);
       if (input.kind !== "coordinates" && input.kind !== "link") throw new Error(`${what} is read as ${input.kind}`);
       expect(input.lat).toBeCloseTo(18.53621, 4);
@@ -20,35 +25,20 @@ describe("the examples of what the search understands", () => {
     }
   });
 
-  test("a maps link is read from a link, and shown without its scheme", () => {
-    const link = EXAMPLES.find((example) => example.what === "Maps link");
+  test("a maps link is shown without its scheme; the others as they are put into the search", () => {
+    const link = EXAMPLES.find((example) => example.what === "A maps link");
     expect(placeInputOf(link?.text ?? "").kind).toBe("link");
     expect(link?.shown.startsWith("http")).toBe(false);
-  });
-
-  test("every other example is shown as it is put into the search", () => {
-    for (const example of EXAMPLES.filter((one) => one.what !== "Maps link")) expect(example.shown).toBe(example.text);
+    for (const example of EXAMPLES.filter((one) => one !== link)) expect(example.shown).toBe(example.text);
   });
 });
 
-describe("the panel of the first step", () => {
-  test("with a map: search, my location and by hand, the examples, the steps of the map", () => {
-    const step = firstStepOf(true);
-    expect(step.ways.map(({ way }) => way)).toEqual(["search", "locate", "hand"]);
-    expect(step.ways.map(({ title }) => title)).toEqual(["Search for the building", "Use my location", "Enter dimensions by hand"]);
-    expect(step.examples).toBe(true);
-    expect(step.steps.map(({ name }) => name)).toEqual(["Find", "Outline", "Build"]);
-    expect(step.steps[0].words).toContain("map");
-  });
-
-  test("without a map: by hand alone, no examples, the steps in its words", () => {
-    const step = firstStepOf(false);
-    expect(step.ways.map(({ way }) => way)).toEqual(["hand"]);
-    expect(step.ways[0].words).toContain("length");
-    expect(step.examples).toBe(false);
-    expect(step.lead).toContain("cannot be shown");
-    expect(step.steps.map(({ name }) => name)).toEqual(["Find", "Outline", "Build"]);
-    expect(step.steps.some(({ words }) => words.includes("map"))).toBe(false);
+describe("the two other ways, under the search", () => {
+  test("my location, and the roof by hand, each with what it is for", () => {
+    expect(WAYS).toEqual([
+      { way: "locate", title: "Use my location", words: "When you are at the building" },
+      { way: "hand", title: "Enter the roof by hand", words: "Type its length and width" },
+    ]);
   });
 });
 

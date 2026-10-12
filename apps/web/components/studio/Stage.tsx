@@ -34,7 +34,7 @@ import { attributionOf, lineOf, stringsLineOf, stringsWordsOf } from "./stage-vi
 import { CONTEXT_LOST, NO_WEBGL } from "./stage-words";
 import { useEscapeClears } from "./use-escape-clears";
 import { TimePill, SunTimeline } from "./Time";
-import { useSize } from "./use-size";
+import { useSize } from "@/components/shell/use-screen-size";
 import { ViewControls } from "./ViewControls";
 import { FirstMeeting } from "@/components/shell/FirstMeeting";
 

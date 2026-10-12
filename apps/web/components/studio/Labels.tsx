@@ -7,7 +7,7 @@ import { measures } from "@/components/ui/measures";
 import { centredBoxOf, chipBoxOf, clearOf, type Size } from "@/lib/scene/chip-place";
 import type { StageLabel } from "@/lib/scene/projection";
 import { labelsOf, type StageStore } from "@/lib/scene/stage-store";
-import { useSize } from "./use-size";
+import { useSize } from "@/components/shell/use-screen-size";
 
 type Props = { stage: StageStore };
 

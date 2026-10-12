@@ -21,8 +21,8 @@ import { projectOf } from "@/lib/stores/project-store";
 import { selectionOf, toReviewOf } from "@/lib/stores/view-store";
 import { ObstaclePanel } from "./ObstaclePanel";
 import { SetByHint } from "./SetByHint";
-import { SummaryRow } from "./SummaryRow";
-import type { Size } from "./use-size";
+import { SummaryRow } from "@/components/shell/SummaryRow";
+import type { Size } from "@/components/shell/use-screen-size";
 
 type Props = {
   /** The size of the screen: the inspector is mounted once, in the container of the size (decision 9). */

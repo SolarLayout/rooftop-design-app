@@ -21,7 +21,16 @@ export type ByHand = {
   rows: readonly Row[];
 };
 
-export const NOTHING_ENTERED: ByHand = { lat: null, lon: null, shape: "rectangle", length: null, width: null, faces: null, rows: [] };
+/** Where the long side faces: four choices, in degrees clockwise from north (V2 · 4, the board "Find"). */
+export const LONG_SIDE_FACES: readonly { value: number; label: string }[] = [
+  { value: 180, label: "South" },
+  { value: 90, label: "East" },
+  { value: 0, label: "North" },
+  { value: 270, label: "West" },
+];
+
+/** Nothing typed yet; the long side faces south, so that the length and the width draw the roof. */
+export const NOTHING_ENTERED: ByHand = { lat: null, lon: null, shape: "rectangle", length: null, width: null, faces: 180, rows: [] };
 
 /** Fewest corners a roof needs. */
 const FEWEST_CORNERS = 3;

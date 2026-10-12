@@ -21,14 +21,14 @@ import { ResultChip } from "@/components/shell/ResultChip";
 import { capacityOf, resultChipOf, summaryOf } from "@/components/shell/result-view";
 import { useNotesOfTheShell, useProgressionOfTheShell } from "@/components/shell/Shell";
 import { useSunKeys } from "@/components/studio/use-sun-keys";
-import { useSize } from "@/components/studio/use-size";
+import { useSize } from "@/components/shell/use-screen-size";
 import { useProject, useStores, useView, useVitals } from "@/components/shell/stores";
 import { projectOf } from "@/lib/stores/project-store";
 import { firstOpenLinesOf, showsFirstOpenOf } from "./first-open";
 import { StepHead } from "./StepHead";
 import { stepHeadOf } from "./step-heads";
 import { usePanel } from "./use-panel";
-import { useShareUnder } from "./use-share-under";
+import { useShareUnder } from "@/components/shell/use-share-under";
 
 type Props = { lens: Lens };
 

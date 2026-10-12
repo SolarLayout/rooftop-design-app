@@ -9,7 +9,7 @@ import type { Colouring } from "@/lib/stores/string-colours";
 import { stringLegendOf, type LegendEntry, type Swatch } from "@/lib/scene/string-legend";
 import { chosenOptionOf, layoutOf } from "@/lib/stores/results-store";
 import { stringColouringOf, stringsShownByOf } from "@/lib/stores/view-store";
-import type { Size } from "./use-size";
+import type { Size } from "@/components/shell/use-screen-size";
 
 const COLOURINGS: { value: Colouring; label: string }[] = [
   { value: "string", label: "String" },

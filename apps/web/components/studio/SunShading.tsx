@@ -11,7 +11,7 @@ import { shown } from "@/components/ui/number-entry";
 import { legendOf } from "@/lib/scene/shade-map";
 import { designOf, layoutOf, readoutsOf } from "@/lib/stores/results-store";
 import { figuresOf, type Figure } from "@/lib/studio/sun-figures";
-import type { Size } from "./use-size";
+import type { Size } from "@/components/shell/use-screen-size";
 
 /** A figure as a tile: its value in percent, what it waits for in words, or a skeleton before any run. */
 function FigureTile({ label, figure }: { label: string; figure: Figure }) {

@@ -37,7 +37,8 @@ type Props = {
   onOpenDesign?: (id: string) => void;
 };
 
-const BAR = classNames(
+/** The bar's look: the top bar of the workspaces, and of Find (V2 · 4). */
+export const BAR = classNames(
   // Its height, and the clock of an installed app over it (issue 147).
   "box-content flex h-topbar shrink-0 items-center gap-2 pt-safe-0 pr-2 pl-4",
   "tablet:h-topbar-tablet tablet:gap-3 tablet:border-b tablet:border-line-subtle tablet:bg-chrome tablet:px-5",
@@ -57,7 +58,7 @@ export function Present({ className }: { className?: string }) {
 }
 
 /** The docs, from the top bar's right (D91): a quiet link with its word on desktop. */
-function Docs() {
+export function Docs() {
   const home = useDocsHome();
   return (
     <ButtonLink kind="quiet" size="m" icon="book" href={home} target="_blank" rel="noreferrer" className="hidden desktop:inline-flex">
@@ -66,19 +67,25 @@ function Docs() {
   );
 }
 
+/** The mark, a link home on every size (the owner, session 18), with the ring of every control. On touch the mark alone is
+ * 28 across: the link is 44 square about it, and gives the 8 on each side back, so that nothing beside it moves. */
+export function HomeMark() {
+  return (
+    <Link
+      href={HOME}
+      aria-label="Home"
+      className="-mx-2 flex min-h-touch min-w-touch shrink-0 items-center justify-center rounded-control focus-ring press-motion desktop:mx-0 desktop:min-w-0 desktop:justify-start"
+    >
+      <Logo />
+    </Link>
+  );
+}
+
 /** The bar at the top of the order of work (D95): the mark, the design, the five steps, the result, the docs. */
 export function TopBar({ name, saving, step, states, result, summary, onOpenNotes, onImport, onOpenProject, onRename, onSaveACopy, designs, onOpenDesign }: Props) {
   return (
     <header className={BAR}>
-      {/* The mark leads home on every size (the owner, session 18), with the ring of every control. On touch the mark alone is
-          28 across: the link is 44 square about it, and gives the 8 on each side back, so that nothing beside it moves. */}
-      <Link
-        href={HOME}
-        aria-label="Home"
-        className="-mx-2 flex min-h-touch min-w-touch shrink-0 items-center justify-center rounded-control focus-ring press-motion desktop:mx-0 desktop:min-w-0 desktop:justify-start"
-      >
-        <Logo />
-      </Link>
+      <HomeMark />
       <span className="hidden h-6 w-px shrink-0 bg-line desktop:block" />
       <ProjectSwitcher
         name={name}
