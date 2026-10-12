@@ -3,7 +3,7 @@
 // the document (weather-source.ts). Pure.
 import type { Mark } from "../../components/ui/table-cells";
 import type { DesignResult } from "../api";
-import { captionWordsOf, optionCardsOf } from "../studio/option-cards";
+import { optionCardsOf } from "../studio/option-cards";
 
 export type OptionItem = {
   key: string;
@@ -37,7 +37,7 @@ export const optionWordsOf = (item: Pick<OptionItem, "letter" | "caption">, isPh
 export function headerOf(design: DesignResult): HeaderView {
   const option = design.options.find((one) => one.key === design.chosen_option) ?? null;
   const items = optionCardsOf(design).map((card, index): OptionItem => {
-    const caption = captionWordsOf(design.options[index]!.caption);
+    const caption = design.options[index]!.caption;
     const label = card.isChosen && caption !== "" ? `${card.letter} · ${caption}` : card.letter;
     return { key: card.key, letter: card.letter, caption, label, name: `${label}, ${lowerFirst(card.mark.label)}`, mark: card.mark, isChosen: card.isChosen };
   });

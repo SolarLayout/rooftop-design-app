@@ -21,12 +21,12 @@ describe("the option cards (V2 · 6, D102; the board \"The Strings step\")", () 
     expect(optionCardsOf({ ...run, chosen_option: "26x27x2" }).map((card) => card.isChosen)).toEqual([false, true]);
   });
 
-  test("an option without a caption of the engine is named by its letter alone", () => {
+  test("an option without a caption is named by its letter alone", () => {
     expect(optionCardsOf({ ...run, options: [option({ caption: "" })] })[0]?.caption).toBe("Option A");
   });
 
-  test("the engine's captions in the vocabulary: Less clipping, and a miss of the target without its inverters", () => {
-    const captions = optionCardsOf({ ...run, options: [option({ caption: "Lower clipping" }), option({ caption: "Fills the inverters" }), option({ caption: "Above target, 3 inverters", ok: false })] }).map((card) => card.caption);
+  test("the run's captions as the API words them (V2 · 12), a miss of the target without its inverters", () => {
+    const captions = optionCardsOf({ ...run, options: [option({ caption: "Less clipping" }), option({ caption: "Fills the inverters" }), option({ caption: "Above target, 3 inverters", ok: false })] }).map((card) => card.caption);
 
     expect(captions).toEqual(["Less clipping", "Fills the inverters", "Above target"]);
   });

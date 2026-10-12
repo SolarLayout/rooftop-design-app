@@ -31,7 +31,7 @@ const OPTION_D = {
   dcac: 0.7148,
   n_modules: 702,
   energy: { energy_mwh: 700.9, ac_kw: 550, pr: 0.892, specific_yield: 1783 },
-  verdict: { ok: false, title: "", detail: "27 strings on 2 inverter(s), DC/AC 0.71 (below target)." },
+  verdict: { ok: false, title: "", detail: "27 strings on 2 inverters, DC/AC 0.71 (below target)." },
 } as unknown as DesignOption;
 
 function design(parts: { chosen: DesignOption | null; moduleNotes: string[] }): DesignResult {

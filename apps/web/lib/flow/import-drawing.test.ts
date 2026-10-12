@@ -10,7 +10,7 @@ import { MAX_REQUEST_BYTES } from "./open-project";
 // document it answers is opened, and the heights it could not give go on the list to review.
 
 const PROJECT = { name: "warehouse-roof", roof: { lat: 18.52, lon: 73.86, obstacles: [] } } as unknown as Project;
-const ANSWER = { source: "dxf", file: "warehouse-roof.dxf", missing_heights: ["Lift shaft", "Plant room"], notes: ["These obstacles have no height in the file and were set to 1.0 m."], project: PROJECT } as unknown as ImportedRoof;
+const ANSWER = { source: "dxf", file: "warehouse-roof.dxf", missing_heights: ["Lift shaft", "Plant room"], notes: ["The file has no height for these obstacles. The app uses 1.0 m."], project: PROJECT } as unknown as ImportedRoof;
 
 function standIn(answer: () => Promise<ImportedRoof>) {
   const asked: RoofFile[] = [];
@@ -37,7 +37,7 @@ describe("importing a drawing", () => {
     expect(asked).toEqual([{ name: "warehouse-roof.dxf", base64: "QUJD", units: "mm" }]);
     expect(project.getState().project).toBe(PROJECT);
     expect(toReviewOf(view.getState())).toEqual(["Lift shaft", "Plant room"]);
-    expect(notes).toEqual(["These obstacles have no height in the file and were set to 1.0 m."]);
+    expect(notes).toEqual(["The file has no height for these obstacles. The app uses 1.0 m."]);
   });
 
   test("a file the API refuses opens nothing and the refusal is the caller's to show", async () => {
