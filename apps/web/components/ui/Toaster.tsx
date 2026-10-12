@@ -50,6 +50,15 @@ export function Toaster({ toasts, label = "What was done", aboveTheTabBar = fals
               },
             }
           }
+          alsoAction={
+            toast.alsoAction && {
+              label: toast.alsoAction.label,
+              onPress: () => {
+                toast.alsoAction?.run();
+                toasts.close(toast.id);
+              },
+            }
+          }
           onClose={toast.kind === "note" ? () => toasts.close(toast.id) : undefined}
           className="pointer-events-auto"
           onPointerEnter={() => toasts.hold(toast.id)}

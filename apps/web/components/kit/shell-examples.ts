@@ -67,16 +67,17 @@ const NAME = "Pune demo roof";
 
 function shown(result: DesignResult | null, status: "idle" | "running" | "failed", progress: typeof SHADING | typeof FITTING | null): VitalsView {
   const notes = notesOf({ design: result, ...NO_FAILURE, designFailure: status === "failed" ? UNREACHABLE : null });
-  return vitalsOf({ name: NAME, design: result, readouts: result?.readouts ?? null, designStatus: status, progress, notes });
+  return vitalsOf({ name: NAME, design: result, readouts: result?.readouts ?? null, designStatus: status, progress, notes, failure: status === "failed" ? UNREACHABLE : null });
 }
 
 export const DESIGN = { name: NAME };
 
-export const VITALS: Record<"design" | "updating" | "loading" | "failed" | "waiting" | "nothingToReview" | "outsideTarget", VitalsView> = {
+export const VITALS: Record<"design" | "updating" | "loading" | "failed" | "notComputed" | "waiting" | "nothingToReview" | "outsideTarget", VitalsView> = {
   design: shown(DEMO, "idle", null),
   updating: shown(DEMO, "running", SHADING),
   loading: shown(null, "running", FITTING),
   failed: shown(DEMO, "failed", null),
+  notComputed: shown(null, "failed", null),
   waiting: shown(WITHOUT_A_VOLTAGE, "idle", null),
   nothingToReview: shown(WITHOUT_NOTES, "idle", null),
   outsideTarget: shown(BELOW_TARGET, "idle", null),

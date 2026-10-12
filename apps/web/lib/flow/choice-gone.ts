@@ -1,7 +1,7 @@
 // A choice of stringing an edit took away (the owner's IKEA design, session 18): the document names an option the run no
 // longer holds, after another module, inverter, voltage or roof changed the options. The engine shows its first option; the
 // document is brought to the option shown, so that the screens, the files and the saved design agree, and the user is told
-// in plain words. Pure.
+// in one line, with the way to undo the edit that took it away and the way to choose another. Pure.
 import type { DesignOption, DesignResult, Project } from "../api";
 
 type Stringing = { series: number; strings: number; inverters: number };
@@ -35,15 +35,7 @@ export const withTheChoiceShown =
   ({ shown }: ChoiceGone) =>
   (document: Project): Project => ({ ...document, chosen_option: shown.key });
 
-const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
-const said = ({ series, strings, inverters }: Stringing) =>
-  `${series} in series × ${plural(strings, "string", "strings")} on ${plural(inverters, "inverter", "inverters")}`;
-
-/** What the user is told: the stringing chosen, that it no longer fits, and what is used instead. */
-export function choiceGoneWords({ dropped, shown }: ChoiceGone): string {
-  const chosen = dropped ? `The stringing you chose, ${said(dropped)}, no longer fits this design.` : "The stringing you chose no longer fits this design.";
-  const instead = said({ series: shown.n_series, strings: shown.n_strings, inverters: shown.n_inverters });
-  const name = `Option ${shown.letter}`;
-  const option = shown.caption && shown.caption !== name ? `${name}, ${shown.caption},` : name;
-  return `${chosen} ${option} is used instead: ${instead}.`;
+/** What the user is told, in one line (V2 · 5, D77; voice §5): that the stringing no longer fits, and which option is used. */
+export function choiceGoneWords({ shown }: ChoiceGone): string {
+  return `Your stringing no longer fits. Option ${shown.letter} is used.`;
 }

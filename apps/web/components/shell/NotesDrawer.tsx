@@ -6,13 +6,16 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
 import { IconButton } from "@/components/ui/IconButton";
+import { NumberField } from "@/components/ui/NumberField";
 import { SheetGrip } from "@/components/ui/SheetGrip";
-import type { Note } from "./notes-view";
+import { introOf, keepWordsOf, NOTE_FIELD_RANGES, reviewTitleOf, type Note, type NoteFieldId } from "./notes-view";
 
 type PanelProps = {
   notes: readonly Note[];
   onClose: () => void;
   onTryAgain: () => void;
+  /** A value entered in a note's field, or kept: it is an edit of the design like any other, and the run follows. */
+  onEnterValue: (id: NoteFieldId, value: number) => void;
   /** The name of the title in the page. */
   titleId: string;
 };
@@ -23,8 +26,8 @@ const PANEL = classNames(
   "tablet:max-h-none tablet:w-inspector tablet:rounded-none tablet:border-0 tablet:border-l tablet:pr-safe-0 tablet:shadow-drawer",
 );
 
-function NoteRow({ note, onClose, onTryAgain }: { note: Note } & Pick<PanelProps, "onClose" | "onTryAgain">) {
-  const { action } = note;
+function NoteRow({ note, onClose, onTryAgain, onEnterValue }: { note: Note } & Pick<PanelProps, "onClose" | "onTryAgain" | "onEnterValue">) {
+  const { action, field } = note;
   return (
     <li className="flex gap-3 rounded-row border border-note-line bg-note-surface p-3.5">
       <span className="flex pt-px">
@@ -33,9 +36,26 @@ function NoteRow({ note, onClose, onTryAgain }: { note: Note } & Pick<PanelProps
       <span className="flex min-w-0 grow flex-col gap-1">
         <span className="font-medium">{note.title}</span>
         <span className="type-body-touch desktop:type-body text-text-2">{note.reason}</span>
+        {field ? (
+          // The value is put right where it is read (V2 · 5): the field in the note, and Keep when the value is right.
+          <span className="mt-2 flex flex-col gap-2">
+            <NumberField label={field.label} detail={`${field.source} · ${note.where.split(" · ").at(-1) ?? ""}`} value={field.value} unit={field.unit} range={NOTE_FIELD_RANGES[field.id]} onCommit={(value) => onEnterValue(field.id, value)} />
+            <Button
+              kind="quiet"
+              size="s"
+              className="self-center"
+              onClick={() => {
+                onEnterValue(field.id, field.value);
+                onClose();
+              }}
+            >
+              {keepWordsOf(field)}
+            </Button>
+          </span>
+        ) : null}
         <span className="mt-1.5 flex items-center gap-2.5">
           <span className="grow type-body-touch desktop:type-body text-text-3">{note.where}</span>
-          {action.kind === "open" ? (
+          {field ? null : action.kind === "open" ? (
             <ButtonLink size="s" href={action.path} onClick={onClose}>
               {action.label}
             </ButtonLink>
@@ -57,19 +77,18 @@ function NoteRow({ note, onClose, onTryAgain }: { note: Note } & Pick<PanelProps
 }
 
 /** What is seen of the notes: their count, and each with its reason and where it leads. */
-export function NotesPanel({ notes, onClose, onTryAgain, titleId }: PanelProps) {
+export function NotesPanel({ notes, onClose, onTryAgain, onEnterValue, titleId }: PanelProps) {
+  const intro = introOf(notes);
   return (
     <div data-testid="notes-panel" data-drawer-panel className={PANEL}>
       <SheetGrip onClose={onClose} className="tablet:hidden" />
       <div className="flex shrink-0 items-center gap-2.5 pt-3 pr-2.5 pb-3 pl-4 tablet:pt-4.5 tablet:pr-3.5 tablet:pl-5">
-        <h2 id={titleId} className="grow type-title-touch desktop:type-title">
-          Notes to review
+        <h2 id={titleId} data-count={notes.length} className="grow type-title-touch desktop:type-title">
+          {reviewTitleOf(notes.length)}
         </h2>
-        <span data-testid="notes-count" className="type-mono-touch desktop:type-mono text-text-2">
-          {notes.length}
-        </span>
         <IconButton data-close kind="quiet" size="s" icon="close" iconSize={18} label="Close" onClick={onClose} />
       </div>
+      {intro === null ? null : <p className="shrink-0 px-4 pb-2 type-body-touch text-text-2 tablet:px-5 desktop:type-body">{intro}</p>}
       <ul className="flex min-h-0 grow flex-col gap-2.5 overflow-y-auto px-4 pt-1 pb-safe-4 tablet:px-5 tablet:pb-safe-5">
         {notes.length === 0 ? (
           <li className="flex items-center gap-3 rounded-row border border-line bg-surface-1 p-3.5">
@@ -80,7 +99,7 @@ export function NotesPanel({ notes, onClose, onTryAgain, titleId }: PanelProps) 
             </span>
           </li>
         ) : (
-          notes.map((note) => <NoteRow key={note.id} note={note} onClose={onClose} onTryAgain={onTryAgain} />)
+          notes.map((note) => <NoteRow key={note.id} note={note} onClose={onClose} onTryAgain={onTryAgain} onEnterValue={onEnterValue} />)
         )}
       </ul>
     </div>

@@ -47,6 +47,7 @@ export function TopBars({ onPress }: Props) {
             result={resultChipOf(VITALS.design)}
             summary={summaryOf(VITALS.design)}
             onOpenNotes={() => onPress(OPEN_THE_NOTES)}
+            onTryAgain={() => onPress("Try again")}
             onImport={() => onPress("Import a drawing")}
             onOpenProject={() => onPress("Open a project")}
             onRename={(name) => onPress(`Rename, ${name}`)}
@@ -86,7 +87,8 @@ export function ResultStates({ onPress }: Props) {
     { name: "result-review", caption: "With a note to review", view: VITALS.design },
     { name: "result-updating", caption: "A new result on its way: the last one dimmed, the ring", view: VITALS.updating },
     { name: "result-computing", caption: "The first result on its way", view: VITALS.loading },
-    { name: "result-problem", caption: "The run failed", view: { ...VITALS.failed, cells: [], kind: "layout" as const } },
+    { name: "result-stale", caption: "The run failed after a result: the last one stays, dimmed and marked", view: VITALS.failed },
+    { name: "result-problem", caption: "The run failed with no result before it", view: VITALS.notComputed },
   ];
 
   return (
@@ -94,7 +96,7 @@ export function ResultStates({ onPress }: Props) {
       <Row label="At the top bar's right, on every step (D95)">
         {examples.map(({ name, caption, view }) => (
           <Example key={name} name={name} caption={caption}>
-            <ResultChip chip={resultChipOf(view)} summary={summaryOf(view)} onOpenNotes={openNotes} />
+            <ResultChip chip={resultChipOf(view)} summary={summaryOf(view)} onOpenNotes={openNotes} onTryAgain={() => onPress("Try again")} />
           </Example>
         ))}
       </Row>
@@ -110,19 +112,19 @@ export function NotesToReview({ onPress }: Props) {
       <Row label="As they look: a drawer from the right on desktop and tablet, a bottom sheet on phone">
         <Wide name="notes" caption="Two notes">
           <div className="-mx-4 flex justify-end rounded-row bg-ground tablet:mx-0 tablet:h-105">
-            <NotesPanel notes={NOTES} onClose={() => undefined} onTryAgain={() => onPress(TRY_AGAIN)} titleId="kit-notes-title" />
+            <NotesPanel notes={NOTES} onClose={() => undefined} onTryAgain={() => onPress(TRY_AGAIN)} onEnterValue={(id, value) => onPress(`Enter ${id} ${value}`)} titleId="kit-notes-title" />
           </div>
         </Wide>
         <Wide name="notes-none" caption="Nothing to review">
           <div className="-mx-4 flex justify-end rounded-row bg-ground tablet:mx-0 tablet:h-50">
-            <NotesPanel notes={NO_NOTES} onClose={() => undefined} onTryAgain={() => undefined} titleId="kit-no-notes-title" />
+            <NotesPanel notes={NO_NOTES} onClose={() => undefined} onTryAgain={() => undefined} onEnterValue={() => undefined} titleId="kit-no-notes-title" />
           </div>
         </Wide>
       </Row>
       <Row label="Open them: the focus goes in, stays in, and goes back">
         <Button onClick={() => setOpen(true)}>Open the notes</Button>
       </Row>
-      <NotesDrawer open={open} notes={NOTES} onClose={() => setOpen(false)} onTryAgain={() => onPress(TRY_AGAIN)} />
+      <NotesDrawer open={open} notes={NOTES} onClose={() => setOpen(false)} onTryAgain={() => onPress(TRY_AGAIN)} onEnterValue={(id, value) => onPress(`Enter ${id} ${value}`)} />
     </Section>
   );
 }

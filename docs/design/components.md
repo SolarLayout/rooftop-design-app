@@ -225,10 +225,26 @@ camera frames the sun path's dome, and on a canvas taller than wide it stands ba
 V2 (D95; the board "V2 · 2"): the vitals bar over the stage is gone. The result is a chip at the top bar's right on
 desktop and phone, a row under the stage on tablet: the energy of year 1 in `type-strong` with `MWh a year` (`MWh` on
 phone) in `text-2`; beside it, after a line, the note mark and `N to review` when notes wait. While a new result comes the
-figure is dimmed with the ring beside it; before the first, the ring and `Computing the energy`; a run that failed, or no
-option that fits, the note mark and its title. Pressed, a card under it: `The result`, seven figures in plain names, the
-notes' button when some wait, `Open Performance`. In code: `ResultChip`, its words from `resultChipOf` and `summaryOf`
+figure is dimmed with the ring beside it; before the first, the ring and `Computing the energy`. V2 · 5 (D101) gives it six
+states: computing; the result; updating (dimmed, the ring); to review (the note mark and `N to review` before the result,
+after a line); failed with nothing before, the note mark and `Energy not computed` (also where no option fits); stale,
+the last result dimmed beside the note mark and `Showing the last result`. Pressed, a card under it: `The result`, seven
+figures in plain names, the notes' button when some wait, `Open Performance`; a failed or stale chip opens its `Problem`
+first, with `Try again` (the flow's). In code: `ResultChip`, its words from `resultChipOf` and `summaryOf`
 (`components/shell/result-view.ts`).
+
+## Problem (V2 · 5, D101)
+Every problem the app shows has one shape: `note-surface`, border `note-line`, radius `radius-row`, padding 16, `role="alert"`.
+The note mark of 18 and the title in Geist 500; under it the cause and the remedy in one paragraph, `text-2`; a secondary
+button for each remedy (`Try again`, `Choose another inverter`, `Change the sizing temperatures`); and `Details` with a
+chevron, a disclosure whose text is in mono on `well`, for what only a developer reads. The cause comes before the
+consequence, in one sentence with the agent named; no word of the machine (HTTP, status, JSON, key, engine, request) in
+the first two lines. It has one place: a problem of the result in the result chip's card; of a step at the head of that
+step's column (the stale result: `Energy not updated`, with the change that waits; no string length fits: with a button
+for each remedy and the likeliest, `Use 1000 V`, as the step's primary with `Allowed on most commercial roofs. Check the
+site's code first.`); of a refused file in its dialog until the file changes (`This file cannot be used`, the API's words);
+of something done for the user, a toast with Undo. In code: `Problem` (`components/ui/Problem.tsx`), the words from
+`problemOfFailure`, `noStringsFitProblemOf`, `problemOfFile` (`lib/errors/problem-of.ts`).
 
 ## Status marks
 Tick: `color-ok`, stroke 2.4. Note: exclamation mark in a circle, accent. Size 14 to 22. Each has a text
@@ -968,9 +984,9 @@ only place: the Table tab of the chart holds every value. Beside a block of the 
 block's right, 8 from it (`side="right"`), so that no other block is hidden; the list under the diagram holds every block.
 
 ## Toast
-A choice of stringing an edit took away is said in a toast with a note (D77): "The stringing you chose, 18 in series × 84
-strings on 7 inverters, no longer fits this design. Option A, Recommended, is used instead: 23 in series × 67 strings on 7
-inverters." with the action Choose another, which leads to the Strings step; `choiceGoneWords` in `lib/flow/choice-gone.ts`.
+A choice of stringing an edit took away is said in a toast with a note (D77, V2 · 5): "Your stringing no longer fits.
+Option A is used." with the actions Undo (the edit that took it away is undone) and Choose another (leads to the Strings
+step); `choiceGoneWords` in `lib/flow/choice-gone.ts`. A toast has one action and may have a second beside it (`alsoAction`).
 
 `surface-1`, border `line-strong`, radius `radius-row`, `shadow-float`, 48 high or more, padding 8 8 8 14,
 gap 10. A status mark (tick 18 or note 20), the words, then an action in accent, Geist 500 (height 32), or a
@@ -1064,11 +1080,15 @@ itself, the block is `control-active` (`onTile`; the board "Shade map").
 ## Notes to review, the drawer
 Desktop and tablet: from the right, 384 wide, over the inspector, `color-chrome`, a line `line` at its left,
 shadow `-16px 0 40px rgba(0,0,0,.5)`, layer `z-sheet`. Phone: a bottom sheet.
-Head: "Notes to review" in the display face 22 / 28, the count in mono 13, a quiet icon button to close (38,
-44 on phone). Padding 20 (16 on phone); notes 10 apart.
+Head: "N to review" (the chip's words; "Notes to review" when none) in the display face 22 / 28, a quiet icon button to
+close (38, 44 on phone); under it, when a value is outside the usual range, "Values outside the usual range. Each one says
+how to fix it." Padding 20 (16 on phone); notes 10 apart.
 A note: `note-surface`, border `note-line`, radius `radius-row`, padding 14: the mark of 20, a title in Geist
 500, the reason in `type-body`, text-2, in the words of the engine; under them where it belongs, in
 `type-body`, text-3, and a secondary button of 36 that leads there ("Open Array") or acts ("Try again").
+A value outside the usual range (V2 · 5) is fixed where it is read: its title ("Voc coefficient outside the usual range"),
+its usual range and "Enter the datasheet's value.", the field itself in the note (a number field with where the value
+came from), and a quiet button "Keep −0.164" that enters the value as it is; an entered coefficient ends the note.
 Nothing to review: one row on `surface-1` with a tick of 20: "Nothing to review", "Every check of the design
 fits."
 

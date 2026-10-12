@@ -12,7 +12,7 @@ docs:
 
 ## What the card shows
 
-The model, the maker and the rated power; the size, and the bifaciality of a bifacial module; Voc, Isc, the bypass diodes, and whether it is twin half-cell. Then the temperature coefficients of Voc, Vmp and Pmpp, with where the Voc coefficient comes from: `PAN file`, `one-diode model` or `entered`. When the engine has a note on the module, an exclamation mark stands beside the coefficients and the note follows: a Voc coefficient outside the usual range for crystalline silicon, or a file that gives no size of the module. The file's name stands at the foot.
+The model, the maker and the rated power; the size, and the bifaciality of a bifacial module; Voc, Isc, the bypass diodes, and whether it is twin half-cell. Then the temperature coefficients of Voc, Vmp and Pmpp, with where the Voc coefficient comes from: `PAN file`, `one-diode model` or `entered`. When the engine has a note on the module, an exclamation mark stands beside the coefficients and the note follows: a Voc coefficient outside the usual range for crystalline silicon, or a file that gives no size of the module. The result at the top right then says `1 to review`; pressed, the list holds the note, and a Voc coefficient outside the usual range has its field in the note, with the usual range and `Keep` and the value, to enter the value as it is. The file's name stands at the foot.
 
 ## Change
 
@@ -26,4 +26,4 @@ Its size, with the <HelpLink k="studio.section.mounting">mounting</HelpLink>, se
 
 ## The Voc coefficient
 
-The card shows the coefficient the PAN file states, or the one-diode model's when it states none. The strings are sized with the one-diode model's unless you enter a coefficient: when the datasheet gives one you trust, enter it under `Sizing temperatures` in the Strings step.
+The card shows the coefficient the PAN file states, or the one-diode model's when it states none. The strings are sized with the one-diode model's unless you enter a coefficient: when the datasheet gives one you trust, enter it under `Sizing temperatures` in the Strings step, or in the note that says it is outside the usual range. An entered coefficient ends that note.

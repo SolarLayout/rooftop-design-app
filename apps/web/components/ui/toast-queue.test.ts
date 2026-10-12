@@ -178,4 +178,14 @@ describe("the queue of toasts", () => {
 
     expect(undone).toBe(true);
   });
+
+  test("a second action of a toast is kept with it, beside the first", () => {
+    const { toasts } = queue();
+    let chosen = false;
+    toasts.show({ kind: "note", words: "Your stringing no longer fits. Option A is used.", action: { label: "Undo", run: () => undefined }, alsoAction: { label: "Choose another", run: () => (chosen = true) } });
+
+    toasts.shown()?.alsoAction?.run();
+
+    expect(chosen).toBe(true);
+  });
 });

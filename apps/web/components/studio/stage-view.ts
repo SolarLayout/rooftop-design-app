@@ -45,10 +45,12 @@ type StringsOf = {
   option: Pick<DesignOption, "n_series" | "n_strings" | "n_inverters" | "n_modules"> | null;
   /** Why the run has no options; null when it has some, or there is no run. */
   noOptions: NoOptions["code"] | null;
+  /** The first run is on its way and there are no strings of a run before to show (V2 · 5). */
+  isSizing?: boolean;
 };
 
 /** The line under the Strings lens's title (the boards "Studio, Strings lens" and its "no system voltage yet"). */
-export function stringsLineOf({ positions, mppts, option, noOptions }: StringsOf): string | null {
+export function stringsLineOf({ positions, mppts, option, noOptions, isSizing = false }: StringsOf): string | null {
   if (positions === null) return null;
   if (option && mppts !== null) {
     const unused = positions - option.n_modules;
@@ -56,7 +58,8 @@ export function stringsLineOf({ positions, mppts, option, noOptions }: StringsOf
     const left = unused > 0 ? `${counted(unused, "position", "positions")} not used` : "every position used";
     return `${counted(option.n_strings, "string", "strings")} of ${shown(option.n_series, 0)} modules · ${inverters} · ${left}`;
   }
-  return noOptions === null ? null : `${shown(positions, 0)} positions ready · ${NO_STRINGS[noOptions]}`;
+  if (noOptions === null) return isSizing ? `${shown(positions, 0)} positions · sizing the strings` : null;
+  return `${shown(positions, 0)} positions ready · ${NO_STRINGS[noOptions]}`;
 }
 
 export type StageLine = {

@@ -25,7 +25,10 @@ import { SeriesRange } from "./SeriesRange";
 import { SizingTemperatures } from "./SizingTemperatures";
 import { StringColourSwitch } from "./StringLegend";
 import { InverterPicker } from "./InverterPicker";
-import { NothingFits, OptionCards, OptionsNote, YourOwn } from "./StringOptions";
+import { Problem } from "@/components/ui/Problem";
+import { ProgressRing } from "@/components/ui/ProgressRing";
+import { useNoStringsFit } from "./use-no-strings-fit";
+import { NothingFits, OptionCards, OptionsNote, OptionsWaiting, YourOwn } from "./StringOptions";
 import { SummaryRow } from "@/components/shell/SummaryRow";
 import { SystemVoltage } from "./SystemVoltage";
 import { useSectionOpen } from "@/components/shell/use-section-open";
@@ -57,9 +60,13 @@ export function StringsInspector() {
   // Each opening of the picker mounts it afresh: its filters and its choice at rest.
   const [openings, setOpenings] = useState(0);
   const [, openLimits] = useSectionOpen("strings.limits", false);
+  const [, openSizing] = useSectionOpen("strings.sizing", false);
+  const noStringsFit = useNoStringsFit();
   const [focusCurrent, setFocusCurrent] = useState(0);
   if (!project) return null;
   const view = stringsViewOf({ voltage: project.system_voltage ?? null, design, option });
+  // The first run is on its way and nothing of a run before stands: the options wait as a skeleton, and the step says what it does (V2 · 5).
+  const isSizing = isUpdating && design === null && view.kind === "sized";
   // A file read for another design says nothing about this one.
   const inverter = inverterShownOf({ design, designEdit, replaced: replaced?.openedAt === openedAt ? replaced : null });
   // The inverter shown, also one read and not yet run with; the module of the run.
@@ -102,6 +109,27 @@ export function StringsInspector() {
 
   return (
     <div className="flex flex-col">
+      {/* Where no string length fits, the problem stands at the step's head with a button for each remedy; the likeliest is the step's primary (V2 · 5). */}
+      {noStringsFit ? (
+        <Problem
+          problem={noStringsFit.problem}
+          testId="no-strings-fit"
+          className="mb-group"
+          onAction={(action) => {
+            if (action.id === "choose-inverter") {
+              setOpenings((count) => count + 1);
+              setReplacing(true);
+            }
+            if (action.id === "sizing") openSizing(true);
+          }}
+        />
+      ) : null}
+      {isSizing ? (
+        <p role="status" data-testid="strings-sizing" className="flex items-center gap-2.5 pb-group type-body-touch desktop:type-body text-text-2">
+          <ProgressRing size={16} />
+          Sizing the strings · a few seconds
+        </p>
+      ) : null}
       {/* On phone the colour switch of the strings is the sheet's first thing (the board "Studio, Strings lens, phone"). */}
       {size === "phone" && option ? <StringColourSwitch fill /> : null}
       <SummaryRow id="strings.inverter" title="Inverter" help="studio.section.inverter" facts={inverter ? inverterFactsOf(inverter.inverter) : null} setBy={wordOf(fileSetByOf(project.ond_text))}>
@@ -128,7 +156,8 @@ export function StringsInspector() {
       </SummaryRow>
       {/* The step's own matter stands open: the series range, the options, the MPPT loading of the one chosen. */}
       <div className="flex flex-col gap-section py-group empty:hidden">
-        {view.kind === "sized" ? <SeriesRange view={view} isUpdating={isUpdating} /> : null}
+        {view.kind === "sized" && !isSizing ? <SeriesRange view={view} isUpdating={isUpdating} /> : null}
+        {isSizing ? <OptionsWaiting /> : null}
         {view.kind === "no-voltage" ? null : (
           <>
             <NothingFits view={view} />

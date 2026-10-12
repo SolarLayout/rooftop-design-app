@@ -46,29 +46,11 @@ describe("a choice an edit took away", () => {
 });
 
 describe("what the user is told", () => {
-  test("the stringing chosen, that it no longer fits, and what is used instead, in plain words", () => {
-    expect(choiceGoneWords({ dropped: { series: 18, strings: 84, inverters: 7 }, shown: { ...A, n_series: 23, n_strings: 67, n_inverters: 7 } })).toBe(
-      "The stringing you chose, 18 in series × 84 strings on 7 inverters, no longer fits this design. " +
-        "Option A, Recommended, is used instead: 23 in series × 67 strings on 7 inverters.",
-    );
+  test("that the stringing no longer fits and which option is used, in one line", () => {
+    expect(choiceGoneWords({ dropped: { series: 18, strings: 84, inverters: 7 }, shown: A })).toBe("Your stringing no longer fits. Option A is used.");
   });
 
-  test("one string, one inverter, said so", () => {
-    expect(choiceGoneWords({ dropped: { series: 20, strings: 1, inverters: 1 }, shown: A })).toBe(
-      "The stringing you chose, 20 in series × 1 string on 1 inverter, no longer fits this design. " +
-        "Option A, Recommended, is used instead: 29 in series × 22 strings on 1 inverter.",
-    );
-  });
-
-  test("an option whose caption is only its name is named once", () => {
-    expect(choiceGoneWords({ dropped: null, shown: { ...D, letter: "B", caption: "Option B" } })).toBe(
-      "The stringing you chose no longer fits this design. Option B is used instead: 26 in series × 27 strings on 2 inverters.",
-    );
-  });
-
-  test("without the numbers of the choice, still what is used instead", () => {
-    expect(choiceGoneWords({ dropped: null, shown: D })).toBe(
-      "The stringing you chose no longer fits this design. Option D, Below target, 2 inverters, is used instead: 26 in series × 27 strings on 2 inverters.",
-    );
+  test("the same without the numbers of the choice", () => {
+    expect(choiceGoneWords({ dropped: null, shown: D })).toBe("Your stringing no longer fits. Option D is used.");
   });
 });

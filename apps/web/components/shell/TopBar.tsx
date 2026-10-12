@@ -23,6 +23,7 @@ type Props = {
   result: Chip;
   summary: readonly SummaryRow[];
   onOpenNotes: () => void;
+  onTryAgain: () => void;
   /** Import a drawing was taken in the project switcher. */
   onImport: () => void;
   /** Open a project was taken in the project switcher (plan/phase-10-plan.md, step 9). */
@@ -82,7 +83,7 @@ export function HomeMark() {
 }
 
 /** The bar at the top of the order of work (D95): the mark, the design, the five steps, the result, the docs. */
-export function TopBar({ name, saving, step, states, result, summary, onOpenNotes, onImport, onOpenProject, onRename, onSaveACopy, designs, onOpenDesign }: Props) {
+export function TopBar({ name, saving, step, states, result, summary, onOpenNotes, onTryAgain, onImport, onOpenProject, onRename, onSaveACopy, designs, onOpenDesign }: Props) {
   return (
     <header className={BAR}>
       <HomeMark />
@@ -103,7 +104,7 @@ export function TopBar({ name, saving, step, states, result, summary, onOpenNote
       <span className="hidden grow tablet:block" />
       {/* On tablet the result is a row under the stage (D95, D97): the bar holds the steps. */}
       <div className="flex shrink-0 items-center gap-2 tablet:hidden desktop:flex">
-        <ResultChip chip={result} summary={summary} onOpenNotes={onOpenNotes} />
+        <ResultChip chip={result} summary={summary} onOpenNotes={onOpenNotes} onTryAgain={onTryAgain} />
         <Docs />
       </div>
     </header>

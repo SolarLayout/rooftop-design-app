@@ -68,7 +68,7 @@ describe("a run that failed", () => {
     expect(view.isDimmed).toBe(false);
     expect(view.failed).toEqual({
       title: "The files were not updated",
-      detail: "They are of the design before",
+      detail: "Showing the last result",
       action: "Try again",
       message: "The server cannot be reached. Check the connection and try again.",
     });

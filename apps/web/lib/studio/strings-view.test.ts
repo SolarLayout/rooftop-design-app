@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { DesignOption, DesignResult } from "../api";
-import { CHANGE_WHEN_NOTHING_FITS, stringsViewOf } from "./strings-view";
+import { stringsViewOf } from "./strings-view";
 
 const RANGE_1500 = { system_v: 1500, n_min: 14, n_max: 29, upper_limit: "Voc limit" };
 const VERDICT_A = { ok: true, title: "29 in series fits: Vmp 1,199 V at STC, inverter nominal 1,080 V", detail: "Voc at 11.9 °C is 1,480 V (limit 1500 V); …" };
@@ -53,21 +53,21 @@ describe("with a system voltage", () => {
     expect(stringsViewOf({ voltage: 1500, design: WITHOUT_A_VOLTAGE, option: null }).kind).toBe("sized");
   });
 
-  test("no string length fits: the engine's words as the verdict, and what can change it", () => {
+  test("no string length fits: the engine's words as the verdict, and the step's problem to carry", () => {
     const reason = { code: "no_string_length_fits", title: "No string length fits this inverter", message: "No string length fits: at least 14 modules are needed for the 500 V MPPT minimum, but at most 11 fit under 600 V." } as const;
     const design = run({ series_range: { ...RANGE_1500, system_v: 600, n_max: 11 } as never, options: [], chosen_option: null, no_options: reason });
     expect(stringsViewOf({ voltage: 600, design, option: null })).toMatchObject({
       kind: "sized",
       chosen: null,
       verdict: { ok: false, title: reason.title, detail: reason.message },
-      noOptions: { title: reason.title, message: reason.message, change: CHANGE_WHEN_NOTHING_FITS },
+      noOptions: { title: reason.title, message: reason.message, noLengthFits: true },
     });
   });
 
   test("too few positions: the API's words, without a verdict on the bar", () => {
     const reason = { code: "too_few_positions", title: "Too few positions for a string", message: "The roof holds 12 positions, …", fits: null } as const;
     const view = stringsViewOf({ voltage: 1500, design: run({ options: [], chosen_option: null, no_options: reason }), option: null });
-    expect(view).toMatchObject({ verdict: null, noOptions: { title: reason.title, message: reason.message, change: null, yourOwn: false } });
+    expect(view).toMatchObject({ verdict: null, noOptions: { title: reason.title, message: reason.message, noLengthFits: false, yourOwn: false } });
   });
 
   test("too few positions, but a short string fits: your own is offered, as the API's words advise (#171)", () => {

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { CSV_REFUSED_TITLE, noStringsFitProblemOf, problemOfFailure, SEARCH_UNAVAILABLE, whenOf, type Problem } from "./problem-of";
+import { CSV_REFUSED_TITLE, noStringsFitProblemOf, problemOfFile, problemOfFileTooLarge, problemOfFailure, problemOfNoOptions, SEARCH_UNAVAILABLE, whenOf, type Problem } from "./problem-of";
 
 // Every problem in one shape (V2 · 5, D101; voice §5): the title (the thing and its state), the cause (one sentence, the agent
 // named), the remedy (the first thing to try), the actions, and the details only a developer reads, behind Details.
@@ -97,6 +97,47 @@ describe("no string length fits", () => {
       label: "Use 1000 V",
       line: "Allowed on most commercial roofs. Check the site's code first.",
     });
+  });
+});
+
+describe("no option to offer", () => {
+  test("the result is not computed; the API's words are the cause, the way leads to where it is put right", () => {
+    expect(problemOfNoOptions({ message: "The roof holds no position for a module.", path: "/studio/roof", stepName: "Roof" })).toEqual({
+      title: "Energy not computed",
+      cause: "The roof holds no position for a module.",
+      remedy: null,
+      actions: [{ id: "open", label: "Open Roof", href: "/studio/roof" }],
+      details: null,
+    });
+  });
+});
+
+describe("a file that was not loaded", () => {
+  const HOURS = "weather.csv has 8,000 hours, not the 8,760 of a year. Energy of a year needs every hour of it.";
+
+  test("a refusal of the API stays in its dialog: This file cannot be used, the API's words, the detail behind Details", () => {
+    expect(problemOfFile({ code: "csv_invalid", message: HOURS, status: 422 })).toEqual({
+      title: "This file cannot be used",
+      cause: HOURS,
+      remedy: null,
+      actions: [],
+      details: "422 · csv_invalid",
+    });
+  });
+
+  test("a file over the size the app takes is refused before any request: its words, nothing behind Details", () => {
+    expect(problemOfFileTooLarge("This file is over 3 MB.")).toEqual({ title: "This file cannot be used", cause: "This file is over 3 MB.", remedy: null, actions: [], details: null });
+  });
+
+  test("a server that does not answer is no refusal of the file: it was not loaded, and trying another changes nothing", () => {
+    const problem = problemOfFile(UNREACHABLE);
+
+    expect(problem).toMatchObject({ title: "The file was not loaded", cause: "The server could not be reached.", actions: [] });
+    expect(firstTwoLines(problem)).not.toMatch(MACHINE);
+  });
+
+  test("a fault of the app while reading the file: the fault behind Details alone", () => {
+    expect(problemOfFile(FAULT)).toMatchObject({ title: "The file was not loaded", cause: "The app could not finish this step.", details: "TypeError: x is undefined" });
   });
 });
 

@@ -14,6 +14,7 @@ import {
   specificYield,
   type Quantity,
 } from "../../lib/format/vitals";
+import { problemOfFailure, type FailureFacts, type Problem } from "../../lib/errors/problem-of";
 import type { Status } from "../../lib/stores/results-store";
 import { wordsOfTheTarget, type Note } from "./notes-view";
 import { pathOfNoOptions } from "../../lib/flow/no-options";
@@ -33,8 +34,8 @@ export type LastCell =
   | { kind: "notes"; count: number; title: string; detail: string }
   /** A run is on its way: its step in the words of the engine, and how far it is, from 0 to 1. */
   | { kind: "run"; title: string; step: string | null; share: number }
-  /** The run failed. It opens the notes, where the reason is. */
-  | { kind: "failed"; title: string; detail: string }
+  /** The run failed: the problem of it, in V2's one shape (the chip opens it, the step names the change that waits). */
+  | { kind: "failed"; title: string; problem: Problem }
   /** There are no options, and why, in the words of the API. It leads to where that is decided. */
   | { kind: "decision"; title: string; detail: string; path: string };
 
@@ -58,14 +59,21 @@ type Asked = {
   designStatus: Status;
   progress: DesignProgress | null;
   notes: readonly Note[];
+  /** Why the last run did not come; none where it did. */
+  failure?: FailureFacts | null;
 };
+
+/** A run that failed with nothing said of why: the server did not answer. */
+const UNSAID: FailureFacts = { code: "unexpected_answer", message: "" };
 
 /** The words of a run on its way, of a run that failed and of the first load: the vitals' and Performance's alike. */
 export const UPDATING_ENERGY = "Updating energy";
 export const openingOf = (name: string | null) => `Opening ${name ?? "the design"}`;
 export const TRY_AGAIN = "Try again";
-export const ENERGY_NOT_UPDATED = { title: "Energy was not updated", detail: "Values are of the design before" } as const;
-export const ENERGY_NOT_COMPUTED = { title: "Energy was not computed", detail: "There are no values yet" } as const;
+/** The last result stays on screen, marked (voice §5). */
+export const SHOWING_THE_LAST_RESULT = "Showing the last result";
+export const ENERGY_NOT_UPDATED = { title: "Energy not updated", detail: SHOWING_THE_LAST_RESULT } as const;
+export const ENERGY_NOT_COMPUTED = { title: "Energy not computed", detail: "There is no result yet" } as const;
 
 function chosenOf(design: DesignResult | null): DesignOption | null {
   if (!design || design.chosen_option === null) return null;
@@ -113,7 +121,7 @@ function notesCell(notes: readonly Note[]): LastCell {
   return { kind: "notes", count: notes.length, title, detail: first.title };
 }
 
-export function vitalsOf({ name, design, readouts, designStatus, progress, notes }: Asked): VitalsView {
+export function vitalsOf({ name, design, readouts, designStatus, progress, notes, failure = null }: Asked): VitalsView {
   const option = chosenOf(design);
   const isOnItsWay = designStatus === "waiting" || designStatus === "running";
   // Before the first answer, and before the design itself is there, nothing has failed and nothing is shown yet.
@@ -125,8 +133,8 @@ export function vitalsOf({ name, design, readouts, designStatus, progress, notes
       return { kind: "run", title, step: progress?.step ?? null, share: progress?.fraction ?? 0 };
     }
     if (designStatus === "failed") {
-      const { title, detail } = design ? ENERGY_NOT_UPDATED : ENERGY_NOT_COMPUTED;
-      return { kind: "failed", title, detail: `${detail} · ${TRY_AGAIN}` };
+      const problem = problemOfFailure(failure ?? UNSAID, { subject: "energy", hasBefore: design !== null });
+      return { kind: "failed", title: problem.title, problem };
     }
     if (design?.no_options) {
       const { title, message } = design.no_options;

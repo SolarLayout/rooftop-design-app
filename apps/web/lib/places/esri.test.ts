@@ -74,7 +74,7 @@ describe("the search", () => {
   });
 
   test("an error of the geocoder is thrown in plain words, never the service's own", () => {
-    const UNAVAILABLE = "The address search is not available right now. Paste coordinates or a maps link instead.";
+    const UNAVAILABLE = "Address search is not available. Paste coordinates or a maps link.";
     expect(() => placesOf({ error: { code: 498, message: "Invalid Token" } })).toThrow(new SearchError(UNAVAILABLE));
     expect(() => placesOf({ error: {} })).toThrow(new SearchError(UNAVAILABLE));
   });
@@ -101,7 +101,7 @@ describe("the search", () => {
       throw new TypeError("Failed to fetch");
     })!;
 
-    await expect(provider.search("Pune")).rejects.toThrow(new SearchError("The search cannot be reached. Check the connection and try again."));
+    await expect(provider.search("Pune")).rejects.toThrow(new SearchError("The address search cannot be reached. Check your connection, then try again."));
   });
 
   test("a search that was given up is thrown as it is", async () => {
@@ -120,6 +120,6 @@ describe("the search", () => {
     const { fetcher: fetch } = fetcher({}, 503);
     const provider = esriProvider(KEY, fetch)!;
 
-    await expect(provider.search("Pune")).rejects.toThrow(new SearchError("The search answered 503. Try again in a moment."));
+    await expect(provider.search("Pune")).rejects.toThrow(new SearchError("The address search did not answer. Try again in a moment."));
   });
 });

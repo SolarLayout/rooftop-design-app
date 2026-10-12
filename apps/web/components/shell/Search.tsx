@@ -12,6 +12,7 @@ import { ProgressRing } from "@/components/ui/ProgressRing";
 import { StatusMark } from "@/components/ui/StatusMark";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useFloating } from "@/components/ui/use-floating";
+import { SEARCH_UNAVAILABLE } from "@/lib/errors/problem-of";
 import { placeInFull } from "@/lib/format/place";
 import { besideTheField } from "@/lib/places/beside-the-field";
 import { SearchError } from "@/lib/places/esri";
@@ -50,7 +51,6 @@ type Props = {
 export const SEARCH_LABEL = "Search an address or paste coordinates";
 /** The field's words in Find's column (the board "Find"). */
 const COLUMN_LABEL = "Address or coordinates";
-const NO_KEY = "Words cannot be searched for without a map key. Paste coordinates or a maps link instead.";
 const NO_LOCATION = "Your location is not available. Allow it in the browser, or search for the address.";
 const MY_LOCATION = "Use my location";
 
@@ -106,7 +106,7 @@ export function Search({ provider, near, onPlace, found, look = "column", exampl
     dispatch({ type: "asked", query });
     floating.open();
     if (!provider) {
-      dispatch({ type: "failed", query, message: NO_KEY });
+      dispatch({ type: "failed", query, message: SEARCH_UNAVAILABLE });
       return;
     }
     try {

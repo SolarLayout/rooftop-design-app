@@ -80,7 +80,7 @@
 | Updating | Old values, dimmed slightly, ring beside the number |
 | Waiting for a decision | Decision card; vitals say what is waiting |
 | Note | Exclamation mark, reason, and where to fix it |
-| Failure | What failed, in the engine's words, and what to do; the last good result stays |
+| Failure | A `Problem` (V2 · 5, D101): the title, the cause, the remedy as a button, Details; no word of the machine in the first two lines; the last good result stays, marked "Showing the last result" |
 | Offline or no map key | The flow continues without the map ("Enter dimensions by hand") |
 | No WebGL | The plan view, with a line saying why |
 

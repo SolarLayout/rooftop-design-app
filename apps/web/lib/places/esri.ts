@@ -1,5 +1,6 @@
 // Esri World Imagery and Esri geocoding, of the ArcGIS Location Platform (decision D13). Verified with
 // the key of the app on 2026-09-29: plan/reference/map-providers.md, "Verified with our own key".
+import { SEARCH_UNAVAILABLE } from "../errors/problem-of";
 import type { MapProvider, Place, SearchOptions } from "./provider";
 
 export type Fetch = (input: string, init?: RequestInit) => Promise<Response>;
@@ -15,8 +16,8 @@ export const IMAGERY_ATTRIBUTION = "Powered by Esri · Source: Esri, Vantor, Ear
 
 const PLACES_AT_MOST = 5;
 
-/** The geocoder answered with an error of its own: the key refused, the service down (the board "Coordinates in the search"). */
-const UNAVAILABLE = "The address search is not available right now. Paste coordinates or a maps link instead.";
+/** The geocoder answered with an error of its own, or did not answer in a form the app reads: the same words as a search without its service (voice §5). */
+const UNAVAILABLE = SEARCH_UNAVAILABLE;
 
 /** The key of the app, put into the page at build time. Empty when the machine has none. */
 export const KEY_OF_THE_APP = process.env.NEXT_PUBLIC_ESRI_API_KEY ?? "";
@@ -32,11 +33,11 @@ type Candidate = { address?: unknown; location?: { x?: unknown; y?: unknown }; a
 
 /** The places of an answer of the geocoder, in its order; an answer of another shape is a fault. */
 export function placesOf(answer: unknown): Place[] {
-  if (typeof answer !== "object" || answer === null) throw new SearchError("The search answered in a shape that cannot be read.");
+  if (typeof answer !== "object" || answer === null) throw new SearchError(UNAVAILABLE);
   const { error, candidates } = answer as { error?: unknown; candidates?: unknown };
   // The service's own words ("Invalid Token") tell the user nothing they can act on.
   if (error) throw new SearchError(UNAVAILABLE);
-  if (!Array.isArray(candidates)) throw new SearchError("The search answered in a shape that cannot be read.");
+  if (!Array.isArray(candidates)) throw new SearchError(UNAVAILABLE);
   return candidates.flatMap((candidate: Candidate) => {
     const { address, location, attributes } = candidate;
     if (typeof address !== "string" || typeof location?.x !== "number" || typeof location?.y !== "number") return [];
@@ -71,9 +72,9 @@ export function esriProvider(key: string, fetcher: Fetch = (input, init) => glob
         response = await fetcher(searchUrl(key, query, near), { signal, cache: "no-store" });
       } catch (cause) {
         if (signal?.aborted) throw cause;
-        throw new SearchError("The search cannot be reached. Check the connection and try again.");
+        throw new SearchError("The address search cannot be reached. Check your connection, then try again.");
       }
-      if (!response.ok) throw new SearchError(`The search answered ${response.status}. Try again in a moment.`);
+      if (!response.ok) throw new SearchError("The address search did not answer. Try again in a moment.");
       return placesOf(await response.json());
     },
   };

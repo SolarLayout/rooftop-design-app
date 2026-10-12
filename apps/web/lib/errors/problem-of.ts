@@ -2,7 +2,8 @@
 // cause, one sentence with the agent named; the remedy, the first thing to try; the actions, a button each; and the
 // details only a developer reads, behind Details. No word of the machine in the title or the cause. Pure.
 
-export type ProblemAction = { id: "try-again" | "choose-inverter" | "sizing"; label: string };
+/** A button of a problem: Try again asks again; Open leads to where the matter is put right (its href). */
+export type ProblemAction = { id: "try-again" | "choose-inverter" | "sizing" | "open"; label: string; href?: string };
 
 export type Problem = {
   title: string;
@@ -60,13 +61,18 @@ export function problemOfFailure(failure: FailureFacts, { subject, hasBefore, at
   return { title, cause: failure.message, remedy: null, actions: [], details: detailsOf(failure.status ?? NO_ANSWER, failure.code, at) };
 }
 
+/** No option to offer, in the API's own words: the result says so, and the way leads to where it is put right. */
+export function problemOfNoOptions({ message, path, stepName }: { message: string; path: string; stepName: string }): Problem {
+  return { title: "Energy not computed", cause: message, remedy: null, actions: [{ id: "open", label: `Open ${stepName}`, href: path }], details: null };
+}
+
 /** A higher voltage that fits, as the step's primary: the user's choice, undone in one step (D87, D88). */
-export type VoltageRemedy = { volts: number; label: string; line: string };
+export type VoltageRemedy<Volts extends number = number> = { volts: Volts; label: string; line: string };
 
 /** No string length fits at the voltage set: the problem at the Strings step's head, and its likeliest remedy. */
-export function noStringsFitProblemOf({ voltage, range, fitsAt }: { voltage: number; range: { n_min: number; n_max: number }; fitsAt: number | null }): {
+export function noStringsFitProblemOf<Volts extends number>({ voltage, range, fitsAt }: { voltage: number; range: { n_min: number; n_max: number }; fitsAt: Volts | null }): {
   problem: Problem;
-  primary: VoltageRemedy | null;
+  primary: VoltageRemedy<Volts> | null;
 } {
   return {
     problem: {
@@ -86,8 +92,23 @@ export function noStringsFitProblemOf({ voltage, range, fitsAt }: { voltage: num
 /** The search for an address without its service (voice §5). */
 export const SEARCH_UNAVAILABLE = "Address search is not available. Paste coordinates or a maps link.";
 
-/** A weather file the API refused, in its dialog until the file changes. */
+/** A file the API refused, in its dialog until the file changes. */
 export const CSV_REFUSED_TITLE = "This file cannot be used";
+
+/** A file the app will not send: its own words, said before any request. */
+export const problemOfFileTooLarge = (message: string): Problem => ({ title: CSV_REFUSED_TITLE, cause: message, remedy: null, actions: [], details: null });
+
+/**
+ * A file that was not loaded, as the dialog says it until the file changes (V2 · 5, voice §5): a refusal of the API
+ * says what was expected and what was found, in its own words, with the status and the code behind Details; a server
+ * that did not answer, or a fault of the app, is no refusal of the file, so it says what happened and offers no remedy.
+ */
+export function problemOfFile(failure: FailureFacts): Problem {
+  const status = failure.status ?? 0;
+  if (status >= 400 && status < 500) return { title: CSV_REFUSED_TITLE, cause: failure.message, remedy: null, actions: [], details: detailsOf(status, failure.code) };
+  const { cause, remedy, details } = problemOfFailure(failure, { subject: "energy", hasBefore: false });
+  return { title: "The file was not loaded", cause, remedy, actions: [], details };
+}
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 

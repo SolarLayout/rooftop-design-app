@@ -128,6 +128,14 @@ describe("the line under the Strings lens's title (plan/phase-07-plan.md, decisi
     expect(stringsLineOf({ positions: 12, mppts: 6, option: null, noOptions: "too_few_positions" })).toBe("12 positions ready · too few for a string");
   });
 
+  test("while the strings are sized for the first time: the positions, and that the strings are being sized (V2 · 5)", () => {
+    expect(stringsLineOf({ positions: 790, mppts: null, option: null, noOptions: null, isSizing: true })).toBe("790 positions · sizing the strings");
+  });
+
+  test("a run on its way never hides the strings of the run before", () => {
+    expect(stringsLineOf({ positions: 790, mppts: 6, option: A, noOptions: null, isSizing: true })).toBe("22 strings of 29 modules · 1 inverter, 6 MPPT · 152 positions not used");
+  });
+
   test("before any run, nothing", () => {
     expect(stringsLineOf({ positions: null, mppts: null, option: null, noOptions: null })).toBeNull();
   });

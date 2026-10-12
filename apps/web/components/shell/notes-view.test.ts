@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import type { DesignOption, DesignResult } from "../../lib/api";
-import { notesOf, subjectOf, withTrueMinus, wordsOfTheTarget } from "./notes-view";
+import type { DesignOption, DesignResult, Project } from "../../lib/api";
+import { introOf, keepWordsOf, notesOf, reviewTitleOf, withNoteValue, subjectOf, withTrueMinus, wordsOfTheTarget } from "./notes-view";
 
 const VOC =
   "Voc coefficient -0.164 %/°C is outside the usual -0.35 to -0.20 %/°C for crystalline silicon. Check the datasheet and enter it if it differs.";
@@ -52,12 +52,34 @@ describe("the notes to review", () => {
     expect(notesOf({ ...NOTHING, design: design({ module: [VOC] }) })).toEqual([
       {
         id: "module-0",
-        title: "Voc coefficient",
-        reason: VOC_SHOWN,
+        title: "Voc coefficient outside the usual range",
+        reason: "Usually −0.35 to −0.20 %/°C for this kind of module. Enter the datasheet's value.",
         where: "Module · Array step",
         action: { kind: "open", label: "Open Array", path: "/studio/array" },
+        field: { id: "voc_coefficient_pct", label: "Voc coefficient", unit: "%/°C", value: -0.164, source: "From the module file" },
       },
     ]);
+  });
+
+  test("a value outside the usual range keeps the engine's words when no field of the app puts it right", () => {
+    const other = "Cell rise 80.0 °C is outside the usual 10.00 to 40.00 °C for crystalline silicon. Check the datasheet and enter it if it differs.";
+    const [note] = notesOf({ ...NOTHING, design: design({ module: [other] }) });
+
+    expect(note?.field).toBeUndefined();
+    expect(note?.title).toBe("Cell rise outside the usual range");
+    expect(note?.reason).toBe("Usually 10.00 to 40.00 °C for this kind of module. Enter the datasheet's value.");
+  });
+
+  test("a value entered in the note is the document's, the user's from now on; the same value leaves the document as it is", () => {
+    const document = { voc_coefficient_pct: null } as unknown as Project;
+
+    expect(withNoteValue(document, "voc_coefficient_pct", -0.164)).toEqual({ voc_coefficient_pct: -0.164 } as unknown as Project);
+    const entered = withNoteValue(document, "voc_coefficient_pct", -0.164);
+    expect(withNoteValue(entered, "voc_coefficient_pct", -0.164)).toBe(entered);
+  });
+
+  test("Keep says the value that stays", () => {
+    expect(keepWordsOf({ id: "voc_coefficient_pct", label: "Voc coefficient", unit: "%/°C", value: -0.164, source: "From the module file" })).toBe("Keep −0.164");
   });
 
   test("a note of the layout leads to the Array lens, one of the weather to Performance", () => {
@@ -102,23 +124,23 @@ describe("the notes to review", () => {
     expect(notes.map((note) => note.reason).join(" ")).not.toContain("horizon");
   });
 
-  test("a run that failed, after the notes of the design: the values are of before, and it can be tried again", () => {
+  test("a run that failed, after the notes of the design: the last result is shown, and it can be tried again", () => {
     const notes = notesOf({ ...NOTHING, design: design({ module: [VOC] }), designFailure: UNREACHABLE });
 
     expect(notes.map((note) => note.id)).toEqual(["module-0", "design-failed"]);
     expect(notes[1]).toEqual({
       id: "design-failed",
-      title: "Energy was not updated",
-      reason: "The server cannot be reached. Check the connection and try again.",
-      where: "The values shown are of the design before",
+      title: "Energy not updated",
+      reason: "The server could not be reached. Check your connection, then try again.",
+      where: "Showing the last result",
       action: { kind: "try-again", label: "Try again" },
     });
   });
 
-  test("a run that failed before any came: there are no values", () => {
+  test("a run that failed before any came: there is no result", () => {
     const [note] = notesOf({ ...NOTHING, designFailure: UNREACHABLE });
 
-    expect(note).toMatchObject({ title: "Energy was not computed", where: "There are no values yet" });
+    expect(note).toMatchObject({ title: "Energy not computed", where: "There is no result yet" });
   });
 
   test("a layout that failed", () => {
@@ -127,9 +149,9 @@ describe("the notes to review", () => {
     expect(notes).toEqual([
       {
         id: "layout-failed",
-        title: "Layout was not updated",
-        reason: "The server cannot be reached. Check the connection and try again.",
-        where: "The positions shown are of the design before",
+        title: "Layout not updated",
+        reason: "The server could not be reached. Check your connection, then try again.",
+        where: "Showing the last positions",
         action: { kind: "try-again", label: "Try again" },
       },
     ]);
@@ -159,6 +181,21 @@ describe("the notes to review", () => {
 
     expect(notes).toHaveLength(9);
     expect(new Set(notes.map((note) => note.id)).size).toBe(9);
+  });
+});
+
+describe("the list of notes", () => {
+  test("its title is the count the chip shows", () => {
+    expect(reviewTitleOf(1)).toBe("1 to review");
+    expect(reviewTitleOf(3)).toBe("3 to review");
+    expect(reviewTitleOf(0)).toBe("Notes to review");
+  });
+
+  test("a line under it when a value is outside the usual range: each note says how to fix it", () => {
+    const notes = notesOf({ ...NOTHING, design: design({ module: [VOC] }) });
+
+    expect(introOf(notes)).toBe("Values outside the usual range. Each one says how to fix it.");
+    expect(introOf(notesOf({ ...NOTHING, layoutNotes: [UNIT_GAP] }))).toBeNull();
   });
 });
 

@@ -100,7 +100,7 @@ export function Stage({ lens, name, className }: Props) {
   const positions = useResults((results) => readoutsOf(results)?.positions ?? null);
   const isRunning = useResults(isDesignUpdating);
   // The Strings lens's line says the chosen option's strings, or why there are none (plan/phase-07-plan.md, decision 14).
-  const stringsWords = stringsLineOf({ positions, mppts: design?.equipment.inverter.n_mppt ?? null, option, noOptions: design?.no_options?.code ?? null });
+  const stringsWords = stringsLineOf({ positions, mppts: design?.equipment.inverter.n_mppt ?? null, option, noOptions: design?.no_options?.code ?? null, isSizing: isRunning && option === null });
   const line =
     isSunView
       ? sunDay && project
