@@ -7,12 +7,12 @@ import type { VitalsView } from "./vitals-view";
 // user beside it; pressed, the summary in plain names. The vitals bar over the stage is gone.
 
 const CELLS: VitalsView["cells"] = [
-  { id: "energy", label: "Energy, year 1", quantity: { number: "617.8", unit: "MWh" } },
+  { id: "energy", label: "Energy in year 1", quantity: { number: "617.8", unit: "MWh" } },
   { id: "dc", label: "DC capacity", quantity: { number: "357.28", unit: "kWp" } },
   { id: "ac", label: "AC capacity", quantity: { number: "275", unit: "kW" } },
-  { id: "dcac", label: "DC/AC", quantity: { number: "1.30" }, mark: { kind: "fits", label: "In target" } },
+  { id: "dcac", label: "DC/AC ratio", quantity: { number: "1.30" }, mark: { kind: "fits", label: "In target" } },
   { id: "modules", label: "Modules", quantity: { number: "638", unit: "of 790" } },
-  { id: "pr", label: "PR", quantity: { number: "86.6", unit: "%" } },
+  { id: "pr", label: "Performance ratio (PR)", quantity: { number: "86.6", unit: "%" } },
   { id: "yield", label: "Yield", quantity: { number: "1,729", unit: "kWh/kWp" } },
 ];
 const view = (over: Partial<VitalsView>): VitalsView => ({ kind: "design", cells: CELLS, isLoading: false, isDimmed: false, last: { kind: "notes", count: 0, title: "Nothing to review", detail: "" }, ...over });
@@ -26,7 +26,7 @@ describe("the result chip", () => {
   });
 
   test("with notes, how many wait beside the energy", () => {
-    expect(resultChipOf(view({ last: { kind: "notes", count: 1, title: "1 note to review", detail: "Voc coefficient" } }))).toEqual({ kind: "result", figure: "617.8", words: "MWh a year", toReview: 1, isDimmed: false });
+    expect(resultChipOf(view({ last: { kind: "notes", count: 1, title: "1 to review", detail: "Voc coefficient" } }))).toEqual({ kind: "result", figure: "617.8", words: "MWh a year", toReview: 1, isDimmed: false });
   });
 
   test("before the first result, computing; while a new one comes, the last one dimmed", () => {

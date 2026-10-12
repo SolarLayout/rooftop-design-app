@@ -84,7 +84,7 @@ const tilt = (degrees: number) => (project: Project) => ({ ...project, array: { 
 const voltage = (volts: 600 | 1000 | 1500) => (document: Project) => ({ ...document, system_voltage: volts });
 const choice = (key: string) => (document: Project) => ({ ...document, chosen_option: key });
 
-const UNREACHABLE = "The server cannot be reached. Check the connection and try again.";
+const UNREACHABLE = "The server could not be reached. Check your connection, then try again.";
 const SHADING = { type: "progress", step: "Computing hourly shading for every module", fraction: 0.4 } as const;
 
 /** What was answered has reached the stores. */

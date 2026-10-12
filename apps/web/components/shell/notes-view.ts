@@ -181,7 +181,7 @@ export function notesOf({ design, layoutNotes, designFailure, layoutFailure, sav
   if (savingFailure !== null) {
     notes.push({
       id: "not-saved",
-      title: "Not saved on this device",
+      title: "Not saved",
       reason: savingFailure,
       where: "This design · on this device",
       action: TRY_AGAIN,

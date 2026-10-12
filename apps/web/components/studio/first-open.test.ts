@@ -6,7 +6,7 @@ import { firstOpenLinesOf, showsFirstOpenOf } from "./first-open";
 // energy on its way, then the energy and what it follows.
 
 const RUN = { kind: "run", title: "Opening Pune demo roof", step: null, share: 0.2 } as const;
-const NOTES = { kind: "notes", count: 1, title: "1 note to review", detail: "Voc" } as const;
+const NOTES = { kind: "notes", count: 1, title: "1 to review", detail: "Voc" } as const;
 const layout = (last: VitalsView["last"]): VitalsView => ({
   kind: "layout",
   isLoading: false,
@@ -23,7 +23,7 @@ const design = (last: VitalsView["last"], isDimmed = false): VitalsView => ({
   isDimmed,
   last,
   cells: [
-    { id: "energy", label: "Energy, year 1", quantity: { number: "617.8", unit: "MWh" } },
+    { id: "energy", label: "Energy in year 1", quantity: { number: "617.8", unit: "MWh" } },
     { id: "dc", label: "DC capacity", quantity: { number: "357.28", unit: "kWp" } },
     { id: "modules", label: "Modules", quantity: { number: "638", unit: "of 790" } },
   ],

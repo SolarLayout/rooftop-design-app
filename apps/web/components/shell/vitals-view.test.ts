@@ -74,12 +74,12 @@ describe("the vitals of a design", () => {
 
     expect(view.kind).toBe("design");
     expect(shownOf(view)).toEqual([
-      ["Energy, year 1", "617.8", "MWh"],
+      ["Energy in year 1", "617.8", "MWh"],
       ["DC capacity", "357.28", "kWp"],
       ["AC capacity", "275", "kW"],
-      ["DC/AC", "1.30", ""],
+      ["DC/AC ratio", "1.30", ""],
       ["Modules", "638", "of 790"],
-      ["PR", "86.6", "%"],
+      ["Performance ratio (PR)", "86.6", "%"],
       ["Yield", "1,729", "kWh/kWp"],
     ]);
     expect(view.cells.map((cell) => cell.id)).toEqual(["energy", "dc", "ac", "dcac", "modules", "pr", "yield"]);
@@ -115,14 +115,14 @@ describe("the vitals of a design", () => {
 
 describe("the last cell: the notes to review", () => {
   test("one note: its count, and what it is about", () => {
-    expect(vitalsOf(AT_REST).last).toEqual({ kind: "notes", count: 1, title: "1 note to review", detail: "Voc coefficient" });
+    expect(vitalsOf(AT_REST).last).toEqual({ kind: "notes", count: 1, title: "1 to review", detail: "Voc coefficient" });
   });
 
   test("several: the first of them", () => {
     expect(vitalsOf({ ...AT_REST, notes: [VOC_NOTE, SECOND_NOTE] }).last).toEqual({
       kind: "notes",
       count: 2,
-      title: "2 notes to review",
+      title: "2 to review",
       detail: "Voc coefficient",
     });
   });
@@ -132,7 +132,7 @@ describe("the last cell: the notes to review", () => {
       kind: "notes",
       count: 0,
       title: "Nothing to review",
-      detail: "Every check of the design fits.",
+      detail: "",
     });
   });
 });
@@ -141,7 +141,7 @@ describe("while the energy is updated", () => {
   test("the values of before stay, dimmed, and the last cell says the step and how far", () => {
     const view = vitalsOf({ ...AT_REST, designStatus: "running", progress: SHADING });
 
-    expect(shownOf(view)[0]).toEqual(["Energy, year 1", "617.8", "MWh"]);
+    expect(shownOf(view)[0]).toEqual(["Energy in year 1", "617.8", "MWh"]);
     expect(view.isDimmed).toBe(true);
     expect(view.isLoading).toBe(false);
     expect(view.last).toEqual({
@@ -234,7 +234,7 @@ describe("before a system voltage", () => {
     expect(shownOf(view)).toEqual([
       ["Roof", "3,600", "m²"],
       ["Positions", "790", "modules"],
-      ["If all were used", "442.40", "kWp"],
+      ["DC capacity, every position used", "442.40", "kWp"],
     ]);
     expect(view.cells.map((cell) => cell.id)).toEqual(["roof", "positions", "if-all-used"]);
   });

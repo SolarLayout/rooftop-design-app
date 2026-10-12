@@ -109,19 +109,19 @@ describe("saidOf: what the field says after it changed the entry", () => {
   });
 
   test("the limit it was brought to, with the unit", () => {
-    expect(saidOf("highest", SETBACK, "m")).toBe("5.00 m is the highest that can be set.");
-    expect(saidOf("lowest", SETBACK, "m")).toBe("0.00 m is the lowest that can be set.");
-    expect(saidOf("highest", MODULES_IN_TILT)).toBe("4 is the highest that can be set.");
+    expect(saidOf("highest", SETBACK, "m")).toBe("The highest is 5.00 m.");
+    expect(saidOf("lowest", SETBACK, "m")).toBe("The lowest is 0.00 m.");
+    expect(saidOf("highest", MODULES_IN_TILT)).toBe("The highest is 4.");
   });
 
   test("the degree sign follows its number without a space", () => {
-    expect(saidOf("highest", { min: 0, max: 45, decimals: 0 }, "°")).toBe("45° is the highest that can be set.");
+    expect(saidOf("highest", { min: 0, max: 45, decimals: 0 }, "°")).toBe("The highest is 45°.");
   });
 
   test("what to enter, when the entry was no number", () => {
-    expect(saidOf("not-a-number", SETBACK, "m")).toBe("Enter a number, from 0.00 to 5.00 m.");
-    expect(saidOf("not-a-number", { min: 0, decimals: 1 }, "m")).toBe("Enter a number, 0.0 m or more.");
-    expect(saidOf("not-a-number", { max: 60, decimals: 0 }, "°")).toBe("Enter a number, 60° or less.");
+    expect(saidOf("not-a-number", SETBACK, "m")).toBe("Enter a number from 0.00 to 5.00 m.");
+    expect(saidOf("not-a-number", { min: 0, decimals: 1 }, "m")).toBe("Enter 0.0 m or more.");
+    expect(saidOf("not-a-number", { max: 60, decimals: 0 }, "°")).toBe("Enter 60° or less.");
     expect(saidOf("not-a-number", { decimals: 1 })).toBe("Enter a number.");
   });
 });

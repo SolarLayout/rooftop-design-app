@@ -33,15 +33,6 @@ export function resultChipOf(view: VitalsView): ResultChip {
   return { kind: "computing", words: "Computing the energy" };
 }
 
-const NAMES: Partial<Record<VitalId, string>> = {
-  energy: "Energy in year 1",
-  modules: "Modules",
-  dc: "DC capacity",
-  ac: "AC capacity",
-  dcac: "DC/AC ratio",
-  pr: "Performance ratio (PR)",
-  yield: "Yield",
-};
 const ORDER: readonly VitalId[] = ["energy", "modules", "dc", "ac", "dcac", "pr", "yield"];
 
 /** The seven figures of a design in plain names; none before there is one. */
@@ -51,7 +42,7 @@ export function summaryOf(view: VitalsView): SummaryRow[] {
     const cell = view.cells.find((one) => one.id === id);
     if (!cell) return [];
     const { number, unit } = cell.quantity;
-    return [{ id, name: NAMES[id] ?? cell.label, value: unit ? `${number} ${unit}` : number }];
+    return [{ id, name: cell.label, value: unit ? `${number} ${unit}` : number }];
   });
 }
 

@@ -74,12 +74,12 @@ export function withUnit(number: string, unit: string | undefined): string {
 export function saidOf(correction: Correction | null, range: Range, unit?: string): string | null {
   const { min, max } = range;
   if (correction === null) return null;
-  if (correction === "highest" && max !== undefined) return `${withUnit(shown(max, range.decimals), unit)} is the highest that can be set.`;
-  if (correction === "lowest" && min !== undefined) return `${withUnit(shown(min, range.decimals), unit)} is the lowest that can be set.`;
+  if (correction === "highest" && max !== undefined) return `The highest is ${withUnit(shown(max, range.decimals), unit)}.`;
+  if (correction === "lowest" && min !== undefined) return `The lowest is ${withUnit(shown(min, range.decimals), unit)}.`;
   if (min !== undefined && max !== undefined) {
-    return `Enter a number, from ${shown(min, range.decimals)} to ${withUnit(shown(max, range.decimals), unit)}.`;
+    return `Enter a number from ${shown(min, range.decimals)} to ${withUnit(shown(max, range.decimals), unit)}.`;
   }
-  if (min !== undefined) return `Enter a number, ${withUnit(shown(min, range.decimals), unit)} or more.`;
-  if (max !== undefined) return `Enter a number, ${withUnit(shown(max, range.decimals), unit)} or less.`;
+  if (min !== undefined) return `Enter ${withUnit(shown(min, range.decimals), unit)} or more.`;
+  if (max !== undefined) return `Enter ${withUnit(shown(max, range.decimals), unit)} or less.`;
   return "Enter a number.";
 }
