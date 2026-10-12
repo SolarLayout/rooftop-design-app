@@ -13,7 +13,7 @@ import { byCount } from "@/lib/words/plural";
 import type { Sized } from "@/lib/studio/strings-view";
 
 /**
- * Modules in series (docs/design/components.md, "Series range bar"; the boards "Studio, Strings lens" and
+ * Modules per string (docs/design/components.md, "Series range bar"; the boards "Studio, Strings lens" and
  * "Options and your own"): the lengths that fit as a band on the track, their ends with what sets each, the
  * chosen option's length as the marker, and under it the verdict with a tick or a note, in the engine's words.
  * While the run of the voltage chosen is on its way, it waits with a ring; while a newer run is on its way, the range of
@@ -27,7 +27,7 @@ export function SeriesRange({ view, isUpdating = false }: { view: Sized; isUpdat
     <section aria-labelledby={heading} data-testid="series-range" data-state={isUpdating && bar ? "updating" : "settled"} className="flex flex-col gap-2">
       <div className="flex items-center gap-3">
         <SectionHeading id={heading} help="studio.section.modules-in-series">
-          Modules in series
+          Modules per string
         </SectionHeading>
         {isUpdating && bar ? (
           <span data-testid="series-ring" className="flex">

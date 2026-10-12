@@ -71,11 +71,11 @@ function offerOf(voltage: Volts, rating: Rating | null, range: VoltageFacts["ran
   if (range && !range.ok) {
     const fitting = above.find((volts) => fitsAt(volts, rating, range));
     if (fitting === undefined) return null;
-    return { words: `No string length fits under ${v(voltage)}; at ${v(fitting)} one does. Raise it only if the site's code allows.`, use: fitting };
+    return { words: `No string length fits at ${v(voltage)}. One fits at ${v(fitting)}. Raise it only if the site's code allows.`, use: fitting };
   }
   const next = above[0];
   if (next === undefined) return null;
-  const takes = rating.taken ? `${v(rating.volts)} is taken for this module: its file gives no limit.` : `This ${rating.of} takes up to ${v(rating.volts)}.`;
+  const takes = rating.taken ? `The module file gives no limit, so the app takes ${v(rating.volts)}.` : `This ${rating.of} takes up to ${v(rating.volts)}.`;
   return { words: `${takes} Raise it only if the site's code allows.`, use: next };
 }
 
@@ -89,12 +89,12 @@ export function voltageWordsOf({ voltage, by, country, nameOf, ratings, range }:
     setBy,
     who: wordOf(setBy),
     line: isTheApps ? lineOf(voltage, country, nameOf) : null,
-    limit: isTheApps && under ? (under.taken ? `Strings sized to ${v(under.volts)}, taken for this module: its file gives no limit.` : `Strings sized to ${v(under.volts)}, this ${under.of}'s limit.`) : null,
+    limit: isTheApps && under ? (under.taken ? `Strings sized to ${v(under.volts)}, the app's value for a module file without a limit.` : `Strings sized to ${v(under.volts)}, this ${under.of}'s limit.`) : null,
     note:
       !isTheApps && under
         ? {
-            title: under.taken ? `Strings sized to ${v(under.volts)}, taken for this module` : `Strings sized to ${v(under.volts)}, this ${under.of}'s limit`,
-            detail: `${under.taken ? `Its file gives no limit, so ${v(under.volts)} is taken. ` : ""}Your system is set to ${v(voltage)}. The bill of materials follows the voltage set.`,
+            title: under.taken ? `Strings sized to ${v(under.volts)}, the app's value for this module` : `Strings sized to ${v(under.volts)}, this ${under.of}'s limit`,
+            detail: `${under.taken ? `The module file gives no limit, so the app takes ${v(under.volts)}. ` : ""}Your system voltage is ${v(voltage)}, and the bill of materials uses it.`,
             use: matching,
           }
         : null,

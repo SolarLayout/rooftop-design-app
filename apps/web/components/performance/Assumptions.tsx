@@ -78,7 +78,7 @@ export function Assumptions({ rows, fields, weather, notes, onField, onLevel, cl
               ))}
             </ul>
           ) : null}
-          <p className="type-body-touch desktop:type-body text-text-3">Choose the weather beside the energy, at the top of the page.</p>
+          <p className="type-body-touch desktop:type-body text-text-3">At the top of the page, choose the weather beside the energy.</p>
         </>
       ) : (
         <Fields fields={fieldsOf[row.id]} onField={onField} onLevel={onLevel} />

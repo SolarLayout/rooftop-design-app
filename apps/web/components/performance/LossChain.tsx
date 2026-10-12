@@ -19,7 +19,7 @@ type Props = {
 };
 const SWATCH = "size-2.5 rounded-swatch";
 
-/** Gain, loss, and that the boxed values are the user's to change. */
+/** Gain, loss, and the box of a value the user can change. */
 function Legend() {
   return (
     <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 type-body-touch desktop:type-body text-text-2 tablet:ml-auto">
@@ -31,7 +31,10 @@ function Legend() {
         <span aria-hidden="true" className={classNames(SWATCH, "bg-data-loss")} />
         Loss
       </li>
-      <li>Boxed values are yours to change</li>
+      <li className="flex items-center gap-1.5">
+        <span aria-hidden="true" className={classNames(SWATCH, "border border-line-strong")} />
+        Editable
+      </li>
     </ul>
   );
 }
@@ -57,7 +60,7 @@ export function LossChain({ view, isDimmed, onBack, className }: Props) {
       <div className="flex flex-col gap-1.5 tablet:flex-row tablet:items-center tablet:gap-4">
         <button type="button" onClick={onBack} className="flex h-touch cursor-pointer items-center gap-1 self-start rounded-control type-strong-touch desktop:h-8 desktop:type-strong text-text-2 hovered:text-text focus-ring">
           <Icon name="chevron-left" size={14} />
-          Eleven steps
+          11 steps
         </button>
         <h3 id={heading} className="type-body-touch desktop:type-body text-text-2">
           All 21 steps, as the report lists them

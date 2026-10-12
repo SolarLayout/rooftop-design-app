@@ -12,8 +12,8 @@ describe("the proof that the chosen length fits", () => {
   test("the line that says it fits, and the lengths that fit at the voltage", () => {
     const proof = fitProofOf({ option: OPTION, range: RANGE, mpptMinimum: 500 });
 
-    expect(proof.fits).toEqual({ words: "29 modules a string fits at 1500 V", kind: "fits" });
-    expect(proof.heading).toBe("Modules a string can hold at 1500 V");
+    expect(proof.fits).toEqual({ words: "29 modules per string fits at 1500 V", kind: "fits" });
+    expect(proof.heading).toBe("Modules per string at 1500 V");
     expect(proof.atLeast).toBe("14 at least");
     expect(proof.atMost).toBe("29 at most");
   });
@@ -35,7 +35,7 @@ describe("the proof that the chosen length fits", () => {
   test("an option that does not fit all its marks is not said to fit; the engine's detail stands beside the proof", () => {
     const proof = fitProofOf({ option: { ...OPTION, verdict: { ok: false, title: "", detail: "27 strings on 2 inverters, DC/AC 0.71 (below target)." } } as DesignOption, range: RANGE, mpptMinimum: 500 });
 
-    expect(proof.fits).toEqual({ words: "29 modules a string at 1500 V", kind: "note" });
+    expect(proof.fits).toEqual({ words: "29 modules per string at 1500 V", kind: "note" });
     expect(proof.detail).toBe("27 strings on 2 inverters, DC/AC 0.71 (below target).");
   });
 });

@@ -30,10 +30,10 @@ export type CableField = { value: number; detail: string };
 const amps = (value: number) => `${shown(value, 1)} A`;
 const metres = (value: number) => `${shown(value, Number.isInteger(value) ? 0 : 2)} m`;
 
-/** Where the file's current per MPPT comes from, in words: "IMaxDC 390 A ÷ 6 MPPT". */
+/** Where the file's current per MPPT comes from, in words: "max DC current 390 A ÷ 6 MPPT". */
 function sourceOf({ inverter, current }: InverterShown): string {
-  if (current.value_a === null) return "not in the OND";
-  const from = current.source === "OND file" ? "from the OND" : `IMaxDC ${shown(inverter.idc_max_a, 0)} A ÷ ${shown(inverter.n_mppt, 0)} MPPT`;
+  if (current.value_a === null) return "not in the inverter file";
+  const from = current.source === "OND file" ? "from the inverter file" : `max DC current ${shown(inverter.idc_max_a, 0)} A ÷ ${shown(inverter.n_mppt, 0)} MPPT`;
   return `${amps(current.value_a)} · ${from}`;
 }
 

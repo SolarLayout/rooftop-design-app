@@ -20,8 +20,6 @@ export type StringLegend = {
   label: string;
 };
 
-const COUNTED = ["no", "one", "two", "three", "four", "five", "six"];
-
 /** By MPPT and by inverter: the lead word of the compact legend, and the words before a colour's numbers. */
 const LEAD: Record<Exclude<Colouring, "string">, { lead: string; prefix: string }> = {
   mppt: { lead: "MPPT", prefix: "MPPT " },
@@ -57,7 +55,7 @@ export function stringLegendOf(strings: readonly Wired[], colouring: Colouring, 
     return {
       entries: [...items, ...unusedEntry],
       compact: { lead: null, items },
-      note: `By string: ${COUNTED[colours.length]} colours in turn along the rows`,
+      note: `By string: ${colours.length} ${colours.length === 1 ? "colour" : "colours"} in turn along the rows`,
       label: labelOf(colours.map(({ named }) => named.join(" · "))),
     };
   }

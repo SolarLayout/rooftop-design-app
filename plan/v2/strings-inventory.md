@@ -20,7 +20,7 @@ There are no first-person strings ("we", "our") anywhere in scope. No user-visib
 
 ## Findings worth a look first
 
-1. **Possible bug.** `W/components/shell/NoOptionsCard.tsx:34` always says "Open the Strings lens". Its link comes from `W/lib/flow/no-options.ts:5`, which sends `no_positions` ("No module fits on this roof") to the **Roof** lens. The label is wrong in that case.
+1. **Possible bug.** `W/components/shell/NoOptionsCard.tsx:34` always says "Open the Strings lens". Its link comes from `W/lib/flow/no-options.ts:5`, which sends `no_positions` ("No module fits on this roof") to the **Roof** lens. The label is wrong in that case. — still so (checked on V2 · 12's branch): `NoOptionsCard` says "Open the Strings lens" whatever `decision.path` is, and `pathOfNoOptions` still sends `no_positions` to the Roof step. A bug, reported, not fixed here. The label also uses "lens", an internal word (§6).
 2. **"Enter by hand" is worded three ways:**
    - "Enter dimensions by hand" (`W/lib/outline/first-step.ts:28`)
    - "Enter the roof by hand" (`W/components/find/Find.tsx:79`)
@@ -412,152 +412,152 @@ Plan view (W/components/find/PlanView.tsx):
 ## Strings lens
 
 **Inverter**
-- "Inverter" (section, card aria): W/components/studio/StringsInspector.tsx:106; W/components/studio/InverterCard.tsx:39
+- "Inverter" (section, card aria): W/components/studio/StringsInspector.tsx:106; W/components/studio/InverterCard.tsx:39 — right
 - Card facts (W/lib/studio/inverter-card.ts:20-33):
-  - "${maker} · ${kW} kW · ${n} MPPT" [!J MPPT]
-  - "${A} A per MPPT, entered"
-  - "Current per MPPT not in the OND" [!J OND]
-  - "${n} input(s)"
+  - "${maker} · ${kW} kW · ${n} MPPT" [!J MPPT] — right (MPPT is the trade's name, §6)
+  - "${A} A per MPPT, entered" — right
+  - "Current per MPPT not in the OND" [!J OND] — done: "Current per MPPT not in the inverter file"
+  - "${n} input(s)" — right (the plural follows the count: "1 input", "5 inputs")
 
 **System voltage** (W/components/studio/SystemVoltage.tsx)
-- "System voltage", options "600 V / 1000 V / 1500 V": :32-36
-- "Sized to the equipment" (aria): :41
-- "Use ${v} V": :64
-- Who (W/lib/studio/voltage-words.ts:85): "Your choice" / "Set for ${country}" / "Set by the app"
+- "System voltage", options "600 V / 1000 V / 1500 V": :32-36 — right
+- "Sized to the equipment" (aria): :41 — right
+- "Use ${v} V": :64 — right
+- Who (W/lib/studio/voltage-words.ts:85): "Your choice" / "Set for ${country}" / "Set by the app" — gone (now set-by.ts's "Yours" / "Set for ${country}" / "Default", V2 · 3)
 - Lines (voltage-words.ts):
-  - "600 V, the limit for homes in ${the United States and Canada / Canada (CE Code, Section 64) / ${country} (NEC 690.7)}. Change it if the site allows more." [!J code refs]: :52-53
-  - "${v}, the usual limit for rooftops ${in ${country} / outside the United States and Canada}. Change it if the site needs another.": :55-56
-  - "No string length fits under ${v}; at ${v2} one does. Raise it only if the site's code allows." [!S]: :71
-  - "${v} is taken for this module: its file gives no limit." / "This ${inverter/module} takes up to ${v}." + " Raise it only if the site's code allows.": :75-76
-  - "Strings sized to ${v}, taken for this module: its file gives no limit." / "Strings sized to ${v}, this ${of}'s limit.": :87
-  - Note title (same without the period) and detail "Its file gives no limit, so ${v} is taken. Your system is set to ${v}. The bill of materials follows the voltage set." [!S]: :91-92
+  - "600 V, the limit for homes in ${the United States and Canada / Canada (CE Code, Section 64) / ${country} (NEC 690.7)}. Change it if the site allows more." [!J code refs]: :52-53 — right (the codes are what the installer checks)
+  - "${v}, the usual limit for rooftops ${in ${country} / outside the United States and Canada}. Change it if the site needs another.": :55-56 — right
+  - "No string length fits under ${v}; at ${v2} one does. Raise it only if the site's code allows." [!S]: :71 — done: "No string length fits at ${v}. One fits at ${v2}. Raise it only if the site's code allows."
+  - "${v} is taken for this module: its file gives no limit." / "This ${inverter/module} takes up to ${v}." + " Raise it only if the site's code allows.": :75-76 — done: "The module file gives no limit, so the app takes ${v}." / "This ${inverter/module} takes up to ${v}." (the second right)
+  - "Strings sized to ${v}, taken for this module: its file gives no limit." / "Strings sized to ${v}, this ${of}'s limit.": :87 — done: "Strings sized to ${v}, the app's value for a module file without a limit." (the second right)
+  - Note title (same without the period) and detail "Its file gives no limit, so ${v} is taken. Your system is set to ${v}. The bill of materials follows the voltage set." [!S]: :91-92 — done: title "Strings sized to ${v}, the app's value for this module"; detail "The module file gives no limit, so the app takes ${v}. Your system voltage is ${v}, and the bill of materials uses it."
 
 **Modules in series** (W/components/studio/SeriesRange.tsx; W/lib/studio/series-bar.ts)
-- "Modules in series": SeriesRange.tsx:29
-- "${low} to ${high} fit" / "None fit": series-bar.ts:24-49
-- Ends "${n} · MPPT minimum" [!J], "${n} · Voc limit" [!J], "${n} · MPPT maximum" [!J]: series-bar.ts:28-34
-- "Sizing the strings for ${v} V": SeriesRange.tsx:55
-- "Fits" (mark): SeriesRange.tsx:60
+- "Modules in series": SeriesRange.tsx:29 — done: "Modules per string" (board 12; the field of your own option and the proof behind Why too: "Modules per string", "29 modules per string fits at 1500 V", "Modules per string at 1500 V", W/lib/studio/fit-proof.ts)
+- "${low} to ${high} fit" / "None fit": series-bar.ts:24-49 — right
+- Ends "${n} · MPPT minimum" [!J], "${n} · Voc limit" [!J], "${n} · MPPT maximum" [!J]: series-bar.ts:28-34 — right (MPPT and Voc are the trade's names, §6; the help defines them)
+- "Sizing the strings for ${v} V": SeriesRange.tsx:55 — right
+- "Fits" (mark): SeriesRange.tsx:60 — right
 - The verdict text comes from the API (see API section).
 
 **Options** (W/components/studio/StringOptions.tsx)
-- "Options", header "series × strings · kWp · DC/AC · MWh" [!J]: :69-71
-- Card: "Option ${L}", "${s} × ${n} · ${kWp} · ${dcac}": W/lib/studio/option-cards.ts:30-31
-- Mark "Over the current of an MPPT, or its limit not known: see the MPPT loading" [!S] [!J]: option-cards.ts:23
-- "Outside the DC/AC target": StringOptions.tsx:211
-- Nothing fits: "Change the system voltage, the inverter or the sizing temperatures": W/lib/studio/strings-view.ts:31
+- "Options", header "series × strings · kWp · DC/AC · MWh" [!J]: :69-71 — gone (the header row; "Options" stays, right)
+- Card: "Option ${L}", "${s} × ${n} · ${kWp} · ${dcac}": W/lib/studio/option-cards.ts:30-31 — right (now "${s} × ${n} · ${kWp} kWp", V2 · 6)
+- Mark "Over the current of an MPPT, or its limit not known: see the MPPT loading" [!S] [!J]: option-cards.ts:23 — done: "MPPT current over its limit, or the limit not known"
+- "Outside the DC/AC target": StringOptions.tsx:211 — right
+- Nothing fits: "Change the system voltage, the inverter or the sizing temperatures": W/lib/studio/strings-view.ts:31 — gone (the step's problem with a button for each remedy, V2 · 5)
 - Line under title (W/components/studio/stage-view.ts:33-59):
-  - "${n} strings of ${n} modules · ${n} inverters, ${n} MPPT each · ${n} positions not used" / "every position used"
-  - "${n} positions ready · no strings yet / no string length fits / too few for a string"
+  - "${n} strings of ${n} modules · ${n} inverters, ${n} MPPT each · ${n} positions not used" / "every position used" — right
+  - "${n} positions ready · no strings yet / no string length fits / too few for a string" — right
 - Custom option (StringOptions.tsx):
-  - "Add your own", "Your own", "series × strings × inverters", "Series", "Strings", "Inverters", "Cancel", "Add" / "Change", "Change", "Remove": :133-192
-  - Field hints "${low} to ${high} fit", "No string of ${n} fits on the roof", "${a} to ${b} of ${n} fit" [?], "1 to ${n}": W/lib/studio/custom-fields.ts:33-38
-  - "${s} × ${n} · ${i} inverter(s)": custom-fields.ts:61
+  - "Add your own", "Your own", "series × strings × inverters", "Series", "Strings", "Inverters", "Cancel", "Add" / "Change", "Change", "Remove": :133-192 — done: "Add your own option", "Your own option" (the heading, and the card of one the run refused), "Modules per string", "Strings", "Inverters", "Cancel", "Add option" / "Change option", "Change", "Remove"; "series × strings × inverters" gone
+  - Field hints "${low} to ${high} fit", "No string of ${n} fits on the roof", "${a} to ${b} of ${n} fit" [?], "1 to ${n}": W/lib/studio/custom-fields.ts:33-38 — done: "Strings of ${n}: ${a} to ${b} fit" (the others right)
+  - "${s} × ${n} · ${i} inverter(s)": custom-fields.ts:61 — right (the plural follows the count)
 
 **Inverter limits and cabling** (W/components/studio/InverterLimits.tsx)
-- "Inverter limits and cabling", "Current per MPPT" [!J], "AC cable per inverter": :48-72
+- "Inverter limits and cabling", "Current per MPPT" [!J], "AC cable per inverter": :48-72 — right (MPPT is the trade's name)
 - Details (W/lib/studio/inverter-fields.ts):
-  - "${A} · from the OND" [!J]
-  - "${A} · IMaxDC ${x} A ÷ ${n} MPPT" [!J IMaxDC]
-  - "not in the OND"
-  - "entered"
-  - "Use the file's" / "Use the file's ${A}"
-  - "${min} to ${max} m"
-  - Row "${A} · ${m}" / "not known · ${m}"
+  - "${A} · from the OND" [!J] — done: "${A} · from the inverter file"
+  - "${A} · IMaxDC ${x} A ÷ ${n} MPPT" [!J IMaxDC] — done: "${A} · max DC current ${x} A ÷ ${n} MPPT"
+  - "not in the OND" — done: "not in the inverter file"
+  - "entered" — right
+  - "Use the file's" / "Use the file's ${A}" — right
+  - "${min} to ${max} m" — right
+  - Row "${A} · ${m}" / "not known · ${m}" — right
   - :29-58
 
 **MPPT loading** (W/components/studio/MpptTable.tsx; W/lib/studio/mppt-table.ts)
-- "MPPT loading" [!J]: MpptTable.tsx:47
-- Columns "MPPT", "Strings", "Current", "Imp" [!J], "Isc" [!J], "kWp": MpptTable.tsx:11-26
-- Caption "Option ${L}: ${n} strings on ${n} MPPT of ${n} inverters, at ${v} V": mppt-table.ts:76
-- "of option ${L}", cells "${A} of ${limit} A", "Limit not known", "Fits", "Over the limit", "MPPT ${n}", "INV-${n}": mppt-table.ts:41-74
-- "Enter the current per MPPT": MpptTable.tsx:56
+- "MPPT loading" [!J]: MpptTable.tsx:47 — right (MPPT is the trade's name; the step's summary row)
+- Columns "MPPT", "Strings", "Current", "Imp" [!J], "Isc" [!J], "kWp": MpptTable.tsx:11-26 — right (a table the trade reads, §6)
+- Caption "Option ${L}: ${n} strings on ${n} MPPT of ${n} inverters, at ${v} V": mppt-table.ts:76 — right
+- "of option ${L}", cells "${A} of ${limit} A", "Limit not known", "Fits", "Over the limit", "MPPT ${n}", "INV-${n}": mppt-table.ts:41-74 — right ("INV-1" is the schedule's and the single-line diagram's tag)
+- "Enter the current per MPPT": MpptTable.tsx:56 — right
 
 **Sizing temperatures** (W/components/studio/SizingTemperatures.tsx; W/lib/studio/sizing-fields.ts)
-- "Sizing temperatures": SizingTemperatures.tsx:54
-- Fields "Lowest ambient", "Highest ambient", "Cell rise" [!J], "Voc coefficient" [!J]: sizing-fields.ts:51-57
+- "Sizing temperatures": SizingTemperatures.tsx:54 — right
+- Fields "Lowest ambient", "Highest ambient", "Cell rise" [!J], "Voc coefficient" [!J]: sizing-fields.ts:51-57 — right (Voc is the trade's name; the cell rise's hint names the roof type it comes from)
 - Details:
-  - "${x} °C from the weather"
-  - "${x} °C by roof type: flat, open rack / flat east-west, open rack / sloped, flush" [!J open rack]
-  - "${x} %/°C, the one-diode model's" [!J]
-  - "entered"
-- Resets: "Use the weather's ${x}", "Use the roof type's", "Use the module's"
-- Row "${min} to ${max} °C": sizing-fields.ts:64
+  - "${x} °C from the weather" — right (now "From the weather · ${x} °C", V2 · 3)
+  - "${x} °C by roof type: flat, open rack / flat east-west, open rack / sloped, flush" [!J open rack] — done: "${x} °C by roof type: Flat, tilted rows / Flat, east-west / Sloped, flush" (the roof types' own names)
+  - "${x} %/°C, the one-diode model's" [!J] — done: "${x} %/°C, computed from the module file"
+  - "entered" — gone (now "Yours · default ${x}", V2 · 3)
+- Resets: "Use the weather's ${x}", "Use the roof type's", "Use the module's" — gone (the hint's Reset, V2 · 3)
+- Row "${min} to ${max} °C": sizing-fields.ts:64 — right
 
 **Strings on the stage** (W/components/studio/StringLegend.tsx; W/lib/scene/string-legend.ts)
-- "Colour the strings by" ("String", "MPPT", "Inverter"); "Strings on the roof" (aria): StringLegend.tsx:15-37, 107
-- "The strings follow the design run" [?]: StringLegend.tsx:97
+- "Colour the strings by" ("String", "MPPT", "Inverter"); "Strings on the roof" (aria): StringLegend.tsx:15-37, 107 — right
+- "The strings follow the design run" [?]: StringLegend.tsx:97 — done: "Wiring the strings" (the loading line beside its ring)
 - Legend:
-  - "Not used": string-legend.ts:13
-  - "Colours: …": string-legend.ts:53
-  - "By string: ${n} colours in turn along the rows": string-legend.ts:60
-  - Prefixes "MPPT ", "INV-", "S${n}" [!J INV]: string-legend.ts:27-28, 55
+  - "Not used": string-legend.ts:13 — right
+  - "Colours: …": string-legend.ts:53 — right
+  - "By string: ${n} colours in turn along the rows": string-legend.ts:60 — done: the count as a figure, "By string: 6 colours in turn along the rows" (it was a word, "six")
+  - Prefixes "MPPT ", "INV-", "S${n}" [!J INV]: string-legend.ts:27-28, 55 — right (the schedule's tags)
 - String callout (W/lib/scene/pick.ts:92-94):
-  - "String ${n} · ${INV}, MPPT ${n}"
-  - "${n} modules"
-  - "${n} modules · Voc cold ${v} V · ${m} m of cable" [!J Voc cold]
+  - "String ${n} · ${INV}, MPPT ${n}" — right
+  - "${n} modules" — right
+  - "${n} modules · Voc cold ${v} V · ${m} m of cable" [!J Voc cold] — right ("Voc cold" is the cable schedule's column, one name for one thing)
 - Screen-reader lines (W/components/studio/stage-view.ts:114-136):
-  - "${n} strings of option ${L}, coloured by …"
-  - "${label} at ${x} m east, ${y} m north"
-  - "Inverter(s) …"
-  - "${n} positions not used" / "Every position used"
+  - "${n} strings of option ${L}, coloured by …" — done: the count of colours as a figure and no semicolons: "${n} strings of option ${L}, coloured by string, 6 colours in turn: Colour 1, 2 strings, S1 and S7. Colour 2, …"
+  - "${label} at ${x} m east, ${y} m north" — right
+  - "Inverter(s) …" — done: "Inverter: INV-1 at …" / "Inverters: INV-1 at … INV-2 at …", joined by full stops, not semicolons
+  - "${n} positions not used" / "Every position used" — right
 
 ## Equipment picker (module and inverter)
 
 Most strings are in W/components/studio/EquipmentPicker.tsx.
 
-- Titles and actions: "Choose a module" / "Use this module" (W/components/studio/ModulePicker.tsx:34); "Choose an inverter" / "Use this inverter" (W/components/studio/InverterPicker.tsx:36)
+- Titles and actions: "Choose a module" / "Use this module" (W/components/studio/ModulePicker.tsx:34); "Choose an inverter" / "Use this inverter" (W/components/studio/InverterPicker.tsx:36) — right
 - Columns:
-  - Module: "Module", "Wp" [!J], "Efficiency %", "Size m", "Bifacial" [!J]: ModulePicker.tsx:38-42
-  - Inverter: "Inverter", "AC kW", "MPPT" [!J], "MPPT V" [!J], "Max DC V": InverterPicker.tsx:40-44
-- Filters: "Power" (note "Wp"); "AC power", "MPPT", "Max DC" (note "V"): ModulePicker.tsx:72-79; InverterPicker.tsx:89-117
-- Mobile order labels: "Model", "Power", "Efficiency", "Bifaciality", "AC power", "MPPT", "Max DC voltage"; "${col}, A to Z / Z to A / low to high / high to low"; "Order" (select): W/lib/equipment/picker.ts:78-130; EquipmentPicker.tsx:279
-- Search: placeholder "Maker or model"; aria "Search the maker or the model"; "Clear the search": W/components/studio/PickerSearch.tsx:23-28
-- Count: "${shown} of ${total} ${things}"; "Clear the filters": EquipmentPicker.tsx:268-276
-- Tags: "In this design", "Preliminary" [?]; mark "Rated under the voltage set": EquipmentPicker.tsx:314-342
-- Row fact: "Up to ${v} V: strings sized under the ${v} V set" [?]: W/lib/equipment/rows.ts:65
-- Sort aria: ", sorted upwards/downwards": EquipmentPicker.tsx:300
-- Actions: "Cancel"; "Choose a PAN / an OND file of your own" [!J PAN/OND]; "Reading": EquipmentPicker.tsx:193-195
-- Loading: "Loading the library"; "Try again": EquipmentPicker.tsx:369, 363
+  - Module: "Module", "Wp" [!J], "Efficiency %", "Size m", "Bifacial" [!J]: ModulePicker.tsx:38-42 — right (a table the trade reads, as the approved picker boards head it)
+  - Inverter: "Inverter", "AC kW", "MPPT" [!J], "MPPT V" [!J], "Max DC V": InverterPicker.tsx:40-44 — right (the same)
+- Filters: "Power" (note "Wp"); "AC power", "MPPT", "Max DC" (note "V"): ModulePicker.tsx:72-79; InverterPicker.tsx:89-117 — right (behind Filter, V2 · 10)
+- Mobile order labels: "Model", "Power", "Efficiency", "Bifaciality", "AC power", "MPPT", "Max DC voltage"; "${col}, A to Z / Z to A / low to high / high to low"; "Order" (select): W/lib/equipment/picker.ts:78-130; EquipmentPicker.tsx:279 — right
+- Search: placeholder "Maker or model"; aria "Search the maker or the model"; "Clear the search": W/components/studio/PickerSearch.tsx:23-28 — right (now "Maker, model or power", V2 · 10)
+- Count: "${shown} of ${total} ${things}"; "Clear the filters": EquipmentPicker.tsx:268-276 — right (with "${n} modules from ${n} makers, or your own module file (PAN)" before a filter)
+- Tags: "In this design", "Preliminary" [?]; mark "Rated under the voltage set": EquipmentPicker.tsx:314-342 — done: mark "Rated under the system voltage" ("In this design" right; "Preliminary" right: the maker's own word for a datasheet not final)
+- Row fact: "Up to ${v} V: strings sized under the ${v} V set" [?]: W/lib/equipment/rows.ts:65 — done: "Up to ${r} V: strings sized to ${r} V, not ${v} V"
+- Sort aria: ", sorted upwards/downwards": EquipmentPicker.tsx:300 — right
+- Actions: "Cancel"; "Choose a PAN / an OND file of your own" [!J PAN/OND]; "Reading": EquipmentPicker.tsx:193-195 — done: "Choose your own module file (PAN)" / "Choose your own inverter file (OND)" ("Cancel" and "Reading" right)
+- Loading: "Loading the library"; "Try again": EquipmentPicker.tsx:369, 363 — right
 - Empty:
-  - "No ${module/inverter} in the app matches "${q}"." / "No ${thing} in the app within these filters.": :380
-  - "The search reads the maker, the model and the file's name. A/An ${PAN/OND} file of your own is taken below." [!S]: :382
-  - "Clear the search" / "Clear the filters": :385
+  - "No ${module/inverter} in the app matches "${q}"." / "No ${thing} in the app within these filters.": :380 — done: "No ${thing} in the library matches "${q}"." / "No ${thing} in the library fits these filters."
+  - "The search reads the maker, the model and the file's name. A/An ${PAN/OND} file of your own is taken below." [!S]: :382 — done: "Or choose your own module file (PAN) below." / "… inverter file (OND) below."
+  - "Clear the search" / "Clear the filters": :385 — right
 - Own file:
-  - "Let go to load the file"; "Or drop a/an ${PAN/OND} file of your own here"; "Choose a file"; "Reading the file ${name}": EquipmentPicker.tsx:434-443
+  - "Let go to load the file"; "Or drop a/an ${PAN/OND} file of your own here"; "Choose a file"; "Reading the file ${name}": EquipmentPicker.tsx:434-443 — done: "Or drop your own module file (PAN) here" / "… inverter file (OND) here" (the others right)
 - Refusals:
-  - "This ${thing} was not loaded" + "${reason}. The ${thing} of before is kept." [?]: EquipmentPicker.tsx:253-255
-  - "The file could not be read (${error}). Choose another.": EquipmentPicker.tsx:77
+  - "This ${thing} was not loaded" + "${reason}. The ${thing} of before is kept." [?]: EquipmentPicker.tsx:253-255 — done: title "${Thing} not changed" ("Module not changed"), then the reason alone: the title says the design keeps its own
+  - "The file could not be read (${error}). Choose another.": EquipmentPicker.tsx:77 — done: "The file could not be read: ${error}. Choose another."
 - Library errors:
-  - "The equipment catalog could not be loaded (HTTP ${status}). Try again." [!J HTTP]: W/lib/equipment/catalog.ts:87
-  - "${file} could not be loaded from the app's library (HTTP ${status}). Try again.": W/lib/equipment/library-file.ts:21
-  - "${name} is over 256 KB, larger than any PAN or OND file. Choose another.": library-file.ts:30
-  - Dev-facing "The equipment catalog is not as expected (${where}). Write it again with `bun equipment:catalog`.": catalog.ts:56
+  - "The equipment catalog could not be loaded (HTTP ${status}). Try again." [!J HTTP]: W/lib/equipment/catalog.ts:87 — done: "The equipment library did not load. Details: HTTP ${status}" (the Try again button under it)
+  - "${file} could not be loaded from the app's library (HTTP ${status}). Try again.": W/lib/equipment/library-file.ts:21 — done: "${file} did not load from the library. Try again. Details: HTTP ${status}"
+  - "${name} is over 256 KB, larger than any PAN or OND file. Choose another.": library-file.ts:30 — done: "${name} is over 256 KB, larger than any module or inverter file. Choose another."
+  - Dev-facing "The equipment catalog is not as expected (${where}). Write it again with `bun equipment:catalog`.": catalog.ts:56 — right (a developer's words: the catalog is written by the build, never by the user)
 
 ## Performance (KPIs, loss chain, weather, charts)
 
 **Header and weather**
-- "Performance" (H1, page title): W/components/performance/PerformanceHeader.tsx:35; W/app/(workspaces)/performance/page.tsx:4
-- Option switch: "Option" / "Stringing option"; "${L} · ${caption}": W/components/performance/OptionSwitch.tsx:15-36
-- Captions from the API: "Recommended", "Your own", "Fills the inverter(s)", "Lower clipping" [!J clipping], "${Below target}, n inverters" (A/rooftop_core/readouts.py:156-165); "A · Recommended" (W/lib/performance/header.ts:14)
+- "Performance" (H1, page title): W/components/performance/PerformanceHeader.tsx:35; W/app/(workspaces)/performance/page.tsx:4 — right
+- Option switch: "Option" / "Stringing option"; "${L} · ${caption}": W/components/performance/OptionSwitch.tsx:15-36 — right ("Option" and "${L} · ${caption}"; "Stringing option" gone)
+- Captions from the API: "Recommended", "Your own", "Fills the inverter(s)", "Lower clipping" [!J clipping], "${Below target}, n inverters" (A/rooftop_core/readouts.py:156-165); "A · Recommended" (W/lib/performance/header.ts:14) — done: the web says the API's "Your own" as "Your own option" and "Lower clipping" as "Less clipping", on the cards and in Performance's Option alike (W/lib/studio/option-cards.ts, `captionWordsOf`); the others right ("Fills the inverter" / "Fills the inverters" follows the count)
 - Run line (W/lib/performance/header.ts):
-  - "${n} modules in series × ${n} strings on ${n} inverter(s)": :38
-  - "${hours} hours of ${PVGIS/NASA POWER/CSV} weather, ${min} to ${max} °C, no horizon / horizon up to ${x}°" [!J horizon]: :42-43
-  - "${n} positions ready": :51
+  - "${n} modules in series × ${n} strings on ${n} inverter(s)": :38 — gone
+  - "${hours} hours of ${PVGIS/NASA POWER/CSV} weather, ${min} to ${max} °C, no horizon / horizon up to ${x}°" [!J horizon]: :42-43 — gone (the Weather assumption's facts now: "${hours} hours · ${min} to ${max} °C · no horizon / horizon up to ${x}°", right)
+  - "${n} positions ready": :51 — gone
 - "Weather" select (W/components/performance/WeatherSelect.tsx; W/lib/flow/weather-source.ts):
-  - Options: "PVGIS TMY" [!J], "NASA POWER 2023" [!J], "CSV file": weather-source.ts:11
-  - Facts: "Typical year · PVGIS horizon", "The year 2023 · no horizon", "Hourly or finer · times read as UTC" [!J UTC]: weather-source.ts:18-20
-  - "Loading ${source} weather", "Reading ${file}": weather-source.ts:35, 39
-  - "The weather was not loaded": WeatherSelect.tsx:19
+  - Options: "PVGIS TMY" [!J], "NASA POWER 2023" [!J], "CSV file": weather-source.ts:11 — gone (now "Typical year", "2023, measured", "Your file", board 12)
+  - Facts: "Typical year · PVGIS horizon", "The year 2023 · no horizon", "Hourly or finer · times read as UTC" [!J UTC]: weather-source.ts:18-20 — gone (now "From PVGIS, with the site's horizon", "From NASA POWER, without a horizon", "A CSV of hourly weather", right)
+  - "Loading ${source} weather", "Reading ${file}": weather-source.ts:35, 39 — right (now "Loading the typical year from PVGIS", "Loading 2023's weather from NASA POWER")
+  - "The weather was not loaded": WeatherSelect.tsx:19 — done: "Weather not loaded"
 
 **KPIs** (W/lib/performance/kpis.ts)
-- Lead "Energy to grid, year 1": :30
-- Exceedance cells "P${level}" / "P${level} · σ ${x} %" [!J P50/P90, σ]: :32; W/lib/format/performance.ts:11
-- Tiles: "Performance ratio", "Specific yield", "Capacity factor, AC" (more "${x} % DC"), "In-plane irradiation" [!J], "Energy over 25 years", "CO₂ avoided": kpis.ts:36-41
+- Lead "Energy to grid, year 1": :30 — gone (now "Energy to the grid in year 1", V2 · 8, right)
+- Exceedance cells "P${level}" / "P${level} · σ ${x} %" [!J P50/P90, σ]: :32; W/lib/format/performance.ts:11 — gone (now "Likely" and "Conservative (P${level})" with "${n} years in ${m} at least", right)
+- Tiles: "Performance ratio", "Specific yield", "Capacity factor, AC" (more "${x} % DC"), "In-plane irradiation" [!J], "Energy over 25 years", "CO₂ avoided": kpis.ts:36-41 — gone (now "System size", "Yield", "Performance ratio (PR)", each with a few words, right)
 
 **Loss chain** (W/components/performance/LossChain.tsx; W/lib/performance/loss-fields.ts)
-- "From sunlight to the grid" [!F mild], legend "Gain", "Loss", "Boxed values are yours to change" [!S]: LossChain.tsx:27-57
-- Step labels from the API (A/rooftop_core/simulation.py:382-409):
+- "From sunlight to the grid" [!F mild], legend "Gain", "Loss", "Boxed values are yours to change" [!S]: LossChain.tsx:27-57 — done: the legend's last "Editable", beside a boxed swatch; "Gain", "Loss" right; "From sunlight to the grid" gone (now "Where the energy goes", board 12); the back press "Eleven steps" done: "11 steps"
+- Step labels from the API (A/rooftop_core/simulation.py:382-409) — right, every one: the 21 steps are the report's words, kept where the trade reads them under "All 21 steps, as the report lists them" (§6); the 11 plain steps lead (W/lib/performance/energy-steps.ts)
   - "Global horizontal irradiation" [!J]
   - "Transposition to plane (${tilt}°)" [!J]
   - "Far shading, horizon"
@@ -579,38 +579,39 @@ Most strings are in W/components/studio/EquipmentPicker.tsx.
   - "AC ohmic" [!J]
   - "Availability"
   - "Energy to grid"
-- Row readout "${value} ${kWh/m²|MWh} · ${±pct} %": W/lib/performance/loss-chain.ts:35-44
-- LID: "default ${x}" / "PAN ${x}" / "PAN gives ${x} %"; "Use the default" / "Use the PAN's": loss-fields.ts:75-76
-- Switch notes: "The module is monofacial: no rear gain." [!J] / "Flush modules lie on the roof: no rear gain.": loss-fields.ts:65-67
+- Row readout "${value} ${kWh/m²|MWh} · ${±pct} %": W/lib/performance/loss-chain.ts:35-44 — right
+- LID: "default ${x}" / "PAN ${x}" / "PAN gives ${x} %"; "Use the default" / "Use the PAN's": loss-fields.ts:75-76 — done: "Module file gives ${x} %", "Use the module file's"; "default ${x}", "PAN ${x}" (inside the field, beside the step "LID (PAN)") and "Use the default" right
+- Switch notes: "The module is monofacial: no rear gain." [!J] / "Flush modules lie on the roof: no rear gain.": loss-fields.ts:65-67 — done: "The module is not bifacial: no rear gain."; the second right
 
 **Assumptions** (W/lib/performance/assumption-fields.ts; component W/components/performance/Assumptions.tsx:19)
-- "Assumptions"
-- "Thermal Uc" (unit "W/m²K") [!J]: :51-52
-- "${x} W/m²K by roof type" / "${x} by roof type"; "Use the roof type's": :53-62
-- "Rear shading and mismatch", "Roof albedo" [!J], "Weather variability", "Model and data", "Exceedance levels" [!J], "Grid CO₂" (t/MWh): :86-91
-- Chip aria "Exceedance level ${n}": Assumptions.tsx:81
+- "Assumptions" — right
+- "Thermal Uc" (unit "W/m²K") [!J]: :51-52 — done: "Heat loss factor (Uc)", unit W/m²K after the number (on the step Temperature, W/lib/performance/loss-fields.ts)
+- "${x} W/m²K by roof type" / "${x} by roof type"; "Use the roof type's": :53-62 — right (now "Roof type gives ${x} W/m²K" and "Use the roof type's")
+- "Rear shading and mismatch", "Roof albedo" [!J], "Weather variability", "Model and data", "Exceedance levels" [!J], "Grid CO₂" (t/MWh): :86-91 — right ("Roof albedo" with "how much light the roof reflects" in its row; "Grid CO₂" under the row "Grid CO₂ per MWh", its unit after the number); "Exceedance levels" gone (now "Likely and conservative levels")
+- Chip aria "Exceedance level ${n}": Assumptions.tsx:81 — gone (now "Level ${n}")
+- The Weather row's line "Choose the weather beside the energy, at the top of the page." (Assumptions.tsx, V2 · 8) — done: "At the top of the page, choose the weather beside the energy." (the place before the action, §4)
 
 **Charts**
-- Chart and Table tabs: "Chart" / "Table": W/components/performance/chart-card.ts:15-16
-- "Energy to grid by month" (unit "MWh"): W/components/performance/MonthlyChart.tsx:20, 94
-- Monthly caption "The energy to grid of every month, and of the year" [!S]: MonthlyChart.tsx:158
-- Monthly cells: "Jan"…"Dec", "Year", "Month", "MWh", "kWh/kWp"; tooltip "${mwh} MWh · ${x} kWh/kWp"; aria "${Mon}: ${mwh} MWh, ${x} kWh/kWp": W/lib/performance/month-bars.ts:9-71
-- "25 years", "Degradation", "Year" (slider aria): W/components/performance/YearsChart.tsx:27, 109, 135
-- Years caption "Every year is in the chart; the table says six of them and the total." [!S] [?]: YearsChart.tsx:174
-- Years cells: "Year ${n}", "Year ${n}: ${x} MWh", "Total, 25 years": W/lib/performance/year-line.ts:20-80
-- "Summary" with caption "The design, summed up by the engine" [!J engine] [?]; columns "Item", "Value": W/components/performance/SummaryTable.tsx:20-22; W/lib/performance/summary.ts:33-34
-- API summary row "Losses": "Clipping ${x} % · LID ${x} % · uncertainty σ ${x} %" [!J]: A/rooftop_core/readouts.py:320-322
+- Chart and Table tabs: "Chart" / "Table": W/components/performance/chart-card.ts:15-16 — right
+- "Energy to grid by month" (unit "MWh"): W/components/performance/MonthlyChart.tsx:20, 94 — gone (now "Energy to the grid each month of year 1", right)
+- Monthly caption "The energy to grid of every month, and of the year" [!S]: MonthlyChart.tsx:158 — done: "Each month of year 1, and the year"
+- Monthly cells: "Jan"…"Dec", "Year", "Month", "MWh", "kWh/kWp"; tooltip "${mwh} MWh · ${x} kWh/kWp"; aria "${Mon}: ${mwh} MWh, ${x} kWh/kWp": W/lib/performance/month-bars.ts:9-71 — done: the heads "Energy, MWh" and "Yield, kWh/kWp" (a unit is never the label, §7); the others right
+- "25 years", "Degradation", "Year" (slider aria): W/components/performance/YearsChart.tsx:27, 109, 135 — gone (now "Energy each year" with "${x} MWh in all · ${x} % less each year"; "Year" right)
+- Years caption "Every year is in the chart; the table says six of them and the total." [!S] [?]: YearsChart.tsx:174 — done: "Years 1, 5, 10, 15, 20 and 25, and the total" (W/lib/performance/year-line.ts, `YEARS_CAPTION`)
+- Years cells: "Year ${n}", "Year ${n}: ${x} MWh", "Total, 25 years": W/lib/performance/year-line.ts:20-80 — done: the head "Energy, MWh"; the cells right
+- "Summary" with caption "The design, summed up by the engine" [!J engine] [?]; columns "Item", "Value": W/components/performance/SummaryTable.tsx:20-22; W/lib/performance/summary.ts:33-34 — done: heading "Summary, as in the report", caption "Summary of the chosen option"; "Item", "Value" right
+- API summary row "Losses": "Clipping ${x} % · LID ${x} % · uncertainty σ ${x} %" [!J]: A/rooftop_core/readouts.py:320-322 — right (the report's row, under "Summary, as in the report"; the API's words are the API's work in #218)
 
 **Weather CSV dialog** (W/lib/performance/weather-csv.ts)
-- "Load weather from a CSV": :9
-- "A year of values, every hour or more often: a time column, global irradiance, and, if you have them, beam, diffuse, air temperature and wind. Rows of less than an hour are averaged into hours. Times are read as UTC." [!S] [!J beam, diffuse, UTC]: :10
-- "Drop the weather file here" / "A CSV of a year's weather, 3 MB at most" / "It is read, and becomes the weather of this design when you use it" [!S]: :11-13
-- "Use this weather" / "Cancel": :15
-- "This file is over 3 MB, more than a year of weather takes, even every 15 minutes. Choose a file of one year.": :25
-- Summary "${n} hours · GHI ${x} kWh/m²" [!J GHI], "beam ${x} · diffuse ${x} kWh/m²", "${min} to ${max} °C": :35-37
-- "The file could not be read (${error}). Choose another.": W/components/performance/WeatherCsvDialog.tsx:28
+- "Load weather from a CSV": :9 — right
+- "A year of values, every hour or more often: a time column, global irradiance, and, if you have them, beam, diffuse, air temperature and wind. Rows of less than an hour are averaged into hours. Times are read as UTC." [!S] [!J beam, diffuse, UTC]: :10 — done: "A year of values, every hour or more often, times in UTC. Columns: the time and the global irradiance, then beam, diffuse, air temperature and wind if you have them. The app averages rows of less than an hour into hours."
+- "Drop the weather file here" / "A CSV of a year's weather, 3 MB at most" / "It is read, and becomes the weather of this design when you use it" [!S]: :11-13 — done: the third "Let go to read the file" (Use this weather says the rest); the first two right
+- "Use this weather" / "Cancel": :15 — right
+- "This file is over 3 MB, more than a year of weather takes, even every 15 minutes. Choose a file of one year.": :25 — done: "The file is over 3 MB. A year of weather is under 3 MB, even every 15 minutes. Choose a file of one year."
+- Summary "${n} hours · GHI ${x} kWh/m²" [!J GHI], "beam ${x} · diffuse ${x} kWh/m²", "${min} to ${max} °C": :35-37 — done: "${n} hours · ${x} kWh/m² on the ground" (as the Weather assumption says it); the other two right
+- "The file could not be read (${error}). Choose another.": W/components/performance/WeatherCsvDialog.tsx:28 — gone (the dialog's problem, from the shared problem-of.ts, V2 · 5)
 
-**States.** Performance and Handover reuse the vitals strings: "Updating energy", "Opening …", "Energy was not updated/computed", "Try again". Decision card: NoOptionsCard (see Shell).
+**States.** Performance and Handover reuse the vitals strings: "Updating energy", "Opening …", "Energy was not updated/computed", "Try again". Decision card: NoOptionsCard (see Shell). — right (now "Updating energy", "Energy not updated", "Energy not computed", the shell's words)
 
 ## Handover (list, previews, downloads, states)
 

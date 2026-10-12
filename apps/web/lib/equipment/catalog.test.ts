@@ -52,7 +52,7 @@ describe("the catalog is fetched once", () => {
       return asked === 1 ? new Response("gone", { status: 404 }) : new Response(JSON.stringify(CATALOG));
     });
 
-    await expect(load()).rejects.toThrow("The equipment catalog could not be loaded (HTTP 404)");
+    await expect(load()).rejects.toThrow("The equipment library did not load. Details: HTTP 404");
     expect(await load()).toEqual(CATALOG);
   });
 });

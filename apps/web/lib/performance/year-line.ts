@@ -85,8 +85,11 @@ export function yearRowsOf(energy: Energy): YearRow[] {
   return [...years, { key: TOTAL_ROW, year: "Total, 25 years", mwh: shown(energy.total_25_years_mwh, 0) }];
 }
 
-/** The year as the name of its row, MWh as a number at the right. */
+/** The years the table holds, as its caption says them: "Years 1, 5, 10, 15, 20 and 25, and the total". */
+export const YEARS_CAPTION = `Years ${LABELLED_YEARS.slice(0, -1).join(", ")} and ${LABELLED_YEARS.at(-1)}, and the total`;
+
+/** The year as the name of its row, the energy as a number at the right, its head the thing and its unit. */
 export const YEAR_COLUMNS: ReadonlyArray<Column<YearRow>> = [
   { key: "year", head: "Year", kind: "name", value: (row) => row.year },
-  { key: "mwh", head: "MWh", kind: "number", value: (row) => row.mwh },
+  { key: "mwh", head: "Energy, MWh", kind: "number", value: (row) => row.mwh },
 ];

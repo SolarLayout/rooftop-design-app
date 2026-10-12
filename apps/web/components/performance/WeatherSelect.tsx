@@ -16,7 +16,7 @@ type Props = {
   className?: string;
 };
 
-export const WEATHER_NOT_LOADED = "The weather was not loaded";
+export const WEATHER_NOT_LOADED = "Weather not loaded";
 
 /**
  * The weather source beside the lead (V2 · 8; plan/phase-08-plan.md, decision 12; components.md, "Select"): Typical year,

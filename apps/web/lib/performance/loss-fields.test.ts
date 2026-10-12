@@ -48,7 +48,7 @@ describe("the fields of the chain (plan/phase-08-plan.md, decision 6; functional
   test("LID entered holds the value; the line under says the PAN's and gives the field back", () => {
     const entered = field(lossControlOf("LID", withLosses({ lid_pct: 1 }), { ...RUN, energy: { lid_pct: 1 } }));
 
-    expect(entered).toMatchObject({ id: "lid_pct", label: "LID", value: 1, detail: "PAN gives 0.2 %", reset: "Use the PAN's" });
+    expect(entered).toMatchObject({ id: "lid_pct", label: "LID", value: 1, detail: "Module file gives 0.2 %", reset: "Use the module file's" });
   });
 
   test("a PAN without a LID: the engine's default, said as such; entered, the default is given back", () => {
@@ -70,7 +70,7 @@ describe("the fields of the chain (plan/phase-08-plan.md, decision 6; functional
       label: "Bifacial rear gain",
       on: true,
       disabled: true,
-      note: "The module is monofacial: no rear gain.",
+      note: "The module is not bifacial: no rear gain.",
     });
   });
 
@@ -79,7 +79,7 @@ describe("the fields of the chain (plan/phase-08-plan.md, decision 6; functional
   test("on a sloped, flush roof the switch cannot be used either, and the row says why", () => {
     const flush = { ...DOCUMENT, roof: { ...DOCUMENT.roof, roof_type: "sloped_flush" as const } };
     expect(lossControlOf("Bifacial rear gain", flush, RUN)).toMatchObject({ disabled: true, note: "Flush modules lie on the roof: no rear gain." });
-    expect(lossControlOf("Bifacial rear gain", flush, { ...RUN, module: MONOFACIAL_MODULE })).toMatchObject({ disabled: true, note: "The module is monofacial: no rear gain." });
+    expect(lossControlOf("Bifacial rear gain", flush, { ...RUN, module: MONOFACIAL_MODULE })).toMatchObject({ disabled: true, note: "The module is not bifacial: no rear gain." });
   });
 
   // V2 · 8: the assumptions keep five rows (D104); Uc and the rear shading stand on their own steps of the chain.
@@ -90,7 +90,7 @@ describe("the fields of the chain (plan/phase-08-plan.md, decision 6; functional
   });
 
   test("Temperature has Uc: empty while the roof type's holds, said inside; entered, the roof type's said and given back", () => {
-    expect(field(lossControlOf("Temperature", DOCUMENT, RUN))).toEqual({ kind: "field", id: "uc", label: "Thermal Uc", unit: "W/m²K", range: { min: 5, max: 60, decimals: 0 }, value: null, detail: "29", reset: null });
+    expect(field(lossControlOf("Temperature", DOCUMENT, RUN))).toEqual({ kind: "field", id: "uc", label: "Heat loss factor (Uc)", unit: "W/m²K", range: { min: 5, max: 60, decimals: 0 }, value: null, detail: "29", reset: null });
     const entered = { ...RUN, sizing: { uc: 25, uc_from: "entered" as const, uc_default: 29 } };
     expect(field(lossControlOf("Temperature", withLosses({ uc: 25 }), entered))).toMatchObject({ value: 25, detail: "Roof type gives 29 W/m²K", reset: "Use the roof type's" });
   });

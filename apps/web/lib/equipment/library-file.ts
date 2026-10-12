@@ -18,7 +18,7 @@ type Fetch = (url: string, init?: RequestInit) => Promise<Response>;
 /** The file of the library as the API's /equipment/module and /equipment/inverter take it. */
 export async function libraryFileOf(kind: Kind, file: string, fetcher: Fetch, signal?: AbortSignal): Promise<EquipmentFile> {
   const response = await fetcher(fileUrlOf(kind, file), { signal });
-  if (!response.ok) throw new Error(`${file} could not be loaded from the app's library (HTTP ${response.status}). Try again.`);
+  if (!response.ok) throw new Error(`${file} did not load from the library. Try again. Details: HTTP ${response.status}`);
   return { name: file, base64: base64Of(new Uint8Array(await response.arrayBuffer())) };
 }
 
@@ -27,6 +27,6 @@ export const MAX_EQUIPMENT_BYTES = 256_000;
 
 /** A file of the user's as the API takes it; one over MAX_EQUIPMENT_BYTES is refused, unread, in the app's words. */
 export async function ownFileOf(file: Pick<File, "name" | "size" | "arrayBuffer">): Promise<EquipmentFile> {
-  if (file.size > MAX_EQUIPMENT_BYTES) throw new Error(`${file.name} is over 256 KB, larger than any PAN or OND file. Choose another.`);
+  if (file.size > MAX_EQUIPMENT_BYTES) throw new Error(`${file.name} is over 256 KB, larger than any module or inverter file. Choose another.`);
   return { name: file.name, base64: base64Of(new Uint8Array(await file.arrayBuffer())) };
 }

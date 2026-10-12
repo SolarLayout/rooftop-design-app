@@ -229,7 +229,7 @@ function CustomFields({ first, design, action, onSave, onCancel }: { first: Cust
           Your own option
         </h3>
       </div>
-      <NumberField label="Modules a string" detail={bounds.series.hint} value={draft[0]} range={bounds.series.range} onCommit={set(0)} initialFocus />
+      <NumberField label="Modules per string" detail={bounds.series.hint} value={draft[0]} range={bounds.series.range} onCommit={set(0)} initialFocus />
       <NumberField label="Strings" detail={bounds.strings.hint} value={draft[1]} range={bounds.strings.range} onCommit={set(1)} />
       <NumberField label="Inverters" detail={bounds.inverters.hint} value={draft[2]} range={bounds.inverters.range} onCommit={set(2)} />
       <p data-testid="custom-verdict" className="flex items-center gap-2 pt-1 type-body-touch desktop:type-body text-text-2">
@@ -275,7 +275,7 @@ export function YourOwn({ document, design, onSave, onRemove }: YourOwnProps) {
         <div data-testid="custom-refused" className="flex items-start gap-3 rounded-row border border-note-line bg-surface-1 p-3">
           <span className="flex size-6.5 shrink-0 items-center justify-center rounded-control bg-control-active type-mono-touch desktop:type-mono font-medium">{refused.letter}</span>
           <span className="flex min-w-0 grow flex-col gap-1">
-            <span className="type-body-touch desktop:type-body font-medium">Your own</span>
+            <span className="type-body-touch desktop:type-body font-medium">Your own option</span>
             <span className="type-body-touch desktop:type-body text-text-2">{refused.numbers}</span>
             <span className="type-body-touch desktop:type-body font-medium text-text">{refused.title}</span>
             <span className="type-body-touch desktop:type-body text-text-2">{refused.detail}</span>

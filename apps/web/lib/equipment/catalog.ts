@@ -84,7 +84,7 @@ export function loaderOf(fetcher: Fetch): () => Promise<Catalog> {
   return () => {
     pending ??= fetcher(CATALOG_URL)
       .then(async (response) => {
-        if (!response.ok) throw new Error(`The equipment catalog could not be loaded (HTTP ${response.status}). Try again.`);
+        if (!response.ok) throw new Error(`The equipment library did not load. Details: HTTP ${response.status}`);
         return catalogFrom(await response.json());
       })
       .catch((error: unknown) => {
