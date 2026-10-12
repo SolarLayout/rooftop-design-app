@@ -131,7 +131,7 @@ export function stringsWordsOf({ option, strings, colouring, positions, selected
   const unused = positions - used;
   const places = option.system.inverters.map(({ label, position: [x, y] }) => `${label} at ${shown(x, 1)} m east, ${shown(y, 1)} m north`);
   const string = selected === null ? undefined : strings.find((one) => one.label === selected);
-  const callout = string ? calloutOfString(string, option.cable_schedule.find((row) => row.string === string.label)) : null;
+  const callout = string ? calloutOfString(string, option.cable_schedule.find((row) => row.string === string.label), { inverters: option.system.inverters.length }) : null;
   return {
     strings: `${head}${turn}: ${parts.join("; ")}`,
     unused: unused > 0 ? `${counted(unused, "position", "positions")} not used` : "Every position used",

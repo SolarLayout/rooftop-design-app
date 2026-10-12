@@ -76,15 +76,8 @@ function Compact({ legend }: { legend: ReturnType<typeof stringLegendOf> }) {
   );
 }
 
-/**
- * The strings' colour switch and legend on the stage (plan/phase-07-plan.md, step 14; components.md, "Strings on the
- * roof"): in the Strings lens, while the run has an option. On desktop a card at the bottom left over the time pill,
- * the switch beside the legend (by string the legend on a line of its own); on tablet a card at the bottom right, the
- * switch over the compact legend; on phone the compact legend alone, the switch being in the sheet. While the run is
- * not of the layout shown, the legend says that the strings follow it, with the ring. One entry per colour (D92); on
- * desktop the card is as wide as its legend and wraps within the stage when that is wider.
- */
-export function StringLegend({ size, className }: { size: Size; className?: string }) {
+/** What the legend says now: its entries, or that the strings follow the design run while the run is not of the layout shown. */
+function useLegendWords() {
   const colouring = useView(stringsShownByOf);
   const option = useResults(chosenOptionOf);
   const positions = useResults(layoutOf)?.layout.modules.length ?? 0;
@@ -97,21 +90,21 @@ export function StringLegend({ size, className }: { size: Size; className?: stri
       The strings follow the design run
     </span>
   );
+  return { legend, follows };
+}
 
-  const card = "rounded-row border border-line bg-surface-1 shadow-float";
-  if (size === "phone") {
-    return <div className={classNames("flex min-h-8 items-center rounded-control border border-line bg-surface-1 px-3 py-1.5 shadow-float", className)}>{legend ? <Compact legend={legend} /> : follows}</div>;
-  }
-  if (size === "tablet") {
-    return (
-      <div role="group" aria-label="Strings on the roof" className={classNames("flex w-96 flex-col gap-2 rounded-card border border-line bg-surface-1 px-1.5 pt-1.5 pb-2.5 shadow-float", className)}>
-        <StringColourSwitch fill />
-        <div className="flex justify-center">{legend ? <Compact legend={legend} /> : follows}</div>
-      </div>
-    );
-  }
+/**
+ * The strings' colour switch and legend (V2 · 6, D92 kept; the board "The Strings step"): a bar at the stage's foot on
+ * tablet and desktop, the switch beside the legend (by string, the note and the entries on a line of their own when they
+ * are many), never over the roof; the stage is laid out above it. On phone it is not here: the sheet's head holds it
+ * (`StringLegendInTheSheet`). Nothing where the run has no option.
+ */
+export function StringLegend({ size, className }: { size: Size; className?: string }) {
+  const words = useLegendWords();
+  if (words === null || size === "phone") return null;
+  const { legend, follows } = words;
   const entries = legend ? (
-    <div role="img" aria-label={legend.label} data-testid="string-legend" className={classNames("flex flex-wrap items-center gap-x-3.5 gap-y-1.5", legend.note && "pl-2.5")}>
+    <div role="img" aria-label={legend.label} data-testid="string-legend" className="flex flex-wrap items-center gap-x-3.5 gap-y-1.5">
       {legend.entries.map((entry) => (
         <Item key={entry.words} entry={entry} />
       ))}
@@ -119,21 +112,24 @@ export function StringLegend({ size, className }: { size: Size; className?: stri
   ) : (
     follows
   );
-  if (legend?.note) {
-    return (
-      <div role="group" aria-label="Strings on the roof" className={classNames("flex w-fit flex-col gap-2 pt-1.5 pr-4 pb-2.5 pl-1.5", card, className)}>
-        <div className="flex items-center gap-3.5 whitespace-nowrap">
-          <StringColourSwitch />
-          <span className="type-body-touch desktop:type-body text-text-2">{legend.note}</span>
-        </div>
-        {entries}
-      </div>
-    );
-  }
   return (
-    <div role="group" aria-label="Strings on the roof" className={classNames("flex min-h-12 w-fit items-center gap-3.5 py-1.5 pr-4 pl-1.5", card, className)}>
+    <div role="group" aria-label="Strings on the roof" data-testid="string-legend-bar" className={classNames("flex min-h-legend flex-wrap items-center gap-x-4 gap-y-2 border-t border-line bg-chrome px-5 py-2.5 desktop:px-6", className)}>
       <StringColourSwitch />
+      {legend?.note ? <span className="type-body-touch desktop:type-body text-text-2">{legend.note}</span> : null}
       {entries}
+    </div>
+  );
+}
+
+/** On phone the switch and the legend are the sheet's head, under the stage, not over the roof (V2 · 6, audit V2-78). */
+export function StringLegendInTheSheet() {
+  const words = useLegendWords();
+  if (words === null) return null;
+  const { legend, follows } = words;
+  return (
+    <div role="group" aria-label="Strings on the roof" className="flex flex-col gap-2.5">
+      <StringColourSwitch fill />
+      <div className="flex justify-center">{legend ? <Compact legend={legend} /> : follows}</div>
     </div>
   );
 }

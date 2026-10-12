@@ -279,6 +279,7 @@ sections. A half step of the utilities (2 px) is for the inside of a control alo
 | `--size-find-panel` | `380px` | Find and outline panel width |
 | `--size-find-stage-inset` | `424px` | Desktop: what floats over the map of Find stays this far from the right: the panel, its margin and a gap |
 | `--size-vitals` | `78px` | Vitals bar height on desktop |
+| `--size-legend` | `56px` | The strings' legend bar at the stage's foot on tablet and desktop (V2 · 6): its least height; it grows when the legend wraps |
 | `--size-tabbar` | `72px` | Bottom tab bar height, on a screen with no home bar |
 | `--size-tabbar-foot` | `10px` | The tab bar's own padding under its tabs, on a screen with no home bar |
 | `--size-tabbar-foot-on-screen` | `max(var(--size-tabbar-foot), var(--safe-bottom))` | The tab bar's foot on the screen: its own padding, or the home bar's zone where that is larger; never both (an installed app on an iPhone) |

@@ -309,14 +309,26 @@ In code: `Sheet`; its stops in `sheet-stops.ts`. It stands at the bottom of the 
 - What is in the sheet scrolls inside it.
 
 ## Option card (stringing options)
-Row 52 high, radius `radius-row`. Letter badge 26, title (Recommended, or the verdict), one mono line
-"series x strings, kWp, DC/AC", energy at the right in `type-mono-touch`, then the status mark. Selected: as the
-selected card. "Add your own" is a dashed quiet button. With no options because the roof holds too few positions, yet
-one string fits on it, the button stands under the engine's words, its fields set to that string
-(the board "UI fixes · Your own when the roof holds too few positions").
+V2 · 6 (D102; the board "The Strings step"). A frame of `radius-row`, the card a row inside it: the letter badge 26,
+why the option is there in `type-body` 500 (Recommended, Fills the inverter, Less clipping, Below target, Your own,
+else "Option" and its letter: the engine's "Lower clipping" is "Less clipping", a miss of the target loses its
+inverters), under it the facts in text-2 ("29 × 22 · 357.28 kWp", " · 2 inverters" when more than one), the energy at
+the right in mono with "MWh" in `type-unit`, then the status mark. The chosen frame has the selected look and a second
+row: the tick and "29 modules a string fits at 1500 V" (an exclamation mark and the length alone where something is
+missed), and "Why" with a chevron, which opens the proof (the series range bar's lengths, "14 at least" and "29 at
+most", then "On the coldest morning, 11.9 °C" and "On the hottest afternoon, 64.3 °C in the cell", each with its
+voltage against its limit) on `well`. The options that miss the DC/AC target fold under a line with the note mark,
+"2 more, below the DC/AC target", which opens them (open already when one is chosen). Under the options "Add your own
+option" is a dashed quiet button, its form "Modules a string", "Strings", "Inverters" with a verdict line before Add
+("Fits · 349.44 kWp · DC/AC ratio 1.27") and "Cancel" and "Add option"; under it "How the options are made", a line that
+opens three numbered lines and one for the options that miss the target. With no options because the roof holds too
+few positions, yet one string fits on it, the button stands under the engine's words, its fields set to that string.
+In code: `OptionCards`, `HowTheOptionsAreMade` (`components/studio/StringOptions.tsx`); `optionCardsOf`, `fitProofOf`,
+`optionsRulesOf`, `customVerdictOf` in `lib/studio`.
 
 ## Series range bar
-Track 8 high in `color-well`; feasible band in `color-ok` at 55 %; chosen length as a 4 px accent marker with a
+V2 · 6: the bar and the two voltages lead nothing; they are behind Why on the chosen option, in plain words. The bar
+itself stays, with its verdict, where no string length fits. Track 8 high in `color-well`; feasible band in `color-ok` at 55 %; chosen length as a 4 px accent marker with a
 halo; labels under the ends in `type-unit` ("14, MPPT minimum", "29, Voc limit"). The verdict follows with a
 tick or a note and the engine's sentence.
 
@@ -422,12 +434,14 @@ or by inverter, in the series colours in their fixed order; the positions the op
 the frames stay. Only while the run is of the layout shown; otherwise the modules are their blue and the legend says
 "The strings follow the design run" with the ring. Leaving the Strings step takes the colours off.
 
-The colour switch is a Segmented control "Colour the strings by": String, MPPT, Inverter. On desktop it stands with
-the legend in a card of 48 (`surface-1`, border `line`, `radius-card-s`, `shadow-float`) at the stage's bottom left,
-12 over the time pill; by string the legend takes a second line under it, after "By string: six colours in turn
-along the rows". On tablet the card is 384 wide at the bottom right, 28 over the stage's bottom, the switch filling
-it, the compact legend under it. On phone the switch is the first thing of the Strings inspector in the sheet, and
-the compact legend stands at the stage's bottom left, 28 over its bottom. The legend has one entry per series colour
+The colour switch is a Segmented control "Colour the strings by": String, MPPT, Inverter. V2 · 6: on tablet and
+desktop it stands with the legend in a bar at the stage's foot, `surface chrome`, a line `line` above it, 56 high or
+more (`--size-legend`; by string the legend takes a second line after "By string: six colours in turn along the rows"),
+and the stage is laid out above it, so that the legend is never over the roof. On phone the switch (filling the width) and
+the compact legend are the head of the sheet. The Strings step opens in the plan view; leaving it gives the 3D view back
+when the step had put the camera there. A string traced or selected says "String S1 · MPPT 1" (with its inverter when the
+option has more than one), "29 modules · 0.0 % shaded" (the mean of its modules' near shading), then its Voc cold and its
+cable. The legend has one entry per series colour
 (D92): by MPPT "MPPT 1" to "MPPT 6", and from the seventh the MPPTs of a colour together ("MPPT 1 · 7"); by inverter
 "INV-1", "INV-2", the same way ("INV-1 · 7"); by string the six colours, each with the strings it marks ("S1 · S7 · S13
 · S19"); past four in a colour the first three, an ellipsis and the last ("S1 · S7 · S13 … S43"), the screen reader's

@@ -135,11 +135,20 @@ describe("the string of a position", () => {
 
 describe("the callout of a string", () => {
   test("its number, its inverter and its MPPT; its modules, its Voc cold and its metres of cable, from the cable schedule", () => {
-    expect(calloutOfString(S12, S12_CABLE)).toEqual({ title: "String 12 · INV-1, MPPT 3", detail: "29 modules · Voc cold 1,480 V · 93 m of cable" });
+    expect(calloutOfString(S12, S12_CABLE)).toEqual({ title: "String S12 · MPPT 3", detail: "29 modules · Voc cold 1,480 V · 93 m of cable" });
+  });
+
+  test("with more than one inverter, the inverter too", () => {
+    expect(calloutOfString(S12, S12_CABLE, { inverters: 2 }).title).toBe("String S12 · INV-1, MPPT 3");
+  });
+
+  test("how much near shading costs its modules, the mean of their positions' losses", () => {
+    const losses = Array.from({ length: 13 }, (_, idx) => (idx === 10 ? 2 : idx === 11 ? 1 : 0));
+    expect(calloutOfString(S12, S12_CABLE, { losses }).detail).toBe("29 modules · 1.0 % shaded · Voc cold 1,480 V · 93 m of cable");
   });
 
   test("without its row of the schedule, the modules it wires alone", () => {
-    expect(calloutOfString(S12, undefined)).toEqual({ title: "String 12 · INV-1, MPPT 3", detail: "3 modules" });
+    expect(calloutOfString(S12, undefined)).toEqual({ title: "String S12 · MPPT 3", detail: "3 modules" });
   });
 
   test("is hung over the module of the string nearest its middle", () => {

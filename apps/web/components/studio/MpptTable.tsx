@@ -1,7 +1,5 @@
 "use client";
 
-import { SectionHeading } from "@/components/shell/help/SectionHeading";
-import { useId } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { Table } from "@/components/ui/Table";
 import type { Column } from "@/components/ui/table-cells";
@@ -39,15 +37,8 @@ type Props = {
  * enter the current per MPPT.
  */
 export function MpptTable({ table, onEnterCurrent }: Props) {
-  const heading = useId();
   return (
-    <section aria-labelledby={heading} data-testid="mppt-table" className="flex flex-col gap-2">
-      <div className="flex items-center gap-3">
-        <SectionHeading id={heading} help="studio.section.mppt-loading">
-          MPPT loading
-        </SectionHeading>
-        <span className="ml-auto type-body-touch desktop:type-body whitespace-nowrap text-text-3">{table.of}</span>
-      </div>
+    <div data-testid="mppt-table" className="flex flex-col gap-2">
       <Table caption={table.caption} columns={COLUMNS} rows={table.rows} keyOf={(row) => row.key} dense cardColumns={2} />
       {table.note ? (
         <div data-testid="mppt-note" className="flex flex-col gap-1.5 rounded-control border border-note-line bg-note-surface px-2.5 py-2 type-body-touch desktop:type-body text-text-2">
@@ -58,6 +49,6 @@ export function MpptTable({ table, onEnterCurrent }: Props) {
           </button>
         </div>
       ) : null}
-    </section>
+    </div>
   );
 }

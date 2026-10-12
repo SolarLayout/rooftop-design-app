@@ -12,7 +12,9 @@ import { inverterFactsOf, inverterShownOf, withInverterRead, type ReplacedInvert
 import { limitsRowOf, limitsSetByOf, withAcCable, withCurrentPerMppt } from "@/lib/studio/inverter-fields";
 import { fileSetByOf, wordOf } from "@/lib/studio/set-by";
 import { sizingFieldsOf, sizingRowOf, sizingSetByOf } from "@/lib/studio/sizing-fields";
-import { mpptTableOf } from "@/lib/studio/mppt-table";
+import { mpptLoadingFactsOf, mpptTableOf } from "@/lib/studio/mppt-table";
+import { fitProofOf } from "@/lib/studio/fit-proof";
+import { seriesBarOf } from "@/lib/studio/series-bar";
 import { optionCardsOf } from "@/lib/studio/option-cards";
 import { stringsViewOf } from "@/lib/studio/strings-view";
 import { withVoltageChosen } from "@/lib/studio/voltage-choice";
@@ -23,12 +25,12 @@ import { InverterLimits } from "./InverterLimits";
 import { MpptTable } from "./MpptTable";
 import { SeriesRange } from "./SeriesRange";
 import { SizingTemperatures } from "./SizingTemperatures";
-import { StringColourSwitch } from "./StringLegend";
+import { StringLegendInTheSheet } from "./StringLegend";
 import { InverterPicker } from "./InverterPicker";
 import { Problem } from "@/components/ui/Problem";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { useNoStringsFit } from "./use-no-strings-fit";
-import { NothingFits, OptionCards, OptionsNote, OptionsWaiting, YourOwn } from "./StringOptions";
+import { HowTheOptionsAreMade, NothingFits, OptionCards, OptionsWaiting, YourOwn } from "./StringOptions";
 import { SummaryRow } from "@/components/shell/SummaryRow";
 import { SystemVoltage } from "./SystemVoltage";
 import { useSectionOpen } from "@/components/shell/use-section-open";
@@ -71,6 +73,8 @@ export function StringsInspector() {
   const inverter = inverterShownOf({ design, designEdit, replaced: replaced?.openedAt === openedAt ? replaced : null });
   // The inverter shown, also one read and not yet run with; the module of the run.
   const ratings = inverter && design ? { inverter: inverter.inverter.vabs_max, module: design.equipment.module.v_max_iec, moduleTaken: !design.equipment.module.v_max_from_file } : null;
+  const proof = view.kind === "sized" && view.range && option && inverter ? fitProofOf({ option, range: view.range, mpptMinimum: inverter.inverter.vmpp_min }) : null;
+  const bar = view.kind === "sized" && view.range ? seriesBarOf(view.range, view.chosen) : null;
   const words =
     view.kind === "sized"
       ? voltageWordsOf({
@@ -130,8 +134,28 @@ export function StringsInspector() {
           Sizing the strings · a few seconds
         </p>
       ) : null}
-      {/* On phone the colour switch of the strings is the sheet's first thing (the board "Studio, Strings lens, phone"). */}
-      {size === "phone" && option ? <StringColourSwitch fill /> : null}
+      {/* On phone the colour switch and the legend of the strings are the sheet's head (the board "The Strings step, phone"). */}
+      {size === "phone" && option ? <div className="pb-group"><StringLegendInTheSheet /></div> : null}
+      {/* The step's matter first (V2 · 6): the options, best first, Add your own in view, the rules behind a link. */}
+      <div className="flex flex-col gap-section pb-group empty:hidden">
+        {isSizing ? <OptionsWaiting /> : null}
+        {view.kind === "sized" && view.noOptions ? <SeriesRange view={view} isUpdating={isUpdating} /> : null}
+        {view.kind === "no-voltage" ? null : (
+          <>
+            <NothingFits view={view} />
+            {view.noOptions?.yourOwn && design ? (
+              <YourOwn document={project} design={design} onSave={(custom) => store.getState().commit((document) => withCustom(document, custom))} onRemove={() => store.getState().commit(withoutCustom)} />
+            ) : null}
+            {view.range && !view.noOptions && design ? (
+              <div data-testid="strings-sized" data-state={isUpdating ? "updating" : "settled"} className={classNames("flex flex-col gap-1.5", isUpdating && "opacity-updating")}>
+                <OptionCards cards={optionCardsOf(design)} proof={proof} bar={bar} onChoose={chooseOption} />
+                <YourOwn document={project} design={design} onSave={(custom) => store.getState().commit((document) => withCustom(document, custom))} onRemove={() => store.getState().commit(withoutCustom)} />
+                <HowTheOptionsAreMade note={design.options_note ?? null} options={design.options} />
+              </div>
+            ) : null}
+          </>
+        )}
+      </div>
       <SummaryRow id="strings.inverter" title="Inverter" help="studio.section.inverter" facts={inverter ? inverterFactsOf(inverter.inverter) : null} setBy={wordOf(fileSetByOf(project.ond_text))}>
         <InverterCard
           inverter={inverter}
@@ -154,31 +178,13 @@ export function StringsInspector() {
       >
         <SystemVoltage voltage={view.kind === "sized" ? view.voltage : null} words={words} onChoose={choose} />
       </SummaryRow>
-      {/* The step's own matter stands open: the series range, the options, the MPPT loading of the one chosen. */}
-      <div className="flex flex-col gap-section py-group empty:hidden">
-        {view.kind === "sized" && !isSizing ? <SeriesRange view={view} isUpdating={isUpdating} /> : null}
-        {isSizing ? <OptionsWaiting /> : null}
-        {view.kind === "no-voltage" ? null : (
-          <>
-            <NothingFits view={view} />
-            {view.noOptions?.yourOwn && design ? (
-              <YourOwn document={project} design={design} onSave={(custom) => store.getState().commit((document) => withCustom(document, custom))} onRemove={() => store.getState().commit(withoutCustom)} />
-            ) : null}
-            {view.range && !view.noOptions && design ? (
-              <div data-testid="strings-sized" data-state={isUpdating ? "updating" : "settled"} className={classNames("flex flex-col gap-1.5", isUpdating && "opacity-updating")}>
-                <OptionCards cards={optionCardsOf(design)} onChoose={chooseOption} />
-                <YourOwn document={project} design={design} onSave={(custom) => store.getState().commit((document) => withCustom(document, custom))} onRemove={() => store.getState().commit(withoutCustom)} />
-                <OptionsNote note={design.options_note ?? null} />
-              </div>
-            ) : null}
-            {view.range && !view.noOptions && design && option ? (
-              <div className={classNames(isUpdating && "opacity-updating")}>
-                <MpptTable table={mpptTableOf(option, view.voltage, design.equipment.max_current_per_mppt)} onEnterCurrent={enterCurrent} />
-              </div>
-            ) : null}
-          </>
-        )}
-      </div>
+      {view.kind === "sized" && view.range && !view.noOptions && design && option ? (
+        <SummaryRow id="strings.mppt" title="MPPT loading" help="studio.section.mppt-loading" facts={mpptLoadingFactsOf(option)} setBy={null}>
+          <div className={classNames(isUpdating && "opacity-updating")}>
+            <MpptTable table={mpptTableOf(option, view.voltage, design.equipment.max_current_per_mppt)} onEnterCurrent={enterCurrent} />
+          </div>
+        </SummaryRow>
+      ) : null}
       {view.kind === "no-voltage" ? null : (
         <>
           <SummaryRow id="strings.sizing" title="Sizing temperatures" facts={sizingRowOf(design)} setBy={sizingBy && wordOf(sizingBy)}>

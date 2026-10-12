@@ -66,4 +66,4 @@ export function withInverterRead(document: Project, read: InverterResponse): Pro
 }
 
 /** The inverter on one line, as the Strings step's summary row says it (V2 · 3): its model and its power. */
-export const inverterFactsOf = (inverter: Pick<Inverter, "model" | "pnom_kw">): string => `${inverter.model} · ${kilowatts(inverter.pnom_kw)}`;
+export const inverterFactsOf = (inverter: Pick<Inverter, "model" | "pnom_kw" | "n_mppt">): string => `${inverter.model} · ${kilowatts(inverter.pnom_kw)} · ${inverter.n_mppt} MPPT`;

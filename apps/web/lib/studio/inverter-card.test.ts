@@ -76,7 +76,7 @@ describe("the edit of a file read (inventory 1.4: a new OND clears the current e
 
 describe("the inverter's facts on one line (V2 · 3)", () => {
   test("the model and its power", () => {
-    expect(inverterFactsOf(WATTPOWER)).toBe("WP-330KTL-H1 · 275 kW");
-    expect(inverterFactsOf({ ...WATTPOWER, pnom_kw: 3.68 })).toBe("WP-330KTL-H1 · 3.68 kW");
+    expect(inverterFactsOf(WATTPOWER)).toBe("WP-330KTL-H1 · 275 kW · 6 MPPT");
+    expect(inverterFactsOf({ ...WATTPOWER, pnom_kw: 3.68 })).toBe("WP-330KTL-H1 · 3.68 kW · 6 MPPT");
   });
 });

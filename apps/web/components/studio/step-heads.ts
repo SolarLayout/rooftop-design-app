@@ -14,6 +14,6 @@ export function stepHeadOf(step: Lens, source: Roof["source"]): StepHead {
     case "array":
       return { title: "Choose the module", line: "The module, how it is mounted, how rows are spaced." };
     case "strings":
-      return { title: "Check the strings", line: "The inverter, the voltage, the option to use." };
+      return { title: "Check the strings", line: "How the modules are wired to the inverter." };
   }
 }
