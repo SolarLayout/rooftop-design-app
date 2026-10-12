@@ -187,7 +187,7 @@ def test_the_note_on_the_options_says_that_the_limit_is_not_known(central):
     assert note.startswith(
         "Target DC/AC 1.10–1.30, warning above 1.40. The OND gives no current limit per MPPT: one string "
         "for each of its 5 inputs at most, 1 per MPPT, so one inverter takes 3 strings. Enter the "
-        "datasheet value of the current per MPPT. The least shaded strings in a row are used first, "
+        "datasheet value of the current per MPPT. The run uses the least shaded strings in a row first, "
         "then those across rows."
     )
     assert "≤ 0.0 A" not in note
@@ -226,7 +226,7 @@ def test_a_module_rated_for_1000_v_limits_the_strings_of_a_1500_v_system():
     assert (run.range.system_v, run.range.limit_v) == (1500.0, 1000.0)
     assert run.range.n_max == 19
     assert readouts.limit_note(run) == (
-        "Limit 1000 V: the lowest of the system, module (1000 V) and inverter (1500 V) ratings."
+        "Limit 1000 V: the lowest of the system's, the module's (1000 V) and the inverter's (1500 V) ratings."
     )
     assert all(option.n_series <= 19 for option in run.options)
 
@@ -238,7 +238,7 @@ def test_an_inverter_rated_for_1000_v_limits_them_as_well():
 
     assert run.range.limit_v == 1000.0 and run.range.n_max == 19
     assert readouts.limit_note(run) == (
-        "Limit 1000 V: the lowest of the system, module (1500 V) and inverter (1000 V) ratings."
+        "Limit 1000 V: the lowest of the system's, the module's (1500 V) and the inverter's (1000 V) ratings."
     )
 
 

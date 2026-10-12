@@ -30,12 +30,12 @@ DEMO_PAGE_1_TABLE = [
     "Structure Fixed tilt 15°, 2P, lower edge 0.5 m",
     "Module INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560 · 560 Wp",
     "Inverter WattPower Systems Pvt.Ltd WP-330KTL-H1 · 275 kW · 6 MPPT",
-    "Stringing 29 in series × 22 strings on 1 inverter(s)",
+    "Stringing 29 in series × 22 strings on 1 inverter",
     "DC capacity 357.28 kWp (638 modules)",
     "AC capacity 275 kW · DC/AC 1.30",
     "Weather PVGIS TMY · GHI 1,822.9 kWh/m² · in-plane 1,998.0 kWh/m²",
     "Energy, year 1 P50 617.8 MWh · P75 600.2 MWh · P90 584.2 MWh",
-    "Specific yield 1,729 kWh/kWp · PR 86.6 % · CUF 25.6 % AC",
+    "Yield 1,729 kWh/kWp · PR 86.6 % · CUF 25.6 % AC",
     "Module area 1,646 m² · 45.7 % of the roof",
     "CO₂ avoided 442.4 t/yr at 0.716 t/MWh",
 ]
@@ -99,7 +99,7 @@ DEMO_PAGE_5 = [
     "DC cable 4 mm² Cu, 1500 V DC, red + black 1,681 m",
     "DC connector pair MC4-compatible, matched to the module 44 pairs",
     "AC cable Inverter to ACDB, sized for 240 A at 800 V AC 30 m",
-    "AC distribution board 1 incomer(s), 1 outgoing 1 pcs",
+    "AC distribution board 1 incomer, 1 outgoing 1 pcs",
 ]
 DEMO_PAGE_6 = [
     "Single-line diagram · 22 strings of 29 × 560 Wp",
@@ -123,7 +123,7 @@ DEMO_PAGES = [
 ]
 # The 40-string design's PDF before the cut: seven pages, the schedule continued on the sixth.
 FORTY_PAGE_1 = [
-    "Stringing 14 in series × 40 strings on 2 inverter(s)",
+    "Stringing 14 in series × 40 strings on 2 inverters",
     "DC capacity 313.60 kWp (560 modules)",
     "Pune demo roof · rooftop PV design",
     "SolarLayout Rooftop · 03 Oct 2026",
@@ -137,7 +137,7 @@ FORTY_PAGE_5_ENDS = [
     "DC cable 4 mm² Cu, 1500 V DC, red + black 1,044 m",
     "DC cable 6 mm² Cu, 1500 V DC, red + black 1,211 m",
     "DC cable 10 mm² Cu, 1500 V DC, red + black 228 m",
-    "AC distribution board 2 incomer(s), 1 outgoing 1 pcs",
+    "AC distribution board 2 incomers, 1 outgoing 1 pcs",
 ]
 FORTY_PAGE_6_ENDS = [
     "String schedule, continued: S29 to S40",

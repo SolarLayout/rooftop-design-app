@@ -66,8 +66,8 @@ def series_range(mm: ModuleModel, inv: Inverter, system_v: float, t_min: float, 
     n_nom = min(max(n_nom, n_min), n_max)
     msg = ""
     if n_min > n_max:
-        msg = (f"No string length fits: at least {n_min} modules are needed for the {inv.vmpp_min:.0f} V "
-               f"MPPT minimum, but at most {n_max} fit under {limit_v:.0f} V.")
+        msg = (f"A string needs at least {n_min} modules for the inverter's {inv.vmpp_min:.0f} V MPPT "
+               f"minimum. At most {n_max} fit under {limit_v:.0f} V.")
     return SeriesRange(system_v, t_min, t_hot, voc_cold, float(vmp_cold), float(vmp_hot), float(vmp_stc),
                        n_min, n_max_voc, n_max_mppt, n_max, n_nom, limit_v, msg)
 

@@ -42,22 +42,21 @@ def test_a_file_that_is_not_a_whole_year_is_refused(hours, said):
         csv_weather.read(_year(EVERY_COLUMN, A_ROW, hours), 18.52, 73.86, "site.csv")
 
     assert str(error.value) == (
-        f"site.csv has {said}, not the 8,760 of a year (8,784 in a leap year). "
-        "The energy of a year needs every hour of it: give a whole year."
+        f"site.csv has {said}. A year has 8,760, a leap year 8,784. Give a whole year."
     )
     assert error.value.field == "weather_csv_text"
 
 
 # The words of the notes, approved by the owner (plan/phase-08-plan.md, decision 14).
 ERBS_NOTE = (
-    "site.csv has no beam and diffuse irradiance. They were worked out from the global irradiance "
-    "(Erbs model), which is less exact than measured values."
+    "site.csv has no beam and diffuse irradiance. The app works them out from the global irradiance, "
+    "less exactly than a measurement (Erbs model)."
 )
 TEMPERATURE_NOTE = (
-    "site.csv has no air temperature. 25 °C was taken for every hour, so the strings are sized for "
-    "25 °C. Enter the site's lowest and highest ambient in the Strings lens."
+    "site.csv has no air temperature. The app takes 25 °C for every hour and sizes the strings for "
+    "25 °C. In the Strings step, enter the site's lowest and highest ambient."
 )
-WIND_NOTE = "site.csv has no wind speed. 1 m/s was taken for every hour."
+WIND_NOTE = "site.csv has no wind speed. The app takes 1 m/s for every hour."
 
 
 def test_a_file_of_time_and_irradiance_alone_has_the_three_notes_in_this_order():
@@ -112,25 +111,24 @@ def test_gaps_in_the_temperature_are_filled_as_the_reader_does():
             "site.csv: no column named any of ghi, g(h), gh, global_horizontal, allsky_sfc_sw_dwn, "
             "irradiance",
         ),
-        ("time,ghi\n", "site.csv has no hours: below its header there is no row."),
+        ("time,ghi\n", "site.csv has a header and no rows of hours."),
         (
             "time,ghi\nyesterday,100\n2023-06-01 01:00,200\nlater,300\n",
-            "site.csv: the time cannot be read in 2 rows, the first of them on line 2 (yesterday). "
+            "site.csv: the app cannot read the time in 2 rows. The first is on line 2: yesterday. "
             "Write it as 2023-06-01 13:00, in UTC.",
         ),
         (
             "time,ghi\n2023-06-01 00:00,100\n2023-06-01 01:00,200\n2023-06-01 00:00,300\n",
-            "site.csv: 1 hour is there more than once, the first of them 2023-06-01 00:00. "
-            "Every hour may be there once.",
+            "site.csv: 1 hour appears more than once. The first is 2023-06-01 00:00. Keep each hour once.",
         ),
         (
             "time,ghi,wind\n2023-06-01 00:00,100,\n2023-06-01 01:00,200,2\n",
-            "site.csv: wind has no value in 1 row, the first of them on line 2. Fill the gaps, or "
+            "site.csv: wind is empty in 1 row. The first is on line 2. Fill the gaps, or "
             "leave the column out.",
         ),
         (
             "time,ghi,temp\n2023-06-01 00:00,100,warm\n2023-06-01 01:00,200,hot\n",
-            "site.csv: temp has no value in 2 rows, the first of them on line 2. Fill the gaps, or "
+            "site.csv: temp is empty in 2 rows. The first is on line 2. Fill the gaps, or "
             "leave the column out.",
         ),
     ],
@@ -190,8 +188,8 @@ def test_a_file_of_rows_under_an_hour_says_so_and_an_hourly_one_does_not():
     hourly = csv_weather.read(_year(EVERY_COLUMN, A_ROW), 18.52, 73.86, "site.csv")
 
     assert quarters.notes[0] == (
-        "site.csv gives the weather every 15 minutes. Each hour is the average of its rows "
-        "(the simulation takes a row as an hour)."
+        "site.csv gives the weather every 15 minutes. The app averages the rows of each hour: "
+        "the run takes one row an hour."
     )
     assert not any("minutes" in note for note in hourly.notes)
 
@@ -224,12 +222,12 @@ def _year_with(columns: str, row: str, changes: dict[int, str]) -> str:
     [
         (
             {2: ",80,40,25,2", 9: "n/a,80,40,25,2"},
-            "site.csv: ghi has no value in 2 rows, the first of them on line 3. "
-            "Fill the gaps: an hour without its irradiance is not an hour of none.",
+            "site.csv: ghi is empty in 2 rows. The first is on line 3. "
+            "Fill the gaps in the irradiance column.",
         ),
         (
             {5: "100,,40,25,2"},
-            "site.csv: dni has no value in 1 row, the first of them on line 6. Fill the gaps, or leave out "
+            "site.csv: dni is empty in 1 row. The first is on line 6. Fill the gaps, or leave out "
             "both beam and diffuse.",
         ),
     ],
@@ -247,7 +245,7 @@ def test_irradiance_below_zero_is_taken_as_zero_and_noted():
         _year_with(EVERY_COLUMN, A_ROW, {1: "-2,0,-1,25,2", 2: "-1,0,0,25,2"}), 18.52, 73.86, "site.csv"
     )
 
-    assert read.notes == ["site.csv has irradiance below zero in 2 rows. It was taken as 0."]
+    assert read.notes == ["site.csv has irradiance below zero in 2 rows. The app takes it as 0."]
     assert (read.weather.data[["ghi", "dhi"]].iloc[:2].to_numpy() == 0).all()
 
 
@@ -255,7 +253,7 @@ def test_gaps_in_the_temperature_are_filled_and_noted():
     read = csv_weather.read(_year_with(EVERY_COLUMN, A_ROW, {3: "100,80,40,,2"}), 18.52, 73.86, "site.csv")
 
     assert read.notes == [
-        "site.csv has no air temperature in 1 row. It was taken from the hours on either side."
+        "site.csv has no air temperature in 1 row. The app takes it from the hours on either side."
     ]
 
 
@@ -267,6 +265,5 @@ def test_a_gap_is_named_by_the_file_s_own_column_and_its_line_comments_and_heade
         csv_weather.read(text, 18.52, 73.86, "site.csv")
 
     assert str(error.value) == (
-        "site.csv: Wind has no value in 1 row, the first of them on line 5. Fill the gaps, or leave the "
-        "column out."
+        "site.csv: Wind is empty in 1 row. The first is on line 5. Fill the gaps, or leave the column out."
     )

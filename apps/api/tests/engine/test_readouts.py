@@ -28,7 +28,7 @@ def option_d(demo_design):
 # ── waiting for the system voltage ───────────────────────────────────────────
 def test_the_words_for_a_missing_system_voltage_are_those_of_the_inventory():
     assert readouts.CHOOSE_VOLTAGE == "Choose a system voltage to size the strings"
-    assert readouts.CHOOSE_VOLTAGE_DETAIL == "600, 1000 or 1500 V. Nothing is sized until you choose."
+    assert readouts.CHOOSE_VOLTAGE_DETAIL == "600, 1000 or 1500 V."
 
 
 # ── the verdict ──────────────────────────────────────────────────────────────
@@ -37,11 +37,11 @@ def test_the_verdict_of_option_a(demo_design, option_a):
 
     assert verdict.ok
     # Vmp is that of the one-diode model (41.36 V), as on the desktop; the PAN file states 41.24 V.
-    assert verdict.title == "29 in series fits: Vmp 1,199 V at STC, inverter nominal 1,080 V"
+    assert verdict.title == "A string of 29 fits: Vmp 1,199 V at STC, inverter nominal 1,080 V"
     hot = 29 * demo_design.range.vmp_hot
     assert verdict.detail == (
-        f"Voc at 11.9 °C is 1,480 V (limit 1500 V); Vmp at 64.3 °C cell is {hot:,.0f} V (MPPT minimum "
-        "500 V). 22 strings on 1 inverter(s), DC/AC 1.30."
+        f"Voc at 11.9 °C is 1,480 V, limit 1500 V. Vmp at a cell temperature of 64.3 °C is {hot:,.0f} V, "
+        "MPPT minimum 500 V. 22 strings on 1 inverter, DC/AC ratio 1.30."
     )
 
 
@@ -50,12 +50,12 @@ def test_the_verdict_of_an_option_below_target_says_so(demo_design, option_d):
 
     assert not verdict.ok
     # #179, item 17: a length that misses only the target does not say "fits" beside the mark.
-    assert verdict.title.startswith("28 in series: Vmp 1,158 V at STC")
-    assert verdict.detail.endswith("28 strings on 2 inverter(s), DC/AC 0.80 (below target).")
+    assert verdict.title.startswith("A string of 28: Vmp 1,158 V at STC")
+    assert verdict.detail.endswith("28 strings on 2 inverters, DC/AC ratio 0.80, below target.")
 
 
 # ── the verdict counts the MPPT loads (decision 18) ──────────────────────────
-NO_LIMIT = "The OND gives no current limit per MPPT: enter the datasheet value."
+NO_LIMIT = "The inverter file (OND) gives no current limit per MPPT. Enter the datasheet's value."
 
 
 def demo_ond_without_imaxdc() -> str:
@@ -90,9 +90,9 @@ def test_an_option_over_the_current_limit_names_its_mppts(overloaded):
 
     assert own.custom and own.n_strings == 37
     assert not verdict.ok
-    assert verdict.title.startswith("20 in series: ")
+    assert verdict.title.startswith("A string of 20: ")
     assert verdict.detail.endswith(
-        "37 strings on 1 inverter(s), DC/AC 1.51 (heavy clipping). "
+        "37 strings on 1 inverter, DC/AC ratio 1.51, heavy clipping. "
         "INV-1 · MPPT 1 carries 95.1 A and MPPT 2 to 6 carry 81.5 A, over the limit of 65.0 A."
     )
 
@@ -105,7 +105,8 @@ def test_an_option_in_target_over_the_current_limit_is_not_ok(demo_design, optio
     assert crowded.ok, "DC/AC in target"
     assert not verdict.ok
     assert verdict.detail.endswith(
-        "22 strings on 1 inverter(s), DC/AC 1.30. INV-1 · MPPT 1 carries 298.8 A, over the limit of 65.0 A."
+        "22 strings on 1 inverter, DC/AC ratio 1.30. "
+        "INV-1 · MPPT 1 carries 298.8 A, over the limit of 65.0 A."
     )
 
 
@@ -143,7 +144,7 @@ def test_without_a_current_limit_every_option_is_not_ok_and_says_so(without_limi
     ]
     assert all(not verdict.ok for verdict in verdicts)
     assert all(verdict.detail.endswith(f". {NO_LIMIT}") for verdict in verdicts)
-    assert verdicts[0].detail.endswith(f"22 strings on 1 inverter(s), DC/AC 1.30. {NO_LIMIT}")
+    assert verdicts[0].detail.endswith(f"22 strings on 1 inverter, DC/AC ratio 1.30. {NO_LIMIT}")
 
 
 def test_the_verdict_when_no_length_fits():
@@ -161,9 +162,9 @@ def test_the_verdict_when_no_length_fits():
 
     assert design.options == []
     assert not verdict.ok
-    assert verdict.title == "No string length fits this inverter"
+    assert verdict.title == "No string length fits at 600 V"
     assert verdict.detail == design.range.message
-    assert verdict.detail.startswith("No string length fits: at least ")
+    assert verdict.detail.startswith("A string needs at least ")
     assert verdict.detail.endswith(" fit under 600 V.")
 
 
@@ -176,7 +177,7 @@ def test_the_captions_of_the_demo_at_1500_v(demo_design):
     assert captions(demo_design) == [
         "Recommended",
         "Fills the inverter",
-        "Lower clipping",
+        "Less clipping",
         "Below target, 2 inverters",
         "Below target, 2 inverters",
     ]
@@ -227,14 +228,14 @@ def test_an_option_in_target_with_no_lower_clipping_has_no_caption(demo_design, 
 # ── notes ────────────────────────────────────────────────────────────────────
 def test_the_limit_note_names_the_three_ratings(demo_design):
     assert readouts.limit_note(demo_design) == (
-        "Limit 1500 V: the lowest of the system, module (1500 V) and inverter (1500 V) ratings."
+        "Limit 1500 V: the lowest of the system's, the module's (1500 V) and the inverter's (1500 V) ratings."
     )
 
 
 def test_the_note_on_the_options(demo_design):
     assert readouts.options_note(demo_design) == (
         "Target DC/AC 1.10–1.30, warning above 1.40. At most 4 strings per MPPT (4 × 13.58 A ≤ 65.0 A), "
-        "so one inverter takes 24 strings. The least shaded strings in a row are used first, "
+        "so one inverter takes 24 strings. The run uses the least shaded strings in a row first, "
         "then those across rows. "
         "! D: DC/AC 0.80, below target; E: DC/AC 0.80, below target."
     )
@@ -243,13 +244,13 @@ def test_the_note_on_the_options(demo_design):
 def test_the_note_on_far_shading(demo_design, pune_weather):
     from dataclasses import replace
 
-    assert readouts.far_shading_note(pune_weather) == "Far shading: PVGIS horizon, highest 2.7°"
+    assert readouts.far_shading_note(pune_weather) == "Horizon from PVGIS, highest 2.7°"
     # PVGIS gives a horizon; without one it did not come this time, and the note says so (#170).
     assert readouts.far_shading_note(replace(pune_weather, horizon=[])) == (
-        "Far shading: not counted, PVGIS sent no horizon for this site"
+        "Horizon not counted: the weather for this site came without one"
     )
     assert readouts.far_shading_note(replace(pune_weather, source="nasa", horizon=[])) == (
-        "Far shading: no horizon profile for this weather source"
+        "Horizon not counted: this weather has none"
     )
 
 
@@ -321,7 +322,7 @@ def test_an_entered_voc_coefficient_gives_the_verdict_its_voc(entered_design):
 
     assert rng.voc_cold == pytest.approx(51.84, abs=0.01)
     assert option.n_series == 28
-    assert verdict.detail.startswith("Voc at 11.9 °C is 1,452 V (limit 1500 V); ")
+    assert verdict.detail.startswith("Voc at 11.9 °C is 1,452 V, limit 1500 V. ")
 
 
 def test_an_entered_voc_coefficient_gives_the_cable_schedule_its_voc(entered_design):
@@ -348,11 +349,11 @@ def test_the_summary_has_the_fourteen_rows_of_the_desktop(demo_design, option_a)
         "Weather",
         "Losses",
         "Energy, year 1",
-        "Specific yield",
+        "Yield",
         "Module area",
         "CO₂ avoided",
     ]
-    assert rows["Stringing"] == "29 in series × 22 strings on 1 inverter(s)"
+    assert rows["Stringing"] == "29 in series × 22 strings on 1 inverter"
     assert rows["DC capacity"] == "357.28 kWp (638 modules)"
     assert rows["Losses"] == "Clipping 3.4 % · LID 0.20 % · uncertainty σ 4.24 %"
     assert rows["Energy, year 1"] == "P50 617.8 MWh · P75 600.2 MWh · P90 584.2 MWh"
@@ -366,7 +367,7 @@ def test_the_read_outs_of_an_option_that_is_not_the_chosen_one(demo_design, opti
     rows = dict(readouts.summary(demo_design, option_d))
     lines = readouts.bill_of_materials(demo_design, option_d)
 
-    assert rows["Stringing"] == "28 in series × 28 strings on 2 inverter(s)"
+    assert rows["Stringing"] == "28 in series × 28 strings on 2 inverters"
     assert rows["DC capacity"] == "439.04 kWp (784 modules)"
     assert (lines[0].qty, lines[1].qty) == (784, 2)
     assert demo_design.p.chosen_option == chosen_before, "the design is only read"

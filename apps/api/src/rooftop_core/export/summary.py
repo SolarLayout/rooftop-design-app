@@ -41,7 +41,11 @@ def summary_rows(d: Design) -> list[tuple[str, str]]:
         ("Structure", structure_label(d)),
         ("Module", f"{m.manufacturer} {m.model} · {m.pnom_w:g} Wp"),
         ("Inverter", f"{inv.manufacturer} {inv.model} · {inv.pnom_kw:g} kW · {inv.n_mppt} MPPT"),
-        ("Stringing", f"{o.n_series} in series × {o.n_strings} strings on {o.n_inverters} inverter(s)"),
+        (
+            "Stringing",
+            f"{o.n_series} in series × {o.n_strings} strings on {o.n_inverters} "
+            f"{'inverter' if o.n_inverters == 1 else 'inverters'}",
+        ),
         ("DC capacity", f"{r.dc_kwp:,.2f} kWp ({o.n_modules} modules)"),
         ("AC capacity", f"{r.ac_kw:,.0f} kW · DC/AC {o.dcac:.2f}"),
         (
@@ -50,7 +54,7 @@ def summary_rows(d: Design) -> list[tuple[str, str]]:
         ),
         ("Energy, year 1", " · ".join(f"P{k} {v:,.1f} MWh" for k, v in r.p_values.items())),
         (
-            "Specific yield",
+            "Yield",
             f"{r.specific_yield:,.0f} kWh/kWp · PR {r.pr * 100:.1f} % · CUF {r.cuf_ac_pct:.1f} % AC",
         ),
         ("Module area", f"{module_area:,.0f} m² · {module_area / p.roof.area_m2 * 100:.1f} % of the roof"),

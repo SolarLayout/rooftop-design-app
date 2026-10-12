@@ -183,8 +183,8 @@ def place(roof: Roof, arr: ArraySpec, module: Module) -> Layout:
             if arr.row_pitch_m and arr.row_pitch_m < D + 0.3:
                 # The rows must not overlap; a pitch entered under that is raised, and says so (#179, item 10).
                 notes.append(
-                    f"Row pitch {arr.row_pitch_m:.2f} m is under a table's depth on plan plus 0.3 m, "
-                    f"so {D + 0.3:.2f} m is used."
+                    f"Row spacing {arr.row_pitch_m:.2f} m is less than a row's depth plus 0.3 m. "
+                    f"The app uses {D + 0.3:.2f} m."
                 )
             pitch = max(pitch, D + 0.3)
             every, aisle_after = roof.walkway_every_modules, "modules"
@@ -289,7 +289,7 @@ def place(roof: Roof, arr: ArraySpec, module: Module) -> Layout:
         n_rows = len({m.row for m in modules})
         if g > 0:
             # A gap of nothing is no news: noted every time, it left an east-west design always with a note (#179, item 11).
-            notes.append(f"Unit gap {g:.2f} m keeps east-west units shade-free in the window.")
+            notes.append(f"Unit gap {g:.2f} m keeps east-west units free of shade in the shade-free hours.")
 
     # The modules were placed in the frame; back to the roof, all of them in one call.
     for m, world in zip(modules, rotate_all([m.poly for m in modules], -rot, origin), strict=True):

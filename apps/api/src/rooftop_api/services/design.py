@@ -28,8 +28,8 @@ logger = logging.getLogger("rooftop_api")
 NO_POSITIONS = schemas.NoOptions(
     code="no_positions",
     title="No module fits on this roof",
-    message="Inside the edge setback and clear of shadows there is no room for a module. "
-    "Check the outline, the setback and the obstacles.",
+    message="The roof has no room for a module inside the edge margin and clear of shade. "
+    "Check the outline, the edge margin and the obstacles.",
 )
 NO_VOLTAGE = schemas.NoOptions(
     code="system_voltage_missing", title=readouts.CHOOSE_VOLTAGE, message=readouts.CHOOSE_VOLTAGE_DETAIL
@@ -127,7 +127,7 @@ def _design(p: Project) -> Design:
 
 
 # PVGIS gives a horizon with its weather; one that came without it is told in plain words (#170).
-NO_HORIZON = "PVGIS sent no horizon for this site, so far shading is not counted."
+NO_HORIZON = "The weather for this site came without a horizon. The run leaves horizon shading out."
 
 
 def _horizon_notes(weather: wx.Weather) -> list[str]:
@@ -242,7 +242,7 @@ def _too_few_positions(design: Design) -> schemas.NoOptions:
     fits = (
         "No string of that length fits."
         if shortest is None
-        else f"A string of {shortest} would fit: add it as your own option."
+        else f"A string of {shortest} fits. Add it as your own option."
     )
     return schemas.NoOptions(
         code="too_few_positions",

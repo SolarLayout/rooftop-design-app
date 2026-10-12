@@ -73,18 +73,18 @@ def test_text_that_is_not_a_pan_is_refused_by_name():
     with pytest.raises(ValueError) as error:
         parse_pan("Hello\nthis is not a module file\n", "notes.PAN")
 
-    assert str(error.value) == "notes.PAN: not a PVsyst module file (PNom, Voc or Isc missing)"
+    assert str(error.value) == "notes.PAN is not a module file (PAN): PNom, Voc or Isc is missing."
 
 
 def test_text_that_is_not_an_ond_is_refused_by_name():
     with pytest.raises(ValueError) as error:
         parse_ond("Hello\nthis is not an inverter file\n", "notes.ond")
 
-    assert str(error.value) == "notes.ond: not a PVsyst inverter file (PNomConv or VMPPMax missing)"
+    assert str(error.value) == "notes.ond is not an inverter file (OND): PNomConv or VMPPMax is missing."
 
 
 def test_an_ond_given_as_a_pan_is_refused():
-    with pytest.raises(ValueError, match="not a PVsyst module file"):
+    with pytest.raises(ValueError, match=r"is not a module file \(PAN\)"):
         parse_pan(OND_PATH.read_text(encoding="utf-8"), "Test-S.ond")
 
 
@@ -92,7 +92,7 @@ def test_a_file_without_a_name_is_still_refused_in_words():
     with pytest.raises(ValueError) as error:
         parse_pan("nothing useful\n")
 
-    assert str(error.value) == "The file: not a PVsyst module file (PNom, Voc or Isc missing)"
+    assert str(error.value) == "The file is not a module file (PAN): PNom, Voc or Isc is missing."
 
 
 def test_the_power_of_an_ond_is_in_kilowatts_whatever_its_display_unit():

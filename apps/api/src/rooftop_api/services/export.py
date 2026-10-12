@@ -225,7 +225,7 @@ def require_option(design: Design, chosen: str) -> None:
         raise ApiError(UNPROCESSABLE, reason.code, f"{reason.title}. {reason.message}", field)
     there = _listed([option.key for option in design.options])
     if not chosen:
-        message = f"Choose a stringing option first. This design has {there}."
+        message = f"Choose an option first. This design has {there}."
         raise ApiError(UNPROCESSABLE, "no_option_chosen", message, "chosen_option")
     if design.chosen.key != chosen:
         message = f"This design has no option {chosen}. It has {there}. Choose one of them."

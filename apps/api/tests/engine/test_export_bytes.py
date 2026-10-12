@@ -211,7 +211,8 @@ def test_the_ac_cable_says_its_voltage_is_taken_when_the_ond_gives_none(demo_des
 
     assert given.spec == "Inverter to ACDB, sized for 240 A at 800 V AC"
     assert taken.spec == (
-        "Inverter to ACDB, sized for 240 A at 415 V AC, taken as the OND gives no output voltage"
+        "Inverter to ACDB, sized for 240 A at 415 V AC by default, "
+        "as the inverter file (OND) gives no output voltage"
     )
 
 
