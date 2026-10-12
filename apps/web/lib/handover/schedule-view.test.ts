@@ -48,7 +48,7 @@ describe("the DC cable schedule as a table (plan/phase-09-plan.md, step 16, deci
     const long = { ...A.cable_schedule[0]!, length_m: 400, cross_section_mm2: 10, size: "10 mm² Cu, 1500 V DC", drop_pct: 1.27 };
     const over = scheduleViewOf({ ...A, cable_schedule: [long] }, null);
     expect(cells(over, over.rows[0]!).slice(6)).toEqual(["400.0", "1.27", "10 mm² Cu, 1500 V DC"]);
-    expect(drop.mark?.(over.rows[0]!)).toEqual({ kind: "note", label: "More than 1 % even at 10 mm²: a shorter run, or the inverter nearer, brings it down" });
+    expect(drop.mark?.(over.rows[0]!)).toEqual({ kind: "note", label: "Over 1 % even at 10 mm². Shorten the run or move the inverter nearer." });
     expect(drop.mark?.(over.rows[1]!)).toBeNull();
   });
 
@@ -69,13 +69,13 @@ describe("sorted", () => {
     expect(view.rows[22]!.key).toBe(view.total);
     expect(view.text.split("\n")[1]!.startsWith("S1\t")).toBe(true);
     expect(view.text.split("\n")[2]!.startsWith("S4\t")).toBe(true);
-    expect(view.caption).toBe("Sorted by DC cable (m), downwards. By string unless sorted");
+    expect(view.caption).toBe("Sorted by DC cable (m), downwards");
   });
 
   test("by string, upwards, S10 comes after S9: the number, not the words", () => {
     const view = scheduleViewOf(A, { key: "string", direction: "ascending" });
     expect(view.rows.slice(0, 22).map((row) => row.key)).toEqual(A.cable_schedule.map((row) => row.string));
-    expect(view.caption).toBe("Sorted by String, upwards. By string unless sorted");
+    expect(view.caption).toBe("Sorted by String, upwards");
   });
 
   test("by MPPT downwards, stable: the strings of MPPT 6 first in the engine's order", () => {

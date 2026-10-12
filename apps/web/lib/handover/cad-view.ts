@@ -23,7 +23,7 @@ type Asked = {
 
 /** The engine's title of the page that draws the plan: the preview shows that page in the paper frame (decision 8). */
 export const PLAN_PAGE_TITLE = "Layout";
-const ABOUT = "R2010 · metres · x east, y north";
+const ABOUT = "AutoCAD 2010 (R2010) · metres · x east, y north";
 
 const count = (value: number) => shown(value, 0);
 const plural = (value: number, one: string, many: string) => `${count(value)} ${value === 1 ? one : many}`;
@@ -38,10 +38,10 @@ export function cadViewOf({ document, design, option }: Asked): CadView {
   return {
     layers: [
       { name: "ROOF", words: "the outline" },
-      { name: "SETBACK", words: "the inner line" },
-      { name: "OBSTACLES", words: `${count(document.roof.obstacles.length)} footprints` },
-      { name: "KEEPOUT", words: "the kept-clear areas" },
-      { name: "MODULES_UNUSED", words: `${count(unusedPositionsOf(design, option))} positions` },
+      { name: "SETBACK", words: "the edge margin" },
+      { name: "OBSTACLES", words: plural(document.roof.obstacles.length, "outline", "outlines") },
+      { name: "KEEPOUT", words: "the areas kept clear" },
+      { name: "MODULES_UNUSED", words: plural(unusedPositionsOf(design, option), "position", "positions") },
       { name: "INVERTERS", words: count(system.n_inverters) },
       { name: "TEXT", words: `the names and heights, ${system.inverters.map((inverter) => inverter.label).join(", ")}` },
       { name: strings, words: oneString ? modules : `${modules} each` },

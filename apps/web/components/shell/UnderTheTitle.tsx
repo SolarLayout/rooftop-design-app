@@ -31,7 +31,7 @@ export function FailedRow({ failed, onTryAgain }: { failed: Failed; onTryAgain: 
       <div className="flex min-w-0 flex-col gap-0.5">
         <div className="flex flex-wrap items-center gap-x-2.5">
           <span className="type-body-touch desktop:type-body font-medium">{failed.title}</span>
-          <span className="type-body-touch desktop:type-body text-text-2">{failed.detail} ·</span>
+          {failed.detail ? <span className="type-body-touch desktop:type-body text-text-2">{failed.detail} ·</span> : null}
           <Button kind="quiet" size="s" onClick={onTryAgain} className="type-body-touch desktop:type-body font-medium">
             {failed.action}
           </Button>

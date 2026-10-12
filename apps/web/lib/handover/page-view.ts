@@ -11,10 +11,11 @@ import { pathOfNoOptions } from "../flow/no-options";
 
 export type { Decision, FailedRow };
 
-export const FILES_NOT_UPDATED = { title: "The files were not updated", detail: "Showing the last result" } as const;
-export const FILES_NOT_MADE = { title: "The files were not made", detail: "There are no files yet" } as const;
-/** The facts of a row that waits once the first run failed (D93): it says why, as a row before options says the API's title. */
-export const NOT_MADE = "Not made: the run failed";
+export const FILES_NOT_UPDATED = { title: "Files not updated", detail: "Showing the last result" } as const;
+/** No detail: the API's words under the title say why (voice §3, §5). */
+export const FILES_NOT_MADE = { title: "Files not made", detail: "" } as const;
+/** The facts of a row that waits once the first run failed (D93): the note over the list or beside it says why. */
+export const NOT_MADE = "Not made";
 
 /** The rows of a first run that failed: each that waits for the design says it was not made; the project file keeps its own. */
 const notMadeOf = (rows: Deliverable[]): Deliverable[] =>

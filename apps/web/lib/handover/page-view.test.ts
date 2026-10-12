@@ -67,7 +67,7 @@ describe("a run that failed", () => {
     expect(view.rows[1]!.facts).toBe("1 inverter, 6 MPPT, 22 strings");
     expect(view.isDimmed).toBe(false);
     expect(view.failed).toEqual({
-      title: "The files were not updated",
+      title: "Files not updated",
       detail: "Showing the last result",
       action: "Try again",
       message: "The server cannot be reached. Check the connection and try again.",
@@ -75,19 +75,19 @@ describe("a run that failed", () => {
     expect(view.decision).toBeNull();
   });
 
-  test("at the first load: there are no files yet", () => {
+  test("at the first load: the files were not made, the API's words say why", () => {
     const view = pageViewOf({ ...AT_REST, design: null, designStatus: "failed", failure: UNREACHABLE });
 
     expect(view.kind).toBe("failed");
     expect(view.rows.filter((row) => row.id !== "project-file").every((row) => row.facts === NOT_MADE && row.waits)).toBe(true);
-    expect(view.failed).toMatchObject({ title: "The files were not made", detail: "There are no files yet", action: "Try again" });
+    expect(view.failed).toMatchObject({ title: "Files not made", detail: "", action: "Try again" });
   });
 
   // D93: the rows of a first run that failed say so, as the rows before options carry the API's title; no row breathes on.
   test("at the first load, every row that waits says it was not made; the project file keeps its own facts", () => {
     const view = pageViewOf({ ...AT_REST, design: null, designStatus: "failed", failure: UNREACHABLE });
 
-    expect(NOT_MADE).toBe("Not made: the run failed");
+    expect(NOT_MADE).toBe("Not made");
     expect(view.rows.filter((row) => row.id !== "project-file").every((row) => row.facts === NOT_MADE && row.about === NOT_MADE && row.waits)).toBe(true);
     expect(view.rows.find((row) => row.id === "project-file")).toMatchObject({ facts: "The whole design, to open again in the app", waits: false });
   });

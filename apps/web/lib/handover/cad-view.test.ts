@@ -17,9 +17,9 @@ describe("the layers of the demo's option A", () => {
 
     expect(named(view.layers)).toEqual([
       ["ROOF", "the outline"],
-      ["SETBACK", "the inner line"],
-      ["OBSTACLES", "6 footprints"],
-      ["KEEPOUT", "the kept-clear areas"],
+      ["SETBACK", "the edge margin"],
+      ["OBSTACLES", "6 outlines"],
+      ["KEEPOUT", "the areas kept clear"],
       ["MODULES_UNUSED", "152 positions"],
       ["INVERTERS", "1"],
       ["TEXT", "the names and heights, INV-1"],
@@ -28,7 +28,7 @@ describe("the layers of the demo's option A", () => {
   });
 
   test("the line under the layers: the format, the unit, the axes", () => {
-    expect(cadViewOf(AT_REST).about).toBe("R2010 · metres · x east, y north");
+    expect(cadViewOf(AT_REST).about).toBe("AutoCAD 2010 (R2010) · metres · x east, y north");
   });
 
   test("the unused positions are the layout's positions less the option's modules; two inverters are counted and named", () => {
@@ -52,7 +52,7 @@ describe("the layers of the demo's option A", () => {
   test("a roof without obstacles still has the layer, empty", () => {
     const bare = { ...DOCUMENT, roof: { ...DOCUMENT.roof, obstacles: [] } };
 
-    expect(named(cadViewOf({ ...AT_REST, document: bare }).layers)[2]).toEqual(["OBSTACLES", "0 footprints"]);
+    expect(named(cadViewOf({ ...AT_REST, document: bare }).layers)[2]).toEqual(["OBSTACLES", "0 outlines"]);
   });
 
   test("a large count has a comma between thousands", () => {

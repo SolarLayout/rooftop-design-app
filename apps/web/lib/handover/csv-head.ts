@@ -13,7 +13,7 @@ export type CsvHead = {
   rows: string[][];
   /** How many rows the file has, the header not counted. */
   count: number;
-  /** "The first 5 of 8,760 hours. Each column is named in the file as under its name here." */
+  /** "First 5 of 8,760 hours". */
   caption: string;
 };
 
@@ -34,7 +34,7 @@ export function csvHeadOf(text: string, rowsShown = SHOWN_ROWS): CsvHead {
   const header = first === undefined ? [] : first.split(",");
   const rows = rest.slice(0, rowsShown).map((line) => line.split(","));
   const count = rest.length;
-  return { header, rows, count, caption: `The first ${shown(rows.length, 0)} of ${shown(count, 0)} hours. Each column is named in the file as under its name here.` };
+  return { header, rows, count, caption: `First ${shown(rows.length, 0)} of ${shown(count, 0)} hours` };
 }
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -51,7 +51,8 @@ export function cellShownOf(column: number, cell: string): string {
   return shown(Math.abs(value) < 0.05 ? 0 : value, 1);
 }
 
-export const HOURS_NOT_MADE = { title: "The hourly data was not made", detail: "There is no preview yet" } as const;
+/** No detail: the API's words under the title say why (voice §3, §5). */
+export const HOURS_NOT_MADE = { title: "Hourly data not made", detail: "" } as const;
 
 /** The CSV did not come: what did not happen, with the API's words and Try again. */
 export const hourlyFailedOf = (message: string): FailedRow => ({ ...HOURS_NOT_MADE, action: TRY_AGAIN, message });

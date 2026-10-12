@@ -125,7 +125,7 @@ export function createDownloadsStore({ api, save = saveBlob, day = todayOfTheBro
 
     function ask(kind: ExportKind): Promise<ExportedFile> {
       const now = open();
-      if (now === null) return Promise.reject(new Error("No design is open: open one before its files are asked for."));
+      if (now === null) return Promise.reject(new Error("No design is open. Open one to download its files."));
       const kept = get().kept[kind];
       if (kept && kept.edit === now.edit) return Promise.resolve(kept.file);
       // Another edit: what was kept is of the document before.

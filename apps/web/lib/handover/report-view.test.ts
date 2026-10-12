@@ -111,7 +111,7 @@ describe("while the pages come, and when they do not", () => {
 
     expect(view.kind).toBe("failed");
     expect(view.pages).toEqual([]);
-    expect(view.failed).toEqual({ title: "The pages were not made", detail: "There is no preview yet", action: "Try again", message: "Choose a stringing option first." });
+    expect(view.failed).toEqual({ title: "Pages not made", detail: "", action: "Try again", message: "Choose a stringing option first." });
   });
 
   test("the pages of the edit before kept and the new ones refused: the pages of before stand, said to be of before, with the API's words", () => {
@@ -120,7 +120,7 @@ describe("while the pages come, and when they do not", () => {
     expect(view.kind).toBe("pages");
     expect(view.isStale).toBe(true);
     expect(view.head).toBe("Page 1 of 6 · Summary");
-    expect(view.failed).toEqual({ title: "The pages were not updated", detail: "Showing the last result", action: "Try again", message: "Choose a stringing option first." });
+    expect(view.failed).toEqual({ title: "Pages not updated", detail: "Showing the last result", action: "Try again", message: "Choose a stringing option first." });
   });
 
   test("a failure of before is not said over the pages of this edit", () => {

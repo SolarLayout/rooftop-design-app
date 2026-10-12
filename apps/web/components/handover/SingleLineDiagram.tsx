@@ -16,7 +16,7 @@ type Props = {
   isDimmed?: boolean;
 };
 
-const CAPTION = "The PNG is drawn on A4, as in the report";
+const CAPTION = "The PNG is A4, as in the report";
 
 // The panel of the board "Handover, previews": the title, the drawing at the width of the panel, the line under it.
 const CARD = "flex flex-col gap-4 rounded-card border border-line bg-surface-1 p-4 shadow-card tablet:p-6";

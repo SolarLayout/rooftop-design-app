@@ -9,7 +9,7 @@ type Props = {
   mono?: boolean;
   /** How wide the names' column is on tablet and desktop: 168, 200 or 220 of the board. */
   nameWidth?: "s" | "m" | "l";
-  /** A line under the rows, in the caption type: "R2010 · metres · x east, y north". */
+  /** A line under the rows, in the caption type: "AutoCAD 2010 (R2010) · metres · x east, y north". */
   caption?: string;
   /** What the rows are, for the tests. */
   testId: string;

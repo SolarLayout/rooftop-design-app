@@ -28,7 +28,7 @@ describe("the demo's CSV", () => {
     expect(head.rows).toEqual(HEAD.slice(1, 6).map((line) => line.split(",")));
     expect(head.rows[0]).toEqual(["2019-01-01 00:00:00+00:00", "0.0", "0.0", "19.96", "0.0", "-0.005"]);
     expect(head.count).toBe(8760);
-    expect(head.caption).toBe("The first 5 of 8,760 hours. Each column is named in the file as under its name here.");
+    expect(head.caption).toBe("First 5 of 8,760 hours");
   });
 
   test("a cell as it is read: the hour by its day and time, a figure with one decimal", () => {
@@ -45,7 +45,7 @@ describe("the demo's CSV", () => {
     expect(head.header).toHaveLength(6);
     expect(head.rows).toEqual([]);
     expect(head.count).toBe(0);
-    expect(head.caption).toBe("The first 0 of 0 hours. Each column is named in the file as under its name here.");
+    expect(head.caption).toBe("First 0 of 0 hours");
   });
 });
 
@@ -54,7 +54,7 @@ describe("files of other shapes", () => {
     const head = csvHeadOf(HEAD.slice(0, 4).join("\n") + "\n");
 
     expect(head.rows).toHaveLength(3);
-    expect(head.caption).toBe("The first 3 of 3 hours. Each column is named in the file as under its name here.");
+    expect(head.caption).toBe("First 3 of 3 hours");
   });
 
   test("without the newline at the end, and with Windows line ends, the same", () => {
@@ -63,15 +63,15 @@ describe("files of other shapes", () => {
   });
 
   test("an empty file: nothing, said as nothing", () => {
-    expect(csvHeadOf("")).toEqual({ header: [], rows: [], count: 0, caption: "The first 0 of 0 hours. Each column is named in the file as under its name here." });
+    expect(csvHeadOf("")).toEqual({ header: [], rows: [], count: 0, caption: "First 0 of 0 hours" });
   });
 });
 
 describe("the CSV that did not come", () => {
   test("what did not happen, the API's words, Try again", () => {
     expect(hourlyFailedOf("Choose a stringing option first.")).toEqual({
-      title: "The hourly data was not made",
-      detail: "There is no preview yet",
+      title: "Hourly data not made",
+      detail: "",
       action: "Try again",
       message: "Choose a stringing option first.",
     });
