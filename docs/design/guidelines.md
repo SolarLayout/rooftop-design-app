@@ -118,8 +118,12 @@
 ## Charts
 
 - Pick the form by the job: a single lead number is a number, not a chart.
-- One axis per chart. Thin marks, 4 px rounded data ends, 2 px gap between neighbours, recessive grid.
-- Direct labels on the extremes only (highest and lowest month). A legend when there are two or more series.
+- One axis per chart, labelled (V2 · 8, audit V2-71): its unit over it, ticks at round steps of 1, 2 or 5 times a power
+  of ten, about four of them, the ends on a tick; from zero for bars, fitted to the values for a line, so that its fall is
+  seen (`lib/performance/chart-axis.ts`). Thin marks, 4 px rounded data ends, 2 px gap between neighbours, recessive grid.
+- Direct labels on the extremes only (the highest and lowest month, the first and last year), beside their marks in the
+  text colour, never on a bar (audit V2-119). A legend when there are two or more series.
+- Chart and Table are a segmented control at the chart's head, at the right of its title.
 - Gain is blue, loss is orange. Categories use the series tokens in their fixed order and keep their colour
   when the selection changes.
 - Hover or tap shows the value; the target is larger than the mark.

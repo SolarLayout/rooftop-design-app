@@ -430,8 +430,6 @@ and the file equal.
 | `STEM_HEIGHT_TOUCH` | `52` | The same on phone and tablet |
 | `TIME_REST` | `150` | Milliseconds the time of the sun must stand still before the engine's shadow outlines are asked for it: a drag of the timeline passes forty quarter hours |
 | `DIM_TOWARD_STAGE` | `55` | Percent that the glass of every other position is mixed toward the stage's colour while a string is traced or selected (decision 13 of plan/phase-07-plan.md) |
-| `CHART_LINE_TOP` | `14` | Pixels between the top of the plot of the 25 years and the highest year, so that the marker and its ring have room |
-| `CHART_LINE_BAND` | `45` | Pixels the line of the 25 years falls from the highest year to the lowest: it is fitted to the run's own extremes, not to zero |
 | `MARKER_RADIUS` | `4` | Pixels: the marker of a point under the pointer is 8 across |
 | `MARKER_RING` | `2` | Pixels of the ring in the surface colour around a marker, so that it stays legible on the line |
 | `SAVE_DEBOUNCE` | `600` | Milliseconds after the last committed edit before the design is written to the device: edits shortly after each other are one write, and "Saving" is seen for the write, not for every keystroke (decision 3 of plan/phase-10-plan.md) |

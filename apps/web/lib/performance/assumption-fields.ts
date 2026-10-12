@@ -1,11 +1,13 @@
-// The assumptions of Performance (plan/phase-08-plan.md, decisions 6, 7 and 8; functional-inventory.md 1.7; the boards
-// "Performance" and "Weather and assumptions"): the thermal Uc, the rear shading and mismatch, the roof's albedo, the two
-// sigmas, the three exceedance levels and the grid CO₂ factor, each a field of the document with the inventory's range.
-// Uc is empty while the roof type's holds and says the run's value; entered, it says the roof type's beside it; the
-// levels are sorted and each kept once. Pure.
+// The fields of Performance's assumptions (plan/phase-08-plan.md, decisions 6, 7 and 8; functional-inventory.md 1.7; V2 · 8,
+// D104): under the rows Roof albedo, Ageing, Uncertainty and Grid CO₂ per MWh, each a field of the document with the
+// inventory's range and who set it; the levels sorted and each kept once. Uc and the rear side's shading stand on their own
+// steps of the chain (loss-fields.ts). Pure.
 import type { Range } from "../../components/ui/number-entry";
-import { shown } from "../../components/ui/number-entry";
-import type { DesignResult, Project } from "../api";
+import type { Project } from "../api";
+import { ROOF_DEFAULTS } from "../studio/defaults";
+import { hintOf, setByOfValue, type SetBy } from "../studio/set-by";
+import { DEGRADATION_RANGE } from "./degradation";
+import { LOSS_DEFAULTS } from "./loss-defaults";
 
 export type AssumptionId = "uc" | "rear_loss_pct" | "albedo" | "weather_sigma_pct" | "model_sigma_pct" | "co2_t_per_mwh";
 
@@ -21,21 +23,21 @@ export const ASSUMPTION_RANGES: Record<AssumptionId, Range & { min: number; max:
 /** An exceedance level, P50 to P99, whole. */
 export const LEVEL_RANGE: Range & { min: number; max: number } = { min: 50, max: 99, decimals: 0 };
 
-/** How many levels the document holds at most: the three fields of the chip. */
+/** How many levels the document holds at most: the three fields. */
 export const LEVELS = 3;
+
+/** The fields under the rows: the assumptions' own and the degradation. */
+export type RowFieldId = Exclude<AssumptionId, "uc" | "rear_loss_pct"> | "degradation_pct";
 
 export type AssumptionField = {
   kind: "field";
-  id: AssumptionId;
+  id: RowFieldId;
   label: string;
   unit: string | null;
   range: Range & { min: number; max: number };
-  /** The document's value; null while the default holds (Uc). */
-  value: number | null;
-  /** The default and where it comes from, said beside an empty field ("29 W/m²K by roof type") or beside an entered Uc ("29 by roof type"); null where there is nothing to say. */
-  detail: string | null;
-  /** The words of the press that gives the field back to its default; null while it holds, or where there is none. */
-  reset: string | null;
+  value: number;
+  /** Who set it, under the field (V2 · 3): "Default", "Yours · default 0.20". */
+  hint: string;
 };
 
 export type LevelsField = {
@@ -48,48 +50,30 @@ export type LevelsField = {
 
 export type Assumption = AssumptionField | LevelsField;
 
-const UC = "Thermal Uc";
-const UC_UNIT = "W/m²K";
-const USE_THE_ROOF_TYPES = "Use the roof type's";
+export type AssumptionFields = { albedo: AssumptionField[]; ageing: AssumptionField[]; uncertainty: Assumption[]; co2: AssumptionField[] };
 
-/** What of the run the fields read: the Uc the engine took, where it came from, and the roof type's. */
-type Sizing = Pick<DesignResult["sizing"], "uc" | "uc_from" | "uc_default">;
+/** The grid's CO₂ the API gives is India's (CEA): said as set for India while it holds. */
+const CO2_COUNTRY = "India";
 
-/** What is said beside Uc: the roof type's with its unit while it holds; entered, the roof type's alone, as the board has it. */
-function ucDetailOf(value: number | null, sizing: Sizing | null): string | null {
-  if (sizing === null) return null;
-  if (value === null) return sizing.uc_from === "roof type" ? `${shown(sizing.uc, 0)} ${UC_UNIT} by roof type` : null;
-  return `${shown(sizing.uc_default, 0)} by roof type`;
+function fieldOf(id: RowFieldId, label: string, unit: string | null, range: AssumptionField["range"], value: number, byDefault: number, by?: SetBy): AssumptionField {
+  const setBy = setByOfValue(value, byDefault, { decimals: range.decimals, ...(unit ? { unit } : {}) });
+  return { kind: "field", id, label, unit, range, value, hint: hintOf(setBy.kind === "default" && by ? by : setBy) };
 }
 
-function ucOf(document: Project, sizing: Sizing | null): AssumptionField {
-  const value = document.losses.uc ?? null;
-  return { kind: "field", id: "uc", label: UC, unit: UC_UNIT, range: ASSUMPTION_RANGES.uc, value, detail: ucDetailOf(value, sizing), reset: value === null ? null : USE_THE_ROOF_TYPES };
-}
-
-const field = (id: Exclude<AssumptionId, "uc" | "albedo">, label: string, unit: string, document: Project): AssumptionField => ({
-  kind: "field",
-  id,
-  label,
-  unit,
-  range: ASSUMPTION_RANGES[id],
-  value: document.losses[id],
-  detail: null,
-  reset: null,
-});
-
-/** The assumptions from the document and the run's sizing (null before a run), in the board's order. */
-export function assumptionsOf(document: Project, sizing: Sizing | null): Assumption[] {
-  const levels = Array.from({ length: LEVELS }, (_, index) => document.losses.p_levels[index] ?? null);
-  return [
-    ucOf(document, sizing),
-    field("rear_loss_pct", "Rear shading and mismatch", "%", document),
-    { kind: "field", id: "albedo", label: "Roof albedo", unit: null, range: ASSUMPTION_RANGES.albedo, value: document.roof.albedo, detail: null, reset: null },
-    field("weather_sigma_pct", "Weather variability", "%", document),
-    field("model_sigma_pct", "Model and data", "%", document),
-    { kind: "levels", label: "Exceedance levels", levels, range: LEVEL_RANGE },
-    field("co2_t_per_mwh", "Grid CO₂", "t/MWh", document),
-  ];
+/** The fields of each row, from the document. */
+export function assumptionFieldsOf(document: Pick<Project, "roof" | "losses">): AssumptionFields {
+  const { losses } = document;
+  const levels = Array.from({ length: LEVELS }, (_, index) => losses.p_levels[index] ?? null);
+  return {
+    albedo: [fieldOf("albedo", "Roof albedo", null, ASSUMPTION_RANGES.albedo, document.roof.albedo, ROOF_DEFAULTS.albedo)],
+    ageing: [fieldOf("degradation_pct", "Less each year", "%", DEGRADATION_RANGE, losses.degradation_pct, LOSS_DEFAULTS.degradation_pct)],
+    uncertainty: [
+      fieldOf("weather_sigma_pct", "Weather variability", "%", ASSUMPTION_RANGES.weather_sigma_pct, losses.weather_sigma_pct, LOSS_DEFAULTS.weather_sigma_pct),
+      fieldOf("model_sigma_pct", "Model and data", "%", ASSUMPTION_RANGES.model_sigma_pct, losses.model_sigma_pct, LOSS_DEFAULTS.model_sigma_pct),
+      { kind: "levels", label: "Exceedance levels", levels, range: LEVEL_RANGE },
+    ],
+    co2: [fieldOf("co2_t_per_mwh", "Grid CO₂", "t/MWh", ASSUMPTION_RANGES.co2_t_per_mwh, losses.co2_t_per_mwh, LOSS_DEFAULTS.co2_t_per_mwh, { kind: "country", country: CO2_COUNTRY })],
+  };
 }
 
 /** The document with an assumption entered, or Uc given back to the roof type's (null); the same document when nothing changes. */

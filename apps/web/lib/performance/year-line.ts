@@ -1,27 +1,24 @@
-// The energy over 25 years (the board "25 years"; plan/phase-08-plan.md, step 12): the 25 years as points of one line,
-// across the width in order and, in height, fitted to the run's own extremes rather than to zero, so that the fall is
-// seen; six years labelled under the line; the year nearest to the pointer with its tooltip; the rows of the Table
+// The energy over 25 years (the boards "25 years" and "V2 · 8 · Performance"; plan/phase-08-plan.md, step 12): the 25
+// years as points of one line, across the width in order and, in height, on an axis fitted to the run's years rather than
+// to zero, so that the fall is seen, the axes labelled (audit V2-71); the first and last years' energy at the line's ends;
+// the line over the chart with the total and the ageing; six years marked under the line; the year nearest to the pointer with its tooltip; the rows of the Table
 // tab, six years and the total. Pure.
 import type { Column } from "../../components/ui/table-cells";
 import { shown } from "../../components/ui/number-entry";
 import type { Energy } from "../api";
+import { axisOf, type Axis } from "./chart-axis";
 
 export type YearPoint = {
   /** 1 to 25. */
   year: number;
   /** Across the width, from 0 at year 1 to 1 at the last year. */
   x: number;
-  /** Down the band of the line, from 0 at the highest year to 1 at the lowest; 0.5 when every year is the same. */
+  /** Down the plot, from 0 at the axis's top to 1 at its foot. */
   y: number;
 };
 
-export type YearLabel = {
-  year: number;
-  /** "Year 1" for the first, the number alone for the others. */
-  label: string;
-  /** The energy of the year, one decimal. */
-  mwh: string;
-};
+/** A year marked under the line, and its place across the width, from 0 to 1. */
+export type YearTick = { year: number; at: number };
 
 export type YearRow = {
   key: string;
@@ -29,7 +26,7 @@ export type YearRow = {
   mwh: string;
 };
 
-/** The years that stand under the line and in the table. */
+/** The years marked under the line and in the table. */
 export const LABELLED_YEARS = [1, 5, 10, 15, 20, 25] as const;
 
 /** The key of the last row of the table: the total over the 25 years. */
@@ -37,19 +34,33 @@ export const TOTAL_ROW = "total";
 
 const energyOfYear = ({ years_mwh }: Energy, year: number) => shown(years_mwh[year - 1] ?? 0, 1);
 
+/** The axis of the years, in MWh, fitted to them. */
+export const yearAxisOf = ({ years_mwh }: Pick<Energy, "years_mwh">): Axis => axisOf(years_mwh, { fromZero: false });
+
 export function yearPointsOf({ years_mwh }: Energy): YearPoint[] {
-  const highest = Math.max(...years_mwh);
-  const lowest = Math.min(...years_mwh);
+  const { low, high } = yearAxisOf({ years_mwh });
   const last = years_mwh.length - 1;
   return years_mwh.map((value, index) => ({
     year: index + 1,
     x: last > 0 ? index / last : 0,
-    y: highest > lowest ? (highest - value) / (highest - lowest) : 0.5,
+    y: (high - value) / (high - low),
   }));
 }
 
-export function yearLabelsOf(energy: Energy): YearLabel[] {
-  return LABELLED_YEARS.map((year) => ({ year, label: year === 1 ? "Year 1" : String(year), mwh: energyOfYear(energy, year) }));
+/** The energy of the first and the last year, beside the line's ends. */
+export function yearEndsOf(energy: Energy): { first: string; last: string } {
+  return { first: energyOfYear(energy, 1), last: energyOfYear(energy, energy.years_mwh.length) };
+}
+
+/** The line over the chart: "14,554 MWh in all · 0.5 % less each year". */
+export function yearsLineOf(energy: Pick<Energy, "total_25_years_mwh">, degradationPct: number): string {
+  const ageing = degradationPct > 0 ? `${shown(degradationPct, 1)} % less each year` : "the same each year";
+  return `${shown(energy.total_25_years_mwh, 0)} MWh in all · ${ageing}`;
+}
+
+export function yearTicksOf({ years_mwh }: Energy): YearTick[] {
+  const last = years_mwh.length - 1;
+  return LABELLED_YEARS.map((year) => ({ year, at: last > 0 ? (year - 1) / last : 0 }));
 }
 
 /** The year nearest to a share of the width, from the pointer or the finger; at the ends, the first or the last year. */

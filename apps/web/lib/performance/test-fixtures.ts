@@ -132,6 +132,8 @@ export const DOCUMENT = {
   roof: { lat: 18.52, lon: 73.86, roof_type: "flat_tilted", albedo: 0.2 },
   system_voltage: 1500,
   chosen_option: "29x22x1",
+  weather_source: "pvgis",
+  weather_csv: "",
   losses: LOSSES,
 } as unknown as Project;
 /** The twelve months of option A, as the engine gave them; the other options carry the same, which the tests do not read. */

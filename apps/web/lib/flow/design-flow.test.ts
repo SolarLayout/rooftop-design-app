@@ -1129,14 +1129,14 @@ describe("weather for a design that has none", () => {
     expect(weathers.map((call) => call.request)).toEqual([{ source: "pvgis", lat: 18.52, lon: 73.86, csv_name: "", csv_text: "" }]);
     expect(designStatusOf(results.getState())).toBe("running");
     expect(designFailureOf(results.getState())).toBeNull();
-    expect(progressOf(results.getState())).toEqual({ type: "progress", step: "Loading PVGIS TMY weather", fraction: 0 });
+    expect(progressOf(results.getState())).toEqual({ type: "progress", step: "Loading the typical year from PVGIS", fraction: 0 });
   });
 
   test("a NASA document asks for NASA's", async () => {
     const { weathers, results } = await refused({ ...WITHOUT_WEATHER, weather_source: "nasa" } as Project);
 
     expect(weathers[0]?.request.source).toBe("nasa");
-    expect(progressOf(results.getState())?.step).toBe("Loading NASA POWER 2023 weather");
+    expect(progressOf(results.getState())?.step).toBe("Loading 2023's weather from NASA POWER");
   });
 
   test("the weather that comes goes into the document of that edit, and the run is asked again with it, under the same edit", async () => {

@@ -1,16 +1,19 @@
-// The energy to grid by month (the board "Energy to grid by month"; plan/phase-08-plan.md, step 12; guidelines.md,
-// "Charts"): twelve bars on one axis from zero, each as tall as its share of the highest month, the highest and the
-// lowest labelled and no other; each month's kWh/kWp from its MWh and the DC capacity; the same figures as the rows of
+// The energy to the grid each month (the board "V2 · 8 · Performance"; plan/phase-08-plan.md, step 12; guidelines.md,
+// "Charts"): twelve bars on a labelled axis from zero (audit V2-71), each as tall as its share of the axis, the highest
+// and the lowest labelled and no other; each month's kWh/kWp from its MWh and the DC capacity; the same figures as the rows of
 // the Table tab, with the year as its last row. Pure.
 import type { Column } from "../../components/ui/table-cells";
 import { shown } from "../../components/ui/number-entry";
 import type { Energy } from "../api";
+import { axisOf, type Axis } from "./chart-axis";
 
 export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] as const;
 
 export type MonthBar = {
   month: string;
-  /** How tall the bar is, as a share of the highest month, from 0 to 1. */
+  /** The month by its initial, under the bar on touch. */
+  initial: string;
+  /** How tall the bar is, as a share of the axis, from 0 to 1. */
   share: number;
   /** The energy, one decimal: "68.4". */
   mwh: string;
@@ -37,7 +40,11 @@ export const YEAR_ROW = "year";
 /** A month's kWh/kWp: its MWh times a thousand over the DC capacity, whole. */
 const specificYieldOf = (mwh: number, dcKwp: number) => shown((mwh * 1000) / dcKwp, 0);
 
+/** The axis of the months, in MWh from zero. */
+export const monthAxisOf = ({ monthly_mwh }: Pick<Energy, "monthly_mwh">): Axis => axisOf(monthly_mwh, { fromZero: true });
+
 export function monthBarsOf({ monthly_mwh, dc_kwp }: Energy): MonthBar[] {
+  const { high } = monthAxisOf({ monthly_mwh });
   const highest = Math.max(...monthly_mwh);
   const lowest = Math.min(...monthly_mwh);
   const labelled = new Set([monthly_mwh.indexOf(highest), monthly_mwh.indexOf(lowest)]);
@@ -48,7 +55,8 @@ export function monthBarsOf({ monthly_mwh, dc_kwp }: Energy): MonthBar[] {
     const kwhPerKwp = specificYieldOf(value, dc_kwp);
     return {
       month,
-      share: highest > 0 ? value / highest : 0,
+      initial: month.charAt(0),
+      share: value / high,
       mwh,
       kwhPerKwp,
       label: labelled.has(index) ? mwh : null,

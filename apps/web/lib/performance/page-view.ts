@@ -2,7 +2,7 @@
 // docs/design/guidelines.md, "States"; the board "Performance, states"). The words of a run on its way, of the first
 // load and of a failure are the vitals' (components/shell/vitals-view.ts), not written a second time. Pure.
 import { ENERGY_NOT_COMPUTED, ENERGY_NOT_UPDATED, openingOf, TRY_AGAIN, UPDATING_ENERGY } from "../../components/shell/vitals-view";
-import type { DesignProgress, DesignResult, Energy, LayoutReadouts } from "../api";
+import type { DesignProgress, DesignResult, Energy } from "../api";
 import type { Failure, Status } from "../stores/results-store";
 import { headerOf, type HeaderView } from "./header";
 import { kpisOf, type KpisView } from "./kpis";
@@ -36,8 +36,6 @@ type Asked = {
   /** The name of the design that is open. */
   name: string | null;
   design: DesignResult | null;
-  /** The read-outs of the layout: of the newer of layout and design. */
-  readouts: LayoutReadouts | null;
   designStatus: Status;
   progress: DesignProgress | null;
   failure: Failure | null;
@@ -45,7 +43,7 @@ type Asked = {
 
 function valuesOf(design: DesignResult): Values | null {
   const option = design.options.find((one) => one.key === design.chosen_option);
-  return option ? { kpis: kpisOf(option), chain: chainViewOf(option, design.equipment.module), summary: summaryRowsOf(option), energy: option.energy } : null;
+  return option ? { kpis: kpisOf(option), chain: chainViewOf(option, design.equipment.module, design.sizing), summary: summaryRowsOf(option), energy: option.energy } : null;
 }
 
 function decisionOf(design: DesignResult): Decision | null {
@@ -54,7 +52,7 @@ function decisionOf(design: DesignResult): Decision | null {
   return { title, message, path: pathOfNoOptions(design.no_options) };
 }
 
-export function pageViewOf({ name, design, readouts, designStatus, progress, failure }: Asked): PageView {
+export function pageViewOf({ name, design, designStatus, progress, failure }: Asked): PageView {
   const isOnItsWay = designStatus === "waiting" || designStatus === "running";
   const step = progress?.step ?? null;
   const share = progress?.fraction ?? 0;
@@ -63,7 +61,7 @@ export function pageViewOf({ name, design, readouts, designStatus, progress, fai
     const { title, detail } = design ? ENERGY_NOT_UPDATED : ENERGY_NOT_COMPUTED;
     return {
       kind: "failed",
-      header: design ? headerOf(design, readouts) : null,
+      header: design ? headerOf(design) : null,
       values: design ? valuesOf(design) : null,
       decision: design ? decisionOf(design) : null,
       failed: { title, detail, action: TRY_AGAIN, message: failure?.message ?? "" },
@@ -72,7 +70,7 @@ export function pageViewOf({ name, design, readouts, designStatus, progress, fai
   // Before the first answer, and before the design itself is there, nothing has failed and nothing is shown yet.
   if (design === null) return { kind: "loading", header: null, run: { title: openingOf(name), step, share } };
 
-  const header = headerOf(design, readouts);
+  const header = headerOf(design);
   const values = valuesOf(design);
   const run = isOnItsWay ? { title: UPDATING_ENERGY, step, share } : null;
   if (values) return { kind: "design", header, values, isDimmed: isOnItsWay, run };

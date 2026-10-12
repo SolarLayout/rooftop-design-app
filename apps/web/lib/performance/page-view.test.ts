@@ -15,7 +15,7 @@ describe("the design (plan/phase-08-plan.md, decision 15)", () => {
 
     expect(view.kind).toBe("design");
     if (view.kind !== "design") return;
-    expect(view.header.runLine.startsWith("29 modules in series × 22 strings")).toBe(true);
+    expect(view.header.chosen).toBe("29x22x1");
     expect(view.values.kpis.lead.quantity).toEqual({ number: "617.8", unit: "MWh" });
     expect(view.values.summary).toHaveLength(14);
     expect(view.values.chain.rows).toHaveLength(21);
@@ -59,14 +59,14 @@ describe("the first load", () => {
   });
 
   test("before the design itself is there", () => {
-    const view = pageViewOf({ name: null, design: null, readouts: null, designStatus: "idle", progress: null, failure: null });
+    const view = pageViewOf({ name: null, design: null, designStatus: "idle", progress: null, failure: null });
 
     expect(view).toEqual({ kind: "loading", header: null, run: { title: "Opening the design", step: null, share: 0 } });
   });
 });
 
 describe("before options", () => {
-  test("the API's title and message, word for word, leading to the Strings lens; the header counts the positions; nothing of energy", () => {
+  test("the API's title and message, word for word, leading to the Strings lens; no options to choose; nothing of energy", () => {
     const view = pageViewOf({ ...AT_REST, design: BEFORE_A_VOLTAGE });
 
     expect(view.kind).toBe("decision");
@@ -76,7 +76,7 @@ describe("before options", () => {
       message: "600, 1000 or 1500 V. Nothing is sized until you choose.",
       path: "/studio/strings",
     });
-    expect(view.header.runLine.startsWith("790 positions ready")).toBe(true);
+    expect(view.header.items).toEqual([]);
     expect(view.header.items).toEqual([]);
     expect(view.run).toBeNull();
     expect(JSON.stringify(view)).not.toContain("MWh");
@@ -107,7 +107,7 @@ describe("the run failed", () => {
     if (view.kind !== "failed") return;
     expect(view.values?.kpis.lead.quantity.number).toBe("617.8");
     expect(view.values?.summary).toHaveLength(14);
-    expect(view.header?.runLine.startsWith("29 modules")).toBe(true);
+    expect(view.header?.chosen).toBe("29x22x1");
     expect(view.decision).toBeNull();
     expect(view.failed).toEqual({
       title: "Energy not updated",

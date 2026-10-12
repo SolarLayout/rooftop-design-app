@@ -7,17 +7,17 @@ import type { Project, Weather, WeatherRequest } from "../api";
 
 export type WeatherSource = Project["weather_source"];
 
-/** The sources as the select names them; the API's labels for PVGIS and NASA (decision 19: NASA stays the year 2023). */
-export const WEATHER_LABELS: Record<WeatherSource, string> = { pvgis: "PVGIS TMY", nasa: "NASA POWER 2023", csv: "CSV file" };
+/** The sources as the select names them, in plain words (V2 · 8, audit V2-97; decision 19: NASA stays the year 2023). */
+export const WEATHER_LABELS: Record<WeatherSource, string> = { pvgis: "Typical year", nasa: "2023, measured", csv: "Your file" };
 
 /** A source that is downloaded for the roof's place; a CSV is read from its text. */
 export type DownloadedSource = Exclude<WeatherSource, "csv">;
 
-/** The choices of the select, each with its fact: the year it is and whether it brings a horizon (the board "Weather and assumptions"). */
+/** The choices of the select, each with where it comes from. */
 export const WEATHER_ITEMS: ReadonlyArray<SelectOption<WeatherSource>> = [
-  { value: "pvgis", label: WEATHER_LABELS.pvgis, fact: "Typical year · PVGIS horizon" },
-  { value: "nasa", label: WEATHER_LABELS.nasa, fact: "The year 2023 · no horizon" },
-  { value: "csv", label: WEATHER_LABELS.csv, fact: "Hourly or finer · times read as UTC" },
+  { value: "pvgis", label: WEATHER_LABELS.pvgis, fact: "From PVGIS, with the site's horizon" },
+  { value: "nasa", label: WEATHER_LABELS.nasa, fact: "From NASA POWER, without a horizon" },
+  { value: "csv", label: WEATHER_LABELS.csv, fact: "A CSV of hourly weather" },
 ];
 
 /** The words of the trigger: the document's source by its name; a CSV document names its file. */
@@ -31,8 +31,10 @@ export function weatherRequestOf(document: Project): WeatherRequest {
   return { source: document.weather_source, lat: document.roof.lat, lon: document.roof.lon, csv_name: document.weather_csv, csv_text: document.weather_csv_text };
 }
 
-/** The words of a load on its way, under the title and in the vitals' place: "Loading NASA POWER 2023 weather". */
-export const loadingWordsOf = (source: WeatherSource): string => `Loading ${WEATHER_LABELS[source]} weather`;
+const LOADING: Record<DownloadedSource, string> = { pvgis: "Loading the typical year from PVGIS", nasa: "Loading 2023's weather from NASA POWER" };
+
+/** The words of a load on its way, under the title and in the vitals' place: "Loading 2023's weather from NASA POWER". */
+export const loadingWordsOf = (source: DownloadedSource): string => LOADING[source];
 
 /** The step under the title while the weather of a design without any is loaded (decision 11). */
 export function stepOfLoading(document: Project): string {

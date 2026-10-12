@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Energy } from "../api";
-import { nearestYear, TOTAL_ROW, YEAR_COLUMNS, yearLabelsOf, yearPointsOf, yearRowsOf, yearSaidOf, yearTooltipOf } from "./year-line";
+import { nearestYear, TOTAL_ROW, YEAR_COLUMNS, yearAxisOf, yearEndsOf, yearPointsOf, yearRowsOf, yearSaidOf, yearsLineOf, yearTicksOf, yearTooltipOf } from "./year-line";
 import { A, DEGRADATION_0_7 } from "./test-fixtures";
 
 const energy = A.energy;
@@ -16,12 +16,23 @@ describe("the line of the 25 years (plan/phase-08-plan.md, step 12; the board \"
     expect(points[24]!.x).toBe(1);
   });
 
-  test("the line is fitted to the run's own extremes, not to zero: the highest year at the top, the lowest at the bottom", () => {
+  test("the line on its axis, fitted to the run's years, not to zero: 540 to 620 MWh by 20 (V2 · 8: the axes labelled)", () => {
     const points = yearPointsOf(energy);
 
-    expect(points[0]!.y).toBe(0);
-    expect(points[24]!.y).toBe(1);
-    expect(points[12]!.y).toBeCloseTo((617.8405373922709 - 581.7727410447965) / (617.8405373922709 - 547.8104814088715), 6);
+    expect(yearAxisOf(energy)).toEqual({ low: 540, high: 620, ticks: [540, 560, 580, 600, 620] });
+    expect(points[0]!.y).toBeCloseTo((620 - 617.8405373922709) / 80, 6);
+    expect(points[24]!.y).toBeCloseTo((620 - 547.8104814088715) / 80, 6);
+    expect(points[12]!.y).toBeCloseTo((620 - 581.7727410447965) / 80, 6);
+  });
+
+  test("the first and the last year's energy stand beside the line's ends", () => {
+    expect(yearEndsOf(energy)).toEqual({ first: "617.8", last: "547.8" });
+  });
+
+  test("the line over the chart: the total, and the ageing in plain words", () => {
+    expect(yearsLineOf(energy, 0.5)).toBe("14,554 MWh in all · 0.5 % less each year");
+    expect(yearsLineOf(DEGRADATION_0_7.energy, 0.7)).toBe("14,216 MWh in all · 0.7 % less each year");
+    expect(yearsLineOf(energy, 0)).toBe("14,554 MWh in all · the same each year");
   });
 
   test("with no degradation every year is the same: the line lies in the middle", () => {
@@ -30,22 +41,19 @@ describe("the line of the 25 years (plan/phase-08-plan.md, step 12; the board \"
     expect(yearPointsOf(flat).every((point) => point.y === 0.5)).toBe(true);
   });
 
-  test("the six labelled years, year 1 by its name, with their energy", () => {
-    expect(yearLabelsOf(energy)).toEqual([
-      { year: 1, label: "Year 1", mwh: "617.8" },
-      { year: 5, label: "5", mwh: "605.6" },
-      { year: 10, label: "10", mwh: "590.6" },
-      { year: 15, label: "15", mwh: "576.0" },
-      { year: 20, label: "20", mwh: "561.7" },
-      { year: 25, label: "25", mwh: "547.8" },
+  test("the years marked under the line, at their places across the width", () => {
+    expect(yearTicksOf(energy)).toEqual([
+      { year: 1, at: 0 },
+      { year: 5, at: 4 / 24 },
+      { year: 10, at: 9 / 24 },
+      { year: 15, at: 14 / 24 },
+      { year: 20, at: 19 / 24 },
+      { year: 25, at: 1 },
     ]);
   });
 
-  test("a degradation of 0.70 entered: year 1 unchanged, the rest lower", () => {
-    const labels = yearLabelsOf(DEGRADATION_0_7.energy);
-
-    expect(labels[0]!.mwh).toBe("617.8");
-    expect(labels[5]!.mwh).toBe("522.0");
+  test("a degradation of 0.70 entered: year 1 unchanged, year 25 lower", () => {
+    expect(yearEndsOf(DEGRADATION_0_7.energy)).toEqual({ first: "617.8", last: "522.0" });
   });
 });
 

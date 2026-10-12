@@ -50,10 +50,18 @@ function TrackMark({ mark }: { mark: Mark }) {
 function Control({ control, onField, onSwitch }: Pick<Props, "control" | "onField" | "onSwitch">) {
   if (!control) return null;
   if (control.kind === "switch") {
+    const { field } = control;
     return (
       <>
         <Switch label={control.label} on={control.on} disabled={control.disabled} onChange={onSwitch} className="area-field justify-self-start" />
-        {control.note ? <p className="area-under type-body-touch desktop:type-body text-text-2">{control.note}</p> : null}
+        {/* The rear side's shading and mismatch, under the switch with its name; then why the switch cannot be used. */}
+        <div className="area-under flex flex-col gap-1 py-1">
+          <span className="flex flex-wrap items-center gap-2 type-body-touch desktop:type-body text-text-2">
+            {field.label}
+            <NumberField form="chip" label={field.label} value={field.value} unit={field.unit} range={field.range} disabled={control.disabled} onCommit={(entered) => onField(field.id, entered)} className="w-21 tablet:w-18" />
+          </span>
+          {control.note ? <p className="type-body-touch desktop:type-body text-text-2">{control.note}</p> : null}
+        </div>
       </>
     );
   }

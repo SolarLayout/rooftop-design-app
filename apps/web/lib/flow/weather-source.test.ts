@@ -20,8 +20,8 @@ describe("the weather a design without any is given (plan/phase-08-plan.md, deci
   });
 
   test("the step says which weather is loaded, by the name of its source", () => {
-    expect(stepOfLoading(PVGIS_DOCUMENT)).toBe("Loading PVGIS TMY weather");
-    expect(stepOfLoading({ ...PVGIS_DOCUMENT, weather_source: "nasa" } as Project)).toBe("Loading NASA POWER 2023 weather");
+    expect(stepOfLoading(PVGIS_DOCUMENT)).toBe("Loading the typical year from PVGIS");
+    expect(stepOfLoading({ ...PVGIS_DOCUMENT, weather_source: "nasa" } as Project)).toBe("Loading 2023's weather from NASA POWER");
     expect(stepOfLoading(CSV_DOCUMENT)).toBe("Reading pune-ghi.csv");
   });
 
@@ -35,22 +35,23 @@ describe("the weather a design without any is given (plan/phase-08-plan.md, deci
 });
 
 describe("the weather source (decision 12)", () => {
-  test("the select's choices, each with its fact: the year it is and whether it brings a horizon", () => {
+  test("the select's choices in plain names (V2 · 8, audit V2-97), each with where it comes from", () => {
     expect(WEATHER_ITEMS).toEqual([
-      { value: "pvgis", label: "PVGIS TMY", fact: "Typical year · PVGIS horizon" },
-      { value: "nasa", label: "NASA POWER 2023", fact: "The year 2023 · no horizon" },
-      { value: "csv", label: "CSV file", fact: "Hourly or finer · times read as UTC" },
+      { value: "pvgis", label: "Typical year", fact: "From PVGIS, with the site's horizon" },
+      { value: "nasa", label: "2023, measured", fact: "From NASA POWER, without a horizon" },
+      { value: "csv", label: "Your file", fact: "A CSV of hourly weather" },
     ]);
   });
 
   test("the words of the trigger are the document's source by its name; a CSV document names its file", () => {
-    expect(weatherShownOf(PVGIS_DOCUMENT)).toBe("PVGIS TMY");
-    expect(weatherShownOf({ ...PVGIS_DOCUMENT, weather_source: "nasa" } as Project)).toBe("NASA POWER 2023");
+    expect(weatherShownOf(PVGIS_DOCUMENT)).toBe("Typical year");
+    expect(weatherShownOf({ ...PVGIS_DOCUMENT, weather_source: "nasa" } as Project)).toBe("2023, measured");
     expect(weatherShownOf(CSV_DOCUMENT)).toBe("pune-ghi.csv");
   });
 
   test("the words of a load on its way", () => {
-    expect(loadingWordsOf("nasa")).toBe("Loading NASA POWER 2023 weather");
+    expect(loadingWordsOf("pvgis")).toBe("Loading the typical year from PVGIS");
+    expect(loadingWordsOf("nasa")).toBe("Loading 2023's weather from NASA POWER");
   });
 
   test("NASA chosen: one edit sets the source and its hours, and clears what was a CSV's", () => {
