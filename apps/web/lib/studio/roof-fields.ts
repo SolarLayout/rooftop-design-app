@@ -37,9 +37,9 @@ export const ROOF_FIELDS: Record<RoofFieldId, RoofFieldSpec> = {
   walkway_every_modules: { label: "Walkway every", unit: "modules", range: { min: 0, max: 500, decimals: 0 } },
   walkway_every_rows: { label: "Walkway every", unit: "rows", range: { min: 0, max: 500, decimals: 0 } },
   obstacle_clearance_m: { label: "Clearance", unit: "m", range: { min: 0, max: 5, decimals: 2 } },
-  albedo: { label: "Albedo", range: { min: 0.05, max: 0.9, decimals: 2 } },
-  slope_deg: { label: "Pitch", unit: "°", range: { min: 0, max: 60, decimals: 0 } },
-  slope_azimuth_deg: { label: "Faces", unit: "°", range: { min: 0, max: 359.9, decimals: 1 } },
+  albedo: { label: "Roof albedo", range: { min: 0.05, max: 0.9, decimals: 2 } },
+  slope_deg: { label: "Roof pitch", unit: "°", range: { min: 0, max: 60, decimals: 0 } },
+  slope_azimuth_deg: { label: "Direction (azimuth)", unit: "°", range: { min: 0, max: 359.9, decimals: 1 } },
 };
 
 /** The fields of a roof, in the order of the board: the walkway is every so many modules on tilted rows, rows otherwise. */
@@ -58,16 +58,16 @@ export function roofFieldsOf(roof: Roof): RoofField[] {
 
 export type RoofGroup = { title: string; fields: RoofField[] };
 
-/** The fields in groups of what belongs together (V2 · 7): at the edges, access, round obstacles, and a sloped roof's slope. */
+/** The fields in groups of what belongs together (V2 · 7): at the edges, access, around obstacles, and a sloped roof's pitch. */
 export function roofGroupsOf(roof: Roof): RoofGroup[] {
   const fields = roofFieldsOf(roof);
   const of = (...ids: RoofFieldId[]) => fields.filter((field) => ids.includes(field.id));
   const groups: RoofGroup[] = [
     { title: "At the edges", fields: of("parapet_h", "setback_m") },
     { title: "Access", fields: of("walkway_m", "walkway_every_modules", "walkway_every_rows") },
-    { title: "Round obstacles", fields: of("obstacle_clearance_m") },
+    { title: "Around obstacles", fields: of("obstacle_clearance_m") },
   ];
-  if (roof.roof_type === "sloped_flush") groups.push({ title: "The slope", fields: of("slope_deg", "slope_azimuth_deg") });
+  if (roof.roof_type === "sloped_flush") groups.push({ title: "Sloped roof", fields: of("slope_deg", "slope_azimuth_deg") });
   return groups;
 }
 
@@ -91,10 +91,10 @@ export function roofTypeFactsOf(roof: Roof): string {
 
 const metres = (id: RoofFieldId, value: number) => withUnit(shown(value, ROOF_FIELDS[id].range.decimals), ROOF_FIELDS[id].unit);
 
-/** The edges: the parapet, which shades the first row, and the setback. */
+/** The edges: the parapet, which shades the first row, and the edge margin (setback). */
 export function edgesFactsOf(roof: Roof): string {
   const parapet = roof.parapet_h > 0 ? `Parapet ${metres("parapet_h", roof.parapet_h)}` : "No parapet";
-  return `${parapet} · setback ${metres("setback_m", roof.setback_m)}`;
+  return `${parapet} · edge margin ${metres("setback_m", roof.setback_m)}`;
 }
 
 /** The obstacles by name, in their order; those of one kind ("AC unit 1", "AC unit 2") counted once. */

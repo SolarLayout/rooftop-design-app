@@ -10,8 +10,8 @@ const named = (name: string) => ({ name, auto: false }) as Obstacle;
 const OBSTACLES = ["Lift shaft", "Plant room", "Skylight", "Vent"].map(named);
 
 describe("the words", () => {
-  test("the engine's sentence, word for word", () => {
-    expect(HEIGHTS_SET).toBe("These obstacles have no height in the file and were set to 1.0 m.");
+  test("the note over them: what the file lacked, and the height the app uses", () => {
+    expect(HEIGHTS_SET).toBe("The file has no height for these obstacles. The app uses 1.0 m.");
   });
 
   test("how many are to review", () => {
@@ -20,7 +20,7 @@ describe("the words", () => {
   });
 
   test("the hint of the open card", () => {
-    expect(REVIEW_HINT).toBe("Enter the real height. The file gave none; 1.0 m stands until you do");
+    expect(REVIEW_HINT).toBe("Not in the file. Enter the real height.");
   });
 });
 

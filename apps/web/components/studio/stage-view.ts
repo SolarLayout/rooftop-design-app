@@ -19,7 +19,7 @@ function obstaclesCounted(count: number): string {
 /** The line under the title of the lens; null where the lens has none yet, or there is no layout. */
 export function subLineOf(lens: Lens, readouts: LayoutReadouts | null, obstacles: number): string | null {
   if (readouts === null) return null;
-  if (lens === "roof") return `${area(readouts.roof_area_m2)} · ${area(readouts.inside_setback_area_m2)} inside the setback · ${obstaclesCounted(obstacles)}`;
+  if (lens === "roof") return `${area(readouts.roof_area_m2)} · ${area(readouts.inside_setback_area_m2)} inside the edge margin · ${obstaclesCounted(obstacles)}`;
   if (lens === "array") {
     return `${shown(readouts.positions, 0)} positions · ${shown(readouts.tables, 0)} tables · ${shown(readouts.rows, 0)} rows · ${area(readouts.module_area_m2)} of modules`;
   }
@@ -79,21 +79,19 @@ export type FailedWords = { title: string; message: string; action: string };
 /** The chip on the stage when the layout asked for last did not come: what failed, in the API's words, and what to do. */
 export function layoutFailedOf(results: ResultsState): FailedWords | null {
   const failure = layoutFailureOf(results);
-  return failure === null ? null : { title: "The layout was not updated", message: failure.message, action: "Try again" };
+  return failure === null ? null : { title: "Layout not updated", message: failure.message, action: "Try again" };
 }
 
 /** The chip on the stage when the sun asked for last did not come (the board "Time on the stage"). */
 export function sunFailedOf(results: ResultsState): FailedWords | null {
   const failure = sunFailureOf(results);
-  return failure === null ? null : { title: "The sun was not updated", message: failure.message, action: "Try again" };
+  return failure === null ? null : { title: "Sun path not updated", message: failure.message, action: "Try again" };
 }
 
 /** A list in words: "a", "a and b", "a, b and c". */
 function listed(items: readonly string[]): string {
   return items.length < 2 ? (items[0] ?? "") : `${items.slice(0, -1).join(", ")} and ${items.at(-1)}`;
 }
-
-const COLOURS_COUNTED = ["no", "one", "two", "three", "four", "five", "six"];
 
 type StringsWordsOf = {
   option: Pick<DesignOption, "letter"> & { system: { inverters: readonly InverterPlace[] }; cable_schedule: readonly CableRow[] };
@@ -126,7 +124,7 @@ export function stringsWordsOf({ option, strings, colouring, positions, selected
     const count = `${named(category)}, ${counted(own.length, "string", "strings")}`;
     return colouring === "string" ? `${count}, ${listed(own.map((string) => string.label))}` : count;
   });
-  const turn = colouring === "string" ? `, ${COLOURS_COUNTED[categories.length]} colours in turn` : "";
+  const turn = colouring === "string" ? `, ${counted(categories.length, "colour", "colours")} in turn` : "";
   const used = strings.reduce((sum, string) => sum + string.modules.length, 0);
   const unused = positions - used;
   const places = option.system.inverters.map(({ label, position: [x, y] }) => `${label} at ${shown(x, 1)} m east, ${shown(y, 1)} m north`);

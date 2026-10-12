@@ -24,9 +24,9 @@ const DEMO: LayoutReadouts = {
 
 describe("the line under the title", () => {
   test("the Roof lens says the areas and counts the obstacles", () => {
-    expect(subLineOf("roof", DEMO, 6)).toBe("3,600 m² · 3,344 m² inside the setback · 6 obstacles");
-    expect(subLineOf("roof", DEMO, 1)).toBe("3,600 m² · 3,344 m² inside the setback · 1 obstacle");
-    expect(subLineOf("roof", DEMO, 0)).toBe("3,600 m² · 3,344 m² inside the setback · no obstacles");
+    expect(subLineOf("roof", DEMO, 6)).toBe("3,600 m² · 3,344 m² inside the edge margin · 6 obstacles");
+    expect(subLineOf("roof", DEMO, 1)).toBe("3,600 m² · 3,344 m² inside the edge margin · 1 obstacle");
+    expect(subLineOf("roof", DEMO, 0)).toBe("3,600 m² · 3,344 m² inside the edge margin · no obstacles");
   });
 
   test("the Array lens says the positions, the tables, the rows and the area of all the positions", () => {
@@ -79,7 +79,7 @@ describe("a layout that failed", () => {
     store.getState().layoutAsked(2);
     store.getState().layoutFailed(2, CROSSES);
 
-    expect(layoutFailedOf(store.getState())).toEqual({ title: "The layout was not updated", message: CROSSES.message, action: "Try again" });
+    expect(layoutFailedOf(store.getState())).toEqual({ title: "Layout not updated", message: CROSSES.message, action: "Try again" });
     expect(lineOf("array", store.getState(), 6)?.isUpdating).toBe(false);
   });
 
@@ -102,7 +102,7 @@ describe("a sun that failed", () => {
     store.getState().sunAsked(KEY);
     store.getState().sunFailed(KEY, UNREACHABLE);
 
-    expect(sunFailedOf(store.getState())).toEqual({ title: "The sun was not updated", message: UNREACHABLE.message, action: "Try again" });
+    expect(sunFailedOf(store.getState())).toEqual({ title: "Sun path not updated", message: UNREACHABLE.message, action: "Try again" });
   });
 
   test("nothing while the sun is on its way or has come", () => {
@@ -159,7 +159,7 @@ describe("the strings on the roof in words", () => {
   });
 
   test("by string: each of the colours in turn with the strings it marks", () => {
-    expect(of("string").strings).toBe("8 strings of option A, coloured by string, six colours in turn: colour 1, 2 strings, S1 and S7; colour 2, 2 strings, S2 and S8; colour 3, 1 string, S3; colour 4, 1 string, S4; colour 5, 1 string, S5; colour 6, 1 string, S6");
+    expect(of("string").strings).toBe("8 strings of option A, coloured by string, 6 colours in turn: colour 1, 2 strings, S1 and S7; colour 2, 2 strings, S2 and S8; colour 3, 1 string, S3; colour 4, 1 string, S4; colour 5, 1 string, S5; colour 6, 1 string, S6");
   });
 
   test("by inverter: each inverter with its strings", () => {

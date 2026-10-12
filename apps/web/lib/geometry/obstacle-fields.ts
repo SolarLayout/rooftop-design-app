@@ -114,7 +114,7 @@ export function fieldsOfObstacle(obstacle: Obstacle | DraftObstacle): ObstacleFi
   return FIELDS_OF_KIND[obstacle.kind].map((id) => ({
     id,
     ...SPEC[id],
-    label: id === "diameter" && obstacle.kind === "tree" ? "Crown ⌀" : SPEC[id].label,
+    label: id === "diameter" && obstacle.kind === "tree" ? "Crown diameter" : SPEC[id].label,
     value: obstacle[id] as number,
   }));
 }
