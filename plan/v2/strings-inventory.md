@@ -26,13 +26,13 @@ There are no first-person strings ("we", "our") anywhere in scope. No user-visib
    - "Enter the roof by hand" (`W/components/find/Find.tsx:79`)
    - "By hand" (docs)
 
-   The Roof-lens obstacle panel reuses "Enter dimensions by hand" only in a comment.
+   The Roof-lens obstacle panel reuses "Enter dimensions by hand" only in a comment. — done: "Enter the roof by hand" everywhere it is said: Home, Find's first step, Find's column, the no-map note ("By hand" in the docs is the docs site's)
 3. **Saving state is worded four ways:**
    - "Not saved" (`W/components/shell/SaveState.tsx:24`)
    - "Not kept on this device" (`SaveState.tsx:20`)
    - "Not saved on this device" (`W/components/shell/notes-view.ts:126`)
    - "Saved on this device" (`SaveState.tsx:18`)
-4. **"Remove" is the dismiss button of the height dialog.** The new shape is not added yet, so this is really Cancel (`W/components/find/HeightDialog.tsx:59`).
+4. **"Remove" is the dismiss button of the height dialog.** The new shape is not added yet, so this is really Cancel (`W/components/find/HeightDialog.tsx:59`). — done: "Cancel" (and "Add")
 5. **"The engine" appears in many user strings.** Examples: "The engine's shadows…", "summed up by the engine", "The PNG is the engine's drawing on A4", "in the engine's order". It is an internal term that users are never introduced to.
 6. **Unclear unit "mod".** It is the unit of the Roof field "Every" (`W/lib/studio/roof-fields.ts:18`).
 7. **"before" as an adjective reads oddly:** "Values are of the design before", "They are of the design before", "The values shown are of the design before", "The positions shown are of the design before".
@@ -43,37 +43,37 @@ There are no first-person strings ("we", "our") anywhere in scope. No user-visib
 
 | Text | File |
 |---|---|
-| "SolarLayout Rooftop" (page title) | W/app/page.tsx:4 |
-| "Rooftop PV design." (meta description) [!J PV] | W/app/metadata.ts:10, W/app/manifest.ts:10 |
-| "Docs" (header link) | W/components/home/Home.tsx:137 |
-| "Find your roof." / "Design it in 3D." (H1) | W/components/home/Home.tsx:29 |
-| "Search the map, outline your roof, and get layout, shading, stringing and 8,760-hour energy yield on one live model." [!J "8,760-hour energy yield", "stringing"] | Home.tsx:30 |
-| "Find my roof" (hero button) | Home.tsx:31 |
-| "Import a drawing" / "KMZ, KML or DXF with the roof and its obstacles" [!J KMZ/KML/DXF] | Home.tsx:37 |
-| "Open a project" / "A saved .rtd file, from this device or a colleague" [!J .rtd] | Home.tsx:38, W/components/shell/OpenProject.tsx:17 |
-| "Demo project" (card caption, aria) | W/components/home/DemoCard.tsx:19 |
-| "Open the demo" | DemoCard.tsx:20 |
-| "Capacity" / "Energy, year 1" (stats) | DemoCard.tsx:54-55; W/components/home/DesignCard.tsx:135-136 |
-| "Capacity and energy come with the run in the Studio" [!S] [?] | W/lib/flow/open-project.ts:27 (DemoCard.tsx:59) |
-| "On this device" (H2) | W/components/home/OnThisDevice.tsx:26 |
-| "Designs you save appear here." [!S] | W/lib/home/home-view.ts:27 |
-| "Your designs are kept on this device." [!S] | home-view.ts:28 |
-| Card menu: "Open", "Rename", "Duplicate", "Save a copy" (fact ".rtd"), "Delete" | DesignCard.tsx:34-38 |
-| "Menu" (aria) | DesignCard.tsx:41 |
-| "Open ${card.name}" (aria, thumbnail) | DesignCard.tsx:71 |
-| "Name" (rename field label) | DesignCard.tsx:123 |
-| "Waiting for a system voltage" [!J] | W/lib/home/cards.ts:24 |
-| "Not run yet" | cards.ts:25 |
-| "Copy of ${name}" | cards.ts:47 |
-| Delete dialog: "Delete ${name}?" / "It is kept on this device alone." [?] / "Cancel", "Delete" | cards.ts:51; OnThisDevice.tsx:61-63 |
-| "Edited just now" / "Edited ${n} minute(s)/hour(s)/day(s) ago" / "Edited yesterday" / "Edited ${d} ${Mon} ${yyyy}" | W/lib/device/kept-design.ts:85-91 |
-| Roof words: "flat roof, tilted rows" / "sloped roof" / "${size} ${type}" (e.g. "90.0 × 40.0 m flat roof, tilted rows") | kept-design.ts:34-41 |
-| Thumbnail aria: "The plan of the layout, north up: the roof, its obstacles and the module rows" [!S] | W/lib/device/thumbnail.ts:15 |
-| Device errors: "The designs on this device could not be read" / "The design on this device could not be read" / "The design could not be kept on this device" / "The design could not be removed from this device", each followed by ": ${reason}." | W/lib/device/designs-db.ts:66-88 |
-| Reasons: "this browser has no IndexedDB" [!J], "the browser gave no reason", "the database is open in another tab and blocks the change", "the transaction was given up" [!J] | designs-db.ts:24-62 |
-| Opening: "The design kept on this device could not be opened: ${error}. The demo is open instead." [?] | W/lib/device/opening.ts:16-21 |
-| "That design is no longer on this device." | opening.ts:38 |
-| "No design is open: nothing can be kept." | W/lib/device/saving.ts:137 |
+| "SolarLayout Rooftop" (page title) | W/app/page.tsx:4 — right |
+| "Rooftop PV design." (meta description) [!J PV] | W/app/metadata.ts:10, W/app/manifest.ts:10 — right |
+| "Docs" (header link) | W/components/home/Home.tsx:137 — right |
+| "Find your roof." / "Design it in 3D." (H1) | W/components/home/Home.tsx:29 — done: "Rooftop PV design" |
+| "Search the map, outline your roof, and get layout, shading, stringing and 8,760-hour energy yield on one live model." [!J "8,760-hour energy yield", "stringing"] | Home.tsx:30 — done: "Outline a roof on the map. The app lays out the modules, the shade, the strings and the energy of a year." |
+| "Find my roof" (hero button) | Home.tsx:31 — done: "Find the roof" |
+| "Import a drawing" / "KMZ, KML or DXF with the roof and its obstacles" [!J KMZ/KML/DXF] | Home.tsx:37 — done: "Import a drawing" (a link under the search, no second line) |
+| "Open a project" / "A saved .rtd file, from this device or a colleague" [!J .rtd] | Home.tsx:38, W/components/shell/OpenProject.tsx:17 — done: "Open a project file" (a link under the search, no second line) |
+| "Demo project" (card caption, aria) | W/components/home/DemoCard.tsx:19 — done: "Try the demo" |
+| "Open the demo" | DemoCard.tsx:20 — right |
+| "Capacity" / "Energy, year 1" (stats) | DemoCard.tsx:54-55; W/components/home/DesignCard.tsx:135-136 — done: "617.8 MWh a year · 357.28 kWp" (a card's figures, once it has run; the demo card has none) |
+| "Capacity and energy come with the run in the Studio" [!S] [?] | W/lib/flow/open-project.ts:27 (DemoCard.tsx:59) — done: the roof of the file, as a card says it, "90.0 × 40.0 m flat roof, tilted rows" (Open a project file's second line); gone from the demo card |
+| "On this device" (H2) | W/components/home/OnThisDevice.tsx:26 — done: "Your designs · on this device" |
+| "Designs you save appear here." [!S] | W/lib/home/home-view.ts:27 — gone (Home shows no empty section; the words are the project switcher's now, Studio shell) |
+| "Your designs are kept on this device." [!S] | home-view.ts:28 — gone |
+| Card menu: "Open", "Rename", "Duplicate", "Save a copy" (fact ".rtd"), "Delete" | DesignCard.tsx:34-38 — done: "Open", "Rename", "Duplicate", "Download the project file", "Delete" |
+| "Menu" (aria) | DesignCard.tsx:41 — right |
+| "Open ${card.name}" (aria, thumbnail) | DesignCard.tsx:71 — right |
+| "Name" (rename field label) | DesignCard.tsx:123 — right |
+| "Waiting for a system voltage" [!J] | W/lib/home/cards.ts:24 — gone |
+| "Not run yet" | cards.ts:25 — gone |
+| "Copy of ${name}" | cards.ts:47 — right |
+| Delete dialog: "Delete ${name}?" / "It is kept on this device alone." [?] / "Cancel", "Delete" | cards.ts:51; OnThisDevice.tsx:61-63 — done: "Delete ${name}?" / "It is saved on this device only." / "Cancel", "Delete" |
+| "Edited just now" / "Edited ${n} minute(s)/hour(s)/day(s) ago" / "Edited yesterday" / "Edited ${d} ${Mon} ${yyyy}" | W/lib/device/kept-design.ts:85-91 — done: "Edited moments ago" / "Edited ${n} minute/minutes/hour/hours/day/days ago", the plural by the count / "Edited yesterday" / "Edited ${d} ${Mon} ${yyyy}" |
+| Roof words: "flat roof, tilted rows" / "sloped roof" / "${size} ${type}" (e.g. "90.0 × 40.0 m flat roof, tilted rows") | kept-design.ts:34-41 — right |
+| Thumbnail aria: "The plan of the layout, north up: the roof, its obstacles and the module rows" [!S] | W/lib/device/thumbnail.ts:15 — done: "Plan of the layout, north up" |
+| Device errors: "The designs on this device could not be read" / "The design on this device could not be read" / "The design could not be kept on this device" / "The design could not be removed from this device", each followed by ": ${reason}." | W/lib/device/designs-db.ts:66-88 — done: "The designs on this device could not be read" / "The design on this device could not be read" / "The design could not be saved on this device" / "The design could not be removed from this device", each followed by ": ${reason}." |
+| Reasons: "this browser has no IndexedDB" [!J], "the browser gave no reason", "the database is open in another tab and blocks the change", "the transaction was given up" [!J] | designs-db.ts:24-62 — done: "this browser cannot save designs", "the browser gave no reason", "the app is open in another tab, which blocks the change", "the browser stopped the change" |
+| Opening: "The design kept on this device could not be opened: ${error}. The demo is open instead." [?] | W/lib/device/opening.ts:16-21 — done: "The design saved on this device could not be opened: ${error}. The demo is open instead." |
+| "That design is no longer on this device." | opening.ts:38 — right |
+| "No design is open: nothing can be kept." | W/lib/device/saving.ts:137 — done: "No design is open: there is nothing to save." |
 
 ## Find (search, outline tools, obstacles, by hand, states and errors)
 
@@ -81,141 +81,141 @@ There are no first-person strings ("we", "our") anywhere in scope. No user-visib
 
 | Text | File |
 |---|---|
-| "Find and outline · SolarLayout Rooftop" | W/app/find/page.tsx:5 |
-| "Back to home" (aria) | W/components/find/Find.tsx:303 |
-| Steps pill: "Find", "Outline", "Build"; aria "Steps", "Done" | W/components/find/Steps.tsx:6-8, 25, 29 |
-| "Step ${n} of 3" | Find.tsx:362 |
+| "Find and outline · SolarLayout Rooftop" | W/app/find/page.tsx:5 — done: "Find the roof · SolarLayout Rooftop" |
+| "Back to home" (aria) | W/components/find/Find.tsx:303 — gone (Find's top bar is the shell's: its home mark is "Home") |
+| Steps pill: "Find", "Outline", "Build"; aria "Steps", "Done" | W/components/find/Steps.tsx:6-8, 25, 29 — gone (the step navigation of the shell) |
+| "Step ${n} of 3" | Find.tsx:362 — gone |
 | Panel titles and leads (W/components/find/Find.tsx:71-79) | |
-| "Outline the roof" — "Click each corner. Drag a corner to adjust it, or type a length you have measured." [!S] | :71 |
-| (rectangle) "Drag a box across the roof, then turn it to the building by its handle. Drag a corner to adjust it." [!S] | :72 |
-| (detect) "Click inside the building. Where its footprint is known, it is proposed as the outline, to accept or adjust." [!S] [?] | :73 |
-| (box) "Drag a box across the thing on the roof, then turn it by its handle. Its height is asked right after." [!S] | :74 |
-| (tank) "Drag from the middle of the tank to its edge. Its height is asked right after." | :75 |
-| (wall) "Click each point of the wall; click the last again, or press Enter, to end it. Its height is asked right after." [!S] | :76 |
-| (building) "Click the corners of the building beside the roof; click the first again to close it. Its height is asked right after." [!S] | :77 |
-| "Build the roof" — "The roof rises in the Studio; the array fills it at once." [!F] | :78 |
-| "Enter the roof by hand" — "Type what you have measured. The roof is drawn as you type; Faces is where its long side looks." [?] | :79 |
-| "Find the roof" (title, step find) | Find.tsx:154 |
-| "Roof type" (section) | Find.tsx:387 |
-| "Building the roof" (busy) / "Build this roof" (primary) | Find.tsx:402, 405; W/lib/outline/build-request.ts:24 |
-| "Enter dimensions by hand instead" / "Draw on the map instead" | Find.tsx:410, 414; W/components/find/NoMap.tsx:16 |
-| "The outline could not be shown on the map." | Find.tsx:237 |
-| "The roof could not be built. Try again." | Find.tsx:259 |
+| "Outline the roof" — "Click each corner. Drag a corner to adjust it, or type a length you have measured." [!S] | :71 — done: "Click each corner of the roof. Click the first corner again to close the outline." ("Press" on touch; the head follows the step, never the tool, W/lib/outline/find-head.ts) |
+| (rectangle) "Drag a box across the roof, then turn it to the building by its handle. Drag a corner to adjust it." [!S] | :72 — gone |
+| (detect) "Click inside the building. Where its footprint is known, it is proposed as the outline, to accept or adjust." [!S] [?] | :73 — gone |
+| (box) "Drag a box across the thing on the roof, then turn it by its handle. Its height is asked right after." [!S] | :74 — gone |
+| (tank) "Drag from the middle of the tank to its edge. Its height is asked right after." | :75 — gone |
+| (wall) "Click each point of the wall; click the last again, or press Enter, to end it. Its height is asked right after." [!S] | :76 — gone |
+| (building) "Click the corners of the building beside the roof; click the first again to close it. Its height is asked right after." [!S] | :77 — gone |
+| "Build the roof" — "The roof rises in the Studio; the array fills it at once." [!F] | :78 — done: "Build this roof · ${area} m²" — "Opens the roof in 3D with the array on it." |
+| "Enter the roof by hand" — "Type what you have measured. The roof is drawn as you type; Faces is where its long side looks." [?] | :79 — done: "Enter the roof by hand" — "Type the roof's length and width. Add its obstacles in the Studio." |
+| "Find the roof" (title, step find) | Find.tsx:154 — done: "Find the roof" — "Search for the building, then outline its roof on the map." |
+| "Roof type" (section) | Find.tsx:387 — right |
+| "Building the roof" (busy) / "Build this roof" (primary) | Find.tsx:402, 405; W/lib/outline/build-request.ts:24 — done: "Building the roof" / "Build this roof · ${area} m²" |
+| "Enter dimensions by hand instead" / "Draw on the map instead" | Find.tsx:410, 414; W/components/find/NoMap.tsx:16 — done: "Enter the roof by hand" / "Draw on the map instead" |
+| "The outline could not be shown on the map." | Find.tsx:237 — right |
+| "The roof could not be built. Try again." | Find.tsx:259 — right |
 
 **First step (Start here).** Lead and ways are in W/lib/outline/first-step.ts; layout is in W/components/find/FirstStep.tsx.
 
-- "Start here", "The search understands" [!F mild personification], "Press one to put it in the search.", "Three steps": FirstStep.tsx:34, 51, 62, 67
-- Lead "Find the building first: the map flies to it, close enough to outline its roof." [!S] [!F "flies"]: first-step.ts:31
+- "Start here", "The search understands" [!F mild personification], "Press one to put it in the search.", "Three steps": FirstStep.tsx:34, 51, 62, 67 — gone (the first step is the search, its examples, and two ways under it; "Examples" heads the list, "Other ways to start" names the ways)
+- Lead "Find the building first: the map flies to it, close enough to outline its roof." [!S] [!F "flies"]: first-step.ts:31 — done: "Search for the building, then outline its roof on the map."
 - Ways:
-  - "Search for the building" / "An address, coordinates or a maps link"
-  - "Use my location" / "When you are at the building"
-  - "Enter dimensions by hand" / "The roof is measured already"
+  - "Search for the building" / "An address, coordinates or a maps link" — gone (the search is the first way itself)
+  - "Use my location" / "When you are at the building" — right
+  - "Enter dimensions by hand" / "The roof is measured already" — done: "Enter the roof by hand" / "Type its length and width"
   - first-step.ts:26-32
-- Examples: "Address" "Koregaon Park, Pune"; "Coordinates" "18.53621, 73.89380"; "Degrees" "18°32′10.4″N 73°53′37.7″E"; "Maps link" "google.com/maps/@18.53621,73.89380": first-step.ts:20-23
-- Steps: "Find" — "the map flies to the building" [!F]; "Outline" — "trace the roof, then what stands on it"; "Build" — "the Studio opens, the array on the roof": first-step.ts:35-37
+- Examples: "Address" "Koregaon Park, Pune"; "Coordinates" "18.53621, 73.89380"; "Degrees" "18°32′10.4″N 73°53′37.7″E"; "Maps link" "google.com/maps/@18.53621,73.89380": first-step.ts:20-23 — done: "An address" "Koregaon Park, Pune"; "Coordinates" "18.53621, 73.89380"; "A maps link" "google.com/maps/@18.53621,73.89380"; "Degrees" gone
+- Steps: "Find" — "the map flies to the building" [!F]; "Outline" — "trace the roof, then what stands on it"; "Build" — "the Studio opens, the array on the roof": first-step.ts:35-37 — gone
 - No-map variant:
-  - "The map cannot be shown here. The roof can still be entered by its measurements, at a place you search or type." [!S]
-  - "Its place, then its length, width and facing"
-  - "the place, searched or typed" / "the roof's measurements, typed"
+  - "The map cannot be shown here. The roof can still be entered by its measurements, at a place you search or type." [!S] — done: "The map is not available" / "Enter the roof by hand instead." (W/lib/map/map-state.ts; the by-hand entry follows)
+  - "Its place, then its length, width and facing" — gone
+  - "the place, searched or typed" / "the roof's measurements, typed" — gone
   - first-step.ts:42-48
 
 **Search** (W/components/shell/Search.tsx)
 
-- Placeholder and aria "Search an address or paste coordinates": :48
-- "Use my location" (tooltip, aria): :51
-- "Search" (button): :296
-- "Searching" (ring) / "Searching for "${query}"": :247, 338
-- "Places found" (aria), facts "Coordinates", "Swapped": :304-325
-- "Nothing found for "${query}". Try a fuller address, or paste coordinates.": :330
-- "Words cannot be searched for without a map key. Paste coordinates or a maps link instead." [!S] [!J "map key"] [?]: :49
-- "Your location is not available. Allow it in the browser, or search for the address.": :50
-- "The search failed. Try again.": :113
+- Placeholder and aria "Search an address or paste coordinates": :48 — right (Import's field; Home and Find say "Address or coordinates")
+- "Use my location" (tooltip, aria): :51 — right
+- "Search" (button): :296 — right
+- "Searching" (ring) / "Searching for "${query}"": :247, 338 — right
+- "Places found" (aria), facts "Coordinates", "Swapped": :304-325 — right
+- "Nothing found for "${query}". Try a fuller address, or paste coordinates.": :330 — right
+- "Words cannot be searched for without a map key. Paste coordinates or a maps link instead." [!S] [!J "map key"] [?]: :49 — done: "Address search is not available. Paste coordinates or a maps link." (W/lib/errors/problem-of.ts)
+- "Your location is not available. Allow it in the browser, or search for the address.": :50 — right
+- "The search failed. Try again.": :113 — right
 
 Search errors in W/lib/places/esri.ts:
-- "Coordinates in the search" / "The address search is not available right now. Paste coordinates or a maps link instead.": :18-19
-- "The search answered in a shape that cannot be read." [?]: :35, :39
-- "The search cannot be reached. Check the connection and try again.": :74
-- "The search answered ${status}. Try again in a moment." [!J HTTP status]: :76
+- "Coordinates in the search" / "The address search is not available right now. Paste coordinates or a maps link instead.": :18-19 — done: "Address search is not available. Paste coordinates or a maps link."
+- "The search answered in a shape that cannot be read." [?]: :35, :39 — done: "Address search is not available. Paste coordinates or a maps link."
+- "The search cannot be reached. Check the connection and try again.": :74 — done: "The address search cannot be reached. Check your connection, then try again."
+- "The search answered ${status}. Try again in a moment." [!J HTTP status]: :76 — done: "The address search did not answer. Try again in a moment."
 
 Attribution:
-- "Powered by Esri · Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community": esri.ts:14
-- "© Overture Maps Foundation, ODbL": W/lib/map/overture.ts:14
+- "Powered by Esri · Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community": esri.ts:14 — right
+- "© Overture Maps Foundation, ODbL": W/lib/map/overture.ts:14 — right
 
 Coordinate refusals in W/lib/places/place-input.ts. All are [!S], which is reasonable for error text.
-- "These look like coordinates, but ${they / the latitude / the longitude} cannot be read. Write them as 12°54′50.74″N 77°29′31.16″E, or 12.91409, 77.49199.": :44-45
-- "Check where it was copied from.": :46
-- "−${x} is marked ${N/E}, and a minus means ${south/west}. Keep the minus or the letter, not both.": :206
-- "Minutes and seconds go up to 59. The ${axis} has ${past}: check where it was copied from.": :211
-- "Only the longitude is here. Add the latitude before it: ${EXAMPLE}." / "Only the latitude is here. Add the longitude after it: ${EXAMPLE}.": :228-229
-- "Both are marked ${N or S / E or W}. The latitude takes N or S, the longitude E or W.": :245
-- "The latitude comes first, and ${x} is more than 90°. Did you mean this?": :257
-- "A latitude goes up to 90°, and this one is ${x}°. Check where it was copied from.": :259
-- "A longitude goes up to 180°, and this one is ${x}°. Check where it was copied from.": :261
+- "These look like coordinates, but ${they / the latitude / the longitude} cannot be read. Write them as 12°54′50.74″N 77°29′31.16″E, or 12.91409, 77.49199.": :44-45 — right
+- "Check where it was copied from.": :46 — right
+- "−${x} is marked ${N/E}, and a minus means ${south/west}. Keep the minus or the letter, not both.": :206 — right
+- "Minutes and seconds go up to 59. The ${axis} has ${past}: check where it was copied from.": :211 — right
+- "Only the longitude is here. Add the latitude before it: ${EXAMPLE}." / "Only the latitude is here. Add the longitude after it: ${EXAMPLE}.": :228-229 — right
+- "Both are marked ${N or S / E or W}. The latitude takes N or S, the longitude E or W.": :245 — right
+- "The latitude comes first, and ${x} is more than 90°. Did you mean this?": :257 — right
+- "A latitude goes up to 90°, and this one is ${x}°. Check where it was copied from.": :259 — right
+- "A longitude goes up to 180°, and this one is ${x}°. Check where it was copied from.": :261 — right
 
 **Map states** (W/lib/map/map-state.ts)
-- "The map is not available" / "This app has no key for the imagery. The roof can still be entered by its measurements." [!J "key"]: :17-18
-- "This browser cannot draw the map" / "It has no WebGL. Try another browser, or enter the roof by its measurements." [!J WebGL]: :21-22
-- "The imagery does not load" / "Check the connection and try again, or enter the roof by its measurements.": :25-26
-- "Satellite map" (aria): W/components/find/RoofMap.tsx:141
-- Map buttons: "North up", "Zoom in", "Zoom out": W/components/find/MapButtons.tsx:20, 27, 29
-- Scale bar: "${n} km" / "${n} m": W/lib/map/scale-bar.ts:23
+- "The map is not available" / "This app has no key for the imagery. The roof can still be entered by its measurements." [!J "key"]: :17-18 — done: "The map is not available" / "Enter the roof by hand instead."
+- "This browser cannot draw the map" / "It has no WebGL. Try another browser, or enter the roof by its measurements." [!J WebGL]: :21-22 — done: "This browser cannot draw the map" / "Try another browser, or enter the roof by hand."
+- "The imagery does not load" / "Check the connection and try again, or enter the roof by its measurements.": :25-26 — done: "The imagery does not load" / "Check your connection and try again, or enter the roof by hand."
+- "Satellite map" (aria): W/components/find/RoofMap.tsx:141 — right
+- Map buttons: "North up", "Zoom in", "Zoom out": W/components/find/MapButtons.tsx:20, 27, 29 — right
+- Scale bar: "${n} km" / "${n} m": W/lib/map/scale-bar.ts:23 — right
 
 **Outline tools** (W/components/find/OutlineTools.tsx)
-- "Corners", "Rectangle", "Detect building" (short "Detect"): :25-27
-- "Box", "Tank", "Wall", "Building": :32-35
-- "Outline tools" (aria), "Undo", "Redo", "Clear outline", "Show the tips": :54, 72, 75, 77, 85
+- "Corners", "Rectangle", "Detect building" (short "Detect"): :25-27 — done: "Corners", "Rectangle", "Detect building" (no short form)
+- "Box", "Tank", "Wall", "Building": :32-35 — done: "Box", "Tank", "Wall", "Tree", "Building"
+- "Outline tools" (aria), "Undo", "Redo", "Clear outline", "Show the tips": :54, 72, 75, 77, 85 — done: "Outline tools" (aria), "Undo", "Clear"; "Redo" and "Show the tips" gone
 
 **Outline panel** (W/components/find/OutlinePanel.tsx)
-- "Find and outline" (aria), "Measurements", "Area", "Faces" ("${deg}° ${compass}"), "Corners", "Lengths", "Edges": :16, 39-47, 55
-- "Click the first corner of the roof." / "${n} of at least 3 corners placed." / "${n} corners placed. Click the first corner, or press Enter, to close the outline.": :74-77
-- "Square the corners" / "Snaps to 90° when you are within 3°": :82-85
-- Edge names: "North", "North-east", "East", "South-east", "South", "South-west", "West", "North-west", "Edge ${n}": W/lib/outline/outline-state.ts:483-495
+- "Find and outline" (aria), "Measurements", "Area", "Faces" ("${deg}° ${compass}"), "Corners", "Lengths", "Edges": :16, 39-47, 55 — done: the section "Edges", "${n} edges · faces ${deg}° ${compass}", a field per edge named by its side or "Edge ${n}"; the rest gone
+- "Click the first corner of the roof." / "${n} of at least 3 corners placed." / "${n} corners placed. Click the first corner, or press Enter, to close the outline.": :74-77 — done: "No corners yet" / "1 corner" / "${n} corners", beside Undo and Clear; the instruction is the head's
+- "Square the corners" / "Snaps to 90° when you are within 3°": :82-85 — right
+- Edge names: "North", "North-east", "East", "South-east", "South", "South-west", "West", "North-west", "Edge ${n}": W/lib/outline/outline-state.ts:483-495 — right
 
 **Map labels**
-- "Corner ${n}" (", selected"), "Corner ${n} of the obstacle", "Add a corner on edge ${n}", "Turn the roof" / "Turn the obstacle" / "Turn the rectangle", "${len} m": W/components/find/OutlineLayer.tsx:602, 619, 638, 749, 788, 838, 928
-- Move readouts: "${x} m W/E · ${y} m S/N"; "${turn} · faces ${deg}° ${compass}": W/lib/outline/roof-move.ts:98-106
-- "${name} · ${move}" / "${name} · ${size} · turned ${deg}°": W/lib/outline/obstacle-move.ts:66-68
+- "Corner ${n}" (", selected"), "Corner ${n} of the obstacle", "Add a corner on edge ${n}", "Turn the roof" / "Turn the obstacle" / "Turn the rectangle", "${len} m": W/components/find/OutlineLayer.tsx:602, 619, 638, 749, 788, 838, 928 — right
+- Move readouts: "${x} m W/E · ${y} m S/N"; "${turn} · faces ${deg}° ${compass}": W/lib/outline/roof-move.ts:98-106 — right
+- "${name} · ${move}" / "${name} · ${size} · turned ${deg}°": W/lib/outline/obstacle-move.ts:66-68 — right
 
 **Detect building** (W/components/find/DetectedCallout.tsx)
-- "Footprint found · ${n} corners · ${area} m²" / "No footprint known here": :29
-- "From Overture Maps · approximate, about ${x} m. Accept it, or drag the corners to the roof edge you see." [!S]: :35
-- "Outline the roof by corners or by a rectangle instead.": :36
-- "Use this outline", "Close": :41, 31
+- "Footprint found · ${n} corners · ${area} m²" / "No footprint known here": :29 — right
+- "From Overture Maps · approximate, about ${x} m. Accept it, or drag the corners to the roof edge you see." [!S]: :35 — done: "From Overture Maps, accurate to about ${x} m. Use it, or drag its corners to the roof's edge."
+- "Outline the roof by corners or by a rectangle instead.": :36 — right
+- "Use this outline", "Close": :41, 31 — right
 
 **Tips** (W/lib/outline/tips.ts; W/components/ui/Tip.tsx)
-- "Move or turn the roof": "Click"/"Press" — "inside the roof to pick it up"; "Drag" — "inside it to move it" / "with one finger inside it to move it"; "◯" — "drag the round handle to turn it"; "← ↑ → ↓" — "nudge 0.1 m, with Shift 1 m"; "2 fingers" — "move the map, as always": tips.ts:14-25
-- "Move or turn an obstacle": "Click"/"Press" — "an obstacle to pick it"; "Drag" — "it to move it"; "◯" — "turns a box or a building"; "Delete" — "removes it": tips.ts:29-39
-- "Got it", "Hide the tips" (aria): Tip.tsx:48, 35
-- "Show me how": W/components/shell/help/ways-in.tsx:19
+- "Move or turn the roof": "Click"/"Press" — "inside the roof to pick it up"; "Drag" — "inside it to move it" / "with one finger inside it to move it"; "◯" — "drag the round handle to turn it"; "← ↑ → ↓" — "nudge 0.1 m, with Shift 1 m"; "2 fingers" — "move the map, as always": tips.ts:14-25 — done: one line on the map, "Drag the roof to move it · drag ○ to turn it" (W/lib/outline/find-head.ts); the tips gone
+- "Move or turn an obstacle": "Click"/"Press" — "an obstacle to pick it"; "Drag" — "it to move it"; "◯" — "turns a box or a building"; "Delete" — "removes it": tips.ts:29-39 — gone
+- "Got it", "Hide the tips" (aria): Tip.tsx:48, 35 — gone
+- "Show me how": W/components/shell/help/ways-in.tsx:19 — gone
 
 **Obstacles on Find**
-- "Obstacles"; empty: "None yet. Draw a box, a tank, a wall or a building with the tools on the map. Each asks its height." [!S]: W/components/find/ObstacleList.tsx:26, 29
-- "Remove ${name}" (aria): ObstacleList.tsx:54
-- Default names: "Box ${n}", "Tank ${n}", "Wall ${n}", "Building ${n}"; facts "${a} × ${b}", "⌀ ${d}", "${len} m", "${area} m²", "${size} · h ${h} m", "${name} · h ${h} m": W/lib/outline/obstacles.ts:19-107
+- "Obstacles"; empty: "None yet. Draw a box, a tank, a wall or a building with the tools on the map. Each asks its height." [!S]: W/components/find/ObstacleList.tsx:26, 29 — done: "Obstacles · ${n}" / "Choose a kind, then drag over it on the map."; the closed outline's head "Add the obstacles" (was "Add what stands on the roof") — "The roof is outlined: ${area} m², ${n} corners. Add its obstacles, choose its type, then build."
+- "Remove ${name}" (aria): ObstacleList.tsx:54 — right
+- Default names: "Box ${n}", "Tank ${n}", "Wall ${n}", "Building ${n}"; facts "${a} × ${b}", "⌀ ${d}", "${len} m", "${area} m²", "${size} · h ${h} m", "${name} · h ${h} m": W/lib/outline/obstacles.ts:19-107 — done: the names right; the row's line "Box · 5.0 × 4.0 m · 3.0 m high" (find-head.ts), the map's label "Box 1 · 3.0 m high", no "h" (obstacles.ts)
 
 Height dialog (W/components/find/HeightDialog.tsx):
-- "Height of the ${kind}": :55
-- "Remove" [?, acts as Cancel]: :59
-- "Add the ${kind}": :60
-- "The imagery cannot give it. Enter its height above the roof surface." [!S]: :63
-- "Name", "Height": :72, 75
+- "Height of the ${kind}": :55 — right (the dialog's label; its title is the kind, "Box")
+- "Remove" [?, acts as Cancel]: :59 — done: "Cancel"
+- "Add the ${kind}": :60 — done: "Add"
+- "The imagery cannot give it. Enter its height above the roof surface." [!S]: :63 — gone (the field says it: "Height above the roof")
+- "Name", "Height": :72, 75 — done: "Height above the roof"; "Name" gone (an obstacle is renamed in the Studio)
 
 **By hand** (W/components/find/ByHandPanel.tsx)
-- "Place", "Latitude", "Longitude": :47, 51-52
-- "From the search above, or typed. Five decimals; north and east are positive." [!S]: :54
-- "Shape" (Segmented "Rectangle" / "Corners", W/lib/outline/shapes.ts:7-8): :57-61
-- "Length", "Width", "Long side faces": :65-68
-- "Corner", "East", "North", "East of corner ${n}", "North of corner ${n}", "Remove corner ${n}", "Add a corner": :73-87
-- "Metres east and north of the middle of the roof, in order around it. Three at least.": :89
+- "Place", "Latitude", "Longitude": :47, 51-52 — right
+- "From the search above, or typed. Five decimals; north and east are positive." [!S]: :54 — done: "North and east positive, to 5 decimals."
+- "Shape" (Segmented "Rectangle" / "Corners", W/lib/outline/shapes.ts:7-8): :57-61 — right
+- "Length", "Width", "Long side faces": :65-68 — done: "Length", "Width", "The long side faces" ("South", "East", "North", "West")
+- "Corner", "East", "North", "East of corner ${n}", "North of corner ${n}", "Remove corner ${n}", "Add a corner": :73-87 — right
+- "Metres east and north of the middle of the roof, in order around it. Three at least.": :89 — done: "Type each corner in metres east and north of the roof's centre, in order. At least 3."
 
 Plan view (W/components/find/PlanView.tsx):
-- "Plan of the roof, north up" (aria): :46
-- "The plan of the roof is drawn here" / "Enter its length and width, or its corners.": :63-64
+- "Plan of the roof, north up" (aria): :46 — right
+- "The plan of the roof is drawn here" / "Enter its length and width, or its corners.": :63-64 — done: "No roof yet" / "Type the roof's length and width, or its corners."
 
 **Roof type cards** (W/lib/geometry/roof-types.ts:7-9)
-- "Flat, tilted rows" (short "Tilted rows") — "Rows facing the equator"
-- "Flat, east-west" ("East-west") — "Back-to-back, low tilt"
-- "Sloped, flush" ("Sloped") — "Modules follow the roof pitch"
+- "Flat, tilted rows" (short "Tilted rows") — "Rows facing the equator" — done: on Find "Flat, rows facing south" ("north" south of the equator) — "Tilted rows, the usual for a flat roof"; roof-types.ts right
+- "Flat, east-west" ("East-west") — "Back-to-back, low tilt" — done: on Find "Flat, rows facing east and west" — "Low rows back to back: more modules, less from each"; roof-types.ts right
+- "Sloped, flush" ("Sloped") — "Modules follow the roof pitch" — done: on Find "Sloped" — "Modules follow the roof pitch" (was "Modules flush on the slope"); roof-types.ts right
 
 ## Studio shell (top bar, lens nav, vitals, notes, project menu, save state)
 
@@ -725,37 +725,37 @@ Most strings are in W/components/studio/EquipmentPicker.tsx.
 ## Open a project, Import a drawing, project switcher
 
 **Open a project** (W/components/shell/OpenProject.tsx)
-- Title "Open a project": :17
-- "A project saved by this app. It opens in the Studio and runs again here." [!S]: :18
-- Drop zone "Drop the project file here" / "An .rtd file saved by this app" / "It is read, and opens as a new design on this device" [!S]: :107
-- "Cancel", "Open", "Try again": :101-111
-- "Notes on the file" (aria): :117
+- Title "Open a project": :17 — done: "Open a project file"
+- "A project saved by this app. It opens in the Studio and runs again here." [!S]: :18 — done: "A design downloaded from the app as one file."
+- Drop zone "Drop the project file here" / "An .rtd file saved by this app" / "It is read, and opens as a new design on this device" [!S]: :107 — done: "Drop the project file here" / "An .rtd file" / "An .rtd file" (while a file is held over it)
+- "Cancel", "Open", "Try again": :101-111 — right
+- "Notes on the file" (aria): :117 — right
 - Refusals (W/lib/flow/open-project.ts):
-  - "Choose a project file (.rtd).": :11
-  - "This file is larger than any project this app saves, so it cannot be opened.": :21
-  - "The file could not be read. Choose another.": :24
+  - "Choose a project file (.rtd).": :11 — right
+  - "This file is larger than any project this app saves, so it cannot be opened.": :21 — done: "This file is larger than any project file the app saves. Choose another."
+  - "The file could not be read. Choose another.": :24 — right
 
 **Import a drawing** (W/components/shell/ImportDrawing.tsx)
-- Title "Import a drawing": :112
-- Intro: "The largest closed shape is the roof. In a KMZ or KML the other closed shapes are obstacles named by their placemark, and open lines are walls; in a DXF the other closed polylines are obstacles named by their layer, and circles are tanks. A height in a name, as h=2.5, is read. A KMZ or KML says where the roof is; a DXF does not, so its place is asked." [!S, very long] [!J KMZ/KML/DXF, placemark, polylines]: :30
-- Drop zone "Drop the drawing here" / "KMZ, KML or DXF" / "It becomes the roof of a new design": :121
-- "DXF units" [!J]; "Suggested for this file. Change it if the drawing is in millimetres" / "Chosen once the file is a DXF": :124-127
-- "Place"; "The drawing does not say where the roof is. Search the place, or type its coordinates" / "From the search. Change it if the drawing is elsewhere": :132-134
-- "Latitude" (° N), "Longitude" (° E): :139-140
-- "Cancel", "Open the roof": :115-116
+- Title "Import a drawing": :112 — right
+- Intro: "The largest closed shape is the roof. In a KMZ or KML the other closed shapes are obstacles named by their placemark, and open lines are walls; in a DXF the other closed polylines are obstacles named by their layer, and circles are tanks. A height in a name, as h=2.5, is read. A KMZ or KML says where the roof is; a DXF does not, so its place is asked." [!S, very long] [!J KMZ/KML/DXF, placemark, polylines]: :30 — done: after the drop, a list: "Roof: the largest closed shape" · "Obstacles: the other closed shapes, circles as tanks, lines in a KMZ or KML as walls" · "Heights: from a shape's name, as h=2.5"; the place of a DXF is asked by its own field
+- Drop zone "Drop the drawing here" / "KMZ, KML or DXF" / "It becomes the roof of a new design": :121 — done: "Drop the drawing here" / "KMZ, KML or DXF" / "KMZ, KML or DXF" (while a file is held over it)
+- "DXF units" [!J]; "Suggested for this file. Change it if the drawing is in millimetres" / "Chosen once the file is a DXF": :124-127 — done: "DXF units"; "If the drawing is in millimetres, choose mm" / "For a DXF"
+- "Place"; "The drawing does not say where the roof is. Search the place, or type its coordinates" / "From the search. Change it if the drawing is elsewhere": :132-134 — done: "Place"; "Where is the roof?" / "From the search"
+- "Latitude" (° N), "Longitude" (° E): :139-140 — right
+- "Cancel", "Open the roof": :115-116 — right
 - Errors:
-  - "The file could not be read." / "The file could not be read. Choose another.": :45, 105
-  - "This drawing is larger than the app can send, about 4.7 MB. Save it with the roof and its obstacles alone, and choose it again." [!S]: W/lib/flow/import-drawing.ts:26
-- File fact "${DXF|File} · ${n} KB · read when the roof is opened": import-drawing.ts:59
+  - "The file could not be read." / "The file could not be read. Choose another.": :45, 105 — right
+  - "This drawing is larger than the app can send, about 4.7 MB. Save it with the roof and its obstacles alone, and choose it again." [!S]: W/lib/flow/import-drawing.ts:26 — done: "The app can send a drawing of about 4.7 MB at most. Save this one with only the roof and its obstacles, then choose it again."
+- File fact "${DXF|File} · ${n} KB · read when the roof is opened": import-drawing.ts:59 — done: "${DXF|File} · ${n} KB"
 
 **Shared file drop** (W/components/ui/FileDrop.tsx)
-- "Let go to load the file": :94
-- "Choose another": :106, 124, 144
-- "Reading the file": :132
-- "This file was not loaded" (mark "Note"): :140-142
-- "Choose a file": :153
+- "Let go to load the file": :94 — right
+- "Choose another": :106, 124, 144 — right
+- "Reading the file": :132 — right
+- "This file was not loaded" (mark "Note"): :140-142 — done: "File not loaded" (mark "Note")
+- "Choose a file": :153 — right
 
-**Project switcher.** See Studio shell above.
+**Project switcher.** See Studio shell above. — its rows are the Studio shell's
 
 ## Help sheet
 
