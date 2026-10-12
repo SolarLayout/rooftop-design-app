@@ -1,6 +1,7 @@
 import { useId } from "react";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Icon } from "@/components/ui/Icon";
+import { openWordsOf } from "@/lib/flow/no-options";
 import type { Decision } from "@/lib/performance/page-view";
 
 const CARD =
@@ -14,8 +15,8 @@ type Props = {
 
 /**
  * Before there are options (plan/phase-08-plan.md, decision 15; D37; the boards "Performance, states" and "Handover,
- * states"): the API's title and message, word for word, on the surface of a decision, leading to the Strings lens where
- * that is decided. No voltage is offered here, and nothing of energy is shown.
+ * states"): the API's title and message, word for word, on the surface of a decision, leading to the step where that is
+ * decided, named on its press ("Open Roof", "Open Strings"). No voltage is offered here, and nothing of energy is shown.
  */
 export function NoOptionsCard({ decision, testId = "energy-waits" }: Props) {
   const heading = useId();
@@ -31,7 +32,7 @@ export function NoOptionsCard({ decision, testId = "energy-waits" }: Props) {
         </div>
       </div>
       <ButtonLink href={decision.path} className="tablet:shrink-0">
-        Open Strings
+        {openWordsOf(decision.path)}
         <Icon name="arrow-right" size={16} className="text-text-2" />
       </ButtonLink>
     </section>
