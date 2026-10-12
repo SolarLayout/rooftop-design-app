@@ -1,46 +1,48 @@
 ---
 title: Move or turn the roof
-summary: Pick the closed roof up, then drag it into place or turn it by its round handle. Its obstacles go with it.
+summary: Drag the roof to move it, or its round handle to turn it. Its obstacles move with it.
 kind: tool
 related:
+  - find.tool.box
+  - find.tool.move-an-obstacle
   - find.section.edges
-  - app.section.obstacles
 docs:
   page: find
   section: Move or turn the roof
 ---
 
 <Steps>
-<Step title="Pick the roof up">
-<Pointer>With `Box` or `Tank` in hand (`Box` is the tool you hold once the roof is closed), click inside the roof, away from a corner and from an obstacle. With `Wall` or `Building` in hand, a click places a point instead.</Pointer>
-<Touch>With `Box` or `Tank` in hand (`Box` is the tool you hold once the roof is closed), press inside the roof, away from a corner and from an obstacle. With `Wall` or `Building` in hand, a press places a point instead.</Touch>
-<Picture src="/help/find/move-the-roof/1.jpg" alt="The closed roof on the map, its corners and the lengths of its edges shown" width={1038} height={544}>
-  <Mark n={1} x={22} y={38.1} ring>Inside the roof, on a clear spot</Mark>
-</Picture>
-</Step>
-<Step title="It is picked">
-Its outline brightens, and the round handle appears above it.
-<Picture src="/help/find/move-the-roof/2.jpg" alt="The roof picked: a brighter outline, and a round handle above its top edge" width={1038} height={544}>
-  <Mark n={1} x={42.2} y={10.7} ring>The round handle, to turn it</Mark>
+<Step title="Click inside the roof">
+<Pointer>Click a clear spot inside the roof, away from its corners and its obstacles.</Pointer>
+<Touch>Press a clear spot inside the roof, away from its corners and its obstacles.</Touch>
+If `Wall` or `Building` is in hand, choose `Box` first: with them, a click places a point. The roof is picked up: its outline brightens, and a round handle stands off the edge that faces nearest north.
+<Picture src="/help/find/move-the-roof/1.jpg" alt="The closed roof on the map, its corners and the lengths of its edges shown" width={1138} height={578}>
+  <Mark n={1} x={20} y={35.8} ring>Inside the roof, on a clear spot</Mark>
 </Picture>
 </Step>
 <Step title="Drag it into place">
-<Pointer>Drag inside the roof. The arrow keys nudge it a tenth of a metre, a metre with <Key>Shift</Key>.</Pointer>
-<Touch>Drag with one finger inside the roof. Two fingers move the map, as always.</Touch>
-<Picture clip="/help/find/move-the-roof/3.mp4" length="0:06" src="/help/find/move-the-roof/3.jpg" alt="The roof dragged to the right and down, a dashed outline where it was, and how far it has moved" width={1038} height={544}>
-  <Mark n={1} x={33.7} y={52.8}>How far it has moved, east and south</Mark>
-  <Mark n={2} x={11.6} y={27.2}>Where it was</Mark>
+<Pointer>Drag from inside the roof. The arrow keys nudge it a tenth of a metre, a metre with <Key>Shift</Key>.</Pointer>
+<Touch>Drag with one finger from inside the roof. Two fingers move the map.</Touch>
+A dashed outline shows where it was, and a label how far it has moved.
+<Picture clip="/help/find/move-the-roof/2.mp4" length="0:06" src="/help/find/move-the-roof/2.jpg" alt="The roof dragged to the right and down, a dashed outline where it was, and how far it has moved" width={1138} height={578}>
+  <Mark n={1} x={43.7} y={54}>How far it has moved, east and south</Mark>
+  <Mark n={2} x={10.7} y={26}>Where it was</Mark>
 </Picture>
 </Step>
-<Step title="Turn it by its handle">
-Drag the round handle around the roof. Its obstacles turn with it.
-<Picture clip="/help/find/move-the-roof/4.mp4" length="0:07" src="/help/find/move-the-roof/4.jpg" alt="The roof turned by its handle, the angle turned and the direction it now faces shown beside the handle" width={1038} height={544}>
-  <Mark n={1} x={48.2} y={12.1} ring>Drag the handle round</Mark>
-  <Mark n={2} x={88.5} y={6}>The angle turned, and where the roof now faces</Mark>
+<Step title="Turn it by its round handle">
+Drag the round handle round the roof. The label beside it says the angle turned and where the roof now faces. When the edge by the handle comes to face within a few degrees of north, east, south or west, the turn snaps square to it.
+<Picture clip="/help/find/move-the-roof/3.mp4" length="0:07" src="/help/find/move-the-roof/3.jpg" alt="The roof turned by its handle, the angle turned and the direction it now faces shown beside the handle" width={1138} height={578}>
+  <Mark n={1} x={43.8} y={11.4} ring>Drag the handle round</Mark>
+  <Mark n={2} x={65.5} y={11.6}>The angle turned, and where the roof now faces</Mark>
 </Picture>
 </Step>
 </Steps>
 
-## Then
+<Pointer>To put the roof down, click outside it, choose another tool, or press <Key>Esc</Key>.</Pointer>
+<Touch>To put the roof down, press outside it or choose another tool.</Touch>
+The design takes the roof where it stands when you press `Build this roof`.
 
-Nothing in the Studio changes until you press `Build this roof`. <Pointer>A step too far: <Key>⌘ Z</Key> or <Key>Ctrl Z</Key> takes it back.</Pointer><Touch>A step too far: Undo, in the toolbar, takes it back.</Touch>
+## Undo
+
+<Pointer>Press <Key>⌘ Z</Key> or <Key>Ctrl Z</Key> to take back the last move or turn, and <Key>Shift</Key> with it to redo.</Pointer>
+<Touch>Drag the roof or its handle back to undo a move or a turn.</Touch>

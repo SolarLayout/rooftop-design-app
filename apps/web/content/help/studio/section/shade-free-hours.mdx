@@ -1,0 +1,34 @@
+---
+title: Shade-free hours
+summary: Set the hours of the design day in which rows and obstacles must not shade the modules.
+kind: section
+related:
+  - studio.section.spacing
+  - studio.section.design-day
+  - studio.section.on-the-roof
+docs:
+  page: array
+  section: Shade-free window
+aliases:
+  - studio.section.shade-free-window
+---
+
+## What to set
+
+Keep the app's hours unless the client asks for more of the day free of shade. They are in the Array step, under Spacing: drag the two ends of `Shade-free hours`. The hours are in `solar time`, the time by the sun, noon when it stands highest, and move by the quarter hour. The start is noon at the latest, the end noon at the earliest.
+
+Under the slider stands who set them: `Default`, or `Yours · default` with the app's hours and `Reset`, which gives them back.
+
+## What it changes
+
+The app follows the sun through these hours on the <HelpLink k="studio.section.design-day">design day</HelpLink>, every quarter hour, then lays out the roof again and runs the design.
+
+- Obstacles and the parapet: the area their shadows cross, at the height of the modules' lower edge, stays free of modules, unless `Allow shaded positions` is on. This holds on every roof type.
+- `Tilted rows`: while `Row spacing from the shade-free hours` is on, the rows stand far enough apart that one does not shade the next.
+- `East-west`: the units stand side by side, with a gap only where these hours need one. A note then gives the gap.
+
+The hours shape the layout alone. The energy counts the shade on every module in every hour of the weather year. The Sun view draws them as the thick part of the sun's path.
+
+## When to change it
+
+Widen them to keep more of the day free of shade: rows stand further apart, more of the roof round obstacles stays empty, and fewer modules fit. Narrow them to fit more modules, with more shade outside the hours.

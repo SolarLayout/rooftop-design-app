@@ -1,7 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { badDocsPlaces, brokenLinks, clashingAliases, driftedOptions, typedNumbers } from "./checks";
+import { BOARD_TOPICS } from "./board-topics";
+import { answerNotFirst, badDocsPlaces, brokenLinks, clashingAliases, driftedOptions, longSummaries, typedNumbers, voiceFindings } from "./checks";
 import { MANIFEST_PATH, manifestOf, readTopics } from "./generate";
 import { OPTIONS_OF } from "./options";
 import { badClips, badPictures } from "./pictures-in-topics";
@@ -43,6 +44,23 @@ describe("the topics of the help", () => {
 
   test("no number is typed with its unit", () => {
     expect(typedNumbers(topics)).toEqual([]);
+  });
+
+  test("the topics are board 11's, each with its title and its summary word for word (D111)", () => {
+    const written = Object.fromEntries(topics.map(({ key, frontmatter }) => [key, { title: frontmatter.title, summary: frontmatter.summary }]));
+    expect(written).toEqual(BOARD_TOPICS);
+  });
+
+  test("every summary says the thing's job in under 20 words (V2 · 11)", () => {
+    expect(longSummaries(topics)).toEqual([]);
+  });
+
+  test("no never-word, no old name, no \"(s)\" (plan/v2/voice.md §6)", () => {
+    expect(voiceFindings(topics)).toEqual([]);
+  });
+
+  test("every section answers first, what to set; every how-to is its numbered steps (voice §9)", () => {
+    expect(answerNotFirst(topics)).toEqual([]);
   });
 
   test("the manifest is written from them (bun help:gen)", () => {

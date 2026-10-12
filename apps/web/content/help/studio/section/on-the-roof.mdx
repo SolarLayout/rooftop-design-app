@@ -1,29 +1,29 @@
 ---
 title: On the roof
-summary: What the Sun view draws over the roof, the sun's path, its shade-free window and the engine's own shadow outlines.
+summary: "Choose what the Sun view draws: the sun's arc, its shade-free hours, shadow outlines, the shade map."
 kind: section
 related:
-  - studio.section.day
-  - studio.section.sun-at-the-hour
-  - app.section.obstacles
+  - studio.section.shade-map
+  - studio.section.the-sun-at-the-time
+  - studio.section.shade-free-hours
 docs:
   page: sun
   section: On the roof
 ---
 
-## The four switches
+## What to set
 
-- `Sun path`: the arc the sun follows across the sky on the day shown. On by default.
-- `Shade-free hours`: the part of the arc inside the shade-free hours, drawn thicker. Its line gives the hours. On by default. It is dimmed and cannot be turned while the sun path is off.
-- `Shadow outlines`: the shadows of the parapet and the obstacles on the roof surface at the day and hour shown, as the app works them out, dashed over the shadows the view renders, to compare. Off by default.
-- `Shade map on the modules`: each module coloured by its loss to near shade over the year, with the map's steps under the switches. Off by default.
+Turn on what the Sun view draws over the roof. Unless you are checking the shade, keep the first two on and the other two off.
 
-## How to read the outlines
+- `Sun path`: the arc the sun follows across the sky on the day shown.
+- `Shade-free hours`: the part of the arc inside the shade-free hours, drawn thicker. Its line gives the hours. It is dimmed while `Sun path` is off.
+- `Shadow outlines`: the shadows of the parapet and the obstacles at the day and time shown, as the app computes them, dashed over the shadows the view draws.
+- `Shade map on the modules`: each module coloured by its loss to shade over the year, with the map's steps under the switches. See <HelpLink k="studio.section.shade-map">Shade map</HelpLink>.
 
-Where the dashed outlines and the rendered shadows agree, the view is true. The outlines are asked for once the hour stays still for a moment, and are shown only while they are of the hour on screen.
+## What it changes
 
-The view, the outlines and the shade-free hours that space the rows place the sun by solar time on the day shown. The year's shading places it at every hour of the weather, from its exact position. The two differ by a fraction of a degree: the view is a close guide, and the year is counted exactly.
+Only what is drawn. The layout, the strings and the energy stay as they are. The shade-free hours are set in the Array step, in <HelpLink k="studio.section.shade-free-hours">Shade-free hours</HelpLink>.
 
-## What they change
+## When to change it
 
-Nothing of the design. The switches only change what is drawn. The shade-free hours are set in the Array step.
+Turn on `Shadow outlines` to check the view: where the dashed outlines and the drawn shadows agree, the view is true. The outlines show a moment after the time stops moving. Turn on the shade map to see which modules lose most to shade.

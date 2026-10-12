@@ -11,5 +11,5 @@ export const OPTIONS_OF: Readonly<Record<string, () => readonly Option[]>> = {
   "studio.section.system-voltage": () => VOLTAGES.map((volts) => ({ id: String(volts), label: `${volts} V` })),
   "app.section.roof-type": () => ROOF_TYPES.map(({ id, name }) => ({ id, label: name })),
   "find.section.shape": () => SHAPES.map(({ value, label }) => ({ id: value, label })),
-  "studio.section.day": () => [...DAY_CHOICES.map(({ dayOfYear, label }) => ({ id: String(dayOfYear), label })), ANY_DATE],
+  "studio.section.design-day": () => [...DAY_CHOICES.map(({ dayOfYear, label }) => ({ id: String(dayOfYear), label })), ANY_DATE],
 };

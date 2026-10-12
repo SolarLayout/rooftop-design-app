@@ -1,9 +1,10 @@
 ---
 title: Move, turn or remove an obstacle
-summary: Pick an obstacle on the map, then drag it, turn a box or a building by its handle, or remove it. Its height is changed in the Roof step.
+summary: Select an obstacle on the map, then drag it, turn it by its handle, or remove it.
 kind: tool
 related:
   - find.tool.move-the-roof
+  - find.tool.box
   - app.section.obstacles
 docs:
   page: find
@@ -11,32 +12,38 @@ docs:
 ---
 
 <Steps>
-<Step title="Pick it">
-<Pointer>Click it on the map, or its row in the list of obstacles.</Pointer>
-<Touch>Press it on the map, or its row in the list of obstacles.</Touch>
-Its corners and, for a box or a building, its round handle appear.
-<Picture src="/help/find/move-an-obstacle/1.jpg" alt="The stair room picked on the roof: its corners shown, and a round handle above it" width={1038} height={544}>
-  <Mark n={1} x={30} y={60}>The obstacle, picked: its corners show</Mark>
-  <Mark n={2} x={25.6} y={34.2} ring>Its handle, to turn it</Mark>
+<Step title="Select the obstacle">
+<Pointer>Click it on the map, with `Box`, `Tank` or `Tree` in hand: with `Wall` or `Building`, a click places a point. Or click its row under `Obstacles` in the column.</Pointer>
+<Touch>Press it on the map, with `Box`, `Tank` or `Tree` in hand: with `Wall` or `Building`, a press places a point. Or press its row under `Obstacles` in the column.</Touch>
+Its corners show, and for a box or a building a round handle. Drag a corner to reshape it: a box stays a rectangle, and the one handle of a tank or a tree, at its edge, sets its size.
+<Picture src="/help/find/move-an-obstacle/1.jpg" alt="The stair room selected on the roof: its corners shown, and a round handle above it" width={1200} height={600}>
+  <Mark n={1} x={33.7} y={54.7}>The obstacle, selected: its corners show</Mark>
+  <Mark n={2} x={33.7} y={35.3} ring>Its handle, to turn it</Mark>
 </Picture>
 </Step>
-<Step title="Drag it">
-Drag it where it stands. One on the roof stays on it, sliding along the edge it meets; a building beside the roof moves freely.
-<Picture clip="/help/find/move-an-obstacle/2.mp4" length="0:06" src="/help/find/move-an-obstacle/2.jpg" alt="The stair room dragged up and to the right" width={1038} height={544}>
-  <Mark n={1} x={30.2} y={48.5} ring>Dragged</Mark>
+<Step title="Drag it into place">
+<Pointer>Drag from inside it. The arrow keys nudge it a tenth of a metre, a metre with <Key>Shift</Key>.</Pointer>
+<Touch>Drag with one finger from inside it.</Touch>
+An obstacle on the roof stays on it, sliding along the edge it meets. A building beside the roof moves freely.
+<Picture clip="/help/find/move-an-obstacle/2.mp4" length="0:06" src="/help/find/move-an-obstacle/2.jpg" alt="The stair room dragged up and to the right, a dashed outline where it was, and how far it has moved" width={1200} height={600}>
+  <Mark n={1} x={37.7} y={50.8} ring>Dragged</Mark>
 </Picture>
 </Step>
 <Step title="Turn it by its handle">
-A box or a building turns: drag its round handle round it. A tank or a wall has no handle.
-<Picture clip="/help/find/move-an-obstacle/3.mp4" length="0:07" src="/help/find/move-an-obstacle/3.jpg" alt="The stair room turned by its handle, the angle turned shown beside it" width={1038} height={544}>
-  <Mark n={1} x={31} y={38.2} ring>The handle</Mark>
-  <Mark n={2} x={95.8} y={34}>How far it has turned</Mark>
+Drag the round handle round the obstacle. A box and a building turn; a tank, a tree and a wall have no handle, and only move.
+<Picture clip="/help/find/move-an-obstacle/3.mp4" length="0:07" src="/help/find/move-an-obstacle/3.jpg" alt="The stair room turned by its handle, the angle turned shown beside it" width={1200} height={600}>
+  <Mark n={1} x={37.7} y={37} ring>The handle</Mark>
+  <Mark n={2} x={88.8} y={37}>How far it has turned</Mark>
 </Picture>
 </Step>
 </Steps>
 
 ## Remove it
 
-<Pointer>Pick it and press <Key>Delete</Key>, or press the bin of its row in the list.</Pointer>
-<Touch>Press the bin of its row in the list.</Touch>
-<Pointer>A step too far: <Key>⌘ Z</Key> or <Key>Ctrl Z</Key> takes it back.</Pointer><Touch>A step too far: Undo, in the column, takes it back.</Touch>
+<Pointer>Select it and press <Key>Delete</Key>, or press the bin of its row under `Obstacles`.</Pointer>
+<Touch>Press the bin of its row under `Obstacles`.</Touch>
+
+## Undo
+
+<Pointer>Press <Key>⌘ Z</Key> or <Key>Ctrl Z</Key> to take back the last step, and <Key>Shift</Key> with it to redo.</Pointer>
+<Touch>Drag the obstacle or its handle back to undo a move or a turn.</Touch>

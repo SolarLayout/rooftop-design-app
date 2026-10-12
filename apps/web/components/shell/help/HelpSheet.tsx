@@ -7,25 +7,27 @@ import { Icon } from "@/components/ui/Icon";
 import { IconButton } from "@/components/ui/IconButton";
 import { SECTION } from "@/components/ui/section-look";
 import { SheetGrip } from "@/components/ui/SheetGrip";
-import { inTheDocsOf, type DocsPlace } from "@/lib/docs/docs";
+import { inTheDocsOf } from "@/lib/docs/docs";
 import { ALIASES, MANIFEST } from "@/lib/help/manifest.gen";
-import { resolvedKey, whereOf } from "@/lib/help/where";
+import { relatedRowsOf, type RelatedRow } from "@/lib/help/related";
+import { whereOf } from "@/lib/help/where";
 import { useDocsHome } from "../use-docs-home";
 import { HelpBody } from "./HelpBody";
 import { useHelp } from "./HelpProvider";
 
-// Desktop and tablet: from the right edge, the whole height of the window, 420 wide. Phone: from the bottom, the whole
-// height but 48, with the grip (components.md, "Help disc and help sheet"; the owner, session 19).
+// Desktop and tablet: from the right edge, the whole height of the window, 440 wide on desktop and 480 on tablet (V2 · 11).
+// Phone: from the bottom, the whole height but 48, with the grip (components.md, "Help disc and help sheet"; session 19).
 const PANEL = classNames(
   "flex h-full w-full flex-col rounded-t-panel border border-b-0 border-line bg-chrome",
-  "tablet:w-105 tablet:rounded-none tablet:border-0 tablet:border-l tablet:pt-safe-0 tablet:pr-safe-0 tablet:shadow-drawer",
+  "tablet:w-120 tablet:rounded-none tablet:border-0 tablet:border-l tablet:pt-safe-0 tablet:pr-safe-0 tablet:shadow-drawer desktop:w-110",
 );
 
 const REGISTRY = { entries: MANIFEST, aliases: ALIASES };
 
 /**
  * The help sheet (D80): where it was opened, Back once a link was followed, the topic's title and summary, its options
- * with the user's own marked, its body, its related topics. The browser's dialog, so that the focus goes in, stays in and
+ * with the user's own marked, its body, and one list at its foot, Related, its topics and its place in the docs (V2 · 11,
+ * V2-87). The browser's dialog, so that the focus goes in, stays in and
  * goes back to the disc; Escape, the ×, or a press beside it close it. It comes and goes as the drawers do.
  */
 export function HelpSheet() {
@@ -33,7 +35,7 @@ export function HelpSheet() {
   const pathname = usePathname();
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
-  const relatedId = useId();
+  const docsHome = useDocsHome();
   const shown = help?.shown ?? null;
   const isOpen = shown !== null;
 
@@ -103,32 +105,7 @@ export function HelpSheet() {
               </ul>
             ) : null}
             <HelpBody key={shown.key} entry={shown.entry} />
-            {shown.entry.related.length > 0 ? (
-              <div className="flex shrink-0 flex-col gap-1.5">
-                <span id={relatedId} className={SECTION}>
-                  Related
-                </span>
-                <ul aria-labelledby={relatedId} className="-mx-2 flex flex-col">
-                  {shown.entry.related.map((raw) => {
-                    const key = resolvedKey(raw, REGISTRY) as keyof typeof MANIFEST | null;
-                    if (!key) return null;
-                    const related = MANIFEST[key];
-                    return (
-                      <li key={key}>
-                        <button type="button" onClick={() => help.follow(key)} className="flex w-full items-center gap-3 rounded-row px-2 py-2.5 text-left hovered:bg-surface-2 focus-ring">
-                          <span className="flex min-w-0 grow flex-col gap-0.5">
-                            <span className="font-medium">{related.title}</span>
-                            <span className="line-clamp-2 type-body-touch desktop:type-body text-text-2">{related.summary}</span>
-                          </span>
-                          <Icon name="chevron-right" size={16} className="shrink-0 text-text-3" />
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ) : null}
-            <InTheDocs place={shown.entry.docs} />
+            <Related rows={relatedRowsOf(shown.entry.related, REGISTRY, inTheDocsOf(shown.entry.docs, docsHome))} onFollow={help.follow} />
           </div>
         </div>
       ) : null}
@@ -136,24 +113,34 @@ export function HelpSheet() {
   );
 }
 
-/** The page and section of the docs that tell more about the topic, opened in a new tab (D91), after its related topics. */
-function InTheDocs({ place }: { place: DocsPlace | undefined }) {
+const ROW = "flex min-h-touch w-full items-center gap-3 border-t border-line-subtle px-2 text-left hovered:bg-surface-2 focus-ring";
+
+/** One list at the topic's foot: its related topics, each opened in the sheet with Back; then its place in the docs, in a new tab (D91). */
+function Related({ rows, onFollow }: { rows: RelatedRow[]; onFollow: (key: string) => void }) {
   const id = useId();
-  const row = inTheDocsOf(place, useDocsHome());
-  if (!row) return null;
+  if (rows.length === 0) return null;
   return (
-    <div className="flex shrink-0 flex-col gap-1.5">
+    <div className="flex shrink-0 flex-col gap-2">
       <span id={id} className={SECTION}>
-        In the docs
+        Related
       </span>
-      <a aria-describedby={id} href={row.href} target="_blank" rel="noopener" className="-mx-2 flex items-center gap-3 rounded-row px-2 py-2.5 hovered:bg-surface-2 focus-ring">
-        <Icon name="book" size={18} stroke="light" className="shrink-0 text-text-2" />
-        <span className="flex min-w-0 grow flex-col gap-0.5">
-          <span className="font-medium">{row.title}</span>
-          <span className="line-clamp-2 type-body-touch desktop:type-body text-text-2">{row.section}</span>
-        </span>
-        <Icon name="external" size={16} className="shrink-0 text-text-3" />
-      </a>
+      <ul aria-labelledby={id} className="-mx-2 flex flex-col">
+        {rows.map((row) => (
+          <li key={row.kind === "topic" ? row.key : row.href}>
+            {row.kind === "topic" ? (
+              <button type="button" onClick={() => onFollow(row.key)} className={classNames(ROW, "cursor-pointer")}>
+                <span className="grow font-medium">{row.title}</span>
+                <Icon name="chevron-right" size={16} className="shrink-0 text-text-2" />
+              </button>
+            ) : (
+              <a href={row.href} target="_blank" rel="noopener" className={ROW}>
+                <span className="grow font-medium">{row.words}</span>
+                <Icon name="book" size={16} stroke="light" className="shrink-0 text-text-2" />
+              </a>
+            )}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

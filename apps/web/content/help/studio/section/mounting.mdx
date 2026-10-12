@@ -1,33 +1,38 @@
 ---
 title: Mounting
-summary: "How the modules stand on the roof: their tilt, their orientation, how many up a table, and their height. The fields follow the roof type."
+summary: Set the modules' tilt, their orientation, and how many stand in each row's height.
 kind: section
 related:
-  - studio.section.module
   - studio.section.spacing
-  - studio.section.shade-free-window
+  - studio.section.module
+  - app.section.roof-type
 docs:
   page: array
   section: Mounting
 ---
 
-## The fields by roof type
+## What to set
 
-- `Flat, tilted rows`: `Tilt`, `Orientation`, `Modules in tilt` and `Clearance under the lower edge`.
-- `Flat, east-west`: `East-west tilt`, `Ridge gap` and `Clearance under the lower edge`.
-- `Sloped, flush`: `Orientation` and `Modules in tilt`. The tilt is the roof's own pitch, set in the Roof step, and the modules lie a small fixed height above the roof.
+Keep the app's values unless the racking fixes them. On `Tilted rows`:
 
-## What each field does
+- `Tilt`: the angle of the modules from flat. Its hint says `Default · low for wind on a flat roof`.
+- `Orientation`: `Portrait` puts the module's long side up the slope, `Landscape` its short side.
+- `Modules in tilt`: how many modules stand one above another in a row. Its hint says `Default · one module up each row`.
+- `Clearance under the lower edge`: the height of the modules' lower edge above the roof.
 
-- `Tilt`: the angle of the tables. The app's tilt is low, for the wind on a flat roof.
-- `Orientation`: `Portrait` puts the module's length up the slope, `Landscape` its width.
-- `Modules in tilt`: how many modules stand one above another on a table. A taller table casts a longer shadow, so a shade-free row pitch grows with it.
-- `Clearance under the lower edge`: the height of the table's lower edge above the roof. The shadows of obstacles and parapets that keep positions empty are worked out at this height.
-- `East-west tilt`: the tilt of each side, away from the ridge. Each side holds one module with its width up the slope, so there is no orientation to choose.
-- `Ridge gap`: the gap between the two sides at the ridge.
+The fields follow the roof type. `East-west` has `East-west tilt` (`Each side, away from the ridge`), `Ridge gap`, the space between the two sides at the ridge, and `Clearance under the lower edge`. Each side holds one module, its short side up the slope. `Sloped` has `Orientation` and `Modules in tilt`: `Tilt` reads the roof's pitch from the Roof step, and the modules lie a small fixed height above the roof.
 
-## How it behaves
+## What it changes
 
-A slider commits when you let go, a choice or a stepper at once, a number on Enter or when you leave the field. Each change lays the roof out again, and the design runs again.
+The app lays out the roof again, then runs the design.
 
-Closed, the section is one line: the tilt, the orientation and the modules in tilt, and who set them. Each field says `Default` with what is usual, or `Yours` with the default it took the place of and `Reset`, which gives the default back.
+- A steeper tilt or more modules in tilt makes a row taller. Its shadow grows, and rows spaced by the shade-free hours stand further apart.
+- The orientation changes the size of each position, and so how many fit along a row.
+- The app works out the shadows of obstacles and the parapet at the height of the lower edge: a higher edge keeps less of the roof free of modules.
+- The tilt changes the sunlight on the modules, and so the energy.
+
+Under each field stands who set it: `Default`, or `Yours · default` with the app's value and `Reset`, which gives it back.
+
+## When to change it
+
+When the racking has a set tilt or height, or when the other orientation fits more modules on the roof.

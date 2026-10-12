@@ -1,6 +1,6 @@
 ---
-title: Draw a building beside the roof
-summary: Press each corner of a building next to the roof, close it on the first, then give its height. Its shadow can fall on the roof.
+title: Add a building beside the roof
+summary: Outline a building next to the roof and type its height, so its shadow on the roof counts.
 kind: tool
 related:
   - find.tool.move-an-obstacle
@@ -12,16 +12,27 @@ docs:
 ---
 
 <Steps>
-<Step title="Press each corner">
-Choose `Building` under `Obstacles` in the column, then go round the building beside the roof, one corner after another.
-<Picture src="/help/find/building/1.jpg" alt="Four corners of a building west of the roof pressed in turn" width={1178} height={544}>
-  <Mark n={1} x={8} y={34.4} ring>The first corner: press it again to close it</Mark>
+<Step title="Click each corner of the building">
+Choose `Building` under `Obstacles` in the column.
+<Pointer>Go round the building beside the roof, one corner after another.</Pointer>
+<Touch>Press each corner of the building beside the roof in turn.</Touch>
+<Picture src="/help/find/building/1.jpg" alt="Four corners of a building west of the roof placed in turn" width={1218} height={546}>
+  <Mark n={1} x={7.7} y={34.1} ring>The first corner: click it again to close the outline</Mark>
 </Picture>
 </Step>
-<Step title="Close it, and give its height">
-Press the first corner again; a building needs three corners at least. Its height is asked, as for a <HelpLink k="find.tool.box">box</HelpLink>: give it above the roof's surface.
-<Picture src="/help/find/building/2.jpg" alt="The new building beside the roof, picked, its handle above it and its name and height under it" width={1178} height={544}>
-  <Mark n={1} x={12.9} y={18.2} ring>Its handle, to turn it</Mark>
+<Step title="Click the first corner again">
+<Pointer>Click the first corner, or press <Key>Enter</Key>, to close the building's outline. A building needs at least 3 corners. <Key>Esc</Key> takes back the last corner.</Pointer>
+<Touch>Press the first corner to close the building's outline. A building needs at least 3 corners.</Touch>
+</Step>
+<Step title="Type its height above the roof">
+A card beside the building asks for it, as for a <HelpLink k="find.tool.box">box</HelpLink>. Type how far it rises above the roof's surface, not its height from the ground, in `Height above the roof`. Then press `Add` or <Key>Enter</Key>.
+<Picture src="/help/find/building/3.jpg" alt="The new building beside the roof, selected, its handle above it and its name and height under it" width={1218} height={546}>
+  <Mark n={1} x={12.4} y={17.9} ring>Its handle, to turn it</Mark>
 </Picture>
 </Step>
 </Steps>
+
+## Undo
+
+<Pointer>Press <Key>⌘ Z</Key> or <Key>Ctrl Z</Key> to take back the last step, and <Key>Shift</Key> with it to redo.</Pointer>
+<Touch>Press the bin of its row under `Obstacles` to remove the building.</Touch>

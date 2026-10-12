@@ -142,7 +142,7 @@ describe("the groups of Edges and access", () => {
       parapet_h: "Default · measure it on site",
       setback_m: "Default · usually 0.5 to 1.5 m",
       walkway_m: "Default",
-      walkway_every_modules: "Default · one across each row",
+      walkway_every_modules: "Default · counted in modules along a row",
       obstacle_clearance_m: "Default · kept free on every side",
     });
     const changed = roofGroupsOf({ ...DEMO, parapet_h: 1.2 }).flatMap((group) => group.fields).find((field) => field.id === "parapet_h");

@@ -1,26 +1,33 @@
 ---
 title: Shape
-summary: The outline of a roof entered by hand, as a rectangle by its sides or as a table of corners in metres.
+summary: Type the roof's length and width, or its corners in metres.
 kind: section
 values:
   "rectangle": A rectangle, by its length, its width and the direction its long side faces.
-  "corners": Any outline, by its corners in metres east and north of the place, in order around the roof.
+  "corners": Any outline, by its corners in metres east and north of the roof's centre, in order round the roof.
 related:
   - find.section.place
-  - find.section.edges
+  - app.section.roof-type
+  - app.section.obstacles
 docs:
   page: find
   section: By hand
 ---
 
-## Rectangle
+## What to set
 
-`Length` and `Width` are in metres. The longer of the two is the long side, whichever field it is typed in. `The long side faces` is the direction it looks: `South`, `East`, `North` or `West`, south at first.
+Measure the roof on site, or take its measurements from a drawing. For a rectangle, choose `Rectangle` and type its length and width. For any other outline, choose `Corners`.
 
-## Corners
+- `Length` and `Width`: in metres. The longer of the two is the long side, whichever field it is typed in.
+- `The long side faces`: the direction the long side looks, `South`, `East`, `North` or `West`. South at first.
+- `Corners`: `Type each corner in metres east and north of the roof's centre, in order. At least 3.` `Add a corner` adds a row; its bin removes one.
 
-Each row is one corner: metres `East` and `North` of the place given under `Place`, which is taken as the middle of the roof. Enter the corners in order around the roof. `Add a corner` adds a row; the bin removes one. A row that is not complete is left out, and the roof needs three corners at least.
+## What it changes
 
-## How it behaves
+The app draws the roof about the <HelpLink k="find.section.place">place</HelpLink> as soon as the place and the shape are complete, and `Build this roof` says its area. A row of the corners with a blank is left out.
 
-The roof is drawn as you type, once the place and the shape are complete, and `Build this roof` says its area. The built roof is marked `Entered by hand`.
+After that the roof is the same as one outlined on the map: choose its <HelpLink k="app.section.roof-type">roof type</HelpLink>, then build it. Add its obstacles in the Studio's Roof step.
+
+## When to change it
+
+Choose `Corners` when the roof is not a rectangle: an L, a notch, a corner cut off. Enter the roof by hand when the map has no imagery of it, or when its measurements are surer than the imagery.

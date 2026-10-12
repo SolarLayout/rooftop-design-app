@@ -601,7 +601,8 @@ their path, a typed manifest, a gate of tests), the look and the places ours.
 button: "Help: <title>", `aria-haspopup="dialog"`, `aria-expanded` while its topic is shown. On a pointer device the Tooltip
 "with a summary" says the topic's summary and "Click for more"; touch has none, a press opens the sheet.
 
-**The sheet.** Desktop and tablet: from the right edge, the whole height of the window over the top bar, 420 wide,
+**The sheet.** Desktop and tablet: from the right edge, the whole height of the window over the top bar, 440 wide on desktop
+and 480 on tablet (V2 · 11),
 `chrome`, a line of `line` on its left, `shadow-drawer`; the screen under it dimmed (`dim`) and waiting. Phone: from the
 bottom, the whole height but 48, `rounded-t-panel`, with the grip. It comes and goes as the drawers do (`drawer-motion`); it
 holds the focus; Escape, the ×, a press beside it close it, and the focus goes back to the disc.
@@ -613,11 +614,15 @@ holds the focus; Escape, the ×, a press beside it close it, and the focus goes 
   gives of who set it (the system voltage: `Set for India`, `Default`, `Yours`; D87, #159, V2 · 3); the body: headings
   (`type-section`, `text`), words (`text-2`), the user's own on-screen words in mono on `surface-2`, a note (`note-surface`, the note
   mark), a link to another topic in the accent, underlined; while the body loads, three lines of skeleton; when it cannot
-  load, "This part of the help did not load. Check the connection and try again." and Try again. Then "Related" (a section heading:
-  `type-section`, `text`) and a row per topic: its title (500), its summary in two lines at most (`type-body`, `text-2`), a chevron.
-  Last, "In the docs" (the same heading) and one row: a book (18, light), the docs page's title (500), the section under it
-  (`type-body`, `text-2`), and the mark of a link that leaves the app (`external`, 16, `text-3`); it opens the docs at that section
-  in a new tab (D91, the boards "UI fixes · The docs from the app").
+  load, "This part of the help did not load. Check the connection and try again." and Try again. Then one list, "Related" (a
+  section heading: `type-section`, `text`; V2 · 11, V2-87): a row of 44 per topic, a line of `line-subtle` over it, its title
+  (500) and a chevron; last the topic's place in the docs, `<section>, in the docs` with the book (16, light), opened at that
+  section in a new tab (D91). "In the docs" is no list of its own any more. In code the rows are `relatedRowsOf`
+  (`lib/help/related.ts`).
+- A how-to's picture that does not load says so in its place (V2-85): a frame of `surface-1` with a dashed `line-strong`
+  edge, the note mark and `The picture did not load` in `type-strong`, and `Try again` (secondary, s), which asks for it
+  afresh (`PictureFailed`, `useLoading` in `components/shell/help/picture-parts.tsx`). A clip that does not load keeps its
+  picture and says so under it.
 - A related topic or a link opens in the sheet; Back returns, as many steps as were taken; a disc pressed starts afresh.
 - The topic shown is in the address (`?help=<key>`), read when the page opens, so a shared link opens it; nothing else of the
   address is touched.

@@ -1,0 +1,33 @@
+---
+title: Shade over the year
+summary: "How much energy shade costs in a year, by its cause: rows and obstacles, strings, the horizon."
+kind: section
+related:
+  - studio.section.shade-map
+  - studio.section.on-the-roof
+  - app.section.obstacles
+docs:
+  page: sun
+  section: Shading over the year
+aliases:
+  - studio.section.shading-over-the-year
+---
+
+## Reading it
+
+Press `Sun` on the stage, on any step, to open the Sun view. Its card `Shade over the year` stands on the stage; on a tablet or a phone it is in the work column. Each tile is what one cause takes over a year of the weather, in percent.
+
+- `Rows and obstacles`: near shading, the shadows on the modules from the rows in front, the parapet and the obstacles, and the part of the sky they hide from each module.
+- `Strings`: string shading loss, the energy lost on top of that because a partly shaded module drags down its string, which runs at its weakest module. It waits, and says why, until there are strings.
+- `Horizon`: horizon shading, the light that hills and buildings far away take while the sun is behind them, and the part of the sky they hide.
+- `Area kept clear`: the roof inside the edge margin that the shadows of the parapet and the obstacles cover in the shade-free hours of the design day, in square metres. The app leaves it free of modules unless `Allow shaded positions` is on in the Array step.
+
+## What it counts
+
+The line under the tiles says which modules count: those of the chosen option, or every position of the layout before there is an option. A second line says whether the weather brought a horizon. Where it says `Horizon not counted`, the `Horizon` tile reads zero.
+
+On a desktop, the close button folds the card to a chip with the three losses added. Press the chip to open it again. Open or folded is remembered on this device.
+
+## What changes it
+
+The obstacles and their heights, the parapet, the row spacing, the chosen option and the weather. Change them in their steps: the design runs again and the card follows. The <HelpLink k="studio.section.shade-map">shade map</HelpLink> shows which modules lose most.

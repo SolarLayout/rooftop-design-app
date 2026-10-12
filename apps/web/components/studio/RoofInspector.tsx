@@ -189,7 +189,7 @@ export function RoofInspector({ size }: Props) {
       >
         <ObstaclePanel roof={roof} size={size} isHeaded={false} />
       </SummaryRow>
-      <SummaryRow id="roof.location" title="Outline" help="studio.section.location" facts={outlineFactsOf(roof, readouts?.roof_area_m2 ?? null)} setBy={null}>
+      <SummaryRow id="roof.location" title="Outline" help="studio.section.outline" facts={outlineFactsOf(roof, readouts?.roof_area_m2 ?? null)} setBy={null}>
         <OutlineCard card={card} onEdit={editTheOutline} />
       </SummaryRow>
     </div>

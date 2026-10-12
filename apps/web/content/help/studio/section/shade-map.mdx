@@ -1,27 +1,26 @@
 ---
 title: Shade map
-summary: Every module position coloured by its near shading over the year, in five steps, with how many positions are in each.
+summary: Each module coloured by its loss to shade over the year, to see where shade costs most.
 kind: section
 related:
-  - studio.section.shading-over-the-year
+  - studio.section.shade-over-the-year
+  - studio.section.on-the-roof
   - app.section.obstacles
 docs:
   page: sun
   section: Shade map
 ---
 
-## What it shows
+## Reading it
 
-Each position of the layout takes the colour of its near shading over the year, as the design run worked it out: the direct light shaded by the rows in front, the parapet and the obstacles, and the part of the sky they hide from it. Every position is coloured, also those a stringing option does not use.
+Turn on `Shade map on the modules` in On the roof. Each module takes the colour of its near shading over the year: the light that the rows in front, the parapet and the obstacles take from it, the part of the sky they hide included. The horizon is not in the map, as it takes the same from every module. Every position is coloured, including those the option does not use.
 
-## The steps
+The list under the switches gives each step's range and how many positions fall in it. The scale runs from zero to the first round value that holds the largest loss: one, two, five, ten, twenty, fifty or a hundred percent. It is cut into five equal steps. The legend on the stage shows the same scale.
 
-The scale runs from zero to the first round value that holds the largest loss: one, two, five, ten, twenty, fifty or a hundred percent. It is cut into five equal steps, and the list gives each step's range and how many positions fall in it. The legend on the stage shows the same scale.
+## One module
 
-## Reading one module
-
-Select a module, or tap it, for its position number, its row (or unit, on an east-west roof) and its near shading. With a chosen option, it also says the string it belongs to and that string's shading, or that the option does not use it.
+Select a module, or tap it, for its position, its row (its unit, on an east-west roof) and its near shading. With a chosen option, it adds the string the module belongs to and that string's shading, or says that the option does not use it.
 
 ## When it waits
 
-The map follows the design run. While the run is not yet of the layout shown, it says so and colours nothing, so that no module takes another layout's value.
+The map follows the run. Until the run is of the layout shown, it says `Waits for the run` and colours nothing, so that no module shows another layout's value.

@@ -1,0 +1,37 @@
+---
+title: Design day
+summary: The day the rows are spaced for. 21 December has the longest shadows.
+kind: section
+values:
+  "355": "21 December: the winter solstice north of the equator, its longest shadows. South of it, the summer solstice."
+  "80": 21 March, the equinox. Its shadows are shorter than at the winter solstice, longer than at the summer one.
+  "172": "21 June: the winter solstice south of the equator, its longest shadows. North of it, the summer solstice."
+  "any": Any day of the year, by its day and its month.
+related:
+  - studio.section.shade-free-hours
+  - studio.section.spacing
+  - studio.section.the-sun-at-the-time
+docs:
+  page: sun
+  section: The day
+aliases:
+  - studio.section.day
+---
+
+`Day` in the Sun view chooses the day the view shows. `Design day`, in the Array step's Spacing, is the day the rows are spaced for.
+
+## What to set
+
+Keep the winter solstice, the shortest day: the sun stands lowest and the shadows are longest, so rows spaced for it stand furthest apart. It is set in the Array step, under Spacing: `Design day` offers the winter solstice of the roof's side of the equator (`21 Dec` in the north, `21 Jun` in the south), `21 Jun` and `21 Mar`. Its hint says `The day the rows are spaced for. 21 Dec has the longest shadows.`
+
+## What it changes
+
+With the <HelpLink k="studio.section.shade-free-hours">shade-free hours</HelpLink>, the design day sets the row spacing on tilted rows, the gap between east-west units, and the area round obstacles and the parapet kept free of modules. The app lays out the roof again, then runs the design.
+
+## In the Sun view
+
+`Day` chooses the day whose sun, path and shadows the view shows. It changes what is seen, not the design. `21 Dec`, `21 Mar` and `21 Jun` are the solstices and the March equinox; `Any date` opens a `Day` field and a `Month` list. The line under it names the design day, as `Design day: 21 December, the winter solstice in this hemisphere`. Choose the design day's date and the view follows the design day, even when it changes. The `[` and `]` keys step a day back or forward.
+
+## When to change it
+
+When the client takes some winter shade between the rows for more modules: a day nearer summer gives shorter shadows, so the rows stand closer.

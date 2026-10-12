@@ -1,6 +1,6 @@
 ---
-title: Draw a tank
-summary: Drag from the middle of a round tank to its edge, then give its height. It casts a shadow and takes room.
+title: Add a tank
+summary: Drag from the middle of a round tank to its edge, then type its height.
 kind: tool
 related:
   - find.tool.move-an-obstacle
@@ -11,17 +11,26 @@ docs:
   section: What stands on the roof
 ---
 
+A tank is anything round on the roof, such as a water tank, that takes room from the modules and casts a shadow.
+
 <Steps>
-<Step title="Drag from its middle to its edge">
-Choose `Tank` under `Obstacles` in the column, then press at the tank's middle and drag out to its edge.
-<Picture src="/help/find/tank/1.jpg" alt="A round tank being drawn on the roof, from its middle out to its edge" width={1038} height={544}>
-  <Mark n={1} x={20} y={39.2} ring>The tank, drawn as you drag</Mark>
+<Step title="Drag from the tank's middle to its edge">
+Choose `Tank` under `Obstacles` in the column.
+<Pointer>Press at the middle of the tank and drag out to its edge.</Pointer>
+<Touch>Press at the middle of the tank and drag with one finger out to its edge.</Touch>
+<Picture src="/help/find/tank/1.jpg" alt="A round tank being drawn on the roof, from its middle out to its edge" width={1078} height={546}>
+  <Mark n={1} x={18.2} y={38.8} ring>The tank, drawn as you drag</Mark>
 </Picture>
 </Step>
-<Step title="Give its height">
-When you let go, its height is asked, as for a <HelpLink k="find.tool.box">box</HelpLink>. `Add` puts it on the roof, its name and height under it.
-<Picture src="/help/find/tank/2.jpg" alt="The new tank on the roof, its name and height under it" width={1038} height={544}>
-  <Mark n={1} x={20} y={39.2} ring>The tank</Mark>
+<Step title="Type its height">
+When you let go, a card beside the tank asks for it, as for a <HelpLink k="find.tool.box">box</HelpLink>. Type it in `Height above the roof`, then press `Add` or <Key>Enter</Key>. The tank shows its name and height under it, and stays selected: drag the handle at its edge to resize it.
+<Picture src="/help/find/tank/2.jpg" alt="The new tank on the roof, its name and height under it" width={1078} height={546}>
+  <Mark n={1} x={18.2} y={38.8} ring>The tank</Mark>
 </Picture>
 </Step>
 </Steps>
+
+## Undo
+
+<Pointer>Press <Key>⌘ Z</Key> or <Key>Ctrl Z</Key> to take back the last step, and <Key>Shift</Key> with it to redo.</Pointer>
+<Touch>Press the bin of its row under `Obstacles` to remove the tank.</Touch>

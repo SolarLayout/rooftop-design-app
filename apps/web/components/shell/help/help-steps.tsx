@@ -6,7 +6,7 @@ import { classNames } from "@/components/ui/class-names";
 import { Icon } from "@/components/ui/Icon";
 import { PictureClip } from "./PictureClip";
 import { PictureLarge } from "./PictureLarge";
-import { FRAME, MARK, MarksOver, MarkWords, useMatches, type MarkProps } from "./picture-parts";
+import { FRAME, MARK, MarksOver, MarkWords, PictureFailed, useLoading, useMatches, type MarkProps } from "./picture-parts";
 
 // A how-to in a help topic (D81; components.md, "How-to steps and pictures"): numbered steps, each with a picture of the
 // app and callouts over it; the words of the hand in use; a key in the chip of the tips. Written in a topic so:
@@ -66,10 +66,11 @@ const COARSE = "(pointer: coarse)";
 export function Picture({ src, alt, width, height, children, clip, length }: PictureProps) {
   const touch = useMatches(COARSE);
   const [large, setLarge] = useState(false);
+  const loading = useLoading();
   const marks = Children.toArray(children)
     .filter((child): child is ReactElement<MarkProps> => isValidElement(child) && child.type === Mark)
     .map(({ props }) => props);
-  const image = <Image src={src} alt={alt} width={width} height={height} sizes="(min-width: 834px) 380px, 100vw" className="block h-auto w-full" />;
+  const image = <Image key={loading.attempt} src={src} alt={alt} width={width} height={height} sizes="(min-width: 834px) 380px, 100vw" onError={loading.failedNow} className="block h-auto w-full" />;
   if (clip) {
     return (
       <figure className="flex flex-col gap-2">
@@ -84,7 +85,9 @@ export function Picture({ src, alt, width, height, children, clip, length }: Pic
   }
   return (
     <figure className="flex flex-col gap-2">
-      {touch ? (
+      {loading.failed ? (
+        <PictureFailed onRetry={loading.retry} />
+      ) : touch ? (
         <button type="button" aria-label={`Open the picture larger: ${alt}`} onClick={() => setLarge(true)} className={classNames(FRAME, "cursor-pointer focus-ring")}>
           {image}
           <MarksOver marks={marks} />

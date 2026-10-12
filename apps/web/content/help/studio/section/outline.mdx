@@ -1,0 +1,37 @@
+---
+title: Outline
+summary: Where the roof is, its size and its corners. Edit the corners in Plan.
+kind: section
+related:
+  - studio.section.edges-and-access
+  - app.section.obstacles
+  - app.section.roof-type
+docs:
+  page: roof
+  section: Location
+aliases:
+  - studio.section.location
+---
+
+Closed, the section says where the roof is, its area, and `Edit it in Plan`.
+
+## What to set
+
+Check the card against the site. To move a corner, press `Edit it in Plan`: the stage turns to the plan with the roof selected and a handle on each corner. Drag a corner and let go.
+
+The card says:
+
+- Where the roof is: its latitude and longitude, in degrees.
+- How the outline was made: `Outlined on satellite`, `By hand` or `From a file`. A roof read from a drawing also names its file.
+- Its corners and its obstacles, as `4 corners · 2 obstacles`.
+- Its size: a rectangle by its two sides, any other outline by its area. Then the direction its long side faces, toward the equator.
+
+## What it changes
+
+While a corner moves, the label beside it gives the lengths of the two edges it joins. Let go, and the corner is snapped to the nearest tenth of a metre. The app lays out the roof again, then runs the design. Undo takes the change back.
+
+An outline that would cross itself is refused: the app says `The outline cannot cross itself. The roof stays as it was.`
+
+## When to change it
+
+When a corner on the map is off the roof's real corner. The Roof step labels the roof's edges with their lengths on the stage, to compare with what was measured. For another roof, choose `New design`, which opens Find.

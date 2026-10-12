@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { arcFrom, boxOf, clipAround, clipAt, clipTopLeft, HOW_TOS, placeOnScreen, pointOf, screenOf } from "./pictures";
+import { arcFrom, boxOf, clipAround, clipAt, HOW_TOS, placeOnScreen, pointOf, screenOf } from "./pictures";
 
 // The pictures of the how-tos (D81): where the hand goes on the roof, and what of the screen is kept.
 
@@ -27,12 +27,6 @@ describe("a place in metres from the map's middle", () => {
   });
 });
 
-describe("a picture of the top left of the screen", () => {
-  test("keeps the search and what floats under it, from the corner", () => {
-    expect(clipTopLeft({ width: 760, height: 360 })).toEqual({ x: 0, y: 0, width: 760, height: 360 });
-  });
-});
-
 describe("a place written either way", () => {
   test("a spot is on the roof's box, metres are from the map's middle", () => {
     const box = { left: 100, top: 50, right: 400, bottom: 250 };
@@ -54,25 +48,32 @@ describe("a turn by the handle", () => {
 });
 
 describe("the how-tos", () => {
-  test("each has its folder under public/help and its pictures numbered from 1", () => {
-    expect(HOW_TOS.map(({ dir }) => dir)).toEqual(["find/find-the-roof", "find/move-the-roof", "find/corners", "find/rectangle", "find/detect", "find/box", "find/tank", "find/wall", "find/building", "find/move-an-obstacle"]);
+  test("each has its folder under public/help and its pictures named for their steps, in order", () => {
+    expect(HOW_TOS.map(({ dir }) => dir)).toEqual(["find/move-the-roof", "find/corners", "find/rectangle", "find/detect", "find/box", "find/tank", "find/wall", "find/building", "find/move-an-obstacle"]);
     for (const { dir, shots } of HOW_TOS) {
       expect(dir).toMatch(/^[a-z]+\/[a-z-]+$/);
-      expect(shots.map(({ name }) => name)).toEqual(shots.map((_, index) => String(index + 1)));
+      const steps = shots.map(({ name }) => Number(name));
+      expect(shots.map(({ name }) => name)).toEqual(steps.map(String));
+      expect(steps.every((step, index) => Number.isInteger(step) && step > (steps[index - 1] ?? 0))).toBe(true);
     }
+  });
+
+  test("a step without a picture is skipped: the wall's and the building's closing click", () => {
+    expect(HOW_TOS.find(({ dir }) => dir === "find/wall")?.shots.map(({ name }) => name)).toEqual(["1", "3"]);
+    expect(HOW_TOS.find(({ dir }) => dir === "find/building")?.shots.map(({ name }) => name)).toEqual(["1", "3"]);
   });
 });
 
-describe("Find the roof (D85)", () => {
-  const howTo = HOW_TOS.find(({ dir }) => dir === "find/find-the-roof");
+describe("Move, turn or remove an obstacle", () => {
+  const howTo = HOW_TOS.find(({ dir }) => dir === "find/move-an-obstacle");
 
-  test("begins on Find with nothing found, and keeps the top left of the screen", () => {
-    expect(howTo?.start).toBe("fresh");
-    expect(howTo?.keep.around).toBe("top-left");
+  test("is taken closer in, round a spot of the roof, so that the stair room is larger than its corners' handles", () => {
+    expect(howTo?.zoomIn).toBe(1);
+    expect(howTo?.keep.around).toBe("spot");
   });
 
-  test("shows the ways to start, then a search and its places", () => {
-    expect(howTo?.shots.map(({ keep }) => keep ?? null)).toEqual([{ region: "Start here" }, null]);
-    expect(howTo?.shots.map(({ acts }) => acts.map(({ kind }) => kind))).toEqual([[], ["search"]]);
+  test("a part kept round a spot of the roof is of its size, round that spot", () => {
+    const box = { left: 100, top: 50, right: 400, bottom: 250 };
+    expect(clipAt(pointOf(box, { across: 0.5, down: 0.5 }), { width: 200, height: 100 })).toEqual({ x: 150, y: 100, width: 200, height: 100 });
   });
 });

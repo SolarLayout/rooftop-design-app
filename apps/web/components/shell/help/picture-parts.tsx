@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo, useSyncExternalStore, type ReactNode } from "react";
+import { useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
+import { Button } from "@/components/ui/Button";
 import { classNames } from "@/components/ui/class-names";
 import { measures } from "@/components/ui/measures";
+import { StatusMark } from "@/components/ui/StatusMark";
 
 // The parts a how-to's picture and its clip share (components.md, "How-to steps and pictures"): the numbered mark, the
 // callouts over the picture and their words under it, the frame, and a media query followed as it changes.
@@ -43,6 +45,32 @@ export function MarkWords({ marks }: { marks: readonly MarkProps[] }) {
 }
 
 export const FRAME = "relative block w-full overflow-hidden rounded-row border border-line bg-surface-2";
+
+/** The words of a picture that did not load (V2 · 11, V2-85). */
+export const PICTURE_FAILED = "The picture did not load";
+
+/** A picture's place when it did not load: it says so, with Try again (V2-85), never a loading state with no words. */
+export function PictureFailed({ onRetry, className }: { onRetry: () => void; className?: string }) {
+  return (
+    <div role="status" className={classNames("flex w-full flex-col items-center justify-center gap-2 rounded-row border border-dashed border-line-strong bg-surface-1 px-4 py-8", className)}>
+      <StatusMark kind="note" label={PICTURE_FAILED} size={16} className="type-strong-touch text-text desktop:type-strong" />
+      <Button size="s" onClick={onRetry}>
+        Try again
+      </Button>
+    </div>
+  );
+}
+
+/** A picture that may fail to load: whether it did, and a fresh try (the picture asked for again, under a new key). */
+export function useLoading(): { failed: boolean; attempt: number; failedNow: () => void; retry: () => void } {
+  const [attempt, setAttempt] = useState(0);
+  const [failed, setFailed] = useState(false);
+  function retry() {
+    setFailed(false);
+    setAttempt((n) => n + 1);
+  }
+  return { failed, attempt, failedNow: () => setFailed(true), retry };
+}
 
 function subscribed(query: string) {
   return (changed: () => void) => {

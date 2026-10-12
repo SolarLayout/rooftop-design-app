@@ -1,6 +1,6 @@
 ---
 title: Outline by its corners
-summary: Press each corner of the roof in turn, then the first again to close it. Drag a corner to adjust it, or add one on an edge.
+summary: Click each corner of the roof, then the first corner again to close the outline.
 kind: tool
 related:
   - find.tool.rectangle
@@ -12,32 +12,43 @@ docs:
 ---
 
 <Steps>
-<Step title="Press each corner">
-Go round the roof's edge, one corner after another. While `Square the corners` is on, a corner close to a right angle snaps to it.
+<Step title="Click each corner of the roof">
+`Corners` is in hand when the outline begins.
+<Pointer>Go round the roof's edge, one corner after another. Drag the map to move it between corners.</Pointer>
+<Touch>Press each corner of the roof in turn. Drag the map to move it between corners.</Touch>
+Each edge shows its length. A corner close to a right angle with the edge before it snaps square, while `Square the corners` is on, as it is at first.
 <Picture src="/help/find/corners/1.jpg" alt="Three corners of a roof placed on the map, joined by two edges with their lengths" width={1040} height={600}>
   <Mark n={1} x={19} y={73.3}>The first corner</Mark>
   <Mark n={2} x={80.6} y={26}>The last one placed</Mark>
 </Picture>
 </Step>
-<Step title="Close it on the first corner">
-<Pointer>Click the first corner again, or press <Key>Enter</Key>. A roof needs three corners at least.</Pointer>
-<Touch>Press the first corner again. A roof needs three corners at least.</Touch>
+<Step title="Click the first corner again">
+<Pointer>Click the first corner, or press <Key>Enter</Key>, to close the outline. A roof needs at least 3 corners.</Pointer>
+<Touch>Press the first corner to close the outline. A roof needs at least 3 corners.</Touch>
+The column's head becomes `Add the obstacles`, with the roof's area and corners.
 <Picture clip="/help/find/corners/2.mp4" length="0:09" src="/help/find/corners/2.jpg" alt="Four corners placed; the outline is still open between the last and the first" width={1040} height={600}>
-  <Mark n={1} x={19} y={73.3} ring>The first corner: press it to close the outline</Mark>
+  <Mark n={1} x={19} y={73.3} ring>The first corner: click it to close the outline</Mark>
 </Picture>
 </Step>
-<Step title="Adjust it">
-Drag a corner where the roof's edge is. Press the dot in the middle of an edge to add a corner there.
+<Step title="Drag a corner to adjust it">
+<Pointer>Drag a corner onto the roof's edge. Click the dot in the middle of an edge to add a corner there, or drag the dot to add one and move it.</Pointer>
+<Touch>Drag a corner onto the roof's edge: a loupe above your finger shows it close up. Press the dot in the middle of an edge to add a corner there.</Touch>
+To set an edge to a length you measured, type it in <HelpLink k="find.section.edges">Edges</HelpLink>.
 <Picture src="/help/find/corners/3.jpg" alt="The closed outline, with its four corners, a dot in the middle of each edge and each edge's length" width={1040} height={600}>
   <Mark n={1} x={80.6} y={26} ring>A corner, to drag</Mark>
-  <Mark n={2} x={50} y={26}>A middle dot: press it to add a corner</Mark>
+  <Mark n={2} x={50} y={26}>A middle dot: click it to add a corner</Mark>
   <Mark n={3} x={50} y={79.3}>The edge's length</Mark>
 </Picture>
 </Step>
 </Steps>
 
-## A step too far
+## Undo
 
-<Pointer>While you draw, <Key>Esc</Key> takes back the last corner. Select a corner and <Key>Delete</Key> removes it, keeping three at least; the arrow keys nudge it a tenth of a metre, a metre with <Key>Shift</Key>.</Pointer>
-<Touch>Undo, in the column beside the corners placed, takes back the last step.</Touch>
-To set an edge to a length you measured, type it in <HelpLink k="find.section.edges">Edges</HelpLink>.
+<Pointer>Press <Key>⌘ Z</Key> or <Key>Ctrl Z</Key> to take back the last step, and <Key>Shift</Key> with it to redo. While the outline is open, <Key>Esc</Key> takes back the last corner.</Pointer>
+<Touch>While the outline is open, press `Undo` beside the count of corners to take back the last step.</Touch>
+While the outline is open, `Clear` takes every corner off to start again, and `Undo` brings them back.
+
+## Keys
+
+<Pointer>Click a corner to select it. <Key>Delete</Key> removes it, while the roof keeps at least 3 corners. The arrow keys nudge it a tenth of a metre, a metre with <Key>Shift</Key>.</Pointer>
+<Touch>To take a corner off while the outline is open, press `Undo`.</Touch>

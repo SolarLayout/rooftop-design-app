@@ -1,30 +1,37 @@
 ---
 title: Obstacles
-summary: Things on or beside the roof that take room and cast shadows, each with its height above the roof surface.
+summary: Add what stands on the roof with its height, so modules keep clear of it and its shade counts.
 kind: section
 related:
   - studio.section.edges-and-access
-  - app.section.roof-type
-  - studio.section.shading-over-the-year
+  - studio.section.shade-over-the-year
+  - find.tool.move-an-obstacle
 docs:
   page: roof
   section: Obstacles
 ---
 
-## What an obstacle does
+An obstacle is anything on the roof that takes room and casts shade: a box such as a stair room or a plant room, a tank, a wall, a tree, or a building beside the roof.
 
-Each obstacle counts three times. No module is placed on its footprint or within the clearance around it, set under `Clearance` in <HelpLink k="studio.section.edges-and-access">Edges and access</HelpLink>. The area its shadow sweeps through the shade-free window of the design day is kept clear of modules, unless shaded positions are allowed. And its shadow is counted, hour by hour over the year, in the shading of every module it falls on.
+## What to set
 
-The height is always above the roof surface. A building beside the roof is drawn with its height above the roof too.
+Add each obstacle with its kind, where it stands, and its height above the roof surface, never above the ground. Measure the height on site: the imagery cannot give one.
 
-## On Find
+- On Find, once the outline is closed: choose `Box`, `Tank`, `Wall`, `Tree` or `Building` under `Obstacles`, draw it on the map, then type its `Height above the roof` and press `Add`. The steps: <HelpLink k="find.tool.box">Add a box</HelpLink>, <HelpLink k="find.tool.tank">Add a tank</HelpLink>, <HelpLink k="find.tool.wall">Add a wall</HelpLink>, <HelpLink k="find.tool.building">Add a building beside the roof</HelpLink>. A tree is drawn as a tank is, from its middle to the edge of its crown.
+- In the Roof step: under `Add one: choose its kind, then place it on the roof.`, press its kind. Press the roof where it stands, type its `Height`, then press `Add the box`, `Add the tank` and so on.
 
-Once the outline is closed, choose a kind under `Obstacles` in the column (`Box`, `Tank`, `Wall`, `Tree` or `Building`), then drag over it on the map. The imagery cannot give a height, so a card beside it asks for it as soon as it is drawn; `Cancel` takes it off again. Each is listed in words, such as `Stair room · Box · 5.0 × 4.0 m · 3.0 m high`. Select a row to select it on the map, or remove it with its bin.
+## What it changes
 
-## In the Roof step
+Each obstacle counts three times.
 
-Each obstacle is one line in words: its name, then what it is, how big and how high, as `Water tank · Tank · 2.5 m across · 2.0 m high`; those of one kind, size and height are counted in one line, as `AC units · 4 boxes · 1.5 × 1.0 m · 1.2 m high`, until one of them is selected. Under the list, `Add one: choose its kind, then place it on the roof.` with a button for each kind: `Box`, `Tank`, `Wall`, `Tree` and `Building`. A new one starts at the middle of the roof (a building beside it); enter its height, then `Add the <kind>` or Enter joins it to the design, and `Remove` drops it. Select a row to open its card: its name, its size, its `Height`, and where it stands in metres `East` and `North` of the middle of the roof. A box also turns by its `Rotation`, counter-clockwise. A wall and a building are tables of points. A tree is a crown on a thin trunk: `Crown starts at` is where the crown begins, and modules keep clear of the whole crown.
+- No module stands on it, nor within the `Clearance` round it, set in <HelpLink k="studio.section.edges-and-access">Edges and access</HelpLink>.
+- The area its shadow covers in the <HelpLink k="studio.section.shade-free-hours">shade-free hours</HelpLink> of the design day is kept free of modules, unless `Allow shaded positions` is on.
+- Its shadow counts, hour by hour over the year, in the shade of every module it falls on.
 
-When the roof has a parapet, it ends the list as `Parapet, all edges`; its height is set in Edges and access. An obstacle imported from a drawing without a height gets a stand-in height and the mark `Height to review` until you type the real one.
+A tree's crown starts at `Crown starts at`, and modules keep clear of the whole crown. A building beside the roof takes no room on it, unless its clearance reaches the roof: its shadow counts all the same.
 
-Closed, the section is one line that names them, marked `Yours`. It opens by itself while one is selected on the roof or has a height to review.
+## When to change it
+
+When a height measured on site differs, select the obstacle in the list or on the roof, and type it in its card. When a drawing gives no height, a note over the obstacles says `The file has no height for these obstacles. The app uses 1.0 m.` Press `Review`: the first of them opens, its card saying `Not in the file. Enter the real height.`, and `Next` goes on to the next.
+
+The parapet ends the list as `Parapet, all edges`. Its height is the <HelpLink k="studio.section.edges-and-access">`Parapet height`</HelpLink> of Edges and access.

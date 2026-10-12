@@ -1,33 +1,39 @@
 ---
 title: Roof type
-summary: How the modules sit on the roof. It decides how the engine lays out the rows, their tilt and their direction.
+summary: "Choose how the modules sit: rows facing south, rows facing east and west, or flush on a slope."
 kind: section
 values:
-  "flat_tilted": Rows of tables on a flat roof, tilted at the array's tilt and facing the equator side of the roof.
-  "flat_ew": Back-to-back units on a flat roof, one side facing east and one west, at a low tilt.
-  "sloped_flush": Modules laid on the surface of a pitched roof, at its pitch and facing where its slope faces.
+  "flat_tilted": Rows of tilted modules on a flat roof, facing its edge nearest the equator, spaced to keep clear of each other's shade.
+  "flat_ew": Low rows back to back on a flat roof, one face turned east and one west. More modules, less energy from each.
+  "sloped_flush": Modules laid on a pitched roof, at its pitch and facing the way it slopes, with no gap for shade.
 related:
   - studio.section.edges-and-access
+  - studio.section.spacing
   - app.section.obstacles
 docs:
   page: roof
   section: Roof type
 ---
 
-## The three types
+Find asks for the roof type once the outline is closed, and beside a roof entered by hand. The Roof step shows the same choice in short words: `Tilted rows`, `East-west`, `Sloped`.
 
-`Flat, tilted rows` (`Tilted rows` in the Roof step and on smaller screens) lays rows of tables at the array's tilt. By default they face the edge of the roof closest to the equator, and the rows are spaced so that they do not shade each other through the shade-free window of the design day, unless you set the row pitch yourself.
+## What to set
 
-`Flat, east-west` (`East-west`) lays back-to-back units, one face turned east and the other west. The units stand together, with a gap between them only where the shade-free window needs one.
+Keep the default, `Flat, rows facing south` (`Tilted rows`), for a flat roof. South of the equator it reads `Flat, rows facing north`.
 
-`Sloped, flush` (`Sloped`) lays the modules on the roof surface, at the roof's pitch and facing the direction its slope faces. Rows follow each other with no spacing for shade.
+- `Flat, rows facing east and west` (`East-west`): for a flat roof where more modules count for more than the energy of each.
+- `Sloped`: for a pitched roof, with the modules laid on its surface.
 
-## What else it changes
+## What it changes
 
-The walkway is counted every so many modules along a row for tilted rows, and every so many rows (or units) for the other two. A sloped roof adds `Pitch` and `Faces` to <HelpLink k="studio.section.edges-and-access">Edges and access</HelpLink>. `Sloped`, chosen on Find or in the Roof step, sets the parapet to nothing and gives the roof a pitch if it had none.
+The app lays the modules out by it.
 
-The roof type also gives two temperatures their defaults, until you enter your own. `Cell rise`, used to size strings, is larger for flush modules. `Thermal Uc`, how fast the modules shed heat in the energy simulation, is highest for tilted rows, lower for east-west units and lowest for flush modules; you can enter your own on the Temperature step of All 21 steps, in Performance. Bifacial rear gain is not counted on a sloped roof, and its switch there cannot be used and says why.
+- Tilted rows stand at the array's tilt and face the roof's edge nearest the equator. The app spaces the rows so that they do not shade each other in the <HelpLink k="studio.section.shade-free-hours">shade-free hours</HelpLink>, unless a row spacing is typed. A walkway crosses the rows every so many modules.
+- East-west units stand back to back at a low tilt, with a gap between them only where the shade-free hours need one. A walkway comes every so many rows.
+- Sloped modules lie at the `Roof pitch` and face the `Direction (azimuth)` of the slope, both set in <HelpLink k="studio.section.edges-and-access">Edges and access</HelpLink>. The rows follow each other with no gap for shade.
 
-## Where you choose it
+The roof type also sets the defaults of two temperatures: `Cell rise`, with which the strings are sized, is higher for flush modules; the `Heat loss factor (Uc)` in Performance is highest for tilted rows and lowest for flush modules. A sloped roof gets no rear gain from bifacial modules.
 
-On Find, once the outline is closed, as a question: `Flat, rows facing south` (north in the southern hemisphere), the default, `Flat, rows facing east and west` and `Sloped`, each with a line of what it does. In the Roof step after; both are the same setting. In the Roof step its line says `Yours`: you chose it on Find.
+## When to change it
+
+Choose `Sloped` when the roof is pitched. The app then removes the parapet (its height becomes 0), and gives the roof a pitch if it had none: type the real one. Choose `East-west` to compare the energy of more modules at a low tilt with that of tilted rows.

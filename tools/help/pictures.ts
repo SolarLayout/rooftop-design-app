@@ -15,7 +15,7 @@ export type Size = { width: number; height: number };
 export type Spot = { across: number; down: number };
 /** Where on the map: metres east and north of its middle, as the demo's place is when it is searched. */
 export type Metres = { east: number; north: number };
-/** A place written either way: a spot on the roof (the demo roof, opened by Edit), or metres from the map's middle. */
+/** A place written either way: a spot on the roof (the demo's roof, opened on Find), or metres from the map's middle. */
 export type Place = Spot | Metres;
 
 /**
@@ -28,8 +28,7 @@ export type Place = Spot | Metres;
  * - `found`: Detect building pressed at a place until its footprint is proposed;
  * - `press`: a button, by its name (Use this outline);
  * - `fill`: a field, by its label, given words (an obstacle's height), then left so that it takes them;
- * - `key`: a key pressed (Enter, to end a wall);
- * - `search`: words typed into the search and searched, until the places found are listed under it.
+ * - `key`: a key pressed (Enter, to end a wall).
  * A turn goes round the roof's middle, or round the obstacle picked.
  * A drag, a draw or a turn that is held is caught before the button is let go; a held drag or turn is then taken back, so
  * the next picture begins from the roof as it was.
@@ -44,29 +43,27 @@ export type Act =
   | { kind: "found"; at: Metres }
   | { kind: "press"; name: string }
   | { kind: "fill"; label: string; text: string }
-  | { kind: "key"; key: string }
-  | { kind: "search"; text: string };
+  | { kind: "key"; key: string };
 
 /**
- * A picture: its name in the folder (its step's number), what the hand does after the picture before it, and, in place of
- * the how-to's part, a dialog that opens in the middle of the screen or a region of the page by its name (a section of
- * Find's panel).
+ * A picture: its name in the folder (the number of the step it shows; a step without a picture is skipped), and what the
+ * hand does after the picture before it.
  */
-export type Shot = { name: string; acts: readonly Act[]; keep?: "dialog" | { region: string } };
+export type Shot = { name: string; acts: readonly Act[] };
 
 /**
- * A how-to's pictures: its folder under public/help, the window they are taken in, how it begins (the demo roof opened
- * on Find by Edit, the demo's place searched with nothing drawn, or Find fresh with nothing found), and what is kept: the
- * roof with a margin round it, a part of a size round the map's middle (or round a place in metres from it), or a part of
- * a size at the top left of the screen (the search and what floats under it).
+ * A how-to's pictures: its folder under public/help, the window they are taken in, how it begins (the demo's roof opened
+ * on Find, /find?edit=roof, or the demo's place searched with nothing drawn), and what is kept: the roof with a margin
+ * round it, a part of a size round a spot of the roof (an obstacle, closer in), or a part of a size round the map's middle
+ * (or round a place in metres from it).
  */
 export type HowTo = {
   dir: string;
   window: Size;
-  start: "edit" | "place" | "fresh";
+  start: "edit" | "place";
   /** Steps of the map's Zoom in after it begins, for a thing too small at the roof's scale (a building to detect). */
   zoomIn?: number;
-  keep: { around: "roof"; margin: Margin } | { around: "middle"; size: Size; at?: Metres } | { around: "top-left"; size: Size };
+  keep: { around: "roof"; margin: Margin } | { around: "spot"; at: Spot; size: Size } | { around: "middle"; size: Size; at?: Metres };
   shots: readonly Shot[];
   /** Its clips, each named for the step it plays in (tools/help/clips.ts). */
   clips?: readonly ClipSpec[];
@@ -74,13 +71,13 @@ export type HowTo = {
 
 /** A clear spot inside the demo roof: away from its corners, its edges' labels and its obstacles. */
 const CLEAR = { across: 0.17, down: 0.22 };
-/** The demo roof's stair room: a press there picks it. */
-const STAIR_ROOM = { across: 0.23, down: 0.5 };
+/** The middle of the demo roof's stair room, between its corners' handles: a press there picks it, a drag from it moves it. */
+const STAIR_ROOM = { across: 0.251, down: 0.555 };
 
-// Wide enough that the demo roof stands clear of Find's panel; the margin keeps the handle above the roof and the
-// labels at its right.
+// Wide enough that the demo roof stands clear of Find's column; the margin keeps the handle above the roof and the
+// obstacles' labels at its right (the AC units', which reach past its edge).
 const WINDOW = { width: 1800, height: 900 };
-const ROOF_MARGIN = { left: 60, top: 72, right: 140, bottom: 56 };
+const ROOF_MARGIN = { left: 60, top: 72, right: 160, bottom: 56 };
 /** Round the demo's place: a roof of 90 by 40 m with its handle and labels, and the building west of it. */
 const MIDDLE = { width: 520, height: 300 };
 
@@ -94,37 +91,25 @@ const A_BUILDING = { east: -10, north: -26.5 };
 
 export const HOW_TOS: readonly HowTo[] = [
   {
-    // Find's first step (D85): the ways to start, then a search and the places found (the geocoder's fixture).
-    dir: "find/find-the-roof",
-    window: { width: 1440, height: 900 },
-    start: "fresh",
-    // The search, its Search button and the places under it: narrow enough to read in the help sheet.
-    keep: { around: "top-left", size: { width: 480, height: 220 } },
-    shots: [
-      { name: "1", acts: [], keep: { region: "Start here" } },
-      { name: "2", acts: [{ kind: "search", text: "Hinjewadi" }] },
-    ],
-  },
-  {
     dir: "find/move-the-roof",
     window: WINDOW,
     start: "edit",
-    keep: { around: "roof", margin: ROOF_MARGIN },
+    // Wider and taller than the others: the roof dragged east and turned takes the AC units' labels further right and down.
+    keep: { around: "roof", margin: { ...ROOF_MARGIN, right: 190, bottom: 72 } },
     shots: [
       { name: "1", acts: [] },
-      { name: "2", acts: [{ kind: "click", at: CLEAR }] },
-      { name: "3", acts: [{ kind: "drag", from: CLEAR, by: { x: 30, y: 12 }, held: true }] },
-      { name: "4", acts: [{ kind: "turn", handle: "Turn the roof", degrees: 16, held: true }] },
+      { name: "2", acts: [{ kind: "click", at: CLEAR }, { kind: "drag", from: CLEAR, by: { x: 30, y: 12 }, held: true }] },
+      { name: "3", acts: [{ kind: "turn", handle: "Turn the roof", degrees: 16, held: true }] },
     ],
     clips: [
       {
-        name: "3",
+        name: "2",
         before: [{ kind: "click", at: CLEAR }],
         acts: [{ kind: "rest", seconds: 0.4 }, { kind: "drag", from: CLEAR, by: { x: 30, y: 12 }, back: true }, { kind: "rest", seconds: 0.6 }],
       },
       {
         // It picks the roof itself: a turn taken back to nothing lets the roof go, so the clip ends as it began.
-        name: "4",
+        name: "3",
         before: [],
         acts: [{ kind: "rest", seconds: 0.4 }, { kind: "click", at: CLEAR }, { kind: "turn", handle: "Turn the roof", degrees: 16, back: true }, { kind: "rest", seconds: 0.6 }],
       },
@@ -195,8 +180,9 @@ export const HOW_TOS: readonly HowTo[] = [
     keep: { around: "roof", margin: ROOF_MARGIN },
     shots: [
       { name: "1", acts: [{ kind: "tool", name: "Box" }, { kind: "draw", from: { across: 0.06, down: 0.12 }, to: { across: 0.18, down: 0.36 }, held: true }] },
-      { name: "2", acts: [], keep: "dialog" },
-      { name: "3", acts: [{ kind: "fill", label: "Height", text: "2.5" }, { kind: "press", name: "Add the box" }] },
+      // Let go, the box asks its height in a card beside it: the height typed, Add ready.
+      { name: "2", acts: [{ kind: "fill", label: "Height above the roof", text: "2.5" }] },
+      { name: "3", acts: [{ kind: "press", name: "Add" }] },
     ],
   },
   {
@@ -206,7 +192,7 @@ export const HOW_TOS: readonly HowTo[] = [
     keep: { around: "roof", margin: ROOF_MARGIN },
     shots: [
       { name: "1", acts: [{ kind: "tool", name: "Tank" }, { kind: "draw", from: { across: 0.12, down: 0.24 }, to: { across: 0.15, down: 0.24 }, held: true }] },
-      { name: "2", acts: [{ kind: "fill", label: "Height", text: "2" }, { kind: "press", name: "Add the tank" }] },
+      { name: "2", acts: [{ kind: "fill", label: "Height above the roof", text: "2" }, { kind: "press", name: "Add" }] },
     ],
   },
   {
@@ -223,7 +209,8 @@ export const HOW_TOS: readonly HowTo[] = [
           { kind: "corner", at: { across: 0.6, down: 0.92 } },
         ],
       },
-      { name: "2", acts: [{ kind: "key", key: "Enter" }, { kind: "fill", label: "Height", text: "1.2" }, { kind: "press", name: "Add the wall" }] },
+      // Step 2, the last point clicked again, has no picture.
+      { name: "3", acts: [{ kind: "key", key: "Enter" }, { kind: "fill", label: "Height above the roof", text: "1.2" }, { kind: "press", name: "Add" }] },
     ],
   },
   {
@@ -231,7 +218,7 @@ export const HOW_TOS: readonly HowTo[] = [
     window: WINDOW,
     start: "edit",
     // West of the roof, in the open: its label runs east, toward the roof, clear of Find's panel.
-    keep: { around: "roof", margin: { left: 130, top: 72, right: 140, bottom: 56 } },
+    keep: { around: "roof", margin: { ...ROOF_MARGIN, left: 130 } },
     shots: [
       {
         name: "1",
@@ -243,14 +230,18 @@ export const HOW_TOS: readonly HowTo[] = [
           { kind: "corner", at: { across: -0.26, down: 0.8 } },
         ],
       },
-      { name: "2", acts: [{ kind: "corner", at: { across: -0.26, down: 0.15 } }, { kind: "fill", label: "Height", text: "9" }, { kind: "press", name: "Add the building" }] },
+      // Step 2, the first corner clicked again, has no picture.
+      { name: "3", acts: [{ kind: "corner", at: { across: -0.26, down: 0.15 } }, { kind: "fill", label: "Height above the roof", text: "9" }, { kind: "press", name: "Add" }] },
     ],
   },
   {
     dir: "find/move-an-obstacle",
     window: WINDOW,
     start: "edit",
-    keep: { around: "roof", margin: ROOF_MARGIN },
+    // Close in, so that the stair room is larger than its corners' handles and a drag from inside it moves it.
+    zoomIn: 1,
+    // Round the stair room, its handle above it and the label of its turn at its right.
+    keep: { around: "spot", at: { across: 0.405, down: 0.5 }, size: { width: 600, height: 300 } },
     shots: [
       { name: "1", acts: [{ kind: "click", at: STAIR_ROOM }] },
       { name: "2", acts: [{ kind: "drag", from: STAIR_ROOM, by: { x: 24, y: -12 }, held: true }] },
@@ -306,11 +297,6 @@ export function clipAround(box: Box, margin: Margin): Clip {
   const x = Math.round(box.left - margin.left);
   const y = Math.round(box.top - margin.top);
   return { x, y, width: Math.round(box.right + margin.right) - x, height: Math.round(box.bottom + margin.bottom) - y };
-}
-
-/** A part of the screen of a size, from its top left corner. */
-export function clipTopLeft(size: Size): Clip {
-  return { x: 0, y: 0, width: size.width, height: size.height };
 }
 
 /** A part of the screen of a size, round a point. */

@@ -31,7 +31,7 @@ describe("what stands under a mounting field (V2 · 7)", () => {
 
     expect(mountingHintOf("tilt_deg", by.tilt_deg!)).toBe("Default · low for wind on a flat roof");
     expect(mountingHintOf("modules_in_tilt", by.modules_in_tilt!)).toBe("Yours · default 1");
-    expect(mountingHintOf("modules_in_tilt", mountingSetByOf({ ...ARRAY, modules_in_tilt: 1 }, "flat_tilted").modules_in_tilt!)).toBe("Default · one module in each row");
+    expect(mountingHintOf("modules_in_tilt", mountingSetByOf({ ...ARRAY, modules_in_tilt: 1 }, "flat_tilted").modules_in_tilt!)).toBe("Default · one module up each row");
     expect(mountingHintOf("clearance_m", by.clearance_m!)).toBe("Default");
     const changed = mountingSetByOf({ ...ARRAY, tilt_deg: 20 }, "flat_tilted");
     expect(mountingHintOf("tilt_deg", changed.tilt_deg!)).toBe("Yours · default 15°");

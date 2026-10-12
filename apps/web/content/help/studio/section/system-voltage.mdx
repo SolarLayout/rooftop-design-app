@@ -1,13 +1,13 @@
 ---
 title: System voltage
-summary: The highest DC voltage the system is built for. It caps how many modules can go in one string. The app starts it from your country.
+summary: The highest DC voltage of the system. It caps the modules in a string; it starts from your country.
 kind: section
 values:
-  "600": Strings stay at or under 600 V on the coldest morning of the site.
-  "1000": Strings stay at or under 1000 V on the coldest morning of the site.
-  "1500": Strings stay at or under 1500 V on the coldest morning of the site.
+  "600": Strings stay at or under 600 V on the coldest morning. The app sets it in the United States, its territories and Canada.
+  "1000": Strings stay at or under 1000 V on the coldest morning. The app sets it outside the United States, its territories and Canada.
+  "1500": Strings stay at or under 1500 V on the coldest morning. The app never sets it; choose it only where the site's code allows.
 related:
-  - studio.section.modules-in-series
+  - studio.section.modules-per-string
   - studio.section.inverter
   - studio.section.module
 docs:
@@ -15,22 +15,18 @@ docs:
   section: System voltage
 ---
 
-## How it limits a string
+## What to set
 
-A string's open-circuit voltage is highest when its modules are coldest. At the coldest sizing temperature, the voltage of the whole string must stay at or under the lowest of three limits: the system voltage, the inverter's highest DC input voltage, and the module's highest system voltage from its file (`1000 V` when the file gives none). That sets the most modules a string can hold.
+Keep the voltage the app set from your country, unless the site's code allows another: `600 V` in the United States, its territories and Canada, `1000 V` everywhere else. The country is the one your connection comes from, else your device's time zone, else India.
 
-## Where it starts
+The words beside the heading say who set it: `Set for` your country, `Default` for the app's value of another country, or `Yours` once you choose. The line under the choice says where the app's value comes from.
 
-A new design starts with the voltage of your country, so that it is sized and run at once. In the United States and its territories, and in Canada, it is `600 V`, the limit for homes there (NEC 690.7; CE Code, Section 64). Everywhere else it is `1000 V`. The country is the one your connection comes from, else your device's time zone, else India. The words beside the heading say who set it: `Set for` your country (`Default` for a design made where the default differs), or `Yours` once you choose. The line under the choice says where the app's value comes from.
+## What it changes
 
-It is yours to change: the right voltage depends on the site, its building and the code that applies there.
+It caps how many modules one string holds. On the coldest morning a string's Voc, its voltage with no current flowing, is at its highest. It must stay at or under the lowest of three limits: the system voltage, the inverter's highest DC voltage and the module's rating. A higher system voltage allows longer strings, and fewer of them. The design runs again when you choose, and the bill of materials names the DC cable by the voltage set.
 
-## When the equipment is rated lower
+## When to change it
 
-The voltage is never moved for you. When the inverter or the module is rated under it, the strings are sized to that rating, and the step says so. For a voltage you chose, it says so with an exclamation mark, and with a button for the highest of the three at or under the rating, where there is one. A module whose file gives no rating is taken as `1000 V`, and the step says that the limit is taken, not the module's.
+When the site's code allows a higher voltage, or asks for a lower one. The app never raises it. When the inverter and the module take more, or when no string length fits and a higher voltage would fit one, the step offers it with a button such as `Use 1500 V`. Press it only where the site's code allows.
 
-## Going higher
-
-The app never raises the voltage. When both the inverter and the module take more, or when no string length fits and a higher voltage would fit one, the step offers it with a button: never above the lower of their two ratings. Where no string length fits, that button is the step's main one, `Use 1000 V` for instance, with a line to check the site's code first. Choose it only where the site's code allows it.
-
-<Callout>The bill of materials names the DC cable by the voltage set.</Callout>
+The equipment never moves it either. When the inverter or the module is rated under it, the strings are sized to that rating and the step says so. If you chose the voltage, a note with an exclamation mark says so, with a button for the voltage that matches. A module file that gives no rating is taken at the app's value, and the step says so.

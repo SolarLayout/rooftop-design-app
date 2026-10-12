@@ -1,31 +1,41 @@
 ---
 title: Edges and access
-summary: The parapet, the setback from the edges, the walkways, the clearance around obstacles and the roof's albedo.
+summary: Set the parapet height and the strips kept free of modules at the edges and round obstacles.
 kind: section
 related:
   - app.section.roof-type
   - app.section.obstacles
+  - studio.section.shade-free-hours
 docs:
   page: roof
   section: Edges and access
 ---
 
-## The fields
+Where modules may not go: the strip at the edges, the walkways, and the space round obstacles.
 
-They stand in three groups.
+## What to set
 
-- At the edges: `Parapet height`, the height of a parapet wall along every edge of the roof. It casts shadows like an obstacle; measure it on site. Zero means no parapet. `Edge margin (setback)`, the strip along every edge, measured inward, where no module is placed; the hint under it gives the usual range.
-- Access: `Walkway width`, the width of each walkway left between modules, and `Walkway every`, how often one comes. On tilted rows it is every so many modules along a row, one aisle across each row; on east-west units and sloped roofs, every so many rows or units. Zero means no walkway.
-- Round obstacles: `Clearance`, the gap kept free of modules on every side of every obstacle.
+Measure the parapet on site: it shades the first row. Keep the other values unless the site's rules ask for more.
 
-The roof's albedo has one home, the assumptions of Performance; the last line of the section says its value and leads there.
+- `Parapet height`: the low wall along the roof's edge. If there is none, type 0. Its hint says `Default · measure it on site`.
+- `Edge margin (setback)`: the strip along every edge kept free of modules, `usually 0.5 to 1.5 m`. The fire code may set it.
+- `Walkway width` and `Walkway every`: a path across the rows, to clean and repair them. On `Tilted rows`, `Walkway every` is in modules, and its hint says `Default · counted in modules along a row`. On `East-west` and `Sloped` roofs the path runs between the rows, every so many rows. At 0, there is no walkway.
+- `Clearance`: the space `kept free on every side` of each obstacle.
 
-## On a sloped roof
+On a `Sloped` roof, `Roof pitch` and `Direction (azimuth)` follow: the slope of the roof and the way it faces, clockwise from north. The modules lie on the roof at that pitch and face that way.
 
-`Pitch` and `Faces` appear when the roof type is `Sloped`. `Pitch` is the slope of the roof and the tilt the modules take; `Faces` is the direction the slope looks, clockwise from north, which the modules face: lying on the roof, they can face nowhere else.
+The line under the fields, `Roof albedo` with its value and `in Performance, Assumptions`, says how much light the roof reflects. Press it to set it in Performance.
 
-## How it behaves
+## What it changes
 
-What you type takes effect when you press Enter or leave the field. Every field lays out the roof again before the design runs. The parapet's shadow over the shade-free window of the design day is kept clear of modules like an obstacle's, unless shaded positions are allowed.
+Each value moves where modules may go. The app lays out the roof again, then runs the design.
 
-Closed, the section is one line: the parapet and the setback, and who set them: `Default` while every field holds the app's value, `Yours` once you change one. Under each field's name stands `Default` with what is usual, as `Default · measure it on site`; a value of yours says the default it took the place of, and `Reset` gives that default back as one change, which undo takes back.
+- The edge margin draws the area modules may fill in from every edge.
+- The parapet stands along every edge like a wall. The area its shadow crosses in the shade-free hours stays free of modules, unless `Allow shaded positions` is on in Spacing. Its shade counts in the energy over the whole year.
+- The clearance widens each obstacle on every side.
+
+Under each field stands who set it: `Default`, or `Yours · default` with the app's value and `Reset`, which gives it back. Undo takes either back.
+
+## When to change it
+
+When the site has no parapet, when its code asks for a wider margin, or when the roof needs a walkway more often.
