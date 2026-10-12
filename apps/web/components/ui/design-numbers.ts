@@ -67,3 +67,6 @@ export const MARKER_RING = 2;
 
 /** A design is written to the device this long after the last committed edit, in milliseconds: edits shortly after each other are one write. */
 export const SAVE_DEBOUNCE = 600;
+
+/** Pixels the sheet of a step shows of itself at peek on phone (V2 · 10): its handle, the step's instruction and its primary. */
+export const SHEET_PEEK_OF_A_STEP = 156;

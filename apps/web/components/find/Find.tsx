@@ -9,6 +9,8 @@ import { useEffect, useMemo, useReducer, useRef, useState, type ReactNode } from
 import { useProject, useStores } from "@/components/shell/stores";
 import { Button } from "@/components/ui/Button";
 import { ProgressRing } from "@/components/ui/ProgressRing";
+import { measures } from "@/components/ui/measures";
+import { classNames } from "@/components/ui/class-names";
 import { Sheet } from "@/components/ui/Sheet";
 import type { Stop } from "@/components/ui/sheet-stops";
 import { StatusMark } from "@/components/ui/StatusMark";
@@ -38,6 +40,7 @@ import { StepTabBar } from "@/components/shell/StepNav";
 import { SummaryRow } from "@/components/shell/SummaryRow";
 import { useSize } from "@/components/shell/use-screen-size";
 import { useShareUnder } from "@/components/shell/use-share-under";
+import { usePhoneSheet } from "@/components/shell/use-phone-sheet";
 import { Search, type FoundPlace, type SearchHandle } from "@/components/shell/Search";
 import type { RoofType } from "@/lib/geometry/roof-types";
 import { ByHandPanel } from "./ByHandPanel";
@@ -139,8 +142,9 @@ export function Find() {
   const room = useRef<HTMLDivElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const [stop, setStop] = useState<Stop>("half");
-  // On touch the sheet at half meets the foot of the map, on a screen of any height.
-  const half = useShareUnder(room, stage, size !== null && size !== "desktop");
+  // On tablet the sheet at half meets the foot of the map; on phone it holds the step at every stop (V2 · 10).
+  const half = useShareUnder(room, stage, size === "tablet");
+  const shares = usePhoneSheet(room, size === "phone");
   // The map begins at the place asked for in the address, else at the roof of the design that is open; without either, from far.
   const [view, setView] = useState<MapView>(() => {
     if (placeAsked) return { lon: placeAsked.lon, lat: placeAsked.lat, zoom: ROOF_ZOOM };
@@ -353,11 +357,15 @@ export function Find() {
             ) : null}
           </aside>
           {size !== null && size !== "desktop" ? (
-            <Sheet label={head.title} stop={stop} onStop={setStop} half={half} foot={foot}>
+            <Sheet label={head.title} stop={stop} onStop={setStop} half={half} shares={shares} foot={foot}>
               <div className="px-4 pt-2 pb-6 tablet:px-5">{column}</div>
             </Sheet>
           ) : null}
-          <div ref={stage} className="relative h-stage-phone shrink-0 tablet:h-110 desktop:h-auto desktop:min-w-0 desktop:shrink desktop:grow">
+          <div
+            ref={stage}
+            className={classNames("relative shrink-0 tablet:h-110 desktop:h-auto desktop:min-w-0 desktop:shrink desktop:grow", shares ? "h-span sheet-motion" : "h-stage-phone")}
+            style={measures(shares ? { span: 1 - shares[stop] } : {})}
+          >
             {state.kind === "ready" && PROVIDER && webGL && !byHand ? (
               <RoofMap
                 imagery={PROVIDER.imagery}

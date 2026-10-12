@@ -2,8 +2,6 @@
 
 import { useToasts } from "@/components/shell/stores";
 import { Button } from "@/components/ui/Button";
-import { IconButton } from "@/components/ui/IconButton";
-import { Tooltip } from "@/components/ui/Tooltip";
 import { COULD_NOT_COPY, copyTable } from "@/lib/handover/copy-table";
 
 type Props = {
@@ -36,17 +34,9 @@ export function CopyAsTable({ text, copied, disabled = false }: Props) {
   }
 
   return (
-    <>
-      <span className="flex tablet:hidden">
-        <Tooltip words={LABEL}>
-          <IconButton kind="secondary" size="l" icon="copy" iconSize={18} label={LABEL} aria-disabled={disabled || undefined} onClick={() => void copy()} />
-        </Tooltip>
-      </span>
-      <span className="hidden tablet:flex">
-        <Button kind="secondary" icon="copy" aria-disabled={disabled || undefined} onClick={() => void copy()}>
-          {LABEL}
-        </Button>
-      </span>
-    </>
+    // With its word on every size (V2 · 10, audit V2-102): icons alone are for close and zoom.
+    <Button kind="secondary" icon="copy" aria-disabled={disabled || undefined} onClick={() => void copy()}>
+      {LABEL}
+    </Button>
   );
 }
