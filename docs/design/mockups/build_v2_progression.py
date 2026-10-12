@@ -13,6 +13,8 @@ HERE = Path(__file__).parent
 OUT = Path(sys.argv[sys.argv.index("--out") + 1]) if "--out" in sys.argv else HERE
 sys.path.insert(0, str(HERE))
 from build_v2_parts import (  # noqa: E402
+    section_title,
+    work_column, hide_button,
     EXPLAIN, explained, tooltip,
     CHROME, CONTROL, ICON, LINE, LINE_STRONG, LINE_SUBTLE, RADIUS, SHADOW_RAISED, STEP_ICON, SURFACE_1, SURFACE_2,
     TEXT, TEXT_2, TEXT_3, WELL, board_head, button, changes, frame, icon, progression, roof_svg, segmented, step_mark,
@@ -29,6 +31,9 @@ LINES = [
     "Download all is Handover's primary. Present moves to the head of Performance and Handover.",
     "The design's result has one place on desktop: the energy of year 1 at the top bar's right, with what waits for "
     "review. The vitals bar over the roof goes (board 3 draws the result on tablet and phone). "
+    "On desktop the work column can be hidden, to give the roof or the map the whole width: Hide panel at its head, "
+    "⌘ \\ from anywhere. The primary stays, at the stage's foot, and the result stays in the top bar. The column is open "
+    "at a design's first open, comes back when a step needs the user or an object is selected, and is remembered. "
     "Sun is a view of the stage, on every step, not a step between Array and Strings. Find is the first part of Roof: "
     "there is no roof to check before it is outlined.",
 ]
@@ -111,7 +116,7 @@ def view_controls(touch: bool) -> str:
 def module_card(touch: bool) -> str:
     glyph = (f'<span style="width: 40px; height: 52px; border-radius: 4px; background: #16294D; border: 1px solid #33558C; '
              f'flex: none; display: inline-block"></span>')
-    return (f'<div style="display: flex; flex-direction: column; gap: 8px">{text("section", "Module", touch)}'
+    return (f'<div style="display: flex; flex-direction: column; gap: 8px">{section_title("Module", touch)}'
             f'<div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: {SURFACE_1}; '
             f'border: 1px solid {LINE}; border-radius: {RADIUS["row"]}px">{glyph}'
             f'<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
@@ -137,14 +142,26 @@ def studio_desktop() -> str:
              f'{text("title", "Array")}{text("body", "790 positions · 28 tables · 6 rows · 1,646 m² of modules", False, TEXT_2)}</div>'
              f'<div style="position: absolute; right: 24px; top: 32px">{view_controls(False)}</div>'
              f'<div style="position: absolute; left: 48px; top: 190px">{roof_svg(960, label="3D view of the Pune demo roof, six rows of modules")}</div></div>')
-    column = (f'<aside style="position: absolute; right: 0; top: 56px; width: 384px; height: 844px; background: {CHROME}; '
-              f'border-left: 1px solid {LINE_SUBTLE}; display: flex; flex-direction: column; box-sizing: border-box">'
-              f'<div style="flex: 1; padding: 24px; display: flex; flex-direction: column; gap: 24px; overflow: hidden">'
-              f'{work_head(False)}{module_card(False)}<div>'
-              f'{summary_row("Mounting", "Tilt 15° · Portrait · 2 modules in tilt", False)}'
-              f'{summary_row("Spacing", "Rows 6.45 m apart · shade-free 09:00 to 16:00", False)}</div></div>'
-              f'<div style="padding: 24px; border-top: 1px solid {LINE_SUBTLE}">{foot(False, "Next: Strings, " + EXPLAIN["Strings"][0].lower() + EXPLAIN["Strings"][1:] + ".", "Continue to Strings")}</div></aside>')
+    column = work_column(f'{work_head(False)}{module_card(False)}<div>'
+                         f'{summary_row("Mounting", "Tilt 15° · Portrait · 2 modules in tilt", False)}'
+                         f'{summary_row("Spacing", "Rows 6.45 m apart · shade-free 09:00 to 16:00", False)}</div>',
+                         foot(False, "Next: Strings, " + EXPLAIN["Strings"][0].lower() + EXPLAIN["Strings"][1:] + ".", "Continue to Strings"))
     return bar + stage + column
+
+
+def studio_desktop_hidden() -> str:
+    """The panel hidden: the stage takes the width; Show panel beside the view controls; the primary floats at the foot."""
+    bar = top_bar(DONE_TO_ARRAY, "Array", 1440)
+    arrow = icon(ICON["arrow-right"], 18, "#1A1204")
+    stage = (f'<div style="position: absolute; left: 0; top: 56px; width: 1440px; height: 844px">'
+             f'<div style="position: absolute; left: 40px; top: 32px; display: flex; flex-direction: column; gap: 4px">'
+             f'{text("title", "Array")}{text("body", "790 positions · 28 tables · 6 rows · 1,646 m² of modules", False, TEXT_2)}</div>'
+             f'<div style="position: absolute; right: 24px; top: 32px; display: flex; gap: 8px">{view_controls(False)}{hide_button(False)}</div>'
+             f'<div style="position: absolute; left: 120px; top: 150px">{roof_svg(1200, label="3D view of the Pune demo roof, six rows of modules")}</div>'
+             f'<div style="position: absolute; right: 24px; bottom: 24px; display: flex; align-items: center; gap: 12px; padding: 8px 8px 8px 16px; '
+             f'background: {CHROME}; border: 1px solid {LINE}; border-radius: {RADIUS["card"]}px; box-shadow: 0 16px 40px rgba(0,0,0,.5)">'
+             f'{text("body", "Next: Strings", False, TEXT_2)}{button("Continue to Strings " + arrow, "primary", "primary")}</div></div>')
+    return bar + stage
 
 
 def page_head(step: str, states: dict, title: str, facts: str, primary: str, primary_icon: str, width: int, size: str) -> str:
@@ -174,6 +191,8 @@ CHANGES = [
      "Gone: the steps in the top bar; on phone in the tab bar. The stage has the width", "V2-55, V2-118"),
     ("components.md · Buttons, the primary", "Export, the one accent button on every workspace",
      "One per step, named for the next step: at the work column's foot, or at the page's head", "V2-57, V2-105"),
+    ("information-architecture.md · Studio, desktop", "The inspector always shown, 384 wide",
+     "Hide panel and Show panel (⌘ \\): the stage the whole width, the primary floating at its foot; shown again when a step needs the user", "The owner, 2026-10-12"),
     ("components.md · Present", "A button of the top bar; the icon alone on tablet",
      "A secondary button with its word at the head of Performance and Handover", "V2-57, V2-79"),
     ("voice.md · §12 (new)", "A word of the app's (Handover) stands alone",
@@ -188,13 +207,15 @@ def build_desktop() -> None:
     head = board_head("V2 · 2 · The progression", LINES, False, ISSUES)
     screens = (frame("The Studio on the Array step: the steps in the top bar, the stage whole, the work column with its question at the head and its primary at the foot",
                      studio_desktop(), w, 900)
+               + frame("The panel hidden (⌘ \\ or Hide panel): the stage takes the whole width; Show panel beside the view controls; the step's primary stays, at the stage's foot",
+                       studio_desktop_hidden(), w, 900)
                + frame("Performance: the primary and Present at the head of the page", page_head(
                    "Performance", ALL_TO_PERF, "Performance", "Option A · Typical year · 617.8 MWh in year 1", "Continue to Handover", "", w, "desktop"), w, 300)
                + frame("Handover: Download all is the primary; Export is gone from the top bar", page_head(
                    "Handover", ALL_TO_HAND, "Handover", "8 files for option A", "Download all", ICON["download"], w, "desktop"), w, 300))
     body = (f'<div style="padding: 40px; display: flex; flex-direction: column; gap: 40px">{head}{order_strip(False, 6)}'
             f'{states_strip(False)}{words_strip(False)}{screens}{changes(CHANGES)}</div>')
-    write_board(OUT, "V2Progression.dc.html", "V2 · 2 · The progression · desktop 1440", 1520, 3780, body)
+    write_board(OUT, "V2Progression.dc.html", "V2 · 2 · The progression · desktop 1440", 1520, 4890, body)
 
 
 def studio_tablet() -> str:
@@ -229,7 +250,7 @@ def build_tablet() -> None:
     body = (f'<div style="padding: 40px 0; display: flex; flex-direction: column; gap: 40px">'
             f'<div style="padding: 0 20px; display: flex; flex-direction: column; gap: 40px">{head}{order_strip(True, 2)}{states_strip(True)}{words_strip(True)}</div>'
             f'{screens}<div style="padding: 0 20px">{changes(CHANGES, True)}</div></div>')
-    write_board(OUT, "V2ProgressionTablet.dc.html", "V2 · 2 · The progression · tablet 834", 834, 5290, body)
+    write_board(OUT, "V2ProgressionTablet.dc.html", "V2 · 2 · The progression · tablet 834", 834, 5520, body)
 
 
 def studio_phone() -> str:
@@ -279,7 +300,7 @@ def build_phone() -> None:
     body = (f'<div style="padding: 40px 0; display: flex; flex-direction: column; gap: 40px">'
             f'<div style="padding: 0 16px; display: flex; flex-direction: column; gap: 40px">{head}{order_strip(True, 1)}{states}{words_strip(True)}</div>'
             f'{screens}<div style="padding: 0 16px">{changes(CHANGES, True)}</div></div>')
-    write_board(OUT, "V2ProgressionPhone.dc.html", "V2 · 2 · The progression · phone 390", 390, 6280, body)
+    write_board(OUT, "V2ProgressionPhone.dc.html", "V2 · 2 · The progression · phone 390", 390, 6650, body)
 
 
 if __name__ == "__main__":

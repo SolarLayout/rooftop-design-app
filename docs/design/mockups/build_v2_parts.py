@@ -181,10 +181,16 @@ def summary_row(name: str, facts: str, touch: bool = False, open_: bool = False,
         f'<div style="display: flex; align-items: center; gap: 12px; min-height: {h}px; box-sizing: border-box; '
         f'border-top: 1px solid {LINE_SUBTLE}">'
         f'<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
-        f'<span style="display: flex; align-items: center; gap: 8px">{lead}{text("section", name, touch)}</span>'
+        f'<span style="display: flex; align-items: center; gap: 4px">{lead}{text("section", name, touch)}{help_disc(touch)}</span>'
         f'{text("body", facts, touch, TEXT_2, "span", "white-space: nowrap; overflow: hidden; text-overflow: ellipsis")}</div>'
         f'{right}{chev}</div>'
     )
+
+
+def section_title(name: str, touch: bool = False) -> str:
+    """A section's name with its quiet ? beside it (D80, D94): the help sheet of that section."""
+    return (f'<span style="display: flex; align-items: center; gap: 4px; min-height: {44 if touch else 24}px">'
+            f'{text("section", name, touch)}{help_disc(touch)}</span>')
 
 
 def card(inner: str, pad: int = 24, radius: str = "card", extra: str = "") -> str:
@@ -501,3 +507,27 @@ class Map:
 
 
 ROOF = [(0, 0), (90, 0), (90, 40), (0, 40)]
+
+
+# ---- The work column on desktop, which the user may hide to give the stage the whole width ----
+
+PANEL_ICON = '<rect x="3.5" y="4.5" width="17" height="15" rx="2"></rect><path d="M14.5 4.5v15"></path>'
+
+
+def hide_button(shown: bool = True) -> str:
+    """Hide panel (in the column's head) or Show panel (beside the view controls); the shortcut ⌘ \\ in its tooltip."""
+    words = "Hide panel" if shown else "Show panel"
+    if shown:
+        return (f'<button type="button" aria-label="{words} (⌘ \\)" title="{words} (⌘ \\)" style="width: 32px; height: 32px; display: inline-flex; '
+                f'align-items: center; justify-content: center; background: transparent; border: 0; border-radius: {RADIUS["control"]}px">'
+                f'{icon(PANEL_ICON, 18, TEXT_2)}</button>')
+    return button(words, "secondary", "compact", False, icon(PANEL_ICON, 16, TEXT_2))
+
+
+def work_column(body: str, foot: str = "", top: int = 56, height: int = 844, width: int = 384) -> str:
+    """The desktop work column: the step's body, its foot pinned, Hide panel at its top right."""
+    return (f'<aside style="position: absolute; right: 0; top: {top}px; width: {width}px; height: {height}px; background: {CHROME}; '
+            f'border-left: 1px solid {LINE_SUBTLE}; display: flex; flex-direction: column; box-sizing: border-box">'
+            f'<div style="position: absolute; right: 12px; top: 16px">{hide_button(True)}</div>'
+            f'<div style="flex: 1; padding: 24px; display: flex; flex-direction: column; gap: 24px; overflow: hidden">{body}</div>'
+            + (f'<div style="padding: 24px; border-top: 1px solid {LINE_SUBTLE}">{foot}</div>' if foot else "") + '</aside>')

@@ -16,6 +16,8 @@ HERE = Path(__file__).parent
 OUT = Path(sys.argv[sys.argv.index("--out") + 1]) if "--out" in sys.argv else HERE
 sys.path.insert(0, str(HERE))
 from build_v2_parts import (  # noqa: E402
+    section_title,
+    work_column,
     ACCENT, CHROME, CONTROL, CONTROL_ACTIVE, ICON, LINE, LINE_STRONG, LINE_SUBTLE, NOTE_SURFACE, RADIUS, ROOF,
     SHADOW_FLOAT, SHADOW_RAISED, SHADOW_SEGMENT, SHADOW_WELL, SURFACE_1, SURFACE_2, TEXT, TEXT_2, TEXT_3, WELL, Map,
     board_head, button, changes, field, frame, icon, mark, segmented, style, summary_row, tab_bar, text, top_bar,
@@ -110,7 +112,7 @@ def roof_type(touch: bool) -> str:
                  f'{"background: " + SURFACE_2 + "; " if on else ""}">{dot}<span style="flex: 1; display: flex; flex-direction: column; gap: 2px">'
                  f'{text("strong" if on else "body", a, touch)}{text("body", b, touch, TEXT_2)}</span>'
                  f'{text("unit", tag, False, TEXT_3) if tag else ""}</label>')
-    return (f'<div style="display: flex; flex-direction: column; gap: 8px">{text("section", "Roof type", touch)}'
+    return (f'<div style="display: flex; flex-direction: column; gap: 8px">{section_title("Roof type", touch)}'
             f'<div role="radiogroup" style="display: flex; flex-direction: column; gap: 2px">{rows}</div></div>')
 
 
@@ -123,7 +125,7 @@ def obstacles(touch: bool, listed: bool) -> str:
                       f'<span style="flex: 1; display: flex; flex-direction: column">{text("strong", a, touch)}{text("body", b, touch, TEXT_2)}</span>'
                       f'{icon(ICON["chevron-right"], 16, TEXT_2)}</div>' for a, b in items)
     hint = text("body", "Choose a kind, then drag over it on the map.", touch, TEXT_2)
-    return (f'<div style="display: flex; flex-direction: column; gap: 8px">{text("section", "Obstacles · " + ("2" if listed else "0"), touch)}'
+    return (f'<div style="display: flex; flex-direction: column; gap: 8px">{section_title("Obstacles · " + ("2" if listed else "0"), touch)}'
             f'{hint}{tools}<div>{lst}</div></div>')
 
 
@@ -211,10 +213,7 @@ def desk_screen(state: str) -> str:
     body = {"find": col_find(False), "outline": col_outline(False), "closed": col_closed(False),
             "height": col_closed(False, True), "hand": col_by_hand(False, True)}[state]
     foot = build_foot(False) if state in ("closed", "height", "hand") else ""
-    col = (f'<aside style="position: absolute; right: 0; top: 56px; width: 384px; height: 844px; background: {CHROME}; '
-           f'border-left: 1px solid {LINE_SUBTLE}; display: flex; flex-direction: column; box-sizing: border-box">'
-           f'<div style="flex: 1; padding: 24px; display: flex; flex-direction: column; gap: 24px; overflow: hidden">{body}</div>'
-           + (f'<div style="padding: 24px; border-top: 1px solid {LINE_SUBTLE}">{foot}</div>' if foot else "") + '</aside>')
+    col = work_column(body, foot)
     return bar + mp + col
 
 

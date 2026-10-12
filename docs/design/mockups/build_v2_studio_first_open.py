@@ -14,6 +14,7 @@ HERE = Path(__file__).parent
 OUT = Path(sys.argv[sys.argv.index("--out") + 1]) if "--out" in sys.argv else HERE
 sys.path.insert(0, str(HERE))
 from build_v2_parts import (  # noqa: E402
+    work_column,
     ACCENT, CHROME, CONTROL_ACTIVE, EXPLAIN, ICON, LINE, LINE_STRONG, LINE_SUBTLE, OK, RADIUS, SHADOW_FLOAT, SURFACE_1,
     SURFACE_2, TEXT, TEXT_2, TEXT_3, WELL, board_head, button, changes, explained, field, frame, icon, mark, ring,
     roof_svg, segmented, style, summary_row, tab_bar, text, top_bar, write_board,
@@ -99,10 +100,7 @@ def stage(width: int, height: int, touch: bool, top: int, roof_w: int, roof_left
 def desktop_screen(computing: bool, open_edges: bool, summary_open: bool = False) -> str:
     bar = top_bar(FIRST, "Roof", 1440, result="" if computing else "617.8", open_=summary_open)
     st = stage(1056, 844, False, 56, 960, 48, 190, "3,600 m² · 6 obstacles · 90.0 × 40.0 m")
-    col = (f'<aside style="position: absolute; right: 0; top: 56px; width: 384px; height: 844px; background: {CHROME}; '
-           f'border-left: 1px solid {LINE_SUBTLE}; display: flex; flex-direction: column; box-sizing: border-box">'
-           f'<div style="flex: 1; padding: 24px; display: flex; flex-direction: column; gap: 24px; overflow: hidden">{column_body(computing, open_edges, False)}</div>'
-           f'<div style="padding: 24px; border-top: 1px solid {LINE_SUBTLE}">{column_foot(False)}</div></aside>')
+    col = work_column(column_body(computing, open_edges, False), column_foot(False))
     pop = summary_popover(False) if summary_open else ""
     return bar + st + col + (f'<div style="position: absolute; right: 96px; top: 52px">{pop}</div>' if pop else "")
 
