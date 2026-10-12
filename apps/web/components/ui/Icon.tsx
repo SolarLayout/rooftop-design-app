@@ -54,6 +54,8 @@ const STROKED = {
     </>
   ),
   "chevron-left": <path d="m15 6-6 6 6 6" />,
+  // Three lines narrowing down: the filters of a list (V2 · 10).
+  filter: <path d="M4 6h16M7 12h10M10 18h4" />,
   "chevron-right": <path d="m9 6 6 6-6 6" />,
   "chevron-up": <path d="m6 15 6-6 6 6" />,
   close: <path d="M6 6l12 12M18 6 6 18" />,

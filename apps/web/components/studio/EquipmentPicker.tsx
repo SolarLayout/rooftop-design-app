@@ -12,7 +12,7 @@ import { StatusMark } from "@/components/ui/StatusMark";
 import { ApiError, type CallOptions, type EquipmentFile } from "@/lib/api";
 import type { Kind } from "@/lib/equipment/catalog";
 import { libraryFileOf, ownFileOf } from "@/lib/equipment/library-file";
-import type { PickerSort } from "@/lib/equipment/picker";
+import { filterWordsOf, pickerLineOf, type PickerSort } from "@/lib/equipment/picker";
 
 /** A column of the list: its head, its width, whether it sorts, and whether it is shown on desktop alone. */
 export type PickerColumn = { key: string; head: string; width: string; sorts: boolean; isDesktopOnly?: boolean };
@@ -45,10 +45,17 @@ type Props<Read> = {
   words: PickerWords;
   /** The file of the design's equipment: tagged "In this design" when it is of the library, and the list opens on it. */
   current: string | null;
-  /** The filters: the search and the range sliders. */
+  /** The search, first with the list (V2 · 10). */
+  searchField: ReactNode;
+  /** The filters' range sliders, behind Filter. */
   filters: ReactNode;
   search: string;
+  /** The search or a filter narrows the list. */
   isFiltered: boolean;
+  /** A filter's slider narrows the list: Filter says so. */
+  isNarrowed: boolean;
+  /** How many makers the library holds, for the line over the list. */
+  makers: number;
   onClearSearch: () => void;
   onClearFilters: () => void;
   /** The rows shown, in their order; null while the catalog loads. */
@@ -100,6 +107,8 @@ export function EquipmentPicker<Read>(props: Props<Read>) {
   const { open, onClose, kind, words, current, rows, columns, sort, readBy, onRead } = props;
   const id = useId();
   const [chosen, setChosen] = useState<string | null>(null);
+  // The sliders stand behind Filter; each opening of the picker mounts it afresh, with them put away.
+  const [isFilterOpen, setFilterOpen] = useState(false);
   const [reading, setReading] = useState<Reading>(IDLE);
   const call = useRef<AbortController | null>(null);
   const input = useRef<HTMLInputElement>(null);
@@ -200,7 +209,14 @@ export function EquipmentPicker<Read>(props: Props<Read>) {
   return (
     <Dialog open={open} title={words.title} onClose={close} actions={actions} size="wide" foot={foot} isDescribed={false}>
       <div className="flex min-h-0 grow flex-col gap-3.5 text-text">
-        {props.filters}
+        {/* The search and the list first; the sliders of the filters behind Filter (V2 · 10, audit V2-72, V2-81). */}
+        <div className="flex items-center gap-3">
+          <div className="min-w-0 grow">{props.searchField}</div>
+          <Button icon="filter" aria-pressed={isFilterOpen} aria-expanded={isFilterOpen} onClick={() => setFilterOpen(!isFilterOpen)} className={isFilterOpen ? "bg-control-active" : undefined}>
+            {filterWordsOf(props.isNarrowed)}
+          </Button>
+        </div>
+        {isFilterOpen ? props.filters : null}
         <CountLine {...props} shown={rows?.length ?? 0} />
         <div
           ref={list}
@@ -262,21 +278,19 @@ export function EquipmentPicker<Read>(props: Props<Read>) {
   );
 }
 
-function CountLine<Read>({ words, total, shown, isFiltered, onClearFilters, sort, orders, onOrder }: Props<Read> & { shown: number }) {
+function CountLine<Read>({ words, total, shown, makers, isFiltered, onClearFilters, sort, orders, onOrder }: Props<Read> & { shown: number }) {
   const clear = isFiltered ? (
     <button type="button" onClick={onClearFilters} className="cursor-pointer text-text-2 underline underline-offset-3 hovered:text-text focus-ring">
       Clear the filters
     </button>
   ) : null;
   return (
-    <div className="flex items-center justify-between gap-3 type-body-touch desktop:type-body text-text-2">
+    <div className="flex flex-col items-start gap-2 type-body-touch desktop:type-body text-text-2 tablet:flex-row tablet:items-center tablet:justify-between tablet:gap-3">
       <span role="status">
-        {shown} of {total}
-        <span className="hidden tablet:inline"> {words.things}</span>
-        {clear ? <span className="tablet:hidden"> · {clear}</span> : null}
+        {pickerLineOf({ shown, total, makers, thing: words.thing, fileKind: words.fileKind, isFiltered })}
+        {clear ? <span> · {clear}</span> : null}
       </span>
-      <span className="hidden tablet:inline">{clear}</span>
-      <Select label="Order" options={orders} value={`${sort.key}:${sort.direction}`} onChange={onOrder} className="tablet:hidden" />
+      <Select label="Order" options={orders} value={`${sort.key}:${sort.direction}`} onChange={onOrder} className="w-full tablet:hidden" />
     </div>
   );
 }

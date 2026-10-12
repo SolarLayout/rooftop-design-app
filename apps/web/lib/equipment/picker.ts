@@ -10,13 +10,13 @@ export type PickerSort = { key: string; direction: Direction };
 /** A column that sorts: what it sorts by, and the way of a first press on its head (the figures downwards, the names A to Z). */
 export type SortColumn<Entry> = { key: string; label: string; by: (entry: Entry) => number | string; first: Direction };
 
-type Searched = { maker: string; model: string; file: string };
+type Searched = { maker: string; model: string; file: string; power?: string };
 
-/** Whether every word typed is found in the maker (as the file states it or as people know it), the model or the file's name. */
+/** Whether every word typed is found in the maker (as the file states it or as people know it), the model, the file's name or the power (V2 · 10). */
 export function matchesSearch(entry: Searched, search: string): boolean {
   const words = search.toLowerCase().split(/\s+/).filter(Boolean);
   if (words.length === 0) return true;
-  const haystack = [entry.maker, makerOf(entry.maker), entry.model, entry.file].join(" ").toLowerCase();
+  const haystack = [entry.maker, makerOf(entry.maker), entry.model, entry.file, entry.power ?? ""].join(" ").toLowerCase();
   return words.every((word) => haystack.includes(word));
 }
 
@@ -33,7 +33,7 @@ export function powerScaleOf(modules: readonly ModuleEntry[]): { min: number; ma
 
 export function filteredModules(modules: readonly ModuleEntry[], filters: ModuleFilters): ModuleEntry[] {
   const [from, to] = filters.wp;
-  return modules.filter((module) => module.wp >= from && module.wp <= to && matchesSearch(module, filters.search));
+  return modules.filter((module) => module.wp >= from && module.wp <= to && matchesSearch({ ...module, power: `${module.wp} Wp` }, filters.search));
 }
 
 // ── The inverters ────────────────────────────────────────────────────────────
@@ -68,7 +68,7 @@ export function filteredInverters(inverters: readonly InverterEntry[], filters: 
       within(inverter.vdc_max_v, filters.vdc, volts) &&
       inverter.mppt >= fewest &&
       inverter.mppt <= most &&
-      matchesSearch(inverter, filters.search),
+      matchesSearch({ ...inverter, power: `${inverter.ac_kw} kW` }, filters.search),
   );
 }
 
@@ -149,4 +149,20 @@ export function twinModels(entries: readonly { model: string }[]): Set<string> {
 
 export function countWords(shown: number, total: number, noun: string): string {
   return `${shown} of ${total} ${noun}`;
+}
+
+/** The press that shows the filters' sliders (V2 · 10: the search and the list first, the filters behind it). */
+export const FILTER = "Filter";
+
+/** Its words: "Filter · on" while a filter narrows the list. */
+export const filterWordsOf = (isFiltered: boolean): string => (isFiltered ? `${FILTER} · on` : FILTER);
+
+type Line = { shown: number; total: number; makers: number; thing: string; fileKind: string; isFiltered: boolean };
+
+const counted = (count: number, one: string) => `${count} ${one}${count === 1 ? "" : "s"}`;
+
+/** The line over the list: what the library holds and the file of one's own; once searched or filtered, how many of how many. */
+export function pickerLineOf({ shown, total, makers, thing, fileKind, isFiltered }: Line): string {
+  if (isFiltered) return countWords(shown, total, `${thing}s`);
+  return `${counted(total, thing)} from ${counted(makers, "maker")}, or your own ${thing} file (${fileKind})`;
 }

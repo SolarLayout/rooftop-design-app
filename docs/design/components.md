@@ -737,17 +737,18 @@ lines of a file read, the refusal from an error); the design is kept by `keepAnd
 The boards "UI fixes · Choose a module or an inverter" and "UI fixes · Where the picker opens" (D75). Change on the module
 card (Array step) opens "Choose a module"; on the inverter card (Strings lens) "Choose an inverter". The dialog is the kit's,
 wide: 760 on desktop, 680 on tablet; on phone the bottom sheet at its full height, 48 under the top of the screen. In it:
-the title, the filters, the count, the list, the file of one's own, the foot; no sentence under the title (the owner: "not
+the title, the search with Filter, the line, the list, the file of one's own, the foot; no sentence under the title (the owner: "not
 needed").
 
-- Filters: a search ("Maker or model") over the maker as the file states it and as people know it, the model and the file's
-  name, and range sliders of the kit, each with its name at the left and its span at the right: the module's Power (300
-  to 650 Wp, the library's ends, steps of 5); the inverter's AC power (0.7 to 350 kW, by steps closer at the low end: 0.7,
-  1, 2, 3, 5, 8, 10, 15, 20, 25, 30, 40, 50, 60, 75, 100, 125, 150, 200, 250, 300, 350), MPPT (1 to 15) and Max DC (the
-  voltages the library holds, 420 to 1,500 V). At rest the handles stand at the ends; they may meet, for one value. The
-  module's search and slider share one row on desktop; the inverter's search has its own row and the three sliders the
-  next (one under the other on phone, where the sliders have no ticks).
-- The count ("20 of 119 modules") with "Clear the filters" when a filter or the search is set (`role="status"`).
+- The search first (V2 · 10, D106; audit V2-72, V2-81): "Maker, model or power" over the maker as the file states it and
+  as people know it, the model, the file's name and the power, the list following each key; beside it `Filter`, a secondary
+  press ("Filter · on" while a slider narrows the list), which shows the range sliders of the kit under them, each with its
+  name at the left and its span at the right: the module's Power (300 to 650 Wp, the library's ends, steps of 5); the
+  inverter's AC power (0.7 to 350 kW, by steps closer at the low end: 0.7, 1, 2, 3, 5, 8, 10, 15, 20, 25, 30, 40, 50, 60,
+  75, 100, 125, 150, 200, 250, 300, 350), MPPT (1 to 15) and Max DC (the voltages the library holds, 420 to 1,500 V). At
+  rest the handles stand at the ends; they may meet, for one value. The sliders are put away each time the picker opens.
+- The line over the list: "119 modules from 5 makers, or your own module file (PAN)"; once searched or filtered, "20 of 119
+  modules" with "Clear the filters" (`role="status"`).
 - The list, a listbox of 52 rows (60 on touch, three lines on phone): the model in Geist 500 with its tags, under it the
   maker as people know it (and the file's data source when one model comes in two files), then the numbers in mono at the
   right. Module: Wp, efficiency %, size m, bifacial (tablet: no bifacial). Inverter: AC kW, MPPT, MPPT V (the window),

@@ -2,6 +2,9 @@ import { describe, expect, test } from "bun:test";
 import type { InverterEntry, ModuleEntry } from "./catalog";
 import {
   countWords,
+  FILTER,
+  filterWordsOf,
+  pickerLineOf,
   filteredInverters,
   filteredModules,
   INVERTER_COLUMNS,
@@ -134,5 +137,27 @@ describe("the rows", () => {
 
   test("the count says how many are shown of how many", () => {
     expect(countWords(20, 119, "modules")).toBe("20 of 119 modules");
+  });
+});
+
+describe("the picker's first view (V2 · 10, D106; audit V2-72, V2-81)", () => {
+  test("unfiltered, the line says what the library holds, and that a file of one's own is taken", () => {
+    expect(pickerLineOf({ shown: 119, total: 119, makers: 5, thing: "module", fileKind: "PAN", isFiltered: false })).toBe("119 modules from 5 makers, or your own module file (PAN)");
+    expect(pickerLineOf({ shown: 76, total: 76, makers: 1, thing: "inverter", fileKind: "OND", isFiltered: false })).toBe("76 inverters from 1 maker, or your own inverter file (OND)");
+  });
+
+  test("searched or filtered, how many are shown of how many", () => {
+    expect(pickerLineOf({ shown: 20, total: 119, makers: 5, thing: "module", fileKind: "PAN", isFiltered: true })).toBe("20 of 119 modules");
+  });
+
+  test("Filter says when a filter narrows the list", () => {
+    expect(FILTER).toBe("Filter");
+    expect(filterWordsOf(false)).toBe("Filter");
+    expect(filterWordsOf(true)).toBe("Filter · on");
+  });
+
+  test("the search reads the power too: Maker, model or power", () => {
+    expect(matchesSearch({ maker: "Heliene Inc", model: "144HC M10", file: "a.PAN", power: "545 Wp" }, "545")).toBe(true);
+    expect(matchesSearch({ maker: "Heliene Inc", model: "144HC M10", file: "a.PAN", power: "545 Wp" }, "550")).toBe(false);
   });
 });

@@ -11,7 +11,7 @@ type Props = {
   className?: string;
 };
 
-/** The search of the equipment picker: a well with the search icon, the words, and a clear once something is typed. */
+/** The search of the equipment picker, first with its list (V2 · 10): a well with the search icon, the words, and a clear once something is typed. */
 export function PickerSearch({ value, onChange, className }: Props) {
   return (
     <div className={classNames("flex h-touch min-w-0 items-center gap-2.5 rounded-control px-3 desktop:h-10", WELL, className)}>
@@ -20,8 +20,8 @@ export function PickerSearch({ value, onChange, className }: Props) {
         type="text"
         value={value}
         onChange={(event) => onChange(event.currentTarget.value)}
-        placeholder="Maker or model"
-        aria-label="Search the maker or the model"
+        placeholder="Maker, model or power"
+        aria-label="Search the maker, the model or the power"
         className={classNames("grow type-body-touch desktop:type-body", INPUT_WORDS)}
       />
       {value ? (
