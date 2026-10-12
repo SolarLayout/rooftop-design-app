@@ -28,7 +28,7 @@ export class ApiError extends Error {
   }
 
   static unexpected(status: number, cause?: unknown): ApiError {
-    const message = `The server answered ${status} in a form that cannot be read. Try again; if it fails again, report it.`;
+    const message = "The server did not answer. Try again in a moment.";
     return new ApiError(status, "unexpected_answer", message, null, { cause });
   }
 }

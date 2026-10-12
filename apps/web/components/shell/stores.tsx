@@ -180,9 +180,10 @@ export function useVitals(notes: readonly Note[]): VitalsView {
   const readouts = useResults(readoutsOf);
   const designStatus = useResults(designStatusOf);
   const progress = useResults(progressOf);
+  const failure = useResults(designFailureOf);
 
   return useMemo(
-    () => vitalsOf({ name, design, readouts, designStatus, progress, notes }),
-    [name, design, readouts, designStatus, progress, notes],
+    () => vitalsOf({ name, design, readouts, designStatus, progress, notes, failure }),
+    [name, design, readouts, designStatus, progress, notes, failure],
   );
 }

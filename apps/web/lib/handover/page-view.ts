@@ -11,7 +11,7 @@ import { pathOfNoOptions } from "../flow/no-options";
 
 export type { Decision, FailedRow };
 
-export const FILES_NOT_UPDATED = { title: "The files were not updated", detail: "They are of the design before" } as const;
+export const FILES_NOT_UPDATED = { title: "The files were not updated", detail: "Showing the last result" } as const;
 export const FILES_NOT_MADE = { title: "The files were not made", detail: "There are no files yet" } as const;
 /** The facts of a row that waits once the first run failed (D93): it says why, as a row before options says the API's title. */
 export const NOT_MADE = "Not made · the run failed";

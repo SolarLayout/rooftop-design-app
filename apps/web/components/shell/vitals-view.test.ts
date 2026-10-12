@@ -61,6 +61,8 @@ const SECOND_NOTE: Note = { ...VOC_NOTE, id: "layout-0", title: "Unit gap" };
 
 const SHADING = { type: "progress", step: "Computing hourly shading for every module", fraction: 0.62 } as const;
 
+const UNREACHABLE = { code: "api_unreachable", message: "The server cannot be reached. Check the connection and try again.", status: null, details: null };
+
 const AT_REST = { name: "Pune demo roof", design: DEMO, readouts: READOUTS, designStatus: "idle", progress: null, notes: [VOC_NOTE] } as const;
 
 const shownOf = (view: ReturnType<typeof vitalsOf>) =>
@@ -183,20 +185,26 @@ describe("the first load", () => {
 });
 
 describe("the run failed", () => {
-  test("the last good values stay, not dimmed, and the last cell is a note", () => {
-    const view = vitalsOf({ ...AT_REST, designStatus: "failed" });
+  test("the last good values stay, not dimmed, and the last cell is the problem of a result that is not updated", () => {
+    const view = vitalsOf({ ...AT_REST, designStatus: "failed", failure: UNREACHABLE });
 
     expect(shownOf(view)).toHaveLength(7);
     expect(view.isDimmed).toBe(false);
     expect(view.last).toEqual({
       kind: "failed",
-      title: "Energy was not updated",
-      detail: "Values are of the design before · Try again",
+      title: "Energy not updated",
+      problem: {
+        title: "Energy not updated",
+        cause: "The server could not be reached after your last change. The result shown is from before the change.",
+        remedy: "Check your connection, then try again.",
+        actions: [{ id: "try-again", label: "Try again" }],
+        details: "No answer",
+      },
     });
   });
 
   test("at the first load: what the layout gave, and no value that is not there", () => {
-    const view = vitalsOf({ ...AT_REST, design: null, designStatus: "failed", notes: [] });
+    const view = vitalsOf({ ...AT_REST, design: null, designStatus: "failed", notes: [], failure: UNREACHABLE });
 
     expect(view.kind).toBe("layout");
     expect(view.isLoading).toBe(false);
@@ -204,7 +212,7 @@ describe("the run failed", () => {
       ["Roof", "3,600", "m²"],
       ["Positions", "790", "modules"],
     ]);
-    expect(view.last).toEqual({ kind: "failed", title: "Energy was not computed", detail: "There are no values yet · Try again" });
+    expect(view.last).toMatchObject({ kind: "failed", title: "Energy not computed", problem: { title: "Energy not computed", cause: "The server could not be reached." } });
   });
 
   test("at the first load, the layout too: no cells at all", () => {

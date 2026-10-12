@@ -11,7 +11,7 @@ import { OpenProject } from "@/components/shell/OpenProject";
 import { Toaster } from "@/components/ui/Toaster";
 import { ImportDrawing } from "./ImportDrawing";
 import { NotesDrawer } from "./NotesDrawer";
-import type { Note } from "./notes-view";
+import { withNoteValue, type Note } from "./notes-view";
 import { resultChipOf, summaryOf } from "./result-view";
 import { StepTabBar } from "./StepNav";
 import { useDownloads, useNotes, useProject, useSaving, useStores, useToasts, useVitals } from "./stores";
@@ -21,7 +21,12 @@ import { TopBar } from "./TopBar";
 import { useOpensWhatBelongs } from "./use-opens-what-belongs";
 import { useSaysChoiceGone } from "./use-says-choice-gone";
 
-type Notes = { notes: readonly Note[]; open: () => void };
+type Notes = {
+  notes: readonly Note[];
+  open: () => void;
+  /** Asks again for what failed, whichever it was: a call of the API, or the write to the device. Each does nothing when nothing of its failed. */
+  tryAgain: () => void;
+};
 
 const NotesContext = createContext<Notes | null>(null);
 const ProgressionContext = createContext<Progression | null>(null);
@@ -33,7 +38,7 @@ export function useProgressionOfTheShell(): Progression {
   return progression;
 }
 
-/** The notes to review, and what opens their drawer. */
+/** The notes to review, what opens their drawer, and Try again. */
 export function useNotesOfTheShell(): Notes {
   const notes = useContext(NotesContext);
   if (notes === null) throw new Error("The notes are read outside the shell: put the component inside Shell.");
@@ -76,7 +81,17 @@ function Frame({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("pagehide", flush);
   }, [saving]);
 
-  const ofTheShell = useMemo(() => ({ notes, open: () => setNotesOpen(true) }), [notes]);
+  const ofTheShell = useMemo(
+    () => ({
+      notes,
+      open: () => setNotesOpen(true),
+      tryAgain: () => {
+        flow.tryAgain();
+        saving.getState().tryAgain();
+      },
+    }),
+    [notes, flow, saving],
+  );
   const designs = useMemo(() => rowsOnTheDeviceOf(kept, keptId), [kept, keptId]);
   const say = (words: string) => void toasts.show({ kind: "note", words });
 
@@ -93,6 +108,7 @@ function Frame({ children }: { children: ReactNode }) {
           result={resultChipOf(vitals)}
           summary={summaryOf(vitals)}
           onOpenNotes={ofTheShell.open}
+          onTryAgain={ofTheShell.tryAgain}
           onImport={() => setImportOpen(true)}
           onOpenProject={() => setOpenProjectOpen(true)}
           // The name is a committed edit like any other, undone by key (plan/phase-09-plan.md, decision 13).
@@ -106,15 +122,12 @@ function Frame({ children }: { children: ReactNode }) {
         </div>
         <StepTabBar current={progression.current} states={progression.states} />
       </div>
-      {/* Try again asks again for what failed, whichever it was: a call of the API, or the write to the device. Each does nothing when nothing of its failed. */}
       <NotesDrawer
         open={areNotesOpen}
         notes={notes}
         onClose={() => setNotesOpen(false)}
-        onTryAgain={() => {
-          flow.tryAgain();
-          saving.getState().tryAgain();
-        }}
+        onTryAgain={ofTheShell.tryAgain}
+        onEnterValue={(id, value) => project.getState().commit((document) => withNoteValue(document, id, value))}
       />
       <ImportDrawing open={isImportOpen} onClose={() => setImportOpen(false)} />
       <OpenProject open={isOpenProjectOpen} onClose={() => setOpenProjectOpen(false)} />

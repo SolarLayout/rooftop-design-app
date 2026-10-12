@@ -8,7 +8,7 @@ import type { ReportPage } from "../api";
 import type { FailedRow } from "../performance/page-view";
 import type { DownloadStatus, KeptPages } from "../stores/downloads-store";
 
-export const PAGES_NOT_UPDATED = { title: "The pages were not updated", detail: "They are of the design before" } as const;
+export const PAGES_NOT_UPDATED = { title: "The pages were not updated", detail: "Showing the last result" } as const;
 export const PAGES_NOT_MADE = { title: "The pages were not made", detail: "There is no preview yet" } as const;
 
 /** The page chosen, for the pages of one edit; null while none was. */

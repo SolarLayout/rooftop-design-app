@@ -79,34 +79,42 @@ export function OptionCards({ cards, onChoose }: { cards: readonly OptionCard[];
   );
 }
 
+/** The options while the strings are sized for the first time: their heading, and three blocks where the cards will stand (V2 · 5). */
+export function OptionsWaiting() {
+  const heading = useId();
+  return (
+    <section aria-labelledby={heading} data-testid="options-waiting" className="flex flex-col gap-1.5">
+      <SectionHeading id={heading} help="studio.section.options">
+        Options
+      </SectionHeading>
+      {[0, 1, 2].map((one) => (
+        <span key={one} aria-hidden="true" className="block h-14 rounded-row bg-surface-2 breathing" />
+      ))}
+    </section>
+  );
+}
+
 /**
- * The options of the Strings lens where there are none to offer (the board "Options and your own", "No string
- * length fits"): the engine's words stand under the bar as its verdict; here what can change it. Too few positions or
- * none: the API's words here, in the same place.
+ * Too few positions for an option, or none (the board "Options and your own"): the API's words, in the place of the
+ * options. Where no string length fits, the problem at the step's head says it (V2 · 5) and nothing stands here.
  */
 export function NothingFits({ view }: { view: Sized }) {
   const heading = useId();
-  if (!view.noOptions) return null;
-  const { title, message, change } = view.noOptions;
+  if (!view.noOptions || view.noOptions.noLengthFits) return null;
+  const { title, message } = view.noOptions;
   return (
     <section aria-labelledby={heading} className="flex flex-col gap-2">
       <SectionHeading id={heading} help="studio.section.options">
         Options
       </SectionHeading>
-      {change ? (
-        <p data-testid="nothing-fits" className="rounded-row border border-line bg-surface-1 px-4 py-3 text-center type-body-touch desktop:type-body text-text-2">
-          {change}
-        </p>
-      ) : (
-        // Too few positions, or none: the API's words, the verdict under the bar having none to say (step 21).
-        <p data-testid="no-options" className="flex items-start gap-2.5 rounded-row border border-note-line bg-surface-1 px-4 py-3 type-body-touch desktop:type-body">
-          <StatusMark kind="note" label={title} wordsShown={false} size={16} />
-          <span className="flex flex-col gap-0.5">
-            <span className="font-medium">{title}</span>
-            <span className="type-body-touch desktop:type-body text-text-2">{message}</span>
-          </span>
-        </p>
-      )}
+      {/* Too few positions, or none: the API's words, the verdict under the bar having none to say (step 21). */}
+      <p data-testid="no-options" className="flex items-start gap-2.5 rounded-row border border-note-line bg-surface-1 px-4 py-3 type-body-touch desktop:type-body">
+        <StatusMark kind="note" label={title} wordsShown={false} size={16} />
+        <span className="flex flex-col gap-0.5">
+          <span className="font-medium">{title}</span>
+          <span className="type-body-touch desktop:type-body text-text-2">{message}</span>
+        </span>
+      </p>
     </section>
   );
 }

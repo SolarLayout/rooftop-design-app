@@ -4,7 +4,7 @@
 // entered is the user's, kept even when it equals the default, and Reset gives it back. Pure.
 import type { Range } from "../../components/ui/number-entry";
 import { shown } from "../../components/ui/number-entry";
-import { withTrueMinus } from "../../components/shell/notes-view";
+import { NOTE_FIELD_RANGES, withTrueMinus } from "../../components/shell/notes-view";
 import type { DesignResult, Project, Roof } from "../api";
 import { DEFAULT, FROM_THE_WEATHER, hintOf, sectionSetByOf, wordOf, type SetBy } from "./set-by";
 
@@ -14,8 +14,7 @@ export const SIZING_RANGES: Record<SizingId, Range & { min: number; max: number 
   t_min_override: { min: -50, max: 40, decimals: 1 },
   t_max_override: { min: 0, max: 60, decimals: 1 },
   cell_rise_c: { min: 0, max: 60, decimals: 1 },
-  // Between −1 and 0, both left out (the API's range).
-  voc_coefficient_pct: { min: -0.999, max: -0.001, decimals: 3 },
+  voc_coefficient_pct: NOTE_FIELD_RANGES.voc_coefficient_pct,
 };
 
 export type SizingField = {

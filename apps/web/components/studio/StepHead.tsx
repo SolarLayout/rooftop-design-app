@@ -1,5 +1,7 @@
+import { Problem } from "@/components/ui/Problem";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { StatusMark } from "@/components/ui/StatusMark";
+import type { Problem as ProblemFacts } from "@/lib/errors/problem-of";
 import type { StatusLine } from "./first-open";
 
 type Props = {
@@ -9,20 +11,26 @@ type Props = {
   line: string;
   /** The first-open status: what happened, the energy on its way, then the energy; none once the user continued. */
   status: readonly StatusLine[];
+  /** A problem of the result, said where the change was made: the last result stays, marked (V2 · 5). */
+  problem: ProblemFacts | null;
+  /** Try again, the only button the head's problem asks for. */
+  onAction: () => void;
 };
 
 /**
  * The head of the work column (V2 · 3, D97; the board "The Studio's first open"): the step's instruction, one line under
- * it, and after Build this roof what happened and the energy on its way. The first of the column's three weights: the
+ * it, and after Build this roof what happened and the energy on its way; a problem of the result (the last one stays,
+ * marked) stands under the line, with Try again. The first of the column's three weights: the
  * step, then the facts (the summary rows), then the details (the fields of a row opened).
  */
-export function StepHead({ title, line, status }: Props) {
+export function StepHead({ title, line, status, problem, onAction }: Props) {
   return (
     <div data-testid="step-head" className="flex flex-col gap-group pb-group">
       <div className="flex flex-col gap-1">
         <h2 className="type-heading text-text">{title}</h2>
         <p className="type-body-touch text-text-2 desktop:type-body">{line}</p>
       </div>
+      {problem === null ? null : <Problem problem={problem} testId="step-problem" onAction={onAction} />}
       {status.length === 0 ? null : (
         <div role="status" data-testid="first-open" className="flex flex-col gap-3 rounded-row border border-line bg-surface-1 p-card-compact">
           {status.map((one) => (

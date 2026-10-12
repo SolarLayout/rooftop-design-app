@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/Button";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { classNames } from "@/components/ui/class-names";
 import { IconButton } from "@/components/ui/IconButton";
@@ -29,6 +30,8 @@ import { StepHead } from "./StepHead";
 import { stepHeadOf } from "./step-heads";
 import { usePanel } from "./use-panel";
 import { useShareUnder } from "@/components/shell/use-share-under";
+import { useNoStringsFit } from "./use-no-strings-fit";
+import { withVoltageChosen } from "@/lib/studio/voltage-choice";
 
 type Props = { lens: Lens };
 
@@ -38,11 +41,26 @@ type Props = { lens: Lens };
  */
 function Primary({ lens, isFloating = false }: { lens: Lens; isFloating?: boolean }) {
   const { seen } = useProgressionOfTheShell();
+  const { project } = useStores();
+  const noStringsFit = useNoStringsFit();
   const next = nextStepOf(lens);
   if (next === null) return null;
   const name = STEPS.find((step) => step.id === next)?.name ?? "";
+  // Where no string length fits, the likeliest remedy is the step's primary (V2 · 5): the voltage that fits, the user's choice.
+  const voltage = lens === "strings" ? (noStringsFit?.primary ?? null) : null;
+  const layout = classNames("flex flex-col gap-2 tablet:flex-row tablet:items-center tablet:justify-between tablet:gap-6 desktop:flex-col desktop:items-stretch desktop:gap-2", isFloating && "w-96 rounded-card border border-line bg-surface-1 p-3 shadow-float");
+  if (voltage !== null) {
+    return (
+      <div className={layout}>
+        <Button kind="primary" size="xl" className="w-full tablet:order-last tablet:ml-auto tablet:w-auto desktop:order-none desktop:w-full" data-testid="step-primary" onClick={() => project.getState().commit((document) => withVoltageChosen(document, voltage.volts))}>
+          {voltage.label}
+        </Button>
+        <p className="type-body-touch text-text-2 desktop:type-body">{voltage.line}</p>
+      </div>
+    );
+  }
   return (
-    <div className={classNames("flex flex-col gap-2 tablet:flex-row tablet:items-center tablet:justify-between tablet:gap-6 desktop:flex-col desktop:items-stretch desktop:gap-2", isFloating && "w-96 rounded-card border border-line bg-surface-1 p-3 shadow-float")}>
+    <div className={layout}>
       {seen.includes(next) ? null : <p className="type-body-touch text-text-2 desktop:type-body">{nextLineOf(name as "Array")}</p>}
       {/* On tablet the primary stands at the right of its line; on phone and desktop the column's width. */}
       <ButtonLink kind="primary" size="xl" icon="arrow-right" href={pathOfStep(next)} className="w-full flex-row-reverse tablet:ml-auto tablet:w-auto desktop:w-full" data-testid="step-primary">
@@ -61,7 +79,7 @@ function Primary({ lens, isFloating = false }: { lens: Lens; isFloating?: boolea
 export function Studio({ lens }: Props) {
   const { view } = useStores();
   const { current, states, seen } = useProgressionOfTheShell();
-  const { notes, open } = useNotesOfTheShell();
+  const { notes, open, tryAgain } = useNotesOfTheShell();
   const vitals = useVitals(notes);
   const size = useSize();
   const isSunView = useView(isSunViewOf);
@@ -73,6 +91,7 @@ export function Studio({ lens }: Props) {
   const half = useShareUnder(room, stage, size === "phone");
   const project = useProject(projectOf);
   const head = project ? stepHeadOf(lens, project.roof.source) : null;
+  const chip = resultChipOf(vitals);
   const capacity = capacityOf(vitals);
   const status = showsFirstOpenOf({ current, seen }) ? firstOpenLinesOf(vitals) : [];
   const name = LENSES.find((one) => one.id === lens)?.name ?? "";
@@ -83,7 +102,7 @@ export function Studio({ lens }: Props) {
       <SunInspector size={size} />
     ) : (
       <>
-        {head ? <StepHead title={head.title} line={head.line} status={status} /> : null}
+        {head ? <StepHead title={head.title} line={head.line} status={status} problem={chip.kind === "stale" ? chip.problem : null} onAction={tryAgain} /> : null}
         {sections}
       </>
     );
@@ -102,7 +121,7 @@ export function Studio({ lens }: Props) {
         <Stage lens={lens} name={isSunView ? `${name} · Sun` : name} className="h-stage-phone shrink-0 tablet:h-110 desktop:h-auto desktop:grow" />
         {/* On tablet the result is a row under the stage, the modules and their power at its right; on desktop and phone it is in the top bar (D95). */}
         <div className="hidden items-center justify-between gap-4 border-b border-line-subtle px-5 py-2 tablet:flex desktop:hidden">
-          <ResultChip chip={resultChipOf(vitals)} summary={summaryOf(vitals)} onOpenNotes={open} />
+          <ResultChip chip={chip} summary={summaryOf(vitals)} onOpenNotes={open} onTryAgain={tryAgain} />
           {capacity ? <span className="type-body text-text-2">{capacity}</span> : null}
         </div>
         {isPanelHidden ? (

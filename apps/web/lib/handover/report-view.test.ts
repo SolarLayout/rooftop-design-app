@@ -120,7 +120,7 @@ describe("while the pages come, and when they do not", () => {
     expect(view.kind).toBe("pages");
     expect(view.isStale).toBe(true);
     expect(view.head).toBe("Page 1 of 6 · Summary");
-    expect(view.failed).toEqual({ title: "The pages were not updated", detail: "They are of the design before", action: "Try again", message: "Choose a stringing option first." });
+    expect(view.failed).toEqual({ title: "The pages were not updated", detail: "Showing the last result", action: "Try again", message: "Choose a stringing option first." });
   });
 
   test("a failure of before is not said over the pages of this edit", () => {

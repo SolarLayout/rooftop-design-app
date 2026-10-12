@@ -12,7 +12,8 @@ import type { SunTime } from "./view-store";
 export type Status = "idle" | "waiting" | "running" | "failed";
 
 /** What failed, in the words of the API. */
-export type Failure = { code: string; message: string };
+/** What failed: the API's code and words; the status of the answer, where one came; the fault of the app, for Details. */
+export type Failure = { code: string; message: string; status?: number | null; details?: string | null };
 
 type Kept<Value> = {
   /** The last good answer; null when none ever came. */

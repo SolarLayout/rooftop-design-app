@@ -49,7 +49,7 @@ describe("the first-open status", () => {
   });
 
   test("a run that failed or found no option says what happened alone: the problem is said where problems are", () => {
-    expect(firstOpenLinesOf(layout({ kind: "failed", title: "Energy was not computed", detail: "" }))).toEqual([{ mark: "done", title: "The array is on the roof", detail: "790 positions" }]);
+    expect(firstOpenLinesOf(layout({ kind: "failed", title: "Energy not computed", problem: { title: "Energy not computed", cause: "The server could not be reached.", remedy: null, actions: [], details: null } }))).toEqual([{ mark: "done", title: "The array is on the roof", detail: "790 positions" }]);
   });
 
   test("a newer run on its way computes again", () => {

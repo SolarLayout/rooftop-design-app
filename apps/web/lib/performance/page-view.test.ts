@@ -110,8 +110,8 @@ describe("the run failed", () => {
     expect(view.header?.runLine.startsWith("29 modules")).toBe(true);
     expect(view.decision).toBeNull();
     expect(view.failed).toEqual({
-      title: "Energy was not updated",
-      detail: "Values are of the design before",
+      title: "Energy not updated",
+      detail: "Showing the last result",
       action: "Try again",
       message: "This project has no weather for 18.5200, 73.8600 yet. Load the PVGIS TMY weather first.",
     });
@@ -123,7 +123,7 @@ describe("the run failed", () => {
     if (view.kind !== "failed") throw new Error(view.kind);
     expect(view.values).toBeNull();
     expect(view.header).toBeNull();
-    expect(view.failed).toEqual({ title: "Energy was not computed", detail: "There are no values yet", action: "Try again", message: "The server cannot be reached." });
+    expect(view.failed).toEqual({ title: "Energy not computed", detail: "There is no result yet", action: "Try again", message: "The server cannot be reached." });
   });
 
   test("before options: the decision stays beside the note", () => {
@@ -138,6 +138,6 @@ describe("the run failed", () => {
     const view = pageViewOf({ ...AT_REST, design: { ...DEMO, options: [A] } as DesignResult, designStatus: "failed", failure: NO_WEATHER });
 
     if (view.kind !== "failed") throw new Error(view.kind);
-    expect(view.failed.title).toBe("Energy was not updated");
+    expect(view.failed.title).toBe("Energy not updated");
   });
 });

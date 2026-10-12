@@ -37,9 +37,7 @@ describe("errorOf", () => {
 
     expect(error.code).toBe("unexpected_answer");
     expect(error.status).toBe(response.status);
-    expect(error.message).toBe(
-      `The server answered ${response.status} in a form that cannot be read. Try again; if it fails again, report it.`,
-    );
+    expect(error.message).toBe("The server did not answer. Try again in a moment.");
     expect(error.field).toBeNull();
   });
 });

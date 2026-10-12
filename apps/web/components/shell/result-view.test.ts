@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { capacityOf, resultChipOf, summaryOf } from "./result-view";
+import type { Problem } from "../../lib/errors/problem-of";
 import type { VitalsView } from "./vitals-view";
 
 // The result chip at the top bar's right (D95; the board "V2 · 2"): the energy of year 1 in one figure, what waits for the
@@ -16,6 +17,9 @@ const CELLS: VitalsView["cells"] = [
 ];
 const view = (over: Partial<VitalsView>): VitalsView => ({ kind: "design", cells: CELLS, isLoading: false, isDimmed: false, last: { kind: "notes", count: 0, title: "Nothing to review", detail: "" }, ...over });
 
+const NOT_COMPUTED: Problem = { title: "Energy not computed", cause: "The server could not be reached.", remedy: "Check your connection, then try again.", actions: [{ id: "try-again", label: "Try again" }], details: "No answer" };
+const NOT_UPDATED: Problem = { ...NOT_COMPUTED, title: "Energy not updated", cause: "The server could not be reached after your last change. The result shown is from before the change." };
+
 describe("the result chip", () => {
   test("the result: the energy of year 1 a year, nothing else", () => {
     expect(resultChipOf(view({}))).toEqual({ kind: "result", figure: "617.8", words: "MWh a year", toReview: 0, isDimmed: false });
@@ -30,9 +34,23 @@ describe("the result chip", () => {
     expect(resultChipOf(view({ isDimmed: true, last: { kind: "run", title: "Updating energy", step: null, share: 0.4 } }))).toEqual({ kind: "result", figure: "617.8", words: "MWh a year", toReview: 0, isDimmed: true });
   });
 
-  test("a run that failed, or no option that fits, says so in the chip", () => {
-    expect(resultChipOf(view({ cells: [], kind: "layout", last: { kind: "failed", title: "Energy was not computed", detail: "" } }))).toEqual({ kind: "problem", words: "Energy was not computed" });
-    expect(resultChipOf(view({ cells: [], kind: "layout", last: { kind: "decision", title: "No string length fits this inverter", detail: "", path: "/studio/strings" } }))).toEqual({ kind: "problem", words: "No string length fits this inverter" });
+  test("a run that failed with nothing before: Energy not computed, with the problem behind the chip", () => {
+    const chip = resultChipOf(view({ cells: [], kind: "layout", last: { kind: "failed", title: "Energy not computed", problem: NOT_COMPUTED } }));
+    expect(chip).toEqual({ kind: "failed", words: "Energy not computed", problem: NOT_COMPUTED });
+  });
+
+  test("a run that failed after a result: Showing the last result, the value dimmed, the problem behind the chip", () => {
+    const chip = resultChipOf(view({ last: { kind: "failed", title: "Energy not updated", problem: NOT_UPDATED } }));
+    expect(chip).toEqual({ kind: "stale", figure: "617.8", words: "Showing the last result", problem: NOT_UPDATED });
+  });
+
+  test("no option to offer: Energy not computed; pressed, the API's words and the way to where it is put right", () => {
+    const chip = resultChipOf(view({ cells: [], kind: "layout", last: { kind: "decision", title: "No string length fits this inverter", detail: "At 600 V a string holds at most 11.", path: "/studio/strings" } }));
+    expect(chip).toEqual({
+      kind: "failed",
+      words: "Energy not computed",
+      problem: { title: "Energy not computed", cause: "At 600 V a string holds at most 11.", remedy: null, actions: [{ id: "open", label: "Open Strings", href: "/studio/strings" }], details: null },
+    });
   });
 });
 

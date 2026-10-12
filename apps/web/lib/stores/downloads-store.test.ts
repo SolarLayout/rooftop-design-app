@@ -117,15 +117,15 @@ describe("a download", () => {
     expect(toasts[0]!.action?.label).toBe("Try again");
   });
 
-  test("a fault that is not the API's is said in words too", async () => {
+  test("a fault that is not the API's is said in the app's words, the fault behind Details (V2 · 5)", async () => {
     const { store, toasts, refuse } = made();
 
     const done = store.getState().download("report");
     refuse(0, new TypeError("blob is not a function"));
     await done;
 
-    expect(statusOf(store.getState(), "report")).toMatchObject({ status: "failed", message: expect.stringContaining("blob is not a function") });
-    expect(toasts[0]!.words).toContain("Try again");
+    expect(statusOf(store.getState(), "report")).toMatchObject({ status: "failed", message: "The app could not finish this step." });
+    expect(toasts[0]!.action?.label).toBe("Try again");
   });
 
   test("Try again asks again, from the toast or from the page, and a file that comes then is saved", async () => {
@@ -416,13 +416,13 @@ describe("the pages of the report, kept per edit as the files are (plan/phase-09
     expect(pagesOf(store.getState())).toEqual({ edit: 3, answer: pagesOfDay(DAY) });
   });
 
-  test("a fault that is not the API's is said in words too", async () => {
+  test("a fault that is not the API's is said in the app's words, the fault behind Details (V2 · 5)", async () => {
     const { store, refuse } = made();
     const asked = store.getState().askPages();
     refuse(0, new TypeError("json is not a function"));
     await asked;
 
-    expect(pagesStatusOf(store.getState())).toMatchObject({ status: "failed", message: expect.stringContaining("json is not a function") });
+    expect(pagesStatusOf(store.getState())).toMatchObject({ status: "failed", message: "The app could not finish this step." });
   });
 
   test("while no design is open nothing is asked, and nothing is said", async () => {

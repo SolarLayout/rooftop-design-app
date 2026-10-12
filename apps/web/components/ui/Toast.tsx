@@ -10,6 +10,8 @@ type Props = Omit<ComponentProps<"div">, "children"> & {
   words: string;
   /** What can be done about it, as "Undo". */
   action?: { label: string; onPress: () => void };
+  /** A second thing to do, beside the first ("Choose another" beside "Undo"). */
+  alsoAction?: { label: string; onPress: () => void };
   /** With it the toast has a button to close it. */
   onClose?: () => void;
 };
@@ -21,7 +23,7 @@ const ACTION = classNames(
 );
 
 /** A few words about what was done, or a note. Where toasts are shown is `Toaster`. */
-export function Toast({ kind, words, action, onClose, className, ...rest }: Props) {
+export function Toast({ kind, words, action, alsoAction, onClose, className, ...rest }: Props) {
   return (
     <div
       data-testid="toast"
@@ -44,6 +46,11 @@ export function Toast({ kind, words, action, onClose, className, ...rest }: Prop
           <button type="button" onClick={action.onPress} className={ACTION}>
             {action.label}
           </button>
+          {alsoAction ? (
+            <button type="button" onClick={alsoAction.onPress} className={ACTION}>
+              {alsoAction.label}
+            </button>
+          ) : null}
         </span>
       ) : null}
       {onClose ? <IconButton kind="quiet" size="xs" icon="close" iconSize={18} label="Close" onClick={onClose} /> : null}

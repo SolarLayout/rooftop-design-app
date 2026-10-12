@@ -11,6 +11,8 @@ export type ToastAsked = {
   words: string;
   /** What can be done about it, as "Undo". */
   action?: { label: string; run: () => void };
+  /** A second thing that can be done, beside the first: "Choose another" beside "Undo". */
+  alsoAction?: { label: string; run: () => void };
 };
 
 export type Toast = ToastAsked & { id: number };

@@ -44,6 +44,8 @@ export const BASE_INPUTS: string[] = [
   "apps/web/lib/country/**",
   // The words of the work explained in a line (D96): the steps in the top bar and the titles of every workspace.
   "apps/web/lib/words/**",
+  // The words of every problem the app shows (V2 · 5, D101): the result chip, the steps' heads, the dialogs, on every page.
+  "apps/web/lib/errors/**",
   "apps/web/content/**",
   "apps/web/public/**",
   "apps/web/*",
