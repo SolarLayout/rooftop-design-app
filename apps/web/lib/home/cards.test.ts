@@ -90,6 +90,6 @@ describe("a copy", () => {
 
 describe("the question before a delete", () => {
   test("is the board's, word for word: the first sentence the title, the second the body", () => {
-    expect(deleteQuestionOf("Pune demo roof")).toEqual({ title: "Delete Pune demo roof?", body: "It is kept on this device alone." });
+    expect(deleteQuestionOf("Pune demo roof")).toEqual({ title: "Delete Pune demo roof?", body: "It is saved on this device only." });
   });
 });

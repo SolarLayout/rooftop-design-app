@@ -17,7 +17,7 @@ const INSTEAD = "The demo is open instead.";
 
 /** The device's words, then what was done instead. */
 export function notOpenedWordsOf(error: unknown): string {
-  const words = error instanceof Error ? error.message : `The design kept on this device could not be opened: ${String(error)}.`;
+  const words = error instanceof Error ? error.message : `The design saved on this device could not be opened: ${String(error)}.`;
   return `${words} ${INSTEAD}`;
 }
 

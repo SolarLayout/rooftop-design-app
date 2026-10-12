@@ -12,7 +12,7 @@ export const THUMBNAIL = { width: 320, height: 180 } as const;
 /** Metres of ground about the roof, as the plan of the Array lens has it. */
 const MARGIN = 3;
 
-const WHAT_IT_IS = "The plan of the layout, north up: the roof, its obstacles and the module rows";
+const WHAT_IT_IS = "Plan of the layout, north up";
 
 const path = (polygon: Polygon, attributes: string) => `<path d="${pathOf(polygon)}" ${attributes}/>`;
 

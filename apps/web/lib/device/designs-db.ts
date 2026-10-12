@@ -21,7 +21,7 @@ export type DesignsDb = {
   removeDesign: (id: string) => Promise<void>;
 };
 
-const NO_INDEXED_DB = "this browser has no IndexedDB";
+const NO_INDEXED_DB = "this browser cannot save designs";
 
 /** What the browser said of a request that failed, or that it said nothing. */
 const wordsOf = (error: unknown): string => (error instanceof Error && error.message !== "" ? error.message : error instanceof DOMException && error.name !== "" ? error.name : "the browser gave no reason");
@@ -45,7 +45,7 @@ export function openDesignsDb(): Promise<IDBDatabase> {
     };
     opening.onsuccess = () => resolve(opening.result);
     opening.onerror = () => reject(opening.error ?? new Error("the browser gave no reason"));
-    opening.onblocked = () => reject(new Error("the database is open in another tab and blocks the change"));
+    opening.onblocked = () => reject(new Error("the app is open in another tab, which blocks the change"));
   });
 }
 
@@ -59,7 +59,7 @@ async function inTheStore<Value>(what: string, mode: IDBTransactionMode, work: (
     await new Promise<void>((resolve, reject) => {
       transaction.oncomplete = () => resolve();
       transaction.onerror = () => reject(transaction.error ?? new Error("the browser gave no reason"));
-      transaction.onabort = () => reject(transaction.error ?? new Error("the transaction was given up"));
+      transaction.onabort = () => reject(transaction.error ?? new Error("the browser stopped the change"));
     });
     return value;
   } catch (error) {
@@ -79,7 +79,7 @@ export function getDesign(id: string): Promise<KeptDesign | null> {
 }
 
 export function putDesign(kept: KeptDesign): Promise<void> {
-  return inTheStore("The design could not be kept on this device", "readwrite", async (store) => {
+  return inTheStore("The design could not be saved on this device", "readwrite", async (store) => {
     await answerOf(store.put(kept));
   });
 }

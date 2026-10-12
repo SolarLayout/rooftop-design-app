@@ -66,7 +66,7 @@ describe("the words of a design not opened", () => {
   });
 
   test("a fault that is no Error is said as it is", () => {
-    expect(notOpenedWordsOf("odd")).toBe("The design kept on this device could not be opened: odd. The demo is open instead.");
+    expect(notOpenedWordsOf("odd")).toBe("The design saved on this device could not be opened: odd. The demo is open instead.");
   });
 });
 

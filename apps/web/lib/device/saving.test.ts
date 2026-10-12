@@ -52,7 +52,7 @@ function fakeDb(kept: KeptDesign[] = []) {
       if (refusal !== null) {
         const words = refusal;
         refusal = null;
-        throw new Error(`The design could not be kept on this device: ${words}.`);
+        throw new Error(`The design could not be saved on this device: ${words}.`);
       }
       puts.push(one);
       records.set(one.id, one);
@@ -292,7 +292,7 @@ describe("a write that fails", () => {
     await settled();
 
     expect(savingOf(saving.getState())).toBe("not-saved");
-    expect(failureOf(saving.getState())).toBe("The design could not be kept on this device: QuotaExceededError.");
+    expect(failureOf(saving.getState())).toBe("The design could not be saved on this device: QuotaExceededError.");
     expect(remembered).toEqual([null]);
 
     project.getState().commit(tilt(25));
@@ -355,7 +355,7 @@ describe("another design opened", () => {
     await settled();
 
     expect(savingOf(saving.getState())).toBe("not-kept");
-    expect(said).toEqual(["The design could not be kept on this device: QuotaExceededError."]);
+    expect(said).toEqual(["The design could not be saved on this device: QuotaExceededError."]);
   });
 
   test("from the device: the document is opened, the state is Saved, the id is remembered, and the time of opening is kept", async () => {
@@ -478,7 +478,7 @@ describe("a project opened from a file", () => {
     await settled();
 
     expect(savingOf(saving.getState())).toBe("not-saved");
-    expect(failureOf(saving.getState())).toBe("The design could not be kept on this device: QuotaExceededError.");
+    expect(failureOf(saving.getState())).toBe("The design could not be saved on this device: QuotaExceededError.");
   });
 });
 
@@ -611,7 +611,7 @@ describe("a design renamed from its card", () => {
 
     await saving.getState().rename("kept-b", "Block C");
 
-    expect(said).toEqual(["The design could not be kept on this device: QuotaExceededError."]);
+    expect(said).toEqual(["The design could not be saved on this device: QuotaExceededError."]);
     expect(keptDesignsOf(saving.getState()).map((one) => one.name)).toEqual(["Block B"]);
   });
 

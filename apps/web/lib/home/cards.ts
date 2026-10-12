@@ -52,5 +52,5 @@ export const copyNameOf = (name: string): string => `Copy of ${name}`.slice(0, L
 
 /** The question before a delete, the board's word for word: the first sentence the title, the second the body (decision 7). */
 export function deleteQuestionOf(name: string): { title: string; body: string } {
-  return { title: `Delete ${name}?`, body: "It is kept on this device alone." };
+  return { title: `Delete ${name}?`, body: "It is saved on this device only." };
 }

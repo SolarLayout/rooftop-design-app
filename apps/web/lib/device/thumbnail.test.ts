@@ -34,7 +34,7 @@ describe("the thumbnail", () => {
     expect(svg.endsWith("</svg>")).toBe(true);
     expect(svg).toContain('width="320" height="180"');
     expect(svg).toContain('role="img"');
-    expect(svg).toContain('aria-label="The plan of the layout, north up: the roof, its obstacles and the module rows"');
+    expect(svg).toContain('aria-label="Plan of the layout, north up"');
   });
 
   test("its view box holds the roof with 3 m of ground about it, north up, and has the shape of the tile", () => {
