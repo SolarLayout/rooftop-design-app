@@ -13,6 +13,7 @@ HERE = Path(__file__).parent
 OUT = Path(sys.argv[sys.argv.index("--out") + 1]) if "--out" in sys.argv else HERE
 sys.path.insert(0, str(HERE))
 from build_v2_parts import (  # noqa: E402
+    EXPLAIN, explained, tooltip,
     CHROME, CONTROL, ICON, LINE, LINE_STRONG, LINE_SUBTLE, RADIUS, SHADOW_RAISED, STEP_ICON, SURFACE_1, SURFACE_2,
     TEXT, TEXT_2, TEXT_3, WELL, board_head, button, changes, frame, icon, progression, roof_svg, segmented, step_mark,
     style, summary_row, tab_bar, text, top_bar, write_board,
@@ -80,6 +81,20 @@ def states_strip(touch: bool) -> str:
             f'{key}<div>{rows}</div></section>')
 
 
+def words_strip(touch: bool) -> str:
+    """D96: the app's own words, each explained in one line where the user meets it."""
+    tip = (f'<div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-start">'
+           f'<div style="overflow: hidden; max-width: 100%">{progression({"Roof": "done", "Array": "done", "Strings": "done"}, "Performance", touch)}</div>'
+           f'<div style="padding-left: {0 if touch else 440}px">{tooltip("Handover: " + EXPLAIN["Handover"].lower())}</div></div>')
+    rows = "".join(f'<div style="display: flex; flex-direction: column; gap: 2px; padding: 12px 0; border-top: 1px solid {LINE_SUBTLE}">'
+                   f'{text("strong", w, touch)}{text("body", EXPLAIN[w] + ".", touch, TEXT_2)}</div>'
+                   for w in ("Roof", "Array", "Strings", "Performance", "Handover", "Sun"))
+    where = text("body", "Each step's line stands in three places: under the page's title, after Next under the primary, and "
+                 "in the step's tooltip on desktop. One sentence, in secondary text, never a paragraph.", touch, TEXT_2, "p", "max-width: 640px")
+    return (f'<section style="display: flex; flex-direction: column; gap: 16px">{text("heading", "The app\'s own words, explained", touch, TEXT, "h2")}'
+            f'{where}{tip}<div style="display: grid; grid-template-columns: {"1fr" if touch else "repeat(3, minmax(0, 1fr))"}; column-gap: 24px">{rows}</div></section>')
+
+
 def view_controls(touch: bool) -> str:
     sun = button("Sun", "secondary", "compact", touch, icon(STEP_ICON["Sun"], 16, TEXT_2))
     layers = button("", "secondary", "compact", touch, icon(ICON["layers"], 16, TEXT_2), "width: %dpx; padding: 0" % (44 if touch else 32))
@@ -127,7 +142,7 @@ def studio_desktop() -> str:
               f'{work_head(False)}{module_card(False)}<div>'
               f'{summary_row("Mounting", "Tilt 15° · Portrait · 2 modules in tilt", False)}'
               f'{summary_row("Spacing", "Rows 6.45 m apart · shade-free 09:00 to 16:00", False)}</div></div>'
-              f'<div style="padding: 24px; border-top: 1px solid {LINE_SUBTLE}">{foot(False, "Next: wire the modules into strings.", "Continue to Strings")}</div></aside>')
+              f'<div style="padding: 24px; border-top: 1px solid {LINE_SUBTLE}">{foot(False, "Next: Strings, " + EXPLAIN["Strings"][0].lower() + EXPLAIN["Strings"][1:] + ".", "Continue to Strings")}</div></aside>')
     return bar + stage + column
 
 
@@ -140,7 +155,8 @@ def page_head(step: str, states: dict, title: str, facts: str, primary: str, pri
     lead = text("display", "617.8", touch) + text("body", " MWh in year 1", touch, TEXT_2) if step == "Performance" else \
         text("body", "Design report · for the client · 6 pages", touch, TEXT_2)
     return (bar + f'<div style="padding: 40px {side}px 0; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px">'
-            f'<div style="display: flex; flex-direction: column; gap: 4px">{text("title", title, touch, TEXT, "h1")}{text("body", facts, touch, TEXT_2)}</div>'
+            f'<div style="display: flex; flex-direction: column; gap: 4px">{text("title", title, touch, TEXT, "h1")}{explained(step, touch)}'
+            f'{text("unit", facts, False, TEXT_3, "p", "margin-top: 4px")}</div>'
             f'<div style="display: flex; gap: 12px; align-items: center">{present}{prim}</div></div>'
             f'<div style="padding: 40px {side}px 0; display: flex; align-items: baseline; gap: 8px; opacity: .5">{lead}</div>')
 
@@ -159,6 +175,8 @@ CHANGES = [
      "One per step, named for the next step: at the work column's foot, or at the page's head", "V2-57, V2-105"),
     ("components.md · Present", "A button of the top bar; the icon alone on tablet",
      "A secondary button with its word at the head of Performance and Handover", "V2-57, V2-79"),
+    ("voice.md · §12 (new)", "A word of the app's (Handover) stands alone",
+     "One line under its title, after Next and in its tooltip says what it is (D96)", "V2-37, V2-83"),
     ("Find's first step (D85) · the steps pill", "1 · 2 · 3 in a pill and Step 2 of 3 in the panel",
      "No counter: Find is the first part of Roof; the panel's title names what to do", "V2-58"),
 ]
@@ -170,12 +188,12 @@ def build_desktop() -> None:
     screens = (frame("The Studio on the Array step: the steps in the top bar, the stage whole, the work column with its question at the head and its primary at the foot",
                      studio_desktop(), w, 900)
                + frame("Performance: the primary and Present at the head of the page", page_head(
-                   "Performance", ALL_TO_PERF, "Performance", "Option A · Typical year", "Continue to Handover", "", w, "desktop"), w, 300)
+                   "Performance", ALL_TO_PERF, "Performance", "Option A · Typical year · 617.8 MWh in year 1", "Continue to Handover", "", w, "desktop"), w, 300)
                + frame("Handover: Download all is the primary; Export is gone from the top bar", page_head(
                    "Handover", ALL_TO_HAND, "Handover", "8 files for option A", "Download all", ICON["download"], w, "desktop"), w, 300))
     body = (f'<div style="padding: 40px; display: flex; flex-direction: column; gap: 40px">{head}{order_strip(False, 6)}'
-            f'{states_strip(False)}{screens}{changes(CHANGES)}</div>')
-    write_board(OUT, "V2Progression.dc.html", "V2 · 2 · The progression · desktop 1440", 1520, 3330, body)
+            f'{states_strip(False)}{words_strip(False)}{screens}{changes(CHANGES)}</div>')
+    write_board(OUT, "V2Progression.dc.html", "V2 · 2 · The progression · desktop 1440", 1520, 3780, body)
 
 
 def studio_tablet() -> str:
@@ -193,7 +211,7 @@ def studio_tablet() -> str:
     arrow = icon(ICON["arrow-right"], 18, "#1A1204")
     footbar = (f'<div style="position: absolute; left: 0; bottom: 0; width: 834px; height: 100px; background: {CHROME}; '
                f'border-top: 1px solid {LINE_SUBTLE}; padding: 0 20px; box-sizing: border-box; display: flex; align-items: center; '
-               f'justify-content: space-between; gap: 16px">{text("body", "Next: wire the modules into strings.", True, TEXT_2)}'
+               f'justify-content: space-between; gap: 16px">{text("body", "Next: Strings, " + EXPLAIN["Strings"][0].lower() + EXPLAIN["Strings"][1:] + ".", True, TEXT_2)}'
                f'{button("Continue to Strings " + arrow, "primary", "primary", True)}</div>')
     return bar + stage + column + footbar
 
@@ -203,14 +221,14 @@ def build_tablet() -> None:
     head = board_head("V2 · 2 · The progression", LINES, True, ISSUES)
     screens = (frame("The Studio on the Array step: the steps in the top bar; the stage 440 high; the primary at the screen's foot",
                      studio_tablet(), w, 1194)
-               + frame("Performance's head", page_head("Performance", ALL_TO_PERF, "Performance", "Option A · Typical year",
+               + frame("Performance's head", page_head("Performance", ALL_TO_PERF, "Performance", "Option A · Typical year · 617.8 MWh in year 1",
                                                       "Continue to Handover", "", w, "tablet"), w, 320)
                + frame("Handover's head", page_head("Handover", ALL_TO_HAND, "Handover", "8 files for option A", "Download all",
                                                    ICON["download"], w, "tablet"), w, 320))
     body = (f'<div style="padding: 40px 0; display: flex; flex-direction: column; gap: 40px">'
-            f'<div style="padding: 0 20px; display: flex; flex-direction: column; gap: 40px">{head}{order_strip(True, 2)}{states_strip(True)}</div>'
+            f'<div style="padding: 0 20px; display: flex; flex-direction: column; gap: 40px">{head}{order_strip(True, 2)}{states_strip(True)}{words_strip(True)}</div>'
             f'{screens}<div style="padding: 0 20px">{changes(CHANGES, True)}</div></div>')
-    write_board(OUT, "V2ProgressionTablet.dc.html", "V2 · 2 · The progression · tablet 834", 834, 4470, body)
+    write_board(OUT, "V2ProgressionTablet.dc.html", "V2 · 2 · The progression · tablet 834", 834, 5290, body)
 
 
 def studio_phone() -> str:
@@ -239,7 +257,7 @@ def handover_phone() -> str:
                   f'<div style="flex: 1; display: flex; flex-direction: column; gap: 2px">{text("strong", a, True)}{text("body", b, True, TEXT_2)}</div>'
                   f'{text("unit", c, True, TEXT_2)}{icon(ICON["download"], 20, TEXT_2)}</div>' for a, b, c in rows)
     page = (f'<div style="position: absolute; left: 0; top: 56px; width: 390px; padding: 24px 16px; box-sizing: border-box">'
-            f'{text("title", "Handover", True, TEXT, "h1")}{text("body", "8 files for option A", True, TEXT_2, "p", "margin-top: 4px")}'
+            f'{text("title", "Handover", True, TEXT, "h1")}<div style="margin-top: 4px">{explained("Handover", True)}</div>'
             f'<div style="margin-top: 16px">{lst}</div></div>')
     prim = (f'<div style="position: absolute; left: 0; bottom: 72px; width: 390px; padding: 12px 16px; box-sizing: border-box; '
             f'background: {CHROME}; border-top: 1px solid {LINE_SUBTLE}">'
@@ -258,9 +276,9 @@ def build_phone() -> None:
                      studio_phone(), w, 844)
                + frame("Handover: Download all over the tab bar. The phone has no Present, as today", handover_phone(), w, 844))
     body = (f'<div style="padding: 40px 0; display: flex; flex-direction: column; gap: 40px">'
-            f'<div style="padding: 0 16px; display: flex; flex-direction: column; gap: 40px">{head}{order_strip(True, 1)}{states}</div>'
+            f'<div style="padding: 0 16px; display: flex; flex-direction: column; gap: 40px">{head}{order_strip(True, 1)}{states}{words_strip(True)}</div>'
             f'{screens}<div style="padding: 0 16px">{changes(CHANGES, True)}</div></div>')
-    write_board(OUT, "V2ProgressionPhone.dc.html", "V2 · 2 · The progression · phone 390", 390, 5360, body)
+    write_board(OUT, "V2ProgressionPhone.dc.html", "V2 · 2 · The progression · phone 390", 390, 6280, body)
 
 
 if __name__ == "__main__":

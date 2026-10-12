@@ -378,3 +378,32 @@ def frame(caption: str, inner: str, width: int, height: int) -> str:
             f'<figcaption style="{style("body", False, TEXT_2)}">{caption}</figcaption>'
             f'<div style="position: relative; width: {width}px; height: {height}px; overflow: hidden; background: {GROUND}; '
             f'border: 1px solid {LINE}; border-radius: {RADIUS["row"]}px; box-sizing: border-box">{inner}</div></figure>')
+
+
+# ---- The app's own words, each explained in one line where the user first meets it (D96) ----
+# Shown as the line under a page's or a section's title, as the "Next:" line under a primary, and as a step's tooltip.
+EXPLAIN = {
+    "Roof": "The roof's outline, its edges and what stands on it",
+    "Array": "The modules on the roof, how they are mounted and spaced",
+    "Strings": "How the modules are wired to the inverter",
+    "Performance": "The energy the design makes in a year, and where it is lost",
+    "Handover": "The files for the client, the installer and the utility",
+    "Sun": "Shadows at any hour, and the shade on each module over the year",
+    "Options": "Ways to wire the modules to the inverter, the best first",
+    "Your own option": "Your own number of modules per string and strings",
+    "To review": "Values outside the usual range. Each one says how to fix it",
+    "Project file": "The whole design in one file, to open again in the app",
+    "Design day": "The day the rows are spaced for, so they do not shade each other",
+    "Present": "The design as a tour on the whole screen, for a client",
+}
+
+
+def explained(word: str, touch: bool = False) -> str:
+    """The one line under a title that says what an app's word means (D96): secondary text, no more than a sentence."""
+    return text("body", EXPLAIN[word] + ".", touch, TEXT_2, "p", "max-width: 560px")
+
+
+def tooltip(words: str) -> str:
+    return (f'<span role="tooltip" style="display: inline-block; padding: 8px 12px; background: {SURFACE_2}; border: 1px solid {LINE_STRONG}; '
+            f'border-radius: {RADIUS["control"]}px; box-shadow: 0 1px 2px rgba(0,0,0,.45), 0 8px 20px rgba(0,0,0,.35); '
+            f'{style("body", False)}; max-width: 280px">{words}</span>')
