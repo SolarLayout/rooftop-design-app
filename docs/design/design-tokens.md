@@ -38,6 +38,7 @@ theme (`:root`).
 | `--color-dim` | `rgba(5,7,10,.72)` | Over the screen, under a dialog and under a bottom sheet that opens |
 | `--color-dim-panel` | `rgba(5,7,10,.58)` | A panel of figures over Present's stage, the stage seen through it, blurred (D72) |
 | `--color-line-glass` | `rgba(255,255,255,.08)` | The edge of a panel over the stage that the stage shows through |
+| `--color-track-glass` | `rgba(242,244,247,.24)` | The empty part of a segment of Present's track, over the stage (V2 · 13) |
 | `--color-handle-fill` | `#FFFFFF` | The handle of a corner on the map: white, so that it reads on any imagery, with an accent line |
 
 ## Colour: text

@@ -13,7 +13,7 @@ separate screens, and there is no Run button.
 | Studio | `/studio/[step]` | Shape the design on the 3D roof, step by step. `step` is `roof`, `array` or `strings`; `/studio/sun`, the Sun lens's old address, turns the Sun view on over the step in hand (D95) |
 | Performance | `/performance` | The energy at first sight: year 1 with Likely and Conservative, three figures; under them By month, Over 25 years, Where the energy goes, Assumptions |
 | Handover | `/handover/[item]` | Deliver: report, single-line diagram, BOM, cable schedule, DXF, KMZ, hourly CSV, project file |
-| Present | `/present` | Show: the design's tour on the whole screen without the shell, from the head of Performance and Handover |
+| Present | `/present` | Show: the design's tour on the whole screen without the shell, from the head of Performance and Handover; six scenes, the presenter's controls on a move or a touch (V2 · 13), Leave or Esc back to the Studio's last lens |
 
 V2 (D95): one **order of work**, five steps: Roof (Find is its first part), Array, Strings, Performance, Handover. Each step
 has its state (done, needs you, to do) and one primary that leads to the next. Sun is a **view** of the stage on every

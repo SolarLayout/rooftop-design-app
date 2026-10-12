@@ -1,9 +1,9 @@
-// The tour of Present (plan/phase-10-plan.md, step 16, decision 9; the board "Present"): six scenes in order,
-// each with its length and what it sets at a moment of itself: where the camera stands and whether it moves
-// there, how far the building, the obstacles and the modules are revealed, the hour of the day, what the
-// strings are coloured by, how far the energy has counted, and the scene's words for the overlay. The whole
-// state at a moment of the loop is `stateAt`. Under reduced motion each scene is a cut held for its time
-// (docs/design/guidelines.md, "Accessibility"). Pure: the clock and the stores are the driver's.
+// The tour of Present (plan/phase-10-plan.md, step 16, decision 9; V2 · 13, D110): six scenes in order, each with its
+// name, its length and what it sets at a moment of itself: where the camera stands and whether it moves there, how far
+// the building, the obstacles and the modules are revealed, the hour of the day, what the strings are coloured by, how
+// far the energy has counted, and the noun the line at the foot says of it. The whole state at a moment of the loop is
+// `stateAt`; the moments the presenter goes to are `sceneBefore`, `sceneAfter` and `momentOfScene`. Under reduced motion
+// each scene is a still held for its time (V2-103). Pure: the clock and the stores are the driver's.
 import type { Colouring } from "../stores/string-colours";
 import type { DayHours } from "../flow/sun-day";
 import type { CameraPreset } from "../stores/view-store";
@@ -22,6 +22,9 @@ export type CameraStep = { from: CameraPreset | null; to: CameraPreset; over: nu
 /** A scene: what it sets at a share of itself from 0 to 1. */
 export type Scene = {
   id: SceneId;
+  /** The scene's name: the panel's head, the track's segment. */
+  name: string;
+  /** What the scene shows, as a noun, for the line at the foot (V2-40). */
   words: string;
   /** Milliseconds. */
   duration: number;
@@ -73,7 +76,8 @@ const COUNTING_SHARE = 6 / 10;
 export const SCENES: readonly Scene[] = [
   {
     id: "satellite",
-    words: "The satellite from above tilts into 3D",
+    name: "The place",
+    words: "The roof from above",
     duration: 4000,
     camera: { from: "plan", to: "3d", over: 4000 },
     revealAt: () => NOTHING,
@@ -84,7 +88,8 @@ export const SCENES: readonly Scene[] = [
   },
   {
     id: "rising",
-    words: "The building and the obstacles rise",
+    name: "The roof",
+    words: "The roof in 3D",
     duration: 4000,
     camera: { from: null, to: "3d", over: 0 },
     revealAt: (share) => ({ building: between(share, 0, 0.5), obstacles: between(share, 0.5, 1), modules: 0 }),
@@ -95,7 +100,8 @@ export const SCENES: readonly Scene[] = [
   },
   {
     id: "filling",
-    words: "The modules fill row by row",
+    name: "The array",
+    words: "The array",
     duration: 6000,
     camera: { from: null, to: "3d", over: 0 },
     revealAt: (share) => ({ building: 1, obstacles: 1, modules: clamp(share) }),
@@ -106,7 +112,8 @@ export const SCENES: readonly Scene[] = [
   },
   {
     id: "day",
-    words: "The day plays with its shadows",
+    name: "The sun",
+    words: "Shadows over the day",
     duration: 12000,
     camera: { from: null, to: "3d", over: 0 },
     revealAt: () => EVERYTHING,
@@ -117,7 +124,8 @@ export const SCENES: readonly Scene[] = [
   },
   {
     id: "strings",
-    words: "The strings light up by MPPT",
+    name: "The strings",
+    words: "The strings",
     duration: 4000,
     camera: { from: null, to: "3d", over: 0 },
     revealAt: () => EVERYTHING,
@@ -128,7 +136,8 @@ export const SCENES: readonly Scene[] = [
   },
   {
     id: "energy",
-    words: "The energy counts up",
+    name: "The energy",
+    words: "Energy over the year",
     duration: 10000,
     camera: { from: null, to: "3d", over: 0 },
     revealAt: () => EVERYTHING,
@@ -144,12 +153,10 @@ export const SCRIPT: readonly Scene[] = SCENES;
 /** The length of one loop, in milliseconds. */
 export const LOOP = SCENES.reduce((sum, scene) => sum + scene.duration, 0);
 
-/** Under reduced motion the day goes in this many cuts: an hour of the demo's day about every second, as play does. */
-const DAY_CUTS = 12;
-
 /**
- * The same scenes as cuts held for their time: the camera cut to the plan and then to 3D, the building and the
- * obstacles and the modules whole from the start of their scenes, the day in cuts, the energy at its number.
+ * The same scenes as stills held for their time (V2-103): the camera cut to the plan and then to 3D, never moved; the
+ * building, the obstacles and the modules whole from the start of their scenes; the day at the hour the Studio holds,
+ * under its sun's arc; the energy at its number.
  */
 export function reducedMotionScript(script: readonly Scene[]): Scene[] {
   return script.map((scene) => {
@@ -158,10 +165,7 @@ export function reducedMotionScript(script: readonly Scene[]): Scene[] {
       ...scene,
       camera,
       revealAt: () => scene.revealAt(1),
-      dayAt: (share) => {
-        const whole = scene.dayAt(share);
-        return whole === null ? null : Math.floor(whole * DAY_CUTS) / DAY_CUTS;
-      },
+      dayAt: held,
       figuresAt: everythingCounted,
     };
   });
@@ -197,4 +201,27 @@ export function stateAt(t: number, hours: DayHours | null, script: readonly Scen
     sunPath: scene.sunPath,
     loop,
   };
+}
+
+const lengthOf = (script: readonly Scene[]) => script.reduce((sum, scene) => sum + scene.duration, 0);
+
+/** The moment scene `index` begins in the loop under way at `t`. */
+export function momentOfScene(index: number, t: number, script: readonly Scene[] = SCRIPT): number {
+  const length = lengthOf(script);
+  const begins = script.slice(0, index).reduce((sum, scene) => sum + scene.duration, 0);
+  return Math.floor(t / length) * length + begins;
+}
+
+/** The moment the scene after the one under way at `t` begins: after the last, the first of the next loop. */
+export function sceneAfter(t: number, script: readonly Scene[] = SCRIPT): number {
+  const { index } = stateAt(t, null, script);
+  return index === script.length - 1 ? momentOfScene(0, t, script) + lengthOf(script) : momentOfScene(index + 1, t, script);
+}
+
+/** The moment the scene before the one under way at `t` begins: before the first, the last of the loop before (of this one in the first). */
+export function sceneBefore(t: number, script: readonly Scene[] = SCRIPT): number {
+  const { index, loop } = stateAt(t, null, script);
+  if (index > 0) return momentOfScene(index - 1, t, script);
+  const last = momentOfScene(script.length - 1, t, script);
+  return loop === 0 ? last : last - lengthOf(script);
 }

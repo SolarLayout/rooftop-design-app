@@ -238,6 +238,7 @@
   --color-dim: rgba(5,7,10,.72);
   --color-dim-panel: rgba(5,7,10,.58);
   --color-line-glass: rgba(255,255,255,.08);
+  --color-track-glass: rgba(242,244,247,.24);
   --color-handle-fill: #FFFFFF;
 
   --color-text: #F2F4F7;
@@ -400,6 +401,7 @@
   --color-dim: var(--color-dim);
   --color-dim-panel: var(--color-dim-panel);
   --color-line-glass: var(--color-line-glass);
+  --color-track-glass: var(--color-track-glass);
   --color-handle-fill: var(--color-handle-fill);
   --color-text: var(--color-text);
   --color-text-2: var(--color-text-2);
@@ -697,6 +699,11 @@
 }
 @utility appearing {
   animation: appear var(--duration-panel) var(--ease-out);
+}
+/* Under reduced motion Present's scenes are stills that change with a fade (V2-103): a veil of the ground over the
+   stage at each change, going. A fade moves nothing, so it stays when less motion is asked for (below). */
+@utility unveiling {
+  animation: appear var(--duration-number) var(--ease-out) reverse forwards;
 }
 /* What waits: a ring turns, a skeleton breathes. Both stand still for those who ask for less motion. */
 @keyframes turn {
@@ -1088,6 +1095,9 @@
     *::after {
       transition: none !important;
       animation: none !important;
+    }
+    .unveiling {
+      animation: appear var(--duration-number) var(--ease-out) reverse forwards !important;
     }
   }
 }
