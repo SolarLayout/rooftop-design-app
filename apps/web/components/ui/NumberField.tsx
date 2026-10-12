@@ -1,6 +1,6 @@
 "use client";
 
-import { useId } from "react";
+import { useId, type ReactNode } from "react";
 import { classNames } from "./class-names";
 import { INPUT, INPUT_IN_THE_CHAIN, SAID, UNIT, WELL } from "./field-look";
 import type { Range } from "./number-entry";
@@ -23,8 +23,8 @@ type Props = {
   disabled?: boolean;
   /** For the kit: the field as it looks with the focus inside. */
   shownAs?: "focus";
-  /** A line under the label, where the label stands before the field: where the value comes from ("11.9 °C from the weather"). */
-  detail?: string | null;
+  /** A line under the label, where the label stands before the field: who set the value ("Yours · default 0.90 m · Reset"). */
+  detail?: ReactNode;
   /** In a dialog, the focus goes into this field when it opens: it is the one to answer. */
   initialFocus?: boolean;
   /**
@@ -61,7 +61,7 @@ export function NumberField({ label, value, onCommit, range, unit, labelInside =
       placeholder={placeholder}
       data-initial-focus={initialFocus || undefined}
       aria-labelledby={names.label}
-      aria-describedby={classNames(unit && names.unit, detail && !labelInside && names.detail, names.said)}
+      aria-describedby={classNames(unit && names.unit, Boolean(detail) && !labelInside && names.detail, names.said)}
       className={classNames(inChain || inChip ? INPUT_IN_THE_CHAIN : INPUT, "text-right", labelHidden || inChain || inChip ? "w-full grow" : wide ? "w-24" : "w-16")}
       {...entry.input}
     />

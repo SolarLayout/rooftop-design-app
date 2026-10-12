@@ -42,7 +42,12 @@ import { draftOf, draggingOf, selectionOf, toReviewOf } from "@/lib/stores/view-
 import { fieldsLayoutOf } from "./inspector-look";
 import type { Size } from "./use-size";
 
-type Props = { roof: Roof; size: Size };
+type Props = {
+  roof: Roof;
+  size: Size;
+  /** Inside the Roof step's summary row (V2 · 3) the row is the heading: Add stands alone at the right. */
+  isHeaded?: boolean;
+};
 
 /** The icon of each kind, as the boards draw the rows. */
 export const ICON_OF_KIND: Record<ObstacleKind, IconName> = { box: "box", cylinder: "tank", wall: "wall", tree: "tree", building: "building" };
@@ -278,7 +283,7 @@ function AddMenu({ onAdd }: { onAdd: (kind: ObstacleKind) => void }) {
  * height, and the parapet as a read-only row at the end. The selection is the view store's: the row and the
  * obstacle on the roof open the same card.
  */
-export function ObstaclePanel({ roof, size }: Props) {
+export function ObstaclePanel({ roof, size, isHeaded = true }: Props) {
   const { project: store, view } = useStores();
   const selection = useView(selectionOf);
   const draft = useView(draftOf);
@@ -327,8 +332,8 @@ export function ObstaclePanel({ roof, size }: Props) {
 
   return (
     <section aria-label="Obstacles" className="flex flex-col gap-2.5">
-      <div className="flex items-center">
-        <SectionHeading help="app.section.obstacles">Obstacles · {own.length}</SectionHeading>
+      <div className={classNames("flex items-center", !isHeaded && "justify-end")}>
+        {isHeaded ? <SectionHeading help="app.section.obstacles">Obstacles · {own.length}</SectionHeading> : null}
         <AddMenu onAdd={add} />
       </div>
       {draft ? (

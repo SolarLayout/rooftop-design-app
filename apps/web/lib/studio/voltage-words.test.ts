@@ -22,12 +22,14 @@ describe("who set the voltage, beside the heading", () => {
     expect(voltageWordsOf(facts({ voltage: 600, country: "US" })).who).toBe("Set for the United States");
   });
 
-  test("the app, for another country than the one the user is in now", () => {
-    expect(voltageWordsOf(facts({ voltage: 600, country: "IN" })).who).toBe("Set by the app");
+  test("the app, for another country than the one the user is in now: its default (V2 · 3)", () => {
+    expect(voltageWordsOf(facts({ voltage: 600, country: "IN" })).who).toBe("Default");
   });
 
-  test("the user", () => {
-    expect(voltageWordsOf(facts({ by: "user" })).who).toBe("Your choice");
+  test("the user: Yours, with the voltage of the country it took the place of (V2 · 3)", () => {
+    expect(voltageWordsOf(facts({ by: "user" })).who).toBe("Yours");
+    expect(voltageWordsOf(facts({ by: "user" })).setBy).toEqual({ kind: "yours", byDefault: "1000\u00a0V" });
+    expect(voltageWordsOf(facts({})).setBy).toEqual({ kind: "country", country: "India" });
   });
 });
 

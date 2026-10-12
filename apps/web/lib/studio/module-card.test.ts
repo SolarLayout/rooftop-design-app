@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Coefficients, Module } from "../api";
-import { moduleCardOf } from "./module-card";
+import { moduleCardOf, moduleFactsOf } from "./module-card";
 
 // The words of the module card of the Array lens (plan/phase-05-plan.md, step 14, decision 14; the board
 // "Studio, Array lens, states"): the model as the file names it, the maker as people know it (D75), the facts, the coefficient line.
@@ -39,5 +39,11 @@ describe("the module card", () => {
     expect(card.size).toBe("2.277 × 1.133 m");
     expect(card.facts).toBe("Voc 49.95 V · Isc 14.30 A · 3 diodes");
     expect(card.coefficients).toBe("Coefficients (PAN file): Voc −0.164, Vmp −0.228, Pmpp −0.212 %/°C");
+  });
+});
+
+describe("the module's facts on one line (V2 · 3)", () => {
+  test("the model and its power", () => {
+    expect(moduleFactsOf(MODULE)).toBe(`${MODULE.model} · ${Math.round(MODULE.pnom_w)} Wp`);
   });
 });

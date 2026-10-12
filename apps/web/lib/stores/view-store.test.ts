@@ -4,12 +4,12 @@ import type { DraftObstacle } from "../geometry/obstacle-fields";
 import { cameraFromOf, cameraMoveOf, cameraOf, cameraRequestOf, createViewStore, framesTheDomeOf, groundDrawnOf, groundOf, presentationOf, draftOf, draggingOf, isPlayingOf, isShadeMapShownOf, lensOf, litStringsOf, onTheRoofOf, sunTabOf, northRequestOf, selectionOf, showsSunPathOf, stringColouringOf, stringsShownByOf, sunTimeOf, toReviewOf, tracedStringOf } from "./view-store";
 
 describe("the view", () => {
-  test("it begins on the first lens, in 3D, on the design day", () => {
+  test("it begins on the first step, in 3D, at the design day's noon", () => {
     const state = createViewStore().getState();
 
     expect(lensOf(state)).toBe("roof");
     expect(cameraOf(state)).toBe("3d");
-    expect(sunTimeOf(state)).toEqual({ day: "design_day", hour: 10.5 });
+    expect(sunTimeOf(state)).toEqual({ day: "design_day", hour: 12 });
     expect(isPlayingOf(state)).toBe(false);
     expect(onTheRoofOf(state)).toEqual({ sunPath: true, window: true, shadowOutlines: false });
   });
@@ -76,6 +76,17 @@ describe("the view", () => {
     expect(sunTabOf(store.getState())).toBe("shadows");
   });
 
+  // The time belongs to the Sun view (V2 · 3, D97): the other steps draw the design day's noon, still.
+  test("the Sun view left takes the time back to the design day's noon", () => {
+    const store = createViewStore();
+    store.getState().showSunView(true);
+    store.getState().setSunTime({ day: 172, hour: 16.5 });
+
+    store.getState().showSunView(false);
+
+    expect(sunTimeOf(store.getState())).toEqual({ day: "design_day", hour: 12 });
+  });
+
   test("whether the time plays is kept; told again, nothing changes", () => {
     const store = createViewStore();
     store.getState().setPlaying(true);
@@ -136,7 +147,7 @@ describe("the view", () => {
     const store = createViewStore();
 
     expect(() => store.getState().setSunTime(sunTime)).toThrow(why);
-    expect(sunTimeOf(store.getState())).toEqual({ day: "design_day", hour: 10.5 });
+    expect(sunTimeOf(store.getState())).toEqual({ day: "design_day", hour: 12 });
   });
 
   test("a change of one leaves the others", () => {

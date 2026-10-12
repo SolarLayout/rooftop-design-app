@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import type { SetBy } from "@/lib/studio/set-by";
+import { SetByHint } from "./SetByHint";
 import type { Size } from "./use-size";
 
 // The look of what the inspectors of the Studio share (the boards "Studio, Array lens" and "Studio,
@@ -9,7 +11,7 @@ export { SECTION } from "@/components/ui/section-look";
 
 /**
  * How the fields of a section stand: two to a row with the label inside on tablet and desktop; on phone
- * one to a row, the label before the field, as the boards draw the edges and the fields of an obstacle.
+ * one to a row, the label before the field, as the boards draw the fields of an obstacle.
  */
 export const fieldsLayoutOf = (size: Size) => (size === "phone" ? "flex flex-col gap-field" : "grid grid-cols-2 gap-field");
 
@@ -49,6 +51,18 @@ export function ReadOut({ label, value, line, children, className }: ReadOutProp
         </div>
         {children}
       </div>
+    </div>
+  );
+}
+
+/** A control with who set its value under it (V2 · 3): "Default", or "Yours · default 15° · Reset". */
+export function WithSetBy({ setBy, onReset, children }: { setBy: SetBy; onReset?: () => void; children: ReactNode }) {
+  return (
+    <div className="flex flex-col gap-1">
+      {children}
+      <p className="type-body-touch text-text-3 desktop:type-body">
+        <SetByHint setBy={setBy} {...(onReset ? { onReset } : {})} />
+      </p>
     </div>
   );
 }

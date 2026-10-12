@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { CurrentPerMppt, DesignResult, Inverter, InverterResponse, Project } from "../api";
-import { inverterCardOf, inverterShownOf, withInverterRead } from "./inverter-card";
+import { inverterCardOf, inverterFactsOf, inverterShownOf, withInverterRead } from "./inverter-card";
 
 const WATTPOWER = { manufacturer: "WattPower Systems Pvt.Ltd", model: "WP-330KTL-H1", pnom_kw: 275, n_mppt: 6, n_inputs: 28, source: "wattpower-wp-330ktl-h1.OND" } as Inverter;
 const OF_THE_FILE: CurrentPerMppt = { value_a: 65, source: "IMaxDC over the MPPT count", note: "Not in the OND: IMaxDC 390 A ÷ 6 MPPT. Enter the datasheet value if it differs." };
@@ -71,5 +71,12 @@ describe("the edit of a file read (inventory 1.4: a new OND clears the current e
     const document = { name: "Pune demo roof", ond_text: "", ond_path: "", imax_mppt_override: 60, ac_cable_m: 30 } as unknown as Project;
     expect(withInverterRead(document, read)).toEqual({ ...document, ond_text: "PVObject_=pvGInverter", ond_path: "sungrow-sg3300ud-20.OND", imax_mppt_override: null });
     expect(document.imax_mppt_override).toBe(60);
+  });
+});
+
+describe("the inverter's facts on one line (V2 · 3)", () => {
+  test("the model and its power", () => {
+    expect(inverterFactsOf(WATTPOWER)).toBe("WP-330KTL-H1 · 275 kW");
+    expect(inverterFactsOf({ ...WATTPOWER, pnom_kw: 3.68 })).toBe("WP-330KTL-H1 · 3.68 kW");
   });
 });

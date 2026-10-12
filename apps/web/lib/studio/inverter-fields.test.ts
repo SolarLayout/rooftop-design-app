@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { CurrentPerMppt, Inverter, Project } from "../api";
-import { acCableFieldOf, currentFieldOf, INVERTER_RANGES, limitsRowOf, withAcCable, withCurrentPerMppt } from "./inverter-fields";
+import { acCableFieldOf, currentFieldOf, INVERTER_RANGES, limitsRowOf, withAcCable, withCurrentPerMppt, limitsSetByOf } from "./inverter-fields";
 import type { InverterShown } from "./inverter-card";
 
 // Inverter limits and cabling (the board "Inverter and sizing"; plan/phase-07-plan.md, decision 16; inventory 1.4,
@@ -79,5 +79,14 @@ describe("what the closed row says", () => {
     expect(limitsRowOf(DOCUMENT, shownWith(NOT_IN_THE_OND))).toBe("not known · 30 m");
     expect(limitsRowOf(DOCUMENT, null)).toBe("30 m");
     expect(limitsRowOf(entered(60), null)).toBe("60.0 A · 30 m");
+  });
+});
+
+describe("who set the limits (V2 · 3)", () => {
+  test("the app while the current is the file's and the cable the API's 30 m; Yours once either is entered", () => {
+    const document = { imax_mppt_override: null, ac_cable_m: 30 } as Project;
+    expect(limitsSetByOf(document)).toEqual({ kind: "default" });
+    expect(limitsSetByOf({ ...document, ac_cable_m: 45 })).toEqual({ kind: "yours", byDefault: null });
+    expect(limitsSetByOf({ ...document, imax_mppt_override: 20 })).toEqual({ kind: "yours", byDefault: null });
   });
 });

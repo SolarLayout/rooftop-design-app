@@ -120,7 +120,10 @@ export type ViewState = {
 export type ViewStore = ReturnType<typeof createViewStore>;
 
 // As the approved mockups open: the first lens, in 3D, the design day at 10:30.
-const AT_THE_START = { lens: "roof", camera: "3d", cameraRequest: 0, cameraFrom: "3d", cameraMove: 0, northRequest: 0, sunTime: { day: "design_day", hour: 10.5 }, isPlaying: false, onTheRoof: { sunPath: true, window: true, shadowOutlines: false }, sunTab: "shadows", selection: null, stringColouring: "mppt", tracedString: null, draft: null, toReview: [] as string[], dragging: null, presentation: null as Presentation | null, ground: "plain" as GroundChoice, isSunView: false, isPanelHidden: false } as const;
+/** The time outside the Sun view (V2 · 3, D97): the design day's noon, still. The time belongs to the Sun view. */
+export const STILL: SunTime = { day: "design_day", hour: 12 };
+
+const AT_THE_START = { lens: "roof", camera: "3d", cameraRequest: 0, cameraFrom: "3d", cameraMove: 0, northRequest: 0, sunTime: STILL, isPlaying: false, onTheRoof: { sunPath: true, window: true, shadowOutlines: false }, sunTab: "shadows", selection: null, stringColouring: "mppt", tracedString: null, draft: null, toReview: [] as string[], dragging: null, presentation: null as Presentation | null, ground: "plain" as GroundChoice, isSunView: false, isPanelHidden: false } as const;
 
 function refuseWhatIsNoTime({ day, hour }: SunTime): void {
   if (!(hour >= 0 && hour <= 24)) throw new RangeError(`${hour} is no hour of a day: from 0 to 24.`);
@@ -141,7 +144,8 @@ export function createViewStore() {
     // the strings are drawn there alone.
     showLens: (lens) =>
       set((state) => (lens === state.lens ? state : { lens, tracedString: null, selection: state.selection?.kind === "string" ? null : state.selection })),
-    showSunView: (isSunView) => set((state) => (state.isSunView === isSunView ? state : isSunView ? { isSunView } : { isSunView, sunTab: "shadows" })),
+    // Leaving the Sun view takes its tab and its time back: the steps draw the design day's noon (V2 · 3).
+    showSunView: (isSunView) => set((state) => (state.isSunView === isSunView ? state : isSunView ? { isSunView } : { isSunView, sunTab: "shadows", sunTime: STILL })),
     hidePanel: (isPanelHidden) => set((state) => (state.isPanelHidden === isPanelHidden ? state : { isPanelHidden })),
     // An object selected on the roof shows the panel again: its fields are there (D99).
     select: (selection) => set(selection === null ? { selection, draft: null } : { selection, draft: null, isPanelHidden: false }),

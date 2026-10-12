@@ -18,3 +18,6 @@ export function moduleCardOf(module: Module, coefficients: Coefficients): Module
     file: module.source,
   };
 }
+
+/** The module on one line, as the Array step's summary row says it (V2 · 3): its model and its power. */
+export const moduleFactsOf = (module: Pick<Module, "model" | "pnom_w">): string => `${module.model} · ${shown(module.pnom_w, 0)} Wp`;

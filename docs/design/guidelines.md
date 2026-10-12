@@ -46,6 +46,8 @@
 - The engine's user-facing sentences are kept word for word (`plan/reference/functional-inventory.md`, 2.8).
 - Never use the word "bankable".
 - No exclamation marks in text. No emoji.
+- Every value says who set it, in four words and no others (V2 · 3, D97): `Default`, `From the weather`,
+  `Set for <country>`, `Yours`. A value of the user's says the default it took the place of, and offers `Reset`.
 
 ## Numbers and units
 
@@ -128,6 +130,7 @@
 - The camera never goes below the roof. Presets: 3D, Plan (top, north up), Fit, Sun's eye.
 - North is always findable (the north control shows the bearing).
 - Shadows are real: their direction and length come from the engine's sun position for the site and time.
+- The time belongs to the Sun view (V2 · 3): outside it the stage draws the design day's noon, still.
 - Selection is an outline in accent. Hover is a lighter outline, on pointer devices only.
 - Labels on the stage are few: dimensions of the roof, the selected object's callout, the inverter marker.
 - Satellite imagery carries its attribution wherever it is shown, on the map and under the 3D.

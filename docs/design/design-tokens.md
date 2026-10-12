@@ -284,7 +284,8 @@ sections. A half step of the utilities (2 px) is for the inside of a control alo
 | `--size-tabbar-foot-on-screen` | `max(var(--size-tabbar-foot), var(--safe-bottom))` | The tab bar's foot on the screen: its own padding, or the home bar's zone where that is larger; never both (an installed app on an iPhone) |
 | `--size-tabbar-on-screen` | `calc(var(--size-tabbar) - var(--size-tabbar-foot) + var(--size-tabbar-foot-on-screen))` | The tab bar's height on the screen, its foot included; what sits above the bar (the toasts) stands on it |
 | `--size-touch` | `44px` | Touch target, the least on phone and tablet, both ways |
-| `--size-sheet-peek` | `84px` | What is seen of the bottom sheet at its lowest stop: the handle and the lens switch |
+| `--size-sheet-peek` | `84px` | What is seen of the bottom sheet at its lowest stop: the handle and the top of the step |
+| `--size-stage-phone` | `40dvh` | The Studio's stage on phone: 40 % of the height; the sheet at half meets its foot (V2 · 3) |
 | `--columns-p-values-phone` | `1fr 1fr 1.5fr` | The three exceedance values of the lead tile on phone: the last cell, which carries the sigma too, is wider |
 | `--columns-loss-chain` | `210px 100px 64px 216px minmax(0, 1fr)` | A row of the loss chain on desktop: the label, the field where the step is the user's, the change, the track, the running total |
 | `--columns-loss-chain-tablet` | `220px 112px 72px 190px minmax(0, 1fr)` | The same on tablet |

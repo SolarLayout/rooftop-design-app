@@ -18,12 +18,17 @@ import { Stage } from "@/components/studio/Stage";
 import { StringsInspector } from "@/components/studio/StringsInspector";
 import { useHistoryKeys } from "@/components/shell/use-history-keys";
 import { ResultChip } from "@/components/shell/ResultChip";
-import { resultChipOf, summaryOf } from "@/components/shell/result-view";
+import { capacityOf, resultChipOf, summaryOf } from "@/components/shell/result-view";
 import { useNotesOfTheShell, useProgressionOfTheShell } from "@/components/shell/Shell";
 import { useSunKeys } from "@/components/studio/use-sun-keys";
 import { useSize } from "@/components/studio/use-size";
-import { useStores, useView, useVitals } from "@/components/shell/stores";
+import { useProject, useStores, useView, useVitals } from "@/components/shell/stores";
+import { projectOf } from "@/lib/stores/project-store";
+import { firstOpenLinesOf, showsFirstOpenOf } from "./first-open";
+import { StepHead } from "./StepHead";
+import { stepHeadOf } from "./step-heads";
 import { usePanel } from "./use-panel";
+import { useShareUnder } from "./use-share-under";
 
 type Props = { lens: Lens };
 
@@ -37,9 +42,10 @@ function Primary({ lens, isFloating = false }: { lens: Lens; isFloating?: boolea
   if (next === null) return null;
   const name = STEPS.find((step) => step.id === next)?.name ?? "";
   return (
-    <div className={classNames("flex flex-col gap-2", isFloating && "w-96 rounded-card border border-line bg-surface-1 p-3 shadow-float")}>
+    <div className={classNames("flex flex-col gap-2 tablet:flex-row tablet:items-center tablet:justify-between tablet:gap-6 desktop:flex-col desktop:items-stretch desktop:gap-2", isFloating && "w-96 rounded-card border border-line bg-surface-1 p-3 shadow-float")}>
       {seen.includes(next) ? null : <p className="type-body-touch text-text-2 desktop:type-body">{nextLineOf(name as "Array")}</p>}
-      <ButtonLink kind="primary" size="xl" icon="arrow-right" href={pathOfStep(next)} className="w-full flex-row-reverse" data-testid="step-primary">
+      {/* On tablet the primary stands at the right of its line; on phone and desktop the column's width. */}
+      <ButtonLink kind="primary" size="xl" icon="arrow-right" href={pathOfStep(next)} className="w-full flex-row-reverse tablet:ml-auto tablet:w-auto desktop:w-full" data-testid="step-primary">
         Continue to {name}
       </ButtonLink>
     </div>
@@ -54,7 +60,7 @@ function Primary({ lens, isFloating = false }: { lens: Lens; isFloating?: boolea
  */
 export function Studio({ lens }: Props) {
   const { view } = useStores();
-  const { states, seen } = useProgressionOfTheShell();
+  const { current, states, seen } = useProgressionOfTheShell();
   const { notes, open } = useNotesOfTheShell();
   const vitals = useVitals(notes);
   const size = useSize();
@@ -62,9 +68,25 @@ export function Studio({ lens }: Props) {
   const isPanelHidden = useView(isPanelHiddenOf) && size === "desktop";
   const [stop, setStop] = useState<Stop>("half");
   const room = useRef<HTMLDivElement>(null);
+  const stage = useRef<HTMLElement>(null);
+  // On phone the sheet at half meets the foot of the stage, on a phone of any height.
+  const half = useShareUnder(room, stage, size === "phone");
+  const project = useProject(projectOf);
+  const head = project ? stepHeadOf(lens, project.roof.source) : null;
+  const capacity = capacityOf(vitals);
+  const status = showsFirstOpenOf({ current, seen }) ? firstOpenLinesOf(vitals) : [];
   const name = LENSES.find((one) => one.id === lens)?.name ?? "";
+  const sections = size === null ? null : lens === "array" ? <ArrayInspector /> : lens === "roof" ? <RoofInspector size={size} /> : <StringsInspector />;
+  // The work column's three weights (V2 · 3): the step (its head, its primary at the foot), the facts, the details.
   const inspector =
-    size === null ? null : isSunView ? <SunInspector size={size} /> : lens === "array" ? <ArrayInspector /> : lens === "roof" ? <RoofInspector size={size} /> : <StringsInspector />;
+    size === null ? null : isSunView ? (
+      <SunInspector size={size} />
+    ) : (
+      <>
+        {head ? <StepHead title={head.title} line={head.line} status={status} /> : null}
+        {sections}
+      </>
+    );
 
   // The Studio comes back to the step that was opened last.
   useEffect(() => view.getState().showLens(lens), [view, lens]);
@@ -76,11 +98,12 @@ export function Studio({ lens }: Props) {
 
   return (
     <div ref={room} className="relative flex min-h-0 grow flex-col desktop:flex-row">
-      <main className="relative flex shrink-0 flex-col desktop:min-w-0 desktop:shrink desktop:grow">
-        <Stage lens={lens} name={isSunView ? `${name} · Sun` : name} className="h-63 shrink-0 tablet:h-110 desktop:h-auto desktop:grow" />
-        {/* On tablet the result is a row under the stage; on desktop and phone it is in the top bar (D95). */}
-        <div className="hidden border-b border-line-subtle px-5 py-2 tablet:flex desktop:hidden">
+      <main ref={stage} className="relative flex shrink-0 flex-col desktop:min-w-0 desktop:shrink desktop:grow">
+        <Stage lens={lens} name={isSunView ? `${name} · Sun` : name} className="h-stage-phone shrink-0 tablet:h-110 desktop:h-auto desktop:grow" />
+        {/* On tablet the result is a row under the stage, the modules and their power at its right; on desktop and phone it is in the top bar (D95). */}
+        <div className="hidden items-center justify-between gap-4 border-b border-line-subtle px-5 py-2 tablet:flex desktop:hidden">
           <ResultChip chip={resultChipOf(vitals)} summary={summaryOf(vitals)} onOpenNotes={open} />
+          {capacity ? <span className="type-body text-text-2">{capacity}</span> : null}
         </div>
         {isPanelHidden ? (
           <div className="absolute right-panel bottom-safe-panel z-float">
@@ -111,7 +134,7 @@ export function Studio({ lens }: Props) {
       </aside>
 
       <div className="tablet:hidden">
-        <Sheet label="Work column" stop={stop} onStop={setStop}>
+        <Sheet label="Work column" stop={stop} onStop={setStop} half={half}>
           <div className="flex flex-col gap-6 px-4 pt-4 pb-6">
             {size === "phone" ? inspector : null}
             {isSunView ? null : <Primary lens={lens} />}

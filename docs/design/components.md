@@ -152,8 +152,8 @@ In code: `NumberField` and `Stepper`; their numbers in `number-entry.ts`.
 - The field shows its number with the decimals of the quantity, a comma between thousands and a true minus
   sign; it reads either minus sign and the comma.
 - With the focus inside: accent border and `shadow-well-focus`. The input has no ring of its own.
-- Where the label stands before the field, a line under the label may say where the value comes from, in
-  `type-body`, text-2: "11.9 °C from the weather", "entered" (the board "Inverter and sizing"). In code: `detail`.
+- Where the label stands before the field, a line under the label says who set the value (V2 · 3), in `type-body`,
+  text-3: "From the weather · 11.9 °C", "Default", "Yours · default 0.90 m · Reset". In code: `detail`.
 - Inside the loss chain there is no line under the label: a field that is empty for its default says the
   default inside itself, in text-3 ("PAN 0.2 %"). In code: `placeholder`.
 - Inside a chip the field is a cell of the chip, as in the chain (`form="chip"`); what it says of an entry it
@@ -244,10 +244,10 @@ preselected. Below it, the list of what is waiting and what is done. Its one use
 (Phase 16): the pattern is kept for a choice that comes to need it, and is in no screen today.
 
 ## System voltage
-The Strings step\'s section (the boards "System voltage · Set by the user's country"; D87, D88). The heading with its
-? disc, and at the right in `type-body` `text-3` who set the voltage: `Set for <country>` (the app, for the user's
-country), `Set by the app` (the app's value is not the default of the country the user is in now), `Your choice`. Under
-it the segmented control of 600, 1000 and 1500 V, filling the width. Then, each only when it applies:
+The Strings step's section (the boards "System voltage · Set by the user's country"; D87, D88), a summary row (V2 · 3)
+open the first time: its facts the voltage, and at the right who set it: `Set for <country>` (the app, for the user's
+country), `Default` (the app's value is not the default of the country the user is in now), `Yours`. Opened, the
+segmented control of 600, 1000 and 1500 V, filling the width. Then, each only when it applies:
 - for the app's value, one line in `type-body` `text-2`: where it comes from ("1000 V, the usual limit for rooftops in
   India. Change it if the site needs another.");
 - for the app's value with equipment rated under it, a second line, plain, no mark: "Strings sized to 800 V, this
@@ -437,13 +437,12 @@ option they are its loss chain's ("Of the 638 modules of option A"); without, ne
 all 790 positions") and Electrical says what it waits for, in the API's words. Under them the engine's note on the
 horizon as it says it. Before any run, skeletons on the tiles.
 
-## Time pill (every step)
-The time on the stage of the Roof, Array and Strings steps, as the approved Array boards draw it: a pill of 44
-(48 on tablet), `surface-1`, border `line`, `shadow-raised`: round play 32 (36 on tablet), the day and the time in
-mono ("21 Dec · 10:30"), a short slider of the time (180, 200 on tablet) filled to the time, and "solar time" on
-desktop. Desktop at the bottom left over the vitals, tablet at the bottom left of the stage. On phone it is the
-play button alone, at the top left of the stage, `control`: a press plays and pauses; the time is moved on the
-timeline of the Sun view. In the Sun view the timeline stands instead, on tablet and desktop.
+## Time pill (the Sun view, phone)
+V2 · 3 (D97): the time belongs to the Sun view. Outside it the stage draws the design day's noon, still, and the keys of
+the time do nothing; leaving the Sun view brings the time back to that noon. In the Sun view the timeline stands across
+the stage's foot on tablet and desktop, 28 over its bottom. On phone the pill is the play button with the day and the time
+in mono ("21 Dec · 12:00"), at the top left of the stage: a press plays and pauses; the time is moved on the timeline in
+the sheet.
 
 ## Find's first step (D85)
 The panel of Find before a place is found (`components/find/FirstStep.tsx`, the words in `lib/outline/first-step.ts`).
@@ -525,7 +524,7 @@ holds the focus; Escape, the ×, a press beside it close it, and the focus goes 
 - Then, 20 in, 18 down, with 16 between: the title (`type-title`, `type-title-touch` on touch, in `text`; D94), the summary (`text-2`); for a
   one-choice section its options in a bordered list (`radius-row`), each its label (500) and what it means (`type-body`,
   `text-2`), the section's own on `note-surface` with "Your choice" (`accent` on `accent-ink`, 11 at 600), or the words the section
-  gives of who set it (the system voltage: `Set for India`, `Set by the app`; D87, #159); the body: headings
+  gives of who set it (the system voltage: `Set for India`, `Default`, `Yours`; D87, #159, V2 · 3); the body: headings
   (`type-section`, `text`), words (`text-2`), the user's own on-screen words in mono on `surface-2`, a note (`note-surface`, the note
   mark), a link to another topic in the accent, underlined; while the body loads, three lines of skeleton; when it cannot
   load, "This part of the help did not load. Check the connection and try again." and Try again. Then "Related" (a section heading:
@@ -664,7 +663,7 @@ m suggested. A DXF holds nothing of where the roof is, and the place sets the su
 DXF the dialog asks "Place": the search field of Find (an address, coordinates or a maps link), then Latitude and
 Longitude, empty, filled by the search or typed, as the roof entered by hand has them; nothing is guessed (the desktop
 app put every DXF at its own default). A KMZ or KML carries its place and shows no Place block. "Open the roof" waits
-until a file is there, and for a DXF until its place is too. After the import the Roof step\'s card says "From a file · 6
+until a file is there, and for a DXF until its place is too. After the import the Roof step's card says "From a file · 6
 corners · 4 obstacles" with the file name in mono; a note under it (`note-surface`, accent border, the note mark)
 carries the engine's sentence "These obstacles have no height in the file and were set to 1.0 m.", "3 to review" and
 Review; the open card of an obstacle to review has the hint "Enter the real height. The file gave none; 1.0 m stands
@@ -1190,6 +1189,28 @@ In code: `TopBar`, `StepNav`, `StepTabBar`, `ResultChip`, `Shell` (`components/s
   stage its shadows, its time and the sun's arc; `/studio/sun` turns it on over the step in hand. On phone it stands alone
   at the stage's top right, 3D or Plan and Layers on a line under it, clear of the time at the top left.
 - Where the top bar is short of room: `guidelines.md`, "Responsive rules".
+
+## The work column (V2 · 3, D97)
+The board "V2 · 3 · The Studio's first open". The column has three weights, in this order:
+1. **The step**: its head (`StepHead`): the instruction in `heading` (`Check the roof`, `Choose the module`, `Check the
+   strings`), one line under it in `text-2`; after Build this roof, until the user continues to another step, the
+   first-open status in a card of `surface-1` with `line`: a tick and `The array is on the roof` with its modules and kWp,
+   then a turning ring and `Computing the energy · Shading every module over the year. A few seconds.`, then a tick and
+   `<energy> MWh in year 1 · The energy follows each change you make.` (`first-open.ts`). A run that failed says the first
+   line alone: the problem is said where problems are. The primary at the foot.
+2. **The facts**: each section a summary row (`SummaryRow`): its name in `section` with its ?, its facts on one line in
+   `text-2`, who set it at the right in `unit` `text-3`, a chevron; 56 high, 64 on touch, divided by `line-subtle`. The
+   whole row opens and closes it in place. The step's own sections open the first time (Module, System voltage); what the
+   user opens or closes is remembered on the device (`rooftop.sections-open`). The obstacles open while one is selected
+   on the roof or has a height to review. On Strings the series range, the options and the MPPT loading stand open
+   between the rows: they are the step's own matter.
+3. **The details**: the fields of a row opened, each with who set it under its name.
+
+Who set it (`lib/studio/set-by.ts`): four words, the same at a row's right and under a field: `Default` (the app's value,
+the API's default, `lib/studio/defaults.ts`), `From the weather`, `Set for <country>` (D87), `Yours`. A field the user
+changed says `Yours · default <value> · Reset`; Reset gives the default back as one edit, which undo takes back. A
+section is `Yours` when any of its fields is, else its source. The module and the inverter are `Yours` once the user read
+a file of their own. The voltage's `Set by the app` and `Your choice` of before are `Default` and `Yours`.
 
 ## Layers button (the stage)
 The board "Stage, Layers" (`mockups/StageLayers.dc.html`). The fourth control of the view, after Fit and the north

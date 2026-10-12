@@ -937,7 +937,7 @@ describe("the sun", () => {
     suns[0].answer(SUN);
     await settled();
 
-    expect(sunTimeOf(view.getState())).toEqual({ day: "design_day", hour: 10.5 });
+    expect(sunTimeOf(view.getState())).toEqual({ day: "design_day", hour: 12 });
   });
 
   test("a late answer for another place or day is not kept", async () => {
@@ -1022,7 +1022,7 @@ describe("the shadow outlines", () => {
 
     expect(asked(suns)).toHaveLength(1);
     const [request] = asked(suns).map((sun) => sun.request);
-    expect(request).toEqual({ lat: 18.52, lon: 73.86, day: "design_day", hours: [10.5], shadows: { roof: DEMO.roof, hour: 10.5 } });
+    expect(request).toEqual({ lat: 18.52, lon: 73.86, day: "design_day", hours: [12], shadows: { roof: DEMO.roof, hour: 12 } });
   });
 
   test("a drag passing many quarter hours asks once, for where it stopped", async () => {
@@ -1030,24 +1030,24 @@ describe("the shadow outlines", () => {
     view.getState().showOnTheRoof("shadowOutlines", true);
     pass(TIME_REST);
 
-    for (const hour of [11, 11.25, 11.5, 11.75, 12]) {
+    for (const hour of [12.25, 12.5, 12.75, 13]) {
       view.getState().setSunTime({ day: "design_day", hour });
       pass(40);
     }
     pass(TIME_REST);
 
-    expect(asked(suns).map((sun) => sun.request.hours)).toEqual([[10.5], [12]]);
+    expect(asked(suns).map((sun) => sun.request.hours)).toEqual([[12], [13]]);
   });
 
   test("are shown while the time is the one they are of, and not once it moved on", async () => {
     const { suns, results, view, pass } = await opened();
     view.getState().showOnTheRoof("shadowOutlines", true);
     pass(TIME_REST);
-    asked(suns)[0].answer(answerOf(10.5));
+    asked(suns)[0].answer(answerOf(12));
     await settled();
     expect(shadowOutlinesOf(results.getState())?.polygons).toEqual([OUTLINE]);
 
-    view.getState().setSunTime({ day: "design_day", hour: 11 });
+    view.getState().setSunTime({ day: "design_day", hour: 13 });
 
     expect(shadowOutlinesOf(results.getState())).toBeNull();
   });

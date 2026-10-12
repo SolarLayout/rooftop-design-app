@@ -1,6 +1,5 @@
 "use client";
 
-import { SectionHeading } from "@/components/shell/help/SectionHeading";
 import type { ReactNode } from "react";
 import { NumberField } from "@/components/ui/NumberField";
 import { RangeSlider } from "@/components/ui/RangeSlider";
@@ -8,10 +7,12 @@ import { Segmented } from "@/components/ui/Segmented";
 import { Switch } from "@/components/ui/Switch";
 import type { ArraySpec, LayoutResponse, Roof } from "@/lib/api";
 import { hourOf } from "@/lib/geometry/keepout";
-import { ARRAY_RANGES, designDayOf, pitchLineOf, spacingOf, withAzimuthDecided, withDesignDay, withPitchDecided, type Decided, type DesignDay, type SpacingId } from "@/lib/studio/array-fields";
+import { ARRAY_RANGES, DESIGN_DAY_WORDS, designDayOf, pitchLineOf, spacingOf, spacingSetByOf, windowSetByOf, withAzimuthDecided, withDesignDay, withPitchDecided, type Decided, type DesignDay, type SpacingId } from "@/lib/studio/array-fields";
+import { ARRAY_DEFAULTS } from "@/lib/studio/defaults";
+import { DEFAULT } from "@/lib/studio/set-by";
 import { azimuthLineOf, shadedLineOf, WINDOW_SCALE, WINDOW_TICKS, windowCommitted } from "@/lib/studio/array-view";
 import type { ArrayChange } from "./ArrayMounting";
-import { ReadOut, ROW } from "./inspector-look";
+import { ReadOut, ROW, WithSetBy } from "./inspector-look";
 
 type Props = {
   array: ArraySpec;
@@ -21,11 +22,7 @@ type Props = {
   onChange: (change: ArrayChange) => void;
 };
 
-const DESIGN_DAYS: { value: DesignDay; label: string }[] = [
-  { value: "winter", label: "Winter solstice" },
-  { value: "june", label: "21 Jun" },
-  { value: "march", label: "21 Mar" },
-];
+const DESIGN_DAYS: { value: DesignDay; label: string }[] = (["winter", "june", "march"] as const).map((value) => ({ value, label: DESIGN_DAY_WORDS[value] }));
 
 type DecidedFieldProps = {
   label: string;
@@ -63,20 +60,19 @@ function DecidedField({ label, decided, switchLabel, onDecided, field }: Decided
 }
 
 /**
- * The spacing of the rows and the shade-free window (plan step 15, functional-inventory.md 1.3): the
- * pitch and the azimuth, which the engine decides unless the switch is off; the window in solar hours;
- * the design day; whether shaded positions are used. The document keeps null where the engine decides.
+ * The spacing of the rows (plan step 15, functional-inventory.md 1.3), inside the Array step's summary row (V2 · 3): the
+ * pitch and the azimuth, which the engine decides unless the switch is off, each saying who set it; the switch gives the
+ * value back to the engine. The document keeps null where the engine decides.
  */
 export function ArraySpacing({ array, roofType, layout, onChange }: Props) {
-  const set = <Id extends "window_start_h" | "window_end_h" | "allow_shaded" | "row_pitch_m" | "azimuth_deg">(id: Id, value: ArraySpec[Id]) =>
-    onChange((before) => (before[id] === value ? before : { ...before, [id]: value }));
+  const set = <Id extends "row_pitch_m" | "azimuth_deg">(id: Id, value: ArraySpec[Id]) => onChange((before) => (before[id] === value ? before : { ...before, [id]: value }));
+  const setBy = spacingSetByOf(array, roofType);
 
   const field = (id: SpacingId) => {
     switch (id) {
       case "row_pitch_m":
         return (
           <DecidedField
-            key={id}
             label="Row pitch"
             decided={pitchLineOf(array, layout)}
             switchLabel="Shade-free row pitch"
@@ -87,7 +83,6 @@ export function ArraySpacing({ array, roofType, layout, onChange }: Props) {
       case "azimuth_deg":
         return (
           <DecidedField
-            key={id}
             label="Azimuth"
             decided={azimuthLineOf(array, layout, roofType)}
             switchLabel="Follow the roof edge"
@@ -98,18 +93,31 @@ export function ArraySpacing({ array, roofType, layout, onChange }: Props) {
     }
   };
 
-  const spacing = spacingOf(roofType);
+  return (
+    <>
+      {spacingOf(roofType).map((id) => (
+        <WithSetBy key={id} setBy={setBy[id] ?? DEFAULT}>
+          {field(id)}
+        </WithSetBy>
+      ))}
+    </>
+  );
+}
+
+type WindowProps = { array: ArraySpec; onChange: (change: ArrayChange) => void };
+
+/**
+ * The shade-free window in solar hours, the design day and whether shaded positions are used (plan step 15), inside the
+ * Array step's summary row (V2 · 3), each saying who set it with Reset for the user's value.
+ */
+export function ShadeFreeWindow({ array, onChange }: WindowProps) {
+  const setBy = windowSetByOf(array);
+  const window = (from: number, to: number) => onChange((before) => (before.window_start_h === from && before.window_end_h === to ? before : { ...before, window_start_h: from, window_end_h: to }));
+  const shaded = (on: boolean) => onChange((before) => (before.allow_shaded === on ? before : { ...before, allow_shaded: on }));
 
   return (
     <>
-      {spacing.length > 0 ? (
-        <section aria-label="Spacing" className="flex flex-col gap-row">
-          <SectionHeading help="studio.section.spacing">Spacing</SectionHeading>
-          {spacing.map(field)}
-        </section>
-      ) : null}
-      <section aria-label="Shade-free window" className="flex flex-col gap-row">
-        <SectionHeading help="studio.section.shade-free-window">Shade-free window</SectionHeading>
+      <WithSetBy setBy={setBy.window} onReset={() => window(ARRAY_DEFAULTS.window_start_h, ARRAY_DEFAULTS.window_end_h)}>
         <RangeSlider
           label="Shade-free window"
           value={[array.window_start_h, array.window_end_h]}
@@ -117,19 +125,20 @@ export function ArraySpacing({ array, roofType, layout, onChange }: Props) {
           format={hourOf}
           note="solar time"
           ticks={WINDOW_TICKS}
-          onCommit={(span) => {
-            const [from, to] = windowCommitted(span);
-            onChange((before) => (before.window_start_h === from && before.window_end_h === to ? before : { ...before, window_start_h: from, window_end_h: to }));
-          }}
+          onCommit={(span) => window(...windowCommitted(span))}
         />
+      </WithSetBy>
+      <WithSetBy setBy={setBy.design_day} onReset={() => onChange((before) => withDesignDay(before, "winter"))}>
         <div className={ROW}>
           <span className="text-text-2">Design day</span>
           <Segmented label="Design day" options={DESIGN_DAYS} value={designDayOf(array)} onChange={(day) => onChange((before) => withDesignDay(before, day))} />
         </div>
+      </WithSetBy>
+      <WithSetBy setBy={setBy.allow_shaded} onReset={() => shaded(ARRAY_DEFAULTS.allow_shaded)}>
         <ReadOut label="Allow shaded positions" value={null} line={shadedLineOf(array.allow_shaded)}>
-          <Switch label="Allow shaded positions" on={array.allow_shaded} onChange={(on) => set("allow_shaded", on)} />
+          <Switch label="Allow shaded positions" on={array.allow_shaded} onChange={shaded} />
         </ReadOut>
-      </section>
+      </WithSetBy>
     </>
   );
 }

@@ -5,6 +5,7 @@ import type { Range } from "../../components/ui/number-entry";
 import { shown } from "../../components/ui/number-entry";
 import type { Project } from "../api";
 import type { InverterShown } from "./inverter-card";
+import { DEFAULT, type SetBy } from "./set-by";
 
 export type InverterFieldId = "imax_mppt_override" | "ac_cable_m";
 
@@ -66,4 +67,12 @@ export function withCurrentPerMppt(document: Project, value: number | null): Pro
 /** The document with the AC cable per inverter entered; the same document when nothing changes. */
 export function withAcCable(document: Project, value: number): Project {
   return document.ac_cable_m === value ? document : { ...document, ac_cable_m: value };
+}
+
+/** The AC cable of a design the user has not set: the API's default. */
+export const AC_CABLE_DEFAULT = 30;
+
+/** The limits' word (V2 · 3): the app's while the current is the file's and the cable the default, Yours once either is entered. */
+export function limitsSetByOf(document: Project): SetBy {
+  return (document.imax_mppt_override ?? null) !== null || document.ac_cable_m !== AC_CABLE_DEFAULT ? { kind: "yours", byDefault: null } : DEFAULT;
 }
