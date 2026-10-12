@@ -53,8 +53,8 @@ function NoteRow({ note, onClose, onTryAgain, onEnterValue }: { note: Note } & P
             </Button>
           </span>
         ) : null}
-        <span className="mt-1.5 flex items-center gap-2.5">
-          <span className="grow type-body-touch desktop:type-body text-text-3">{note.where}</span>
+        <span className={field ? undefined : "mt-1.5 flex items-center gap-2.5"}>
+          {field ? null : <span className="grow type-body-touch desktop:type-body text-text-3">{note.where}</span>}
           {field ? null : action.kind === "open" ? (
             <ButtonLink size="s" href={action.path} onClick={onClose}>
               {action.label}

@@ -27,15 +27,18 @@ const CHIP = classNames(
   "press-motion focus-ring hovered:border-line-hover hovered:bg-control-hover desktop:h-10",
 );
 
+/** The failed chip on phone, where "Energy not computed" has no room (the board "V2 · 5"). */
+const NO_ENERGY = "No energy";
+
 const toReviewOf = (count: number) => `${count} to review`;
 
 /** The energy of year 1 in the chip: the figure and its unit. Dimmed while a newer one comes, and while the last one is shown. */
-function Figure({ figure, isDimmed }: { figure: string; isDimmed: boolean }) {
+function Figure({ figure, isDimmed, isShort = false, hiddenOnPhone = false }: { figure: string; isDimmed: boolean; isShort?: boolean; hiddenOnPhone?: boolean }) {
   return (
-    <span className={classNames("flex items-baseline gap-1.5", isDimmed && "opacity-updating")}>
+    <span className={classNames("items-baseline gap-1.5", hiddenOnPhone ? "hidden tablet:flex" : "flex", isDimmed && "opacity-updating")}>
       <span className="type-strong-touch tabular-nums desktop:type-strong">{figure}</span>
       <span className="type-body-touch text-text-2 desktop:type-body">
-        MWh<span className="hidden desktop:inline"> a year</span>
+        MWh{isShort ? null : <span className="hidden desktop:inline"> a year</span>}
       </span>
     </span>
   );
@@ -70,10 +73,10 @@ export function ResultChip({ chip, summary, onOpenNotes, onTryAgain, className }
             {chip.toReview > 0 ? (
               <span className="flex items-center gap-1.5 border-r border-line pr-2">
                 <StatusMark kind="note" label={toReviewOf(chip.toReview)} wordsShown={false} size={16} />
-                <span className="hidden type-body desktop:inline">{toReviewOf(chip.toReview)}</span>
+                <span className="type-body-touch tablet:type-body">{toReviewOf(chip.toReview)}</span>
               </span>
             ) : null}
-            <Figure figure={chip.figure} isDimmed={chip.isDimmed} />
+            <Figure figure={chip.figure} isDimmed={chip.isDimmed} hiddenOnPhone={chip.toReview > 0} />
             {chip.isDimmed ? <ProgressRing size={16} /> : null}
           </>
         ) : chip.kind === "computing" ? (
@@ -84,12 +87,13 @@ export function ResultChip({ chip, summary, onOpenNotes, onTryAgain, className }
         ) : chip.kind === "stale" ? (
           <>
             <StatusMark kind="note" label={chip.words} wordsShown={false} size={16} />
-            <Figure figure={chip.figure} isDimmed />
+            <Figure figure={chip.figure} isDimmed isShort />
             <span className="hidden type-body tablet:inline">{chip.words}</span>
           </>
         ) : (
           <>
             <StatusMark kind="note" label={chip.words} wordsShown={false} size={16} />
+            <span className="type-body-touch tablet:hidden">{NO_ENERGY}</span>
             <span className="hidden type-body tablet:inline">{chip.words}</span>
           </>
         )}

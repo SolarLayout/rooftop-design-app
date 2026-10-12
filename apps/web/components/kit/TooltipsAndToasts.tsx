@@ -46,6 +46,9 @@ export function TooltipsAndToasts({ onPress }: Props) {
           <Example name="toast-action" caption="Done, and it can be undone">
             <Toast kind="done" words="Stair room was removed" action={{ label: "Undo", onPress: () => undefined }} />
           </Example>
+          <Example name="toast-two-actions" caption="A note with two things to do (V2 · 5): undo the edit, or choose another">
+            <Toast kind="note" words="Your stringing no longer fits. Option A is used." action={{ label: "Undo", onPress: () => undefined }} alsoAction={{ label: "Choose another", onPress: () => undefined }} onClose={() => undefined} />
+          </Example>
           <Example name="toast-note" caption="A note. It stays until it is closed">
             <Toast kind="note" words={MAP_NOT_LOADED} onClose={() => undefined} />
           </Example>
