@@ -9,7 +9,7 @@ export const BOM = [
   { item: "DC cable", spec: "4 mm² Cu, 1500 V DC, red + black", qty: 1681.0, unit: "m" },
   { item: "DC connector pair", spec: "MC4-compatible, matched to the module", qty: 44.0, unit: "pairs" },
   { item: "AC cable", spec: "Inverter to ACDB, sized for 240 A at 800 V AC", qty: 30.0, unit: "m" },
-  { item: "AC distribution board", spec: "1 incomer(s), 1 outgoing", qty: 1.0, unit: "pcs" },
+  { item: "AC distribution board", spec: "1 incomer, 1 outgoing", qty: 1.0, unit: "pcs" },
 ];
 
 const row = (string: string, mppt: number, length_m: number) => ({

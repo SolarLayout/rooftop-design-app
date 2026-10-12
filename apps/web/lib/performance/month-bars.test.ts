@@ -64,13 +64,13 @@ describe("the table of the months", () => {
     expect(rows[12]).toEqual({ key: YEAR_ROW, month: "Year", mwh: "617.8", kwhPerKwp: "1,729" });
   });
 
-  test("the columns: the month as the name of its row, MWh and kWh/kWp as numbers", () => {
+  test("the columns: the month as the name of its row, the energy and the yield as numbers, each head the thing and its unit", () => {
     const row = monthRowsOf(energy)[6]!;
 
     expect(MONTH_COLUMNS.map((column) => [column.head, column.kind])).toEqual([
       ["Month", "name"],
-      ["MWh", "number"],
-      ["kWh/kWp", "number"],
+      ["Energy, MWh", "number"],
+      ["Yield, kWh/kWp", "number"],
     ]);
     expect(MONTH_COLUMNS.map((column) => column.value(row))).toEqual(["Jul", "31.5", "88"]);
   });

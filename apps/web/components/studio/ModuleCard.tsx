@@ -75,7 +75,7 @@ export function ModuleCard({ shown, onChange }: Props) {
         <Skeleton kind="label" className="w-75" />
         <p role="status" className="flex items-center gap-2.5 type-body-touch desktop:type-body text-text-2">
           <ProgressRing size={16} />
-          Reading the module with the first run
+          Loading the module
         </p>
       </section>
     );

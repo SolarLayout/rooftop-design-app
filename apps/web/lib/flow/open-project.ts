@@ -4,6 +4,7 @@
 // and Open keeps the project on this device as a new design and opens it, which runs it as the flow runs any design.
 // The web parses no .rtd itself. Pure: what is sent and what is shown.
 import { ApiError, type OpenedProject, type ProjectFile } from "../api";
+import { roofWordsOf } from "../device/kept-design";
 
 export const PROJECT_FILE_ENDING = ".rtd";
 
@@ -18,13 +19,10 @@ export const NOT_A_PROJECT_FILE = "Choose a project file (.rtd).";
 export const MAX_REQUEST_BYTES = 6_291_456;
 
 /** The dialog's own words for a file whose request would pass MAX_REQUEST_BYTES: no request is made for it. */
-export const TOO_LARGE = "This file is larger than any project this app saves, so it cannot be opened.";
+export const TOO_LARGE = "This file is larger than any project file the app saves. Choose another.";
 
 /** The browser could not read the file: words of the app, since the API never saw it. */
 export const COULD_NOT_BE_READ = "The file could not be read. Choose another.";
-
-/** The second line of a file read, for every file: the results are never in the file (D5), and the answer carries no capacity and no energy. */
-export const RUNS_IN_THE_STUDIO = "Capacity and energy come with the run in the Studio";
 
 /** Whether the file is a project file by its ending, whatever the case. */
 export function isProjectFile(name: string): boolean {
@@ -47,11 +45,12 @@ export function fitsTheApi(request: ProjectFile): boolean {
 }
 
 /**
- * The lines of a file read, under its name: the project's name, then that the capacity and the energy come with the run.
- * The format is not shown: the answer's is the current one, not the file's.
+ * The lines of a file read, under its name: a summary of what it holds, the project's name, then its roof as a card on Home
+ * says it ("90.0 × 40.0 m flat roof, tilted rows"). The results are never in the file (D5): the design runs once opened. The
+ * format is not shown: the answer's is the current one, not the file's.
  */
 export function linesOf(opened: OpenedProject): string[] {
-  return [opened.project.name, RUNS_IN_THE_STUDIO];
+  return [opened.project.name, roofWordsOf(opened.project)];
 }
 
 export type Refusal = {

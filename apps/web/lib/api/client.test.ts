@@ -176,7 +176,7 @@ describe("runDesign", () => {
 
     expect(thrown).toMatchObject({
       code: "run_cut_short",
-      message: "The design run ended before its result arrived. Run it again.",
+      message: "The run ended before its result arrived. Try again.",
     });
   });
 

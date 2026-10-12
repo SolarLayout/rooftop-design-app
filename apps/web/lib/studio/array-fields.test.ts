@@ -76,7 +76,7 @@ describe("the pitch and the azimuth, decided by the engine or given", () => {
   test("when the pitch is given the line says what shade-free would be", () => {
     // The layout of a pitch given is at that pitch: the line reads the engine's own, from the readouts (#179, item 9).
     const given = { layout: { ...LAYOUT.layout, pitch: 7 }, readouts: { ...LAYOUT.readouts, shade_free_pitch_m: 6.45 } } as unknown as LayoutResponse;
-    expect(pitchLineOf({ ...ARRAY, row_pitch_m: 7 }, given)).toEqual({ value: "7.00 m", line: "Shade-free would be 6.45 m", isEngine: false });
+    expect(pitchLineOf({ ...ARRAY, row_pitch_m: 7 }, given)).toEqual({ value: "7.00 m", line: "Shade-free spacing 6.45 m", isEngine: false });
   });
 
   test("without a layout the pitch has no line yet", () => {
@@ -145,9 +145,9 @@ describe("the facts of the array's sections, on one line (V2 · 3)", () => {
   });
 
   test("the spacing: how far apart the rows stand and the hours they are free of shade", () => {
-    expect(spacingFactsOf(ARRAY, LAYOUT, "flat_tilted")).toBe("Rows 6.45 m apart · shade-free 09:00 to 16:00");
-    expect(spacingFactsOf(ARRAY, LAYOUT, "flat_ew")).toBe("Azimuth 180.0° · shade-free 09:00 to 16:00");
-    expect(spacingFactsOf(ARRAY, LAYOUT, "sloped_flush")).toBe("Shade-free 09:00 to 16:00");
+    expect(spacingFactsOf(ARRAY, LAYOUT, "flat_tilted")).toBe("Rows 6.45 m apart · shade-free hours 09:00 to 16:00");
+    expect(spacingFactsOf(ARRAY, LAYOUT, "flat_ew")).toBe("Direction 180.0° · shade-free hours 09:00 to 16:00");
+    expect(spacingFactsOf(ARRAY, LAYOUT, "sloped_flush")).toBe("Shade-free hours 09:00 to 16:00");
     expect(spacingFactsOf(ARRAY, null, "flat_tilted")).toBeNull();
   });
 });
@@ -163,7 +163,7 @@ describe("the one sentence of Spacing (V2 · 7; audit V2-34)", () => {
   test("a spacing typed says so and what shade-free would be", () => {
     const sentence = spacingSentenceOf({ ...ARRAY, row_pitch_m: 7 }, { ...LAYOUT, layout: { ...LAYOUT.layout, pitch: 7 }, readouts: { ...LAYOUT.readouts, shade_free_pitch_m: 6.45 } } as LayoutResponse, "flat_tilted", 18.52);
 
-    expect(sentence).toBe("Rows stand 7.00 m apart. Shade-free they would stand 6.45 m apart.");
+    expect(sentence).toBe("Rows stand 7.00 m apart. The shade-free spacing is 6.45 m.");
   });
 
   test("on the design day of the array, in the other hemisphere too; none before a layout or where no row pitch applies", () => {

@@ -39,7 +39,7 @@ describe("the card of the roof in the Roof lens", () => {
   });
 
   test("a roof entered by hand, or read from a file, says so; the file is named", () => {
-    expect(roofCardOf(roof({ source: "coordinates" })).how).toBe("Entered by hand");
+    expect(roofCardOf(roof({ source: "coordinates" })).how).toBe("By hand");
     expect(roofCardOf(roof({ source: "kmz" }), "roof.kmz")).toMatchObject({ how: "From a file", file: "roof.kmz" });
     expect(roofCardOf(roof({ source: "dxf" }), "warehouse-roof.dxf")).toMatchObject({ how: "From a file", file: "warehouse-roof.dxf" });
   });

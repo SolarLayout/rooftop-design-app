@@ -24,7 +24,7 @@ def decode_pvsyst(data: bytes) -> str:
             return data.decode(enc)
         except UnicodeDecodeError:
             continue
-    raise ValueError(f"Cannot decode the file: it is not text in any of {', '.join(ENCODINGS)}.")
+    raise ValueError(f"The app cannot read the file as text: it is in none of {', '.join(ENCODINGS)}.")
 
 
 def _text_and_source(source: str | Path | bytes) -> tuple[str, str]:
@@ -215,7 +215,7 @@ def parse_pan(text: str, source: str = "") -> Module:
         source=source,
     )
     if not m.pnom_w or not m.voc or not m.isc:
-        raise ValueError(f"{_label(source)}: not a PVsyst module file (PNom, Voc or Isc missing)")
+        raise ValueError(f"{_label(source)} is not a module file (PAN): PNom, Voc or Isc is missing.")
     if not m.r_shunt_0:
         m.r_shunt_0 = 4 * m.r_shunt
     return m
@@ -315,6 +315,6 @@ def parse_ond(text: str, source: str = "") -> Inverter:
             scale = 1000.0 if pts[-1][0] < 10 * inv.pnom_kw else 1.0
             inv.curves[inv.vmpp_nom or 0.0] = [(a * scale, b * scale) for a, b in pts]
     if not inv.pnom_kw or not inv.vmpp_max:
-        raise ValueError(f"{_label(source)}: not a PVsyst inverter file (PNomConv or VMPPMax missing)")
+        raise ValueError(f"{_label(source)} is not an inverter file (OND): PNomConv or VMPPMax is missing.")
     inv._curve_euro = _floats(kv, "EfficEuroV")  # type: ignore[attr-defined]
     return inv

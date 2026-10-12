@@ -15,7 +15,10 @@ import { lensOf } from "@/lib/stores/view-store";
 type Props = { open: boolean; onClose: () => void };
 
 export const OPEN_A_PROJECT = "Open a project file";
-const WHAT_IT_IS = "A project saved by this app. It opens in the Studio and runs again here.";
+/** What a project file is (voice §12): the one line under the title. */
+const WHAT_IT_IS = "A design downloaded from the app as one file.";
+/** Which file the drop takes. */
+const WHICH_FILE = "An .rtd file";
 
 /** What the dialog holds of the file chosen last: the file, and what the API answered for it once it has. */
 type Chosen = { file: File; opened: OpenedProject | null };
@@ -23,7 +26,7 @@ type Chosen = { file: File; opened: OpenedProject | null };
 /**
  * Open a project (plan/phase-10-plan.md, step 9, decision 4; the board "Open a project"): an .rtd is read as soon as it
  * is dropped or chosen, by the browser as text and by the API with the engine's own reader. What was read stands in the
- * field (the file's name, the project's name, that the capacity and the energy come with the run) and under it as rows,
+ * field (the file's name, the project's name, its roof) and under it as rows,
  * word for word, the engine's notes on the files a format 1 project names without their text. Open keeps the project on
  * this device as a new design and opens it in the Studio at its last lens, with no second request. A file the API refuses
  * is refused in the field in the API's words; an API that was not reached offers Try again, which reads the file again.
@@ -104,7 +107,7 @@ export function OpenProject({ open, onClose }: Props) {
     >
       <p>{WHAT_IT_IS}</p>
       <div className="mt-3 flex flex-col gap-3">
-        <FileDrop title="Drop the project file here" detail="An .rtd file saved by this app" whenOver="It is read, and opens as a new design on this device" accept=".rtd" state={state} onFile={hold} />
+        <FileDrop title="Drop the project file here" detail={WHICH_FILE} whenOver={WHICH_FILE} accept=".rtd" state={state} onFile={hold} />
         {canTryAgain && chosen ? (
           <div className="flex justify-end">
             <Button size="s" onClick={() => void readTheFile(chosen.file)}>

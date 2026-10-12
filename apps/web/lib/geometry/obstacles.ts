@@ -69,8 +69,8 @@ export function solidsOf(obstacle: Obstacle, heightAt: HeightAt): Solid[] {
 function sizeWordsOf(obstacle: Obstacle): string {
   const { kind, points } = obstacle;
   if (kind === "box") return `box ${shown(obstacle.length, 1)} × ${shown(obstacle.width, 1)} m`;
-  if (kind === "cylinder") return `tank ⌀ ${shown(obstacle.diameter, 1)} m`;
-  if (kind === "tree") return `tree, crown ⌀ ${shown(obstacle.diameter, 1)} m`;
+  if (kind === "cylinder") return `tank ${shown(obstacle.diameter, 1)} m across`;
+  if (kind === "tree") return `tree, crown ${shown(obstacle.diameter, 1)} m across`;
   if (kind === "wall") return `wall ${shown(lengthOf(points), 1)} m long`;
   return `building ${shown(Math.round(areaOf(points.map(([x, y]) => ({ x, y })))), 0)} m²`;
 }
@@ -90,8 +90,8 @@ export type ObstacleState = "selected" | "draft" | "to-review";
 function sizeInMetres(obstacle: Obstacle | DraftObstacle): string {
   const { kind, points } = obstacle;
   if (kind === "box") return `${shown(obstacle.length, 1)} × ${shown(obstacle.width, 1)} m`;
-  if (kind === "cylinder") return `⌀ ${shown(obstacle.diameter, 1)} m`;
-  if (kind === "tree") return `crown ⌀ ${shown(obstacle.diameter, 1)} m`;
+  if (kind === "cylinder") return `${shown(obstacle.diameter, 1)} m across`;
+  if (kind === "tree") return `crown ${shown(obstacle.diameter, 1)} m across`;
   if (kind === "wall") return `${shown(lengthOf(points), 1)} m long`;
   return `${shown(Math.round(areaOf(points.map(([x, y]) => ({ x, y })))), 0)} m²`;
 }
@@ -106,13 +106,13 @@ export const canBeDragged = (obstacle: Pick<Obstacle, "kind">) => obstacle.kind 
  */
 export function calloutOfObstacle(obstacle: Obstacle | DraftObstacle, state: ObstacleState): Callout {
   const title = `${obstacle.name} · ${state === "draft" ? "draft" : "selected"}`;
-  if (state === "draft" || obstacle.height === null) return { title, detail: `${sizeInMetres(obstacle)} · type its height to add it` };
+  if (state === "draft" || obstacle.height === null) return { title, detail: `${sizeInMetres(obstacle)} · no height yet` };
   if (state === "to-review") return { title, detail: `${sizeInMetres(obstacle)} · height to review` };
-  const moved = canBeDragged(obstacle) ? "drag to move" : "moved by its points in the list";
+  const moved = canBeDragged(obstacle) ? "Drag to move it." : "Move it by its points in the list.";
   if (obstacle.kind === "tree") {
-    return { title, detail: `${sizeInMetres(obstacle)} from ${shown(obstacle.trunk_height, 1)} to ${shown(obstacle.height, 1)} m · ${moved}` };
+    return { title, detail: `${sizeInMetres(obstacle)} · ${shown(obstacle.trunk_height, 1)} to ${shown(obstacle.height, 1)} m high. ${moved}` };
   }
-  return { title, detail: `${sizeInMetres(obstacle)} · ${shown(obstacle.height, 1)} m high · ${moved}` };
+  return { title, detail: `${sizeInMetres(obstacle)} · ${shown(obstacle.height, 1)} m high. ${moved}` };
 }
 
 /** The point of a polyline half way along it. */

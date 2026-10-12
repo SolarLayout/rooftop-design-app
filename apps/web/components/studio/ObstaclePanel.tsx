@@ -46,7 +46,7 @@ type Props = {
 /** The icon of each kind, as the boards draw the rows. */
 export const ICON_OF_KIND: Record<ObstacleKind, IconName> = { box: "box", cylinder: "tank", wall: "wall", tree: "tree", building: "building" };
 
-/** A point of a wall or a building: metres east and north, as the corners of "Enter dimensions by hand". */
+/** A point of a wall or a building: metres east and north, as the corners of "Enter the roof by hand". */
 const POINT = { min: -5000, max: 5000, decimals: 2 };
 
 const ROW = "flex min-h-14 w-full items-center py-1.5 gap-2.5 rounded-row border border-line bg-surface-1 px-3 text-left cursor-pointer press-motion focus-ring hovered:bg-surface-2";
@@ -88,7 +88,7 @@ function NameField({ name, onCommit }: { name: string; onCommit: (name: string) 
 
 type PointsProps<Kind extends Obstacle | DraftObstacle> = { obstacle: Kind; onChange: (next: Kind) => void };
 
-/** The points of a wall or a building, as the corner table of "Enter dimensions by hand": east and north of each, added and removed. */
+/** The points of a wall or a building, as the corner table of "Enter the roof by hand": east and north of each, added and removed. */
 function PointsTable<Kind extends Obstacle | DraftObstacle>({ obstacle, onChange }: PointsProps<Kind>) {
   const fewest = obstacle.kind === "wall" ? FEWEST_POINTS.wall : FEWEST_POINTS.building;
   const atTheFewest = obstacle.points.length <= fewest;
@@ -112,7 +112,7 @@ function PointsTable<Kind extends Obstacle | DraftObstacle>({ obstacle, onChange
         Add a point
       </Button>
       <p className="type-body-touch desktop:type-body text-text-3">
-        Metres east and north of the middle of the roof, in order. {fewest === FEWEST_POINTS.wall ? "Two" : "Three"} at least.
+        {`Type each point in metres east and north of the roof's centre, in order. At least ${fewest}.`}
       </p>
     </div>
   );
@@ -300,7 +300,7 @@ export function ObstaclePanel({ roof, size, isHeaded = true }: Props) {
             foot={
               <div className="flex justify-end gap-2">
                 <Button kind="quiet" size="s" onClick={() => view.getState().setDraft(null)}>
-                  Remove
+                  Cancel
                 </Button>
                 <Button kind="primary" size="s" type="submit" aria-disabled={heightToAdd(draft) === null || undefined}>
                   Add the {wordOfKind(draft.kind).toLowerCase()}
@@ -350,7 +350,7 @@ export function ObstaclePanel({ roof, size, isHeaded = true }: Props) {
         <div data-testid="parapet-row" className="flex h-10 items-center gap-2.5 px-3 type-body-touch desktop:type-body text-text-3">
           <Icon name="parapet" size={20} stroke="light" />
           <span className="grow">Parapet, all edges</span>
-          <code className="type-body-touch desktop:type-body">h {shown(roof.parapet_h, 1)} m</code>
+          <code className="type-body-touch desktop:type-body">{shown(roof.parapet_h, 1)} m high</code>
         </div>
       ) : null}
     </section>

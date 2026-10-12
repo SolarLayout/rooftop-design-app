@@ -9,15 +9,15 @@ type Props = {
   isDimmed: boolean;
 };
 
-/** The summary of the chosen option in the engine's words, under All 21 steps (V2 · 8): a table; cards on phone. */
+/** The summary of the chosen option in the report's words, under All 21 steps (V2 · 8): a table; cards on phone. */
 export function SummaryTable({ rows, isDimmed }: Props) {
   const heading = useId();
   return (
     <section data-testid="summary-table" aria-labelledby={heading} className="flex flex-col gap-2.5">
       <h3 id={heading} className="type-body-touch desktop:type-body text-text-2">
-        The engine&apos;s summary
+        Summary, as in the report
       </h3>
-      <Table caption="The design, summed up by the engine" columns={SUMMARY_COLUMNS} rows={rows} keyOf={(row) => row.key} className={classNames(isDimmed && "opacity-updating")} />
+      <Table caption="Summary of the chosen option" columns={SUMMARY_COLUMNS} rows={rows} keyOf={(row) => row.key} className={classNames(isDimmed && "opacity-updating")} />
     </section>
   );
 }

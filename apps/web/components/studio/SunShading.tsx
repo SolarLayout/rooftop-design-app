@@ -75,7 +75,7 @@ export function ShadeMapSection({ size }: { size: Size }) {
       </SectionHeading>
       <p className="type-body-touch desktop:type-body text-text-2">
         {map
-          ? `Each module is coloured by its near shading over the year, of all ${shown(positions, 0)} positions. ${size === "desktop" ? "Select" : "Tap"} a module for its value.`
+          ? `Loss to rows and obstacles over the year, on all ${shown(positions, 0)} positions. ${size === "desktop" ? "Select" : "Tap"} a module for its value.`
           : legend.of}
       </p>
       {map ? (

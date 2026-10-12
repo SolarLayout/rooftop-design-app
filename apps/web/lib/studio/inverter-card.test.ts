@@ -22,7 +22,7 @@ describe("the inverter card (the board \"Studio, Strings lens\"; plan/phase-07-p
 
   test("a file without a current per MPPT says it is not in the OND", () => {
     const none: CurrentPerMppt = { value_a: null, source: "not in the OND", note: "…" };
-    expect(inverterCardOf({ ...WATTPOWER, n_inputs: 5 }, none, null)).toMatchObject({ facts: "Current per MPPT not in the OND · 5 inputs", isCurrentKnown: false });
+    expect(inverterCardOf({ ...WATTPOWER, n_inputs: 5 }, none, null)).toMatchObject({ facts: "Current per MPPT not in the inverter file · 5 inputs", isCurrentKnown: false });
     expect(inverterCardOf({ ...WATTPOWER, n_inputs: 5 }, none, 30)).toMatchObject({ facts: "30.0 A per MPPT, entered · 5 inputs", isCurrentKnown: true });
   });
 
@@ -57,7 +57,7 @@ describe("which inverter the card shows (plan/phase-07-plan.md, step 17; as the 
     expect(inverterCardOf(SUNGROW, NOT_IN_THE_OND, null)).toEqual({
       name: "SG3300UD-20",
       line: "Sungrow · 3,300 kW · 3 MPPT",
-      facts: "Current per MPPT not in the OND · 5 inputs",
+      facts: "Current per MPPT not in the inverter file · 5 inputs",
       isCurrentKnown: false,
       file: "sungrow-sg3300ud-20.OND",
     });

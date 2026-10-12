@@ -10,7 +10,7 @@ from shapely.geometry import Polygon
 
 from tests.api.conftest import error_of
 
-HEIGHT_NOTE = "These obstacles have no height in the file and were set to 1.0 m."
+HEIGHT_NOTE = "The file has no height for these obstacles. The app uses 1.0 m."
 KML = """<?xml version='1.0' encoding='UTF-8'?>
 <kml xmlns='http://www.opengis.net/kml/2.2'><Document>
 <Placemark><name>Roof</name><Polygon><outerBoundaryIs><LinearRing><coordinates>

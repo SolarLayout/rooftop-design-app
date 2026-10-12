@@ -26,7 +26,7 @@ const SIGNIFICANT_DIGITS = 6;
 const KIND_WORDS: Record<Obstacle["kind"], string> = { box: "box", cylinder: "tank", wall: "wall", tree: "tree", building: "building" };
 
 const count = (value: number) => shown(value, 0);
-const FLAT = "Heights are in the names; Google Earth draws the shapes flat.";
+const FLAT = "Google Earth draws the shapes flat. Heights are in the names.";
 
 /**
  * A number as Python's `:g` writes it, which the engine's KML and DXF use for a height: six significant digits, the trailing
@@ -52,7 +52,7 @@ export const unusedPositionsOf = (design: DesignResult, option: DesignOption) =>
 
 export function earthViewOf({ document, option }: Asked): EarthView {
   const obstacles = document.roof.obstacles.map(
-    (obstacle): FactRow => ({ name: placemarkNameOf(obstacle), words: `the ${KIND_WORDS[obstacle.kind]}'s footprint, its height in the name` }),
+    (obstacle): FactRow => ({ name: placemarkNameOf(obstacle), words: `the ${KIND_WORDS[obstacle.kind]}'s outline, its height in the name` }),
   );
   return {
     inside: [{ name: "Roof", words: "the outline" }, ...obstacles, { name: `Modules (${count(option.n_modules)})`, words: "the positions used, one by one" }],

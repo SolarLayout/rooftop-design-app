@@ -108,8 +108,8 @@ describe("the words", () => {
       { x: 5, y: 4 },
       { x: 0, y: 4 },
     ]);
-    expect(factsOf(sides)).toBe("5.0 × 4.0 · h 3.0 m");
-    expect(factsOf({ ...sides, kind: "cylinder", points: [{ x: 1, y: 1 }], diameter: 2.5, height: 2 })).toBe("⌀ 2.5 · h 2.0 m");
+    expect(factsOf(sides)).toBe("5.0 × 4.0 · 3.0 m high");
+    expect(factsOf({ ...sides, kind: "cylinder", points: [{ x: 1, y: 1 }], diameter: 2.5, height: 2 })).toBe("⌀ 2.5 · 2.0 m high");
     expect(
       factsOf({
         ...sides,
@@ -121,7 +121,7 @@ describe("the words", () => {
         ],
         height: 0.8,
       }),
-    ).toBe("18.0 m · h 0.8 m");
+    ).toBe("18.0 m · 0.8 m high");
     expect(
       factsOf({
         ...sides,
@@ -134,11 +134,11 @@ describe("the words", () => {
         ],
         height: 8,
       }),
-    ).toBe("64 m² · h 8.0 m");
+    ).toBe("64 m² · 8.0 m high");
   });
 
   test("the label on the map: the name and the height", () => {
-    expect(labelOf(box([], 3))).toBe("Box 1 · h 3.0 m");
+    expect(labelOf(box([], 3))).toBe("Box 1 · 3.0 m high");
   });
 });
 

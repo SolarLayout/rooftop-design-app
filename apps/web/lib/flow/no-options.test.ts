@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { pathOfNoOptions } from "./no-options";
+import { openWordsOf, pathOfNoOptions } from "./no-options";
 
 // Where a design with no options leads (#179, item 13): to the lens where it is put right. No module fitting on the roof is
 // the outline's, the setback's or the obstacles' (the Roof lens); every other reason is the strings' (the Strings lens).
@@ -10,5 +10,13 @@ describe("the lens a design with no options leads to", () => {
 
   test("no system voltage, no string length that fits, too few positions for a string: the Strings lens", () => {
     for (const code of ["system_voltage_missing", "no_string_length_fits", "too_few_positions"] as const) expect(pathOfNoOptions({ code })).toBe("/studio/strings");
+  });
+});
+
+// Found while the vocabulary was applied (V2 · 12): the card's press said "Open Strings" even where it leads to the Roof step.
+describe("the press that leads there", () => {
+  test("names the step it opens", () => {
+    expect(openWordsOf(pathOfNoOptions({ code: "no_positions" }))).toBe("Open Roof");
+    expect(openWordsOf(pathOfNoOptions({ code: "system_voltage_missing" }))).toBe("Open Strings");
   });
 });

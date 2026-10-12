@@ -24,15 +24,14 @@ export type OptionCard = {
 
 const plural = (count: number, one: string, many: string) => `${shown(count, 0)} ${count === 1 ? one : many}`;
 
-/** The engine's caption in the vocabulary of the app: "Lower clipping" is Less clipping; a miss of the target loses its inverters, which the facts say. */
+/** The card's caption: a miss of the target loses its inverters, which the facts say. */
 function captionOf(option: DesignOption): string {
   if (option.caption === "") return `Option ${option.letter}`;
-  if (option.caption === "Lower clipping") return "Less clipping";
   return option.ok ? option.caption : option.caption.replace(/, \d+ inverters?$/, "");
 }
 
 /** An option in target whose verdict does not fit: its MPPT loading does not (plan/phase-07-plan.md, decision 18). */
-const OVER_AN_MPPT = "Over the current of an MPPT, or its limit not known: see the MPPT loading";
+const OVER_AN_MPPT = "MPPT current over its limit, or the limit not known";
 
 export function optionCardsOf(design: DesignResult | null): OptionCard[] {
   if (!design) return [];

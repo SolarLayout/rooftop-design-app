@@ -141,7 +141,7 @@ export function MonthlyChart({ energy, isDimmed }: Props) {
         </div>
       ) : (
         <Table
-          caption="The energy to the grid of every month, and of the year"
+          caption="Each month of year 1, and the year"
           columns={MONTH_COLUMNS}
           rows={monthRowsOf(energy)}
           keyOf={(row) => row.key}

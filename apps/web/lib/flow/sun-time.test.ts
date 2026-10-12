@@ -98,8 +98,8 @@ describe("the days to choose", () => {
   });
 
   test("the line says which day is the design day", () => {
-    expect(designDayLineOf(null, 18.52)).toBe("21 December is the design day: the winter solstice for this hemisphere");
-    expect(designDayLineOf(172, 18.52)).toBe("21 June is the design day of the array");
+    expect(designDayLineOf(null, 18.52)).toBe("Design day: 21 December, the winter solstice in this hemisphere");
+    expect(designDayLineOf(172, 18.52)).toBe("Design day: 21 June, set in the Array step");
   });
 
   test("the day a chip sets: the design day as such, so that it follows the array", () => {
@@ -185,11 +185,11 @@ describe("the callout of the sun's marker", () => {
   const AT_16 = { elevationDeg: 17.972, azimuthDeg: 236.642 };
 
   test("at the window's end it says so", () => {
-    expect(sunCalloutOf(16, AT_16, WINDOW_9_16)).toEqual({ title: "16:00 · end of the shade-free window", detail: "Sun 18.0° high, 56.6° W of south" });
+    expect(sunCalloutOf(16, AT_16, WINDOW_9_16)).toEqual({ title: "16:00 · end of the shade-free hours", detail: "Sun 18.0° high, 56.6° W of south" });
   });
 
   test("at the window's start it says so", () => {
-    expect(sunCalloutOf(9, { elevationDeg: 28, azimuthDeg: 133 }, WINDOW_9_16)).toEqual({ title: "09:00 · start of the shade-free window", detail: "Sun 28.0° high, 47.0° E of south" });
+    expect(sunCalloutOf(9, { elevationDeg: 28, azimuthDeg: 133 }, WINDOW_9_16)).toEqual({ title: "09:00 · start of the shade-free hours", detail: "Sun 28.0° high, 47.0° E of south" });
   });
 
   test("at any other hour the time alone", () => {
@@ -207,7 +207,7 @@ describe("the words of the sun path", () => {
   const DEC = { lat: 18.52, lon: 73.86, day: "design_day" as const, dayOfYear: 355, sunriseH: 6.557, sunsetH: 17.443, positions: [{ hour: 12, elevationDeg: 48, azimuthDeg: 180 }] };
 
   test("the day, from sunrise to sunset, and the window drawn thicker", () => {
-    expect(sunPathLineOf(DEC, { from: 9, to: 16 })).toBe("Sun path of 21 Dec from 06:33 to 17:27, the shade-free window from 09:00 to 16:00 thicker");
+    expect(sunPathLineOf(DEC, { from: 9, to: 16 })).toBe("Sun path of 21 Dec from 06:33 to 17:27, the shade-free hours from 09:00 to 16:00 thicker");
   });
 
   test("without the window, the day alone", () => {

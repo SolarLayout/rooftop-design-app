@@ -93,10 +93,7 @@ export function NotesPanel({ notes, onClose, onTryAgain, onEnterValue, titleId }
         {notes.length === 0 ? (
           <li className="flex items-center gap-3 rounded-row border border-line bg-surface-1 p-3.5">
             <Icon name="tick" stroke="tick" size={20} label="Fits" className="text-ok" />
-            <span className="flex flex-col gap-0.5">
-              <span className="font-medium">Nothing to review</span>
-              <span className="type-body-touch desktop:type-body text-text-2">Every check of the design fits.</span>
-            </span>
+            <span className="font-medium">Nothing to review</span>
           </li>
         ) : (
           notes.map((note) => <NoteRow key={note.id} note={note} onClose={onClose} onTryAgain={onTryAgain} onEnterValue={onEnterValue} />)

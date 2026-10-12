@@ -36,7 +36,7 @@ def test_an_entry_carries_the_files_data_source():
 
 
 def test_a_file_that_is_no_pan_is_refused_in_the_readers_words():
-    with pytest.raises(ValueError, match="not a PVsyst module file"):
+    with pytest.raises(ValueError, match=r"is not a module file \(PAN\)"):
         module_entry("notes.PAN", b"hello\nworld\n")
 
 
@@ -75,7 +75,7 @@ def test_an_inverter_its_maker_calls_preliminary_says_so():
 
 
 def test_a_file_that_is_no_ond_is_refused_in_the_readers_words():
-    with pytest.raises(ValueError, match="not a PVsyst inverter file"):
+    with pytest.raises(ValueError, match=r"is not an inverter file \(OND\)"):
         inverter_entry("notes.OND", b"hello\n")
 
 
@@ -95,7 +95,7 @@ def test_the_catalog_lists_every_file_read_sorted_and_names_the_files_refused(tm
 
     assert [entry["file"] for entry in catalog["modules"]] == ["A.PAN", "B.PAN"]
     assert [entry["file"] for entry in catalog["inverters"]] == ["One.OND"]
-    assert [(r.file, "not a PVsyst module file" in r.reason) for r in refused] == [
+    assert [(r.file, "is not a module file (PAN)" in r.reason) for r in refused] == [
         ("modules/Broken.PAN", True)
     ]
 

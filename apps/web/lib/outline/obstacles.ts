@@ -102,12 +102,12 @@ export function sizeOf(shape: Shape): string {
 
 /** What the list says of an obstacle: its size, then its height. */
 export function factsOf(obstacle: Obstacle): string {
-  return `${sizeOf(obstacle)} · h ${shown(obstacle.height, 1)} m`;
+  return `${sizeOf(obstacle)} · ${shown(obstacle.height, 1)} m high`;
 }
 
 /** The label of an obstacle on the map: its name and its height. */
 export function labelOf(obstacle: Obstacle): string {
-  return `${obstacle.name} · h ${shown(obstacle.height, 1)} m`;
+  return `${obstacle.name} · ${shown(obstacle.height, 1)} m high`;
 }
 
 /** The point of a shape its label stands under: the lowest, and of those the leftmost. */

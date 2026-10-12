@@ -183,7 +183,7 @@ export function ProjectMenu({ name, saving, onOpenNotes, onImport, onOpenProject
       <span className={DIVIDER} />
       <span className={LABEL}>On this device</span>
       {designs.length === 0 ? (
-        <p className="px-2.5 pt-0.5 pb-2.5 type-body-touch desktop:type-body text-text-2">Designs you save appear here.</p>
+        <p className="px-2.5 pt-0.5 pb-2.5 type-body-touch desktop:type-body text-text-2">No other designs</p>
       ) : (
         <OnThisDevice designs={designs} onTake={onTake} onOpenDesign={onOpenDesign} />
       )}

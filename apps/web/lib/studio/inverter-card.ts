@@ -25,7 +25,7 @@ const kilowatts = (kw: number) => `${Number.isInteger(kw) ? shown(kw, 0) : Strin
  */
 export function inverterCardOf(inverter: Inverter, ofTheFile: CurrentPerMppt, entered: number | null): InverterCard {
   const current = entered ?? ofTheFile.value_a;
-  const perMppt = current === null ? "Current per MPPT not in the OND" : `${shown(current, 1)} A per MPPT${entered === null ? "" : ", entered"}`;
+  const perMppt = current === null ? "Current per MPPT not in the inverter file" : `${shown(current, 1)} A per MPPT${entered === null ? "" : ", entered"}`;
   const inputs = `${shown(inverter.n_inputs, 0)} ${inverter.n_inputs === 1 ? "input" : "inputs"}`;
   return {
     name: inverter.model,

@@ -14,9 +14,9 @@ export function bearingOf(degrees: number): string {
 }
 
 const FOLLOWS: Record<Roof["roof_type"], string> = {
-  flat_tilted: "Follows the roof edge closest to the equator",
-  flat_ew: "The ridges run square to the roof edge closest to the equator",
-  sloped_flush: "Follows the roof edge closest to the equator",
+  flat_tilted: "From the roof edge nearest the equator",
+  flat_ew: "Ridges square to the roof edge nearest the equator",
+  sloped_flush: "From the roof edge nearest the equator",
 };
 
 /** The azimuth as shown: the engine's with why, or the one given with where the roof edge faces. */
@@ -26,14 +26,14 @@ export function azimuthLineOf(array: ArraySpec, layout: LayoutResponse | null, r
   if (!layout) return { value: given, line: null, isEngine };
   if (isEngine) return { value: bearingOf(layout.layout.azimuth), line: FOLLOWS[roofType], isEngine };
   // The layout faces the azimuth given: where the roof edge faces is the readouts' (#179, item 9).
-  return { value: given, line: `The roof edge closest to the equator faces ${bearingOf(layout.readouts.edge_azimuth_deg)}`, isEngine };
+  return { value: given, line: `Roof edge nearest the equator: ${bearingOf(layout.readouts.edge_azimuth_deg)}`, isEngine };
 }
 
 /** The tilt of a sloped roof: the roof's own pitch, set in the Roof lens. */
 export function slopedTiltLineOf(roof: Pick<Roof, "slope_deg" | "slope_azimuth_deg">): { value: string; line: string } {
   return {
     value: withUnit(shown(roof.slope_deg, 0), "°"),
-    line: `Follows the roof pitch · ${withUnit(shown(roof.slope_deg, 0), "°")} facing ${bearingOf(roof.slope_azimuth_deg)} · set in the Roof step`,
+    line: `Roof pitch ${withUnit(shown(roof.slope_deg, 0), "°")} facing ${bearingOf(roof.slope_azimuth_deg)}, from the Roof step`,
   };
 }
 

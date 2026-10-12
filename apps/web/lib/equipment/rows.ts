@@ -62,5 +62,5 @@ export function inverterRowOf(entry: InverterEntry): InverterRow {
 /** An inverter's mark in the picker when it is rated under the system voltage set: the strings are sized to its rating (D88). */
 export function ratedUnderOf(rating: number, voltage: number | null): string | null {
   if (voltage === null || rating <= 0 || rating >= voltage) return null;
-  return `Up to ${Math.round(rating)}\u00a0V: strings sized under the ${voltage}\u00a0V set`;
+  return `Up to ${Math.round(rating)}\u00a0V: strings sized to ${Math.round(rating)}\u00a0V, not ${voltage}\u00a0V`;
 }

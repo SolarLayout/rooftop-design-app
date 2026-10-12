@@ -104,7 +104,7 @@ def test_several_faults_report_the_first_and_count_the_rest(client):
     error = response.json()["error"]
     assert response.status_code == 422
     assert error["field"] == "name"
-    assert error["message"] == "name: Field required (and 2 more faults in this request)"
+    assert error["message"] == "name: Field required. 2 more values are refused"
 
 
 def test_a_body_that_is_not_json_is_refused_in_the_same_shape(client):
@@ -114,7 +114,7 @@ def test_a_body_that_is_not_json_is_refused_in_the_same_shape(client):
     assert response.status_code == 422
     assert error["code"] == "invalid_request"
     assert error["field"] is None
-    assert error["message"].startswith("The request body is not valid JSON")
+    assert error["message"].startswith("The server cannot read what the app sent")
 
 
 @pytest.mark.parametrize(
@@ -165,7 +165,7 @@ def test_a_fault_of_the_server_is_a_500_that_tells_no_detail_and_is_logged(clien
     assert response.json() == {
         "error": {
             "code": "internal_error",
-            "message": "The server could not finish this request. Try again; if it fails again, report it.",
+            "message": "The server could not finish this step. Try again.",
             "field": None,
         }
     }

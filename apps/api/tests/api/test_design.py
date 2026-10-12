@@ -132,7 +132,7 @@ def test_the_five_options_of_the_demo(demo_result):
     assert [o["caption"] for o in options] == [
         "Recommended",
         "Fills the inverter",
-        "Lower clipping",
+        "Less clipping",
         "Below target, 2 inverters",
         "Below target, 2 inverters",
     ]
@@ -242,8 +242,8 @@ def test_the_strings_of_option_a(option_a, demo_result):
 
 def test_the_verdict_and_the_tables_of_option_a(option_a):
     assert option_a["verdict"]["ok"] is True
-    assert option_a["verdict"]["title"] == ("29 in series fits: Vmp 1,199 V at STC, inverter nominal 1,080 V")
-    assert option_a["verdict"]["detail"].startswith("Voc at 11.9 °C is 1,480 V (limit 1500 V); ")
+    assert option_a["verdict"]["title"] == "A string of 29 fits: Vmp 1,199 V at STC, inverter nominal 1,080 V"
+    assert option_a["verdict"]["detail"].startswith("Voc at 11.9 °C is 1,480 V, limit 1500 V. ")
     assert [load["strings"] for load in option_a["mppt_loads"]] == [4, 4, 4, 4, 3, 3]
     assert [(line["item"], line["qty"], line["unit"]) for line in option_a["bom"]] == [
         ("PV module", 638, "pcs"),
@@ -271,7 +271,7 @@ def test_the_series_range_of_the_demo(demo_result):
     assert series["system_v"] == 1500 and series["limit_v"] == 1500
     assert series["upper_limit"] == "Voc limit"
     assert series["limit_note"] == (
-        "Limit 1500 V: the lowest of the system, module (1500 V) and inverter (1500 V) ratings."
+        "Limit 1500 V: the lowest of the system's, the module's (1500 V) and the inverter's (1500 V) ratings."
     )
     assert demo_result["options_note"].startswith("Target DC/AC 1.10–1.30, warning above 1.40. ")
 
@@ -311,7 +311,7 @@ def test_the_weather_and_the_shading_of_the_demo(demo_result):
     assert demo_result["weather"]["ghi_kwh_m2"] == pytest.approx(1822.9, abs=ONE_DECIMAL)
     assert demo_result["weather"]["horizon_highest_deg"] == 2.7
     assert demo_result["weather_notes"] == []
-    assert demo_result["far_shading_note"] == "Far shading: PVGIS horizon, highest 2.7°"
+    assert demo_result["far_shading_note"] == "Horizon from PVGIS, highest 2.7°"
     shading = demo_result["shading"]
     assert list(shading) == ["near_pct", "far_pct", "near_pct_by_module", "keepout_area_m2"]
     assert len(shading["near_pct_by_module"]) == 790
@@ -410,7 +410,7 @@ def test_without_a_system_voltage_the_answer_says_what_it_waits_for(waiting_resu
     assert waiting_result["no_options"] == {
         "code": "system_voltage_missing",
         "title": "Choose a system voltage to size the strings",
-        "message": "600, 1000 or 1500 V. Nothing is sized until you choose.",
+        "message": "600, 1000 or 1500 V.",
         "fits": None,
     }
 
@@ -544,7 +544,7 @@ def test_a_custom_equal_to_option_b_is_a_sixth_option_that_custom_chooses(client
     assert [o["custom"] for o in options] == [False] * 5 + [True]
     assert (options[5]["n_series"], options[5]["n_strings"], options[5]["n_inverters"]) == (26, 24, 1)
     assert result["chosen_option"] == "custom"
-    assert options[5]["caption"] == "Your own"
+    assert options[5]["caption"] == "Your own option"
 
 
 def test_a_custom_that_cannot_be_built_is_not_simulated_and_the_answer_says_why(client, demo):
@@ -557,7 +557,7 @@ def test_a_custom_that_cannot_be_built_is_not_simulated_and_the_answer_says_why(
     assert result["chosen_option"] == result["options"][0]["key"]
     assert result["custom_refused"] == {
         "ok": False,
-        "title": "29 in series does not fit at 1000 V",
+        "title": "A string of 29 does not fit at 1000 V",
         "detail": "At most 19 fit: Voc at 11.9 °C is 1,480 V, over the limit of 1000 V. "
         "Change your option or remove it.",
     }
@@ -582,9 +582,9 @@ def test_when_no_string_length_fits_the_answer_says_why(client, demo):
     assert result["series_range"]["ok"] is False
     assert result["strings_by_series"] == []
     assert result["no_options"]["code"] == "no_string_length_fits"
-    assert result["no_options"]["title"] == "No string length fits this inverter"
+    assert result["no_options"]["title"] == "No string length fits at 600 V"
     assert result["no_options"]["message"] == result["series_range"]["message"]
-    assert result["no_options"]["message"].startswith("No string length fits: at least ")
+    assert result["no_options"]["message"].startswith("A string needs at least ")
 
 
 def test_a_roof_too_small_for_a_module_has_no_positions_and_says_so(client, demo):
@@ -598,8 +598,8 @@ def test_a_roof_too_small_for_a_module_has_no_positions_and_says_so(client, demo
     assert result["no_options"] == {
         "code": "no_positions",
         "title": "No module fits on this roof",
-        "message": "Inside the edge setback and clear of shadows there is no room for a module. "
-        "Check the outline, the setback and the obstacles.",
+        "message": "The roof has no room for a module inside the edge margin and clear of shade. "
+        "Check the outline, the edge margin and the obstacles.",
         "fits": None,
     }
 
@@ -634,7 +634,7 @@ def test_a_roof_that_holds_one_short_string_says_which_and_builds_it_as_your_own
     assert result["options"] == []
     assert result["no_options"]["code"] == "too_few_positions"
     assert result["no_options"]["fits"] == 14
-    assert result["no_options"]["message"].endswith("A string of 14 would fit: add it as your own option.")
+    assert result["no_options"]["message"].endswith("A string of 14 fits. Add it as your own option.")
 
     project["custom"] = [14, 1, 1]
     built = result_of(client.post("/design", json=project))
@@ -705,8 +705,10 @@ def test_pvgis_weather_without_its_horizon_says_far_shading_is_not_counted(clien
 
     result = result_of(client.post("/design", json=project))
 
-    assert result["weather_notes"] == ["PVGIS sent no horizon for this site, so far shading is not counted."]
-    assert result["far_shading_note"] == "Far shading: not counted, PVGIS sent no horizon for this site"
+    assert result["weather_notes"] == [
+        "The weather for this site came without a horizon. The run leaves horizon shading out."
+    ]
+    assert result["far_shading_note"] == "Horizon not counted: the weather for this site came without one"
 
 
 def test_csv_weather_in_the_project_is_checked_and_used(client, demo):
@@ -722,11 +724,11 @@ def test_csv_weather_in_the_project_is_checked_and_used(client, demo):
     result = result_of(response)
     assert (result["weather"]["label"], result["weather"]["hours"]) == ("site.csv", 8760)
     assert result["weather_notes"] == [
-        "site.csv has no beam and diffuse irradiance. They were worked out from the global irradiance "
-        "(Erbs model), which is less exact than measured values.",
-        "site.csv has no air temperature. 25 °C was taken for every hour, so the strings are sized for "
-        "25 °C. Enter the site's lowest and highest ambient in the Strings lens.",
-        "site.csv has no wind speed. 1 m/s was taken for every hour.",
+        "site.csv has no beam and diffuse irradiance. The app works them out from the global irradiance, "
+        "less exactly than a measurement (Erbs model).",
+        "site.csv has no air temperature. The app takes 25 °C for every hour and sizes the strings for "
+        "25 °C. In the Strings step, enter the site's lowest and highest ambient.",
+        "site.csv has no wind speed. The app takes 1 m/s for every hour.",
     ]
     assert "Loading CSV file weather" not in [e.data.get("step") for e in events_of(response)]
 
@@ -743,7 +745,7 @@ def test_csv_weather_that_cannot_be_used_is_refused_before_the_run(client, demo)
     assert response.status_code == 422
     assert error_of(response) == {
         "code": "not_a_weather_csv",
-        "message": "site.csv: the time cannot be read in 1 row, the first of them on line 2 (noon). "
+        "message": "site.csv: the app cannot read the time in 1 row. The first is on line 2: noon. "
         "Write it as 2023-06-01 13:00, in UTC.",
         "field": "weather_csv_text",
     }
@@ -767,8 +769,7 @@ def test_a_fault_in_the_run_travels_in_the_stream(client, demo, monkeypatch):
                 "type": "error",
                 "error": {
                     "code": "internal_error",
-                    "message": "The server could not finish this request. Try again; if it fails again, "
-                    "report it.",
+                    "message": "The server could not finish this step. Try again.",
                     "field": None,
                 },
             },
@@ -795,6 +796,7 @@ def test_an_inverter_without_a_current_limit_says_so_and_shows_no_limit_of_zero(
     assert [(load["imp_limit_a"], load["isc_limit_a"], load["ok"]) for load in loads] == [
         (None, None, False)
     ] * len(loads)
+    # The web reads these words (apps/web/lib/studio/options-rules.ts) and says them in its own.
     assert "The OND gives no current limit per MPPT" in result["options_note"]
     assert [option["ok"] for option in result["options"]] == [False] * len(result["options"])
 
@@ -846,6 +848,6 @@ def test_a_module_whose_file_gives_no_rating_is_sized_to_1000_v_taken_and_says_s
     assert (module["v_max_iec"], module["v_max_from_file"]) == (1000.0, False)
     assert result["series_range"]["limit_v"] == 1000
     assert result["series_range"]["limit_note"] == (
-        "Limit 1000 V: the lowest of the system, module (1000 V taken, its file gives none) and inverter "
-        "(1500 V) ratings."
+        "Limit 1000 V: the lowest of the system's, the module's (1000 V by default, as its file gives none) "
+        "and the inverter's (1500 V) ratings."
     )

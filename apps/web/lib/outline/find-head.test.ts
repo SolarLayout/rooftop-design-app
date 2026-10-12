@@ -18,7 +18,7 @@ describe("the head of the column", () => {
 
   test("the outline closed: what is left, with the roof's area and corners", () => {
     expect(findHeadOf({ stage: "closed", touch: false, area: 3600.4, corners: 4 })).toEqual({
-      title: "Add what stands on the roof",
+      title: "Add the obstacles",
       line: "The roof is outlined: 3,600 m², 4 corners. Add its obstacles, choose its type, then build.",
     });
   });
@@ -33,7 +33,7 @@ describe("the roof type, a question with a default", () => {
     expect(roofTypeChoicesOf(18.5)).toEqual([
       { id: "flat_tilted", name: "Flat, rows facing south", line: "Tilted rows, the usual for a flat roof", isDefault: true },
       { id: "flat_ew", name: "Flat, rows facing east and west", line: "Low rows back to back: more modules, less from each", isDefault: false },
-      { id: "sloped_flush", name: "Sloped", line: "Modules flush on the slope", isDefault: false },
+      { id: "sloped_flush", name: "Sloped", line: "Modules follow the roof pitch", isDefault: false },
     ]);
     expect(roofTypeChoicesOf(-33.9)[0]?.name).toBe("Flat, rows facing north");
   });

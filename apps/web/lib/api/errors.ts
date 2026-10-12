@@ -1,7 +1,7 @@
 // Every fault of the API reaches the app as one kind of error, with a message for the user.
 import type { ErrorDetail } from "./types";
 
-export const UNREACHABLE_MESSAGE = "The server cannot be reached. Check the connection and try again.";
+export const UNREACHABLE_MESSAGE = "The server could not be reached. Check your connection, then try again.";
 
 export class ApiError extends Error {
   override readonly name = "ApiError";

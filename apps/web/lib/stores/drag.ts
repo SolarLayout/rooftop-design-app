@@ -73,7 +73,7 @@ export function liveWordsOf({ by, obstacle }: Dragging): string {
   if (by === "corner") return `${shown(obstacle.length, 1)} × ${metres(obstacle.width)}`;
   if (by === "turn") return `Rotation ${shown(obstacle.rotation_deg, 0)}°`;
   if (by === "height") return `${metres(obstacle.height)} high`;
-  return `${obstacle.kind === "tree" ? "crown " : ""}⌀ ${metres(obstacle.diameter)}`;
+  return `${obstacle.kind === "tree" ? "crown " : ""}${metres(obstacle.diameter)} across`;
 }
 
 /** Whether two obstacles are the same in every field: a drag that changed nothing need not be drawn again. */

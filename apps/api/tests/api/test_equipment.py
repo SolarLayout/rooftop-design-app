@@ -121,7 +121,7 @@ def test_a_file_that_is_not_a_pan_is_refused_in_the_words_of_the_engine(client, 
     assert response.status_code == 422
     assert error_of(response) == {
         "code": "not_a_pan_file",
-        "message": "notes.PAN: not a PVsyst module file (PNom, Voc or Isc missing)",
+        "message": "notes.PAN is not a module file (PAN): PNom, Voc or Isc is missing.",
         "field": field,
     }
 
@@ -229,6 +229,6 @@ def test_a_file_that_is_not_an_ond_is_refused_in_the_words_of_the_engine(client)
     assert response.status_code == 422
     assert error_of(response) == {
         "code": "not_an_ond_file",
-        "message": "Test.PAN: not a PVsyst inverter file (PNomConv or VMPPMax missing)",
+        "message": "Test.PAN is not an inverter file (OND): PNomConv or VMPPMax is missing.",
         "field": "text",
     }

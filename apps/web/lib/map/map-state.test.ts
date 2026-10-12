@@ -6,11 +6,11 @@ describe("the state of the map", () => {
     expect(mapStateOf({ hasKey: true, hasWebGL: true, tilesFailed: false })).toEqual({ kind: "ready" });
   });
 
-  test("without a key it says so, and that the roof can be entered by its measurements", () => {
+  test("without a key it says so, and that the roof can be entered by hand", () => {
     expect(mapStateOf({ hasKey: false, hasWebGL: true, tilesFailed: false })).toEqual({
       kind: "no-key",
       title: "The map is not available",
-      reason: "Enter the roof's measurements instead.",
+      reason: "Enter the roof by hand instead.",
     });
   });
 
@@ -18,6 +18,7 @@ describe("the state of the map", () => {
     expect(mapStateOf({ hasKey: true, hasWebGL: false, tilesFailed: false })).toMatchObject({
       kind: "no-webgl",
       title: "This browser cannot draw the map",
+      reason: "Try another browser, or enter the roof by hand.",
     });
   });
 
@@ -25,7 +26,7 @@ describe("the state of the map", () => {
     expect(mapStateOf({ hasKey: true, hasWebGL: true, tilesFailed: true })).toMatchObject({
       kind: "offline",
       title: "The imagery does not load",
-      reason: "Check the connection and try again, or enter the roof by its measurements.",
+      reason: "Check your connection and try again, or enter the roof by hand.",
     });
   });
 

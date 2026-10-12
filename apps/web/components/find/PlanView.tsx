@@ -57,8 +57,8 @@ export function PlanView({ corners, className }: Props) {
       ))}
       {drawn && drawn.points.length < 3 ? (
         <p className="absolute inset-x-10 top-1/2 flex -translate-y-1/2 flex-col items-center gap-1.5 text-center text-text-2">
-          <span className="font-medium text-text">The plan of the roof is drawn here</span>
-          <span className="type-body-touch desktop:type-body">Enter its length and width, or its corners.</span>
+          <span className="font-medium text-text">No roof yet</span>
+          <span className="type-body-touch desktop:type-body">{"Type the roof's length and width, or its corners."}</span>
         </p>
       ) : null}
       <span aria-hidden="true" className="absolute top-safe-21 right-5 flex size-touch items-center justify-center rounded-row border border-line bg-surface-1 shadow-float desktop:top-safe-5 desktop:right-find-stage-inset desktop:mr-5">

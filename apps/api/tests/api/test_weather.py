@@ -188,8 +188,7 @@ def test_a_csv_that_is_not_a_whole_year_is_refused(client):
     assert response.status_code == 422
     assert error_of(response) == {
         "code": "not_a_weather_csv",
-        "message": "site.csv has 4 hours, not the 8,760 of a year (8,784 in a leap year). "
-        "The energy of a year needs every hour of it: give a whole year.",
+        "message": "site.csv has 4 hours. A year has 8,760, a leap year 8,784. Give a whole year.",
         "field": "csv_text",
     }
 
@@ -201,11 +200,11 @@ def test_a_csv_of_time_and_irradiance_alone_says_what_was_taken_for_the_rest(cli
 
     assert sum(body["weather"]["dni"]) > 0 and sum(body["weather"]["dhi"]) > 0
     assert body["notes"] == [
-        "site.csv has no beam and diffuse irradiance. They were worked out from the global irradiance "
-        "(Erbs model), which is less exact than measured values.",
-        "site.csv has no air temperature. 25 °C was taken for every hour, so the strings are sized for "
-        "25 °C. Enter the site's lowest and highest ambient in the Strings lens.",
-        "site.csv has no wind speed. 1 m/s was taken for every hour.",
+        "site.csv has no beam and diffuse irradiance. The app works them out from the global irradiance, "
+        "less exactly than a measurement (Erbs model).",
+        "site.csv has no air temperature. The app takes 25 °C for every hour and sizes the strings for "
+        "25 °C. In the Strings step, enter the site's lowest and highest ambient.",
+        "site.csv has no wind speed. The app takes 1 m/s for every hour.",
     ]
 
 
@@ -239,24 +238,23 @@ def test_a_path_as_name_is_cut_to_the_name_of_the_file(client):
         (
             "time,ghi\n",
             "not_a_weather_csv",
-            "site.csv has no hours: below its header there is no row.",
+            "site.csv has a header and no rows of hours.",
         ),
         (
             "time,ghi\nyesterday,100\n2023-06-01 01:00,200\nlater,300\n",
             "not_a_weather_csv",
-            "site.csv: the time cannot be read in 2 rows, the first of them on line 2 (yesterday). "
+            "site.csv: the app cannot read the time in 2 rows. The first is on line 2: yesterday. "
             "Write it as 2023-06-01 13:00, in UTC.",
         ),
         (
             "time,ghi\n2023-06-01 00:00,100\n2023-06-01 01:00,200\n2023-06-01 00:00,300\n",
             "not_a_weather_csv",
-            "site.csv: 1 hour is there more than once, the first of them 2023-06-01 00:00. "
-            "Every hour may be there once.",
+            "site.csv: 1 hour appears more than once. The first is 2023-06-01 00:00. Keep each hour once.",
         ),
         (
             "time,ghi,wind\n2023-06-01 00:00,100,\n2023-06-01 01:00,200,2\n",
             "not_a_weather_csv",
-            "site.csv: wind has no value in 1 row, the first of them on line 2. Fill the gaps, or "
+            "site.csv: wind is empty in 1 row. The first is on line 2. Fill the gaps, or "
             "leave the column out.",
         ),
     ],

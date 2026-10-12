@@ -15,12 +15,12 @@ describe("in the file, for the demo's option A", () => {
 
     expect(named(view.inside)).toEqual([
       ["Roof", "the outline"],
-      ["Stair room h=3", "the box's footprint, its height in the name"],
-      ["Water tank h=2", "the tank's footprint, its height in the name"],
-      ["AC unit 1 h=1.2", "the box's footprint, its height in the name"],
-      ["AC unit 2 h=1.2", "the box's footprint, its height in the name"],
-      ["AC unit 3 h=1.2", "the box's footprint, its height in the name"],
-      ["AC unit 4 h=1.2", "the box's footprint, its height in the name"],
+      ["Stair room h=3", "the box's outline, its height in the name"],
+      ["Water tank h=2", "the tank's outline, its height in the name"],
+      ["AC unit 1 h=1.2", "the box's outline, its height in the name"],
+      ["AC unit 2 h=1.2", "the box's outline, its height in the name"],
+      ["AC unit 3 h=1.2", "the box's outline, its height in the name"],
+      ["AC unit 4 h=1.2", "the box's outline, its height in the name"],
       ["Modules (638)", "the positions used, one by one"],
     ]);
   });
@@ -30,10 +30,10 @@ describe("in the file, for the demo's option A", () => {
     const view = earthViewOf({ ...AT_REST, document: { ...DOCUMENT, roof: { ...DOCUMENT.roof, obstacles: kinds } } });
 
     expect(view.inside.slice(1, 5).map((row) => row.words)).toEqual([
-      "the wall's footprint, its height in the name",
-      "the tree's footprint, its height in the name",
-      "the building's footprint, its height in the name",
-      "the tank's footprint, its height in the name",
+      "the wall's outline, its height in the name",
+      "the tree's outline, its height in the name",
+      "the building's outline, its height in the name",
+      "the tank's outline, its height in the name",
     ]);
   });
 
@@ -44,7 +44,7 @@ describe("in the file, for the demo's option A", () => {
 
 describe("what the file does not draw (V2 · 9, audit V2-93)", () => {
   test("one line: the heights are in the names", () => {
-    expect(earthViewOf(AT_REST).flat).toBe("Heights are in the names; Google Earth draws the shapes flat.");
+    expect(earthViewOf(AT_REST).flat).toBe("Google Earth draws the shapes flat. Heights are in the names.");
   });
 });
 

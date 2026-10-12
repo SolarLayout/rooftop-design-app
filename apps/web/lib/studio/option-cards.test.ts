@@ -21,12 +21,12 @@ describe("the option cards (V2 · 6, D102; the board \"The Strings step\")", () 
     expect(optionCardsOf({ ...run, chosen_option: "26x27x2" }).map((card) => card.isChosen)).toEqual([false, true]);
   });
 
-  test("an option without a caption of the engine is named by its letter alone", () => {
+  test("an option without a caption is named by its letter alone", () => {
     expect(optionCardsOf({ ...run, options: [option({ caption: "" })] })[0]?.caption).toBe("Option A");
   });
 
-  test("the engine's captions in the vocabulary: Less clipping, and a miss of the target without its inverters", () => {
-    const captions = optionCardsOf({ ...run, options: [option({ caption: "Lower clipping" }), option({ caption: "Fills the inverters" }), option({ caption: "Above target, 3 inverters", ok: false })] }).map((card) => card.caption);
+  test("the run's captions as the API words them (V2 · 12), a miss of the target without its inverters", () => {
+    const captions = optionCardsOf({ ...run, options: [option({ caption: "Less clipping" }), option({ caption: "Fills the inverters" }), option({ caption: "Above target, 3 inverters", ok: false })] }).map((card) => card.caption);
 
     expect(captions).toEqual(["Less clipping", "Fills the inverters", "Above target"]);
   });
@@ -38,7 +38,7 @@ describe("the option cards (V2 · 6, D102; the board \"The Strings step\")", () 
   test("a verdict that does not fit is a note, whatever its DC/AC", () => {
     const card = optionCardsOf({ ...run, options: [option({ verdict: { ok: false, title: "29 in series fits: Vmp 1,199 V at STC", detail: "… over the limit of 65.0 A." } })] })[0];
     // The title says the series fits: the mark says what does not, where the table shows it (decision 18).
-    expect(card?.mark).toEqual({ kind: "note", label: "Over the current of an MPPT, or its limit not known: see the MPPT loading" });
+    expect(card?.mark).toEqual({ kind: "note", label: "MPPT current over its limit, or the limit not known" });
   });
 
   test("no run, no cards", () => {

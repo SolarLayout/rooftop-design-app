@@ -134,7 +134,7 @@ export function createSaving({ project, results, db, clock = CLOCK_OF_THE_BROWSE
     /** The open design as it is now, to be written: the document and the last run of the stores, the times of *current*. */
     function recordOf(id: string): KeptDesign {
       const document = project.getState().project;
-      if (document === null) throw new Error("No design is open: nothing can be kept.");
+      if (document === null) throw new Error("No design is open: there is nothing to save.");
       const kept = keptOf({ id, document, design: designOf(results.getState()), layout: layoutOf(results.getState())?.layout ?? null, now: current.editedAt });
       return { ...kept, openedAt: current.openedAt };
     }

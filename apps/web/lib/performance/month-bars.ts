@@ -72,9 +72,9 @@ export function monthRowsOf(energy: Energy): MonthRow[] {
   return [...months, { key: YEAR_ROW, month: "Year", mwh: shown(energy.energy_mwh, 1), kwhPerKwp: shown(energy.specific_yield, 0) }];
 }
 
-/** The month as the name of its row, MWh and kWh/kWp as numbers at the right. */
+/** The month as the name of its row, the energy and the yield as numbers at the right, each head the thing and its unit. */
 export const MONTH_COLUMNS: ReadonlyArray<Column<MonthRow>> = [
   { key: "month", head: "Month", kind: "name", value: (row) => row.month },
-  { key: "mwh", head: "MWh", kind: "number", value: (row) => row.mwh },
-  { key: "kwh-kwp", head: "kWh/kWp", kind: "number", value: (row) => row.kwhPerKwp },
+  { key: "mwh", head: "Energy, MWh", kind: "number", value: (row) => row.mwh },
+  { key: "kwh-kwp", head: "Yield, kWh/kWp", kind: "number", value: (row) => row.kwhPerKwp },
 ];

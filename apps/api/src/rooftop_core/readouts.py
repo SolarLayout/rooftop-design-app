@@ -17,10 +17,9 @@ from .stringing import DCAC_TARGET, DCAC_WARN, max_strings_per_inverter, strings
 from .weather import Weather
 
 CHOOSE_VOLTAGE = "Choose a system voltage to size the strings"
-CHOOSE_VOLTAGE_DETAIL = "600, 1000 or 1500 V. Nothing is sized until you choose."
-NO_LENGTH_FITS = "No string length fits this inverter"
+CHOOSE_VOLTAGE_DETAIL = "600, 1000 or 1500 V."
 CHANGE_OR_REMOVE = "Change your option or remove it."
-NO_CURRENT_LIMIT = "The OND gives no current limit per MPPT: enter the datasheet value."
+NO_CURRENT_LIMIT = "The inverter file (OND) gives no current limit per MPPT. Enter the datasheet's value."
 LOSSES_ROW = 9  # where the desktop app put the row "Losses" among the rows of the summary
 CURRENT_TOLERANCE_A = 1e-6
 
@@ -60,7 +59,7 @@ def verdict(design: Design, option: StringOption | None) -> Verdict:
     """
     rng, inverter = design.range, design.inverter
     if option is None:
-        return Verdict(False, NO_LENGTH_FITS, rng.message)
+        return Verdict(False, f"No string length fits at {rng.system_v:.0f} V", rng.message)
     n = option.n_series
     nominal = f", inverter nominal {inverter.vmpp_nom:,.0f} V" if inverter.vmpp_nom else ""
     loads = mppt_loads(design, option)
@@ -70,13 +69,13 @@ def verdict(design: Design, option: StringOption | None) -> Verdict:
         ok=ok,
         # "fits" only where it does: a length that misses the target or a current limit is marked, not said
         # to fit (#179, item 17); the detail says what it misses.
-        title=f"{n} in series{' fits' if ok else ''}: Vmp {n * rng.vmp_stc:,.0f} V at STC{nominal}",
+        title=f"A string of {n}{' fits' if ok else ''}: Vmp {n * rng.vmp_stc:,.0f} V at STC{nominal}",
         detail=(
-            f"Voc at {rng.t_min:.1f} °C is {n * rng.voc_cold:,.0f} V (limit {rng.limit_v:.0f} V); "
-            f"Vmp at {rng.t_cell_hot:.1f} °C cell is {n * rng.vmp_hot:,.0f} V (MPPT minimum "
-            f"{inverter.vmpp_min:.0f} V). {option.n_strings} strings on {option.n_inverters} inverter(s), "
-            f"DC/AC {option.dcac:.2f}"
-            + ("" if option.ok else f" ({option.note})")
+            f"Voc at {rng.t_min:.1f} °C is {n * rng.voc_cold:,.0f} V, limit {rng.limit_v:.0f} V. "
+            f"Vmp at a cell temperature of {rng.t_cell_hot:.1f} °C is {n * rng.vmp_hot:,.0f} V, MPPT minimum "
+            f"{inverter.vmpp_min:.0f} V. {_count(option.n_strings, 'string')} on "
+            f"{_count(option.n_inverters, 'inverter')}, DC/AC ratio {option.dcac:.2f}"
+            + ("" if option.ok else f", {option.note}")
             + "."
             + (f" {currents}" if currents else "")
         ),
@@ -153,7 +152,7 @@ def caption(design: Design, option: StringOption) -> str:
     if option.recommended:
         return "Recommended"
     if option.custom:
-        return "Your own"
+        return "Your own option"
     if not option.ok:
         return option.note.capitalize() + (
             f", {option.n_inverters} inverters" if option.n_inverters > 1 else ""
@@ -162,7 +161,7 @@ def caption(design: Design, option: StringOption) -> str:
         return "Fills the inverters" if option.n_inverters > 1 else "Fills the inverter"
     recommended = next((other for other in design.options if other.recommended), None)
     if recommended is not None and option.result.clipping_pct < recommended.result.clipping_pct:
-        return "Lower clipping"
+        return "Less clipping"
     return ""
 
 
@@ -177,7 +176,7 @@ def custom_refused(design: Design) -> Verdict | None:
         return Verdict(
             ok=False,
             title=f"{_count(strings, 'string')} cannot fill {_count(inverters, 'inverter')}",
-            detail=f"Each inverter needs a string at least. {CHANGE_OR_REMOVE}",
+            detail=f"Each inverter needs at least 1 string. {CHANGE_OR_REMOVE}",
         )
     if misfit.reason == "voc":
         why = (
@@ -191,12 +190,12 @@ def custom_refused(design: Design) -> Verdict | None:
         )
     else:
         why = (
-            f"At least {rng.n_min} are needed: Vmp at {rng.t_cell_hot:.1f} °C cell is "
+            f"At least {rng.n_min} are needed: Vmp at a cell temperature of {rng.t_cell_hot:.1f} °C is "
             f"{n * rng.vmp_hot:,.0f} V, under the MPPT minimum of {inverter.vmpp_min:.0f} V."
         )
     return Verdict(
         ok=False,
-        title=f"{n} in series does not fit at {rng.system_v:.0f} V",
+        title=f"A string of {n} does not fit at {rng.system_v:.0f} V",
         detail=f"{why} {CHANGE_OR_REMOVE}",
     )
 
@@ -220,11 +219,11 @@ def limit_note(design: Design) -> str:
     rated = (
         f"{module.v_max_iec:.0f} V"
         if module.v_max_from_file
-        else f"{module.v_max_iec:.0f} V taken, its file gives none"
+        else f"{module.v_max_iec:.0f} V by default, as its file gives none"
     )
     return (
-        f"Limit {design.range.limit_v:.0f} V: the lowest of the system, module "
-        f"({rated}) and inverter ({design.inverter.vabs_max:.0f} V) ratings."
+        f"Limit {design.range.limit_v:.0f} V: the lowest of the system's, the module's "
+        f"({rated}) and the inverter's ({design.inverter.vabs_max:.0f} V) ratings."
     )
 
 
@@ -247,17 +246,18 @@ def options_note(design: Design) -> str:
         )
     return (
         f"Target DC/AC {DCAC_TARGET[0]:.2f}–{DCAC_TARGET[1]:.2f}, warning above {DCAC_WARN:.2f}. "
-        f"{strings} The least shaded strings in a row are used first, then those across rows."
+        f"{strings} The run uses the least shaded strings in a row first, then those across rows."
         + (" ! " + "; ".join(missed) + "." if missed else "")
     )
 
 
 def far_shading_note(weather: Weather) -> str:
+    """The horizon the run counts, by the plain name of far shading (voice §6, board 12: Horizon)."""
     if not weather.horizon and weather.source == "pvgis":  # PVGIS gives one; this time it did not (#170)
-        return "Far shading: not counted, PVGIS sent no horizon for this site"
+        return "Horizon not counted: the weather for this site came without one"
     if not weather.horizon:
-        return "Far shading: no horizon profile for this weather source"
-    return f"Far shading: PVGIS horizon, highest {max(height for _, height in weather.horizon):.1f}°"
+        return "Horizon not counted: this weather has none"
+    return f"Horizon from PVGIS, highest {max(height for _, height in weather.horizon):.1f}°"
 
 
 def mppt_loads(design: Design, option: StringOption) -> list[MpptLoad]:

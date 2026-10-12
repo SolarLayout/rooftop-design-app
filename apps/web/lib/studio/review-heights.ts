@@ -3,11 +3,11 @@
 // until each has a real height. The names are the view store's list to review.
 import type { Obstacle } from "../api";
 
-/** The engine's note, word for word (rooftop_core.roof_files.HEIGHTS_SET). */
-export const HEIGHTS_SET = "These obstacles have no height in the file and were set to 1.0 m.";
+/** The note over the obstacles to review: what the file lacked, and the height the app uses until the user enters one. */
+export const HEIGHTS_SET = "The file has no height for these obstacles. The app uses 1.0 m.";
 
 /** The hint in the open card of an obstacle whose height is to be reviewed. */
-export const REVIEW_HINT = "Enter the real height. The file gave none; 1.0 m stands until you do";
+export const REVIEW_HINT = "Not in the file. Enter the real height.";
 
 export const toReviewWordsOf = (count: number): string => `${count} to review`;
 

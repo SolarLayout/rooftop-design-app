@@ -43,7 +43,7 @@ describe("the fields of an obstacle", () => {
   test("a tree: its crown, its height, where the crown starts, where it stands", () => {
     const fields = fieldsOfObstacle(box({ kind: "tree", diameter: 4, height: 6, trunk_height: 2 }));
     expect(fields.map((field) => [field.id, field.label])).toEqual([
-      ["diameter", "Crown ⌀"],
+      ["diameter", "Crown diameter"],
       ["height", "Height"],
       ["trunk_height", "Crown starts at"],
       ["x", "East"],

@@ -8,7 +8,7 @@ from rooftop_core.io import roof_import
 
 KML_ENDINGS = (".kmz", ".kml")
 DXF_ENDING = ".dxf"
-HEIGHTS_SET = "These obstacles have no height in the file and were set to 1.0 m."
+HEIGHTS_SET = "The file has no height for these obstacles. The app uses 1.0 m."
 
 
 def import_roof(file: schemas.RoofFile) -> schemas.ImportedRoof:

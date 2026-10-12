@@ -10,7 +10,7 @@ import { MAX_REQUEST_BYTES } from "./open-project";
 // document it answers is opened, and the heights it could not give go on the list to review.
 
 const PROJECT = { name: "warehouse-roof", roof: { lat: 18.52, lon: 73.86, obstacles: [] } } as unknown as Project;
-const ANSWER = { source: "dxf", file: "warehouse-roof.dxf", missing_heights: ["Lift shaft", "Plant room"], notes: ["These obstacles have no height in the file and were set to 1.0 m."], project: PROJECT } as unknown as ImportedRoof;
+const ANSWER = { source: "dxf", file: "warehouse-roof.dxf", missing_heights: ["Lift shaft", "Plant room"], notes: ["The file has no height for these obstacles. The app uses 1.0 m."], project: PROJECT } as unknown as ImportedRoof;
 
 function standIn(answer: () => Promise<ImportedRoof>) {
   const asked: RoofFile[] = [];
@@ -37,7 +37,7 @@ describe("importing a drawing", () => {
     expect(asked).toEqual([{ name: "warehouse-roof.dxf", base64: "QUJD", units: "mm" }]);
     expect(project.getState().project).toBe(PROJECT);
     expect(toReviewOf(view.getState())).toEqual(["Lift shaft", "Plant room"]);
-    expect(notes).toEqual(["These obstacles have no height in the file and were set to 1.0 m."]);
+    expect(notes).toEqual(["The file has no height for these obstacles. The app uses 1.0 m."]);
   });
 
   test("a file the API refuses opens nothing and the refusal is the caller's to show", async () => {
@@ -73,15 +73,15 @@ describe("importing a drawing", () => {
 });
 
 describe("a file held before it is read", () => {
-  test("is said by its kind, its size in whole kilobytes, and when it is read", () => {
-    expect(heldWordsOf("warehouse-roof.dxf", 48 * 1024)).toBe("DXF · 48 KB · read when the roof is opened");
-    expect(heldWordsOf("Roof.KMZ", 1536)).toBe("KMZ · 2 KB · read when the roof is opened");
-    expect(heldWordsOf("roof.kml", 300)).toBe("KML · 1 KB · read when the roof is opened");
+  test("is said by its kind and its size in whole kilobytes", () => {
+    expect(heldWordsOf("warehouse-roof.dxf", 48 * 1024)).toBe("DXF · 48 KB");
+    expect(heldWordsOf("Roof.KMZ", 1536)).toBe("KMZ · 2 KB");
+    expect(heldWordsOf("roof.kml", 300)).toBe("KML · 1 KB");
   });
 
   test("a file of another kind is said by its ending, so that the refusal of the API is no surprise", () => {
-    expect(heldWordsOf("notes.txt", 2048)).toBe("TXT · 2 KB · read when the roof is opened");
-    expect(heldWordsOf("README", 10)).toBe("File · 1 KB · read when the roof is opened");
+    expect(heldWordsOf("notes.txt", 2048)).toBe("TXT · 2 KB");
+    expect(heldWordsOf("README", 10)).toBe("File · 1 KB");
   });
 });
 
@@ -112,6 +112,6 @@ describe("a drawing too large to send", () => {
   });
 
   test("is refused in the dialog's own words, with the size that fits", () => {
-    expect(DRAWING_TOO_LARGE).toBe("This drawing is larger than the app can send, about 4.7 MB. Save it with the roof and its obstacles alone, and choose it again.");
+    expect(DRAWING_TOO_LARGE).toBe("The app can send a drawing of about 4.7 MB at most. Save this one with only the roof and its obstacles, then choose it again.");
   });
 });

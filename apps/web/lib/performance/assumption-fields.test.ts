@@ -27,7 +27,7 @@ describe("the fields of the assumptions, under their rows (V2 · 8, D104)", () =
     expect(fields.uncertainty).toEqual([
       { kind: "field", id: "weather_sigma_pct", label: "Weather variability", unit: "%", range: ASSUMPTION_RANGES.weather_sigma_pct, value: 3, hint: "Default" },
       { kind: "field", id: "model_sigma_pct", label: "Model and data", unit: "%", range: ASSUMPTION_RANGES.model_sigma_pct, value: 3, hint: "Default" },
-      { kind: "levels", label: "Exceedance levels", levels: [50, 75, 90], range: LEVEL_RANGE },
+      { kind: "levels", label: "Likely and conservative levels", levels: [50, 75, 90], range: LEVEL_RANGE },
     ]);
     expect(fields.co2).toEqual([{ kind: "field", id: "co2_t_per_mwh", label: "Grid CO₂", unit: "t/MWh", range: ASSUMPTION_RANGES.co2_t_per_mwh, value: 0.716, hint: "Set for India" }]);
   });

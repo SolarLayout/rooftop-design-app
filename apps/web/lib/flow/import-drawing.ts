@@ -23,7 +23,7 @@ export function kindOfDrawing(name: string): DrawingKind | null {
 }
 
 /** The dialog's own words for a drawing whose request would pass MAX_REQUEST_BYTES: about 4.7 MB of file once in base64. */
-export const DRAWING_TOO_LARGE = "This drawing is larger than the app can send, about 4.7 MB. Save it with the roof and its obstacles alone, and choose it again.";
+export const DRAWING_TOO_LARGE = "The app can send a drawing of about 4.7 MB at most. Save this one with only the roof and its obstacles, then choose it again.";
 
 /** The request of POST /roof/import: the units and the place only where they are given. */
 function requestOf({ name, base64, units, lat, lon }: Drawing): RoofFile {
@@ -54,9 +54,9 @@ function kindWordOf(name: string): string {
   return dot > 0 && dot < name.length - 1 ? name.slice(dot + 1).toUpperCase() : "File";
 }
 
-/** What the dialog says of a file it holds before it is read: "DXF · 48 KB · read when the roof is opened". */
+/** What the dialog says of a file it holds before it is read: "DXF · 48 KB". */
 export function heldWordsOf(name: string, bytes: number): string {
-  return `${kindWordOf(name)} · ${Math.max(1, Math.round(bytes / KILOBYTE))} KB · read when the roof is opened`;
+  return `${kindWordOf(name)} · ${Math.max(1, Math.round(bytes / KILOBYTE))} KB`;
 }
 
 /** The base64 of a data URL, as FileReader.readAsDataURL gives one. */

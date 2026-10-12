@@ -43,7 +43,7 @@ def test_custom_chooses_the_custom_and_not_the_offered_option_it_equals(same_as_
 
 
 def test_the_custom_is_captioned_your_own(same_as_b):
-    assert readouts.caption(same_as_b, same_as_b.options[-1]) == "Your own"
+    assert readouts.caption(same_as_b, same_as_b.options[-1]) == "Your own option"
     assert readouts.caption(same_as_b, same_as_b.options[1]) == "Fills the inverter"
 
 
@@ -59,7 +59,7 @@ def test_a_custom_over_the_voc_limit_is_not_simulated_and_says_why():
     assert [option.key for option in design.options] == OFFERED
     assert readouts.custom_refused(design) == readouts.Verdict(
         ok=False,
-        title="35 in series does not fit at 1500 V",
+        title="A string of 35 does not fit at 1500 V",
         detail="At most 29 fit: Voc at 11.9 °C is 1,786 V, over the limit of 1500 V. "
         "Change your option or remove it.",
     )
@@ -71,7 +71,7 @@ def test_a_custom_kept_after_the_voltage_went_to_1000_v_is_refused_in_the_words_
     assert not any(option.custom for option in design.options)
     assert readouts.custom_refused(design) == readouts.Verdict(
         ok=False,
-        title="29 in series does not fit at 1000 V",
+        title="A string of 29 does not fit at 1000 V",
         detail="At most 19 fit: Voc at 11.9 °C is 1,480 V, over the limit of 1000 V. "
         "Change your option or remove it.",
     )
@@ -90,9 +90,9 @@ def test_a_custom_under_the_mppt_minimum_is_refused():
     assert [option.key for option in design.options] == OFFERED
     assert readouts.custom_refused(design) == readouts.Verdict(
         ok=False,
-        title="12 in series does not fit at 1500 V",
-        detail="At least 14 are needed: Vmp at 64.3 °C cell is 454 V, under the MPPT minimum of 500 V. "
-        "Change your option or remove it.",
+        title="A string of 12 does not fit at 1500 V",
+        detail="At least 14 are needed: Vmp at a cell temperature of 64.3 °C is 454 V, under the MPPT "
+        "minimum of 500 V. Change your option or remove it.",
     )
 
 
@@ -103,7 +103,7 @@ def test_a_custom_with_fewer_strings_than_inverters_is_refused():
     assert readouts.custom_refused(design) == readouts.Verdict(
         ok=False,
         title="3 strings cannot fill 4 inverters",
-        detail="Each inverter needs a string at least. Change your option or remove it.",
+        detail="Each inverter needs at least 1 string. Change your option or remove it.",
     )
 
 
@@ -132,7 +132,7 @@ def test_a_custom_over_the_mppt_maximum_is_refused_when_the_mppt_maximum_sets_th
     assert not any(option.custom for option in design.options)
     assert readouts.custom_refused(design) == readouts.Verdict(
         ok=False,
-        title="27 in series does not fit at 1500 V",
+        title="A string of 27 does not fit at 1500 V",
         detail="At most 25 fit: Vmp at 11.9 °C is 1,151 V, over the inverter's MPPT maximum of 1100 V. "
         "Change your option or remove it.",
     )

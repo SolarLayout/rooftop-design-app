@@ -77,12 +77,12 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 const some = (count: number, unit: string) => `${count} ${unit}${count === 1 ? "" : "s"} ago`;
 
 /**
- * When the design was edited, in words: "Edited just now" within the minute, then minutes, hours, "yesterday" from a
+ * When the design was edited, in words: "Edited moments ago" within the minute, then minutes, hours, "yesterday" from a
  * day to two, days up to a week, then the date ("Edited 17 Sep 2026", in the device's own time).
  */
 export function whenOf(editedAt: number, now: number): string {
   const ago = now - editedAt;
-  if (ago < MINUTE) return "Edited just now";
+  if (ago < MINUTE) return "Edited moments ago";
   if (ago < HOUR) return `Edited ${some(Math.floor(ago / MINUTE), "minute")}`;
   if (ago < DAY) return `Edited ${some(Math.floor(ago / HOUR), "hour")}`;
   if (ago < 2 * DAY) return "Edited yesterday";

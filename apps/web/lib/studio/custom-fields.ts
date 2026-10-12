@@ -34,7 +34,7 @@ export function customBoundsOf(design: DesignResult, [series, strings, inverters
     strings:
       held === 0
         ? { range: whole(1, 1), hint: `No string of ${series} fits on the roof` }
-        : { range: whole(Math.min(inverters, held), held), hint: `${Math.min(inverters, held)} to ${shown(held, 0)} of ${series} fit` },
+        : { range: whole(Math.min(inverters, held), held), hint: `Strings of ${series}: ${Math.min(inverters, held)} to ${shown(held, 0)} fit` },
     inverters: { range: whole(1, Math.min(MOST_INVERTERS, strings)), hint: `1 to ${shown(Math.min(MOST_INVERTERS, strings), 0)}` },
   };
 }

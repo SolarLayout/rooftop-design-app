@@ -10,7 +10,7 @@ import { Table } from "@/components/ui/Table";
 import { useSize } from "@/components/ui/use-size";
 import { ValueTooltip } from "@/components/ui/ValueTooltip";
 import type { Energy } from "@/lib/api";
-import { nearestYear, TOTAL_ROW, YEAR_COLUMNS, yearAxisOf, yearEndsOf, yearPointsOf, yearRowsOf, yearSaidOf, yearsLineOf, yearTicksOf, yearTooltipOf } from "@/lib/performance/year-line";
+import { nearestYear, TOTAL_ROW, YEAR_COLUMNS, YEARS_CAPTION, yearAxisOf, yearEndsOf, yearPointsOf, yearRowsOf, yearSaidOf, yearsLineOf, yearTicksOf, yearTooltipOf } from "@/lib/performance/year-line";
 import { AxisTicks, CHART_TABS, ChartHead, dimmed, PLOT_INSET, PLOT_MARGIN, type ChartTab } from "./chart-card";
 
 type Props = {
@@ -169,7 +169,7 @@ export function YearsChart({ energy, degradation, isDimmed }: Props) {
         </div>
       ) : (
         <Table
-          caption="Every year is in the chart; the table says six of them and the total."
+          caption={YEARS_CAPTION}
           columns={YEAR_COLUMNS}
           rows={yearRowsOf(energy)}
           keyOf={(row) => row.key}

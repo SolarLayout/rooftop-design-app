@@ -197,25 +197,25 @@ export const SUMMARY = [
   { label: "Structure", value: "Fixed tilt 15°, 2P, lower edge 0.5 m" },
   { label: "Module", value: "INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560 · 560 Wp" },
   { label: "Inverter", value: "WattPower Systems Pvt.Ltd WP-330KTL-H1 · 275 kW · 6 MPPT" },
-  { label: "Stringing", value: "29 in series × 22 strings on 1 inverter(s)" },
+  { label: "Stringing", value: "29 in series × 22 strings on 1 inverter" },
   { label: "DC capacity", value: "357.28 kWp (638 modules)" },
   { label: "AC capacity", value: "275 kW · DC/AC 1.30" },
   { label: "Weather", value: "PVGIS TMY · GHI 1,822.9 kWh/m² · in-plane 1,998.0 kWh/m²" },
   { label: "Losses", value: "Clipping 3.4 % · LID 0.20 % · uncertainty σ 4.24 %" },
   { label: "Energy, year 1", value: "P50 617.8 MWh · P75 600.2 MWh · P90 584.2 MWh" },
-  { label: "Specific yield", value: "1,729 kWh/kWp · PR 86.6 % · CUF 25.6 % AC" },
+  { label: "Yield", value: "1,729 kWh/kWp · PR 86.6 % · CUF 25.6 % AC" },
   { label: "Module area", value: "1,646 m² · 45.7 % of the roof" },
   { label: "CO₂ avoided", value: "442.4 t/yr at 0.716 t/MWh" },
 ];
 
 export const A = option({ key: "29x22x1", letter: "A", caption: "Recommended", ok: true, note: "", n_series: 29, n_strings: 22, n_inverters: 1, dc_kwp: 357.28, dcac: 1.2992, mwh: [617.8405373922709, 600.1603034807486, 584.2475414395242] });
 export const B = option({ key: "26x24x1", letter: "B", caption: "Fills the inverter", ok: true, note: "", n_series: 26, n_strings: 24, n_inverters: 1, dc_kwp: 349.44, dcac: 1.270690909090909, mwh: [607.7468423326311, 590.3554513812021, 574.7026570142883] });
-export const C = option({ key: "28x22x1", letter: "C", caption: "Lower clipping", ok: true, note: "", n_series: 28, n_strings: 22, n_inverters: 1, dc_kwp: 344.96, dcac: 1.2544, mwh: [602.8964516539205, 585.643860338598, 570.1159899739245] });
+export const C = option({ key: "28x22x1", letter: "C", caption: "Less clipping", ok: true, note: "", n_series: 28, n_strings: 22, n_inverters: 1, dc_kwp: 344.96, dcac: 1.2544, mwh: [602.8964516539205, 585.643860338598, 570.1159899739245] });
 export const D = option({ key: "26x27x2", letter: "D", caption: "Below target, 2 inverters", ok: false, note: "below target", n_series: 26, n_strings: 27, n_inverters: 2, dc_kwp: 393.12, dcac: 0.7147636363636364, mwh: [700.9249949800169, 680.8672015597525, 662.8145617945797] });
 export const E = option({ key: "28x25x2", letter: "E", caption: "Below target, 2 inverters", ok: false, note: "below target", n_series: 28, n_strings: 25, n_inverters: 2, dc_kwp: 392.0, dcac: 0.7127272727272728, mwh: [700.4622362253473, 680.4176851913169, 662.3769639868403] });
 
 /** Your own, simulated: 26 × 24 × 1 as the engine names it. */
-export const YOUR_OWN = { ...B, key: "custom", letter: "F", caption: "Your own", custom: true } as DesignOption;
+export const YOUR_OWN = { ...B, key: "custom", letter: "F", caption: "Your own option", custom: true } as DesignOption;
 
 /** The demo at 1500 V with option A chosen. */
 export const DEMO = {

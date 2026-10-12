@@ -23,8 +23,8 @@ const PLAN = "w-full min-w-0 desktop:w-140 desktop:shrink-0";
 /**
  * The body of the CAD layout (plan/phase-09-plan.md, step 19, decision 8): the engine's plan, the page of the report titled
  * Layout, in the paper frame, a breathing block of its shape while the pages come and the API's words with Try again when
- * they did not; behind "What is in the file", the DXF's layers from the run with what is on each and the line "R2010 ·
- * metres · x east, y north".
+ * they did not; behind "What is in the file", the DXF's layers from the run with what is on each and the line "AutoCAD
+ * 2010 (R2010) · metres · x east, y north".
  */
 export function CadPreview({ files, report, onTryAgain }: Props) {
   const view = cadViewOf(files);
@@ -35,7 +35,7 @@ export function CadPreview({ files, report, onTryAgain }: Props) {
       <div className={classNames(PLAN, report.isStale && "opacity-updating")}>
         {plan ? (
           <figure aria-label={plan.name} className={PAPER}>
-            <PageImage src={plan.src} alt={`${plan.title} · page ${plan.number} of the report`} width={plan.width} height={plan.height} data-testid="plan-image" className={PAGE_IMAGE} />
+            <PageImage src={plan.src} alt={`${plan.title}, page ${plan.number} of the report`} width={plan.width} height={plan.height} data-testid="plan-image" className={PAGE_IMAGE} />
           </figure>
         ) : report.failed ? (
           <FailedRow failed={report.failed} onTryAgain={onTryAgain} />

@@ -33,7 +33,7 @@ function LevelsRow({ field, onLevel }: { field: LevelsField; onLevel: Props["onL
           <Fragment key={index}>
             {index > 0 ? <span className="mx-1 text-text-3">·</span> : null}
             <span className="type-mono-touch text-text-2 desktop:type-mono">P</span>
-            <NumberField form="chip" label={`Exceedance level ${index + 1}`} value={level} range={field.range} onCommit={(entered) => onLevel(index, entered)} className="w-13 tablet:w-10" />
+            <NumberField form="chip" label={`Level ${index + 1}`} value={level} range={field.range} onCommit={(entered) => onLevel(index, entered)} className="w-13 tablet:w-10" />
           </Fragment>
         ))}
       </span>
@@ -78,7 +78,7 @@ export function Assumptions({ rows, fields, weather, notes, onField, onLevel, cl
               ))}
             </ul>
           ) : null}
-          <p className="type-body-touch desktop:type-body text-text-3">Choose the weather beside the energy, at the top of the page.</p>
+          <p className="type-body-touch desktop:type-body text-text-3">At the top of the page, choose the weather beside the energy.</p>
         </>
       ) : (
         <Fields fields={fieldsOf[row.id]} onField={onField} onLevel={onLevel} />

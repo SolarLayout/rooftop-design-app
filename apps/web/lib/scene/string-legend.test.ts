@@ -64,7 +64,7 @@ describe("the legend by string", () => {
       { swatch: 6, words: "S6 · S12 · S18" },
       { swatch: "unused", words: "Not used" },
     ]);
-    expect(legend.note).toBe("By string: six colours in turn along the rows");
+    expect(legend.note).toBe("By string: 6 colours in turn along the rows");
     // Compact, the strings are named as they are: a number alone would not say which.
     expect(legend.compact).toEqual({ lead: null, items: legend.entries.slice(0, 6) });
   });
@@ -80,7 +80,7 @@ describe("the legend by string", () => {
       { swatch: 2, words: "S2" },
       { swatch: 3, words: "S3" },
     ]);
-    expect(legend.note).toBe("By string: three colours in turn along the rows");
+    expect(legend.note).toBe("By string: 3 colours in turn along the rows");
   });
 });
 

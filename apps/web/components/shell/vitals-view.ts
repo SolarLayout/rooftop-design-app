@@ -82,17 +82,17 @@ function chosenOf(design: DesignResult | null): DesignOption | null {
 
 function ofTheDesign(option: DesignOption, readouts: LayoutReadouts): Vital[] {
   return [
-    { id: "energy", label: "Energy, year 1", quantity: energy(option.energy.energy_mwh) },
+    { id: "energy", label: "Energy in year 1", quantity: energy(option.energy.energy_mwh) },
     { id: "dc", label: "DC capacity", quantity: dcCapacity(option.dc_kwp) },
     { id: "ac", label: "AC capacity", quantity: acCapacity(option.energy.ac_kw) },
     {
       id: "dcac",
-      label: "DC/AC",
+      label: "DC/AC ratio",
       quantity: dcAcRatio(option.dcac),
       mark: { kind: option.ok ? "fits" : "note", label: wordsOfTheTarget(option) },
     },
     { id: "modules", label: "Modules", quantity: modulesUsed(option.n_modules, readouts.positions) },
-    { id: "pr", label: "PR", quantity: performanceRatio(option.energy.pr) },
+    { id: "pr", label: "Performance ratio (PR)", quantity: performanceRatio(option.energy.pr) },
     { id: "yield", label: "Yield", quantity: specificYield(option.energy.specific_yield) },
   ];
 }
@@ -107,7 +107,7 @@ function ofTheLayout(readouts: LayoutReadouts | null, design: DesignResult | nul
   if (design) {
     cells.push({
       id: "if-all-used",
-      label: "If all were used",
+      label: "DC capacity, every position used",
       quantity: capacityIfAllWereUsed(readouts.positions, design.equipment.module.pnom_w),
     });
   }
@@ -116,8 +116,8 @@ function ofTheLayout(readouts: LayoutReadouts | null, design: DesignResult | nul
 
 function notesCell(notes: readonly Note[]): LastCell {
   const [first] = notes;
-  if (!first) return { kind: "notes", count: 0, title: "Nothing to review", detail: "Every check of the design fits." };
-  const title = notes.length === 1 ? "1 note to review" : `${notes.length} notes to review`;
+  if (!first) return { kind: "notes", count: 0, title: "Nothing to review", detail: "" };
+  const title = `${notes.length} to review`;
   return { kind: "notes", count: notes.length, title, detail: first.title };
 }
 

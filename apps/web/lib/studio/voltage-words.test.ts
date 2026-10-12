@@ -64,7 +64,7 @@ describe("equipment rated under the voltage (D88)", () => {
     expect(words.limit).toBeNull();
     expect(words.note).toEqual({
       title: `Strings sized to ${V(1100)}, this inverter's limit`,
-      detail: `Your system is set to ${V(1500)}. The bill of materials follows the voltage set.`,
+      detail: `Your system voltage is ${V(1500)}, and the bill of materials uses it.`,
       use: 1000,
     });
   });
@@ -76,11 +76,11 @@ describe("equipment rated under the voltage (D88)", () => {
   // #179, item 14: a module whose file gives no rating is taken as 1000 V; the words say it was taken, not the module's.
   test("a module rating taken for want of one in the file is said to be taken", () => {
     const taken = { inverter: 1500, module: 1000, moduleTaken: true };
-    expect(voltageWordsOf(facts({ voltage: 1500, ratings: taken })).limit).toBe(`Strings sized to ${V(1000)}, taken for this module: its file gives no limit.`);
+    expect(voltageWordsOf(facts({ voltage: 1500, ratings: taken })).limit).toBe(`Strings sized to ${V(1000)}, the app's value for a module file without a limit.`);
     const note = voltageWordsOf(facts({ voltage: 1500, by: "user", ratings: taken })).note;
-    expect(note?.title).toBe(`Strings sized to ${V(1000)}, taken for this module`);
-    expect(note?.detail).toBe(`Its file gives no limit, so ${V(1000)} is taken. Your system is set to ${V(1500)}. The bill of materials follows the voltage set.`);
-    expect(voltageWordsOf(facts({ voltage: 600, ratings: taken })).offer?.words).toBe(`${V(1000)} is taken for this module: its file gives no limit. Raise it only if the site's code allows.`);
+    expect(note?.title).toBe(`Strings sized to ${V(1000)}, the app's value for this module`);
+    expect(note?.detail).toBe(`The module file gives no limit, so the app takes ${V(1000)}. Your system voltage is ${V(1500)}, and the bill of materials uses it.`);
+    expect(voltageWordsOf(facts({ voltage: 600, ratings: taken })).offer?.words).toBe(`The module file gives no limit, so the app takes ${V(1000)}. Raise it only if the site's code allows.`);
   });
 
   test("offers no button when no voltage is at or under the rating", () => {
@@ -105,7 +105,7 @@ describe("equipment rated over the voltage: the offer up, never taken by the app
     // 51 V a module at the coldest, at least 14 in series: 600 V holds 11, 1000 V holds 19.
     const words = voltageWordsOf(facts({ voltage: 600, country: "US", range: { ...FITS, ok: false } }));
 
-    expect(words.offer).toEqual({ words: `No string length fits under ${V(600)}; at ${V(1000)} one does. Raise it only if the site's code allows.`, use: 1000 });
+    expect(words.offer).toEqual({ words: `No string length fits at ${V(600)}. One fits at ${V(1000)}. Raise it only if the site's code allows.`, use: 1000 });
   });
 
   test("none where no length fits at any voltage the equipment takes", () => {

@@ -25,9 +25,18 @@ const UNITS: { value: Units; label: string }[] = [
 /** The inventory's units of a DXF, suggested once the file is one (functional-inventory.md, 1.1). */
 const SUGGESTED_UNITS: Units = "m";
 
-/** What the importer reads of each kind (rooftop_core/io/roof_import.py; issue 179, item 7). */
-const WHAT_IS_READ =
-  "The largest closed shape is the roof. In a KMZ or KML the other closed shapes are obstacles named by their placemark, and open lines are walls; in a DXF the other closed polylines are obstacles named by their layer, and circles are tanks. A height in a name, as h=2.5, is read. A KMZ or KML says where the roof is; a DXF does not, so its place is asked.";
+/** Which files the drop takes. */
+const WHICH_FILE = "KMZ, KML or DXF";
+
+/**
+ * What the app reads of a drawing, a short summary under the drop (rooftop_core/io/roof_import.py; issue 179, item 7; audit
+ * V2-45): the roof, the obstacles, their heights. The place of a DXF is asked by its own field, not said here.
+ */
+const WHAT_IS_READ = [
+  "Roof: the largest closed shape",
+  "Obstacles: the other closed shapes, circles as tanks, lines in a KMZ or KML as walls",
+  "Heights: from a shape's name, as h=2.5",
+] as const;
 
 /** The place of a DXF, searched or typed; nothing until it is (docs/design/components.md, "Import a drawing"). */
 type Place = { lat: number | null; lon: number | null; found: string | null };
@@ -116,13 +125,17 @@ export function ImportDrawing({ open, onClose }: Props) {
         { label: "Open the roof", kind: "primary", waits: held === null || isReading || lacksPlace, onPress: openTheRoof },
       ]}
     >
-      <p>{WHAT_IS_READ}</p>
-      <div className="mt-3 flex flex-col gap-3">
-        <FileDrop title="Drop the drawing here" detail="KMZ, KML or DXF" whenOver="It becomes the roof of a new design" accept=".kmz,.kml,.dxf" state={state} onFile={hold} />
+      <div className="flex flex-col gap-3">
+        <FileDrop title="Drop the drawing here" detail={WHICH_FILE} whenOver={WHICH_FILE} accept=".kmz,.kml,.dxf" state={state} onFile={hold} />
+        <ul aria-label="What the app reads" className="flex flex-col gap-1 type-body-touch desktop:type-body text-text-2">
+          {WHAT_IS_READ.map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
         <div className="flex items-center gap-3">
           <div className="flex grow flex-col gap-0.5">
             <span className="text-text">DXF units</span>
-            <span className="type-body-touch desktop:type-body text-text-3">{isDxf ? "Suggested for this file. Change it if the drawing is in millimetres" : "Chosen once the file is a DXF"}</span>
+            <span className="type-body-touch desktop:type-body text-text-3">{isDxf ? "If the drawing is in millimetres, choose mm" : "For a DXF"}</span>
           </div>
           <Segmented label="DXF units" options={UNITS} value={units} onChange={setUnits} disabled={!isDxf} />
         </div>
@@ -131,7 +144,7 @@ export function ImportDrawing({ open, onClose }: Props) {
             <div className="flex flex-col gap-0.5">
               <span className="text-text">Place</span>
               <span className="type-body-touch desktop:type-body text-text-3">
-                {place.found === null ? "The drawing does not say where the roof is. Search the place, or type its coordinates" : "From the search. Change it if the drawing is elsewhere"}
+                {place.found === null ? "Where is the roof?" : "From the search"}
               </span>
             </div>
             <Search provider={PROVIDER} near={nowhere} onPlace={placeFound} found={null} look="field" />

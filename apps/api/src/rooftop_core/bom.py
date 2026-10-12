@@ -122,9 +122,14 @@ def bom(layout: Layout, system: System, module: Module, inv: Inverter, voc_cold:
           for mm2, metres in dc_lines),
         BomLine("DC connector pair", "MC4-compatible, matched to the module", system.n_strings * 2, "pairs"),
         BomLine("AC cable", _ac_cable_spec(inv), round(ac_cable_m * system.n_inverters), "m"),
-        BomLine("AC distribution board", f"{system.n_inverters} incomer(s), 1 outgoing", 1, "pcs"),
+        BomLine("AC distribution board", f"{_incomers(system.n_inverters)}, 1 outgoing", 1, "pcs"),
     ]
     return lines
+
+
+def _incomers(count: int) -> str:
+    """The incomers of the AC board by their count: "1 incomer", "2 incomers"."""
+    return f"{count} incomer" + ("" if count == 1 else "s")
 
 
 # The AC voltage taken when the OND gives none: a three-phase low-voltage grid's.
@@ -135,8 +140,8 @@ def _ac_cable_spec(inv: Inverter) -> str:
     """The AC cable's spec; a voltage the OND does not give is said to be taken (#179, item 26)."""
     if inv.v_out_v:
         return f"Inverter to ACDB, sized for {_i_ac(inv):.0f} A at {inv.v_out_v:.0f} V AC"
-    return (f"Inverter to ACDB, sized for {_i_ac(inv):.0f} A at {AC_VOLTS_TAKEN} V AC, "
-            "taken as the OND gives no output voltage")
+    return (f"Inverter to ACDB, sized for {_i_ac(inv):.0f} A at {AC_VOLTS_TAKEN} V AC by default, "
+            "as the inverter file (OND) gives no output voltage")
 
 
 def _i_ac(inv: Inverter) -> float:
