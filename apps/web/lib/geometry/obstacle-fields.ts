@@ -2,9 +2,7 @@
 // from plan/reference/functional-inventory.md, 1.2, what a new one is, and the facts of a row. The
 // inspector renders them; a committed value is an edit of the obstacle.
 import type { Range } from "../../components/ui/number-entry";
-import { shown } from "../../components/ui/number-entry";
 import type { Obstacle, Project, Roof } from "../api";
-import { areaOf, type XY as XYOf } from "./measure";
 import type { XY } from "./adapter";
 
 export type ObstacleKind = Obstacle["kind"];
@@ -52,16 +50,6 @@ export const OBSTACLE_KINDS: { id: ObstacleKind; word: string }[] = [
 ];
 
 export const wordOfKind = (kind: ObstacleKind): string => OBSTACLE_KINDS.find((one) => one.id === kind)?.word ?? kind;
-
-/** What the Add menu says a new one of the kind gets: the inventory's sizes, in the words of the board. */
-export function factOfNewKind(kind: ObstacleKind): string {
-  const fresh = newObstacleOf(kind, [0, 0], []);
-  if (kind === "box") return `${shown(fresh.length, 1)} × ${shown(fresh.width, 1)} m`;
-  if (kind === "cylinder") return `⌀ ${shown(fresh.diameter, 1)} m`;
-  if (kind === "tree") return `crown ⌀ ${shown(fresh.diameter, 1)} m`;
-  if (kind === "wall") return `${shown(lengthOf(fresh.points), 1)} m, points`;
-  return "beside the roof, points";
-}
 
 /** Fewest points a wall and a building keep: the API's validator wants as many. */
 export const FEWEST_POINTS = { wall: 2, building: 3 } as const;
@@ -168,25 +156,9 @@ export function newObstacleOf(kind: ObstacleKind, [x, y]: XY, among: readonly Ob
   };
 }
 
-const asPoints = (points: readonly Point[]): XYOf[] => points.map(([x, y]) => ({ x, y }));
-
 /** The length of a polyline, point to point. */
 export function lengthOf(points: readonly Point[]): number {
   return points.slice(1).reduce((sum, [x, y], n) => sum + Math.hypot(x - points[n][0], y - points[n][1]), 0);
-}
-
-/** The size of an obstacle, as its row and its callout say it: a box by its sides, a tank by its diameter, a wall by its length, a building by its area, a tree by its crown. */
-export function sizeOf(obstacle: Obstacle | DraftObstacle): string {
-  if (obstacle.kind === "box") return `${shown(obstacle.length, 1)} × ${shown(obstacle.width, 1)}`;
-  if (obstacle.kind === "cylinder") return `⌀ ${shown(obstacle.diameter, 1)}`;
-  if (obstacle.kind === "tree") return `crown ⌀ ${shown(obstacle.diameter, 1)}`;
-  if (obstacle.kind === "wall") return `${shown(lengthOf(obstacle.points), 1)} m`;
-  return `${shown(Math.round(areaOf(asPoints(obstacle.points))), 0)} m²`;
-}
-
-/** The facts of an obstacle in its row: its size in the words of its kind, then its height. */
-export function factsOf(obstacle: Obstacle): string {
-  return `${sizeOf(obstacle)} · h ${shown(obstacle.height, 1)} m`;
 }
 
 /**

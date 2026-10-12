@@ -9,6 +9,12 @@ describe("what the stage draws", () => {
     expect(whatIsDrawnOf(false, "plan")).toEqual({ keptClear: true, edgeLabels: true });
   });
 
+  test("the roof's dimensions on the Roof step alone (V2 · 7)", () => {
+    expect(whatIsDrawnOf(false, "3d", "array")).toEqual({ keptClear: true, edgeLabels: false });
+    expect(whatIsDrawnOf(false, "plan", "strings")).toEqual({ keptClear: true, edgeLabels: false });
+    expect(whatIsDrawnOf(true, "plan", "array")).toEqual({ keptClear: false, edgeLabels: false });
+  });
+
   test("in the Sun view, neither in 3D; in the plan the edge labels alone", () => {
     expect(whatIsDrawnOf(true, "3d")).toEqual({ keptClear: false, edgeLabels: false });
     expect(whatIsDrawnOf(true, "sun-eye")).toEqual({ keptClear: false, edgeLabels: false });

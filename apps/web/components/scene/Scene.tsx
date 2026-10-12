@@ -16,7 +16,7 @@ import { whatIsDrawnOf } from "@/lib/scene/what-is-drawn";
 import type { Cursor, StageStore } from "@/lib/scene/stage-store";
 import { projectOf } from "@/lib/stores/project-store";
 import { layoutOf, stringsOnTheRoofOf } from "@/lib/stores/results-store";
-import { cameraOf, draftOf, draggingOf, groundDrawnOf, groundOf, isSunViewOf, presentationOf, selectionOf, showsSunPathOf, toReviewOf, type Reveal } from "@/lib/stores/view-store";
+import { cameraOf, draftOf, lensOf, draggingOf, groundDrawnOf, groundOf, isSunViewOf, presentationOf, selectionOf, showsSunPathOf, toReviewOf, type Reveal } from "@/lib/stores/view-store";
 import { withDraftAt, withObstacleReplaced } from "@/lib/geometry/obstacle-fields";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/places/esri";
 import { Building, BUILDING_DEPTH } from "./Building";
@@ -76,7 +76,11 @@ export function Scene({ onContextLost, stage }: Props) {
   const imagery = groundDrawnOf(useView(groundOf), IMAGERY !== null) === "imagery" ? IMAGERY : null;
   const glass = useGlassOfTheStage();
   const strings = useStringsShown();
-  const drawn = whatIsDrawnOf(useView(isSunViewOf), useView(cameraOf));
+  const isSunView = useView(isSunViewOf);
+  const camera = useView(cameraOf);
+  const lens = useView(lensOf);
+  const drawn = whatIsDrawnOf(isSunView, camera, lens);
+  const isEditingOutline = !isSunView && camera === "plan" && lens === "roof";
   const { view, project: store, results } = useStores();
   const roof = project?.roof ?? null;
   const flushClearance = project?.array.flush_clearance_m ?? 0.1;
@@ -115,6 +119,8 @@ export function Scene({ onContextLost, stage }: Props) {
     const labels = [...edges, ...markers.map(({ label, top }): Anchor => ({ words: label, at: about(top), kind: "inverter" }))];
     const callout = (at: XYZ): Anchor => ({ words: "", at: about(at), kind: "callout" });
     if (draft) return [...labels, callout(anchorOfObstacle(draft, frame.heightAt))];
+    // The outline edited in the plan of the Roof step (V2 · 7): its corners as handles, no callout over them.
+    if (selection?.kind === "roof" && isEditingOutline) return [...labels, ...roof.outline.map(([x, y], n): Anchor => ({ words: "", at: about([x, y, frame.heightAt([x, y])]), kind: "handle", id: `outline-${n}` }))];
     if (selection?.kind === "roof") return [...labels, callout(anchorOfRoof(roof.outline, frame.heightAt))];
     if (selection?.kind === "obstacle" && roof.obstacles[selection.index]) {
       const obstacle = dragging?.index === selection.index ? dragging.obstacle : roof.obstacles[selection.index];
@@ -129,7 +135,7 @@ export function Scene({ onContextLost, stage }: Props) {
     const part = selection?.kind === "keepout" ? layout?.layout.keepout[selection.index] : undefined;
     const hung = part ? anchorOf(part) : null;
     return hung ? [...labels, callout([hung[0], hung[1], frame.heightAt(hung)])] : labels;
-  }, [roof, frame, layout, selection, draft, dragging, drawn.edgeLabels, markers, strings]);
+  }, [roof, frame, layout, selection, draft, dragging, drawn.edgeLabels, markers, strings, isEditingOutline]);
 
   if (!roof || !frame || !about) return null;
   const [cx, cy] = frame.centroid;

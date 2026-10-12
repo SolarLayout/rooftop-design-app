@@ -14,7 +14,7 @@ import { isPanelHiddenOf, isSunViewOf } from "@/lib/stores/view-store";
 import { nextLineOf } from "@/lib/words/explain";
 import { ArrayInspector } from "@/components/studio/ArrayInspector";
 import { RoofInspector } from "@/components/studio/RoofInspector";
-import { SunInspector } from "@/components/studio/SunInspector";
+import { SunCardBody } from "@/components/studio/SunInspector";
 import { Stage } from "@/components/studio/Stage";
 import { StringsInspector } from "@/components/studio/StringsInspector";
 import { useHistoryKeys } from "@/components/shell/use-history-keys";
@@ -98,8 +98,9 @@ export function Studio({ lens }: Props) {
   const sections = size === null ? null : lens === "array" ? <ArrayInspector /> : lens === "roof" ? <RoofInspector size={size} /> : <StringsInspector />;
   // The work column's three weights (V2 · 3): the step (its head, its primary at the foot), the facts, the details.
   const inspector =
-    size === null ? null : isSunView ? (
-      <SunInspector size={size} />
+    size === null ? null : isSunView && size !== "desktop" ? (
+      // On touch the card's content is the work column's while the Sun view is on (V2 · 7); on desktop it is the card on the stage.
+      <SunCardBody size={size} />
     ) : (
       <>
         {head ? <StepHead title={head.title} line={head.line} status={status} problem={chip.kind === "stale" ? chip.problem : null} onAction={tryAgain} /> : null}
@@ -145,18 +146,16 @@ export function Studio({ lens }: Props) {
         </div>
         {/* The sections scroll on desktop; the primary stays at the column's foot. */}
         <div className="flex grow flex-col pb-6 desktop:min-h-0 desktop:overflow-y-auto desktop:px-panel desktop:pt-2">{size === "phone" ? null : inspector}</div>
-        {isSunView ? null : (
-          <div className="sticky bottom-0 -mx-5 border-t border-line-subtle bg-chrome px-5 pt-3 pb-safe-3 desktop:static desktop:mx-0 desktop:px-panel desktop:pb-safe-panel">
-            <Primary lens={lens} />
-          </div>
-        )}
+        <div className="sticky bottom-0 -mx-5 border-t border-line-subtle bg-chrome px-5 pt-3 pb-safe-3 desktop:static desktop:mx-0 desktop:px-panel desktop:pb-safe-panel">
+          <Primary lens={lens} />
+        </div>
       </aside>
 
       <div className="tablet:hidden">
         <Sheet label="Work column" stop={stop} onStop={setStop} half={half}>
           <div className="flex flex-col gap-6 px-4 pt-4 pb-6">
             {size === "phone" ? inspector : null}
-            {isSunView ? null : <Primary lens={lens} />}
+            <Primary lens={lens} />
           </div>
         </Sheet>
       </div>

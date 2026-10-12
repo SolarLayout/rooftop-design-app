@@ -51,18 +51,22 @@ describe("the places of the labels", () => {
     [0, 40],
   ] as const;
 
-  test("one at the middle of each edge, in the engine's metres, saying the edge's length to one decimal", () => {
+  test("one at the middle of an edge, in the engine's metres, saying its length to one decimal; once per pair of edges (V2 · 7)", () => {
+    // Of two opposite edges as long, the one on the south and west side stands, nearer the camera's 3D view.
     expect(labelPlacesOf(demo, () => 0)).toEqual([
       { words: "90.0 m", at: [45, 0, 0] },
-      { words: "40.0 m", at: [90, 20, 0] },
-      { words: "90.0 m", at: [45, 40, 0] },
       { words: "40.0 m", at: [0, 20, 0] },
     ]);
   });
 
+  test("edges of other lengths, or not opposite, are each labelled", () => {
+    const l = [[0, 0], [30, 0], [30, 10], [10, 10], [10, 25], [0, 25]] as [number, number][];
+    expect(labelPlacesOf(l, () => 0).map(({ words }) => words)).toEqual(["30.0 m", "10.0 m", "20.0 m", "15.0 m", "10.0 m", "25.0 m"]);
+  });
+
   test("on a sloped roof each stands at the roof's height there", () => {
     const heightAt = ([, y]: readonly [number, number]) => y / 10;
-    expect(labelPlacesOf(demo, heightAt).map(({ at }) => at[2])).toEqual([0, 2, 4, 2]);
+    expect(labelPlacesOf(demo, heightAt).map(({ at }) => at[2])).toEqual([0, 2]);
   });
 
   test("a length is written as a number of the fields: a comma between thousands", () => {

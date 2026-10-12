@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { bearingOf, dateOf, dayOfChoice, sunAtOf, sunCalloutOf, sunLineOf, sunPathLineOf, dayOfYearOf, daysOf, designDayLineOf, heldHourOf, partsOf, readOutOf, ticksOf, timeOfKey } from "./sun-time";
+import { bearingOf, dateOf, sunWordsOf, dayOfChoice, sunAtOf, sunCalloutOf, sunLineOf, sunPathLineOf, dayOfYearOf, daysOf, designDayLineOf, heldHourOf, partsOf, readOutOf, ticksOf, timeOfKey } from "./sun-time";
 
 describe("the date of a day of the year", () => {
   test.each([
@@ -217,5 +217,17 @@ describe("the words of the sun path", () => {
   test("a day the sun stays up runs the whole day; one it stays down has no path", () => {
     expect(sunPathLineOf({ ...DEC, sunriseH: null, sunsetH: null }, null)).toBe("Sun path of 21 Dec, the sun up the whole day");
     expect(sunPathLineOf({ ...DEC, sunriseH: null, sunsetH: null, positions: [{ hour: 12, elevationDeg: -5, azimuthDeg: 180 }] }, null)).toBeNull();
+  });
+});
+
+describe("the sun at the time, in a line (V2 · 7)", () => {
+  test("its height and where it comes from, with the point of the compass in words", () => {
+    expect(sunWordsOf({ elevationDeg: 17.972, azimuthDeg: 236.642 })).toBe("Sun 18.0° high, from 237° (south-west)");
+    expect(sunWordsOf({ elevationDeg: 60, azimuthDeg: 180 })).toBe("Sun 60.0° high, from 180° (south)");
+  });
+
+  test("while it is down, or not known, that it is down", () => {
+    expect(sunWordsOf({ elevationDeg: -2, azimuthDeg: 100 })).toBe("The sun is down");
+    expect(sunWordsOf(null)).toBe("The sun is down");
   });
 });

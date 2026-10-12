@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Roof } from "../api";
-import { edgesFactsOf, obstaclesFactsOf, placeFactsOf, ROOF_FIELDS, roofFieldsOf, roofTypeFactsOf, withRoofField } from "./roof-fields";
+import { albedoLineOf, outlineFactsOf, edgesFactsOf, obstaclesFactsOf, placeFactsOf, ROOF_FIELDS, roofFieldsOf, roofGroupsOf, roofTypeFactsOf, withRoofField } from "./roof-fields";
 
 // The fields of the Roof lens (plan/phase-05-plan.md, step 11, decision 20), from
 // plan/reference/functional-inventory.md, 1.1: each with its unit, its range and its decimals.
@@ -29,20 +29,19 @@ const DEMO = {
 } as unknown as Roof;
 
 describe("the fields", () => {
-  test("of a flat roof with tilted rows: the edges and access, the walkway every so many modules", () => {
+  test("of a flat roof with tilted rows: the edges and access in plain words, the walkway every so many modules; the albedo is Performance's", () => {
     expect(roofFieldsOf(DEMO).map((field) => [field.id, field.label, field.value, field.unit])).toEqual([
-      ["parapet_h", "Parapet", 0.9, "m"],
-      ["setback_m", "Setback", 1, "m"],
-      ["walkway_m", "Walkway", 0.6, "m"],
-      ["walkway_every_modules", "Every", 24, "mod"],
+      ["parapet_h", "Parapet height", 0.9, "m"],
+      ["setback_m", "Edge margin (setback)", 1, "m"],
+      ["walkway_m", "Walkway width", 0.6, "m"],
+      ["walkway_every_modules", "Walkway every", 24, "modules"],
       ["obstacle_clearance_m", "Clearance", 0.5, "m"],
-      ["albedo", "Albedo", 0.2, undefined],
     ]);
   });
 
   test("of an east-west or a sloped roof the walkway is every so many rows", () => {
     const fields = roofFieldsOf({ ...DEMO, roof_type: "flat_ew" });
-    expect(fields.find((field) => field.id === "walkway_every_rows")).toMatchObject({ label: "Every", value: 4, unit: "rows" });
+    expect(fields.find((field) => field.id === "walkway_every_rows")).toMatchObject({ label: "Walkway every", value: 4, unit: "rows" });
     expect(fields.some((field) => field.id === "walkway_every_modules")).toBe(false);
   });
 
@@ -82,7 +81,7 @@ describe("the edit a field makes", () => {
 
 describe("who set each field (V2 · 3)", () => {
   test("a field at the API's default is the app's", () => {
-    expect(roofFieldsOf(DEMO).map((field) => field.setBy.kind)).toEqual(["default", "default", "default", "default", "default", "default"]);
+    expect(roofFieldsOf(DEMO).map((field) => field.setBy.kind)).toEqual(["default", "default", "default", "default", "default"]);
   });
 
   test("a field typed by the user is Yours, with the default it can be given back", () => {
@@ -119,5 +118,51 @@ describe("the facts of each section, on one line (V2 · 3)", () => {
   test("the place in degrees, to two decimals", () => {
     expect(placeFactsOf(DEMO)).toBe("18.52° N, 73.86° E");
     expect(placeFactsOf({ ...DEMO, lat: -33.868, lon: -151.2 })).toBe("33.87° S, 151.20° W");
+  });
+});
+
+// Fields stand in groups of what belongs together (V2 · 7, D103; the board "The Roof and Array steps"), each with the usual
+// thing said under its label while the app's value stands.
+describe("the groups of Edges and access", () => {
+  test("at the edges, access, round obstacles, in that order, each field with its hint", () => {
+    const groups = roofGroupsOf(DEMO);
+
+    expect(groups.map((group) => [group.title, group.fields.map((field) => field.id)])).toEqual([
+      ["At the edges", ["parapet_h", "setback_m"]],
+      ["Access", ["walkway_m", "walkway_every_modules"]],
+      ["Round obstacles", ["obstacle_clearance_m"]],
+    ]);
+  });
+
+  test("the app's value is a Default with the usual thing after it; the user's is Yours, with the default it took the place of", () => {
+    const fields = roofGroupsOf(DEMO).flatMap((group) => group.fields);
+    const hints = Object.fromEntries(fields.map((field) => [field.id, field.hint]));
+
+    expect(hints).toEqual({
+      parapet_h: "Default · measure it on site",
+      setback_m: "Default · usually 0.5 to 1.5 m",
+      walkway_m: "Default",
+      walkway_every_modules: "Default · one across each row",
+      obstacle_clearance_m: "Default · kept free on every side",
+    });
+    const changed = roofGroupsOf({ ...DEMO, parapet_h: 1.2 }).flatMap((group) => group.fields).find((field) => field.id === "parapet_h");
+    expect(changed?.hint).toBe("Yours · default 0.90 m");
+  });
+
+  test("a sloped roof adds the slope as a group of its own", () => {
+    expect(roofGroupsOf({ ...DEMO, roof_type: "sloped_flush" }).map((group) => group.title)).toEqual(["At the edges", "Access", "Round obstacles", "The slope"]);
+  });
+});
+
+describe("the albedo has one home", () => {
+  test("the Roof step points to Performance's assumptions with the value", () => {
+    expect(albedoLineOf(DEMO)).toBe("Roof albedo 0.20 · in Performance, Assumptions");
+  });
+});
+
+describe("the outline's line (V2 · 7)", () => {
+  test("where the roof is, its area, and where it is edited: in the plan of the Roof step", () => {
+    expect(outlineFactsOf(DEMO, 3600)).toBe("18.52° N, 73.86° E · 3,600 m² · Edit it in Plan");
+    expect(outlineFactsOf(DEMO, null)).toBe("18.52° N, 73.86° E · Edit it in Plan");
   });
 });

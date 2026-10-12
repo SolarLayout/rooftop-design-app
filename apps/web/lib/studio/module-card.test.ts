@@ -22,23 +22,25 @@ const MODULE = {
 
 const COEFFICIENTS = { mu_voc_pct: -0.164, mu_vmp_pct: -0.228, mu_pmpp_pct: -0.212, mu_voc_mv: -82, source: "one-diode model" } as Coefficients;
 
-describe("the module card", () => {
-  test("says the model, the maker as people know it with the Wp, the size with the bifaciality, the facts and the file", () => {
+describe("the module card (V2 · 7, D103; audit V2-30)", () => {
+  test("says the model, the maker as people know it with the power and the size; the electrical figures are behind Details in plain names", () => {
     expect(moduleCardOf(MODULE, COEFFICIENTS)).toEqual({
       title: "INA-144MHC-TF-560",
-      maker: "Insolation · 560 Wp",
-      size: "2.277 × 1.133 m · bifacial 0.80",
-      facts: "Voc 49.95 V · Isc 14.30 A · 3 diodes · twin half-cell",
-      coefficients: "Coefficients (one-diode model): Voc −0.164, Vmp −0.228, Pmpp −0.212 %/°C",
-      file: "insolation-ina-144mhc-tf-560.PAN",
+      maker: "Insolation · 560 Wp · 2.28 × 1.13 m",
+      details: [
+        { name: "Open-circuit voltage (Voc)", value: "49.95 V" },
+        { name: "Short-circuit current (Isc)", value: "14.30 A" },
+        { name: "Bifacial, rear gain", value: "0.80" },
+        { name: "Voc coefficient", value: "−0.164 %/°C" },
+      ],
     });
   });
 
-  test("a monofacial module of whole cells says neither", () => {
+  test("a monofacial module has no bifacial line; the file's name, the diodes and the other coefficients are not on the card", () => {
     const card = moduleCardOf({ ...MODULE, is_bifacial: false, bifaciality: 0, half_cell: false }, { ...COEFFICIENTS, source: "PAN file" });
-    expect(card.size).toBe("2.277 × 1.133 m");
-    expect(card.facts).toBe("Voc 49.95 V · Isc 14.30 A · 3 diodes");
-    expect(card.coefficients).toBe("Coefficients (PAN file): Voc −0.164, Vmp −0.228, Pmpp −0.212 %/°C");
+    expect(card.details.map((row) => row.name)).toEqual(["Open-circuit voltage (Voc)", "Short-circuit current (Isc)", "Voc coefficient"]);
+    expect(JSON.stringify(card)).not.toContain(".PAN");
+    expect(JSON.stringify(card)).not.toContain("diodes");
   });
 });
 

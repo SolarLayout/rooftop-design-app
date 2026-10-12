@@ -38,7 +38,7 @@ export function slopedTiltLineOf(roof: Pick<Roof, "slope_deg" | "slope_azimuth_d
 }
 
 export function shadedLineOf(allowShaded: boolean): string {
-  return allowShaded ? "On: positions shaded inside the window are used too" : "Off: positions shaded inside the window stay empty";
+  return allowShaded ? "On: positions shaded in the shade-free hours are used too" : "Off: positions shaded in the shade-free hours stay empty";
 }
 
 /** The shade-free window on one track: solar hours by the quarter, from the earliest start to the latest end. */

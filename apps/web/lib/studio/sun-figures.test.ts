@@ -26,6 +26,7 @@ describe("the shading figures", () => {
       electrical: { value: "0.56", waits: null },
       far: { value: "0.01", waits: null },
       keptClear: "150",
+      total: "0.92",
       of: "Of the 638 modules of option A",
       horizon: "Far shading: PVGIS horizon, highest 2.7°",
     });
@@ -37,6 +38,7 @@ describe("the shading figures", () => {
       electrical: { value: null, waits: "Choose a system voltage to size the strings" },
       far: { value: "0.01", waits: null },
       keptClear: "150",
+      total: null,
       of: "Of all 790 positions",
       horizon: "Far shading: PVGIS horizon, highest 2.7°",
     });
@@ -48,9 +50,15 @@ describe("the shading figures", () => {
       electrical: { value: null, waits: null },
       far: { value: null, waits: null },
       keptClear: "150",
+      total: null,
       of: null,
       horizon: null,
     });
+  });
+
+  test("the total is the sum of the three causes as they are shown, so that the tiles add up to it; none while one waits", () => {
+    expect(figuresOf(withOption, null).total).toBe("0.92");
+    expect(figuresOf(withoutOption, null).total).toBeNull();
   });
 
   test("before any layout there is no kept clear area either", () => {

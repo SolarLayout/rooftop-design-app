@@ -26,6 +26,8 @@ import { Callout } from "./Callout";
 import { Handles } from "./Handles";
 import { Labels } from "./Labels";
 import { ShadeLegend } from "./ShadeLegend";
+import { OutlineHandles } from "./OutlineHandles";
+import { ShadeCard } from "./ShadeCard";
 import { StringLegend } from "./StringLegend";
 import { SunMarks } from "./SunMarks";
 import { LayoutFailed, SunFailed } from "./LayoutFailed";
@@ -137,6 +139,7 @@ export function Stage({ lens, name, className }: Props) {
       {cannotDraw ? null : <Labels stage={stage} />}
       {cannotDraw ? null : <Callout stage={stage} />}
       {cannotDraw ? null : <Handles stage={stage} />}
+      {cannotDraw ? null : <OutlineHandles stage={stage} />}
       <div className="pointer-events-none absolute inset-x-4 top-4 z-stage-overlay flex flex-col gap-0.5 tablet:inset-x-5 desktop:top-5 desktop:left-6">
         <h1 className="sr-only desktop:not-sr-only type-title-touch desktop:type-title">{name}</h1>
         <FirstMeeting word={isSunView ? "Sun" : LENS_WORD[lens]} className="hidden type-body text-text-2 desktop:block" />
@@ -150,6 +153,8 @@ export function Stage({ lens, name, className }: Props) {
       <LayoutFailed className={LAYOUT_FAILED} />
       <SunFailed className={LAYOUT_FAILED} />
       {cannotDraw ? null : <ViewControls stage={stage} className={VIEW_CONTROLS} />}
+      {/* The Sun view's card, on desktop: on touch its content is the work column's (V2 · 7). */}
+      {cannotDraw || size !== "desktop" || !isSunView ? null : <ShadeCard />}
       {/* The time belongs to the Sun view (V2 · 3): the other steps draw the design day's noon, still. */}
       {cannotDraw || size === null || !isSunView ? null : size !== "phone" ? <SunTimeline size={size} className={TIMELINE} /> : <TimePill size={size} className={TIME_PILL} />}
       {cannotDraw || size === null ? null : <ShadeLegend size={size} className={SHADE_LEGEND} />}

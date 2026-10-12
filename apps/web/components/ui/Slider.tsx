@@ -36,7 +36,7 @@ export function Slider({ label, value, onCommit, scale, decimals = 0, unit, hint
     <div className={className}>
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between gap-row">
-          <span className="text-text-2">{label}</span>
+          <span className="text-text">{label}</span>
           <span className="flex items-baseline gap-1">
             <span data-testid="value" className="type-mono-touch desktop:type-mono">
               {shownNumber(now, decimals)}

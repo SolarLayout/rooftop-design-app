@@ -59,8 +59,8 @@ describe("the tilt of a sloped roof", () => {
 
 describe("the shaded positions", () => {
   test("say what the switch does either way", () => {
-    expect(shadedLineOf(false)).toBe("Off: positions shaded inside the window stay empty");
-    expect(shadedLineOf(true)).toBe("On: positions shaded inside the window are used too");
+    expect(shadedLineOf(false)).toBe("Off: positions shaded in the shade-free hours stay empty");
+    expect(shadedLineOf(true)).toBe("On: positions shaded in the shade-free hours are used too");
   });
 });
 

@@ -5,7 +5,7 @@ import { Segmented } from "@/components/ui/Segmented";
 import { Slider } from "@/components/ui/Slider";
 import { Stepper } from "@/components/ui/Stepper";
 import type { ArraySpec, Roof } from "@/lib/api";
-import { ARRAY_RANGES, mountingOf, mountingSetByOf, tiltHintOf, type MountingId } from "@/lib/studio/array-fields";
+import { ARRAY_RANGES, mountingHintOf, mountingOf, mountingSetByOf, type MountingId } from "@/lib/studio/array-fields";
 import { ARRAY_DEFAULTS } from "@/lib/studio/defaults";
 import { DEFAULT } from "@/lib/studio/set-by";
 import { slopedTiltLineOf } from "@/lib/studio/array-view";
@@ -39,20 +39,20 @@ export function ArrayMounting({ array, roof, onChange }: Props) {
   const field = (id: MountingId) => {
     switch (id) {
       case "tilt_deg":
-        return <Slider key={id} label="Tilt" value={array.tilt_deg} scale={TILT} unit="°" hint={tiltHintOf(roof.lat)} onCommit={(value) => set("tilt_deg", value)} />;
+        return <Slider key={id} label="Tilt" value={array.tilt_deg} scale={TILT} unit="°" onCommit={(value) => set("tilt_deg", value)} />;
       case "ew_tilt_deg":
         return <Slider key={id} label="East-west tilt" value={array.ew_tilt_deg} scale={EW_TILT} unit="°" hint="Each side, away from the ridge" onCommit={(value) => set("ew_tilt_deg", value)} />;
       case "orientation":
         return (
           <div key={id} className={ROW}>
-            <span className="text-text-2">Orientation</span>
+            <span className="text-text">Orientation</span>
             <Segmented label="Orientation" options={ORIENTATIONS} value={array.orientation} onChange={(value) => set("orientation", value)} />
           </div>
         );
       case "modules_in_tilt":
         return <Stepper key={id} label="Modules in tilt" value={array.modules_in_tilt} range={ARRAY_RANGES.modules_in_tilt} onCommit={(value) => set("modules_in_tilt", value)} />;
       case "clearance_m":
-        return <NumberField key={id} label="Lower-edge clearance" value={array.clearance_m} unit="m" range={ARRAY_RANGES.clearance_m} onCommit={(value) => set("clearance_m", value)} />;
+        return <NumberField key={id} label="Clearance under the lower edge" value={array.clearance_m} unit="m" range={ARRAY_RANGES.clearance_m} onCommit={(value) => set("clearance_m", value)} />;
       case "ew_ridge_gap_m":
         return <NumberField key={id} label="Ridge gap" value={array.ew_ridge_gap_m} unit="m" range={ARRAY_RANGES.ew_ridge_gap_m} onCommit={(value) => set("ew_ridge_gap_m", value)} />;
     }
@@ -65,7 +65,7 @@ export function ArrayMounting({ array, roof, onChange }: Props) {
     <>
       {sloped ? <ReadOut label="Tilt" value={sloped.value} line={sloped.line} /> : null}
       {mountingOf(roof.roof_type).map((id) => (
-        <WithSetBy key={id} setBy={setBy[id] ?? DEFAULT} onReset={() => set(id, ARRAY_DEFAULTS[id])}>
+        <WithSetBy key={id} setBy={setBy[id] ?? DEFAULT} words={mountingHintOf(id, setBy[id] ?? DEFAULT)} onReset={() => set(id, ARRAY_DEFAULTS[id])}>
           {field(id)}
         </WithSetBy>
       ))}

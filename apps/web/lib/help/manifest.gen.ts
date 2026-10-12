@@ -285,7 +285,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     load: () => import("../../content/help/studio/section/shade-map.mdx"),
   },
   "studio.section.shading-over-the-year": {
-    title: "Shading over the year",
+    title: "Shade over the year",
     summary: "What shading costs over a year of the weather, as near, electrical and far losses, and the roof area kept clear.",
     kind: "section",
     related: ["studio.section.shade-map","app.section.obstacles"],

@@ -4,18 +4,22 @@ import { shown } from "../../components/ui/number-entry";
 import type { Coefficients, Module } from "../api";
 import { makerOf } from "../equipment/makers";
 
-export type ModuleCard = { title: string; maker: string; size: string; facts: string; coefficients: string; file: string };
+export type ModuleCard = { title: string; maker: string; details: { name: string; value: string }[] };
 
+/**
+ * The module as a buyer reads it (V2 · 7): the model, the maker as people know it with the power and the size, and behind
+ * Details the electrical figures in plain names. The file's name, the diodes and the other coefficients are not on the card.
+ */
 export function moduleCardOf(module: Module, coefficients: Coefficients): ModuleCard {
-  const size = `${shown(module.length_m, 3)} × ${shown(module.width_m, 3)} m`;
-  const facts = [`Voc ${shown(module.voc, 2)} V`, `Isc ${shown(module.isc, 2)} A`, `${module.n_diodes} diodes`, ...(module.half_cell ? ["twin half-cell"] : [])];
   return {
     title: module.model,
-    maker: `${makerOf(module.manufacturer)} · ${shown(module.pnom_w, 0)} Wp`,
-    size: module.is_bifacial ? `${size} · bifacial ${shown(module.bifaciality, 2)}` : size,
-    facts: facts.join(" · "),
-    coefficients: `Coefficients (${coefficients.source}): Voc ${shown(coefficients.mu_voc_pct, 3)}, Vmp ${shown(coefficients.mu_vmp_pct, 3)}, Pmpp ${shown(coefficients.mu_pmpp_pct, 3)} %/°C`,
-    file: module.source,
+    maker: `${makerOf(module.manufacturer)} · ${shown(module.pnom_w, 0)} Wp · ${shown(module.length_m, 2)} × ${shown(module.width_m, 2)} m`,
+    details: [
+      { name: "Open-circuit voltage (Voc)", value: `${shown(module.voc, 2)} V` },
+      { name: "Short-circuit current (Isc)", value: `${shown(module.isc, 2)} A` },
+      ...(module.is_bifacial ? [{ name: "Bifacial, rear gain", value: shown(module.bifaciality, 2) }] : []),
+      { name: "Voc coefficient", value: `${shown(coefficients.mu_voc_pct, 3)} %/°C` },
+    ],
   };
 }
 

@@ -3,14 +3,14 @@
 import { useState } from "react";
 import { useProject, useResults, useStores } from "@/components/shell/stores";
 import type { ModuleResponse } from "@/lib/api";
-import { mountingFactsOf, mountingSetByOf, spacingFactsOf, spacingOf, spacingSetByOf, windowFactsOf, windowSetByOf } from "@/lib/studio/array-fields";
+import { mountingFactsOf, mountingSetByOf, spacingFactsOf, spacingSetByOf, windowSetByOf } from "@/lib/studio/array-fields";
 import { moduleShownOf, type ReplacedModule } from "@/lib/studio/array-view";
 import { moduleFactsOf } from "@/lib/studio/module-card";
 import { fileSetByOf, sectionSetByOf, wordOf, type SetBy } from "@/lib/studio/set-by";
 import { editOf, openedAtOf, projectOf } from "@/lib/stores/project-store";
 import { designEditOf, designOf, layoutOf } from "@/lib/stores/results-store";
 import { ArrayMounting, type ArrayChange } from "./ArrayMounting";
-import { ArraySpacing, ShadeFreeWindow } from "./ArraySpacing";
+import { ArraySpacing } from "./ArraySpacing";
 import { ModuleCard } from "./ModuleCard";
 import { ModulePicker } from "./ModulePicker";
 import { SummaryRow } from "@/components/shell/SummaryRow";
@@ -54,8 +54,7 @@ export function ArrayInspector() {
   }
 
   const mountingBy = project ? sectionSetByOf(Object.values(mountingSetByOf(project.array, project.roof.roof_type))) : null;
-  const spacingBy = project ? sectionSetByOf(Object.values(spacingSetByOf(project.array, project.roof.roof_type))) : null;
-  const windowBy = project ? sectionSetByOf(Object.values(windowSetByOf(project.array))) : null;
+  const spacingBy = project ? sectionSetByOf([...Object.values(spacingSetByOf(project.array, project.roof.roof_type)), ...Object.values(windowSetByOf(project.array))]) : null;
   const said = (by: SetBy | null) => (by === null ? null : wordOf(by));
 
   return (
@@ -74,13 +73,8 @@ export function ArrayInspector() {
           <SummaryRow id="array.mounting" title="Mounting" help="studio.section.mounting" facts={mountingFactsOf(project.array, project.roof)} setBy={said(mountingBy)}>
             <ArrayMounting array={project.array} roof={project.roof} onChange={changeArray} />
           </SummaryRow>
-          {spacingOf(project.roof.roof_type).length > 0 ? (
-            <SummaryRow id="array.spacing" title="Spacing" help="studio.section.spacing" facts={spacingFactsOf(project.array, layout, project.roof.roof_type)} setBy={said(spacingBy)}>
-              <ArraySpacing array={project.array} roofType={project.roof.roof_type} layout={layout} onChange={changeArray} />
-            </SummaryRow>
-          ) : null}
-          <SummaryRow id="array.window" title="Shade-free window" help="studio.section.shade-free-window" facts={windowFactsOf(project.array)} setBy={said(windowBy)}>
-            <ShadeFreeWindow array={project.array} onChange={changeArray} />
+          <SummaryRow id="array.spacing" title="Spacing" help="studio.section.spacing" facts={spacingFactsOf(project.array, layout, project.roof.roof_type)} setBy={said(spacingBy)}>
+            <ArraySpacing array={project.array} roof={project.roof} layout={layout} onChange={changeArray} />
           </SummaryRow>
         </>
       ) : null}
