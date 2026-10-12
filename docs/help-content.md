@@ -59,21 +59,37 @@ These fields and no others:
 
 | Field | Rule |
 |---|---|
-| `title` | The heading as it reads on screen. 80 characters at most. |
-| `summary` | One or two sentences, 140 characters at most. It is the tooltip on the disc and the lead of the sheet. |
+| `title` | The heading as it reads on screen. 80 characters at most. V2's titles are board 11's (`tools/help/board-topics.ts`, D111): the gate holds every topic to its entry there; a new topic adds its entry. |
+| `summary` | The thing's job for the user, under 20 words (`plan/v2/voice.md` §9), 140 characters at most: "Choose how the modules sit: rows facing south, rows facing east and west, or flush on a slope." Not a noun phrase that names the thing. It is the tooltip on the disc and the lead of the sheet. |
 | `kind` | The kind in the key. |
 | `values` | Only for a section where one option is chosen. List every option the code offers, keyed by the id the code uses, with what each means (140 characters at most). The labels come from the code, never from here. |
-| `related` | Keys of other topics, listed under Related at the foot of the sheet. |
+| `related` | Keys of other topics, two or three: where the user goes next. Listed under Related at the foot of the sheet, by their titles. |
 | `aliases` | Old keys that still lead here. |
-| `docs` | The place in the Rooftop docs that tells more, shown as "In the docs" at the foot of the sheet (D91): `page`, the page's address (`sun`, `strings`, …), and `section`, one of its `##` headings as written. Required; the gate refuses a page or a section the docs do not have (`apps/web/lib/docs/docs.ts` lists them: a page or heading renamed in the docs is renamed there). |
+| `docs` | The place in the Rooftop docs that tells more, shown last under Related as "<section>, in the docs" (D91, V2 · 11): `page`, the page's address (`sun`, `strings`, …), and `section`, one of its `##` headings as written. Required; the gate refuses a page or a section the docs do not have (`apps/web/lib/docs/docs.ts` lists them: a page or heading renamed in the docs is renamed there). |
 
 A summary or meaning that contains `: ` must be quoted, or YAML cannot read it. The generator names the file
 when this happens.
 
 ### The body
 
+The answer first (V2 · 11, `plan/v2/voice.md` §9), in the order a new user asks:
+
+1. One lead sentence, if it helps: what the section is for, in plain words.
+2. `## What to set`: what to put here, the usual values, what to measure. A section where the user picks among the app's
+   results begins `## Choosing one` (Options); a read-out the user does not set begins `## Reading it` (the shade map).
+3. `## What it changes`: what the app does with it.
+4. `## When to change it`: the cases that call for another value. The edge cases last.
+
+The gate refuses another first heading (`answerNotFirst` in `tools/help/checks.ts`), a summary of 20 words or more
+(`longSummaries`), and a never-word, an old name of board 12 or a "(s)" anywhere in a topic (`voiceFindings`, from
+`apps/web/lib/words/voice-scan.ts`). A how-to is its numbered steps (below).
+
+- The field's own hint carries the one-line answer, so most users never open the sheet: the topic's `What to set` and the
+  hint say the same. A hint changed is a topic read again (`docs/help-upkeep.md`).
+- Never "the engine": the app is the subject when the app acts. No "you may", "you can", "note that". A term is defined
+  where it first appears, in plain words. Imperatives for steps, numbered.
 - Use `##` headings; the sheet draws them one size down. Keep it short: two to four headings.
-- Write the user's own on-screen words in code spans: `` `Modules in series` ``, `` `Build this roof` ``.
+- Write the user's own on-screen words in code spans, as the screen says them today: `` `Walkway every` ``, `` `Build this roof` ``.
 - **Never type a number with its unit** (`1.5 m`, `600 V`, `30°`). Values change in the code and the text
   would then be wrong. Say it in words ("the parapet's height"), or quote the on-screen words in a code span.
   The gate refuses a typed number.
@@ -112,7 +128,9 @@ mounted by the shell and by Find. A heading that rightly has no disc is named in
 
 ## A how-to
 
-A tool, a gesture, anything done in steps is written as a how-to (D81; `components.md`, "How-to steps and pictures"):
+A tool, a gesture, anything done in steps is written as a how-to (D81; `components.md`, "How-to steps and pictures"). It is
+reached from the ? of the section it belongs to (V2 · 11; the tips card and Show me how are gone): that section's topic
+links it with `<HelpLink>`, and the how-to lists the section's topic under `related`. One lead sentence, then the steps:
 
 ```mdx
 <Steps>
@@ -141,17 +159,17 @@ A how-to's pictures (D81) are taken from the app by a script, never drawn, never
 are taken again and the change is seen in the pull request.
 
 - **What each picture shows** is written in `tools/help/pictures.ts`, in `HOW_TOS`: the how-to's folder (`find/corners`),
-  the window it is taken in, how it begins (`edit`: the demo roof opened by Edit; `place`: the demo's place searched with
-  nothing drawn; `fresh`: Find opened with nothing found, its first step), steps of `zoomIn` for something small, what is
-  kept (the roof with a margin, a part of a size round the map's middle or round a place in metres from it, or a part of a
-  size at the top left: the search and what floats under it; a picture may keep a dialog, or a region of the page by its
-  name, such as a section of Find's panel), and per picture the acts of the hand after the picture before it:
+  the window it is taken in, how it begins (`edit`: the demo opened in the Studio, then its roof on Find at
+  `/find?edit=roof`, reached in the page since the design is not kept across a reload; `place`: the demo's place searched
+  with nothing drawn), steps of `zoomIn` for something small, what is kept (the roof with a margin, a part of a size round
+  a spot of the roof, or a part of a size round the map's middle or round a place in metres from it), and per picture,
+  named for the step it shows (a step without a picture is skipped), the acts of the hand after the picture before it:
   `tool` (a tool chosen), `corner` (a press on the map), `click` (inside the roof), `drag` (from a spot of the roof),
   `draw` (from one place of the map to another), `turn` (a handle, by its name, round the roof's middle), `found` (Detect
-  building pressed until a footprint is proposed), `press` (a button, by its name), `search` (words searched, until the
-  places found are listed; the geocoder answers from the tests' fixture). A spot is a fraction of the roof's
-  box; a place is metres east and north of the map's middle, turned into pixels with the scale bar. A drag, a draw or a
-  turn that is `held` is caught before the button is let go.
+  building pressed until a footprint is proposed), `press` (a button, by its name), `fill` (a field, by its label, given
+  words, then left), `key` (a key pressed). A spot is a fraction of the roof's box; a place is metres east and north of
+  the map's middle, turned into pixels with the scale bar. A drag, a draw or a turn that is `held` is caught before the
+  button is let go.
 - **Take them:** `bun help:pictures` (every how-to) or `bun help:pictures -g <folder>` (one). It runs Playwright on the test
   stack (`e2e/help-pictures`, its README says what each file does) and writes `apps/web/public/help/<folder>/<n>.jpg`, the
   number being the step's.
