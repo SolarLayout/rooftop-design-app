@@ -78,10 +78,16 @@ type Props<Read> = {
 type Reading = { kind: "idle" } | { kind: "reading"; file: string; isOwn: boolean } | { kind: "refused"; reason: string };
 const IDLE: Reading = { kind: "idle" };
 
-/** Why a file was not loaded: the words of the engine, or what the browser could not do. */
+/** The file of one's own by its name in the vocabulary (plan/v2/voice.md §6): "module file (PAN)", "inverter file (OND)". */
+const ownFileWordsOf = (words: PickerWords) => `${words.thing} file (${words.fileKind})`;
+
+/** The thing with its capital, as a title starts: "Module". */
+const thingOf = (words: PickerWords) => words.thing.charAt(0).toUpperCase() + words.thing.slice(1);
+
+/** Why a file was not loaded: the API's words, or what the browser could not do. */
 function reasonOf(error: unknown): string {
   if (error instanceof ApiError) return error.message;
-  return error instanceof Error ? error.message : `The file could not be read (${String(error)}). Choose another.`;
+  return error instanceof Error ? error.message : `The file could not be read: ${String(error)}. Choose another.`;
 }
 
 function Tag({ look, children }: { look: "here" | "note"; children: ReactNode }) {
@@ -200,7 +206,7 @@ export function EquipmentPicker<Read>(props: Props<Read>) {
 
   const actions: DialogAction[] = [
     { label: "Cancel", kind: "quiet", onPress: close, shown: "panel" },
-    { label: `Choose ${words.fileKind === "OND" ? "an" : "a"} ${words.fileKind} file of your own`, kind: "secondary", onPress: () => input.current?.click(), shown: "phone" },
+    { label: `Choose your own ${ownFileWordsOf(words)}`, kind: "secondary", onPress: () => input.current?.click(), shown: "phone" },
     { label: reading.kind === "reading" && !reading.isOwn ? "Reading" : words.use, kind: "primary", onPress: () => take(), waits: !canUse, busy: reading.kind === "reading" && !reading.isOwn },
   ];
 
@@ -266,10 +272,8 @@ export function EquipmentPicker<Read>(props: Props<Read>) {
           <p role="status" className="flex items-start gap-2.5 rounded-row border border-note-line bg-note-surface px-3.5 py-3 type-body-touch desktop:type-body text-text-2">
             <StatusMark kind="note" label="Note" wordsShown={false} size={18} />
             <span className="flex flex-col gap-0.5">
-              <span className="type-body-touch desktop:type-body font-medium text-text">This {words.thing} was not loaded</span>
-              <span>
-                {/[.!?]$/.test(reading.reason) ? reading.reason : `${reading.reason}.`} The {words.thing} of before is kept.
-              </span>
+              <span className="type-body-touch desktop:type-body font-medium text-text">{thingOf(words)} not changed</span>
+              <span>{/[.!?]$/.test(reading.reason) ? reading.reason : `${reading.reason}.`}</span>
             </span>
           </p>
         ) : null}
@@ -353,7 +357,7 @@ function Row({ id, row, columns, isChosen, isCurrent, onChoose, onUse }: RowProp
         <span className="truncate type-body-touch desktop:type-body text-text-2 tablet:hidden">{row.phone}</span>
         {row.mark ? (
           <span className="flex min-w-0 items-center gap-1.5 type-body-touch desktop:type-body text-text-2">
-            <StatusMark kind="note" label="Rated under the voltage set" wordsShown={false} size={14} />
+            <StatusMark kind="note" label="Rated under the system voltage" wordsShown={false} size={14} />
             <span className="truncate">{row.mark}</span>
           </span>
         ) : null}
@@ -391,10 +395,8 @@ function Nothing<Read>({ words, search, onClearSearch, onClearFilters }: Props<R
   const isSearched = search.trim() !== "";
   return (
     <div className="flex h-full flex-col items-center justify-center gap-3 px-8 py-6 text-center">
-      <span>{isSearched ? `No ${words.thing} in the app matches “${search.trim()}”.` : `No ${words.thing} in the app within these filters.`}</span>
-      <span className="type-body-touch desktop:type-body text-text-2">
-        The search reads the maker, the model and the file’s name. {words.fileKind === "OND" ? "An" : "A"} {words.fileKind} file of your own is taken below.
-      </span>
+      <span>{isSearched ? `No ${words.thing} in the library matches “${search.trim()}”.` : `No ${words.thing} in the library fits these filters.`}</span>
+      <span className="type-body-touch desktop:type-body text-text-2">Or choose your own {ownFileWordsOf(words)} below.</span>
       <Button size="s" onClick={isSearched ? onClearSearch : onClearFilters}>
         {isSearched ? "Clear the search" : "Clear the filters"}
       </Button>
@@ -450,7 +452,7 @@ function OwnFile({ words, reading, onFile, onChoose }: OwnFileProps) {
         ) : isOver ? (
           "Let go to load the file"
         ) : (
-          `Or drop ${words.fileKind === "OND" ? "an" : "a"} ${words.fileKind} file of your own here`
+          `Or drop your own ${ownFileWordsOf(words)} here`
         )}
       </span>
       <Button size="s" onClick={onChoose} disabled={reading.kind === "reading"}>

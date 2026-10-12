@@ -24,7 +24,7 @@ describe("a file of the library, as the API takes it", () => {
 
   test("a file that is not there says so", async () => {
     const missing = libraryFileOf("inverters", "Gone.OND", async () => new Response("", { status: 404 }));
-    await expect(missing).rejects.toThrow("Gone.OND could not be loaded from the app's library (HTTP 404). Try again.");
+    await expect(missing).rejects.toThrow("Gone.OND did not load from the library. Try again. Details: HTTP 404");
   });
 });
 
@@ -42,7 +42,7 @@ describe("a file of the user's, as the API takes it", () => {
     expect((await ownFileOf(fileOf("Edge.PAN", new Uint8Array(MAX_EQUIPMENT_BYTES)))).name).toBe("Edge.PAN");
     let read = false;
     const big = { name: "Huge.OND", size: MAX_EQUIPMENT_BYTES + 1, arrayBuffer: async () => ((read = true), new ArrayBuffer(0)) };
-    await expect(ownFileOf(big)).rejects.toThrow("Huge.OND is over 256 KB, larger than any PAN or OND file. Choose another.");
+    await expect(ownFileOf(big)).rejects.toThrow("Huge.OND is over 256 KB, larger than any module or inverter file. Choose another.");
     expect(read).toBe(false);
   });
 });

@@ -52,7 +52,7 @@ describe("an inverter's row", () => {
 
 describe("an inverter rated under the system voltage set (the boards \"System voltage · Set by the user's country\")", () => {
   test("says so under its maker", () => {
-    expect(ratedUnderOf(800, 1000)).toBe("Up to 800 V: strings sized under the 1000 V set");
+    expect(ratedUnderOf(800, 1000)).toBe("Up to 800 V: strings sized to 800 V, not 1000 V");
   });
 
   test("says nothing when it takes the voltage, when its file gives no rating, or before a voltage", () => {
