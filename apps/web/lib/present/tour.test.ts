@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { DayHours } from "../flow/sun-day";
-import { LOOP, REDUCED_SCRIPT, SCENES, SCRIPT, stateAt } from "./tour";
+import { LOOP, momentOfScene, REDUCED_SCRIPT, sceneAfter, sceneBefore, SCENES, SCRIPT, stateAt } from "./tour";
 
 // The tour's script (plan/phase-10-plan.md, step 16, decision 9): six scenes in order, 40 s in all, each setting
 // the camera, the reveal, the hour, the colouring and the energy's count at a moment; under reduced motion the
@@ -24,14 +24,14 @@ describe("the scenes", () => {
     expect(LOOP).toBe(40_000);
   });
 
-  test("each names itself in the words of the board", () => {
-    expect(SCENES.map((scene) => scene.words)).toEqual([
-      "The satellite from above tilts into 3D",
-      "The building and the obstacles rise",
-      "The modules fill row by row",
-      "The day plays with its shadows",
-      "The strings light up by MPPT",
-      "The energy counts up",
+  test("each has its name, and a noun for the line at the foot (V2 · 13, V2-40)", () => {
+    expect(SCENES.map((scene) => [scene.name, scene.words])).toEqual([
+      ["The place", "The roof from above"],
+      ["The roof", "The roof in 3D"],
+      ["The array", "The array"],
+      ["The sun", "Shadows over the day"],
+      ["The strings", "The strings"],
+      ["The energy", "Energy over the year"],
     ]);
   });
 });
@@ -43,7 +43,7 @@ describe("the state at a moment", () => {
     expect(state.scene).toBe("satellite");
     expect(state.index).toBe(0);
     expect(state.into).toBe(0);
-    expect(state.words).toBe("The satellite from above tilts into 3D");
+    expect(state.words).toBe("The roof from above");
     expect(state.camera).toEqual({ from: "plan", to: "3d", over: 4000 });
     expect(state.reveal).toEqual(NOTHING_REVEALED);
     expect(state.hour).toBeNull();
@@ -139,14 +139,42 @@ describe("under reduced motion", () => {
     expect(stateAt(8000, PUNE_DEC, REDUCED_SCRIPT).reveal).toEqual(EVERYTHING_REVEALED);
   });
 
-  test("the day goes in twelve cuts, one a second", () => {
-    expect(stateAt(14000, PUNE_DEC, REDUCED_SCRIPT).hour).toBe(6.75);
-    expect(stateAt(14999, PUNE_DEC, REDUCED_SCRIPT).hour).toBe(6.75);
-    expect(stateAt(15000, PUNE_DEC, REDUCED_SCRIPT).hour).toBeCloseTo(6.75 + 10.5 / 12, 6);
-    expect(stateAt(25999, PUNE_DEC, REDUCED_SCRIPT).hour).toBeCloseTo(6.75 + (11 * 10.5) / 12, 6);
+  test("the day is a still: the hour held as the Studio has it, the sun's arc drawn (V2-103)", () => {
+    expect([14000, 20000, 25999].map((t) => stateAt(t, PUNE_DEC, REDUCED_SCRIPT).hour)).toEqual([null, null, null]);
+    expect(stateAt(20000, PUNE_DEC, REDUCED_SCRIPT).sunPath).toBe(true);
+  });
+
+  test("no scene moves the camera: each is a cut", () => {
+    expect(REDUCED_SCRIPT.map((scene) => scene.camera.over)).toEqual([0, 0, 0, 0, 0, 0]);
   });
 
   test("the energy stands at its number from the start of its scene", () => {
     expect(stateAt(30000, PUNE_DEC, REDUCED_SCRIPT).figures).toBe(1);
+  });
+});
+
+describe("going between scenes (V2 · 13)", () => {
+  test("the moment a scene begins, in the loop under way", () => {
+    expect(momentOfScene(0, 0)).toBe(0);
+    expect(momentOfScene(3, 5000)).toBe(14000);
+    expect(momentOfScene(5, LOOP + 1000)).toBe(LOOP + 30000);
+  });
+
+  test("the scene after: the next from its beginning; after the last, the first of the next loop", () => {
+    expect(sceneAfter(5000)).toBe(8000);
+    expect(sceneAfter(14000)).toBe(26000);
+    expect(sceneAfter(35000)).toBe(LOOP);
+    expect(stateAt(sceneAfter(35000), PUNE_DEC).loop).toBe(1);
+  });
+
+  test("the scene before: the one before from its beginning; before the first, the last", () => {
+    expect(sceneBefore(9000)).toBe(4000);
+    expect(sceneBefore(4500)).toBe(0);
+    expect(sceneBefore(LOOP + 1000)).toBe(30000);
+    expect(sceneBefore(1000)).toBe(30000);
+  });
+
+  test("under reduced motion the scenes begin where they do in the script", () => {
+    expect(sceneAfter(5000, REDUCED_SCRIPT)).toBe(8000);
   });
 });

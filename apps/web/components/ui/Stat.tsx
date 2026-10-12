@@ -5,7 +5,7 @@ import { classNames } from "./class-names";
  * Cell: one of the vitals. Lead: the first of them, the energy. Tile: a value inside a card. Hero: the energy on
  * Performance, at the display size of 76. Figure: a KPI tile of Performance, a card of its own.
  */
-export type StatLook = "cell" | "lead" | "tile" | "hero" | "figure" | "scene" | "scene-small";
+export type StatLook = "cell" | "lead" | "tile" | "hero" | "figure";
 
 const FRAME: Record<StatLook, string> = {
   cell: "gap-1",
@@ -13,8 +13,6 @@ const FRAME: Record<StatLook, string> = {
   tile: "gap-0.5 rounded-row bg-surface-2 px-3.5 py-2.5",
   hero: "gap-0.5",
   figure: "gap-1 tablet:gap-1.5",
-  scene: "gap-0.5",
-  "scene-small": "gap-0.5",
 };
 
 const LABEL: Record<StatLook, string> = {
@@ -23,8 +21,6 @@ const LABEL: Record<StatLook, string> = {
   tile: "type-body-touch desktop:type-body",
   hero: "type-body-touch desktop:type-body",
   figure: "type-body-touch desktop:type-body",
-  scene: "type-body-touch desktop:type-body",
-  "scene-small": "type-body-touch desktop:type-body",
 };
 
 const VALUE: Record<StatLook, string> = {
@@ -33,8 +29,6 @@ const VALUE: Record<StatLook, string> = {
   tile: "type-mono-touch desktop:type-mono",
   hero: "type-display-touch desktop:type-display",
   figure: "type-figure-touch desktop:type-figure",
-  scene: "type-figure-touch desktop:type-figure",
-  "scene-small": "type-figure-touch desktop:type-figure",
 };
 
 const UNIT: Record<StatLook, string> = {
@@ -43,8 +37,6 @@ const UNIT: Record<StatLook, string> = {
   tile: "type-body-touch desktop:type-body",
   hero: "type-heading",
   figure: "type-body-touch desktop:type-body",
-  scene: "type-body-touch desktop:type-section",
-  "scene-small": "type-body-touch desktop:type-body",
 };
 
 type Props = Omit<ComponentProps<"div">, "children"> & {
@@ -68,7 +60,7 @@ type Props = Omit<ComponentProps<"div">, "children"> & {
   look?: StatLook;
 };
 
-const BESIDE: Record<StatLook, string> = { cell: "gap-1.5", lead: "gap-2.5", tile: "gap-1.5", hero: "gap-3.5", figure: "gap-1.5", scene: "gap-2", "scene-small": "gap-1.5" };
+const BESIDE: Record<StatLook, string> = { cell: "gap-1.5", lead: "gap-2.5", tile: "gap-1.5", hero: "gap-3.5", figure: "gap-1.5" };
 
 /** One label with its value. It belongs into `Stats`. */
 export function Stat({ label, value, holds, unit, more, mark, dimmed = false, beside, look = "cell", className, ...rest }: Props) {
@@ -98,7 +90,7 @@ export function Stat({ label, value, holds, unit, more, mark, dimmed = false, be
  * A value in the width of the one it holds the place of: the held one in the flow, unseen, gives the width; the value
  * stands over it at its right. (An inline grid of the two took no width inside the stat's flex boxes.)
  */
-function HeldValue({ value, holds }: { value: string; holds: string }) {
+export function HeldValue({ value, holds }: { value: string; holds: string }) {
   return (
     <span className="relative inline-block tabular-nums">
       <span aria-hidden className="invisible">

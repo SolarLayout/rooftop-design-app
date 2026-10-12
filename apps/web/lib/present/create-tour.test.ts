@@ -36,7 +36,7 @@ describe("the tour", () => {
     expect(cameraMoveOf(view.getState())).toBe(4000);
     expect(cameraRequestOf(view.getState())).toBe(requests + 2);
     expect(hourShown()).toBe(10.5);
-    expect(tour.view.getState()).toEqual({ isRunning: true, scene: "satellite", words: "The satellite from above tilts into 3D", figures: 0, loop: 0, into: 0, share: 0, isReduced: false });
+    expect(tour.view.getState()).toEqual({ isRunning: true, isPaused: false, scene: "satellite", index: 0, words: "The roof from above", figures: 0, loop: 0, into: 0, share: 0, isReduced: false });
   });
 
   test("the scenes follow on the clock, a tick at a time; the camera is asked for once a scene, and only when it must change", () => {
@@ -147,5 +147,75 @@ describe("the tour", () => {
     expect(cameraOf(view.getState())).toBe("3d");
     expect(cameraMoveOf(view.getState())).toBe(0);
     expect(presentationOf(view.getState())?.reveal).toEqual({ building: 1, obstacles: 1, modules: 0 });
+  });
+
+  test("paused, it stands where it is, nothing waiting; played, it goes on from there", () => {
+    const { tour, view, pass, waiting } = touring();
+    tour.start();
+    pass(5000);
+
+    tour.pause();
+    pass(10000);
+
+    expect(tour.view.getState()).toMatchObject({ isPaused: true, scene: "rising", into: 1000 });
+    expect(presentationOf(view.getState())?.reveal).toEqual({ building: 0.5, obstacles: 0, modules: 0 });
+    expect(waiting()).toBe(0);
+
+    tour.play();
+    pass(3000);
+    expect(tour.view.getState()).toMatchObject({ isPaused: false, scene: "filling", into: 0 });
+  });
+
+  test("the scene after and before, each from its beginning; the first again tilts the camera from the plan", () => {
+    const { tour, view, pass } = touring();
+    tour.start();
+    pass(1000);
+
+    tour.after();
+    expect(tour.view.getState()).toMatchObject({ scene: "rising", index: 1, into: 0 });
+    tour.before();
+    expect(tour.view.getState()).toMatchObject({ scene: "satellite", into: 0 });
+    expect(cameraFromOf(view.getState())).toBe("plan");
+    expect(cameraMoveOf(view.getState())).toBe(4000);
+    pass(1000);
+    expect(tour.view.getState().into).toBe(1000);
+  });
+
+  test("going to a scene starts it from its beginning; paused, it stays paused there", () => {
+    const { tour, pass, hourShown } = touring();
+    tour.start();
+    tour.pause();
+
+    tour.goTo(3);
+    expect(tour.view.getState()).toMatchObject({ scene: "day", into: 0, isPaused: true });
+    expect(hourShown()).toBe(6.75);
+    pass(5000);
+    expect(tour.view.getState().into).toBe(0);
+
+    tour.goTo(5);
+    expect(tour.view.getState()).toMatchObject({ scene: "energy", figures: 0 });
+    expect(hourShown()).toBe(10.5);
+  });
+
+  test("after the last scene the loop goes on", () => {
+    const { tour } = touring();
+    tour.start();
+    tour.goTo(5);
+
+    tour.after();
+
+    expect(tour.view.getState()).toMatchObject({ scene: "satellite", loop: 1 });
+  });
+
+  test("before the start, the presenter's presses are nothing", () => {
+    const { tour, view } = touring();
+    const requests = cameraRequestOf(view.getState());
+
+    tour.pause();
+    tour.after();
+    tour.goTo(2);
+
+    expect(tour.view.getState().isRunning).toBe(false);
+    expect(cameraRequestOf(view.getState())).toBe(requests);
   });
 });
