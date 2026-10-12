@@ -312,7 +312,8 @@ def result_chip(energy: str = "617.8", note: int = 0, open_: bool = False, compa
             f'{icon(ICON["chevron-down"], 14, TEXT_2) if not compact else ""}</button>')
 
 
-def top_bar(states: dict, current: str, width: int, size: str = "desktop", result="617.8", note: int = 0, open_: bool = False) -> str:
+def top_bar(states: dict, current: str, width: int, size: str = "desktop", result="617.8", note: int = 0, open_: bool = False,
+            name: str = "Pune demo roof") -> str:
     """V2's top bar: the logo (Home), the design's name with its saved mark, the steps; Docs at the right on desktop."""
     h = {"desktop": 56, "tablet": 60, "phone": 56}[size]
     touch = size != "desktop"
@@ -322,7 +323,7 @@ def top_bar(states: dict, current: str, width: int, size: str = "desktop", resul
              + '</a>')
     divider = f'<span style="width: 1px; height: 24px; background: {LINE}; flex: none"></span>'
     left = (f'<div style="display: flex; align-items: center; gap: 12px; min-width: 0">{brand}{divider}'
-            f'{project_name("Pune demo roof", touch, {"desktop": "220px", "tablet": "150px", "phone": "128px"}[size])}</div>')
+            f'{project_name(name, touch, {"desktop": "220px", "tablet": "150px", "phone": "128px"}[size])}</div>')
     mid = progression(states, current, False, size == "tablet") if size != "phone" else ""
     docs = (button("Docs", "quiet", "standard", False, icon(STEP_ICON["book"], 16, TEXT_2)) if size == "desktop" else "")
     if size == "desktop":
@@ -422,3 +423,81 @@ def tooltip(words: str) -> str:
     return (f'<span role="tooltip" style="display: inline-block; padding: 8px 12px; background: {SURFACE_2}; border: 1px solid {LINE_STRONG}; '
             f'border-radius: {RADIUS["control"]}px; box-shadow: 0 1px 2px rgba(0,0,0,.45), 0 8px 20px rgba(0,0,0,.35); '
             f'{style("body", False)}; max-width: 280px">{words}</span>')
+
+
+# ---- The map of Find: the approved boards' imagery illustration, in roof metres, with V2's overlays ----
+
+def _imagery() -> tuple:
+    import re
+    s = (HERE / "Locate.dc.html").read_text(encoding="utf-8")
+    svg = re.search(r'<svg viewBox="0 0 1440 900"[\s\S]*?</svg>', s).group(0)
+    defs = re.search(r'<defs>[\s\S]*?</defs>', svg).group(0)
+    ground = re.search(r'<g transform="matrix\(6\.2 0 0 -6\.2 251 574\)" filter="url\(#soft\)">([\s\S]*?)</g>\n<rect width="1440"', svg).group(1)
+    return defs, ground
+
+
+class Map:
+    """A map of w x h on which roof metres (x east, y north) land at screen points: `at` is where (cx, cy) falls."""
+
+    def __init__(self, w: int, h: int, scale: float, cx: float = 45, cy: float = 20, at: tuple = None):
+        self.w, self.h, self.s = w, h, scale
+        ax, ay = at if at else (w / 2, h / 2)
+        self.ox, self.oy = ax - scale * cx, ay + scale * cy
+        self.parts = []
+
+    def xy(self, x: float, y: float) -> tuple:
+        return self.ox + self.s * x, self.oy - self.s * y
+
+    def outline(self, corners: list, closed: bool, cursor: tuple = None) -> "Map":
+        pts = [self.xy(*c) for c in corners]
+        d = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
+        if closed:
+            self.parts.append(f'<polygon points="{d}" fill="rgba(255,176,32,.09)" stroke="{ACCENT}" stroke-width="2"></polygon>')
+        else:
+            self.parts.append(f'<polyline points="{d}" fill="none" stroke="{ACCENT}" stroke-width="2"></polyline>')
+            if cursor:
+                cx, cy = self.xy(*cursor)
+                lx, ly = pts[-1]
+                self.parts.append(f'<line x1="{lx:.1f}" y1="{ly:.1f}" x2="{cx:.1f}" y2="{cy:.1f}" stroke="{ACCENT}" stroke-width="2" stroke-dasharray="6 5"></line>')
+                self.parts.append(f'<g transform="translate({cx:.1f} {cy:.1f})"><path d="M-10 0H10M0-10V10" stroke="#FFFFFF" stroke-width="1.5"></path></g>')
+        for i, (x, y) in enumerate(pts):
+            r = 7 if (not closed and i == 0) else 6
+            self.parts.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{r}" fill="#FFFFFF" stroke="{ACCENT}" stroke-width="3"></circle>')
+        return self
+
+    def length(self, a: tuple, b: tuple, words: str, off: tuple = (0, 0)) -> "Map":
+        (x1, y1), (x2, y2) = self.xy(*a), self.xy(*b)
+        x, y = (x1 + x2) / 2 + off[0], (y1 + y2) / 2 + off[1]
+        self.parts.append(f'<g transform="translate({x:.1f} {y:.1f})"><rect x="-30" y="-12" width="60" height="24" rx="6" fill="{SURFACE_1}" '
+                          f'stroke="{LINE_STRONG}"></rect><text x="0" y="4.5" text-anchor="middle" font-family="Geist, sans-serif" '
+                          f'font-size="13" font-weight="500" fill="{TEXT}">{words}</text></g>')
+        return self
+
+    def box(self, cx: float, cy: float, w: float, h: float, selected: bool = False) -> "Map":
+        x, y = self.xy(cx - w / 2, cy + h / 2)
+        col = ACCENT if selected else "#FFFFFF"
+        self.parts.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{w * self.s:.1f}" height="{h * self.s:.1f}" fill="rgba(11,14,19,.55)" '
+                          f'stroke="{col}" stroke-width="2"></rect>')
+        return self
+
+    def tank(self, cx: float, cy: float, d: float) -> "Map":
+        x, y = self.xy(cx, cy)
+        self.parts.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{d / 2 * self.s:.1f}" fill="rgba(11,14,19,.55)" stroke="#FFFFFF" stroke-width="2"></circle>')
+        return self
+
+    def turn_handle(self, x: float, y: float) -> "Map":
+        sx, sy = self.xy(x, y)
+        self.parts.append(f'<line x1="{sx:.1f}" y1="{sy:.1f}" x2="{sx:.1f}" y2="{sy - 44:.1f}" stroke="#FFFFFF" stroke-width="1.5"></line>'
+                          f'<circle cx="{sx:.1f}" cy="{sy - 44:.1f}" r="8" fill="#FFFFFF" stroke="{ACCENT}" stroke-width="3"></circle>')
+        return self
+
+    def svg(self, dim: float = 0) -> str:
+        defs, ground = _imagery()
+        shade = f'<rect width="{self.w}" height="{self.h}" fill="#0B0E13" opacity="{dim}"></rect>' if dim else ""
+        return (f'<svg viewBox="0 0 {self.w} {self.h}" width="{self.w}" height="{self.h}" role="img" '
+                f'aria-label="Satellite view. Illustration standing in for live imagery." style="position: absolute; left: 0; top: 0">'
+                f'{defs}<g transform="matrix({self.s} 0 0 {-self.s} {self.ox:.1f} {self.oy:.1f})" filter="url(#soft)">{ground}</g>'
+                f'<rect width="{self.w}" height="{self.h}" filter="url(#grain)" opacity="0.8"></rect>{shade}{"".join(self.parts)}</svg>')
+
+
+ROOF = [(0, 0), (90, 0), (90, 40), (0, 40)]
