@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { Energy } from "../api";
-import { nearestYear, TOTAL_ROW, YEAR_COLUMNS, yearAxisOf, yearEndsOf, yearPointsOf, yearRowsOf, yearSaidOf, yearsLineOf, yearTicksOf, yearTooltipOf } from "./year-line";
+import { nearestYear, TOTAL_ROW, YEAR_COLUMNS, YEARS_CAPTION, yearAxisOf, yearEndsOf, yearPointsOf, yearRowsOf, yearSaidOf, yearsLineOf, yearTicksOf, yearTooltipOf } from "./year-line";
 import { A, DEGRADATION_0_7 } from "./test-fixtures";
 
 const energy = A.energy;
@@ -83,13 +83,17 @@ describe("the table of the years", () => {
     expect(rows[6]).toEqual({ key: TOTAL_ROW, year: "Total, 25 years", mwh: "14,554" });
   });
 
-  test("the columns: the year as the name of its row, MWh as a number", () => {
+  test("the columns: the year as the name of its row, the energy as a number, its head the thing and its unit", () => {
     const row = yearRowsOf(energy)[0]!;
 
     expect(YEAR_COLUMNS.map((column) => [column.head, column.kind])).toEqual([
       ["Year", "name"],
-      ["MWh", "number"],
+      ["Energy, MWh", "number"],
     ]);
     expect(YEAR_COLUMNS.map((column) => column.value(row))).toEqual(["Year 1", "617.8"]);
+  });
+
+  test("the table's caption names the years it holds, as figures (plan/v2/voice.md §7)", () => {
+    expect(YEARS_CAPTION).toBe("Years 1, 5, 10, 15, 20 and 25, and the total");
   });
 });

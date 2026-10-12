@@ -73,7 +73,7 @@ const FIELD_OF: Record<string, RangedId> = {
 const REAR_GAIN = "Bifacial rear gain";
 const TEMPERATURE = "Temperature";
 const UC_UNIT = "W/m²K";
-export const MONOFACIAL = "The module is monofacial: no rear gain.";
+export const MONOFACIAL = "The module is not bifacial: no rear gain.";
 /** On a sloped, flush roof the engine applies no rear gain: the rear faces the roof (#179, item 23). */
 export const FLUSH = "Flush modules lie on the roof: no rear gain.";
 
@@ -84,7 +84,7 @@ function lidWords(value: number | null, { energy, module }: RunOfTheChain): Pick
   const pan = module.lid_loss_pct;
   // Inside the field the unit follows, as for every field: "PAN 0.2" and "default 1.5" read "PAN 0.2 %", "default 1.5 %".
   if (value === null) return { detail: pan === null ? `default ${shown(energy.lid_pct, 1)}` : `PAN ${shown(pan, 1)}`, reset: null };
-  return pan === null ? { detail: null, reset: "Use the default" } : { detail: `PAN gives ${percent(pan)}`, reset: "Use the PAN's" };
+  return pan === null ? { detail: null, reset: "Use the default" } : { detail: `Module file gives ${percent(pan)}`, reset: "Use the module file's" };
 }
 
 /** Uc while the roof type's holds, said inside the field ("29 W/m²K", in text-3); entered, the roof type's said under the row. */
@@ -94,7 +94,7 @@ function ucOf(document: Project, { sizing }: RunOfTheChain): LossField {
     value === null
       ? { detail: sizing?.uc_from === "roof type" ? shown(sizing.uc, 0) : null, reset: null }
       : { detail: sizing ? `Roof type gives ${shown(sizing.uc_default, 0)} ${UC_UNIT}` : null, reset: "Use the roof type's" };
-  return { kind: "field", id: "uc", label: "Thermal Uc", unit: UC_UNIT, range: ASSUMPTION_RANGES.uc, value, ...words };
+  return { kind: "field", id: "uc", label: "Heat loss factor (Uc)", unit: UC_UNIT, range: ASSUMPTION_RANGES.uc, value, ...words };
 }
 
 const rearLossOf = (document: Project): LossField => ({
