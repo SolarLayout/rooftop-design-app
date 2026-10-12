@@ -3,7 +3,7 @@
 The single place that says where the project stands. Every session reads it first and updates it last.
 Keep it short and true. History belongs in git and in the phase files, not here.
 
-**Last updated:** 2026-10-11 (#179's rest, #200 to #205, and D93, #206: merged and deployed to staging and production at dc34cf4; before it #114: the strings' legend, one entry per colour, D92, #199; before it the map seen working from the cloud, resume 019). Before it, 2026-10-11 (Claude Code cloud sessions set up, #198). Before it, 2026-10-10 (the skill product-video reviewed, #197; the Sun lens video, #196; the launch video and the skill product-video, #195; #187 to #192 deployed; see the end of the paragraph below). Earlier, 2026-10-08, session 22: **Phase 16 built**, the system voltage set by the user's country (D87: 600 V
+**Last updated:** 2026-10-12 (V2 opened: the audit and the voice in `plan/v2/`). Before it, 2026-10-11 (#179's rest, #200 to #205, and D93, #206: merged and deployed to staging and production at dc34cf4; before it #114: the strings' legend, one entry per colour, D92, #199; before it the map seen working from the cloud, resume 019). Before it, 2026-10-11 (Claude Code cloud sessions set up, #198). Before it, 2026-10-10 (the skill product-video reviewed, #197; the Sun lens video, #196; the launch video and the skill product-video, #195; #187 to #192 deployed; see the end of the paragraph below). Earlier, 2026-10-08, session 22: **Phase 16 built**, the system voltage set by the user's country (D87: 600 V
 in the US and Canada, 1000 V elsewhere; the request's country, else the time zone, else India; D88: the equipment never
 moves the voltage, the app never raises it). #153 (who set it, engine and API), #154 (`/country`, `lib/country`, the store),
 #155 (the Strings lens and the picker to the boards), #156 (the help), #157 (the browser suites, changed by reading); then
@@ -95,8 +95,9 @@ referrers now hold `http://localhost:4710` and `http://127.0.0.1:4710` beside 47
 places, one picked opened Find at it with the imagery (findAddressCandidates and the World_Imagery tiles all 200). The screen pictures' baselines are darwin only, so their tests cannot pass on Linux.
 The owner (2026-10-11): the browser tests are set aside; they are broken and will be fixed later. Until then no browser
 group runs, here or in the cloud, and `bun check --skip=e2e` is the check.
-**Next:** a new task as the owner names it (the map from the cloud works: search, Find and its imagery on
-`localhost:4710`). Later, the browser tests fixed (#157's suites, #151's mobile fixes, the Strings lens pictures whose options
+**Next:** the owner reads `plan/v2/audit.md` and `plan/v2/voice.md` and agrees the order of work; then the first
+V2 screens are designed as boards (the first open of the Studio, Find's first step, the problem states) and approved
+before they are built. The map from the cloud works (search, Find and its imagery on `localhost:4710`). Later, the browser tests fixed (#157's suites, #151's mobile fixes, the Strings lens pictures whose options
 D and E #160 changed, the kit and shell failures above).
 
 ## Where we are
@@ -125,7 +126,12 @@ D and E #160 changed, the kit and shell failures above).
 
 ## In flight
 
-Nothing open. #114 done (2026-10-11): the boards "UI fixes · The strings' legend with many MPPT" drawn
+**V2** (opened 2026-10-12, `plan/v2/README.md`): the product made usable by a new user alone. Delivered the same day: the
+audit of the whole app at three sizes and of every user-facing string (`plan/v2/audit.md`, 103 issues in eleven categories,
+11 of them P0, the ten that matter most in order) and the voice (`plan/v2/voice.md`: five rules, instructions in the
+imperative and the active voice as the owner set out, problems as cause then remedy, one name per thing, a checklist for
+pull requests), with the strings' inventory as evidence. Nothing built yet; the audit's directions are proposals for
+boards. Before it: #114 done (2026-10-11): the boards "UI fixes · The strings' legend with many MPPT" drawn
 (`docs/design/mockups/build_ui_fixes_strings_legend.py`, its prototype a local branch of the cloud container, never merged),
 approved (D92), built and merged (#199); the three boards on the canvas (version 52). Then #179's rest, in six pull
 requests, each test-first with the help kept true: #200 (items 6, 7, 8: files too large refused in the app's words, the
