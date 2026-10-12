@@ -58,6 +58,8 @@ export type ViewState = {
   cameraFrom: CameraPreset;
   /** Milliseconds the camera takes to the preset asked for last; 0 for a cut, as the Studio's presets are (decision 10). */
   cameraMove: number;
+  /** The Strings step put the camera in the plan itself: leaving the step takes it back to 3D (V2 · 6). */
+  isPlanFromStrings: boolean;
   /** How many times north up was asked for: the camera turns on each request. */
   northRequest: number;
   sunTime: SunTime;
@@ -123,7 +125,7 @@ export type ViewStore = ReturnType<typeof createViewStore>;
 /** The time outside the Sun view (V2 · 3, D97): the design day's noon, still. The time belongs to the Sun view. */
 export const STILL: SunTime = { day: "design_day", hour: 12 };
 
-const AT_THE_START = { lens: "roof", camera: "3d", cameraRequest: 0, cameraFrom: "3d", cameraMove: 0, northRequest: 0, sunTime: STILL, isPlaying: false, onTheRoof: { sunPath: true, window: true, shadowOutlines: false }, sunTab: "shadows", selection: null, stringColouring: "mppt", tracedString: null, draft: null, toReview: [] as string[], dragging: null, presentation: null as Presentation | null, ground: "plain" as GroundChoice, isSunView: false, isPanelHidden: false } as const;
+const AT_THE_START = { lens: "roof", camera: "3d", cameraRequest: 0, cameraFrom: "3d", cameraMove: 0, isPlanFromStrings: false, northRequest: 0, sunTime: STILL, isPlaying: false, onTheRoof: { sunPath: true, window: true, shadowOutlines: false }, sunTab: "shadows", selection: null, stringColouring: "mppt", tracedString: null, draft: null, toReview: [] as string[], dragging: null, presentation: null as Presentation | null, ground: "plain" as GroundChoice, isSunView: false, isPanelHidden: false } as const;
 
 function refuseWhatIsNoTime({ day, hour }: SunTime): void {
   if (!(hour >= 0 && hour <= 24)) throw new RangeError(`${hour} is no hour of a day: from 0 to 24.`);
@@ -142,8 +144,17 @@ export function createViewStore() {
     ...AT_THE_START,
     // Leaving a lens takes back its tab of the Sun lens, and the string traced and selected of the Strings lens:
     // the strings are drawn there alone.
+    // The Strings step opens in the plan, where the strings read best (V2 · 6); leaving it gives the 3D view back when it was the step's doing.
     showLens: (lens) =>
-      set((state) => (lens === state.lens ? state : { lens, tracedString: null, selection: state.selection?.kind === "string" ? null : state.selection })),
+      set((state) => {
+        if (lens === state.lens) return state;
+        const lens_ = { lens, tracedString: null, selection: state.selection?.kind === "string" ? null : state.selection };
+        const toPlan = lens === "strings" && state.camera === "3d";
+        const back = lens !== "strings" && state.isPlanFromStrings && state.camera === "plan";
+        if (toPlan) return { ...lens_, camera: "plan" as const, cameraRequest: state.cameraRequest + 1, cameraFrom: state.camera, cameraMove: 0, isPlanFromStrings: true };
+        if (back) return { ...lens_, camera: "3d" as const, cameraRequest: state.cameraRequest + 1, cameraFrom: state.camera, cameraMove: 0, isPlanFromStrings: false };
+        return { ...lens_, isPlanFromStrings: false };
+      }),
     // Leaving the Sun view takes its tab and its time back: the steps draw the design day's noon (V2 · 3).
     showSunView: (isSunView) => set((state) => (state.isSunView === isSunView ? state : isSunView ? { isSunView } : { isSunView, sunTab: "shadows", sunTime: STILL })),
     hidePanel: (isPanelHidden) => set((state) => (state.isPanelHidden === isPanelHidden ? state : { isPanelHidden })),
@@ -159,7 +170,7 @@ export function createViewStore() {
       }),
     setToReview: (names) => set({ toReview: [...names] }),
     reviewed: (name) => set((state) => (state.toReview.includes(name) ? { toReview: state.toReview.filter((one) => one !== name) } : state)),
-    setCamera: (camera, options) => set((state) => ({ camera, cameraRequest: state.cameraRequest + 1, cameraFrom: state.camera, cameraMove: options?.over ?? 0 })),
+    setCamera: (camera, options) => set((state) => ({ camera, cameraRequest: state.cameraRequest + 1, cameraFrom: state.camera, cameraMove: options?.over ?? 0, isPlanFromStrings: false })),
     turnNorthUp: () => set((state) => ({ northRequest: state.northRequest + 1 })),
     setSunTime(sunTime) {
       refuseWhatIsNoTime(sunTime);

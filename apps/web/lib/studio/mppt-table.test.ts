@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { CurrentPerMppt, DesignOption } from "../api";
-import { mpptTableOf } from "./mppt-table";
+import { mpptLoadingFactsOf, mpptTableOf } from "./mppt-table";
 
 // The MPPT loading of the chosen option (the board "Inverter and sizing"; plan/phase-07-plan.md, decision 17;
 // inventory 2.5): a row for each MPPT that has strings, Imp and Isc against their limits, kWp and the mark.
@@ -86,5 +86,25 @@ describe("two inverters", () => {
     const table = mpptTableOf(optionWith(loads, { letter: "D", n_inverters: 2 }), 1000, BY_IMAXDC);
     expect(table.caption).toBe("Option D: 12 strings on 3 MPPT of 2 inverters, at 1000 V");
     expect(table.rows.map((row) => row.title)).toEqual(["INV-1 · MPPT 1", "INV-1 · MPPT 2", "INV-2 · MPPT 1"]);
+  });
+});
+
+describe("the line of the MPPT loading when its row is closed (V2 · 6)", () => {
+  test("the strings of each MPPT, and that every one is within its limit", () => {
+    expect(mpptLoadingFactsOf(A)).toBe("4, 4, 4, 4, 3 and 3 strings · within limits");
+  });
+
+  test("one MPPT: its strings alone; one string, in the singular", () => {
+    expect(mpptLoadingFactsOf(optionWith([load(1, 1, 65)]))).toBe("1 string · within limits");
+    expect(mpptLoadingFactsOf(optionWith([load(1, 2, 65), load(2, 2, 65)]))).toBe("2 and 2 strings · within limits");
+  });
+
+  test("a current over its limit, or a limit not known, is said", () => {
+    expect(mpptLoadingFactsOf(optionWith([load(1, 5, 65)]))).toBe("5 strings · over a limit");
+    expect(mpptLoadingFactsOf(optionWith([load(1, 4, null)]))).toBe("4 strings · a limit not known");
+  });
+
+  test("no option, no line", () => {
+    expect(mpptLoadingFactsOf(null)).toBeNull();
   });
 });

@@ -34,19 +34,21 @@ type Of = {
   shade: { losses: readonly number[]; option: DesignOption | null } | null;
   /** The strings on the roof, in the Strings lens (plan/phase-07-plan.md, decision 13). */
   strings: StringsShown | null;
+  /** The near shading of every position, whenever a run is there: what a string's callout says of its shade. */
+  losses: readonly number[] | null;
 };
 
 /** The words of a callout; a string's carry the swatch of its colour of the moment, and its figures in mono. */
 type Said = Words & { swatch?: Swatch };
 
 /** The words of the callout: of the draft, of the selected obstacle, kept-clear area, module, string or roof; null where nothing is selected. */
-function wordsOf({ selection, draft, toReview, project, layout, shade, strings }: Of): Said | null {
+function wordsOf({ selection, draft, toReview, project, layout, shade, strings, losses }: Of): Said | null {
   if (draft) return calloutOfObstacle(draft, "draft");
   if (selection?.kind === "string") {
     const string = strings?.strings.find((one) => one.label === selection.label);
     if (!string || !strings) return null;
     const cable = strings.option.cable_schedule.find((row) => row.string === string.label);
-    return { ...calloutOfString(string, cable), swatch: seriesOf(categoryOf(string, strings.colouring)) };
+    return { ...calloutOfString(string, cable, { inverters: strings.option.n_inverters, ...(losses === null ? {} : { losses }) }), swatch: seriesOf(categoryOf(string, strings.colouring)) };
   }
   if (selection?.kind === "roof") return calloutOfRoof(project.roof.outline);
   if (selection?.kind === "module") {
@@ -95,7 +97,7 @@ export function Callout({ stage }: Props) {
   // While a drag lasts the live label beside the pointer says what changes; the callout waits for the drop.
   if (!project || !hung?.visible || dragging) return null;
   const shade = map && design ? { losses: design.shading.near_pct_by_module, option } : null;
-  const words = wordsOf({ selection, draft, toReview, project, layout: layout?.layout ?? null, shade, strings });
+  const words = wordsOf({ selection, draft, toReview, project, layout: layout?.layout ?? null, shade, strings, losses: design?.shading.near_pct_by_module ?? null });
   if (!words || size === null) return null;
   const place = calloutPlaceOf({ y: hung.y, size, hasHandles: labels.some((label) => label.kind === "handle"), stageHeight });
   if (place === null) return null;

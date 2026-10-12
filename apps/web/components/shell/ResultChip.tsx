@@ -71,7 +71,7 @@ export function ResultChip({ chip, summary, onOpenNotes, onTryAgain, className }
         {chip.kind === "result" ? (
           <>
             {chip.toReview > 0 ? (
-              <span className="flex items-center gap-1.5 border-r border-line pr-2">
+              <span className="flex items-center gap-1.5 tablet:border-r tablet:border-line tablet:pr-2">
                 <StatusMark kind="note" label={toReviewOf(chip.toReview)} wordsShown={false} size={16} />
                 <span className="type-body-touch tablet:type-body">{toReviewOf(chip.toReview)}</span>
               </span>

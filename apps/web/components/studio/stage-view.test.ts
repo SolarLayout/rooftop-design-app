@@ -180,7 +180,7 @@ describe("the strings on the roof in words", () => {
   });
 
   test("the string selected, in the words of its callout; none when none is, or the option has it not", () => {
-    expect(of("mppt", "S8").selected).toBe("String 8 · INV-1, MPPT 3, selected: 29 modules · Voc cold 1,480 V · 93 m of cable");
+    expect(of("mppt", "S8").selected).toBe("String S8 · MPPT 3, selected: 29 modules · Voc cold 1,480 V · 93 m of cable");
     expect(of("mppt").selected).toBeNull();
     expect(of("mppt", "S40").selected).toBeNull();
   });

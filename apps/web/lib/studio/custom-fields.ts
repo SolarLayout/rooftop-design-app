@@ -63,3 +63,18 @@ export function refusedCardOf(document: Project, design: DesignResult | null): R
     detail: refused.detail,
   };
 }
+
+/** The target of DC/AC the engine states in its note on the options: the ends of the range. */
+const TARGET = /Target DC\/AC (\d\.\d\d)–(\d\.\d\d)/;
+
+/** What the numbers of your own option come to before Add: the power, the DC/AC ratio, and whether the ratio is in the engine's target. */
+export function customVerdictOf(design: DesignResult, [series, strings, inverters]: Custom): { kind: "fits" | "note"; words: string } {
+  const dc = (series * strings * design.equipment.module.pnom_w) / 1000;
+  const ratio = dc / (inverters * design.equipment.inverter.pnom_kw);
+  const figures = `${shown(dc, 2)} kWp · DC/AC ratio ${shown(ratio, 2)}`;
+  const target = TARGET.exec(design.options_note ?? "");
+  if (!target) return { kind: "fits", words: figures };
+  if (ratio < Number(target[1])) return { kind: "note", words: `Under the DC/AC target · ${figures}` };
+  if (ratio > Number(target[2])) return { kind: "note", words: `Over the DC/AC target · ${figures}` };
+  return { kind: "fits", words: `Fits · ${figures}` };
+}

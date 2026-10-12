@@ -141,6 +141,7 @@
   --size-find-stage-inset: 424px;
   --size-vitals: 78px;
   --size-tabbar: 72px;
+  --size-legend: 56px;
   --size-tabbar-foot: 10px;
   --size-tabbar-foot-on-screen: max(var(--size-tabbar-foot), var(--safe-bottom));
   --size-tabbar-on-screen: calc(var(--size-tabbar) - var(--size-tabbar-foot) + var(--size-tabbar-foot-on-screen));
@@ -365,6 +366,7 @@
   --spacing-find-panel: var(--size-find-panel);
   --spacing-find-stage-inset: var(--size-find-stage-inset);
   --spacing-vitals: var(--size-vitals);
+  --spacing-legend: var(--size-legend);
   --spacing-tabbar: var(--size-tabbar);
   --spacing-tabbar-foot: var(--size-tabbar-foot);
   --spacing-tabbar-foot-on-screen: var(--size-tabbar-foot-on-screen);

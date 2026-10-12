@@ -63,15 +63,6 @@ const TIMELINE = "absolute inset-x-5 bottom-7 z-stage-overlay desktop:bottom-saf
 /** The legend of the shade map: 12 over the timeline on tablet and desktop; on phone at the stage's bottom left, over the attribution. */
 const SHADE_LEGEND = "absolute bottom-7 left-3 z-stage-overlay tablet:bottom-26 tablet:left-5 desktop:bottom-safe-26";
 
-/**
- * The strings' colour switch and legend (the boards "Studio, Strings lens" on three sizes): at the bottom right on tablet
- * and at the bottom left on phone and desktop, 28 over the stage's bottom, so that the imagery's attribution under it stays
- * clear; in the Sun view 12 over the timeline instead. On desktop it is held 24 from both sides, so that a long legend
- * wraps within the stage (D92).
- */
-const stringLegendOf = (isSunView: boolean) =>
-  classNames("absolute bottom-7 left-3 z-stage-overlay tablet:right-5 tablet:left-auto desktop:right-6 desktop:left-6", isSunView ? "tablet:bottom-26 desktop:bottom-safe-26" : "desktop:bottom-safe-7");
-
 /** The chip of a layout that failed stands under the title, in the middle of the stage: as wide as the board draws it, or as the phone allows. */
 const LAYOUT_FAILED = "absolute inset-x-4 top-16 z-stage-overlay tablet:inset-x-0 tablet:top-20 tablet:mx-auto tablet:w-95 desktop:top-24";
 
@@ -126,12 +117,21 @@ export function Stage({ lens, name, className }: Props) {
 
   return (
     <div data-testid="stage" data-state={cannotDraw ? "plan" : "scene"} data-module-writes={SAYS_MODULE_WRITES ? moduleWrites : undefined} className={classNames("relative", className)}>
-      <div className={classNames("absolute inset-0 z-stage", CURSOR[cursor])}>
-        {cannotDraw ? (
-          project ? <PlanFallback roof={project.roof} layout={layout?.layout ?? null} reason={cannotDraw} /> : null
-        ) : (
-          <Scene onContextLost={() => setLost(true)} stage={stage} />
-        )}
+      {/* The scene above, the strings' legend as a bar at the foot: never over the roof (V2 · 6). */}
+      <div className="absolute inset-0 z-stage flex flex-col">
+        <div className={classNames("relative min-h-0 grow", CURSOR[cursor])}>
+          {cannotDraw ? (
+            project ? <PlanFallback roof={project.roof} layout={layout?.layout ?? null} reason={cannotDraw} /> : null
+          ) : (
+            <Scene onContextLost={() => setLost(true)} stage={stage} />
+          )}
+          {cannotDraw ? null : attribution ? (
+            <p data-testid="stage-attribution" className="pointer-events-none absolute bottom-1 left-4 z-stage-overlay max-w-full truncate type-unit text-text-on-imagery on-imagery tablet:left-5 desktop:left-6">
+              {attribution}
+            </p>
+          ) : null}
+        </div>
+        {cannotDraw || size === null || isSunView ? null : <StringLegend size={size} />}
       </div>
       {cannotDraw ? null : <SunMarks stage={stage} />}
       {cannotDraw ? null : <Labels stage={stage} />}
@@ -153,12 +153,6 @@ export function Stage({ lens, name, className }: Props) {
       {/* The time belongs to the Sun view (V2 · 3): the other steps draw the design day's noon, still. */}
       {cannotDraw || size === null || !isSunView ? null : size !== "phone" ? <SunTimeline size={size} className={TIMELINE} /> : <TimePill size={size} className={TIME_PILL} />}
       {cannotDraw || size === null ? null : <ShadeLegend size={size} className={SHADE_LEGEND} />}
-      {cannotDraw || size === null ? null : <StringLegend size={size} className={stringLegendOf(isSunView)} />}
-      {cannotDraw ? null : attribution ? (
-        <p data-testid="stage-attribution" className="pointer-events-none absolute bottom-1 left-4 z-stage-overlay max-w-full truncate type-unit text-text-on-imagery on-imagery tablet:left-5 desktop:bottom-safe-1.5 desktop:left-6">
-          {attribution}
-        </p>
-      ) : null}
       <OnTheRoof stage={stage} isScene={!cannotDraw} />
     </div>
   );

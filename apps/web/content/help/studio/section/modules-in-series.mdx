@@ -11,9 +11,9 @@ docs:
   section: Modules in series
 ---
 
-## The bar
+## Where it is
 
-It appears once the strings are sized. The band holds the lengths that fit, and the words beside the heading say which. The left end is the shortest length, set by the `MPPT minimum`. The right end is the longest, set by the `Voc limit` or the `MPPT maximum`, whichever is tighter. The marker is the length of the chosen option.
+Once the strings are sized, the chosen option says that its length fits, and `Why` under it opens the lengths that fit at your system voltage: the fewest, `14 at least`, set by the `MPPT minimum`, and the most, `29 at most`, set by the `Voc limit` or the `MPPT maximum`, whichever is tighter, with a marker at the chosen length. Where no length fits, the bar stands under the problem at the head of the step, and says `None fit`.
 
 ## How the ends are set
 
@@ -23,10 +23,10 @@ It appears once the strings are sized. The band holds the lengths that fit, and 
 
 The temperatures and the Voc coefficient are under `Sizing temperatures`. The open-circuit voltage at the lowest ambient comes from the module's one-diode model, and the coefficient beside the field is that model's; a Voc coefficient you enter from the datasheet takes its place.
 
-## The verdict
+## The proof
 
-Under the bar stands the engine's verdict on the chosen option: its MPP voltage at STC, the voltages at both temperatures against their limits, its strings, inverters and DC/AC. It carries a tick when the option is in its DC/AC target and every MPPT is within its current limit, and its first line says the length fits. Otherwise it carries an exclamation mark, its first line names the length without saying it fits, and the rest says what it misses.
+Behind `Why`, two plain lines. On the coldest morning, at the lowest ambient: the string's open-circuit voltage against the lowest of the system voltage, the inverter's highest DC voltage and the module's highest system voltage. On the hottest afternoon, with the cell at its hottest: the string's MPP voltage against the inverter's MPPT minimum. A line carries a tick on the chosen option when it is in its DC/AC target and every MPPT is within its current limit; otherwise the line carries an exclamation mark, and the engine's words on what it misses follow the proof.
 
 ## When no length fits
 
-When the shortest length needed is longer than the longest allowed, the heading says `None fit`, the verdict gives both numbers, and there are no options. The step says it at its head: `No string length fits at` the voltage, what the inverter needs and what a string holds. Its buttons are the ways out: `Choose another inverter` and `Change the sizing temperatures`, and, where a higher voltage the equipment takes would fit a string, `Use` that voltage as the step's main button, to be pressed only where the site's code allows it. Until one length fits, no option can be built, your own included.
+When the shortest length needed is longer than the longest allowed, the heading says `None fit`, the verdict under the bar gives both numbers, and there are no options. The step says it at its head: `No string length fits at` the voltage, what the inverter needs and what a string holds. Its buttons are the ways out: `Choose another inverter` and `Change the sizing temperatures`, and, where a higher voltage the equipment takes would fit a string, `Use` that voltage as the step's main button, to be pressed only where the site's code allows it. Until one length fits, no option can be built, your own included.

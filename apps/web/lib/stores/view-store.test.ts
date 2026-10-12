@@ -509,3 +509,36 @@ describe("the Sun view and the panel (V2)", () => {
     expect(view.getState().isPanelHidden).toBe(false);
   });
 });
+
+// The Strings step opens in Plan, where the strings read best (V2 · 6, D102); 3D stays one press away.
+describe("the camera of the Strings step", () => {
+  test("entering the step from the 3D view turns the camera to the plan, as a request of its own", () => {
+    const store = createViewStore();
+    const requests = store.getState().cameraRequest;
+
+    store.getState().showLens("strings");
+
+    expect(cameraOf(store.getState())).toBe("plan");
+    expect(store.getState().cameraRequest).toBe(requests + 1);
+  });
+
+  test("leaving it returns the camera to 3D when the step had put it in the plan; the user's own choice stays", () => {
+    const store = createViewStore();
+    store.getState().showLens("strings");
+    store.getState().showLens("array");
+    expect(cameraOf(store.getState())).toBe("3d");
+
+    store.getState().showLens("strings");
+    store.getState().setCamera("fit");
+    store.getState().showLens("roof");
+    expect(cameraOf(store.getState())).toBe("fit");
+  });
+
+  test("a camera already in the plan or the fit is left where it is on entering", () => {
+    const store = createViewStore();
+    store.getState().setCamera("fit");
+    store.getState().showLens("strings");
+
+    expect(cameraOf(store.getState())).toBe("fit");
+  });
+});

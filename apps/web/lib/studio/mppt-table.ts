@@ -77,3 +77,13 @@ export function mpptTableOf(option: DesignOption, voltage: number, current: Curr
     note: isLimitUnknown ? current.note : null,
   };
 }
+
+/** What the closed row of the MPPT loading says (V2 · 6): the strings of each MPPT, and whether every one is within its limit. */
+export function mpptLoadingFactsOf(option: DesignOption | null): string | null {
+  if (option === null || option.mppt_loads.length === 0) return null;
+  const strings = option.mppt_loads.map((load) => load.strings);
+  const list = strings.length === 1 ? `${strings[0]}` : `${strings.slice(0, -1).join(", ")} and ${strings.at(-1)}`;
+  const total = `${list} ${strings.length === 1 && strings[0] === 1 ? "string" : "strings"}`;
+  const unknown = option.mppt_loads.some((load) => load.imp_limit_a === null || load.isc_limit_a === null);
+  return `${total} · ${unknown ? "a limit not known" : option.mppt_loads.every((load) => load.ok) ? "within limits" : "over a limit"}`;
+}

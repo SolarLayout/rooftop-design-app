@@ -9,7 +9,7 @@ import type { Selection } from "../stores/view-store";
 import type { XY, XYZ } from "../geometry/adapter";
 import type { Callout } from "../geometry/keepout";
 import type { HeightAt } from "../geometry/obstacles";
-import { numberOfString, type Wired } from "../stores/string-colours";
+import type { Wired } from "../stores/string-colours";
 
 /** What a press of the pointer hit in the scene. A module is known by the instance of the instanced mesh. */
 export type Picked = { what: "roof" } | { what: "obstacle" | "keepout"; index: number } | { what: "module"; instanceId: number | undefined } | { what: "ground" };
@@ -85,13 +85,21 @@ export function selectionOfPickedString(picked: Picked, idxs: readonly number[],
 }
 
 /**
- * The callout of a string (the board "Strings on the roof"): its number, its inverter and its MPPT; its modules,
- * its Voc cold and its metres of cable as the engine's cable schedule has them, to the whole volt and metre.
+ * The callout of a string (the boards "Strings on the roof" and "V2 · 6"): its name and its MPPT, with its inverter when
+ * the option has more than one; its modules, how much near shading costs them, as the run's losses per position have
+ * it, then its Voc cold and its metres of cable as the engine's cable schedule has them, to the whole volt and metre.
  */
-export function calloutOfString(string: Pick<Wired, "label" | "modules" | "inverter" | "mppt">, cable: CableRow | undefined): Callout {
-  const title = `String ${shown(numberOfString(string.label), 0)} · ${cable?.inverter ?? `INV-${string.inverter}`}, MPPT ${shown(string.mppt, 0)}`;
-  if (!cable) return { title, detail: `${shown(string.modules.length, 0)} modules` };
-  return { title, detail: `${shown(cable.modules, 0)} modules · Voc cold ${shown(cable.voc_cold_v, 0)} V · ${shown(cable.length_m, 0)} m of cable` };
+export function calloutOfString(
+  string: Pick<Wired, "label" | "modules" | "inverter" | "mppt">,
+  cable: CableRow | undefined,
+  { inverters = 1, losses }: { inverters?: number; losses?: readonly number[] } = {},
+): Callout {
+  const inverter = inverters > 1 ? `${cable?.inverter ?? `INV-${string.inverter}`}, ` : "";
+  const title = `String ${string.label} · ${inverter}MPPT ${shown(string.mppt, 0)}`;
+  const lost = losses === undefined || string.modules.length === 0 ? null : string.modules.reduce((sum, idx) => sum + (losses[idx] ?? 0), 0) / string.modules.length;
+  const shade = lost === null ? [] : [`${shown(lost, 1)} % shaded`];
+  if (!cable) return { title, detail: [`${shown(string.modules.length, 0)} modules`, ...shade].join(" · ") };
+  return { title, detail: [`${shown(cable.modules, 0)} modules`, ...shade, `Voc cold ${shown(cable.voc_cold_v, 0)} V`, `${shown(cable.length_m, 0)} m of cable`].join(" · ") };
 }
 
 /** Where the callout of a string is hung: over its module nearest the middle of its modules; null for a string of none. */

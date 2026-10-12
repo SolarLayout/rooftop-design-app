@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { DesignResult, Project } from "../api";
-import { customBoundsOf, customOf, refusedCardOf, withCustom, withoutCustom } from "./custom-fields";
+import { customBoundsOf, customOf, customVerdictOf, refusedCardOf, withCustom, withoutCustom } from "./custom-fields";
 
 const RUN = {
   series_range: { n_min: 14, n_max: 29 },
@@ -61,5 +61,22 @@ describe("your own option (the board \"Options and your own\"; plan/phase-07-pla
       detail: "At most 19 fit: …",
     });
     expect(refusedCardOf({ ...DOCUMENT, custom: [29, 22, 1] } as Project, RUN)).toBeNull();
+  });
+});
+
+describe("the verdict of your own option before it is added (V2 · 6)", () => {
+  const equipped = { ...RUN, equipment: { module: { pnom_w: 560 }, inverter: { pnom_kw: 275 } }, options_note: "Target DC/AC 1.10–1.30, warning above 1.40. At most 4 strings per MPPT (4 × 13.58 A ≤ 65.0 A), so one inverter takes 24 strings." } as unknown as DesignResult;
+
+  test("in target: Fits, the power and the ratio of the numbers as they stand", () => {
+    expect(customVerdictOf(equipped, [26, 24, 1])).toEqual({ kind: "fits", words: "Fits · 349.44 kWp · DC/AC ratio 1.27" });
+  });
+
+  test("outside the target: a note that says so, with the same figures", () => {
+    expect(customVerdictOf(equipped, [26, 27, 2])).toEqual({ kind: "note", words: "Under the DC/AC target · 393.12 kWp · DC/AC ratio 0.71" });
+    expect(customVerdictOf(equipped, [29, 23, 1])).toEqual({ kind: "note", words: "Over the DC/AC target · 373.52 kWp · DC/AC ratio 1.36" });
+  });
+
+  test("without the target in the engine's note, the figures alone", () => {
+    expect(customVerdictOf({ ...equipped, options_note: "" } as DesignResult, [26, 24, 1])).toEqual({ kind: "fits", words: "349.44 kWp · DC/AC ratio 1.27" });
   });
 });

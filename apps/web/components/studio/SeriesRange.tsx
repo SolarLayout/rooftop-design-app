@@ -9,6 +9,7 @@ import { ProgressRing } from "@/components/ui/ProgressRing";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { StatusMark } from "@/components/ui/StatusMark";
 import { seriesBarOf } from "@/lib/studio/series-bar";
+import { byCount } from "@/lib/words/plural";
 import type { Sized } from "@/lib/studio/strings-view";
 
 /**
@@ -60,7 +61,7 @@ export function SeriesRange({ view, isUpdating = false }: { view: Sized; isUpdat
           <StatusMark kind={verdict.ok ? "fits" : "note"} label={verdict.ok ? "Fits" : verdict.title} wordsShown={false} size={16} />
           <span className="flex flex-col gap-0.5">
             {verdict.ok ? null : <span className="font-medium text-text">{verdict.title}</span>}
-            <span>{withTrueMinus(verdict.detail)}</span>
+            <span>{byCount(withTrueMinus(verdict.detail))}</span>
           </span>
         </p>
       ) : range === null ? (

@@ -13,6 +13,6 @@ describe("the step's head", () => {
 
   test("Array and Strings: their instruction and what they hold, as the board of the order of work says", () => {
     expect(stepHeadOf("array", "map")).toEqual({ title: "Choose the module", line: "The module, how it is mounted, how rows are spaced." });
-    expect(stepHeadOf("strings", "map")).toEqual({ title: "Check the strings", line: "The inverter, the voltage, the option to use." });
+    expect(stepHeadOf("strings", "map")).toEqual({ title: "Check the strings", line: "How the modules are wired to the inverter." });
   });
 });
