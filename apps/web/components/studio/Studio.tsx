@@ -103,10 +103,12 @@ export function Studio({ lens }: Props) {
       // On touch the card's content is the work column's while the Sun view is on (V2 · 7); on desktop it is the card on the stage.
       <SunCardBody size={size} />
     ) : (
-      <>
-        {head ? <StepHead title={head.title} line={head.line} status={status} problem={chip.kind === "stale" ? chip.problem : null} onAction={tryAgain} /> : null}
-        {sections}
-      </>
+      // On tablet the column is two halves in the step's order (V2 · 10, D106): the step's head at the left, its sections at
+      // the right; on desktop and phone one under the other.
+      <div className="flex flex-col tablet:grid tablet:grid-cols-2 tablet:items-start tablet:gap-x-10 desktop:flex desktop:items-stretch">
+        <div className="min-w-0">{head ? <StepHead title={head.title} line={head.line} status={status} problem={chip.kind === "stale" ? chip.problem : null} onAction={tryAgain} /> : null}</div>
+        <div className="min-w-0">{sections}</div>
+      </div>
     );
 
   // The Studio comes back to the step that was opened last.
@@ -126,7 +128,7 @@ export function Studio({ lens }: Props) {
       >
         <Stage lens={lens} name={isSunView ? `${name} · Sun` : name} className={classNames("shrink-0 tablet:h-110 desktop:h-auto desktop:grow", shares ? "h-full" : "h-stage-phone")} />
         {/* On tablet the result is a row under the stage, the modules and their power at its right; on desktop and phone it is in the top bar (D95). */}
-        <div className="hidden items-center justify-between gap-4 border-b border-line-subtle px-5 py-2 tablet:flex desktop:hidden">
+        <div className="hidden min-h-14 items-center justify-between gap-4 border-b border-line-subtle px-5 py-2 tablet:flex desktop:hidden">
           <ResultChip chip={chip} summary={summaryOf(vitals)} onOpenNotes={open} onTryAgain={tryAgain} />
           {capacity ? <span className="type-body text-text-2">{capacity}</span> : null}
         </div>
