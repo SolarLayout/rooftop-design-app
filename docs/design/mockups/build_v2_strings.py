@@ -155,7 +155,8 @@ def foot(touch: bool) -> str:
 
 
 def stage(w: int, h: int, top: int, touch: bool, traced: str = "", legend_at: str = "foot") -> str:
-    plan = plan_svg(w, h - (72 if legend_at == "foot" else 0), traced=traced)
+    pad = 0 if w > 1000 else 84
+    plan = plan_svg(w, h - (72 if legend_at == "foot" else 0) - pad, traced=traced)
     title = (f'<div style="position: absolute; left: {40 if w > 1000 else 20}px; top: {32 if w > 1000 else 20}px; display: flex; flex-direction: column; gap: 4px; z-index: 1">'
              f'{text("title", "Strings", touch)}{text("body", "22 strings of 29 · 1 inverter · 152 positions not used", touch, TEXT_2)}</div>')
     ctl = f'<div style="position: absolute; right: {24 if w > 1000 else 20}px; top: {32 if w > 1000 else 20}px; z-index: 1">{view_controls(touch, plan=True)}</div>' if w > 500 else ""
@@ -167,7 +168,7 @@ def stage(w: int, h: int, top: int, touch: bool, traced: str = "", legend_at: st
                f'border-radius: {RADIUS["row"]}px; display: flex; flex-direction: column; gap: 2px; z-index: 1">{text("strong", "String S1 · MPPT 1")}'
                f'{text("body", "29 modules · 0.0 % shaded", False, TEXT_2)}</div>')
     return (f'<div style="position: absolute; left: 0; top: {top}px; width: {w}px; height: {h}px; overflow: hidden">'
-            f'<div style="position: absolute; left: 0; top: 0; width: {w}px; height: {h - 72 if legend_at == "foot" else h}px">{plan}</div>{title}{ctl}{leg}{tip}</div>')
+            f'<div style="position: absolute; left: 0; top: {pad}px; width: {w}px; height: {(h - 72 if legend_at == "foot" else h) - pad}px">{plan}</div>{title}{ctl}{leg}{tip}</div>')
 
 
 def desktop_screen(why_open: bool = False, traced: str = "") -> str:

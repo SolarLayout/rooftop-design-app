@@ -101,9 +101,10 @@ def words_strip(touch: bool) -> str:
             f'{where}{tip}<div style="display: grid; grid-template-columns: {"1fr" if touch else "repeat(3, minmax(0, 1fr))"}; column-gap: 24px">{rows}</div></section>')
 
 
-def view_controls(touch: bool, plan: bool = False) -> str:
-    sun = button("Sun", "secondary", "compact", touch, icon(STEP_ICON["Sun"], 16, TEXT_2))
-    layers = button("", "secondary", "compact", touch, icon(ICON["layers"], 16, TEXT_2), "width: %dpx; padding: 0" % (44 if touch else 32))
+def view_controls(touch: bool, plan: bool = False, sun_on: bool = False) -> str:
+    sun = button("Sun", "secondary", "compact", touch, icon(STEP_ICON["Sun"], 16, TEXT if sun_on else TEXT_2),
+                 "background: #232A36; box-shadow: inset 0 2px 4px rgba(0,0,0,.5)" if sun_on else "", )
+    layers = button("Imagery", "secondary", "compact", touch, icon(ICON["layers"], 16, TEXT_2))
     seg = segmented(["3D", "Plan"], 1 if plan else 0, touch) if touch else (
         f'<span style="display: inline-flex; padding: 3px; height: 32px; box-sizing: border-box; background: {WELL}; border: 1px solid {LINE}; '
         f'border-radius: {RADIUS["control"]}px"><span style="height: 24px; padding: 0 10px; display: inline-flex; align-items: center; '
