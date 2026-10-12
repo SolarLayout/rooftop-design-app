@@ -19,18 +19,18 @@ describe("the current per MPPT", () => {
   test("empty for the file's: its value and where it comes from, and the API's note in its words", () => {
     expect(currentFieldOf(DOCUMENT, shownWith(BY_IMAXDC))).toEqual({
       value: null,
-      detail: "65.0 A · IMaxDC 390 A ÷ 6 MPPT",
+      detail: "65.0 A · max DC current 390 A ÷ 6 MPPT",
       reset: null,
       note: "Not in the OND: IMaxDC 390 A ÷ 6 MPPT. Enter the datasheet value if it differs.",
     });
   });
 
   test("a value the OND states itself needs no note", () => {
-    expect(currentFieldOf(DOCUMENT, shownWith(IN_THE_FILE))).toEqual({ value: null, detail: "30.0 A · from the OND", reset: null, note: null });
+    expect(currentFieldOf(DOCUMENT, shownWith(IN_THE_FILE))).toEqual({ value: null, detail: "30.0 A · from the inverter file", reset: null, note: null });
   });
 
   test("no value in the file: not in the OND, and the note asks for the datasheet value", () => {
-    expect(currentFieldOf(DOCUMENT, shownWith(NOT_IN_THE_OND))).toEqual({ value: null, detail: "not in the OND", reset: null, note: NOT_IN_THE_OND.note });
+    expect(currentFieldOf(DOCUMENT, shownWith(NOT_IN_THE_OND))).toEqual({ value: null, detail: "not in the inverter file", reset: null, note: NOT_IN_THE_OND.note });
   });
 
   test("entered: it says so, the note goes, and the file's value can be given back", () => {

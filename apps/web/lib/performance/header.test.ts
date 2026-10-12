@@ -20,7 +20,7 @@ describe("the option switch (decision 4)", () => {
     expect(items).toEqual([
       { key: "29x22x1", letter: "A", caption: "Recommended", label: "A · Recommended", name: "A · Recommended, in target", mark: { kind: "fits", label: "In target" }, isChosen: true },
       { key: "26x24x1", letter: "B", caption: "Fills the inverter", label: "B", name: "B, in target", mark: { kind: "fits", label: "In target" }, isChosen: false },
-      { key: "28x22x1", letter: "C", caption: "Lower clipping", label: "C", name: "C, in target", mark: { kind: "fits", label: "In target" }, isChosen: false },
+      { key: "28x22x1", letter: "C", caption: "Less clipping", label: "C", name: "C, in target", mark: { kind: "fits", label: "In target" }, isChosen: false },
       { key: "26x27x2", letter: "D", caption: "Below target, 2 inverters", label: "D", name: "D, below the DC/AC target", mark: { kind: "note", label: "Below the DC/AC target" }, isChosen: false },
       { key: "28x25x2", letter: "E", caption: "Below target, 2 inverters", label: "E", name: "E, below the DC/AC target", mark: { kind: "note", label: "Below the DC/AC target" }, isChosen: false },
     ]);
@@ -40,10 +40,10 @@ describe("the option switch (decision 4)", () => {
     expect(items[0]?.caption).toBe("");
   });
 
-  test("your own, simulated, is an item, as the engine names it", () => {
+  test("your own, simulated, is an item, as the app names it", () => {
     const { items } = headerOf({ ...DEMO, options: [A, YOUR_OWN], chosen_option: "custom" } as DesignResult);
 
-    expect(items.map((item) => item.label)).toEqual(["A", "F · Your own"]);
+    expect(items.map((item) => item.label)).toEqual(["A", "F · Your own option"]);
   });
 
   test("a refused custom is not an item: it has no energy", () => {
@@ -56,7 +56,7 @@ describe("the option switch (decision 4)", () => {
   test("the select of Option (V2 · 8): each option by its letter and caption; the chosen one by its letter alone on phone", () => {
     const { items } = headerOf(DEMO);
 
-    expect(items.map((item) => optionWordsOf(item, false))).toEqual(["A · Recommended", "B · Fills the inverter", "C · Lower clipping", "D · Below target, 2 inverters", "E · Below target, 2 inverters"]);
+    expect(items.map((item) => optionWordsOf(item, false))).toEqual(["A · Recommended", "B · Fills the inverter", "C · Less clipping", "D · Below target, 2 inverters", "E · Below target, 2 inverters"]);
     expect(optionWordsOf(items[0]!, true)).toBe("A");
     expect(optionWordsOf({ ...items[0]!, caption: "" }, false)).toBe("A");
   });

@@ -93,8 +93,6 @@ function listed(items: readonly string[]): string {
   return items.length < 2 ? (items[0] ?? "") : `${items.slice(0, -1).join(", ")} and ${items.at(-1)}`;
 }
 
-const COLOURS_COUNTED = ["no", "one", "two", "three", "four", "five", "six"];
-
 type StringsWordsOf = {
   option: Pick<DesignOption, "letter"> & { system: { inverters: readonly InverterPlace[] }; cable_schedule: readonly CableRow[] };
   /** The option's strings on the roof. */
@@ -111,7 +109,7 @@ export type StringsWords = { strings: string; unused: string; inverters: string;
 /**
  * The strings on the roof in words, for the text equivalent of the stage (plan/phase-07-plan.md, step 16): the
  * strings and what they are coloured by, with each colour's strings; the positions not used; the inverters and where
- * the engine places them, in the roof's metres; the string selected, in the words of its callout.
+ * the app places them, in the roof's metres; the string selected, in the words of its callout.
  */
 export function stringsWordsOf({ option, strings, colouring, positions, selected }: StringsWordsOf): StringsWords {
   const head = `${counted(strings.length, "string", "strings")} of option ${option.letter}, coloured by ${colouring === "mppt" ? "MPPT" : colouring}`;
@@ -120,22 +118,22 @@ export function stringsWordsOf({ option, strings, colouring, positions, selected
     strings
       .filter((string) => (colouring === "string" ? seriesOf(numberOfString(string.label)) : categoryOf(string, colouring)) === category)
       .sort((a, b) => numberOfString(a.label) - numberOfString(b.label));
-  const named = (category: number) => (colouring === "mppt" ? `MPPT ${category}` : colouring === "inverter" ? `INV-${category}` : `colour ${category}`);
+  const named = (category: number) => (colouring === "mppt" ? `MPPT ${category}` : colouring === "inverter" ? `INV-${category}` : `Colour ${category}`);
   const parts = categories.map((category) => {
     const own = ofCategory(category);
     const count = `${named(category)}, ${counted(own.length, "string", "strings")}`;
     return colouring === "string" ? `${count}, ${listed(own.map((string) => string.label))}` : count;
   });
-  const turn = colouring === "string" ? `, ${COLOURS_COUNTED[categories.length]} colours in turn` : "";
+  const turn = colouring === "string" ? `, ${counted(categories.length, "colour", "colours")} in turn` : "";
   const used = strings.reduce((sum, string) => sum + string.modules.length, 0);
   const unused = positions - used;
   const places = option.system.inverters.map(({ label, position: [x, y] }) => `${label} at ${shown(x, 1)} m east, ${shown(y, 1)} m north`);
   const string = selected === null ? undefined : strings.find((one) => one.label === selected);
   const callout = string ? calloutOfString(string, option.cable_schedule.find((row) => row.string === string.label), { inverters: option.system.inverters.length }) : null;
   return {
-    strings: `${head}${turn}: ${parts.join("; ")}`,
+    strings: `${head}${turn}: ${parts.join(". ")}`,
     unused: unused > 0 ? `${counted(unused, "position", "positions")} not used` : "Every position used",
-    inverters: `${places.length === 1 ? "Inverter" : "Inverters"} ${places.join("; ")}`,
+    inverters: `${places.length === 1 ? "Inverter" : "Inverters"}: ${places.join(". ")}`,
     selected: callout ? `${callout.title}, selected: ${callout.detail}` : null,
   };
 }

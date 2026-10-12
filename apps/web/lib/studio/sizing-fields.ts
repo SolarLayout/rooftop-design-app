@@ -5,7 +5,8 @@
 import type { Range } from "../../components/ui/number-entry";
 import { shown } from "../../components/ui/number-entry";
 import { NOTE_FIELD_RANGES, withTrueMinus } from "../../components/shell/notes-view";
-import type { DesignResult, Project, Roof } from "../api";
+import type { DesignResult, Project } from "../api";
+import { ROOF_TYPES } from "../geometry/roof-types";
 import { DEFAULT, FROM_THE_WEATHER, hintOf, sectionSetByOf, wordOf, type SetBy } from "./set-by";
 
 export type SizingId = "t_min_override" | "t_max_override" | "cell_rise_c" | "voc_coefficient_pct";
@@ -31,8 +32,10 @@ export type SizingField = {
   note: string | null;
 };
 
-const MOUNTING: Record<Roof["roof_type"], string> = { flat_tilted: "flat, open rack", flat_ew: "flat east-west, open rack", sloped_flush: "sloped, flush" };
 const degrees = (value: number) => `${shown(value, 1)} °C`;
+
+/** The roof type by the name its choice shows: "Flat, tilted rows". */
+const roofTypeOf = (document: Project) => ROOF_TYPES.find(({ id }) => id === document.roof.roof_type)?.name ?? document.roof.roof_type;
 
 /** The engine's note on the module's Voc coefficient, when it gave one. */
 const vocNoteOf = (design: DesignResult) => design.equipment.module_notes.find((note) => note.startsWith("Voc coefficient")) ?? null;
@@ -53,12 +56,12 @@ export function sizingFieldsOf(document: Project, design: DesignResult | null): 
   // The coefficient the strings are sized with: cold Voc is the one-diode model's while none is entered, whatever the
   // PAN states for the module card (#179, item 15).
   const sizedWith = design && design.sizing.voc_coefficient_from === "one-diode model" ? `${shown(design.sizing.voc_coefficient_pct, 3)} %/°C` : null;
-  const voc = field("voc_coefficient_pct", "Voc coefficient", "%/°C", DEFAULT, sizedWith === null ? null : { value: sizedWith, line: `${sizedWith}, the one-diode model's` });
+  const voc = field("voc_coefficient_pct", "Voc coefficient", "%/°C", DEFAULT, sizedWith === null ? null : { value: sizedWith, line: `${sizedWith}, computed from the module file` });
   const vocNote = design && voc.value === null ? vocNoteOf(design) : null;
   return [
     field("t_min_override", "Lowest ambient", "°C", FROM_THE_WEATHER, weather ? fromTheWeather(weather.t_min_c) : null),
     field("t_max_override", "Highest ambient", "°C", FROM_THE_WEATHER, weather ? fromTheWeather(weather.t_max_c) : null),
-    field("cell_rise_c", "Cell rise", "°C", DEFAULT, cellRise === null ? null : { value: `${shown(cellRise, 0)} °C`, line: `${shown(cellRise, 0)} °C by roof type: ${MOUNTING[document.roof.roof_type]}` }),
+    field("cell_rise_c", "Cell rise", "°C", DEFAULT, cellRise === null ? null : { value: `${shown(cellRise, 0)} °C`, line: `${shown(cellRise, 0)} °C by roof type: ${roofTypeOf(document)}` }),
     { ...voc, note: vocNote === null ? null : withTrueMinus(vocNote) },
   ];
 }

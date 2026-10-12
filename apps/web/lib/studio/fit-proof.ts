@@ -8,7 +8,7 @@ import type { DesignOption, SeriesRange } from "../api";
 export type FitProof = {
   /** The line under the chosen card: a tick where the option fits, a note where something is missed. */
   fits: { words: string; kind: "fits" | "note" };
-  /** "Modules a string can hold at 1500 V". */
+  /** "Modules per string at 1500 V". */
   heading: string;
   atLeast: string;
   atMost: string;
@@ -28,10 +28,10 @@ export function fitProofOf({ option, range, mpptMinimum }: Of): FitProof {
   const cold = n * range.voc_cold;
   const hot = n * range.vmp_hot;
   const voltage = plainVolts(range.system_v);
-  const words = `${n} modules a string`;
+  const words = `${n} modules per string`;
   return {
     fits: option.verdict.ok ? { words: `${words} fits at ${voltage}`, kind: "fits" } : { words: `${words} at ${voltage}`, kind: "note" },
-    heading: `Modules a string can hold at ${voltage}`,
+    heading: `Modules per string at ${voltage}`,
     atLeast: `${range.n_min} at least`,
     atMost: `${range.n_max} at most`,
     coldest: {

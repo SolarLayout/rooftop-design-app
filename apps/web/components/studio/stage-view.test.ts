@@ -155,16 +155,16 @@ describe("the strings on the roof in words", () => {
   const of = (colouring: "string" | "mppt" | "inverter", selected: string | null = null) => stringsWordsOf({ option, strings, colouring, positions: 790, selected });
 
   test("by MPPT: the strings of the option, and each MPPT with its strings", () => {
-    expect(of("mppt").strings).toBe("8 strings of option A, coloured by MPPT: MPPT 1, 3 strings; MPPT 2, 3 strings; MPPT 3, 2 strings");
+    expect(of("mppt").strings).toBe("8 strings of option A, coloured by MPPT: MPPT 1, 3 strings. MPPT 2, 3 strings. MPPT 3, 2 strings");
   });
 
   test("by string: each of the colours in turn with the strings it marks", () => {
-    expect(of("string").strings).toBe("8 strings of option A, coloured by string, six colours in turn: colour 1, 2 strings, S1 and S7; colour 2, 2 strings, S2 and S8; colour 3, 1 string, S3; colour 4, 1 string, S4; colour 5, 1 string, S5; colour 6, 1 string, S6");
+    expect(of("string").strings).toBe("8 strings of option A, coloured by string, 6 colours in turn: Colour 1, 2 strings, S1 and S7. Colour 2, 2 strings, S2 and S8. Colour 3, 1 string, S3. Colour 4, 1 string, S4. Colour 5, 1 string, S5. Colour 6, 1 string, S6");
   });
 
   test("by inverter: each inverter with its strings", () => {
     const two = [wired("S1", 1, 1), wired("S2", 2, 1), wired("S3", 2, 2)];
-    expect(stringsWordsOf({ option, strings: two, colouring: "inverter", positions: 87, selected: null }).strings).toBe("3 strings of option A, coloured by inverter: INV-1, 1 string; INV-2, 2 strings");
+    expect(stringsWordsOf({ option, strings: two, colouring: "inverter", positions: 87, selected: null }).strings).toBe("3 strings of option A, coloured by inverter: INV-1, 1 string. INV-2, 2 strings");
   });
 
   test("the positions not used, or every position used", () => {
@@ -173,10 +173,10 @@ describe("the strings on the roof in words", () => {
     expect(stringsWordsOf({ option, strings, colouring: "mppt", positions: 233, selected: null }).unused).toBe("1 position not used");
   });
 
-  test("the inverters and where the engine places them, in the roof's metres", () => {
-    expect(of("mppt").inverters).toBe("Inverter INV-1 at 31.0 m east, 39.0 m north");
+  test("the inverters and where the app places them, in the roof's metres", () => {
+    expect(of("mppt").inverters).toBe("Inverter: INV-1 at 31.0 m east, 39.0 m north");
     const two = { ...option, system: { inverters: [{ label: "INV-1", position: [27.37, 1] as [number, number] }, { label: "INV-2", position: [36.92, 39] as [number, number] }] } };
-    expect(stringsWordsOf({ option: two, strings, colouring: "mppt", positions: 790, selected: null }).inverters).toBe("Inverters INV-1 at 27.4 m east, 1.0 m north; INV-2 at 36.9 m east, 39.0 m north");
+    expect(stringsWordsOf({ option: two, strings, colouring: "mppt", positions: 790, selected: null }).inverters).toBe("Inverters: INV-1 at 27.4 m east, 1.0 m north. INV-2 at 36.9 m east, 39.0 m north");
   });
 
   test("the string selected, in the words of its callout; none when none is, or the option has it not", () => {

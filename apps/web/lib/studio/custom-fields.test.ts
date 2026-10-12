@@ -32,10 +32,10 @@ describe("your own option (the board \"Options and your own\"; plan/phase-07-pla
   test("the series is bounded by the range, the strings by what the roof holds of that length, the inverters by the strings", () => {
     expect(customBoundsOf(RUN, [29, 22, 1])).toEqual({
       series: { range: { min: 14, max: 29, decimals: 0 }, hint: "14 to 29 fit" },
-      strings: { range: { min: 1, max: 23, decimals: 0 }, hint: "1 to 23 of 29 fit" },
+      strings: { range: { min: 1, max: 23, decimals: 0 }, hint: "Strings of 29: 1 to 23 fit" },
       inverters: { range: { min: 1, max: 22, decimals: 0 }, hint: "1 to 22" },
     });
-    expect(customBoundsOf(RUN, [26, 24, 2]).strings).toEqual({ range: { min: 2, max: 27, decimals: 0 }, hint: "2 to 27 of 26 fit" });
+    expect(customBoundsOf(RUN, [26, 24, 2]).strings).toEqual({ range: { min: 2, max: 27, decimals: 0 }, hint: "Strings of 26: 2 to 27 fit" });
   });
 
   test("a length the roof holds no string of has no strings to choose", () => {
