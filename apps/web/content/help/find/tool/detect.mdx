@@ -1,6 +1,6 @@
 ---
 title: Detect the building
-summary: Press inside a building to have its footprint proposed as the outline, then use it and drag its corners to the roof.
+summary: Click inside the building to get its outline, then drag the corners onto the roof.
 kind: tool
 related:
   - find.tool.corners
@@ -11,25 +11,34 @@ docs:
   section: Outline the roof
 ---
 
+Take the building's footprint, its outline from Overture Maps, as the roof's outline, then correct it.
+
 <Steps>
-<Step title="Press inside the building">
-With `Detect building` taken in the column, the footprints that are known show faintly on the map.
+<Step title="Click inside the building">
+Choose `Detect building` in the column first: the footprints that are known show faintly on the map.
+<Pointer>Click inside the building of the roof.</Pointer>
+<Touch>Press inside the building of the roof.</Touch>
 <Picture src="/help/find/detect/1.jpg" alt="The footprints of buildings shown faintly over the map" width={1120} height={640}>
   <Mark n={1} x={24.5} y={29.7} ring>Inside the building of the roof</Mark>
 </Picture>
 </Step>
-<Step title="Use it">
-Its outline is proposed, with its corners and its area.
-<Picture src="/help/find/detect/2.jpg" alt="The footprint proposed as an outline, and a note with its corners, its area, and Use this outline" width={1120} height={640}>
-  <Mark n={1} x={32.5} y={76.6}>`Use this outline`: take it as the roof's outline</Mark>
+<Step title="Press Use this outline">
+The footprint becomes the roof's outline, closed. A note beside it says `Footprint found`, with its corners, its area and how accurate it is. Press `Use this outline` to close the note.
+<Picture src="/help/find/detect/2.jpg" alt="The footprint taken as the outline, and a note with its corners, its area, and Use this outline" width={1120} height={640}>
+  <Mark n={1} x={44.5} y={63.4}>`Use this outline`: keep it and close the note</Mark>
 </Picture>
 </Step>
-<Step title="Check it against the roof">
-A footprint is approximate: drag its corners to the roof's edge you see.
+<Step title="Drag the corners onto the roof">
+A footprint is close, not exact: drag each corner onto the roof's edge you see, or type a length you measured in <HelpLink k="find.section.edges">Edges</HelpLink>.
 <Picture src="/help/find/detect/3.jpg" alt="The footprint taken as the roof's outline, its corners and its edges' lengths shown" width={1120} height={640}>
   <Mark n={1} x={34.5} y={13.4} ring>A corner, to drag</Mark>
 </Picture>
 </Step>
 </Steps>
 
-Where no footprint is known, the note says so: outline the roof <HelpLink k="find.tool.corners">by its corners</HelpLink> or <HelpLink k="find.tool.rectangle">by a rectangle</HelpLink> instead.
+Where no footprint is known, the note says `No footprint known here`: outline the roof <HelpLink k="find.tool.corners">by its corners</HelpLink> or <HelpLink k="find.tool.rectangle">as a rectangle</HelpLink> instead.
+
+## Undo
+
+<Pointer>Press <Key>⌘ Z</Key> or <Key>Ctrl Z</Key> to take the footprint back, and <Key>Shift</Key> with it to redo.</Pointer>
+<Touch>Drag a corner back to undo its move.</Touch>

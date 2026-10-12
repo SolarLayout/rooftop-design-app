@@ -1,6 +1,6 @@
 ---
-title: Draw a wall
-summary: Press each point of a wall in turn and end it on its last point, then give its height. A wall shades what is behind it.
+title: Add a wall
+summary: Click each point of the wall, end on the last one, then type its height.
 kind: tool
 related:
   - find.tool.move-an-obstacle
@@ -11,20 +11,31 @@ docs:
   section: What stands on the roof
 ---
 
+A wall is a line on the roof, straight or bent, that takes room from the modules and shades what stands behind it.
+
 <Steps>
-<Step title="Press each point of the wall">
-Choose `Wall` under `Obstacles` in the column, then press where it begins, then at each turn of it.
-<Picture src="/help/find/wall/1.jpg" alt="A wall of two points being drawn along the roof" width={1038} height={544}>
-  <Mark n={1} x={23.8} y={75.2}>Where it begins</Mark>
-  <Mark n={2} x={48.3} y={75.2} ring>The last point</Mark>
+<Step title="Click each point of the wall">
+Choose `Wall` under `Obstacles` in the column.
+<Pointer>Click where the wall begins, then at each turn of it.</Pointer>
+<Touch>Press where the wall begins, then at each turn of it.</Touch>
+<Picture src="/help/find/wall/1.jpg" alt="A wall of two points being drawn along the roof" width={1078} height={546}>
+  <Mark n={1} x={22.8} y={75.1}>Where it begins</Mark>
+  <Mark n={2} x={46.6} y={75.1} ring>The last point</Mark>
 </Picture>
 </Step>
-<Step title="End it, and give its height">
-<Pointer>Press the last point again, or <Key>Enter</Key>. A wall needs two points at least.</Pointer>
-<Touch>Press the last point again. A wall needs two points at least.</Touch>
-Its height is asked, as for a <HelpLink k="find.tool.box">box</HelpLink>.
-<Picture src="/help/find/wall/2.jpg" alt="The new wall on the roof, its name and height under it" width={1038} height={544}>
-  <Mark n={1} x={48.3} y={75.2} ring>The wall</Mark>
+<Step title="Click the last point again">
+<Pointer>Click the last point again, or press <Key>Enter</Key>, to end the wall. A wall needs at least 2 points. <Key>Esc</Key> takes back the last point.</Pointer>
+<Touch>Press the last point again to end the wall. A wall needs at least 2 points.</Touch>
+</Step>
+<Step title="Type its height">
+A card beside the wall asks for it, as for a <HelpLink k="find.tool.box">box</HelpLink>. Type it in `Height above the roof`, then press `Add` or <Key>Enter</Key>. The wall shows its name and height under it.
+<Picture src="/help/find/wall/3.jpg" alt="The new wall on the roof, its name and height under it" width={1078} height={546}>
+  <Mark n={1} x={34.7} y={75.1} ring>The wall</Mark>
 </Picture>
 </Step>
 </Steps>
+
+## Undo
+
+<Pointer>Press <Key>⌘ Z</Key> or <Key>Ctrl Z</Key> to take back the last step, and <Key>Shift</Key> with it to redo.</Pointer>
+<Touch>Press the bin of its row under `Obstacles` to remove the wall.</Touch>

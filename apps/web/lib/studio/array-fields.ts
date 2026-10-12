@@ -144,7 +144,7 @@ export function mountingFactsOf(array: ArraySpec, roof: Pick<Roof, "roof_type" |
 }
 
 /** The usual thing, said after Default (V2 · 7): why the app's value is what it is. */
-const USUAL: Partial<Record<MountingId, string>> = { tilt_deg: "low for wind on a flat roof", modules_in_tilt: "one module in each row" };
+const USUAL: Partial<Record<MountingId, string>> = { tilt_deg: "low for wind on a flat roof", modules_in_tilt: "one module up each row" };
 
 /** What stands under a mounting field: "Default · low for wind on a flat roof", or the user's "Yours · default 15°". */
 export const mountingHintOf = (id: MountingId, setBy: SetBy): string => (setBy.kind === "default" && USUAL[id] ? `${hintOf(setBy)} · ${USUAL[id]}` : hintOf(setBy));

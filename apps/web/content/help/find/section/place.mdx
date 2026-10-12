@@ -1,25 +1,26 @@
 ---
 title: Place
-summary: Where the roof entered by hand stands, as latitude and longitude. The shape you type is drawn around this point.
+summary: "Set where a roof entered by hand stands: search for it, or type its latitude and longitude."
 kind: section
 related:
   - find.section.shape
-  - studio.section.location
+  - find.tool.find-the-roof
+  - app.section.roof-type
 docs:
   page: find
   section: By hand
 ---
 
-## What it is
+`Place` shows in `Enter the roof by hand` only while the app does not know where the roof is: until a search finds the building, a corner is placed on the map, or both fields here hold a value.
 
-When you enter the roof by hand without a place found, `Latitude` and `Longitude` say where it is, in degrees with five decimals. North and east are positive; south and west are negative. A place found with the search is taken as it is, and the fields are not shown.
+## What to set
 
-## Where the numbers come from
+Search for the building in Find's first step, before `Enter the roof by hand`: the place found is used. Otherwise type the place here.
 
-A place found with the search fills both fields. If you switch to entering by hand after drawing on the map without searching, they start at the first corner you placed. You can also type them.
+- `Latitude` and `Longitude`: in degrees, `North and east positive, to 5 decimals.` South and west are negative. A maps link or the site's survey gives both.
 
-## How it behaves
+## What it changes
 
-The shape under `Shape` is laid out around this point, in metres east and north of it. Nothing is drawn until the place and the shape are both complete. Obstacles drawn on the map before you switched stay only while the fields hold the place they started at, the first corner you placed; when a place found with the search fills them, or you type another, the obstacles are dropped.
+The app draws the shape typed under <HelpLink k="find.section.shape">Shape</HelpLink> about this place, in metres east and north of it. Nothing is drawn until the place and the shape are both complete.
 
-When the roof is built, its place is taken at the middle of its outline. The sun of the design is worked out at that place, and weather from an online source is fetched for it.
+When the roof is built, the app takes its place at the middle of its outline, and works out the sun and the weather for that place. After `Enter the roof by hand` from a roof drawn on the map, the place is where the first corner was placed, and the obstacles drawn there stay.

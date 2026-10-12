@@ -36,7 +36,7 @@ export function ShadingSection() {
   const heading = useId();
   return (
     <section aria-labelledby={heading} className="flex flex-col gap-3">
-      <SectionHeading id={heading} help="studio.section.shading-over-the-year">
+      <SectionHeading id={heading} help="studio.section.shade-over-the-year">
         Shade over the year
       </SectionHeading>
       <p className="type-body-touch desktop:type-body text-text-2">The energy lost to shade, by its cause.</p>

@@ -14,7 +14,7 @@ const OPTIONS = [option("A", 1.3, ""), option("D", 0.71, "below target"), option
 describe("how the options are made", () => {
   test("three numbered lines: the target, the strings an MPPT takes with its current, the least shaded first", () => {
     expect(optionsRulesOf(NOTE, OPTIONS).lines).toEqual([
-      "Each option keeps the DC/AC ratio between 1.10 and 1.30. Above 1.40 it is marked.",
+      "The options in the DC/AC target, 1.10 to 1.30, come first; those outside it come after, marked.",
       "An MPPT takes at most 4 strings: 4 strings of 13.58 A stay under 65.0 A.",
       "The least shaded strings are used first.",
     ]);

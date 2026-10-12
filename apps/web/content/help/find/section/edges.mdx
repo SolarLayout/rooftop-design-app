@@ -1,31 +1,33 @@
 ---
 title: Edges
-summary: The length of each edge of the outline drawn on the map. Type a length you measured to correct one edge.
+summary: Type a length you measured to correct one edge of the outline.
 kind: section
 related:
-  - find.section.shape
   - app.section.obstacles
+  - app.section.roof-type
+  - find.tool.corners
 docs:
   page: find
   section: Outline the roof
 ---
 
-## While you draw
+Once the outline is closed, `Edges` is a row of Find's column: how many edges, and where the roof faces. Open it to see each edge's length.
 
-Until the outline is closed, the column counts the corners placed, beside `Undo` and `Clear`. A roof needs three corners at least. Click the first corner again, or press Enter, to close it.
+## What to set
 
-## The length of each edge
+Measure an edge on site, or take it from a drawing, and type its length into that edge's field. Leave the other edges as drawn.
 
-Once the outline is closed, `Edges` is a row of the column: how many edges, and where the roof faces. Open it: each edge has a field with its length in metres. The edges of a rectangle are named by the side they are on, such as `North` or `South-east`; the edges of any other outline are numbered, `Edge 1`, `Edge 2` and on.
+- Each edge's field: its length in metres. The edges of a rectangle are named by the side they face, such as `North` or `South-east`. The edges of any other outline are `Edge 1`, `Edge 2` and so on.
+- `Square the corners`: `Snaps to 90° when you are within 3°`. On at first. Keep it on for a roof with right-angled corners.
 
-Type a length you measured and the edge grows or shrinks about its middle: both its ends move along it by the same amount. When the outline is a rectangle and `Square the corners` is on, the edge opposite follows, so the roof stays a rectangle.
+## What it changes
 
-## Square the corners
+A typed length moves both ends of the edge along it by the same amount: the edge grows or shrinks about its middle. On a rectangle with `Square the corners` on, the edge opposite follows, so the roof stays a rectangle. The area on `Build this roof` follows the new outline.
 
-On by default. While a corner is placed or dragged, it snaps to a right angle with the edge before it when it is within a few degrees of one and close to the pointer. Four corners that are all close to right angles become an exact rectangle when the outline is closed; the first edge is kept as drawn.
+With `Square the corners` on, a corner placed or dragged near a right angle with the edge before it snaps to the right angle. Four corners all close to right angles become an exact rectangle when the outline is closed, the first edge kept as drawn.
 
-Turn it off for a roof whose corners are not square. A corner still snaps to run parallel to an edge already drawn.
+The row says where the roof faces: the direction its longest edge looks, on its side toward the equator.
 
-## Where the roof faces
+## When to change it
 
-The row of `Edges` says it: the direction the longest edge looks, on its side toward the equator. The area and the corners are said at the head of the column.
+When the imagery leans or blurs at the roof's edge, a measured length is truer than the one drawn. Turn `Square the corners` off for a roof whose corners are not right angles. A corner then still snaps to run parallel to an edge already drawn.

@@ -1,4 +1,4 @@
-// The one line on Find's map for the first outline (V2 · 4, D98; before it the tips of D79): "Drag the roof to move it ·
+// The one line on Find's map for the first outline (V2 · 4, D98; before it the tips of D79): "Click the roof, then drag it to move it ·
 // drag ○ to turn it", once the outline is closed, gone for good on this device once the roof is moved or turned. The
 // roof's own handles say the rest. Pure; the device remembers it gone (lib/device/tips-seen.ts).
 import { isClosedAndSettled, type OutlineState } from "./outline-state";

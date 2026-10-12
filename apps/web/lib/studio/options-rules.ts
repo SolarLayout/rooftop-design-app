@@ -33,10 +33,10 @@ export function optionsRulesOf(note: string, options: readonly Pick<DesignOption
   const perMppt = PER_MPPT.exec(note);
   const noLimit = NO_LIMIT.exec(note);
   if (!target || (!perMppt && !noLimit)) return { lines: [note.split(" ! ")[0] ?? note], missed: missedOf(options) };
-  const [, low, high, warn] = target;
+  const [, low, high] = target;
   return {
     lines: [
-      `Each option keeps the DC/AC ratio between ${low} and ${high}. Above ${warn} it is marked.`,
+      `The options in the DC/AC target, ${low} to ${high}, come first; those outside it come after, marked.`,
       perMppt ? `An MPPT takes at most ${perMppt[1]} strings: ${perMppt[2]} strings of ${perMppt[3]} A stay under ${perMppt[4]} A.` : `The inverter file gives no current limit per MPPT:${noLimit![1]} ${noLimit![2]}`,
       LEAST_SHADED,
     ],

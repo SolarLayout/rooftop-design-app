@@ -61,7 +61,7 @@ describe("Build", () => {
   });
 
   test("the one line on the map for the first outline", () => {
-    expect(MAP_LINE).toBe("Drag the roof to move it · drag ○ to turn it");
+    expect(MAP_LINE).toBe("Click the roof, then drag it to move it · drag ○ to turn it");
   });
 });
 

@@ -26,7 +26,7 @@ export function SeriesRange({ view, isUpdating = false }: { view: Sized; isUpdat
   return (
     <section aria-labelledby={heading} data-testid="series-range" data-state={isUpdating && bar ? "updating" : "settled"} className="flex flex-col gap-2">
       <div className="flex items-center gap-3">
-        <SectionHeading id={heading} help="studio.section.modules-in-series">
+        <SectionHeading id={heading} help="studio.section.modules-per-string">
           Modules per string
         </SectionHeading>
         {isUpdating && bar ? (

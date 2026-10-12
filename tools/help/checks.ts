@@ -2,6 +2,7 @@
 // nowhere. Each check gives its problems in words, with the topic's path; none is the topic as it should be.
 import { problemsOfPlace } from "../../apps/web/lib/docs/docs";
 import { isHelpKey } from "../../apps/web/lib/help/keys";
+import { findingsOf } from "../../apps/web/lib/words/voice-scan";
 import type { Topic } from "./generate";
 import type { Option } from "./options";
 
@@ -74,4 +75,40 @@ export function badDocsPlaces(topics: readonly Topic[]): string[] {
       ? [`${path}: names no place in the docs; give docs, its page and section`]
       : problemsOfPlace(frontmatter.docs).map((problem) => `${path}: docs: ${problem}`),
   );
+}
+
+// The voice of a topic (V2 · 11, plan/v2/voice.md §9): the summary the thing's job in under 20 words; no never-word and no
+// old name of board 12; the answer first: a section begins with what to set, a how-to is its numbered steps.
+
+const SUMMARY_WORDS = 20;
+
+/** A summary of 20 words or more. */
+export function longSummaries(topics: readonly Topic[]): string[] {
+  return topics.flatMap(({ path, frontmatter }) => {
+    const words = frontmatter.summary.split(/\s+/).filter(Boolean).length;
+    return words >= SUMMARY_WORDS ? [`${path}: the summary has ${words} words; say the thing's job in under ${SUMMARY_WORDS}`] : [];
+  });
+}
+
+/** A never-word, an old name or a "(s)" in the title, the summary or the body (lib/words/voice-scan.ts), once a topic and why. */
+export function voiceFindings(topics: readonly Topic[]): string[] {
+  return topics.flatMap(({ path, frontmatter, body }) => {
+    const whys = [frontmatter.title, frontmatter.summary, body].flatMap((said) => findingsOf(said).map(({ why }) => why));
+    return [...new Set(whys)].map((why) => `${path}: ${why}`);
+  });
+}
+
+/** The headings a section may begin with: what to set; for a choice among the app's results, choosing one; for a read-out, reading it. */
+export const FIRST_HEADINGS = ["What to set", "Choosing one", "Reading it"] as const;
+
+const FIRST = `${FIRST_HEADINGS.slice(0, -1).join(", ")} or ${FIRST_HEADINGS.at(-1)}`;
+
+/** A section whose first heading is not the answer; a how-to without its numbered steps. */
+export function answerNotFirst(topics: readonly Topic[]): string[] {
+  return topics.flatMap(({ path, frontmatter, body }) => {
+    if (frontmatter.kind === "tool") return /<Steps>/.test(body) ? [] : [`${path}: a how-to without its numbered steps; write them in <Steps>`];
+    const first = /^## (.+)$/m.exec(body)?.[1]?.trim();
+    if (first === undefined) return [`${path}: no heading; begin with ${FIRST}`];
+    return (FIRST_HEADINGS as readonly string[]).includes(first) ? [] : [`${path}: the first heading is "${first}"; begin with ${FIRST}`];
+  });
 }

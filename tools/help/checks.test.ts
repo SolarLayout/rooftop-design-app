@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { badDocsPlaces, brokenLinks, clashingAliases, driftedOptions, linksOf, typedNumbers } from "./checks";
+import { answerNotFirst, badDocsPlaces, brokenLinks, clashingAliases, driftedOptions, linksOf, longSummaries, typedNumbers, voiceFindings } from "./checks";
 import type { Topic } from "./generate";
 
 // The gate's checks, each on topics made for it: one that passes and the ways it fails.
@@ -74,7 +74,7 @@ describe("options", () => {
 describe("the place in the docs (issue 193, D91)", () => {
   test("every topic names a page of the docs and one of its sections", () => {
     const topics = [
-      topic("studio.section.day", { docs: { page: "sun", section: "The day" } }),
+      topic("studio.section.design-day", { docs: { page: "sun", section: "The day" } }),
       topic("studio.section.none"),
       topic("studio.section.moon", { docs: { page: "moon", section: "Craters" } }),
       topic("studio.section.lost", { docs: { page: "sun", section: "Moonlight" } }),
@@ -84,5 +84,42 @@ describe("the place in the docs (issue 193, D91)", () => {
       'studio/section/moon.mdx: docs: "moon" is no page of the docs',
       'studio/section/lost.mdx: docs: "Moonlight" is no section of The Sun lens',
     ]);
+  });
+});
+
+describe("the voice of a topic (V2 · 11, plan/v2/voice.md §9)", () => {
+  test("a summary under 20 words passes; one of 20 or more is refused", () => {
+    const short = topic("studio.section.a", { summary: "Set the parapet height and the strips kept free of modules at the edges and round obstacles." });
+    const long = topic("studio.section.b", { summary: "The parapet, the setback from the edges, the walkways, the clearance around obstacles and the roof's albedo, each one set here." });
+    expect(longSummaries([short, long])).toEqual(["studio/section/b.mdx: the summary has 21 words; say the thing's job in under 20"]);
+  });
+
+  test("a never-word or an old name in the title, the summary or the body is refused", () => {
+    const topics = [
+      topic("studio.section.a", { summary: "The engine spaces the rows." }),
+      topic("studio.section.b", {}, "## What to set\n\nSet the `Shade-free window` first."),
+      topic("studio.section.c", {}, "## What to set\n\nThe app spaces the rows."),
+    ];
+    expect(voiceFindings(topics)).toEqual(['studio/section/a.mdx: never "engine"', 'studio/section/b.mdx: the old name "Shade-free window"']);
+  });
+
+  test("a section answers first: its first heading is What to set (Choosing one for a choice, Reading it for a read-out)", () => {
+    const topics = [
+      topic("studio.section.a", {}, "Lead.\n\n## What to set\n\nWords.\n\n## What it changes"),
+      topic("studio.section.b", {}, "## Choosing one\n\nWords."),
+      topic("studio.section.c", {}, "## Reading it\n\nWords."),
+      topic("studio.section.d", {}, "## How it limits a string\n\n## What to set"),
+      topic("studio.section.e", {}, "No heading at all."),
+    ];
+    expect(answerNotFirst(topics)).toEqual([
+      'studio/section/d.mdx: the first heading is "How it limits a string"; begin with What to set, Choosing one or Reading it',
+      "studio/section/e.mdx: no heading; begin with What to set, Choosing one or Reading it",
+    ]);
+  });
+
+  test("a how-to is its numbered steps", () => {
+    const steps = topic("find.tool.a", { kind: "tool" }, '<Steps>\n<Step title="Click each corner">Words.</Step>\n</Steps>');
+    const words = topic("find.tool.b", { kind: "tool" }, "## What it does\n\nWords.");
+    expect(answerNotFirst([steps, words])).toEqual(["find/tool/b.mdx: a how-to without its numbered steps; write them in <Steps>"]);
   });
 });

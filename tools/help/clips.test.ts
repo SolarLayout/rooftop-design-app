@@ -44,7 +44,7 @@ describe("the clips", () => {
 
   test("D84's: moving and turning the roof, a rectangle, corners, an obstacle", () => {
     const clipsOf = (dir: string) => HOW_TOS.find((howTo) => howTo.dir === dir)?.clips?.map(({ name }) => name);
-    expect(clipsOf("find/move-the-roof")).toEqual(["3", "4"]);
+    expect(clipsOf("find/move-the-roof")).toEqual(["2", "3"]);
     expect(clipsOf("find/rectangle")).toEqual(["1", "2"]);
     expect(clipsOf("find/corners")).toEqual(["2"]);
     expect(clipsOf("find/move-an-obstacle")).toEqual(["2", "3"]);

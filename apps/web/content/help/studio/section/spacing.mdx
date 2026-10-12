@@ -1,29 +1,35 @@
 ---
 title: Spacing
-summary: How far apart the rows stand and which way they face. The engine decides both unless you switch it off and enter your own.
+summary: How far apart the rows stand so they do not shade each other in the shade-free hours.
 kind: section
 related:
-  - studio.section.shade-free-window
+  - studio.section.shade-free-hours
+  - studio.section.design-day
   - studio.section.mounting
 docs:
   page: array
   section: Spacing
 ---
 
-## What it says
+## What to set
 
-The section opens with one sentence: how far apart the rows stand, and the hours and the day they keep each other free of shade, as `Rows stand 6.45 m apart so that they do not shade each other from 09:00 to 16:00 on 21 Dec.` Then its fields: `Row spacing from the shade-free hours`, `Shade-free hours`, `Design day`, `Direction (azimuth)` and `Allow shaded positions`. On `Flat, east-west` there is no row spacing; a `Sloped, flush` roof has no spacing nor direction: its rows follow one another up the roof and face the way the roof slopes.
+Keep `Row spacing from the shade-free hours` on: the app spaces the rows so that one does not shade the next in the shade-free hours of the design day. The sentence at the top gives the result, as `Rows stand 6.45 m apart so that they do not shade each other from 09:00 to 16:00 on 21 Dec.`
 
-## Row spacing
+- `Row spacing from the shade-free hours`: the row spacing, or row pitch, is the distance on plan from the front edge of one row to the front edge of the next. While the switch is on, the line under it says `Off: type the spacing yourself`. Off, type `Row spacing` yourself: the line then gives the `Shade-free spacing` beside yours.
+- `Shade-free hours` and `Design day`: the <HelpLink k="studio.section.shade-free-hours">hours</HelpLink> and the <HelpLink k="studio.section.design-day">day</HelpLink> the rows keep free of each other's shade.
+- `Direction (azimuth)`: the way the rows face, clockwise from north. With `Follow the roof edge` on, they face square off the roof edge nearest the equator. Off, type the direction.
+- `Allow shaded positions`: off, positions shaded in the shade-free hours stay empty. On, they hold modules too.
 
-The distance on plan from the front edge of one row to the front edge of the next. With `Row spacing from the shade-free hours` on, the engine works it out from the <HelpLink k="studio.section.shade-free-window">shade-free hours</HelpLink> and rounds it up slightly, from the sun's lowest profile angle in those hours (the ground coverage ratio, GCR, follows from it). Switched off, the field starts at the last spacing and takes your own, and the sentence says what shade-free would be.
+An `East-west` roof has no row spacing: its units stand side by side. A `Sloped` roof has neither row spacing nor direction: its rows follow one another up the roof and face the way it slopes.
 
-## Direction (azimuth)
+## What it changes
 
-The direction the rows face, in degrees clockwise from north. With `Follow the roof edge` on, the rows face square off the roof edge closest to the equator; on an east-west roof the ridges run square to that edge, each unit's two faces turned east and west of it. Switched off, the field starts at the azimuth the layout used, and the line under it says where that edge faces.
+The app lays out the roof again, then runs the design. Rows closer together fit more modules, and shade each other outside the shade-free hours; the energy counts that shade.
 
-## How it behaves
+The app finds the sun's lowest profile angle in the shade-free hours, the sun's height seen square to the rows, and sets the rows far enough apart for it. It rounds the spacing up to the next five centimetres. A spacing typed under a row's depth plus a small gap is raised, and a note says so.
 
-Switching back on hands the value back to the engine. Each change lays the roof out again, and the design runs again.
+Under each field stands who set it: `Default`, or `Yours · default` with the app's value and `Reset`, which gives it back. A field with a switch says nothing while the app's value stands.
 
-Closed, the section is one line: how far apart the rows stand and the shade-free hours, with `Default` while the app's values hold and `Yours` once you give one.
+## When to change it
+
+Type a spacing when the racking fixes it, or when the client takes some shade for more modules: the sentence then gives the shade-free spacing beside yours. Turn off `Follow the roof edge` when the rows must face another way than the roof edge.

@@ -26,7 +26,7 @@ export type RoofField = RoofFieldSpec & {
 const USUAL: Partial<Record<RoofFieldId, string>> = {
   parapet_h: "measure it on site",
   setback_m: "usually 0.5 to 1.5 m",
-  walkway_every_modules: "one across each row",
+  walkway_every_modules: "counted in modules along a row",
   obstacle_clearance_m: "kept free on every side",
 };
 

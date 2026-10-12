@@ -32,7 +32,7 @@ export function ObstacleList({ state, tool, onTool, on }: Props) {
   return (
     <section aria-label="Obstacles" className="flex flex-col gap-row">
       <SectionHeading help="app.section.obstacles">Obstacles · {obstacles.length}</SectionHeading>
-      <p className="text-text-2">Choose a kind, then drag over it on the map.</p>
+      <p className="text-text-2">Choose a kind, then draw it on the map.</p>
       <ToolRow tools={OBSTACLE_TOOLS} tool={tool} onTool={onTool} label="Obstacle kinds" />
       {obstacles.length === 0 ? null : (
         <ul className="flex flex-col gap-1.5 pt-1">

@@ -1,29 +1,37 @@
 ---
 title: Module
-summary: The PV module of the design, read from its PAN file. Its size sets the layout; its ratings set the strings and the energy.
+summary: Choose the module. Its size sets the layout; its ratings set the strings and the energy.
 kind: section
 related:
   - studio.section.mounting
-  - studio.section.modules-in-series
+  - studio.section.modules-per-string
+  - studio.section.inverter
 docs:
   page: array
   section: Module
 ---
 
-## What the card shows
+## What to set
 
-The model; the maker as people know it, the rated power and the size; and `Change`. `Details` under the card opens the electrical figures in plain names: `Open-circuit voltage (Voc)`, `Short-circuit current (Isc)`, `Bifacial, rear gain` for a bifacial module, and the `Voc coefficient` the card is read with. When the engine has a note on the module, it stands under the card with an exclamation mark: a Voc coefficient outside the usual range for crystalline silicon, or a file that gives no size of the module. The result at the top right then says `1 to review`; pressed, the list holds the note, and a Voc coefficient outside the usual range has its field in the note, with the usual range and `Keep` and the value, to enter the value as it is.
+Choose the module the site buys.
 
-## Change
+1. Press `Change` on the module's card to open `Choose a module`, the app's library.
+2. Search by maker, model, file name or power, or press `Filter` to narrow the list by `Power`.
+3. Choose a row, then press `Use this module`. For a module the library does not hold, drop its module file (PAN) under the list, or press `Choose a file`; on a phone, press `Choose your own module file (PAN)`.
 
-`Change` opens `Choose a module`: the app's library of PAN files, its search first, over the maker, the model, the file's name and the power, then the list. `Filter` shows a filter by `Power`. `Use this module` reads the one chosen; a PAN file of your own can be chosen or dropped instead. A file that cannot be read leaves the module as it was and says why; a file over 256 KB, larger than any PAN file, is refused before it is sent. A new module lays the roof out again, and the design runs again.
+The card shows the model, the maker, the rated power and the size. `Details` opens the electrical figures: `Open-circuit voltage (Voc)`, `Short-circuit current (Isc)`, `Bifacial, rear gain` for a bifacial module, and the `Voc coefficient`, how much the voltage rises as the module gets colder.
 
-In the Array step the section is one line: the model and its power, with `Default` for the app's module and `Yours` once you read a file of your own. It is open the first time the step is.
+The section says `Default` for the app's module, and `Yours` once another is read.
 
-## What the module sets
+## What it changes
 
-Its size, with the <HelpLink k="studio.section.mounting">mounting</HelpLink>, sets the footprint of every position. Its voltages, its temperature coefficients and its highest system voltage set the lengths of string that fit. Its Imp and Isc set how many strings an MPPT can take. Its rated power sets the kWp and the DC/AC of each option.
+A new module lays out the roof again, then the design runs again.
 
-## The Voc coefficient
+- Its size, with the <HelpLink k="studio.section.mounting">mounting</HelpLink>, sets the footprint of each position, and so how many fit.
+- Its Voc, its temperature coefficients and its own highest voltage set how many modules a string holds.
+- Its currents, Imp and Isc, set how many strings an MPPT takes.
+- Its rated power sets the system's size in kWp, the DC/AC ratio of each option and the energy.
 
-The card shows the coefficient the PAN file states, or the one-diode model's when it states none. The strings are sized with the one-diode model's unless you enter a coefficient: when the datasheet gives one you trust, enter it under `Sizing temperatures` in the Strings step, or in the note that says it is outside the usual range. An entered coefficient ends that note.
+## When to change it
+
+When the site uses another module, or the client asks to compare two. An exclamation mark under the card says what to check: a Voc coefficient outside the usual range, or a file that gives no size of the module. For the first, enter the datasheet's coefficient under `Sizing temperatures` in the Strings step. For the second, choose a file that has the size. A file that cannot be read leaves the module as it was and says why.

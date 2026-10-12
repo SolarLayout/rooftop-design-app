@@ -1,0 +1,40 @@
+---
+title: Modules per string
+summary: How many modules one string can hold at your system voltage, and what limits it.
+kind: section
+related:
+  - studio.section.system-voltage
+  - studio.section.inverter
+  - studio.section.options
+docs:
+  page: strings
+  section: Modules in series
+aliases:
+  - studio.section.modules-in-series
+---
+
+## Reading it
+
+A string is a run of modules wired one after another, in series. The app sizes its length from the system voltage, the inverter, and the coldest and hottest hours of the site.
+
+Under the chosen option, one line says how many modules per string it uses and whether that length fits at the system voltage, with a tick. `Why` opens the proof:
+
+- the lengths that fit, from the fewest to the most, with a marker at the chosen length;
+- the coldest morning: the string's Voc, its voltage with no current flowing, against the lowest limit;
+- the hottest afternoon: the string's working voltage against the inverter's MPPT minimum.
+
+An option that misses its DC/AC target or an MPPT's current limit has an exclamation mark on the line instead, and the proof says what it misses.
+
+## What sets the ends
+
+When there are no options, the `Modules per string` bar stands in their place and names what sets each end.
+
+- The fewest, `MPPT minimum`: on the hottest afternoon, the highest ambient plus the cell rise, the string's working voltage must stay at or over the inverter's MPPT minimum.
+- The most, `Voc limit`: on the coldest morning, at the lowest ambient, the string's Voc must stay at or under the lowest of the system voltage, the inverter's highest DC voltage and the module's rating.
+- The most, `MPPT maximum`: on the coldest morning, the string's working voltage must stay at or under the inverter's MPPT maximum. The tighter of the two sets the end.
+
+The temperatures and the Voc coefficient are under `Sizing temperatures`. `Lowest ambient` and `Highest ambient` come from the weather, `Cell rise` from the roof type, and the Voc coefficient from the module file until you type the datasheet's.
+
+## When no length fits
+
+When the fewest modules the inverter needs are more than a string can hold, there are no options, your own included. The step says `No string length fits at` the voltage at its head, and the `Modules per string` bar says `None fit`. Its buttons are the ways out: `Choose another inverter`, `Change the sizing temperatures` and, where a higher voltage the equipment takes would fit a string, a button such as `Use 1500 V`. Press that one only where the site's code allows.

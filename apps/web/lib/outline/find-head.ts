@@ -33,7 +33,7 @@ export function findHeadOf({ stage, touch, area = null, corners = 0 }: Asked): F
 }
 
 /** The one line on the map for the first outline: the roof's own handles say the rest. */
-export const MAP_LINE = "Drag the roof to move it · drag ○ to turn it";
+export const MAP_LINE = "Click the roof, then drag it to move it · drag ○ to turn it";
 
 export type RoofTypeChoice = { id: RoofType; name: string; line: string; isDefault: boolean };
 

@@ -155,7 +155,7 @@ export function OptionCards({ cards, proof, bar, onChoose }: OptionCardsProps) {
         {shown.map(frame)}
         {folds ? (
           <button type="button" aria-expanded={isFoldedOpen} data-testid="options-folded" onClick={() => setFoldedOpen((open) => !open)} className="flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-row type-body-touch desktop:type-body text-text-2 focus-ring hovered:text-text">
-            <StatusMark kind="note" label="Below the DC/AC target" wordsShown={false} size={14} />
+            <StatusMark kind="note" label="Outside the DC/AC target" wordsShown={false} size={14} />
             {foldedWordsOf(folded)}
             <Icon name={isFoldedOpen ? "chevron-up" : "chevron-down"} size={14} />
           </button>
