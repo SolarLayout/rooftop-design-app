@@ -4,7 +4,7 @@ import { RunStep } from "@/components/ui/RunStep";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Example, Row, Section } from "./Example";
 
-const STEP = "Computing hourly shading for every module";
+const STEP = "Computing the hourly shading of the modules";
 
 // The widths of a label and of its value, for three cells of the vitals.
 const CELLS = [

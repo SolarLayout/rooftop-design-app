@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ..geometry import ROOF_TYPE_LABELS
+from ..geometry import roof_type_name
 
 if TYPE_CHECKING:
     from ..project import Design
@@ -35,7 +35,7 @@ def summary_rows(d: Design) -> list[tuple[str, str]]:
         ("Site", f"{p.roof.lat:.5f}° {north_south}, {p.roof.lon:.5f}° {east_west}"),
         (
             "Roof",
-            f"{ROOF_TYPE_LABELS[p.roof.roof_type]} · {p.roof.area_m2:,.0f} m² · "
+            f"{roof_type_name(p.roof.roof_type, p.roof.lat)} · {p.roof.area_m2:,.0f} m² · "
             f"usable {d.layout.usable.area:,.0f} m²",
         ),
         ("Structure", structure_label(d)),

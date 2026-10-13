@@ -32,7 +32,7 @@ test.describe("ProgressRing", () => {
   });
 
   test("with an arc, 20: it says how far to a screen reader, and stands still", async ({ page }) => {
-    const ring = example(page, "ring-arc").getByRole("progressbar", { name: "Computing hourly shading for every module" });
+    const ring = example(page, "ring-arc").getByRole("progressbar", { name: "Computing the hourly shading of the modules" });
 
     expect(await ring.boundingBox()).toMatchObject({ width: 20, height: 20 });
     await expect(ring).toHaveAttribute("aria-valuenow", "62");
@@ -65,8 +65,8 @@ test.describe("ProgressRing", () => {
     await expect(run).toHaveCSS("border-radius", "12px");
     await expect(run).toHaveCSS("padding-left", "14px");
     expect((await run.boundingBox())?.height).toBe(52);
-    await expect(run.getByRole("progressbar", { name: "Computing hourly shading for every module" })).toHaveAttribute("aria-valuenow", "62");
-    await expect(run.getByText("Computing hourly shading for every module")).toBeVisible();
+    await expect(run.getByRole("progressbar", { name: "Computing the hourly shading of the modules" })).toHaveAttribute("aria-valuenow", "62");
+    await expect(run.getByText("Computing the hourly shading of the modules")).toBeVisible();
     await expect(run.getByText("62 %")).toHaveCSS("color", COLOUR.text2);
     await expect(run.getByText("62 %")).toHaveCSS("font-size", "13px");
   });

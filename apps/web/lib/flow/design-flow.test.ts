@@ -85,7 +85,7 @@ const voltage = (volts: 600 | 1000 | 1500) => (document: Project) => ({ ...docum
 const choice = (key: string) => (document: Project) => ({ ...document, chosen_option: key });
 
 const UNREACHABLE = "The server could not be reached. Check your connection, then try again.";
-const SHADING = { type: "progress", step: "Computing hourly shading for every module", fraction: 0.4 } as const;
+const SHADING = { type: "progress", step: "Computing the hourly shading of the modules", fraction: 0.4 } as const;
 
 /** What was answered has reached the stores. */
 const settled = () => new Promise<void>((resolve) => setTimeout(resolve, 0));

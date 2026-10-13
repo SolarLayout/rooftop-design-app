@@ -11,7 +11,6 @@ OPERATIONS = {
     ("post", "/equipment/inverter"): "parseInverter",
     ("post", "/roof/import"): "importRoof",
     ("post", "/roof/from-map"): "roofFromMap",
-    ("post", "/roof/on-map"): "roofOnMap",
     ("post", "/layout"): "computeLayout",
     ("post", "/sun"): "computeSun",
     ("post", "/weather"): "loadWeather",
@@ -69,7 +68,6 @@ def test_a_point_is_a_pair_of_numbers(document):
 TAKE_AN_OUTLINE = (
     "/roof/import",
     "/roof/from-map",
-    "/roof/on-map",
     "/layout",
     "/sun",
     "/design",

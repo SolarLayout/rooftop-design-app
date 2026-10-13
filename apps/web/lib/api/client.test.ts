@@ -52,7 +52,6 @@ describe("the calls that answer with JSON", () => {
     ["parseInverter", "/api/equipment/inverter", { name: "a.OND", text: "x" }],
     ["importRoof", "/api/roof/import", { name: "roof.kmz", base64: "AAAA" }],
     ["roofFromMap", "/api/roof/from-map", { outline: [[73.86, 18.52], [73.861, 18.52], [73.861, 18.521]], roof_type: "flat_tilted" }],
-    ["roofOnMap", "/api/roof/on-map", PROJECT.roof],
     ["computeLayout", "/api/layout", PROJECT],
     ["computeSun", "/api/sun", { lat: 18.52, lon: 73.86, doy: 355 }],
     ["loadWeather", "/api/weather", { source: "pvgis", lat: 18.52, lon: 73.86 }],
@@ -117,7 +116,7 @@ describe("the calls that answer with JSON", () => {
 
 describe("runDesign", () => {
   const FITTING: DesignProgress = { type: "progress", step: "Fitting modules on the roof", fraction: 0 };
-  const SHADING: DesignProgress = { type: "progress", step: "Computing hourly shading for every module", fraction: 0.01 };
+  const SHADING: DesignProgress = { type: "progress", step: "Computing the hourly shading of the modules", fraction: 0.01 };
 
   test("tells the progress on the way and hands out the result", async () => {
     const { api, calls } = server(() =>

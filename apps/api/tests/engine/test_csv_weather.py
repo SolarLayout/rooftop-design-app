@@ -53,10 +53,10 @@ ERBS_NOTE = (
     "less exactly than a measurement (Erbs model)."
 )
 TEMPERATURE_NOTE = (
-    "site.csv has no air temperature. The app takes 25 °C for every hour and sizes the strings for "
+    "site.csv has no air temperature. The app takes 25 °C for all hours and sizes the strings for "
     "25 °C. In the Strings step, enter the site's lowest and highest ambient."
 )
-WIND_NOTE = "site.csv has no wind speed. The app takes 1 m/s for every hour."
+WIND_NOTE = "site.csv has no wind speed. The app takes 1 m/s for all hours."
 
 
 def test_a_file_of_time_and_irradiance_alone_has_the_three_notes_in_this_order():
@@ -188,7 +188,7 @@ def test_a_file_of_rows_under_an_hour_says_so_and_an_hourly_one_does_not():
     hourly = csv_weather.read(_year(EVERY_COLUMN, A_ROW), 18.52, 73.86, "site.csv")
 
     assert quarters.notes[0] == (
-        "site.csv gives the weather every 15 minutes. The app averages the rows of each hour: "
+        "site.csv gives the weather in steps of 15 minutes. The app averages the rows of each hour: "
         "the run takes one row an hour."
     )
     assert not any("minutes" in note for note in hourly.notes)

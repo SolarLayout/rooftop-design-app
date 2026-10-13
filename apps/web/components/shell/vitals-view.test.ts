@@ -59,7 +59,7 @@ const VOC_NOTE: Note = {
 };
 const SECOND_NOTE: Note = { ...VOC_NOTE, id: "layout-0", title: "Unit gap" };
 
-const SHADING = { type: "progress", step: "Computing hourly shading for every module", fraction: 0.62 } as const;
+const SHADING = { type: "progress", step: "Computing the hourly shading of the modules", fraction: 0.62 } as const;
 
 const UNREACHABLE = { code: "api_unreachable", message: "The server cannot be reached. Check the connection and try again.", status: null, details: null };
 
@@ -147,7 +147,7 @@ describe("while the energy is updated", () => {
     expect(view.last).toEqual({
       kind: "run",
       title: "Updating energy",
-      step: "Computing hourly shading for every module",
+      step: "Computing the hourly shading of the modules",
       share: 0.62,
     });
   });
@@ -171,7 +171,7 @@ describe("the first load", () => {
     expect(view.last).toEqual({
       kind: "run",
       title: "Opening Pune demo roof",
-      step: "Computing hourly shading for every module",
+      step: "Computing the hourly shading of the modules",
       share: 0.62,
     });
   });

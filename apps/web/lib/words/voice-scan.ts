@@ -1,6 +1,7 @@
 // What the voice forbids in a word the user meets (plan/v2/voice.md §6, §7; V2 · 12, D108): the words that never appear,
-// the old names of board 12, and "(s)". The strings of a source file are found as a person reads them: the quoted literals
-// and the text between tags, comments left out. Pure: the scan of the repository is words.test.ts.
+// the old names of board 12, "(s)", and "every" (the owner, 2026-10-13). The strings of a source file are found as a
+// person reads them: the quoted literals and the text between tags, comments left out. Pure: the scan of the repository
+// is words.test.ts.
 
 /** The words that never appear (§6), whole words, any case. */
 export const NEVER_WORDS = [
@@ -25,6 +26,8 @@ export function findingsOf(said: string): Finding[] {
   for (const word of NEVER_WORDS) if (new RegExp(`\\b${escaped(word)}\\b`, "i").test(said)) found.push({ said, why: `never "${word}"` });
   for (const name of OLD_NAMES) if (new RegExp(`\\b${escaped(name)}\\b`).test(said)) found.push({ said, why: `the old name "${name}"` });
   if (said.includes("(s)")) found.push({ said, why: 'no "(s)": say the count' });
+  // The owner's word (2026-10-13): no "every". The field `Walkway every` keeps its label.
+  if (/\bevery\b/i.test(said.replace(/Walkway every/g, ""))) found.push({ said, why: 'no "every": say "each", "all" or the number' });
   return found;
 }
 

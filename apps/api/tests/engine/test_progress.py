@@ -73,7 +73,7 @@ def test_an_event_names_a_step_and_a_fraction_and_cannot_be_changed():
 def test_the_steps_are_named_as_the_desktop_app_named_them():
     assert FITTING == "Fitting modules on the roof"
     assert loading_weather("PVGIS TMY") == "Loading PVGIS TMY weather"
-    assert SHADING == "Computing hourly shading for every module"
+    assert SHADING == "Computing the hourly shading of the modules"
     assert LOSSES == "Applying the losses"
     assert OPTIONS == "Sizing strings and simulating the options"
 

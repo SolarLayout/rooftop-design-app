@@ -64,7 +64,7 @@ export const PROJECT_FILE: HandoverItem = "project-file";
 
 /** What the files are, the same with or without an option. */
 const ALWAYS: Partial<Record<HandoverItem, string>> = {
-  "cad-layout": "The roof and every string, in metres",
+  "cad-layout": "The roof and its strings, in metres",
   "project-file": "The whole design, to open again in the app",
   "earth-model": "The roof and the modules on the map",
 };

@@ -93,7 +93,7 @@ export function ResultStates({ onPress }: Props) {
 
   return (
     <Section title="The result">
-      <Row label="At the top bar's right, on every step (D95)">
+      <Row label="At the top bar's right, on each step (D95)">
         {examples.map(({ name, caption, view }) => (
           <Example key={name} name={name} caption={caption}>
             <ResultChip chip={resultChipOf(view)} summary={summaryOf(view)} onOpenNotes={openNotes} onTryAgain={() => onPress("Try again")} />
@@ -175,7 +175,7 @@ export function ProjectAndSaving({ onPress }: Props) {
         <Example name="saving-saving" caption="Saving">
           <SaveState state="saving" onOpenNotes={openNotes} />
         </Example>
-        <Example name="saving-not-kept" caption="The demo, and every design before designs are kept">
+        <Example name="saving-not-kept" caption="The demo, and each design before designs are kept">
           <SaveState state="not-kept" onOpenNotes={openNotes} />
         </Example>
         <Example name="saving-not-saved" caption="Could not be saved: it opens the notes">

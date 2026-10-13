@@ -113,7 +113,7 @@ test.describe("TextField", () => {
   });
 
   test("a hint stands under the field in the style of what it says", async ({ page }) => {
-    const hint = example(page, "text-field-hint").getByText("In the name of every file");
+    const hint = example(page, "text-field-hint").getByText("In the name of each file");
 
     await expect(hint).toBeVisible();
     await expect(hint).toHaveCSS("font-size", "12px");

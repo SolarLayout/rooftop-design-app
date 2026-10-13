@@ -154,6 +154,7 @@ TOPICS = [
         ("Move or turn the roof", "", "How-to", "Drag the roof to move it, or its round handle to turn it. Its obstacles move with it."),
         ("Add a box", "Draw a box", "How-to", "Drag over a stair room or a plant room, then type its height above the roof."),
         ("Add a tank", "Draw a tank", "How-to", "Drag from the middle of a round tank to its edge, then type its height."),
+        ("Add a tree", "", "How-to", "Drag from the middle of a tree to the edge of its crown, then type its height."),
         ("Add a wall", "Draw a wall", "How-to", "Click each point of the wall, end on the last one, then type its height."),
         ("Add a building beside the roof", "Draw a building beside the roof", "How-to", "Outline a building next to the roof and type its height, so its shadow on the roof counts."),
         ("Move, turn or remove an obstacle", "", "How-to", "Select an obstacle on the map, then drag it, turn it by its handle, or remove it."),
@@ -184,7 +185,7 @@ TOPICS = [
         ("Options", "", "Answer", "Choose how the modules are wired to the inverter. The best option comes first."),
         ("Inverter", "", "Answer", "Choose the inverter the strings are sized for, from the library or your own file (OND)."),
         ("System voltage", "", "Answer", "The highest DC voltage of the system. It caps the modules in a string; it starts from your country."),
-        ("Modules a string", "Modules in series", "Answer", "How many modules one string can hold at your system voltage, and what limits it."),
+        ("Modules per string", "Modules in series", "Answer", "How many modules one string can hold at your system voltage, and what limits it."),
         ("MPPT loading", "", "Answer", "The strings on each input of the inverter, and their current against its limit."),
     ]),
 ]

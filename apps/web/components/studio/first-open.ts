@@ -6,7 +6,7 @@ import type { VitalId, VitalsView } from "@/components/shell/vitals-view";
 
 export type StatusLine = { mark: "done" | "working"; title: string; detail: string };
 
-export const COMPUTING: StatusLine = { mark: "working", title: "Computing the energy", detail: "Shading every module over the year. A few seconds." };
+export const COMPUTING: StatusLine = { mark: "working", title: "Computing the energy", detail: "Shading the modules over the year. A few seconds." };
 const FOLLOWS = "The energy follows each change you make.";
 const PLACED = "The array is on the roof";
 

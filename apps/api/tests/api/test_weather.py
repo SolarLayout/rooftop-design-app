@@ -202,9 +202,9 @@ def test_a_csv_of_time_and_irradiance_alone_says_what_was_taken_for_the_rest(cli
     assert body["notes"] == [
         "site.csv has no beam and diffuse irradiance. The app works them out from the global irradiance, "
         "less exactly than a measurement (Erbs model).",
-        "site.csv has no air temperature. The app takes 25 °C for every hour and sizes the strings for "
+        "site.csv has no air temperature. The app takes 25 °C for all hours and sizes the strings for "
         "25 °C. In the Strings step, enter the site's lowest and highest ambient.",
-        "site.csv has no wind speed. The app takes 1 m/s for every hour.",
+        "site.csv has no wind speed. The app takes 1 m/s for all hours.",
     ]
 
 

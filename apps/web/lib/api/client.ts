@@ -22,8 +22,6 @@ import type {
   ProjectRequest,
   ReportPages,
   RoofFile,
-  RoofOnMap,
-  RoofRequest,
   SunRequest,
   SunResponse,
   WeatherRequest,
@@ -111,7 +109,6 @@ export function createApi({ base = "/api", fetch: fetcher = globalThis.fetch }: 
     /** A new design from a roof outlined on the map, in local metres through the projection of the API. */
     roofFromMap: (drawn: OutlineOnMap, options?: CallOptions) => json<Project>("/roof/from-map", drawn, options),
     /** Where a roof and its obstacles are on the map. */
-    roofOnMap: (roof: RoofRequest, options?: CallOptions) => json<RoofOnMap>("/roof/on-map", roof, options),
     computeLayout: (project: ProjectRequest, options?: CallOptions) => json<LayoutResponse>("/layout", project, options),
     computeSun: (request: SunRequest, options?: CallOptions) => json<SunResponse>("/sun", request, options),
     loadWeather: (request: WeatherRequest, options?: CallOptions) => json<WeatherResponse>("/weather", request, options),

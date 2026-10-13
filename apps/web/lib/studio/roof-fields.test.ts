@@ -144,7 +144,7 @@ describe("the groups of Edges and access", () => {
       setback_m: "Default · usually 0.5 to 1.5 m",
       walkway_m: "Default · room to clean and repair the modules",
       walkway_every_modules: "Default · counted in modules along a row",
-      obstacle_clearance_m: "Default · kept free on every side",
+      obstacle_clearance_m: "Default · kept free all round",
     });
     const eastWest = roofGroupsOf({ ...DEMO, roof_type: "flat_ew" }).flatMap((group) => group.fields).find((field) => field.id === "walkway_every_rows");
     expect(eastWest?.hint).toBe("Default · counted in rows");

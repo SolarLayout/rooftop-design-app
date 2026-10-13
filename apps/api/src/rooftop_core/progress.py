@@ -10,7 +10,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 FITTING = "Fitting modules on the roof"
-SHADING = "Computing hourly shading for every module"
+SHADING = "Computing the hourly shading of the modules"
 LOSSES = "Applying the losses"
 OPTIONS = "Sizing strings and simulating the options"
 

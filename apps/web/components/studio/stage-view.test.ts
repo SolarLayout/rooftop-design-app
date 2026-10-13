@@ -119,7 +119,7 @@ describe("the line under the Strings lens's title (plan/phase-07-plan.md, decisi
   test("with an option: its strings, its inverters with their MPPTs, and the positions it leaves", () => {
     expect(stringsLineOf({ positions: 790, mppts: 6, option: A, noOptions: null })).toBe("22 strings of 29 modules · 1 inverter, 6 MPPT · 152 positions not used");
     expect(stringsLineOf({ positions: 790, mppts: 6, option: D, noOptions: null })).toBe("27 strings of 26 modules · 2 inverters, 6 MPPT each · 88 positions not used");
-    expect(stringsLineOf({ positions: 29, mppts: 6, option: { n_series: 29, n_strings: 1, n_inverters: 1, n_modules: 29 } as never, noOptions: null })).toBe("1 string of 29 modules · 1 inverter, 6 MPPT · every position used");
+    expect(stringsLineOf({ positions: 29, mppts: 6, option: { n_series: 29, n_strings: 1, n_inverters: 1, n_modules: 29 } as never, noOptions: null })).toBe("1 string of 29 modules · 1 inverter, 6 MPPT · all positions used");
   });
 
   test("before a voltage, and where no length fits, the positions are ready", () => {
@@ -167,9 +167,9 @@ describe("the strings on the roof in words", () => {
     expect(stringsWordsOf({ option, strings: two, colouring: "inverter", positions: 87, selected: null }).strings).toBe("3 strings of option A, coloured by inverter: INV-1, 1 string. INV-2, 2 strings");
   });
 
-  test("the positions not used, or every position used", () => {
+  test("the positions not used, or all positions used", () => {
     expect(of("mppt").unused).toBe("558 positions not used");
-    expect(stringsWordsOf({ option, strings, colouring: "mppt", positions: 232, selected: null }).unused).toBe("Every position used");
+    expect(stringsWordsOf({ option, strings, colouring: "mppt", positions: 232, selected: null }).unused).toBe("All positions used");
     expect(stringsWordsOf({ option, strings, colouring: "mppt", positions: 233, selected: null }).unused).toBe("1 position not used");
   });
 

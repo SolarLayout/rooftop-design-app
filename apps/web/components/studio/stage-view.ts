@@ -55,7 +55,7 @@ export function stringsLineOf({ positions, mppts, option, noOptions, isSizing = 
   if (option && mppts !== null) {
     const unused = positions - option.n_modules;
     const inverters = `${counted(option.n_inverters, "inverter", "inverters")}, ${shown(mppts, 0)} MPPT${option.n_inverters === 1 ? "" : " each"}`;
-    const left = unused > 0 ? `${counted(unused, "position", "positions")} not used` : "every position used";
+    const left = unused > 0 ? `${counted(unused, "position", "positions")} not used` : "all positions used";
     return `${counted(option.n_strings, "string", "strings")} of ${shown(option.n_series, 0)} modules · ${inverters} · ${left}`;
   }
   if (noOptions === null) return isSizing ? `${shown(positions, 0)} positions · sizing the strings` : null;
@@ -132,7 +132,7 @@ export function stringsWordsOf({ option, strings, colouring, positions, selected
   const callout = string ? calloutOfString(string, option.cable_schedule.find((row) => row.string === string.label), { inverters: option.system.inverters.length }) : null;
   return {
     strings: `${head}${turn}: ${parts.join(". ")}`,
-    unused: unused > 0 ? `${counted(unused, "position", "positions")} not used` : "Every position used",
+    unused: unused > 0 ? `${counted(unused, "position", "positions")} not used` : "All positions used",
     inverters: `${places.length === 1 ? "Inverter" : "Inverters"}: ${places.join(". ")}`,
     selected: callout ? `${callout.title}, selected: ${callout.detail}` : null,
   };

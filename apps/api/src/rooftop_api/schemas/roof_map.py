@@ -1,8 +1,8 @@
-"""A roof drawn on the map, in WGS84, and a roof shown on the map again."""
+"""A roof drawn on the map, in WGS84."""
 
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from rooftop_api.schemas.common import Input, Latitude, Longitude
 from rooftop_api.schemas.roof import Metres, RoofType, Size
@@ -38,10 +38,3 @@ class OutlineOnMap(Input):
     name: Name | None = Field(
         default=None, description="The name of the new design; the API's default when left out"
     )
-
-
-class RoofOnMap(BaseModel):
-    """A roof of a project, in WGS84, so that the map shows it where it is."""
-
-    outline: list[LonLat]
-    obstacles: list[MapShape]

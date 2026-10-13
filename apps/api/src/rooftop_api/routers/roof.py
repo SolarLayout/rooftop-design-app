@@ -20,9 +20,3 @@ def roof_from_map(drawn: schemas.OutlineOnMap) -> schemas.Project:
     """A new project from a roof outlined on the map: the outline and the obstacles in local metres around
     the roof's centroid, through the engine's projection; everything else at its default."""
     return roof_map.from_map(drawn)
-
-
-@router.post("/on-map", response_model=schemas.RoofOnMap, operation_id="roofOnMap")
-def roof_on_map(roof: schemas.Roof) -> schemas.RoofOnMap:
-    """Where a roof and its obstacles are on the map, so that they can be shown and outlined again."""
-    return roof_map.on_map(roof)

@@ -71,7 +71,7 @@ export function Fields({ onPress }: Props) {
             <TextField label="Name" {...NAME} shownAs="focus" className="w-full" value="Pune demo roof, block B" onCommit={() => undefined} />
           </Example>
           <Example name="text-field-hint" caption="With a hint under it">
-            <TextField label="Name" {...NAME} detail="In the name of every file" className="w-full" value="Pune demo roof" onCommit={() => undefined} />
+            <TextField label="Name" {...NAME} detail="In the name of each file" className="w-full" value="Pune demo roof" onCommit={() => undefined} />
           </Example>
         </div>
       </Row>

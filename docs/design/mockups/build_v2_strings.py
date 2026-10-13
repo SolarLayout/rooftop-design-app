@@ -121,7 +121,7 @@ def why(touch: bool) -> str:
              ("On the hottest afternoon, 64.3 °C in the cell", "It gives 1,097 V, over the inverter's 500 V minimum")]
     rows = "".join(f'<div style="display: flex; flex-direction: column; gap: 2px">{text("body", a, touch, TEXT_2)}{text("body", b, touch)}</div>' for a, b in lines)
     return (f'<div style="margin: 0 0 12px 36px; padding: 12px; background: {SURFACE_2}; border-radius: {RADIUS["control"]}px; display: flex; flex-direction: column; gap: 12px">'
-            f'<div>{text("body", "Modules a string can hold at 1500 V", touch, TEXT_2)}{band}</div>{rows}</div>')
+            f'<div>{text("body", "Modules per string at 1500 V", touch, TEXT_2)}{band}</div>{rows}</div>')
 
 
 def options_section(touch: bool, why_open: bool = False, all_open: bool = False) -> str:
@@ -192,7 +192,7 @@ def how_made(touch: bool) -> str:
 
 def own_form(touch: bool) -> str:
     return (f'{section_title("Your own option", touch)}{explained("Your own option", touch)}'
-            f'<div style="display: flex; flex-direction: column; gap: 8px">{field("Modules a string", "26", "", "14 to 29 fit", touch, 96)}'
+            f'<div style="display: flex; flex-direction: column; gap: 8px">{field("Modules per string", "26", "", "14 to 29 fit", touch, 96)}'
             f'{field("Strings", "24", "", "Up to 24 on this inverter", touch, 96)}{field("Inverters", "1", "", "", touch, 96)}</div>'
             f'<div style="display: flex; align-items: center; gap: 8px">{mark("fits", 16)}{text("body", "Fits · 349.44 kWp · DC/AC ratio 1.27", touch)}</div>'
             f'<div style="display: flex; justify-content: flex-end; gap: 8px">{button("Cancel", "quiet", "standard", touch)}{button("Add option", "secondary", "standard", touch)}</div>')

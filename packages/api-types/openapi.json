@@ -3094,47 +3094,6 @@
         "title": "RoofInput",
         "type": "object"
       },
-      "RoofOnMap": {
-        "description": "A roof of a project, in WGS84, so that the map shows it where it is.",
-        "properties": {
-          "obstacles": {
-            "items": {
-              "$ref": "#/components/schemas/MapShape"
-            },
-            "title": "Obstacles",
-            "type": "array"
-          },
-          "outline": {
-            "items": {
-              "maxItems": 2,
-              "minItems": 2,
-              "prefixItems": [
-                {
-                  "description": "Degrees, east positive",
-                  "maximum": 180.0,
-                  "minimum": -180.0,
-                  "type": "number"
-                },
-                {
-                  "description": "Degrees, north positive",
-                  "maximum": 90.0,
-                  "minimum": -90.0,
-                  "type": "number"
-                }
-              ],
-              "type": "array"
-            },
-            "title": "Outline",
-            "type": "array"
-          }
-        },
-        "required": [
-          "outline",
-          "obstacles"
-        ],
-        "title": "RoofOnMap",
-        "type": "object"
-      },
       "SeriesRange": {
         "description": "How many modules may be in series, and what sets the limits.",
         "properties": {
@@ -4524,48 +4483,6 @@
           }
         },
         "summary": "Import Roof",
-        "tags": [
-          "roof"
-        ]
-      }
-    },
-    "/roof/on-map": {
-      "post": {
-        "description": "Where a roof and its obstacles are on the map, so that they can be shown and outlined again.",
-        "operationId": "roofOnMap",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Roof"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RoofOnMap"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "The request is refused. The message says why. An outline over 30,000 m\u00b2 is refused with the code roof_too_large, before any work."
-          }
-        },
-        "summary": "Roof On Map",
         "tags": [
           "roof"
         ]

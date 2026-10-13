@@ -254,26 +254,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/roof/on-map": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Roof On Map
-         * @description Where a roof and its obstacles are on the map, so that they can be shown and outlined again.
-         */
-        post: operations["roofOnMap"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/sun": {
         parameters: {
             query?: never;
@@ -1843,19 +1823,6 @@ export interface components {
             width: number;
         };
         /**
-         * RoofOnMap
-         * @description A roof of a project, in WGS84, so that the map shows it where it is.
-         */
-        RoofOnMap: {
-            /** Obstacles */
-            obstacles: components["schemas"]["MapShape"][];
-            /** Outline */
-            outline: [
-                number,
-                number
-            ][];
-        };
-        /**
          * SeriesRange
          * @description How many modules may be in series, and what sets the limits.
          */
@@ -2611,39 +2578,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ImportedRoof"];
-                };
-            };
-            /** @description The request is refused. The message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorResponse"];
-                };
-            };
-        };
-    };
-    roofOnMap: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["Roof"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RoofOnMap"];
                 };
             };
             /** @description The request is refused. The message says why. An outline over 30,000 m² is refused with the code roof_too_large, before any work. */

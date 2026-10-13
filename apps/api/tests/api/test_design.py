@@ -11,7 +11,7 @@ pytestmark = pytest.mark.slow
 
 FITTING = "Fitting modules on the roof"
 WEATHER = "Loading PVGIS TMY weather"
-SHADING = "Computing hourly shading for every module"
+SHADING = "Computing the hourly shading of the modules"
 LOSSES = "Applying the losses"
 OPTIONS = "Sizing strings and simulating the options"
 ONE_DECIMAL = 0.05
@@ -726,9 +726,9 @@ def test_csv_weather_in_the_project_is_checked_and_used(client, demo):
     assert result["weather_notes"] == [
         "site.csv has no beam and diffuse irradiance. The app works them out from the global irradiance, "
         "less exactly than a measurement (Erbs model).",
-        "site.csv has no air temperature. The app takes 25 °C for every hour and sizes the strings for "
+        "site.csv has no air temperature. The app takes 25 °C for all hours and sizes the strings for "
         "25 °C. In the Strings step, enter the site's lowest and highest ambient.",
-        "site.csv has no wind speed. The app takes 1 m/s for every hour.",
+        "site.csv has no wind speed. The app takes 1 m/s for all hours.",
     ]
     assert "Loading CSV file weather" not in [e.data.get("step") for e in events_of(response)]
 

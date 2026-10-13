@@ -522,8 +522,8 @@ def detect_card() -> str:
             180,
             220,
             "Footprint found · 4 corners · 3,570 m²",
-            "From Overture Maps · approximate, about 0.6 m. Accept it, or drag the corners to the roof edge you see.",
-            f'<div style="display: flex; gap: 8px">{primary("Use this outline", 36)}{quiet("Adjust", 36)}</div>',
+            "Taken as the roof's outline, from Overture Maps, accurate to about 0.6 m. Drag its corners to the roof's edge.",
+            f'<div style="display: flex; gap: 8px">{quiet("Undo", 36)}</div>',
             width=340,
         )
         + f'<div style="position: absolute; left: 50%; top: 16px; transform: translateX(-50%)">{toolbar("Detect building")}</div>'

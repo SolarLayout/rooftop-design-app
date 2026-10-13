@@ -42,7 +42,7 @@ test.describe("the client of the API", () => {
     const steps = heard.map((progress) => progress.step).filter((step, n, all) => step !== all[n - 1]);
     expect(steps).toEqual([
       "Fitting modules on the roof",
-      "Computing hourly shading for every module",
+      "Computing the hourly shading of the modules",
       "Applying the losses",
       "Sizing strings and simulating the options",
     ]);
@@ -69,12 +69,6 @@ test.describe("the client of the API", () => {
     expect(project.roof.lat).toBeCloseTo(18.52, 6);
     expect(project.roof.lon).toBeCloseTo(73.86, 6);
     expect([project.name, project.roof.source, project.roof.roof_type, project.system_voltage]).toEqual(["Pune, Maharashtra", "map", "flat_ew", null]);
-
-    const back = await api.roofOnMap(project.roof);
-    back.outline.forEach(([lon, lat], n) => {
-      expect(lon).toBeCloseTo(drawn[n][0], 7);
-      expect(lat).toBeCloseTo(drawn[n][1], 7);
-    });
   });
 
   test("without a system voltage the result says what it waits for", async ({ baseURL }) => {
