@@ -61,6 +61,8 @@ Waaree (#248, 2026-10-13): its 22 current framed datasheets (Elite and Elite R T
 from the download center's Product Datasheet section, 159 files. Assumed where silent: the bifaciality of Bi-53 and Bi-57
 (0.70, as the other Ahnay PERC datasheets state) and 3 bypass diodes on the Ahnay and Arka sheets. Left out: the flexible
 WFLW panels (no temperature coefficients in their text) and BiN-08's revision 10 (revision 12 has the same figures).
+The specs, the list of datasheets with their URLs, and the script that writes the specs from the datasheets' text are
+in `datasheet-to-pan-ond`, `datasheets/waaree/` (its README says how to rebuild them).
 
 ## What the library held
 
