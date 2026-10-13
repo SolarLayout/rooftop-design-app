@@ -9,7 +9,8 @@ focus ring. An icon-only button has an `aria-label`.
 ## Buttons
 
 V2 (D94): three heights on desktop, 32 compact, 40 standard, 48 primary; on phone and tablet 44, 44 and 48. One row, one
-height. Every button has the control's radius, 8.
+height. Every button has the control's radius, 8, but the large orange primary of 48 (`primary`, `xl`, and Find's Search):
+the radius of Home's Find the roof, 14 (`radius-cta`; the owner, 2026-10-13).
 
 | Kind | Height | Surface | Text | Shadow | Use |
 |---|---|---|---|---|---|
@@ -830,7 +831,7 @@ address search is not available right now. Paste coordinates or a maps link inst
 
 Beside the search (the boards "UI fixes · My location and Search on every size", D78): on Find, one place at the field's
 right, on every size: before anything is typed, Use my location, the square of 48 (`surface-1`, border `line`,
-`radius-card-s`, `shadow-float`; its tooltip "Use my location" on desktop); with something typed, Search, primary, 48 high,
+`radius-card-s`, `shadow-float`; its tooltip "Use my location" on desktop); with something typed, Search, primary, 48 high, `radius-cta`,
 which does what Enter does; once a place is found, nothing. On Home Use my location is a link under the search (V2 · 9). In
 code: `besideTheField` in `lib/places/beside-the-field.ts`.
 
