@@ -732,8 +732,16 @@ export interface components {
             vmpp_max: number;
             /** Vmpp Min */
             vmpp_min: number;
-            /** Vmpp Nom */
+            /**
+             * Vmpp Nom
+             * @description The nominal MPP voltage; 0 when the file gives neither VmppNom nor VNomEff
+             */
             vmpp_nom: number;
+            /**
+             * Vmpp Nom From
+             * @description Where vmpp_nom comes from: "VmppNom", the file's own; "VNomEff", the middle of the voltages its efficiency was measured at, when the file gives no VmppNom; "" when it gives neither
+             */
+            vmpp_nom_from: string;
             /**
              * Width M
              * @description Width of the box; 0 when the file does not give it

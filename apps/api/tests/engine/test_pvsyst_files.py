@@ -1,6 +1,8 @@
 # Copied from rooftop-design (SolarLayout/rooftop-design) at commit bf2cb67.
-from rooftop_core.io.pvsyst import read_ond, read_pan
-from tests.equipment import fixture_path
+import re
+
+from rooftop_core.io.pvsyst import parse_ond, read_ond, read_pan
+from tests.equipment import fixture_path, fixture_text
 
 
 def test_pan_reads_one_diode_parameters():
@@ -17,5 +19,26 @@ def test_ond_reads_curves_and_limits():
     inv = read_ond(fixture_path("Test-S.ond"))
     assert inv.pnom_kw == 275 and inv.n_mppt == 6 and inv.n_inputs == 28
     assert (inv.vmpp_min, inv.vmpp_max, inv.vmpp_nom, inv.vabs_max) == (500, 1500, 1080, 1500)
+    assert inv.vmpp_nom_from == "VmppNom"
     assert sorted(inv.curves) == [930.0, 1189.0, 1300.0]
     assert inv.mppt_current_limit == 65.0  # IMaxDC 390 A over 6 MPPT (decision F2)
+
+
+def _without(text: str, *keys: str) -> str:
+    for key in keys:
+        text = re.sub(rf"(?im)^\s*{key}\s*=.*\r?\n", "", text)
+    return text
+
+
+def test_ond_without_vmppnom_takes_the_middle_of_its_efficiency_voltages():
+    """VNomEff holds the DC voltages its efficiency was measured at: the MPPT's minimum, the rated voltage
+    and the maximum (EN 50530); the middle one stands for VmppNom when the file has none."""
+    inv = parse_ond(_without(fixture_text("Test-S.ond"), "VmppNom"), "Test-S.ond")
+    assert inv.vmpp_nom == 1189.0
+    assert inv.vmpp_nom_from == "VNomEff"
+
+
+def test_ond_without_vmppnom_or_vnomeff_has_no_nominal_voltage():
+    inv = parse_ond(_without(fixture_text("Test-S.ond"), "VmppNom", "VNomEff"), "Test-S.ond")
+    assert inv.vmpp_nom == 0.0
+    assert inv.vmpp_nom_from == ""

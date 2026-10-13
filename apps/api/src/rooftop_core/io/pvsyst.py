@@ -230,7 +230,8 @@ class Inverter:
     pmax_kw: float = 0.0
     vmpp_min: float = 0.0
     vmpp_max: float = 0.0
-    vmpp_nom: float = 0.0
+    vmpp_nom: float = 0.0           # the nominal MPP voltage; 0 = neither VmppNom nor VNomEff in the file
+    vmpp_nom_from: str = ""         # "VmppNom", or "VNomEff" (the middle of its efficiency voltages), or ""
     vabs_max: float = 0.0
     pseuil_w: float = 0.0
     idc_max_a: float = 0.0          # whole inverter
@@ -304,6 +305,12 @@ def parse_ond(text: str, source: str = "") -> Inverter:
         source=source,
     )
     vnoms = _floats(kv, "VNomEff")
+    if inv.vmpp_nom:
+        inv.vmpp_nom_from = "VmppNom"
+    elif len(vnoms) >= 3:
+        # VNomEff: the DC voltages the efficiency was measured at, the MPPT's minimum, the rated voltage and
+        # the maximum (EN 50530). The middle one stands for the nominal MPP voltage the file does not give.
+        inv.vmpp_nom, inv.vmpp_nom_from = vnoms[1], "VNomEff"
     for i, v in enumerate(vnoms[:3], start=1):
         pts = _profile(lines, f"ProfilPIOV{i}")
         if len(pts) >= 3:
