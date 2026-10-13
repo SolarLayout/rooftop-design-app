@@ -8,7 +8,9 @@ import {
   labelOf,
   mapShapesOf,
   nameOf,
+  numberedOf,
   obstacleMovedBy,
+  sharedLabelOf,
   obstacleTurnedAbout,
   roundOf,
   type Obstacle,
@@ -107,6 +109,20 @@ describe("the words", () => {
 
   test("the label on the map: the name and the height", () => {
     expect(labelOf(box([], 3))).toBe("Box 1 · 3.0 m high");
+  });
+
+  // Issue 238, item 32: obstacles close together, of one name but its number and of one height, share one label.
+  test("a name and its number: the name before it, and the number; a name without one has none", () => {
+    expect(numberedOf("AC unit 4")).toEqual({ base: "AC unit", number: 4 });
+    expect(numberedOf("Box 12")).toEqual({ base: "Box", number: 12 });
+    expect(numberedOf("Stair room")).toBeNull();
+    expect(numberedOf("12")).toBeNull();
+  });
+
+  test("the label shared: the name, the numbers as a run or a list, the height", () => {
+    expect(sharedLabelOf("AC unit", [3, 1, 2, 4], 1.2)).toBe("AC unit 1–4 · 1.2 m high");
+    expect(sharedLabelOf("AC unit", [1, 3, 4], 1.2)).toBe("AC unit 1, 3 and 4 · 1.2 m high");
+    expect(sharedLabelOf("Box", [2, 3], 1.2)).toBe("Box 2 and 3 · 1.2 m high");
   });
 });
 

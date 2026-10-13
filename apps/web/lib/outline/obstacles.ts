@@ -108,6 +108,25 @@ export function labelOf(obstacle: Obstacle): string {
   return `${obstacle.name} · ${shown(obstacle.height, 1)} m high`;
 }
 
+/** A name that ends in a number, as Find and the demo give them ("AC unit 4", "Box 12"): what stands before it, and it. */
+export function numberedOf(name: string): { base: string; number: number } | null {
+  const match = /^(.*\S)\s+(\d+)$/.exec(name.trim());
+  return match ? { base: match[1], number: Number(match[2]) } : null;
+}
+
+/** The numbers of a shared label: a run as "1–4", else a list, "1, 3 and 4". */
+function numbersOf(numbers: readonly number[]): string {
+  const sorted = [...new Set(numbers)].sort((a, b) => a - b);
+  const isRun = sorted.length > 2 && sorted.every((number, n) => n === 0 || number === sorted[n - 1] + 1);
+  if (isRun) return `${sorted[0]}–${sorted.at(-1)}`;
+  return sorted.length > 1 ? `${sorted.slice(0, -1).join(", ")} and ${sorted.at(-1)}` : String(sorted[0] ?? "");
+}
+
+/** The one label of obstacles close together of one name and one height (issue 238, item 32): "AC unit 1–4 · 1.2 m high". */
+export function sharedLabelOf(base: string, numbers: readonly number[], height: number): string {
+  return `${base} ${numbersOf(numbers)} · ${shown(height, 1)} m high`;
+}
+
 /** The point of a shape its label stands under: the lowest, and of those the leftmost. */
 export function foldOf(shape: Shape): XY {
   if (isRound(shape.kind)) {

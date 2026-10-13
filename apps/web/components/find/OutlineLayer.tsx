@@ -16,7 +16,7 @@ import { ghostOf, liftLabelPlaceOf, turnHandleOfPicked } from "@/lib/outline/lif
 import { drawsOf } from "@/lib/outline/draws";
 import { handleReachOf, shortestSideOf } from "@/lib/outline/handle-reach";
 import { followsOf, type Held } from "@/lib/outline/held";
-import { labelPlacesOf, type Rect } from "@/lib/outline/label-places";
+import { obstacleLabelsOf, type Rect } from "@/lib/outline/label-places";
 import { mapCursorOf } from "@/lib/outline/map-cursor";
 import { isInside, type Lift } from "@/lib/outline/roof-move";
 import { isClosedAndSettled, type Lifted, type OutlineEvent, type OutlineState } from "@/lib/outline/outline-state";
@@ -888,19 +888,34 @@ function fitOnScreen(map: MapLibre, state: OutlineState, { labels, obstacleLabel
     ...labels.map((label) => rectOfCentred(map, label, EDGE_LABEL_BELOW_PX)),
     ...others.flatMap((other) => (other instanceof HTMLElement ? [rectOfElement(map, other)] : [])),
   ];
-  const places = labelPlacesOf({
-    taken,
-    labels: state.obstacles.map((obstacle, index) => {
-      const element = obstacleLabels[index].getElement();
-      return { points: ringOf(obstacle).map(onScreen), size: { width: element.offsetWidth, height: element.offsetHeight }, selected: obstacle.id === state.selectedObstacle };
-    }),
+  // Each label measured with its own words; a label shared by obstacles close together (item 32) is measured with its words
+  // in a label's element, then shown on the first of them.
+  const sizeOfElement = (element: HTMLElement) => ({ width: element.offsetWidth, height: element.offsetHeight });
+  const asked = state.obstacles.map((obstacle, index) => {
+    const element = obstacleLabels[index].getElement();
+    const words = labelOf(obstacle);
+    element.textContent = words;
+    return { points: ringOf(obstacle).map(onScreen), size: sizeOfElement(element), selected: obstacle.id === state.selectedObstacle, name: obstacle.name, height: obstacle.height, words };
   });
-  places.forEach((place, index) => {
+  const [measuring] = obstacleLabels;
+  const sizeOf = (words: string) => {
+    const element = measuring.getElement();
+    const was = element.textContent;
+    element.textContent = words;
+    const size = sizeOfElement(element);
+    element.textContent = was;
+    return size;
+  };
+  const container = map.getContainer();
+  const shown = obstacleLabelsOf({ taken, labels: asked, sizeOf, bounds: { left: 0, top: 0, right: container.clientWidth, bottom: container.clientHeight } });
+  shown.forEach((label, index) => {
     const marker = obstacleLabels[index];
-    marker.getElement().classList.toggle("invisible", place === null);
-    if (!place) return;
+    const element = marker.getElement();
+    element.classList.toggle("invisible", label === null);
+    if (!label) return;
+    element.textContent = label.words;
     const at = map.project(marker.getLngLat());
-    marker.setOffset([place.left - at.x, place.top - at.y]);
+    marker.setOffset([label.left - at.x, label.top - at.y]);
   });
 
   const selected = state.obstacles.find(({ id }) => id === state.selectedObstacle);
