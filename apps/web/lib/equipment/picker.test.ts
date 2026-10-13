@@ -9,6 +9,7 @@ import {
   filteredModules,
   INVERTER_COLUMNS,
   INVERTER_START,
+  kwSpanOf,
   kwStopsOf,
   matchesSearch,
   MODULE_COLUMNS,
@@ -159,5 +160,19 @@ describe("the picker's first view (V2 · 10, D106; audit V2-72, V2-81)", () => {
   test("the search reads the power too: Maker, model or power", () => {
     expect(matchesSearch({ maker: "Heliene Inc", model: "144HC M10", file: "a.PAN", power: "545 Wp" }, "545")).toBe(true);
     expect(matchesSearch({ maker: "Heliene Inc", model: "144HC M10", file: "a.PAN", power: "545 Wp" }, "550")).toBe(false);
+  });
+});
+
+describe("the AC power that suits a roof, as the slider's span (D118)", () => {
+  const stops = [0.7, 1, 2, 3, 5, 8, 10, 15, 20, 25, 30, 40, 50, 60, 75, 100, 125, 150, 200, 250, 300, 350];
+
+  test("the stops that hold the range: the highest at or under its low end, the lowest at or over its high end", () => {
+    expect(kwSpanOf(stops, 128.49, 151.85)).toEqual([stops.indexOf(125), stops.indexOf(200)]);
+    expect(kwSpanOf(stops, 100, 150)).toEqual([stops.indexOf(100), stops.indexOf(150)]);
+  });
+
+  test("a range past the library's ends stops at them", () => {
+    expect(kwSpanOf(stops, 0.2, 0.5)).toEqual([0, 0]);
+    expect(kwSpanOf(stops, 400, 900)).toEqual([stops.length - 1, stops.length - 1]);
   });
 });

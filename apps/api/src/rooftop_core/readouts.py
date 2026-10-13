@@ -261,6 +261,51 @@ def options_note(design: Design) -> str:
     )
 
 
+@dataclass(frozen=True)
+class BelowTarget:
+    """Why no option reaches the DC/AC target on this inverter, and the AC power for the roof (D118)."""
+
+    title: str
+    message: str
+    ac_kw_from: float  # the roof's array at the target's high end
+    ac_kw_to: float  # and at its low end
+
+
+BELOW_TARGET = "No option within the DC/AC target"
+
+
+def _off_the_target(option: StringOption) -> float:
+    return max(DCAC_TARGET[0] - option.dcac, option.dcac - DCAC_TARGET[1], 0.0)
+
+
+def below_target(design: Design) -> BelowTarget | None:
+    """The options all miss the target: what keeps them off it, the nearest option's ratio, and the power
+    that would suit the roof's array. None when an option reaches the target, or there is no option."""
+    offered = [option for option in design.options if not option.custom]
+    if not offered or any(option.ok for option in offered):
+        return None
+    module, inverter = design.module, design.inverter
+    nearest = min(offered, key=_off_the_target)
+    kwp = max(option.n_modules for option in offered) * module.pnom_w / 1000.0
+    kw = f"{inverter.pnom_kw:g} kW"
+    per_inverter = max_strings_per_inverter(module, inverter)
+    if nearest.dcac > DCAC_TARGET[1]:
+        cause = f"The roof's {kwp:.2f} kWp is more than this inverter's {kw} can take"
+    elif nearest.n_strings >= nearest.n_inverters * per_inverter:
+        full = per_inverter * nearest.n_series * module.pnom_w / 1000.0
+        cause = f"This inverter takes at most {per_inverter} strings, {full:.2f} kWp, for its {kw}"
+    else:
+        cause = f"This inverter's {kw} is more than the roof's {kwp:.2f} kWp can fill"
+    lo, hi = DCAC_TARGET
+    reaches = f"the best option reaches {nearest.dcac:.2f}, and the target is {lo:.2f} to {hi:.2f}"
+    return BelowTarget(
+        title=BELOW_TARGET,
+        message=f"{cause}: {reaches}.",
+        ac_kw_from=kwp / hi,
+        ac_kw_to=kwp / lo,
+    )
+
+
 def far_shading_note(weather: Weather) -> str:
     """The horizon the run counts, by the plain name of far shading (voice §6, board 12: Horizon)."""
     if not weather.horizon and weather.source == "pvgis":  # PVGIS gives one; this time it did not (#170)

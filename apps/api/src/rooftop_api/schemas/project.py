@@ -30,6 +30,16 @@ VoltageSetBy = Annotated[
         )
     ),
 ]
+InverterSetBy = Annotated[
+    Literal["app", "user"],
+    Field(
+        description=(
+            "Who set the inverter: the app, which runs the design with the inverter of Waaree's range "
+            "for its roof and leaves ond_text aside (D118), or the user, whose OND is ond_text (or the "
+            "bundled one without it). Null: the user's."
+        )
+    ),
+]
 VocCoefficient = Annotated[
     float,
     Field(
@@ -77,6 +87,7 @@ class Project(Input):
     ond_path: FileName = ""
     pan_text: FileText = ""
     ond_text: FileText = ""
+    inverter_by: InverterSetBy | None = None
     weather_source: WeatherSource = "pvgis"
     weather_csv: FileName = ""
     weather_csv_text: CsvText = ""

@@ -13,7 +13,7 @@ docs:
 
 ## What to set
 
-Choose the inverter that will be installed. The app's own is there to start with, marked `Default`; once you choose one, the row says `Yours`.
+Choose the inverter that will be installed. A new design starts with one the app chose for its roof, marked `Chosen for this roof`: of Waaree's on-grid inverters, the one that keeps the most modules in the DC/AC target on the fewest inverters, at the system voltage. When you change the roof, the array or the voltage, the app chooses again. Once you choose one, the row says `Yours`, and `Choose for this roof` under the card gives the choice back to the app.
 
 1. Press `Change` on the inverter's card to open `Choose an inverter`, the app's library.
 2. Search by maker, model, file name or power, or press `Filter` to narrow the list by `AC power`, `MPPT` and `Max DC`.
@@ -27,6 +27,6 @@ The inverter sets how the strings are sized. Its MPPT voltage window sets the sh
 
 ## When to change it
 
-When the installer's inverter is another. When no string length fits, the step offers `Choose another inverter`. When the card says `Current per MPPT not in the inverter file`, keep the inverter and type the datasheet's value in `Current per MPPT`, under `Inverter limits and cabling`.
+When the installer's inverter is another. When no string length fits, the step offers `Choose another inverter`. When no option reaches the DC/AC target with your inverter, the step says why at its head and offers the inverter for this roof, such as `Use Waaree 3P-136K (75-136 kW)`, and `Choose another inverter`, which opens the library filtered to the AC power that suits the roof. When the card says `Current per MPPT not in the inverter file`, keep the inverter and type the datasheet's value in `Current per MPPT`, under `Inverter limits and cabling`.
 
 A file that cannot be read leaves the inverter as it was and says why. A file larger than any inverter file is refused before it is sent.

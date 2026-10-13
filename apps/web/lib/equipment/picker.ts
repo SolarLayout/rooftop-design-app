@@ -49,6 +49,16 @@ export function kwStopsOf(inverters: readonly InverterEntry[]): number[] {
   return [lowest, ...KW_STEPS.filter((kw) => kw > lowest && kw < highest), highest];
 }
 
+/** The span of the AC power's slider that holds *from* to *to* kW: the highest stop at or under *from*, the lowest at or
+ * over *to*, each within the library's ends (D118, the power that suits a roof). */
+export function kwSpanOf(stops: readonly number[], from: number, to: number): Span {
+  const last = stops.length - 1;
+  const low = stops.findLastIndex((kw) => kw <= from);
+  const high = stops.findIndex((kw) => kw >= to);
+  const lowIndex = low === -1 ? 0 : low;
+  return [lowIndex, Math.max(lowIndex, high === -1 ? last : high)];
+}
+
 /** The stops of the maximum DC voltage's slider: the voltages the library holds, from the lowest. */
 export function voltageStopsOf(inverters: readonly InverterEntry[]): number[] {
   if (inverters.length === 0) return [0, 1];

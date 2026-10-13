@@ -10,7 +10,7 @@ import { displayNameOf, nameOfCountry } from "@/lib/country/country";
 import { withCustom, withoutCustom } from "@/lib/studio/custom-fields";
 import { inverterFactsOf, inverterShownOf, withInverterRead, type ReplacedInverter } from "@/lib/studio/inverter-card";
 import { limitsRowOf, limitsSetByOf, withAcCable, withCurrentPerMppt } from "@/lib/studio/inverter-fields";
-import { fileSetByOf, wordOf } from "@/lib/studio/set-by";
+import { wordOf } from "@/lib/studio/set-by";
 import { sizingFieldsOf, sizingRowOf, sizingSetByOf } from "@/lib/studio/sizing-fields";
 import { mpptLoadingFactsOf, mpptTableOf } from "@/lib/studio/mppt-table";
 import { fitProofOf } from "@/lib/studio/fit-proof";
@@ -18,6 +18,7 @@ import { seriesBarOf } from "@/lib/studio/series-bar";
 import { optionCardsOf } from "@/lib/studio/option-cards";
 import { stringsViewOf } from "@/lib/studio/strings-view";
 import { withVoltageChosen } from "@/lib/studio/voltage-choice";
+import { inverterSetByOf, withTheRoofsInverter } from "@/lib/studio/roof-inverter";
 import { voltageWordsOf } from "@/lib/studio/voltage-words";
 import type { Volts } from "@/lib/studio/voltages";
 import { InverterCard } from "./InverterCard";
@@ -30,6 +31,7 @@ import { InverterPicker } from "./InverterPicker";
 import { Problem } from "@/components/ui/Problem";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { useNoStringsFit } from "./use-no-strings-fit";
+import { useBelowTarget } from "./use-below-target";
 import { HowTheOptionsAreMade, NothingFits, OptionCards, OptionsWaiting, YourOwn } from "./StringOptions";
 import { SummaryRow } from "@/components/shell/SummaryRow";
 import { SystemVoltage } from "./SystemVoltage";
@@ -64,6 +66,9 @@ export function StringsInspector() {
   const [, openLimits] = useSectionOpen("strings.limits", false);
   const [, openSizing] = useSectionOpen("strings.sizing", false);
   const noStringsFit = useNoStringsFit();
+  const belowTarget = useBelowTarget();
+  // The picker opened from the problem below the target opens filtered to the power that suits the roof (D118).
+  const [suitedKw, setSuitedKw] = useState<readonly [number, number] | null>(null);
   const [focusCurrent, setFocusCurrent] = useState(0);
   if (!project) return null;
   const view = stringsViewOf({ voltage: project.system_voltage ?? null, design, option });
@@ -100,6 +105,13 @@ export function StringsInspector() {
     setReplacing(false);
   }
 
+  /** Opens the picker afresh, filtered to *kw* or at rest. */
+  function openPicker(kw: readonly [number, number] | null = null) {
+    setSuitedKw(kw);
+    setOpenings((count) => count + 1);
+    setReplacing(true);
+  }
+
   /** An option chosen is an edit of the document; nothing is run (plan/phase-07-plan.md, decision 3). */
   function chooseOption(key: string) {
     store.getState().commit((document) => (document.chosen_option === key ? document : { ...document, chosen_option: key }));
@@ -120,11 +132,14 @@ export function StringsInspector() {
           testId="no-strings-fit"
           className="mb-group"
           onAction={(action) => {
-            if (action.id === "choose-inverter") {
-              setOpenings((count) => count + 1);
-              setReplacing(true);
-            }
+            if (action.id === "choose-inverter") openPicker();
             if (action.id === "sizing") openSizing(true);
+          }}
+        />
+      ) : belowTarget ? (
+        // Where no option reaches the DC/AC target, the problem stands at the step's head; the inverter for the roof is the step's primary (D118).
+        <Problem problem={belowTarget.problem} testId="below-target" className="mb-group" onAction={(action) => {
+            if (action.id === "choose-inverter") openPicker(belowTarget.kw);
           }}
         />
       ) : null}
@@ -156,14 +171,12 @@ export function StringsInspector() {
           </>
         )}
       </div>
-      <SummaryRow id="strings.inverter" title="Inverter" help="studio.section.inverter" facts={inverter ? inverterFactsOf(inverter.inverter) : null} setBy={wordOf(fileSetByOf(project.ond_text))}>
+      <SummaryRow id="strings.inverter" title="Inverter" help="studio.section.inverter" facts={inverter ? inverterFactsOf(inverter.inverter) : null} setBy={wordOf(inverterSetByOf(project, design))}>
         <InverterCard
           inverter={inverter}
           entered={project.imax_mppt_override ?? null}
-          onChange={() => {
-            setOpenings((count) => count + 1);
-            setReplacing(true);
-          }}
+          onChange={() => openPicker()}
+          onTheRoofs={project.inverter_by === "app" ? null : () => store.getState().commit(withTheRoofsInverter)}
         />
       </SummaryRow>
       <SummaryRow
@@ -201,7 +214,7 @@ export function StringsInspector() {
           </SummaryRow>
         </>
       )}
-      <InverterPicker key={openings} voltage={project.system_voltage ?? null} open={isReplacing} current={inverter?.inverter.source ?? null} onRead={inverterRead} onClose={() => setReplacing(false)} />
+      <InverterPicker key={openings} voltage={project.system_voltage ?? null} open={isReplacing} current={inverter?.inverter.source ?? null} onRead={inverterRead} onClose={() => setReplacing(false)} suitedKw={suitedKw} />
     </div>
   );
 }

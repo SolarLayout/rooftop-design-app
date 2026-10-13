@@ -35,7 +35,7 @@ describe("importing a drawing", () => {
     const notes = await importDrawing({ name: "warehouse-roof.dxf", base64: "QUJD", units: "mm" }, { api, project, view });
 
     expect(asked).toEqual([{ name: "warehouse-roof.dxf", base64: "QUJD", units: "mm" }]);
-    expect(project.getState().project).toBe(PROJECT);
+    expect(project.getState().project).toEqual({ ...PROJECT, inverter_by: "app" });
     expect(toReviewOf(view.getState())).toEqual(["Lift shaft", "Plant room"]);
     expect(notes).toEqual(["The file has no height for these obstacles. The app uses 1.0 m."]);
   });

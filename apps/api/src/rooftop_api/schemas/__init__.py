@@ -3,6 +3,7 @@
 from rooftop_api.schemas.array import ArraySpec
 from rooftop_api.schemas.common import Point, Polygon
 from rooftop_api.schemas.design import (
+    BelowTarget,
     BomLine,
     CableRow,
     DesignDone,
@@ -19,6 +20,7 @@ from rooftop_api.schemas.design import (
     Option,
     PValue,
     PVString,
+    RoofInverter,
     SeriesRange,
     Shading,
     Sizing,
@@ -54,6 +56,7 @@ from rooftop_api.schemas.weather import Weather, WeatherRequest, WeatherResponse
 
 __all__ = [
     "ArraySpec",
+    "BelowTarget",
     "BomLine",
     "CableRow",
     "CoefficientSource",
@@ -95,6 +98,7 @@ __all__ = [
     "OpenedProject",
     "Option",
     "PVString",
+    "RoofInverter",
     "PValue",
     "PlacedModule",
     "Point",

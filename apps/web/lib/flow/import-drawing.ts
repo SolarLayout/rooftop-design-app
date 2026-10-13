@@ -5,6 +5,7 @@
 import type { Api, RoofFile } from "../api";
 import type { ProjectStore } from "../stores/project-store";
 import type { ViewStore } from "../stores/view-store";
+import { asANewDesign } from "./new-design";
 import { MAX_REQUEST_BYTES } from "./open-project";
 
 export type DrawingKind = "kmz" | "dxf";
@@ -41,7 +42,7 @@ export function drawingFits(drawing: Drawing): boolean {
 /** Sends the drawing, opens its document, lists the heights to review; gives back the API's notes. */
 export async function importDrawing(drawing: Drawing, { api, project, view }: Stores): Promise<string[]> {
   const answer = await api.importRoof(requestOf(drawing));
-  project.getState().open(answer.project);
+  project.getState().open(asANewDesign(answer.project));
   view.getState().setToReview(answer.missing_heights);
   return answer.notes;
 }

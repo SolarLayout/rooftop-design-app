@@ -59,6 +59,7 @@ import { RoofTypeChoice } from "./RoofTypeChoice";
 import type { MapView } from "./RoofMap";
 import { useOutlineKeys } from "./use-outline-keys";
 import { useWebGL } from "./use-web-gl";
+import { asANewDesign } from "@/lib/flow/new-design";
 
 // On Find there is no design yet: Roof is in hand, the steps after it cannot be gone to (D95).
 const ON_FIND = stepStatesOf({ current: "roof", seen: [], waiting: [], hasDesign: false });
@@ -207,7 +208,7 @@ export function Find() {
       const answer = await api.roofFromMap(request);
       // The place's own name (D114): of a place found by words; by hand, while the Place's fields still hold it.
       const handAt = byHand ? { lat: hand.lat, lon: hand.lon } : null;
-      store.getState().open({ ...answer, place_name: placeNameOfBuild(foundAt, handAt) });
+      store.getState().open(asANewDesign({ ...answer, place_name: placeNameOfBuild(foundAt, handAt) }));
       setStep("build");
       router.push(pathOfLens("roof"));
     } catch (error) {

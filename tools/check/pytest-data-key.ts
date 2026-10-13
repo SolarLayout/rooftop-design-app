@@ -3,14 +3,15 @@
 // Testmon fingerprints the Python code each test executes, and knows the Python version and the list of
 // installed packages without their patch versions. It does not see the data files the tests read (the
 // fixtures, the samples of rooftop_core), the weather fixtures of the browser tests that a pytest holds
-// to the API's answers (e2e/fixtures/weather-*.json), the pytest options in pyproject.toml, uv.lock, or
+// to the API's answers (e2e/fixtures/weather-*.json), the library's catalog the pool of the inverter for the roof is held
+// to (apps/web/public/equipment/catalog.json, D118), the pytest options in pyproject.toml, uv.lock, or
 // the platform. This key holds those. When it differs from the key kept beside the data, the data is
 // deleted and the suite runs whole (tools/check/pytest-selected.ts).
 
 import { spawnSync } from "node:child_process";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { API_DIR, E2E_DIR } from "../lib/paths.ts";
+import { API_DIR, E2E_DIR, WEB_DIR } from "../lib/paths.ts";
 
 export type DataFile = { path: string; bytes: Uint8Array };
 export type DataKeyInputs = { files: DataFile[]; python: string; testmon: string; coverage: string; platform: string };
@@ -61,13 +62,19 @@ export function e2eWeatherFixtures(e2eDir: string = E2E_DIR): DataFile[] {
     .map((name) => ({ path: `e2e/fixtures/${name}`, bytes: new Uint8Array(readFileSync(join(directory, name))) }));
 }
 
-export function readDataKeyInputs(apiDir: string = API_DIR, e2eDir: string = E2E_DIR): DataKeyInputs {
+/** The catalog of the app's library of equipment, named from the root of the repo. */
+export function equipmentCatalog(webDir: string = WEB_DIR): DataFile {
+  const path = "public/equipment/catalog.json";
+  return { path: `apps/web/${path}`, bytes: new Uint8Array(readFileSync(join(webDir, path))) };
+}
+
+export function readDataKeyInputs(apiDir: string = API_DIR, e2eDir: string = E2E_DIR, webDir: string = WEB_DIR): DataKeyInputs {
   const lock = readFileSync(join(apiDir, "uv.lock"), "utf8");
   const files = filesOfApi()
     .filter(isDataInput)
     .map((path) => ({ path, bytes: new Uint8Array(readFileSync(join(apiDir, path))) }));
   return {
-    files: [...files, ...e2eWeatherFixtures(e2eDir)],
+    files: [...files, ...e2eWeatherFixtures(e2eDir), equipmentCatalog(webDir)],
     python: readFileSync(join(apiDir, ".python-version"), "utf8").trim(),
     testmon: lockedVersion(lock, "pytest-testmon"),
     coverage: lockedVersion(lock, "coverage"),

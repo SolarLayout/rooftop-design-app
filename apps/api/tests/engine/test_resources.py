@@ -17,9 +17,10 @@ def test_every_sample_is_there(name):
     assert Path(sample_path(name)).is_file()
 
 
-def test_the_samples_are_the_equipment_of_the_demo_and_its_weather():
+def test_the_samples_are_the_equipment_of_the_demo_its_weather_and_the_inverters_for_a_roof():
     assert (SAMPLE_PAN, SAMPLE_OND) == ("waaree-bin-08-580.PAN", "wattpower-wp-330ktl-h1.OND")
     assert sorted(path.name for path in samples_dir().iterdir() if not path.name.startswith(".")) == [
+        "for_the_roof",
         "pune_weather.json",
         "waaree-bin-08-580.PAN",
         "wattpower-wp-330ktl-h1.OND",
