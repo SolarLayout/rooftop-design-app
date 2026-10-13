@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { dataKey, e2eWeatherFixtures, isDataInput, lockedVersion, type DataKeyInputs } from "./pytest-data-key.ts";
+import { dataKey, e2eWeatherFixtures, equipmentCatalog, isDataInput, lockedVersion, type DataKeyInputs } from "./pytest-data-key.ts";
 
 const inputs: DataKeyInputs = {
   files: [
@@ -72,6 +72,16 @@ describe("e2eWeatherFixtures", () => {
       { path: "e2e/fixtures/weather-nasa-pune.json", bytes: new TextEncoder().encode("[]") },
       { path: "e2e/fixtures/weather-pvgis-pune.json", bytes: new TextEncoder().encode("{}") },
     ]);
+  });
+});
+
+describe("equipmentCatalog", () => {
+  test("the library's catalog, named from the root: the pool of the inverter for the roof is held to it (D118)", () => {
+    const webDir = mkdtempSync(join(tmpdir(), "web-"));
+    mkdirSync(join(webDir, "public", "equipment"), { recursive: true });
+    writeFileSync(join(webDir, "public", "equipment", "catalog.json"), '{"inverters": []}');
+
+    expect(equipmentCatalog(webDir)).toEqual({ path: "apps/web/public/equipment/catalog.json", bytes: new TextEncoder().encode('{"inverters": []}') });
   });
 });
 

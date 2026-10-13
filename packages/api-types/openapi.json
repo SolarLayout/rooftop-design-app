@@ -123,6 +123,37 @@
         "title": "ArraySpec",
         "type": "object"
       },
+      "BelowTarget": {
+        "description": "No option reaches the DC/AC target on this inverter: why, in words for the user, and the AC power\nthat suits the roof's array (D118).",
+        "properties": {
+          "ac_kw_from": {
+            "description": "The roof's array at the target's high end, in kW AC",
+            "title": "Ac Kw From",
+            "type": "number"
+          },
+          "ac_kw_to": {
+            "description": "The roof's array at the target's low end, in kW AC",
+            "title": "Ac Kw To",
+            "type": "number"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "message",
+          "ac_kw_from",
+          "ac_kw_to"
+        ],
+        "title": "BelowTarget",
+        "type": "object"
+      },
       "BomLine": {
         "properties": {
           "item": {
@@ -350,6 +381,17 @@
       "DesignResult": {
         "description": "Everything a run gives. Without options, no_options says why and nothing is chosen.",
         "properties": {
+          "below_target": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BelowTarget"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why no option reaches the target; null when one does"
+          },
           "chosen_option": {
             "anyOf": [
               {
@@ -413,6 +455,17 @@
           "readouts": {
             "$ref": "#/components/schemas/LayoutReadouts"
           },
+          "roof_inverter": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RoofInverter"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The inverter for the roof: the one in use when the app set it, else the one offered when no option reaches the target; null when there is none"
+          },
           "series_range": {
             "anyOf": [
               {
@@ -463,7 +516,9 @@
           "options_note",
           "custom_refused",
           "chosen_option",
-          "no_options"
+          "no_options",
+          "roof_inverter",
+          "below_target"
         ],
         "title": "DesignResult",
         "type": "object"
@@ -2583,6 +2638,22 @@
             ],
             "title": "Imax Mppt Override"
           },
+          "inverter_by": {
+            "anyOf": [
+              {
+                "description": "Who set the inverter: the app, which runs the design with the inverter of Waaree's range for its roof and leaves ond_text aside (D118), or the user, whose OND is ond_text (or the bundled one without it). Null: the user's.",
+                "enum": [
+                  "app",
+                  "user"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inverter By"
+          },
           "losses": {
             "$ref": "#/components/schemas/Losses",
             "default": {
@@ -3099,6 +3170,51 @@
           }
         },
         "title": "RoofInput",
+        "type": "object"
+      },
+      "RoofInverter": {
+        "description": "The inverter of Waaree's on-grid range for the roof (D118), and the strings it takes in the target.",
+        "properties": {
+          "dcac": {
+            "title": "Dcac",
+            "type": "number"
+          },
+          "file": {
+            "description": "Its file in the app's library of inverters",
+            "title": "File",
+            "type": "string"
+          },
+          "in_use": {
+            "description": "True: the app set the inverter and the run used this one. False: offered, as no option of the user's inverter reaches the target",
+            "title": "In Use",
+            "type": "boolean"
+          },
+          "inverter": {
+            "$ref": "#/components/schemas/Inverter"
+          },
+          "n_inverters": {
+            "title": "N Inverters",
+            "type": "integer"
+          },
+          "n_series": {
+            "title": "N Series",
+            "type": "integer"
+          },
+          "n_strings": {
+            "title": "N Strings",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "file",
+          "inverter",
+          "n_series",
+          "n_strings",
+          "n_inverters",
+          "dcac",
+          "in_use"
+        ],
+        "title": "RoofInverter",
         "type": "object"
       },
       "SeriesRange": {

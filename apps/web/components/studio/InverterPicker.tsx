@@ -8,6 +8,7 @@ import {
   filteredInverters,
   INVERTER_COLUMNS,
   INVERTER_START,
+  kwSpanOf,
   kwStopsOf,
   nextPickerSort,
   orderOptions,
@@ -32,6 +33,8 @@ type Props = {
   current: string | null;
   onRead: (read: InverterResponse) => void;
   onClose: () => void;
+  /** The AC power in kW the picker opens filtered to: the power that suits the roof (D118); none, at rest. */
+  suitedKw?: readonly [from: number, to: number] | null;
 };
 
 const WORDS: PickerWords = { title: "Choose an inverter", thing: "inverter", things: "inverters", use: "Use this inverter", fileKind: "OND", accept: ".ond,.OND" };
@@ -49,7 +52,7 @@ const COLUMNS: readonly PickerColumn[] = [
 const KW_TICKS = [10, 50, 125];
 
 /** "Choose an inverter" (D75): the equipment picker over the library's inverters, filtered by AC power and MPPT. */
-export function InverterPicker({ voltage, open, current, onRead, onClose }: Props) {
+export function InverterPicker({ voltage, open, current, onRead, onClose, suitedKw = null }: Props) {
   const { catalog, error, retry } = useEquipmentCatalog();
   // On phone the sliders have no ticks: their values stand above them, and the list needs the room.
   const hasTicks = useSize() !== "phone";
@@ -60,12 +63,14 @@ export function InverterPicker({ voltage, open, current, onRead, onClose }: Prop
   const [search, setSearch] = useState("");
   // Null: at rest, the handles at the ends of the library's scales, whatever the catalog brings. Each opening mounts the
   // picker afresh, so that it opens at rest.
-  const [kwSpan, setKwSpan] = useState<Span | null>(null);
+  // "suited": the stops that hold the power that suits the roof, whatever the catalog brings.
+  const [kwSpan, setKwSpan] = useState<Span | "suited" | null>(suitedKw ? "suited" : null);
   const [mpptSpan, setMpptSpan] = useState<Span | null>(null);
   const [vdcSpan, setVdcSpan] = useState<Span | null>(null);
   const [sort, setSort] = useState<PickerSort>(INVERTER_START);
   const last = stops.length - 1;
-  const kw: Span = kwSpan ?? [0, last];
+  const suited: Span | null = suitedKw ? kwSpanOf(stops, suitedKw[0], suitedKw[1]) : null;
+  const kw: Span = (kwSpan === "suited" ? suited : kwSpan) ?? [0, last];
   const mppt: Span = mpptSpan ?? [1, mostMppt];
   const lastVolts = volts.length - 1;
   const vdc: Span = vdcSpan ?? [0, lastVolts];

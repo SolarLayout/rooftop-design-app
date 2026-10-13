@@ -247,6 +247,31 @@ class NoOptions(BaseModel):
     )
 
 
+class RoofInverter(BaseModel):
+    """The inverter of Waaree's on-grid range for the roof (D118), and the strings it takes in the target."""
+
+    file: str = Field(description="Its file in the app's library of inverters")
+    inverter: Inverter
+    n_series: int
+    n_strings: int
+    n_inverters: int
+    dcac: float
+    in_use: bool = Field(
+        description="True: the app set the inverter and the run used this one. False: offered, as no option "
+        "of the user's inverter reaches the target"
+    )
+
+
+class BelowTarget(BaseModel):
+    """No option reaches the DC/AC target on this inverter: why, in words for the user, and the AC power
+    that suits the roof's array (D118)."""
+
+    title: str
+    message: str
+    ac_kw_from: float = Field(description="The roof's array at the target's high end, in kW AC")
+    ac_kw_to: float = Field(description="The roof's array at the target's low end, in kW AC")
+
+
 class DesignResult(BaseModel):
     """Everything a run gives. Without options, no_options says why and nothing is chosen."""
 
@@ -269,6 +294,13 @@ class DesignResult(BaseModel):
     )
     chosen_option: str | None
     no_options: NoOptions | None
+    roof_inverter: RoofInverter | None = Field(
+        description="The inverter for the roof: the one in use when the app set it, else the one offered "
+        "when no option reaches the target; null when there is none"
+    )
+    below_target: BelowTarget | None = Field(
+        description="Why no option reaches the target; null when one does"
+    )
 
 
 class DesignProgress(BaseModel):

@@ -33,6 +33,8 @@ import { usePhoneSheet } from "@/components/shell/use-phone-sheet";
 import { measures } from "@/components/ui/measures";
 import { useNoStringsFit } from "./use-no-strings-fit";
 import { withVoltageChosen } from "@/lib/studio/voltage-choice";
+import { withTheRoofsInverter } from "@/lib/studio/roof-inverter";
+import { useBelowTarget } from "./use-below-target";
 
 type Props = { lens: Lens };
 
@@ -44,11 +46,14 @@ function Primary({ lens, isFloating = false, withLine = true }: { lens: Lens; is
   const { seen } = useProgressionOfTheShell();
   const { project } = useStores();
   const noStringsFit = useNoStringsFit();
+  const belowTarget = useBelowTarget();
   const next = nextStepOf(lens);
   if (next === null) return null;
   const name = STEPS.find((step) => step.id === next)?.name ?? "";
   // Where no string length fits, the likeliest remedy is the step's primary (V2 · 5): the voltage that fits, the user's choice.
   const voltage = lens === "strings" ? (noStringsFit?.primary ?? null) : null;
+  // Where no option reaches the DC/AC target, the inverter for the roof that reaches it (D118).
+  const roofs = lens === "strings" && voltage === null ? (belowTarget?.primary ?? null) : null;
   const layout = classNames("flex flex-col gap-2 tablet:flex-row tablet:items-center tablet:justify-between tablet:gap-6 desktop:flex-col desktop:items-stretch desktop:gap-2", isFloating && "w-96 rounded-card border border-line bg-surface-1 p-3 shadow-float");
   if (voltage !== null) {
     return (
@@ -57,6 +62,16 @@ function Primary({ lens, isFloating = false, withLine = true }: { lens: Lens; is
           {voltage.label}
         </Button>
         <p className="type-body-touch text-text-2 desktop:type-body">{voltage.line}</p>
+      </div>
+    );
+  }
+  if (roofs !== null) {
+    return (
+      <div className={layout}>
+        <Button kind="primary" size="xl" className="w-full tablet:order-last tablet:ml-auto tablet:w-auto desktop:order-none desktop:w-full" data-testid="step-primary" onClick={() => project.getState().commit(withTheRoofsInverter)}>
+          {roofs.label}
+        </Button>
+        <p className="type-body-touch text-text-2 desktop:type-body">{roofs.line}</p>
       </div>
     );
   }

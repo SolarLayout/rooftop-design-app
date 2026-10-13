@@ -105,6 +105,8 @@ def test_the_result_has_its_parts(demo_result):
         "custom_refused",
         "chosen_option",
         "no_options",
+        "roof_inverter",
+        "below_target",
     ]
 
 

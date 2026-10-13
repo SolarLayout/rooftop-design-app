@@ -44,6 +44,13 @@ describe("the demo at 1500 V", () => {
     expect(view.contents[0]).toEqual({ label: "Module file", value: "The app's sample", isFileName: false });
     expect(view.contents[1]).toEqual({ label: "Inverter file", value: "The app's sample", isFileName: false });
   });
+
+  test("an inverter the app set is the one the run took for the roof, said as such (D118)", () => {
+    const theApps = { ...DOCUMENT, ond_path: "", ond_text: "", inverter_by: "app" } as Project;
+    const design = { ...DEMO, roof_inverter: { file: "Waaree_3P-136K_75-136kW.OND", in_use: true } } as typeof DEMO;
+
+    expect(projectFileViewOf({ ...AT_REST, document: theApps, design }).contents[1]).toEqual({ label: "Inverter file", value: "Chosen for this roof · Waaree_3P-136K_75-136kW.OND", isFileName: false });
+  });
 });
 
 describe("before a voltage", () => {

@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { StatusMark } from "@/components/ui/StatusMark";
 import { inverterCardOf, type InverterShown } from "@/lib/studio/inverter-card";
@@ -12,6 +13,8 @@ type Props = {
   entered: number | null;
   /** Opens the picker of the library (D75). */
   onChange: () => void;
+  /** Hands the inverter back to the app, which takes the one for the roof (D118); none while the app set it. */
+  onTheRoofs?: (() => void) | null;
 };
 
 const CARD = "flex flex-col gap-2.5 rounded-row border border-line bg-surface-1 p-card-compact shadow-card";
@@ -33,7 +36,7 @@ function InverterGlyph() {
  * inputs, Change (D75), and the file's name under the card. A current per MPPT that is not known has its line under
  * the rest, with a note mark. Before a run read the inverter, skeletons.
  */
-export function InverterCard({ inverter, entered, onChange }: Props) {
+export function InverterCard({ inverter, entered, onChange, onTheRoofs = null }: Props) {
   if (!inverter) {
     return (
       <section aria-label="Inverter" data-testid="inverter-card" className={CARD}>
@@ -76,6 +79,11 @@ export function InverterCard({ inverter, entered, onChange }: Props) {
       <code data-testid="inverter-file" className="type-body-touch desktop:type-body text-text-3">
         {card.file}
       </code>
+      {onTheRoofs ? (
+        <Button kind="quiet" size="m" className="self-start" data-testid="inverter-for-the-roof" onClick={onTheRoofs}>
+          Choose for this roof
+        </Button>
+      ) : null}
     </div>
   );
 }

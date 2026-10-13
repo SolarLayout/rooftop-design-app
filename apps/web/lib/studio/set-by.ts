@@ -1,5 +1,5 @@
-// Who set each value of a design (V2 · 3, D97): the app (Default), the site's weather, the user's country (D87) or the
-// user (Yours). The same four words stand at the right of a section and in a field's hint, on every step, so that a new
+// Who set each value of a design (V2 · 3, D97): the app (Default), the site's weather, the user's country (D87), the
+// roof (the inverter the app chose for it, D118) or the user (Yours). The same four words stand at the right of a section and in a field's hint, on every step, so that a new
 // user sees what to check and what was left as the app gave it. Pure.
 import { shown, withUnit } from "../../components/ui/number-entry";
 
@@ -7,6 +7,7 @@ export type SetBy =
   | { kind: "default" }
   | { kind: "weather" }
   | { kind: "country"; country: string }
+  | { kind: "roof" }
   /** The default the user's value took the place of, as it is shown; null where there is none to say. */
   | { kind: "yours"; byDefault: string | null };
 
@@ -22,6 +23,8 @@ export function wordOf(by: SetBy): string {
       return "From the weather";
     case "country":
       return `Set for ${by.country}`;
+    case "roof":
+      return "Chosen for this roof";
     case "yours":
       return "Yours";
   }

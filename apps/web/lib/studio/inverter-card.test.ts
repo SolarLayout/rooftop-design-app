@@ -67,9 +67,9 @@ describe("which inverter the card shows (plan/phase-07-plan.md, step 17; as the 
 describe("the edit of a file read (inventory 1.4: a new OND clears the current entered)", () => {
   const read: InverterResponse = { file: "sungrow-sg3300ud-20.OND", inverter: SUNGROW, max_current_per_mppt: NOT_IN_THE_OND, text: "PVObject_=pvGInverter" };
 
-  test("commits the file's text and its name, and clears the current per MPPT entered", () => {
-    const document = { name: "Pune demo roof", ond_text: "", ond_path: "", imax_mppt_override: 60, ac_cable_m: 30 } as unknown as Project;
-    expect(withInverterRead(document, read)).toEqual({ ...document, ond_text: "PVObject_=pvGInverter", ond_path: "sungrow-sg3300ud-20.OND", imax_mppt_override: null });
+  test("commits the file's text and its name, the user's from now on (D118), and clears the current per MPPT entered", () => {
+    const document = { name: "Pune demo roof", ond_text: "", ond_path: "", inverter_by: "app", imax_mppt_override: 60, ac_cable_m: 30 } as unknown as Project;
+    expect(withInverterRead(document, read)).toEqual({ ...document, ond_text: "PVObject_=pvGInverter", ond_path: "sungrow-sg3300ud-20.OND", inverter_by: "user", imax_mppt_override: null });
     expect(document.imax_mppt_override).toBe(60);
   });
 });

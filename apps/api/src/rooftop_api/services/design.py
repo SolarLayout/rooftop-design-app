@@ -116,7 +116,31 @@ def result(run: Run, on_progress: Callable[[ProgressEvent], None] | None = None)
         custom_refused=_custom_refused(design),
         chosen_option=design.chosen.key if design.chosen else None,
         no_options=no_options(design),
+        roof_inverter=_roof_inverter(design),
+        below_target=_below_target(design),
     )
+
+
+def _roof_inverter(design: Design) -> schemas.RoofInverter | None:
+    fit = design.roof_fit
+    if fit is None:
+        return None
+    return schemas.RoofInverter.model_construct(
+        file=fit.file,
+        inverter=convert.inverter_from_engine(
+            design.inverter if design.inverter_is_the_roofs else fit.inverter
+        ),
+        n_series=fit.n_series,
+        n_strings=fit.n_strings,
+        n_inverters=fit.n_inverters,
+        dcac=fit.dcac,
+        in_use=design.inverter_is_the_roofs,
+    )
+
+
+def _below_target(design: Design) -> schemas.BelowTarget | None:
+    below = readouts.below_target(design)
+    return None if below is None else schemas.BelowTarget.model_construct(**asdict(below))
 
 
 def _design(p: Project) -> Design:

@@ -373,6 +373,27 @@ export interface components {
              */
             window_start_h?: number;
         };
+        /**
+         * BelowTarget
+         * @description No option reaches the DC/AC target on this inverter: why, in words for the user, and the AC power
+         *     that suits the roof's array (D118).
+         */
+        BelowTarget: {
+            /**
+             * Ac Kw From
+             * @description The roof's array at the target's high end, in kW AC
+             */
+            ac_kw_from: number;
+            /**
+             * Ac Kw To
+             * @description The roof's array at the target's low end, in kW AC
+             */
+            ac_kw_to: number;
+            /** Message */
+            message: string;
+            /** Title */
+            title: string;
+        };
         /** BomLine */
         BomLine: {
             /** Item */
@@ -486,6 +507,8 @@ export interface components {
          * @description Everything a run gives. Without options, no_options says why and nothing is chosen.
          */
         DesignResult: {
+            /** @description Why no option reaches the target; null when one does */
+            below_target: components["schemas"]["BelowTarget"] | null;
             /** Chosen Option */
             chosen_option: string | null;
             /** @description Why the custom option was not simulated; null when it was or there is none */
@@ -500,6 +523,8 @@ export interface components {
             /** Options Note */
             options_note: string | null;
             readouts: components["schemas"]["LayoutReadouts"];
+            /** @description The inverter for the roof: the one in use when the app set it, else the one offered when no option reaches the target; null when there is none */
+            roof_inverter: components["schemas"]["RoofInverter"] | null;
             series_range: components["schemas"]["SeriesRange"] | null;
             shading: components["schemas"]["Shading"];
             sizing: components["schemas"]["Sizing"];
@@ -1532,6 +1557,8 @@ export interface components {
             format?: 1 | 2;
             /** Imax Mppt Override */
             imax_mppt_override?: number | null;
+            /** Inverter By */
+            inverter_by?: ("app" | "user") | null;
             /**
              * @default {
              *       "ac_ohmic_pct": 1,
@@ -1829,6 +1856,31 @@ export interface components {
              * @default 20
              */
             width?: number;
+        };
+        /**
+         * RoofInverter
+         * @description The inverter of Waaree's on-grid range for the roof (D118), and the strings it takes in the target.
+         */
+        RoofInverter: {
+            /** Dcac */
+            dcac: number;
+            /**
+             * File
+             * @description Its file in the app's library of inverters
+             */
+            file: string;
+            /**
+             * In Use
+             * @description True: the app set the inverter and the run used this one. False: offered, as no option of the user's inverter reaches the target
+             */
+            in_use: boolean;
+            inverter: components["schemas"]["Inverter"];
+            /** N Inverters */
+            n_inverters: number;
+            /** N Series */
+            n_series: number;
+            /** N Strings */
+            n_strings: number;
         };
         /**
          * SeriesRange

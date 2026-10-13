@@ -15,6 +15,7 @@ from . import shading as shading_mod
 from . import weather as wx
 from .errors import MissingEquipmentFile, UnsupportedProjectFormat, WeatherNotLoaded
 from .geometry import Obstacle, Roof
+from .inverter_for_the_roof import RoofFit, inverter_for_the_roof, pool_folder
 from .io.pvsyst import Inverter, Module, parse_ond, parse_pan, read_ond, read_pan
 from .onediode import Coefficients, ModuleModel
 from .options import CustomMisfit, StringOption, build_options, custom_misfit, custom_option
@@ -24,7 +25,8 @@ from .resources import SAMPLE_OND, SAMPLE_PAN, sample_path
 from .simulation import KeptPoints, Losses, Precomputed, after_the_year, precompute
 from .stringing import CELL_RISE, SeriesRange, series_range
 
-VoltageSetBy = Literal["app", "user"]
+SetBy = Literal["app", "user"]
+VoltageSetBy = SetBy
 FILE_SUFFIX = ".rtd"
 FORMAT_VERSION = 2          # embeds the PAN, OND and CSV text; format 1 held paths to them
 READABLE_FORMATS = (1, 2)
@@ -41,6 +43,7 @@ class Project:
     ond_path: str = ""
     pan_text: str = ""                       # the content of the PAN file (format 2)
     ond_text: str = ""
+    inverter_by: SetBy | None = None         # "app": the inverter for the roof, chosen at every run (D118)
     weather_source: str = "pvgis"
     weather_csv: str = ""                    # the name of the CSV file; its content is weather_csv_text
     weather_csv_text: str = ""
@@ -174,6 +177,9 @@ class Design:
         self.range: SeriesRange | None = None
         self.options: list[StringOption] = []
         self.custom_misfit: CustomMisfit | None = None  # why the custom option was not simulated
+        # The pool's inverter for the roof (D118): the one in use when the app sets it, else the one offered
+        # when no option of the user's reaches the DC/AC target. None when there is none or nothing to offer.
+        self.roof_fit: RoofFit | None = None
 
     @property
     def default_imax(self) -> float:
@@ -248,6 +254,24 @@ class Design:
     def cell_rise(self) -> float:
         return self.p.cell_rise_c if self.p.cell_rise_c is not None else CELL_RISE[self.p.roof.roof_type]
 
+    @property
+    def inverter_is_the_roofs(self) -> bool:
+        """Whether the inverter in use is the one the app chose for the roof (D118)."""
+        return self.p.inverter_by == "app" and self.roof_fit is not None
+
+    def _use_the_roofs_inverter(self) -> None:
+        """The pool's inverter for the roof in place of the project's, when there is one (D118). Read again
+        from its file: the pool's own is shared, and a design changes its inverter's current per MPPT."""
+        self.roof_fit = inverter_for_the_roof(self)
+        if self.roof_fit is None:
+            return
+        file = self.roof_fit.file
+        self.inverter = _named_by_its_file(read_ond(pool_folder() / file), file)
+        self.ond_imax = self.inverter.imax_mppt_a
+        self._ond_iscmax = self.inverter.isc_max_mppt_a
+        self.apply_imax(self.p.imax_mppt_override)
+        self.options = []
+
     def size_series(self) -> SeriesRange | None:
         if not self.p.system_voltage:
             self.range = None
@@ -301,12 +325,17 @@ class Design:
         """
         report = progress.Reporter(on_progress)
         self._prepare(report, share=progress.OPTIONS_AT)
+        self.roof_fit = None
+        if self.p.inverter_by == "app":
+            self._use_the_roofs_inverter()
         rng = self.size_series()
         if rng is not None:
             report.begin(progress.OPTIONS, progress.OPTIONS_AT, until=1.0)
             self._build_options(rng, report.part)
         else:
             self.options, self.custom_misfit = [], None
+        if self.p.inverter_by != "app" and self.options and not any(o.ok for o in self.options):
+            self.roof_fit = inverter_for_the_roof(self)
         report.finish(progress.OPTIONS if rng is not None else progress.LOSSES)
         return self.options
 

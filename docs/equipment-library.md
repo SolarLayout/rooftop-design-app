@@ -25,6 +25,13 @@ them, the file's data source, and the numbers the picker filters and sorts by (a
 bifaciality; an inverter's AC power, MPPT count, MPPT window and maximum DC voltage, and whether its maker calls it
 preliminary).
 
+## The inverter for the roof (D118)
+
+A new design's inverter is chosen by the engine for its roof from Waaree's on-grid inverters. The engine cannot read the
+web app's folder, so it carries copies of those files: `apps/api/src/rooftop_core/samples/for_the_roof/`. A test of the
+engine (`tests/engine/test_inverter_for_the_roof.py`) holds them to the catalog: every Waaree inverter of the library, by
+its SHA-256, and nothing else. When a Waaree inverter is added, changed or removed here, copy the same change there.
+
 ## Adding files
 
 1. Copy the files into `apps/web/public/equipment/modules/` (PAN) or `apps/web/public/equipment/inverters/` (OND), named

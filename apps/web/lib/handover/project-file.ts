@@ -40,6 +40,13 @@ const NO_OPTION_YET = "None yet";
 
 const fileRow = (label: string, path: string): ContentRow => (path === "" ? { label, value: BUNDLED_SAMPLE, isFileName: false } : { label, value: path, isFileName: true });
 
+/** The inverter the app set is the run's for the roof (D118); else the file the document names. */
+function inverterRowOf(document: Project, design: DesignResult | null): ContentRow {
+  const roof = design?.roof_inverter;
+  if (document.inverter_by === "app" && roof?.in_use) return { label: "Inverter file", value: `Chosen for this roof · ${roof.file}`, isFileName: false };
+  return fileRow("Inverter file", document.ond_path);
+}
+
 function voltageOf(document: Project, design: DesignResult | null): string | null {
   if (document.system_voltage !== null && document.system_voltage !== undefined) return `${document.system_voltage} V`;
   return design?.no_options?.title ?? null;
@@ -60,7 +67,7 @@ export function projectFileViewOf({ document, design, bytes, draft }: Asked): Pr
     format: FORMAT,
     contents: [
       fileRow("Module file", document.pan_path),
-      fileRow("Inverter file", document.ond_path),
+      inverterRowOf(document, design),
       { label: "Weather", value: design ? `${weatherShownOf(document)} · ${shown(design.weather.hours, 0)} hours` : null, isFileName: false },
       { label: "System voltage", value: voltageOf(document, design), isFileName: false },
       { label: "Chosen option", value: optionOf(design), isFileName: false },
