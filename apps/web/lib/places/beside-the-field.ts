@@ -3,7 +3,8 @@
 // V2 · 9); with something typed, on Find, the action that searches it (Enter does the same). Home has its own action for
 // words, Find the roof; a field of a form has the form's. Pure.
 
-export type SearchLook = "column" | "field" | "hero";
+/** Home has two looks with its own action: `hero`, beside the field, and `glass`, over its picture (D120). */
+export type SearchLook = "column" | "field" | "hero" | "glass";
 export type Beside = "locate" | "search" | null;
 
 export function besideTheField({ look, typed, found }: { look: SearchLook; typed: string; found: string | null }): Beside {

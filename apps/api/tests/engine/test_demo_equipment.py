@@ -5,7 +5,9 @@ That file stays with the tests as the engine's reference module (tools/reference
 app's Test.PAN under its real names, and with Test-S.ond (the bundled inverter under its) every number is
 the same."""
 
+import re
 from dataclasses import asdict
+from pathlib import Path
 
 import pytest
 
@@ -107,3 +109,18 @@ def test_the_bundled_demo_recommends_an_option_in_the_target():
     assert len(design.layout.modules) == 790
     assert options[0].recommended and options[0].key == "25x24x1"
     assert options[0].result.energy_mwh == pytest.approx(586.4, abs=0.05)
+
+
+HOME_VIEW = Path(__file__).resolve().parents[3] / "web" / "lib" / "home" / "home-view.ts"
+
+
+def test_home_says_the_bundled_demos_figures():
+    """Home's demo row and card (D120) quote the demo's capacity and energy as text: they are the engine's."""
+    design = Design(demo_project(), memo=KEPT)
+    options = design.run_options()
+    view = HOME_VIEW.read_text(encoding="utf-8")
+    kwp = re.search(r'kwp: "([\d.,]+)"', view).group(1)
+    mwh = re.search(r'mwh: "([\d.,]+)"', view).group(1)
+
+    assert kwp == f"{options[0].n_modules * design.module.pnom_w / 1000:.2f}"
+    assert mwh == f"{options[0].result.energy_mwh:.1f}"

@@ -31,6 +31,16 @@
   --text-display-touch--letter-spacing: -0.03em;
   --text-display-touch--font-weight: 600;
   --text-display-touch--font-family: var(--font-display);
+  --text-banner: 84px;
+  --text-banner--line-height: 84px;
+  --text-banner--letter-spacing: -0.035em;
+  --text-banner--font-weight: 600;
+  --text-banner--font-family: var(--font-display);
+  --text-banner-line: 18px;
+  --text-banner-line--line-height: 28px;
+  --text-banner-line--letter-spacing: 0;
+  --text-banner-line--font-weight: 400;
+  --text-banner-line--font-family: var(--font-sans);
 
   --text-figure: 36px;
   --text-figure--line-height: 40px;
@@ -148,12 +158,16 @@
   --size-touch: 44px;
   --size-sheet-peek: 84px;
   --size-stage-phone: 40dvh;
+  --size-graph: 40px;
+  --size-graph-phone: 32px;
+  --size-graph-fade: 260px;
   --columns-p-values-phone: 1fr 1fr 1.5fr;
   --columns-loss-chain: 210px 100px 64px 216px minmax(0, 1fr);
   --columns-loss-chain-tablet: 220px 112px 72px 190px minmax(0, 1fr);
   --aspect-paper: 297 / 210;
   --aspect-thumbnail: 320 / 180;
   --columns-loss-chain-phone: minmax(0, 1fr) auto auto;
+  --columns-designs: 72px minmax(0, 2fr) minmax(0, 1.4fr) 104px 120px 160px 32px;
 
   --radius-swatch: 3px;
   --radius-key: 4px;
@@ -162,6 +176,8 @@
   --radius-row: 12px;
   --radius-card: 16px;
   --radius-panel: 24px;
+  --radius-cta: 14px;
+  --radius-hero: 20px;
   --radius-full: 9999px;
 
   --blur-panel: 10px;
@@ -239,6 +255,7 @@
   --color-dim-panel: rgba(5,7,10,.58);
   --color-line-glass: rgba(255,255,255,.08);
   --color-track-glass: rgba(242,244,247,.24);
+  --color-graph-line: rgba(255,255,255,.035);
   --color-handle-fill: #FFFFFF;
 
   --color-text: #F2F4F7;
@@ -363,11 +380,15 @@
   --spacing-touch: var(--size-touch);
   --spacing-sheet-peek: var(--size-sheet-peek);
   --spacing-stage-phone: var(--size-stage-phone);
+  --spacing-graph: var(--size-graph);
+  --spacing-graph-phone: var(--size-graph-phone);
+  --spacing-graph-fade: var(--size-graph-fade);
 
   --grid-template-columns-p-values-phone: var(--columns-p-values-phone);
   --grid-template-columns-loss-chain: var(--columns-loss-chain);
   --grid-template-columns-loss-chain-tablet: var(--columns-loss-chain-tablet);
   --grid-template-columns-loss-chain-phone: var(--columns-loss-chain-phone);
+  --grid-template-columns-designs: var(--columns-designs);
   --aspect-paper: var(--aspect-paper);
   --aspect-thumbnail: var(--aspect-thumbnail);
 
@@ -381,6 +402,8 @@
   --radius-row: var(--radius-row);
   --radius-card: var(--radius-card);
   --radius-panel: var(--radius-panel);
+  --radius-cta: var(--radius-cta);
+  --radius-hero: var(--radius-hero);
   --radius-full: var(--radius-full);
 
   --ease-out: var(--ease-out);
@@ -402,6 +425,7 @@
   --color-dim-panel: var(--color-dim-panel);
   --color-line-glass: var(--color-line-glass);
   --color-track-glass: var(--color-track-glass);
+  --color-graph-line: var(--color-graph-line);
   --color-handle-fill: var(--color-handle-fill);
   --color-text: var(--color-text);
   --color-text-2: var(--color-text-2);
@@ -490,6 +514,22 @@
   font-size: var(--text-display-touch);
   line-height: var(--text-display-touch--line-height);
   letter-spacing: var(--text-display-touch--letter-spacing);
+  font-variant-numeric: tabular-nums;
+}
+@utility type-banner {
+  font-family: var(--text-banner--font-family);
+  font-weight: var(--text-banner--font-weight);
+  font-size: var(--text-banner);
+  line-height: var(--text-banner--line-height);
+  letter-spacing: var(--text-banner--letter-spacing);
+  font-variant-numeric: tabular-nums;
+}
+@utility type-banner-line {
+  font-family: var(--text-banner-line--font-family);
+  font-weight: var(--text-banner-line--font-weight);
+  font-size: var(--text-banner-line);
+  line-height: var(--text-banner-line--line-height);
+  letter-spacing: var(--text-banner-line--letter-spacing);
   font-variant-numeric: tabular-nums;
 }
 @utility type-figure {
@@ -946,6 +986,20 @@
 /* Text that stands on the satellite imagery is read against whatever is under it. */
 @utility on-imagery {
   text-shadow: var(--shadow-text-on-imagery);
+}
+/* Home's graph paper under its hero (D120): the ground's grid, a line of --color-graph-line every --size-graph (32 on phone),
+   fading in over --size-graph-fade from the top so that it never cuts the picture's fade. */
+@utility graph-paper {
+  background-image: linear-gradient(var(--color-graph-line) 1px, transparent 1px), linear-gradient(90deg, var(--color-graph-line) 1px, transparent 1px);
+  background-size: var(--size-graph-phone) var(--size-graph-phone);
+  mask-image: linear-gradient(to bottom, transparent, black var(--size-graph-fade));
+  @media (width >= 640px) {
+    background-size: var(--size-graph) var(--size-graph);
+  }
+}
+/* Home's picture on desktop, faded in from its left edge into the ground under the words (D120). */
+@utility fade-from-left {
+  mask-image: linear-gradient(to right, transparent, black 40%);
 }
 /* The fade of the stage into the ground under the words of Present: nothing of the stage under them is cut, it darkens. */
 @utility stage-fade {
