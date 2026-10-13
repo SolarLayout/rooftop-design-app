@@ -30,6 +30,7 @@ import { firstKnownOf } from "@/lib/help/keys";
 import { HELP_KEYS } from "@/lib/help/manifest.gen";
 import { entryAfterPlace, EXAMPLES, type Entry } from "@/lib/outline/first-step";
 import { footprintNoteStays } from "@/lib/outline/footprint-note";
+import { editedPlaceNameOf, placeNameOfBuild } from "@/lib/outline/place-name";
 import { howTosOf, type Tool } from "@/lib/outline/how-to";
 import { isClosedAndSettled, measurementsOf, outlineAfter, START } from "@/lib/outline/outline-state";
 import { showsMapLineOf, tipDoneBy, type TipId } from "@/lib/outline/tips";
@@ -231,10 +232,12 @@ export function Find() {
     setBuilding({ kind: "building" });
     try {
       const answer = await api.roofFromMap(request);
+      // The place's own name (D114): of a place found by words; by hand, while the Place's fields still hold it.
+      const handAt = byHand ? { lat: hand.lat, lon: hand.lon } : null;
       if (isEditing && project) {
-        store.getState().commit((design) => ({ ...design, roof: roofAfterBuild(design.roof, answer.roof) }));
+        store.getState().commit((design) => ({ ...design, roof: roofAfterBuild(design.roof, answer.roof), place_name: editedPlaceNameOf(design.place_name, foundAt, handAt) }));
       } else {
-        store.getState().open(answer);
+        store.getState().open({ ...answer, place_name: placeNameOfBuild(foundAt, handAt) });
       }
       setStep("build");
       router.push(pathOfLens("roof"));
