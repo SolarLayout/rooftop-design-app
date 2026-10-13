@@ -2,6 +2,11 @@
 
 Produced by running the desktop engine (commit bf2cb67) on the bundled weather. Use them in API and e2e tests.
 
+**Since D117 (#251) these are the engine's reference case, not the demo the app opens.** The app's demo bundles Waaree
+BiN-08-580 (580 Wp, 2.278 x 1.134 m, Voc -0.26 %/degC): 790 positions, recommended 25 x 24 x 1, 348.00 kWp, DC/AC 1.27,
+586.4 MWh a year, no Voc note. The figures below were taken with the Insolation file, whose temperature figures are not
+a real module's; the tests and the parity tool keep it as the reference module (`apps/api/tools/reference.py`).
+
 ## Roof
 90 x 40 m flat roof, lat 18.52, lon 73.86, long side facing 180. Parapet 0.9 m, setback 1.0 m, walkway 0.6 m
 every 24 modules, obstacle clearance 0.5 m, albedo 0.20.
@@ -13,8 +18,8 @@ every 24 modules, obstacle clearance 0.5 m, albedo 0.20.
 | AC unit 1 to 4 | box | 70.75 / 73.75 / 76.75 / 79.75, 3.5 | 1.5 x 1.0 | 1.2 |
 
 ## Equipment
-Shown in the demo by their real names (decision D24): Insolation INA-144MHC-TF-560 and WattPower
-WP-330KTL-H1, bundled as `insolation-ina-144mhc-tf-560.PAN` and `wattpower-wp-330ktl-h1.OND`. `Test.PAN` and
+The reference module Insolation INA-144MHC-TF-560 (`apps/api/tests/fixtures/equipment/insolation-ina-144mhc-tf-560.PAN`,
+bundled until D117) and the bundled inverter WattPower WP-330KTL-H1 (`wattpower-wp-330ktl-h1.OND`, D24). `Test.PAN` and
 `Test-S.ond` of the desktop app hold the same data under the name "Test"; they are test fixtures here.
 - Module: 560 Wp, 2.277 x 1.133 m, Voc 49.95 V, Isc 14.30 A, Vmp 41.24 V, Imp 13.58 A, twin half-cell,
   3 diodes, bifaciality 0.80, LID 0.2 %. Derived: Voc -0.164 %/degC, Vmp -0.228, Pmpp -0.212 (the Voc note fires).
