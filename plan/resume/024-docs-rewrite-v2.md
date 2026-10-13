@@ -32,7 +32,8 @@ The work, in this order:
 2. The tree, for the owner's approval before any page: the pages and their `##` headings, following V2's places and the help's
    topics (D111: each topic links to its page and section). Show it as a short list; ask one question at a time.
 3. The pages, from the sheet alone, in the voice of the writing guide and plan/v2/voice.md. What's new: one dated entry.
-4. Screenshots: Playwright from production (rooftop.solarlayout.app) for what is deployed, else the product repo's test stack
+4. Screenshots: all of them are retaken, none kept: V2 changed the interface across the app, so each existing image
+   under public/screenshots/rooftop/ is stale. Take what the new pages need, by Playwright from production (rooftop.solarlayout.app) for what is deployed, else the product repo's test stack
    (`bun dev:bg --profile test` there; never start or stop its dev profile), at 1440 × 900 (scale 2), 834 × 1194 or 390 × 844
    with touch. Delete the stale images; the manifest content/rooftop/screenshots.ts has a PNG for each id.
 5. The gates: `node .claude/skills/update-docs/scripts/check-pages.mjs --product rooftop`, then
