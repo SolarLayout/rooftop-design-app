@@ -6,14 +6,18 @@ import type { KeptDesign } from "../device/kept-design";
 import { whenOf } from "../device/kept-design";
 import { thumbnailOf } from "../device/thumbnail";
 import { LONGEST_NAME } from "../flow/name-field";
-import { cardFiguresOf } from "../device/card-figures";
+import { shown } from "../../components/ui/number-entry";
+import type { Project } from "../api";
 
 export type DesignCard = {
   id: string;
   name: string;
   roofWords: string;
-  /** "617.8 MWh a year · 357.28 kWp", of the last run; null before one (never 0). */
-  figures: string | null;
+  /** Where the roof is: the place's name as Find found it (D114), else its coordinates. */
+  place: string;
+  /** The capacity and the energy of year 1 of the last run, "357.28" and "617.8"; null before one (never 0). */
+  kwp: string | null;
+  mwh: string | null;
   /** "Edited 2 hours ago". */
   edited: string;
   /** The plan of the kept layout as an SVG (decision 6); for a record kept before there were thumbnails, the plan of its roof alone. */
@@ -31,12 +35,18 @@ export const CARD_MENU = [
 
 export type CardDoing = (typeof CARD_MENU)[number]["does"];
 
+/** Where the roof is, in degrees to two decimals: "18.52° N, 73.86° E". */
+const coordinatesOf = ({ lat, lon }: Pick<Project["roof"], "lat" | "lon">) =>
+  `${shown(Math.abs(lat), 2)}° ${lat >= 0 ? "N" : "S"}, ${shown(Math.abs(lon), 2)}° ${lon >= 0 ? "E" : "W"}`;
+
 function cardOf({ id, name, document, facts, thumbnail, editedAt }: KeptDesign, now: number): DesignCard {
   return {
     id,
     name,
     roofWords: facts.roofWords,
-    figures: cardFiguresOf(facts),
+    place: document.place_name || coordinatesOf(document.roof),
+    kwp: facts.dcKwp === null ? null : shown(facts.dcKwp, 2),
+    mwh: facts.energyMwh === null ? null : shown(facts.energyMwh, 1),
     edited: whenOf(editedAt, now),
     thumbnail: thumbnail ?? thumbnailOf(document.roof, null),
   };

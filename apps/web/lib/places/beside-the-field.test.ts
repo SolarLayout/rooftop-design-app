@@ -15,6 +15,8 @@ describe("beside the search", () => {
     expect(besideTheField({ look: "column", typed: "Pune", found: null })).toBe("search");
     expect(besideTheField({ look: "column", typed: "18.52, 73.86", found: null })).toBe("search");
     expect(besideTheField({ look: "hero", typed: "Pune", found: null })).toBeNull();
+    expect(besideTheField({ look: "glass", typed: "", found: null })).toBeNull();
+    expect(besideTheField({ look: "glass", typed: "Pune", found: null })).toBeNull();
     expect(besideTheField({ look: "field", typed: "Pune", found: null })).toBeNull();
   });
 

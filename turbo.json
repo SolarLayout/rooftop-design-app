@@ -43,7 +43,8 @@
       "inputs": [
         "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/e2e/fixtures/weather-*.json",
-        "$TURBO_ROOT$/apps/web/public/equipment/catalog.json"
+        "$TURBO_ROOT$/apps/web/public/equipment/catalog.json",
+        "$TURBO_ROOT$/apps/web/lib/home/home-view.ts"
       ],
       "outputs": [],
       "passThroughEnv": [

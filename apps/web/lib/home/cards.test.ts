@@ -29,6 +29,13 @@ const kept = ({ document, ...over }: Partial<Omit<KeptDesign, "document">> & { d
   ...over,
 });
 
+describe("the place of a row", () => {
+  test("the place's name as Find found it (D114); without one, the coordinates", () => {
+    expect(cardsOf([kept({ document: { place_name: "Koregaon Park" } })], NOW)[0]!.place).toBe("Koregaon Park");
+    expect(cardsOf([kept({ document: { place_name: "", roof: { ...DEMO.roof, lat: -33.87, lon: -151.21 } } })], NOW)[0]!.place).toBe("33.87° S, 151.21° W");
+  });
+});
+
 describe("the cards", () => {
   test("a design that has run: its name, the roof's words, the capacity and the energy as the vitals say them, when it was edited", () => {
     expect(cardsOf([kept({})], NOW)).toEqual([
@@ -36,7 +43,9 @@ describe("the cards", () => {
         id: "a1",
         name: "Pune demo roof",
         roofWords: "90.0 × 40.0 m flat roof, tilted rows",
-        figures: "617.8 MWh a year · 357.28 kWp",
+        place: "18.52° N, 73.86° E",
+        kwp: "357.28",
+        mwh: "617.8",
         edited: "Edited 2 hours ago",
         thumbnail: expect.stringMatching(/^<svg /),
       },
@@ -53,7 +62,7 @@ describe("the cards", () => {
   test("before a run the card says no figure, never 0 (V2 · 9)", () => {
     const card = cardsOf([kept({ facts: { roofWords: "62 × 28 m flat roof", dcKwp: null, energyMwh: null }, document: { system_voltage: null } })], NOW)[0]!;
 
-    expect(card.figures).toBeNull();
+    expect([card.kwp, card.mwh]).toEqual([null, null]);
     expect(card.roofWords).toBe("62 × 28 m flat roof");
   });
 

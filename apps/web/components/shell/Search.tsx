@@ -34,8 +34,9 @@ type Props = {
   onPlace: (place: FoundPlace) => void;
   /** The label of the place that was found, beside the field. */
   found: string | null;
-  /** First in Find's column (V2 · 4), a field of a form (the import of a drawing), or the well of Home with its primary action inside (`hero`). */
-  look?: "column" | "field" | "hero";
+  /** First in Find's column (V2 · 4), a field of a form (the import of a drawing), the well of Home with its primary action
+   * beside it (`hero`), or Home's glass field over its picture with the action inside it from tablet on (`glass`, D120). */
+  look?: "column" | "field" | "hero" | "glass";
   /** What the search reads, shown in its list while it is empty and has the focus (Find's column); pressed, put into it. */
   examples?: readonly { what: string; text: string; shown: string }[];
   /**
@@ -70,6 +71,12 @@ const HERO_ANCHOR = "pointer-events-none absolute inset-x-0 bottom-0";
 const HERO_ACTION = "w-full tablet:h-14 tablet:w-auto";
 /** Home's field's words: short, so that they are never cut (V2 · 9). */
 const HERO_LABEL = "Address or coordinates";
+// Home over its picture (D120): the field a glass of 60 (68 from tablet), the stage seen through it; the action under it on
+// phone, inside its right end from tablet on, 52 high with the large primary's radius.
+const GLASS = "relative flex min-w-0 flex-col gap-2.5 tablet:block";
+const GLASS_FORM =
+  "relative flex h-15 min-w-0 items-center gap-3 rounded-hero border border-line-glass bg-dim-panel px-4.5 shadow-float backdrop-blur-panel focused:border-accent tablet:h-17 tablet:pr-48 tablet:pl-5.5";
+const GLASS_ACTION = "h-14 w-full rounded-cta tablet:absolute tablet:top-2 tablet:right-2 tablet:h-13 tablet:w-auto";
 
 /** The field of the search: words for the geocoder, coordinates, or a maps link; the places found under it. */
 export function Search({ provider, near, onPlace, found, look = "column", examples, hero, ref, className }: Props) {
@@ -210,18 +217,19 @@ export function Search({ provider, near, onPlace, found, look = "column", exampl
   const offer = state.kind === "refused" ? state.offer : null;
   const marked = state.kind === "found" ? state.marked : readBack || offer ? 0 : null;
   const isListOpen = marked !== null;
-  const isHero = look === "hero";
+  const isGlass = look === "glass";
+  const isHero = look === "hero" || isGlass;
   const hasWords = typed.trim() !== "";
   const beside = besideTheField({ look, typed, found });
   const locateMark = isLocating ? <ProgressRing size={16} /> : <Icon name="locate" size={18} />;
 
   return (
-    <div className={classNames(isHero ? HERO : "flex min-w-0 items-center gap-2 tablet:gap-2.5", className)}>
+    <div className={classNames(isGlass ? GLASS : isHero ? HERO : "flex min-w-0 items-center gap-2 tablet:gap-2.5", className)}>
       <form
         id={formId}
         ref={isHero ? undefined : anchor}
         role="search"
-        className={classNames(isHero ? HERO_FORM : look === "field" ? FIELD : BOX, "min-w-0 grow")}
+        className={classNames(isGlass ? GLASS_FORM : isHero ? HERO_FORM : look === "field" ? FIELD : BOX, "min-w-0 grow")}
         onSubmit={(event) => {
           event.preventDefault();
           onSubmit();
@@ -260,11 +268,11 @@ export function Search({ provider, near, onPlace, found, look = "column", exampl
       </form>
       {hero ? (
         hasWords ? (
-          <Button type="submit" form={formId} kind="primary" size="xl" className={HERO_ACTION}>
+          <Button type="submit" form={formId} kind="primary" size="xl" icon={isGlass ? "arrow-right" : undefined} className={classNames(isGlass ? GLASS_ACTION : HERO_ACTION, isGlass && "flex-row-reverse")}>
             {hero.label}
           </Button>
         ) : (
-          <ButtonLink kind="primary" size="xl" href={hero.href} className={HERO_ACTION}>
+          <ButtonLink kind="primary" size="xl" href={hero.href} icon={isGlass ? "arrow-right" : undefined} className={classNames(isGlass ? GLASS_ACTION : HERO_ACTION, isGlass && "flex-row-reverse")}>
             {hero.label}
           </ButtonLink>
         )

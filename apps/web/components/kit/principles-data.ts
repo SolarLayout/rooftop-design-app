@@ -6,6 +6,8 @@ export type TypeStyle = { name: string; sample: string; use: string };
 export const TYPE_STYLES: readonly TypeStyle[] = [
   { name: "display", sample: "617.8", use: "The one lead number of a page" },
   { name: "display-touch", sample: "617.8", use: "The same on phone and tablet" },
+  { name: "banner", sample: "Rooftop PV design", use: "Home's title over its picture, on desktop (D120)" },
+  { name: "banner-line", sample: "Outline a roof on the map.", use: "The line under Home's title, from tablet on" },
   { name: "figure", sample: "1,729", use: "A figure a buyer reads" },
   { name: "figure-touch", sample: "1,729", use: "The same on phone and tablet" },
   { name: "title", sample: "Performance", use: "Page and step titles" },

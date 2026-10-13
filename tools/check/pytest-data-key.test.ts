@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { dataKey, e2eWeatherFixtures, equipmentCatalog, isDataInput, lockedVersion, type DataKeyInputs } from "./pytest-data-key.ts";
+import { dataKey, e2eWeatherFixtures, isDataInput, lockedVersion, webFilesOfPytest, type DataKeyInputs } from "./pytest-data-key.ts";
 
 const inputs: DataKeyInputs = {
   files: [
@@ -75,13 +75,18 @@ describe("e2eWeatherFixtures", () => {
   });
 });
 
-describe("equipmentCatalog", () => {
-  test("the library's catalog, named from the root: the pool of the inverter for the roof is held to it (D118)", () => {
+describe("webFilesOfPytest", () => {
+  test("the web app's files a pytest holds to the engine, named from the root: the library's catalog (D118), Home's demo figures (D120)", () => {
     const webDir = mkdtempSync(join(tmpdir(), "web-"));
     mkdirSync(join(webDir, "public", "equipment"), { recursive: true });
+    mkdirSync(join(webDir, "lib", "home"), { recursive: true });
     writeFileSync(join(webDir, "public", "equipment", "catalog.json"), '{"inverters": []}');
+    writeFileSync(join(webDir, "lib", "home", "home-view.ts"), 'kwp: "348.00"');
 
-    expect(equipmentCatalog(webDir)).toEqual({ path: "apps/web/public/equipment/catalog.json", bytes: new TextEncoder().encode('{"inverters": []}') });
+    expect(webFilesOfPytest(webDir)).toEqual([
+      { path: "apps/web/public/equipment/catalog.json", bytes: new TextEncoder().encode('{"inverters": []}') },
+      { path: "apps/web/lib/home/home-view.ts", bytes: new TextEncoder().encode('kwp: "348.00"') },
+    ]);
   });
 });
 
