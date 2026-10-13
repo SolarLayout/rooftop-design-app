@@ -1,6 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import type { XY } from "../geometry/measure";
-import { howTosOf } from "./how-to";
+import { firstKnownOf } from "../help/keys";
+import { HELP_KEYS } from "../help/manifest.gen";
+import { howTosOf, type Tool } from "./how-to";
 import { outlineAfter, START, type OutlineEvent, type OutlineState } from "./outline-state";
 
 // The how-to the ? beside Find's title opens (D81): of what the hand can do now, the most fitting first; Find opens the
@@ -34,6 +36,14 @@ describe("the how-to of what the hand can do now", () => {
 
   test("with the roof picked up, moving it", () => {
     expect(howTosOf(outlineAfter(closed(), { type: "roofPicked", picked: true }), "box")).toEqual(["move-the-roof"]);
+  });
+
+  // Issue 238, item 3: with Tree in hand the ? opened Move or turn the roof, since the tree had no how-to.
+  test("every tool has its how-to, so that the ? opens the tool in hand", () => {
+    const tools: Record<Tool, true> = { corners: true, rectangle: true, detect: true, box: true, tank: true, wall: true, tree: true, building: true };
+    const known: readonly string[] = HELP_KEYS;
+    expect(Object.keys(tools).filter((tool) => !known.includes(`find.tool.${tool}`))).toEqual([]);
+    expect(firstKnownOf(howTosOf(closed(), "tree").map((id) => `find.tool.${id}`), HELP_KEYS)).toBe("find.tool.tree");
   });
 
   test("with an obstacle picked, moving it, then the roof", () => {

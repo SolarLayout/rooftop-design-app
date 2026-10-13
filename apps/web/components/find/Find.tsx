@@ -29,6 +29,7 @@ import { isRound, obstaclesOfMap, type Shape } from "@/lib/outline/obstacles";
 import { firstKnownOf } from "@/lib/help/keys";
 import { HELP_KEYS } from "@/lib/help/manifest.gen";
 import { entryAfterPlace, EXAMPLES, type Entry } from "@/lib/outline/first-step";
+import { footprintNoteStays } from "@/lib/outline/footprint-note";
 import { howTosOf, type Tool } from "@/lib/outline/how-to";
 import { isClosedAndSettled, measurementsOf, outlineAfter, START } from "@/lib/outline/outline-state";
 import { showsMapLineOf, tipDoneBy, type TipId } from "@/lib/outline/tips";
@@ -384,10 +385,14 @@ export function Find() {
             ) : null}
             {/* The phone has no buttons: the map is pinched and turned by hand. */}
             {map && !byHand ? <MapButtons map={map} className="absolute right-5 bottom-7 z-stage-overlay hidden tablet:flex" /> : null}
-            {detected ? (
+            {detected && footprintNoteStays(detected.found ? detected.taken : null, outline.corners) ? (
               <DetectedCallout
                 detected={detected}
-                onUse={() => setDetected(null)}
+                // The note stands while the outline is the footprint: its Undo takes back the footprint and nothing else.
+                onUndo={() => {
+                  on({ type: "undone" });
+                  setDetected(null);
+                }}
                 // The footprint stays and its corners drag, as the corners of any closed roof do.
                 onClose={() => setDetected(null)}
               />

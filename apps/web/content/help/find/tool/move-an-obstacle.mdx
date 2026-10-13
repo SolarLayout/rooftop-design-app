@@ -15,7 +15,7 @@ docs:
 <Step title="Select the obstacle">
 <Pointer>Click it on the map, with `Box`, `Tank` or `Tree` in hand: with `Wall` or `Building`, a click places a point. Or click its row under `Obstacles` in the column.</Pointer>
 <Touch>Press it on the map, with `Box`, `Tank` or `Tree` in hand: with `Wall` or `Building`, a press places a point. Or press its row under `Obstacles` in the column.</Touch>
-Its corners show, and for a box or a building a round handle. Drag a corner to reshape it: a box stays a rectangle, and the one handle of a tank or a tree, at its edge, sets its size.
+Its corners show, and for a box or a building a round handle. Drag a corner to reshape it: a box stays a rectangle, and the one handle of a tank or a tree, at its edge, sets its size. On an obstacle small on the screen a corner takes a press on its dot alone, and on one smaller still the corners do not show, so that a drag from inside it moves it: zoom in to reshape it.
 <Picture src="/help/find/move-an-obstacle/1.jpg" alt="The stair room selected on the roof: its corners shown, and a round handle above it" width={1200} height={600}>
   <Mark n={1} x={33.7} y={54.7}>The obstacle, selected: its corners show</Mark>
   <Mark n={2} x={33.7} y={35.3} ring>Its handle, to turn it</Mark>
@@ -38,6 +38,8 @@ Drag the round handle round the obstacle. A box and a building turn; a tank, a t
 </Step>
 </Steps>
 
+Each obstacle's name and height stand under it, or above or beside it where an edge's length or another label takes the room. A label with no room shows once its obstacle is selected, or the map is zoomed in.
+
 ## Remove it
 
 <Pointer>Select it and press <Key>Delete</Key>, or press the bin of its row under `Obstacles`.</Pointer>
@@ -45,5 +47,5 @@ Drag the round handle round the obstacle. A box and a building turn; a tank, a t
 
 ## Undo
 
-<Pointer>Press <Key>⌘ Z</Key> or <Key>Ctrl Z</Key> to take back the last step, and <Key>Shift</Key> with it to redo.</Pointer>
-<Touch>Drag the obstacle or its handle back to undo a move or a turn.</Touch>
+<Pointer>Press <Key>⌘ Z</Key> or <Key>Ctrl Z</Key>, or `Undo` under the obstacle kinds, to take back the last step, and <Key>Shift</Key> with the keys to redo.</Pointer>
+<Touch>Press `Undo` under the obstacle kinds to take back a move or a turn.</Touch>

@@ -32,7 +32,10 @@ export function ghostOf(state: OutlineState): { points: readonly XY[]; closed: b
   return atRest ? { points: footprintOf(atRest), closed: atRest.kind !== "wall" } : null;
 }
 
-/** The label of a lift and where it stands: a move's at the middle of what moves, a turn's at the handle. */
+/** The middle of an obstacle's move label stands this many pixels under its lowest point, so that it hides nothing of it. */
+const MOVE_LABEL_UNDER_PX = 28;
+
+/** The label of a lift and where it stands: a roof's move at its middle, an obstacle's under it, a turn's at the handle. */
 export function liftLabelPlaceOf(state: OutlineState, metresPerPx: number): { at: XY; text: string; kind: Lift["kind"] } | null {
   const { lift, frame } = state;
   if (!lift) return null;
@@ -43,5 +46,7 @@ export function liftLabelPlaceOf(state: OutlineState, metresPerPx: number): { at
   }
   const obstacle = state.obstacles.find(({ id }) => id === lift.of);
   if (!obstacle) return null;
-  return { at: handle ?? centroidOf(footprintOf(obstacle)), text: obstacleLiftLabelOf(obstacle, lift), kind: lift.kind };
+  const footprint = footprintOf(obstacle);
+  const under = { x: centroidOf(footprint).x, y: Math.min(...footprint.map(({ y }) => y)) - MOVE_LABEL_UNDER_PX * metresPerPx };
+  return { at: handle ?? under, text: obstacleLiftLabelOf(obstacle, lift), kind: lift.kind };
 }

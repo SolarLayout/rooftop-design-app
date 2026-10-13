@@ -13,6 +13,10 @@ import { areaOf, centroidOf, midpointsOf, type XY } from "@/lib/geometry/measure
 import { foldOf, isRound, labelOf, type Obstacle, type ObstacleKind, type Shape } from "@/lib/outline/obstacles";
 import { turnedAbout } from "@/lib/outline/rectangle";
 import { ghostOf, liftLabelPlaceOf, turnHandleOfPicked } from "@/lib/outline/lifted";
+import { drawsOf } from "@/lib/outline/draws";
+import { handleReachOf, shortestSideOf } from "@/lib/outline/handle-reach";
+import { followsOf, type Held } from "@/lib/outline/held";
+import { labelPlacesOf, type Rect } from "@/lib/outline/label-places";
 import { mapCursorOf } from "@/lib/outline/map-cursor";
 import { isInside, type Lift } from "@/lib/outline/roof-move";
 import { isClosedAndSettled, type Lifted, type OutlineEvent, type OutlineState } from "@/lib/outline/outline-state";
@@ -35,8 +39,8 @@ export function kindOfTool(tool: Tool | null): ObstacleKind | null {
   }
 }
 
-/** What a press with Detect building found, and where on the screen it was. */
-export type Detected = { at: { x: number; y: number } } & ({ found: true; corners: number; area: number } | { found: false });
+/** What a press with Detect building found, and where on the screen it was; a footprint found is taken as the outline at once. */
+export type Detected = { at: { x: number; y: number } } & ({ found: true; taken: readonly XY[]; area: number } | { found: false });
 
 export type OutlineProps = {
   state: OutlineState;
@@ -82,6 +86,8 @@ const CORNER_EDITED = "pulsing-corner";
 const OBSTACLE_TARGET = classNames(TARGET, "desktop:size-6");
 // The ring of a midpoint is as wide as the line of the outline.
 const MIDPOINT = "block size-2.5 rounded-full border-outline border-accent-ink bg-accent";
+// An edge's length stands this many pixels below its midpoint, beside the handle, not on it.
+const EDGE_LABEL_BELOW_PX = 18;
 const LABEL = "block rounded-control bg-ground px-2.25 py-0.75 type-mono-touch desktop:type-mono font-medium text-text shadow-tooltip select-none";
 // The handle that turns a box: a round button above its top edge, this many pixels up.
 const TURN = classNames(
@@ -257,7 +263,16 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
   const obstacleLabels = useRef<Marker[]>([]);
   const obstacleHandles = useRef<Marker[]>([]);
   const liveHandles = useRef<Marker[]>([]);
-  const isDragging = useRef(false);
+  const held = useRef<Held>(null);
+  const overlaysOf = (): Overlays => ({
+    labels: labels.current,
+    obstacleLabels: obstacleLabels.current,
+    obstacleHandles: obstacleHandles.current,
+    others: [
+      ...[...corners.current, ...midpoints.current].map((marker) => marker.getElement().firstElementChild),
+      ...[turn.current, pickedTurn.current, liftLabel.current].map((marker) => marker?.getElement()),
+    ],
+  });
   const latest = useRef({ state, tool, on, onDetected });
   useEffect(() => {
     latest.current = { state, tool, on, onDetected };
@@ -387,7 +402,7 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
         if (!now.frame) tell({ type: "began", at: frame.centre });
         const corners = now.frame ? footprint.corners.map((corner) => toMetres(frame, toLonLat(footprint.frame, corner))) : footprint.corners;
         tell({ type: "footprintTaken", corners });
-        found?.({ found: true, corners: corners.length, area: areaOf(corners), at: { x: event.point.x, y: event.point.y } });
+        found?.({ found: true, taken: corners, area: areaOf(corners), at: { x: event.point.x, y: event.point.y } });
         return;
       }
       const kind = kindOfTool(inHand);
@@ -527,8 +542,8 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
     return listenToDrag(map, onDown, onMove, onUp);
   }, [map, tool]);
 
-  const drawsByDrag = (tool === "rectangle" && state.corners.length === 0) || ((tool === "box" || tool === "tank") && state.closed && !state.pending && !state.picked);
-  const drawsByPress = (tool === "corners" && !state.closed) || tool === "detect" || ((tool === "wall" || tool === "building") && state.closed && !state.pending);
+  const draws = drawsOf(tool, state);
+  const drawsByDrag = draws === "drag";
 
   // While a box can be drawn, a drag is the box's, not the map's.
   useEffect(() => {
@@ -563,7 +578,7 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
     };
   }, [map]);
   const isPicking = state.picked || state.selectedObstacle !== null;
-  const cursor = mapCursorOf({ draws: drawsByDrag || drawsByPress, overPicked: isPicking && overPicked, dragged: panning || state.lift !== null });
+  const cursor = mapCursorOf({ draws: draws !== null, overPicked: isPicking && overPicked, dragged: panning || state.lift !== null });
   useEffect(() => {
     map.getCanvas().style.cursor = cursor;
   }, [map, cursor]);
@@ -574,9 +589,10 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
   }, [tool, state.corners.length]);
 
   // The handles and the labels: made anew when their number changes, moved otherwise; left alone
-  // while one is dragged, because the drag is theirs.
+  // while a corner is dragged, because the drag is theirs. While the rectangle is turned they follow the turn, its handle the hand.
   useEffect(() => {
-    if (isDragging.current) return;
+    const follows = followsOf(held.current);
+    if (!follows.handles) return;
     const { frame } = state;
     const remove = (markers: Marker[]) => markers.splice(0).forEach((marker) => marker.remove());
     if (!frame) {
@@ -595,7 +611,7 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
 
     if (corners.current.length !== state.corners.length) {
       remove(corners.current);
-      corners.current = state.corners.map((_, index) => cornerMarker(map, index, latest, isDragging));
+      corners.current = state.corners.map((_, index) => cornerMarker(map, index, latest, held));
     }
     state.corners.forEach((corner, index) => {
       const marker = corners.current[index];
@@ -607,7 +623,7 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
 
     if (midpoints.current.length !== drawnEdges) {
       remove(midpoints.current);
-      midpoints.current = Array.from({ length: drawnEdges }, (_, edge) => midpointMarker(map, edge, latest, isDragging));
+      midpoints.current = Array.from({ length: drawnEdges }, (_, edge) => midpointMarker(map, edge, latest, held));
       remove(labels.current);
       labels.current = Array.from({ length: drawnEdges }, () => labelMarker(map));
     }
@@ -628,8 +644,8 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
       turn.current?.remove();
       turn.current = null;
     } else {
-      turn.current ??= turnMarker(map, latest, isDragging);
-      turn.current.setLngLat(lonLatOf(frame, turning.handle));
+      turn.current ??= turnMarker(map, latest, held);
+      if (follows.turnHandle) turn.current.setLngLat(lonLatOf(frame, turning.handle));
     }
 
     const picked = turnHandleOfPicked(state, metresPerPx);
@@ -659,7 +675,7 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
 
   // The labels of the obstacles, the handles of the selected one, and the points of the shape being drawn.
   useEffect(() => {
-    if (isDragging.current) return;
+    if (!followsOf(held.current).handles) return;
     const { frame } = state;
     const remove = (markers: Marker[]) => markers.splice(0).forEach((marker) => marker.remove());
     if (!frame) {
@@ -682,7 +698,7 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
     const handles = selected ? handlesOf(selected) : [];
     if (obstacleHandles.current.length !== handles.length || obstacleHandles.current.some((marker) => marker.getElement().dataset.obstacle !== String(selected?.id))) {
       remove(obstacleHandles.current);
-      obstacleHandles.current = selected ? handles.map((_, index) => obstacleHandleMarker(map, selected.id, index, latest, isDragging)) : [];
+      obstacleHandles.current = selected ? handles.map((_, index) => obstacleHandleMarker(map, selected.id, index, latest, held)) : [];
     }
     handles.forEach((point, index) => obstacleHandles.current[index].setLngLat(lonLatOf(frame, point)));
 
@@ -692,7 +708,21 @@ export function OutlineLayer({ map, state, tool, on, onDetected }: Props) {
       liveHandles.current = live.map(() => liveHandleMarker(map));
     }
     live.forEach((point, index) => liveHandles.current[index].setLngLat(lonLatOf(frame, point)));
+    fitOnScreen(map, state, overlaysOf());
   }, [map, state]);
+
+  // A zoom or a turn of the map changes what fits on the screen: the obstacles' labels and handles are fitted again.
+  useEffect(() => {
+    const fit = () => {
+      if (followsOf(held.current).handles) fitOnScreen(map, latest.current.state, overlaysOf());
+    };
+    map.on("zoom", fit);
+    map.on("rotate", fit);
+    return () => {
+      map.off("zoom", fit);
+      map.off("rotate", fit);
+    };
+  }, [map]);
 
   useEffect(
     () => () => {
@@ -744,7 +774,7 @@ function drawLoupe(map: MapLibre, loupe: Marker, at: { lng: number; lat: number 
   context.drawImage(map.getCanvas(), point.x * ratio - side / 2, point.y * ratio - side / 2, side, side, 0, 0, canvas.width, canvas.height);
 }
 
-function cornerMarker(map: MapLibre, index: number, latest: Latest, isDragging: React.RefObject<boolean>): Marker {
+function cornerMarker(map: MapLibre, index: number, latest: Latest, held: React.RefObject<Held>): Marker {
   const element = document.createElement("button");
   element.type = "button";
   element.className = TARGET;
@@ -762,7 +792,7 @@ function cornerMarker(map: MapLibre, index: number, latest: Latest, isDragging: 
   const marker = new Marker({ element, draggable: latest.current.tool !== null }).setLngLat([0, 0]).addTo(map);
   let loupe: Marker | null = null;
   marker.on("dragstart", () => {
-    isDragging.current = true;
+    held.current = "corner";
     latest.current.on({ type: "selected", index });
     if (isCoarse()) loupe = loupeMarker(map);
   });
@@ -775,7 +805,7 @@ function cornerMarker(map: MapLibre, index: number, latest: Latest, isDragging: 
     }
   });
   marker.on("dragend", () => {
-    isDragging.current = false;
+    held.current = null;
     loupe?.remove();
     loupe = null;
     latest.current.on({ type: "cornerDropped" });
@@ -783,7 +813,7 @@ function cornerMarker(map: MapLibre, index: number, latest: Latest, isDragging: 
   return marker;
 }
 
-function midpointMarker(map: MapLibre, edge: number, latest: Latest, isDragging: React.RefObject<boolean>): Marker {
+function midpointMarker(map: MapLibre, edge: number, latest: Latest, held: React.RefObject<Held>): Marker {
   const element = document.createElement("button");
   element.type = "button";
   element.className = TARGET;
@@ -800,7 +830,7 @@ function midpointMarker(map: MapLibre, edge: number, latest: Latest, isDragging:
   const marker = new Marker({ element, draggable: latest.current.tool !== null }).setLngLat([0, 0]).addTo(map);
   // A drag of a midpoint makes a corner there and drags it.
   marker.on("dragstart", () => {
-    isDragging.current = true;
+    held.current = "corner";
     const { state, on } = latest.current;
     if (state.frame) on({ type: "midpointTaken", edge, at: metresOf(marker, state.frame) });
   });
@@ -809,7 +839,7 @@ function midpointMarker(map: MapLibre, edge: number, latest: Latest, isDragging:
     if (state.frame) on({ type: "cornerMoved", index: edge + 1, at: metresOf(marker, state.frame), metresPerPx: metresPerPixel(map.getCenter().lat, map.getZoom()) });
   });
   marker.on("dragend", () => {
-    isDragging.current = false;
+    held.current = null;
     latest.current.on({ type: "cornerDropped" });
   });
   return marker;
@@ -820,7 +850,71 @@ function labelMarker(map: MapLibre): Marker {
   element.className = LABEL;
   element.dataset.testid = "edge-label";
   // The label stands beside the midpoint handle, not on it.
-  return new Marker({ element, offset: [0, 18] }).setLngLat([0, 0]).addTo(map);
+  return new Marker({ element, offset: [0, EDGE_LABEL_BELOW_PX] }).setLngLat([0, 0]).addTo(map);
+}
+
+/** Where a marker's element stands on the map's screen, from its middle at its point and its offset. */
+function rectOfCentred(map: MapLibre, marker: Marker, below: number): Rect {
+  const at = map.project(marker.getLngLat());
+  const { offsetWidth: width, offsetHeight: height } = marker.getElement();
+  return { left: at.x - width / 2, top: at.y + below - height / 2, right: at.x + width / 2, bottom: at.y + below + height / 2 };
+}
+
+/** Where an element over the map stands on the map's screen, as it is drawn now. */
+function rectOfElement(map: MapLibre, element: HTMLElement): Rect {
+  const room = map.getContainer().getBoundingClientRect();
+  const { left, top, right, bottom } = element.getBoundingClientRect();
+  return { left: left - room.left, top: top - room.top, right: right - room.left, bottom: bottom - room.top };
+}
+
+type Overlays = {
+  labels: readonly Marker[];
+  obstacleLabels: readonly Marker[];
+  obstacleHandles: readonly Marker[];
+  /** The dots of the roof's corners and midpoints, its turn handles, the label of a move or a turn: kept clear of too. */
+  others: readonly (Element | null | undefined)[];
+};
+
+/**
+ * What of the obstacles fits on the screen at this zoom: their labels placed clear of the edges' lengths and of each other
+ * (issue 238, item 29), and the handles of the one selected taking a press over their target, on their dot alone, or not
+ * shown, by its size on the screen, so that a drag from inside a small one moves it (item 27).
+ */
+function fitOnScreen(map: MapLibre, state: OutlineState, { labels, obstacleLabels, obstacleHandles, others }: Overlays): void {
+  const { frame } = state;
+  if (!frame || obstacleLabels.length !== state.obstacles.length) return;
+  const onScreen = (point: XY) => map.project(toLonLat(frame, point));
+  const taken = [
+    ...labels.map((label) => rectOfCentred(map, label, EDGE_LABEL_BELOW_PX)),
+    ...others.flatMap((other) => (other instanceof HTMLElement ? [rectOfElement(map, other)] : [])),
+  ];
+  const places = labelPlacesOf({
+    taken,
+    labels: state.obstacles.map((obstacle, index) => {
+      const element = obstacleLabels[index].getElement();
+      return { points: ringOf(obstacle).map(onScreen), size: { width: element.offsetWidth, height: element.offsetHeight }, selected: obstacle.id === state.selectedObstacle };
+    }),
+  });
+  places.forEach((place, index) => {
+    const marker = obstacleLabels[index];
+    marker.getElement().classList.toggle("invisible", place === null);
+    if (!place) return;
+    const at = map.project(marker.getLngLat());
+    marker.setOffset([place.left - at.x, place.top - at.y]);
+  });
+
+  const selected = state.obstacles.find(({ id }) => id === state.selectedObstacle);
+  const [first] = obstacleHandles;
+  const dot = first?.getElement().firstElementChild;
+  if (!selected || !first || !(dot instanceof HTMLElement)) return;
+  const metresPerPx = metresPerPixel(map.getCenter().lat, map.getZoom());
+  const reach = handleReachOf({ sidePx: shortestSideOf(selected) / metresPerPx, targetPx: first.getElement().offsetWidth, dotPx: dot.offsetWidth });
+  obstacleHandles.forEach((handle) => {
+    const element = handle.getElement();
+    element.classList.toggle("pointer-events-none", reach !== "target");
+    element.classList.toggle("invisible", reach === "none");
+    element.firstElementChild?.classList.toggle("pointer-events-auto", reach === "dot");
+  });
 }
 
 function obstacleLabelMarker(map: MapLibre): Marker {
@@ -832,7 +926,7 @@ function obstacleLabelMarker(map: MapLibre): Marker {
 }
 
 /** A handle of the selected obstacle: a corner, or the edge of a tank; dragged, it reshapes it. */
-function obstacleHandleMarker(map: MapLibre, id: number, index: number, latest: Latest, isDragging: React.RefObject<boolean>): Marker {
+function obstacleHandleMarker(map: MapLibre, id: number, index: number, latest: Latest, held: React.RefObject<Held>): Marker {
   const element = document.createElement("button");
   element.type = "button";
   element.className = OBSTACLE_TARGET;
@@ -845,14 +939,14 @@ function obstacleHandleMarker(map: MapLibre, id: number, index: number, latest: 
   element.addEventListener("click", (event) => event.stopPropagation());
   const marker = new Marker({ element, draggable: true }).setLngLat([0, 0]).addTo(map);
   marker.on("dragstart", () => {
-    isDragging.current = true;
+    held.current = "corner";
   });
   marker.on("drag", () => {
     const { state, on } = latest.current;
     if (state.frame) on({ type: "obstacleCornerMoved", id, index, at: metresOf(marker, state.frame) });
   });
   marker.on("dragend", () => {
-    isDragging.current = false;
+    held.current = null;
     latest.current.on({ type: "obstacleCornerDropped" });
   });
   return marker;
@@ -923,7 +1017,7 @@ function pickedTurnMarker(map: MapLibre, latest: Latest, isTurning: React.RefObj
   return marker;
 }
 
-function turnMarker(map: MapLibre, latest: Latest, isDragging: React.RefObject<boolean>): Marker {
+function turnMarker(map: MapLibre, latest: Latest, held: React.RefObject<Held>): Marker {
   const element = document.createElement("button");
   element.type = "button";
   element.className = TURN;
@@ -933,14 +1027,14 @@ function turnMarker(map: MapLibre, latest: Latest, isDragging: React.RefObject<b
   element.addEventListener("click", (event) => event.stopPropagation());
   const marker = new Marker({ element, draggable: true }).setLngLat([0, 0]).addTo(map);
   marker.on("dragstart", () => {
-    isDragging.current = true;
+    held.current = "turn";
   });
   marker.on("drag", () => {
     const { state, on } = latest.current;
     if (state.frame) on({ type: "boxTurned", handle: metresOf(marker, state.frame) });
   });
   marker.on("dragend", () => {
-    isDragging.current = false;
+    held.current = null;
     latest.current.on({ type: "turnDropped" });
   });
   return marker;

@@ -41,7 +41,7 @@ export function roofSizeOf(roof: Roof): string {
 export function roofCardOf(roof: Roof, file = ""): RoofCard {
   const corners = cornersOf(roof);
   const facing = facingOf(corners, roof.lat >= 0 ? "north" : "south");
-  const faces = facing ? ` · faces ${Math.round(facing.degrees)}° ${facing.compass}` : "";
+  const faces = facing ? ` · long side faces ${Math.round(facing.degrees)}° ${facing.compass}` : "";
   const size = roofSizeOf(roof);
   const obstacles = roof.obstacles.filter((obstacle) => !obstacle.auto).length;
   const counted = obstacles === 0 ? "" : ` · ${obstacles} ${obstacles === 1 ? "obstacle" : "obstacles"}`;

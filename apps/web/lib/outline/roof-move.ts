@@ -98,10 +98,10 @@ export function moveLabelOf({ x, y }: XY): string {
   return `${shown(Math.abs(x), 1)} m ${x < 0 ? "W" : "E"} · ${shown(Math.abs(y), 1)} m ${y < 0 ? "S" : "N"}`;
 }
 
-/** What the label beside the roof says while it is moved or turned: how far, or the turn and where it now faces. */
+/** What the label beside the roof says while it is moved or turned: how far, or the turn and where its long side now faces. */
 export function liftLabelOf(lift: Lift, corners: readonly XY[], hemisphere: Hemisphere): string {
   if (lift.kind === "move") return moveLabelOf(lift.by);
   const facing = facingOf(corners, hemisphere);
   const turn = `${shown(-lift.degrees + 0, 1)}°`;
-  return facing ? `${turn} · faces ${Math.round(facing.degrees)}° ${facing.compass}` : turn;
+  return facing ? `${turn} · long side faces ${Math.round(facing.degrees)}° ${facing.compass}` : turn;
 }

@@ -22,10 +22,10 @@ Choose `Detect building` in the column first: the footprints that are known show
   <Mark n={1} x={24.5} y={29.7} ring>Inside the building of the roof</Mark>
 </Picture>
 </Step>
-<Step title="Press Use this outline">
-The footprint becomes the roof's outline, closed. A note beside it says `Footprint found`, with its corners, its area and how accurate it is. Press `Use this outline` to close the note.
-<Picture src="/help/find/detect/2.jpg" alt="The footprint taken as the outline, and a note with its corners, its area, and Use this outline" width={1120} height={640}>
-  <Mark n={1} x={44.5} y={63.4}>`Use this outline`: keep it and close the note</Mark>
+<Step title="Check the footprint">
+The footprint becomes the roof's outline, closed. A note beside it says `Footprint found`, with its corners, its area and how accurate it is. If it is the wrong building, press `Undo` in the note to take it back. Otherwise close the note.
+<Picture src="/help/find/detect/2.jpg" alt="The footprint taken as the outline, and a note with its corners, its area, and Undo" width={1120} height={640}>
+  <Mark n={1} x={39.9} y={69.7} ring>`Undo`: take the footprint back</Mark>
 </Picture>
 </Step>
 <Step title="Drag the corners onto the roof">
@@ -40,5 +40,6 @@ Where no footprint is known, the note says `No footprint known here`: outline th
 
 ## Undo
 
-<Pointer>Press <Key>⌘ Z</Key> or <Key>Ctrl Z</Key> to take the footprint back, and <Key>Shift</Key> with it to redo.</Pointer>
-<Touch>Drag a corner back to undo its move.</Touch>
+<Pointer>Press <Key>⌘ Z</Key> or <Key>Ctrl Z</Key>, or `Undo` under the obstacle kinds, to take back the last step, and <Key>Shift</Key> with the keys to redo.</Pointer>
+<Touch>Press `Undo` under the obstacle kinds to take back the last step.</Touch>
+While the note stands, its `Undo` takes the footprint back; it goes once a corner moves.

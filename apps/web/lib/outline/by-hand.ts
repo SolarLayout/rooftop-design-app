@@ -2,12 +2,19 @@
 // and where its long side faces, or a table of corners, in metres about the place typed or found. The
 // corners go to the outline reducer as a roof loaded, at that place, and everything after is the same as
 // for a roof drawn on the map: the tiles, the roof type, Build.
+import { isAPlace, placeInputOf, type LatLon } from "../places/place-input";
 import type { LonLat } from "./frame";
 import type { XY } from "../geometry/measure";
 import { turnedAbout } from "./rectangle";
 import type { Shape } from "./shapes";
 
-/** A row of the corner table: metres east and north of the middle of the roof; null until typed. */
+/** Under the place's fields: how a coordinate is written, and that a pair or a link pasted fills both. */
+export const PLACE_HINT = "North and east positive, to 5 decimals. A pair or a maps link pasted fills both.";
+
+/** Under the corner table: the corners are placed about the place typed or found, not about their own middle. */
+export const CORNERS_HINT = "Type each corner in metres east and north of the place, in order. At least 3.";
+
+/** A row of the corner table: metres east and north of the place; null until typed. */
 export type Row = { east: number | null; north: number | null };
 
 export type ByHand = {
@@ -62,6 +69,15 @@ const rounded = (value: number) => Math.round(value * 1e9) / 1e9 + 0;
 /** The corners of the table, in its order; a row that is not complete is left out. */
 export function cornersOfTable(rows: readonly Row[]): XY[] {
   return rows.flatMap((row) => (row.east === null || row.north === null ? [] : [{ x: row.east, y: row.north }]));
+}
+
+/**
+ * A place pasted into a field of Place: coordinates or a maps link, read as the search reads them, fill both fields
+ * (issue 238, item 4: without a map there is no search). Null for anything else, which the field takes as it is typed.
+ */
+export function placeOfPaste(text: string): LatLon | null {
+  const input = placeInputOf(text);
+  return isAPlace(input) ? { lat: input.lat, lon: input.lon } : null;
 }
 
 /** Where the roof is and its corners, once enough is entered to draw it; null before. */

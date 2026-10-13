@@ -49,7 +49,7 @@ describe("a turn by the handle", () => {
 
 describe("the how-tos", () => {
   test("each has its folder under public/help and its pictures named for their steps, in order", () => {
-    expect(HOW_TOS.map(({ dir }) => dir)).toEqual(["find/move-the-roof", "find/corners", "find/rectangle", "find/detect", "find/box", "find/tank", "find/wall", "find/building", "find/move-an-obstacle"]);
+    expect(HOW_TOS.map(({ dir }) => dir)).toEqual(["find/move-the-roof", "find/corners", "find/rectangle", "find/detect", "find/box", "find/tank", "find/tree", "find/wall", "find/building", "find/move-an-obstacle"]);
     for (const { dir, shots } of HOW_TOS) {
       expect(dir).toMatch(/^[a-z]+\/[a-z-]+$/);
       const steps = shots.map(({ name }) => Number(name));

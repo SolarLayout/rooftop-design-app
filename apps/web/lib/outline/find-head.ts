@@ -69,9 +69,12 @@ export const buildLabelOf = (area: number | null): string => (area === null ? "B
 /** The corners placed, beside Undo and Clear while the outline is open. */
 export const cornersWordsOf = (count: number): string => (count === 0 ? "No corners yet" : count === 1 ? "1 corner" : `${count} corners`);
 
-/** The edges of a closed outline on one line, as the row of the edges says them: how many, and where the roof faces. */
+/** Clear, beside Undo while the outline is open and once it is closed, takes off every corner and every obstacle: there must be one. */
+export const canClearOf = (state: OutlineState): boolean => state.corners.length > 0 || state.obstacles.length > 0;
+
+/** The edges of a closed outline on one line, as the row of the edges says them: how many, and where its long side faces. */
 export function edgesFactsOf(state: OutlineState): string {
   const measured = measurementsOf(state, (state.frame?.centre.lat ?? 0) >= 0 ? "north" : "south");
-  const facing = measured.facing === null ? "" : ` · faces ${shown(Math.round(measured.facing.degrees), 0)}° ${measured.facing.compass}`;
+  const facing = measured.facing === null ? "" : ` · long side faces ${shown(Math.round(measured.facing.degrees), 0)}° ${measured.facing.compass}`;
   return `${measured.edges.length} edges${facing}`;
 }

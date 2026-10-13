@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { cornersOfRectangle, cornersOfTable, isEntered, LONG_SIDE_FACES, NOTHING_ENTERED, type ByHand } from "./by-hand";
+import { cornersOfRectangle, cornersOfTable, isEntered, LONG_SIDE_FACES, CORNERS_HINT, NOTHING_ENTERED, PLACE_HINT, placeOfPaste, type ByHand } from "./by-hand";
 import { areaOf, edgesOf, facingOf } from "../geometry/measure";
 
 // The roof entered by hand (plan/phase-04-plan.md, step 15; the board "Enter dimensions by hand"): a
@@ -87,5 +87,41 @@ describe("where the long side faces", () => {
 
   test("nothing entered faces south, so that the length and the width draw the roof", () => {
     expect(NOTHING_ENTERED.faces).toBe(180);
+  });
+});
+
+// Issue 238, item 19: the corners are placed about the place typed or found (isEntered), which need not be the roof's centre.
+describe("the hint of the corner table", () => {
+  test("says the corners are about the place", () => {
+    expect(CORNERS_HINT).toBe("Type each corner in metres east and north of the place, in order. At least 3.");
+    const rows = [
+      { east: 10, north: 0 },
+      { east: 40, north: 0 },
+      { east: 40, north: 14 },
+    ];
+    // Not about their own middle: the corners stand where they were typed from the place.
+    expect(isEntered({ ...NOTHING_ENTERED, lat: 18.5, lon: 73.9, shape: "corners", rows })?.corners[0]).toEqual({ x: 10, y: 0 });
+  });
+});
+
+// Issue 238, item 4: without a map there is no search, so the Place fields take a pasted place whole, as the search reads it.
+describe("a place pasted into a field of Place", () => {
+  test("coordinates, as a pair, fill both fields", () => {
+    expect(placeOfPaste("18.53681, 73.89428")).toEqual({ lat: 18.53681, lon: 73.89428 });
+    expect(placeOfPaste("18°32′12.5″N 73°53′39.4″E")?.lat).toBeCloseTo(18.53681, 4);
+  });
+
+  test("a maps link that holds the place fills both fields", () => {
+    expect(placeOfPaste("https://www.google.com/maps/@18.53681,73.89428,19z")).toEqual({ lat: 18.53681, lon: 73.89428 });
+  });
+
+  test("the hint under the fields says so", () => {
+    expect(PLACE_HINT).toBe("North and east positive, to 5 decimals. A pair or a maps link pasted fills both.");
+  });
+
+  test("one number, words, or coordinates that cannot be read are left to the field", () => {
+    expect(placeOfPaste("18.53681")).toBeNull();
+    expect(placeOfPaste("Koregaon Park")).toBeNull();
+    expect(placeOfPaste("98.5, 73.9")).toBeNull();
   });
 });

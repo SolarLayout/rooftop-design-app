@@ -44,7 +44,7 @@ test.describe("Build this roof", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Roof", exact: true })).toBeVisible();
     await expect(page.getByTestId("roof-how")).toHaveText("Outlined on satellite");
     await expect(page.getByTestId("roof-count")).toHaveText("4 corners");
-    await expect(page.getByTestId("roof-size")).toHaveText(/^(89|90)\.\d × (39|40)\.\d m · faces 180° S$/);
+    await expect(page.getByTestId("roof-size")).toHaveText(/^(89|90)\.\d × (39|40)\.\d m · long side faces 180° S$/);
     await expect(page.getByTestId("roof-place")).toHaveText(/^18\.5\d{4}° N, 73\.8\d{4}° E$/);
     expect(Date.now() - began).toBeLessThan(UNDER);
     await expect(page.getByRole("banner").getByRole("button", { name: /Untitled roof/ })).toBeVisible();
@@ -90,7 +90,7 @@ test.describe("the Roof lens", () => {
     await page.goto("/studio/roof");
     await expect(page.getByTestId("roof-how")).toHaveText("Entered by hand", { timeout: RUN });
     await expect(page.getByTestId("roof-count")).toHaveText("4 corners · 6 obstacles");
-    await expect(page.getByTestId("roof-size")).toHaveText("90.0 × 40.0 m · faces 180° S");
+    await expect(page.getByTestId("roof-size")).toHaveText("90.0 × 40.0 m · long side faces 180° S");
 
     await page.getByRole("link", { name: "Edit" }).click();
 
