@@ -1,0 +1,79 @@
+{
+ "voice": null,
+ "model": "eleven_multilingual_v2",
+ "settings": {
+  "stability": 0.75,
+  "similarity_boost": 0.8,
+  "style": 0.0,
+  "speed": 1.0
+ },
+ "lines": [
+  {
+   "id": "01-hook",
+   "shot": 0,
+   "offset": 0.8,
+   "text": "This is SolarLayout Rooftop, an app for designing rooftop PV systems in the browser."
+  },
+  {
+   "id": "02-home",
+   "shot": 1,
+   "offset": 0.5,
+   "text": "On the home page, you paste the coordinates of the roof, or you search for an address."
+  },
+  {
+   "id": "03-detect",
+   "shot": 2,
+   "offset": 0.5,
+   "text": "When you click the building, the app detects its footprint, and you can drag the corners if you need to."
+  },
+  {
+   "id": "04-build",
+   "shot": 3,
+   "offset": 0.5,
+   "text": "When you build the roof, it opens in 3D with the modules already laid out, and you can show the satellite imagery under it.",
+   "continues": true
+  },
+  {
+   "id": "05-sun",
+   "shot": 5,
+   "offset": 0.5,
+   "text": "If you turn on the sun and play the day, the shadows move across the roof, and the shade on every module is worked out for the whole year."
+  },
+  {
+   "id": "06-array",
+   "shot": 6,
+   "offset": 0.4,
+   "text": "On the array step, you choose the module, its tilt and the spacing of the rows."
+  },
+  {
+   "id": "07-strings",
+   "shot": 7,
+   "offset": 0.4,
+   "text": "On the strings step, the app chooses an inverter for this roof and compares the stringing options side by side."
+  },
+  {
+   "id": "08-performance",
+   "shot": 8,
+   "offset": 0.5,
+   "text": "Every hour of a typical year is simulated, each loss is listed, and you get the P50, P75 and P90 values."
+  },
+  {
+   "id": "09-handover",
+   "shot": 9,
+   "offset": 0.5,
+   "text": "The handover step gives you the report, the single-line diagram, the bill of materials, the cable schedule, and DXF and KMZ files."
+  },
+  {
+   "id": "10-energy",
+   "shot": 10,
+   "offset": 1.7,
+   "text": "For this roof, the result is one thousand one hundred and seventy-five megawatt hours a year."
+  },
+  {
+   "id": "11-end",
+   "shot": 11,
+   "offset": 0.4,
+   "text": "It is free, with no account needed, at rooftop dot solarlayout dot app."
+  }
+ ]
+}

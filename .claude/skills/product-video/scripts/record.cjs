@@ -92,7 +92,12 @@ class Recorder {
     switch (act.act) {
       case "rest": return this.tick(act.frames);
       case "glide": return this.glide({ x: act.x, y: act.y }, act.frames ?? 24);
-      case "pointer-away": await page.mouse.move(-10, -10); this.pointer = { x: -10, y: -10 }; return;
+      case "pointer-away": {
+        // A move outside the window sends no pointer event: the drawn dot is put out of sight as well.
+        await page.mouse.move(-10, -10); this.pointer = { x: -10, y: -10 };
+        await page.evaluate(() => { for (const el of document.body.children) if (el instanceof HTMLElement && el.style.zIndex === "2147483647") Object.assign(el.style, { left: "-40px", top: "-40px" }); });
+        return;
+      }
       case "click": {
         if (act.x !== undefined) await this.glide({ x: act.x, y: act.y }, act.frames ?? 24);
         else await this.glide(await this.centre(this.locator(act)), act.frames ?? 24);
@@ -125,6 +130,8 @@ class Recorder {
         // A press repeated until the words appear (the footprints come once their tile is there).
         const where = page.getByTestId(act.testid);
         for (let t = 0; t < (act.tries ?? 40); t++) {
+          // Unseen, the ticks take no screenshots and pass in no real time: the tile needs real time to arrive.
+          if (!this.segment) await new Promise((resolve) => setTimeout(resolve, 300));
           await this.press();
           for (let i = 0; i < (act.frames ?? 10); i++) { await this.tick(1); if (((await where.textContent().catch(() => "")) || "").includes(act.includes)) { log(`"${act.includes}" after ${t + 1} presses`); return; } }
         }
