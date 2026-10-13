@@ -292,7 +292,7 @@ export function Search({ provider, near, onPlace, found, look = "column", exampl
       ) : null}
       {beside === "search" ? (
         // With something typed, the action that Enter is: the words searched, coordinates or a link taken.
-        <Button type="submit" form={formId} kind="primary" className="h-12 shrink-0 rounded-row px-4 desktop:h-12 desktop:rounded-row">
+        <Button type="submit" form={formId} kind="primary" className="h-12 shrink-0 rounded-cta px-4 desktop:h-12">
           Search
         </Button>
       ) : null}

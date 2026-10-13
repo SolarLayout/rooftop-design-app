@@ -8,7 +8,8 @@ export type ButtonKind = "primary" | "secondary" | "quiet";
 /**
  * V2's heights (D94): compact 32 (`xs`, `s`), standard 40 (`m`, `l`), primary 48 (`xl`) on desktop; on phone and tablet
  * nothing is lower than 44, and the primary is 48. `sheet` is for the actions of a dialog: 40 on desktop, 44 on tablet,
- * and on phone 48, a quiet one 44. One row, one height. Every button has the control's radius, 8.
+ * and on phone 48, a quiet one 44. One row, one height. Every button has the control's radius, 8, but the large orange primary
+ * (`primary`, `xl`): the radius of Home's Find the roof, 14 (`radius-cta`; the owner, 2026-10-13).
  */
 export type ButtonSize = "xs" | "s" | "m" | "l" | "xl" | "sheet";
 
@@ -63,7 +64,8 @@ const PADDING: Record<ButtonKind, string> = { primary: "px-4", secondary: "px-3.
 export function buttonLook(kind: ButtonKind, size: ButtonSize): string {
   const border = kind === "secondary" && "border-line-strong pressed:border-line-strong";
   const height = size === "sheet" && kind === "quiet" ? HEIGHT_OF_A_QUIET_ACTION : HEIGHT[size];
-  return classNames(PRESSABLE, "gap-inline rounded-control", KIND[kind], border, height, size === "xl" ? "px-5" : PADDING[kind]);
+  const corners = kind === "primary" && size === "xl" ? "rounded-cta" : "rounded-control";
+  return classNames(PRESSABLE, "gap-inline", corners, KIND[kind], border, height, size === "xl" ? "px-5" : PADDING[kind]);
 }
 
 /** The look of a button while the panel it opens is open: pressed, and staying so, as the trigger of a Select does. */
