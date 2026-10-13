@@ -74,27 +74,26 @@ export function withAzimuthDecided(array: ArraySpec, layout: LayoutResponse | nu
   return { ...array, azimuth_deg: layout.layout.azimuth };
 }
 
-export type DesignDay = "winter" | "june" | "march";
+/** The winter solstice of the roof's hemisphere, its summer solstice, or 21 March. */
+export type DesignDay = "winter" | "summer" | "march";
 
 const windowWordsOf = (from: number, to: number) => `${hourOf(from)} to ${hourOf(to)}`;
 
-/** The days of the year the board offers beside the winter solstice (inventory 1.3). */
-const DAY_OF: Record<Exclude<DesignDay, "winter">, number> = { june: 172, march: 80 };
+/** The days of the year the board offers beside the winter solstice (inventory 1.3): the summer solstice of the roof's
+ * hemisphere, 21 June in the north and 21 December in the south (#238), and 21 March. */
+const dayOf = (day: Exclude<DesignDay, "winter">, latitude: number) => (day === "march" ? 80 : latitude >= 0 ? 172 : 355);
 
-export function designDayOf(array: ArraySpec): DesignDay {
-  if (array.design_doy === DAY_OF.june) return "june";
-  if (array.design_doy === DAY_OF.march) return "march";
+export function designDayOf(array: ArraySpec, latitude: number): DesignDay {
+  if (array.design_doy === dayOf("summer", latitude)) return "summer";
+  if (array.design_doy === dayOf("march", latitude)) return "march";
   return "winter";
 }
 
-export function withDesignDay(array: ArraySpec, day: DesignDay): ArraySpec {
-  const doy = day === "winter" ? null : DAY_OF[day];
+export function withDesignDay(array: ArraySpec, day: DesignDay, latitude: number): ArraySpec {
+  const doy = day === "winter" ? null : dayOf(day, latitude);
   return array.design_doy === doy ? array : { ...array, design_doy: doy };
 }
 
-/** The design days in the words of the board: the segmented control's, and the summary's in lower case. */
-export const DESIGN_DAY_WORDS: Record<DesignDay, string> = { winter: "Winter solstice", june: "21 Jun", march: "21 Mar" };
-const dayWordsOf = (day: DesignDay) => (day === "winter" ? "winter solstice" : DESIGN_DAY_WORDS[day]);
 
 // Who set each field of the Array step, and the facts of its sections on one line (V2 · 3).
 
@@ -126,11 +125,11 @@ export function spacingSetByOf(array: ArraySpec, roofType: Roof["roof_type"]): P
 }
 
 /** Who set the shade-free window, the design day and whether shaded positions are used. */
-export function windowSetByOf(array: ArraySpec): { window: SetBy; design_day: SetBy; allow_shaded: SetBy } {
+export function windowSetByOf(array: ArraySpec, latitude: number): { window: SetBy; design_day: SetBy; allow_shaded: SetBy } {
   const isDefaultWindow = array.window_start_h === ARRAY_DEFAULTS.window_start_h && array.window_end_h === ARRAY_DEFAULTS.window_end_h;
   return {
     window: isDefaultWindow ? DEFAULT : { kind: "yours", byDefault: windowWordsOf(ARRAY_DEFAULTS.window_start_h, ARRAY_DEFAULTS.window_end_h) },
-    design_day: setByOfValue(designDayOf(array), "winter", { words: dayWordsOf("winter") }),
+    design_day: setByOfValue(designDayOf(array, latitude), "winter", { words: "winter solstice" }),
     allow_shaded: setByOfValue(array.allow_shaded, ARRAY_DEFAULTS.allow_shaded, { words: "off" }),
   };
 }
@@ -157,9 +156,9 @@ export function spacingFactsOf(array: ArraySpec, layout: LayoutResponse | null, 
   return `Direction ${shown(array.azimuth_deg ?? layout.layout.azimuth, 1)}° · shade-free hours ${windowWordsOf(array.window_start_h, array.window_end_h)}`;
 }
 
-/** The design days by their date: the winter solstice of the hemisphere, 21 Jun and 21 Mar (V2 · 7). */
+/** The design days by their date: the winter and the summer solstice of the hemisphere, and 21 Mar (V2 · 7). */
 export function designDayLabelsOf(latitude: number): Record<DesignDay, string> {
-  return { winter: dateOf(designDayOfYear(null, latitude)).short, june: "21 Jun", march: "21 Mar" };
+  return { winter: dateOf(designDayOfYear(null, latitude)).short, summer: dateOf(dayOf("summer", latitude)).short, march: "21 Mar" };
 }
 
 /** The one sentence of Spacing: why the rows stand where they do. None before a layout, or where the roof has no row pitch. */
@@ -170,5 +169,5 @@ export function spacingSentenceOf(array: ArraySpec, layout: LayoutResponse | nul
     const free = layout.readouts.shade_free_pitch_m;
     return `Rows stand ${apart}.${free == null ? "" : ` The shade-free spacing is ${shown(free, 2)} m.`}`;
   }
-  return `Rows stand ${apart} so that they do not shade each other from ${windowWordsOf(array.window_start_h, array.window_end_h)} on ${designDayLabelsOf(latitude)[designDayOf(array)]}.`;
+  return `Rows stand ${apart} so that they do not shade each other from ${windowWordsOf(array.window_start_h, array.window_end_h)} on ${designDayLabelsOf(latitude)[designDayOf(array, latitude)]}.`;
 }

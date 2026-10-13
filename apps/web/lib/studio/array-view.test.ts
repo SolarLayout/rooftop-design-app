@@ -30,6 +30,10 @@ describe("the azimuth, decided by the engine or given", () => {
     expect(azimuthLineOf(ARRAY, LAYOUT, "flat_tilted")).toEqual({ value: "180° S", line: "From the roof edge nearest the equator", isEngine: true });
   });
 
+  test("flush on a sloped roof the modules face the way the roof slopes (#238, 20)", () => {
+    expect(azimuthLineOf(ARRAY, LAYOUT, "sloped_flush").line).toBe("The way the roof slopes");
+  });
+
   test("on an east-west roof the ridges run square to it, as the engine lays them (#171)", () => {
     expect(azimuthLineOf(ARRAY, LAYOUT, "flat_ew")).toEqual({ value: "180° S", line: "Ridges square to the roof edge nearest the equator", isEngine: true });
   });

@@ -177,9 +177,8 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
   },
   "studio.section.design-day": {
     title: "Design day",
-    summary: "The day the rows are spaced for. 21 December has the longest shadows.",
+    summary: "The day the rows are spaced for. The winter solstice has the longest shadows.",
     kind: "section",
-    values: [{"id":"355","label":"21 Dec","meaning":"21 December: the winter solstice north of the equator, its longest shadows. South of it, the summer solstice."},{"id":"80","label":"21 Mar","meaning":"21 March, the equinox. Its shadows are shorter than at the winter solstice, longer than at the summer one."},{"id":"172","label":"21 Jun","meaning":"21 June: the winter solstice south of the equator, its longest shadows. North of it, the summer solstice."},{"id":"any","label":"Any date","meaning":"Any day of the year, by its day and its month."}],
     related: ["studio.section.shade-free-hours","studio.section.spacing","studio.section.the-sun-at-the-time"],
     aliases: ["studio.section.day"],
     docs: {"page":"sun","section":"The day"},
@@ -316,6 +315,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     title: "The sun at the time",
     summary: "Where the sun stands at the time on the timeline: how high, and from which direction.",
     kind: "section",
+    values: [{"id":"355","label":"21 Dec","meaning":"21 December, a solstice. North of the equator its shadows are the longest of the year, south of it the shortest."},{"id":"80","label":"21 Mar","meaning":"21 March, the equinox. Its shadows are shorter than at the winter solstice, longer than at the summer one."},{"id":"172","label":"21 Jun","meaning":"21 June, a solstice. South of the equator its shadows are the longest of the year, north of it the shortest."},{"id":"any","label":"Any date","meaning":"Any day of the year, by its day and its month."}],
     related: ["studio.section.design-day","studio.section.on-the-roof","studio.section.shade-free-hours"],
     aliases: ["studio.section.sun-at-the-hour"],
     docs: {"page":"sun","section":"The sun at the hour"},

@@ -54,7 +54,7 @@ export function ArrayInspector() {
   }
 
   const mountingBy = project ? sectionSetByOf(Object.values(mountingSetByOf(project.array, project.roof.roof_type))) : null;
-  const spacingBy = project ? sectionSetByOf([...Object.values(spacingSetByOf(project.array, project.roof.roof_type)), ...Object.values(windowSetByOf(project.array))]) : null;
+  const spacingBy = project ? sectionSetByOf([...Object.values(spacingSetByOf(project.array, project.roof.roof_type)), ...Object.values(windowSetByOf(project.array, project.roof.lat))]) : null;
   const said = (by: SetBy | null) => (by === null ? null : wordOf(by));
 
   return (

@@ -27,7 +27,8 @@ export const BOARD_TOPICS: Readonly<Record<string, { title: string; summary: str
   "studio.section.mounting": { title: "Mounting", summary: "Set the modules' tilt, their orientation, and how many stand in each row's height." },
   "studio.section.spacing": { title: "Spacing", summary: "How far apart the rows stand so they do not shade each other in the shade-free hours." },
   "studio.section.shade-free-hours": { title: "Shade-free hours", summary: "Set the hours of the design day in which rows and obstacles must not shade the modules." },
-  "studio.section.design-day": { title: "Design day", summary: "The day the rows are spaced for. 21 December has the longest shadows." },
+  // Board 11 says "21 December has the longest shadows": untrue south of the equator (#238, 25).
+  "studio.section.design-day": { title: "Design day", summary: "The day the rows are spaced for. The winter solstice has the longest shadows." },
   // The Sun view
   "studio.section.shade-over-the-year": { title: "Shade over the year", summary: "How much energy shade costs in a year, by its cause: rows and obstacles, strings, the horizon." },
   "studio.section.on-the-roof": { title: "On the roof", summary: "Choose what the Sun view draws: the sun's arc, its shade-free hours, shadow outlines, the shade map." },
