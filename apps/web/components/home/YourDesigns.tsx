@@ -31,7 +31,8 @@ type Props = DeviceActions & {
 const PRESS = "cursor-pointer press-motion focus-ring";
 // A row: on desktop the columns of the table (`columns-designs`), 72 high; under it the plan, the name with the place and the
 // energy under it, and the menu, at least 72 high.
-const ROW = "flex min-h-18 items-center gap-3 px-3 desktop:grid desktop:h-18 desktop:grid-cols-designs desktop:gap-4 desktop:px-4.5";
+// The whole row opens its design (the owner, 2026-10-13); its buttons are there for the keyboard, their press the row's.
+const ROW = "flex min-h-18 cursor-pointer items-center gap-3 px-3 transition-colors duration-press hovered:bg-surface-1 desktop:grid desktop:h-18 desktop:grid-cols-designs desktop:gap-4 desktop:px-4.5";
 const THUMB = classNames("block h-12 w-16 shrink-0 overflow-hidden rounded-control bg-surface-2 desktop:w-18 *:size-full", PRESS);
 const FIGURE = "hidden text-right type-mono text-text desktop:block";
 const HEAD = "hidden h-10 items-center gap-4 border-b border-line-subtle px-4.5 type-unit text-text-3 desktop:grid desktop:grid-cols-designs";
@@ -68,13 +69,13 @@ export function YourDesigns({ cards, onOpenDemo, onOpen, onRename, onDuplicate, 
           <span role="columnheader" aria-label="Menu" />
         </div>
 
-        <div role="row" data-testid="demo-row" className={classNames(ROW, "bg-accent/4", cards.length > 0 && "border-b border-line-subtle")}>
-          <button type="button" role="cell" aria-label={`${DEMO.action}: ${DEMO.name}`} onClick={onOpenDemo} className={THUMB}>
+        <div role="row" data-testid="demo-row" onClick={onOpenDemo} className={classNames(ROW, "bg-accent/4 hovered:bg-accent/8", cards.length > 0 && "border-b border-line-subtle")}>
+          <button type="button" role="cell" aria-label={`${DEMO.action}: ${DEMO.name}`} className={THUMB}>
             {/* The demo's own picture, the hero's: the roof as Present shows it. */}
             <Image src={DEMO_PICTURE} alt="" width={144} height={96} className="size-full object-cover" />
           </button>
           <span role="cell" className="flex min-w-0 grow flex-col desktop:flex-row desktop:items-center desktop:gap-2.5">
-            <button type="button" onClick={onOpenDemo} className={classNames("flex min-w-0 items-center gap-2 rounded-control text-left type-strong-touch desktop:type-strong", PRESS)}>
+            <button type="button" className={classNames("flex min-w-0 items-center gap-2 rounded-control text-left type-strong-touch desktop:type-strong", PRESS)}>
               <span className="truncate">{DEMO.name}</span>
               <span className="inline-flex h-5.5 items-center rounded-control bg-accent/14 px-2 type-unit text-accent">{DEMO.badge}</span>
             </button>
@@ -92,7 +93,7 @@ export function YourDesigns({ cards, onOpenDemo, onOpen, onRename, onDuplicate, 
             {DEMO.mwh}
           </span>
           <span role="cell" className="shrink-0 text-right">
-            <button type="button" onClick={onOpenDemo} className={classNames("rounded-control type-strong-touch text-accent desktop:type-strong hovered:text-accent-hover", PRESS)}>
+            <button type="button" className={classNames("rounded-control type-strong-touch text-accent desktop:type-strong hovered:text-accent-hover", PRESS)}>
               <span className="desktop:hidden">{DEMO.open}</span>
               <span className="hidden desktop:inline">{DEMO.action}</span>
             </button>
@@ -101,9 +102,9 @@ export function YourDesigns({ cards, onOpenDemo, onOpen, onRename, onDuplicate, 
         </div>
 
         {cards.map((card, index) => (
-          <div key={card.id} role="row" data-testid="design-row" className={classNames(ROW, index < cards.length - 1 && "border-b border-line-subtle")}>
+          <div key={card.id} role="row" data-testid="design-row" onClick={() => renaming !== card.id && onOpen(card.id)} className={classNames(ROW, index < cards.length - 1 && "border-b border-line-subtle")}>
             {/* The plan is the app's own SVG, kept with the design on this device (lib/device/thumbnail.ts): its colours are classes of the page's tokens. */}
-            <button type="button" role="cell" aria-label={`Open ${card.name}`} onClick={() => onOpen(card.id)} className={THUMB} dangerouslySetInnerHTML={{ __html: card.thumbnail }} />
+            <button type="button" role="cell" aria-label={`Open ${card.name}`} className={THUMB} dangerouslySetInnerHTML={{ __html: card.thumbnail }} />
             <span role="cell" className="flex min-w-0 grow flex-col">
               {renaming === card.id ? (
                 <span
@@ -118,7 +119,7 @@ export function YourDesigns({ cards, onOpenDemo, onOpen, onRename, onDuplicate, 
                   <TextField label="Name" labelHidden value={card.name} {...NAME_RULES} initialFocus onCommit={(name) => onRename(card.id, name)} onDone={(said) => said === null && setRenaming(null)} />
                 </span>
               ) : (
-                <button type="button" onClick={() => onOpen(card.id)} className={classNames("min-w-0 truncate rounded-control text-left type-strong-touch desktop:type-strong hovered:text-text-2", PRESS)}>
+                <button type="button" className={classNames("min-w-0 truncate rounded-control text-left type-strong-touch desktop:type-strong hovered:text-text-2", PRESS)}>
                   {card.name}
                 </button>
               )}
@@ -137,7 +138,8 @@ export function YourDesigns({ cards, onOpenDemo, onOpen, onRename, onDuplicate, 
             <span role="cell" className="hidden text-right type-body text-text-3 desktop:block">
               {card.edited}
             </span>
-            <span role="cell" className="shrink-0">
+            {/* The menu and its rows do what they say; they do not open the design. */}
+            <span role="cell" className="shrink-0" onClick={(event) => event.stopPropagation()}>
               <DesignMenu
                 name={card.name}
                 does={{
