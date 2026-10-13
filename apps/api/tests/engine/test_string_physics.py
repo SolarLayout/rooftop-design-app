@@ -5,18 +5,19 @@ import numpy as np
 import pytest
 
 from rooftop_core import simulation
-from rooftop_core.demo import demo_project, rectangle
+from rooftop_core.demo import rectangle
 from rooftop_core.geometry import Obstacle, Roof
 from rooftop_core.options import of_length
 from rooftop_core.project import Design
 from rooftop_core.stringing import PVString, assign, form_strings
+from tools.reference import reference_demo
 
 pytestmark = pytest.mark.slow
 
 
 def a_shaded_design() -> Design:
     """A 30 x 14 m roof at the demo's site with a tank: shaded and unshaded strings."""
-    project = demo_project()
+    project = reference_demo()
     project.roof = Roof(outline=rectangle(30.0, 14.0), lat=project.roof.lat, lon=project.roof.lon)
     project.roof.obstacles = [Obstacle("Tank", "cylinder", x=8.0, y=7.0, diameter=2.0, height=2.0)]
     design = Design(project)

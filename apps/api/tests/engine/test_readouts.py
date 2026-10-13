@@ -6,12 +6,13 @@ from types import SimpleNamespace
 import pytest
 
 from rooftop_core import readouts
-from rooftop_core.demo import demo_project, rectangle
+from rooftop_core.demo import rectangle
 from rooftop_core.geometry import Roof
 from rooftop_core.io.pvsyst import Inverter
 from rooftop_core.project import Design
 from rooftop_core.resources import SAMPLE_OND, sample_path
 from tests.kept import KEPT
+from tools.reference import reference_demo
 
 pytestmark = pytest.mark.slow
 
@@ -76,7 +77,7 @@ def demo_ond_without_imaxdc() -> str:
 @pytest.fixture(scope="module")
 def overloaded():
     """The demo with the custom 20 × 37 × 1: 37 strings on one inverter that takes 24."""
-    project = demo_project()
+    project = reference_demo()
     project.custom, project.chosen_option = (20, 37, 1), "custom"
     design = Design(project, memo=KEPT)
     design.run_options()
@@ -86,7 +87,7 @@ def overloaded():
 @pytest.fixture(scope="module")
 def without_limit():
     """The demo with its OND's IMaxDC line taken out: no current limit per MPPT is known."""
-    project = demo_project()
+    project = reference_demo()
     project.ond_text, project.ond_path = demo_ond_without_imaxdc(), "wattpower-without-imaxdc.OND"
     design = Design(project, memo=KEPT)
     design.run_options()
@@ -158,7 +159,7 @@ def test_without_a_current_limit_every_option_is_not_ok_and_says_so(without_limi
 
 
 def test_the_verdict_when_no_length_fits():
-    project = demo_project()
+    project = reference_demo()
     project.roof = Roof(outline=rectangle(30.0, 14.0), lat=project.roof.lat, lon=project.roof.lon)
     project.system_voltage = 600.0
     project.t_max_override = 60.0
@@ -194,7 +195,7 @@ def test_the_captions_of_the_demo_at_1500_v(demo_design):
 
 
 def test_the_captions_of_the_demo_at_1000_v():
-    project = demo_project()
+    project = reference_demo()
     project.system_voltage = 1000.0
     design = Design(project, memo=KEPT)
     design.run_options()
@@ -314,7 +315,7 @@ def test_the_cable_schedule_of_option_a(demo_design, option_a):
 @pytest.fixture(scope="module")
 def entered_design():
     """The demo with the Voc coefficient of a datasheet entered: −0.29 %/°C."""
-    project = demo_project()
+    project = reference_demo()
     project.voc_coefficient_pct = -0.29
     design = Design(project, memo=KEPT)
     design.run_options()

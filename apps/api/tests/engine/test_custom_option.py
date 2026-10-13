@@ -3,10 +3,10 @@
 import pytest
 
 from rooftop_core import readouts
-from rooftop_core.demo import demo_project
 from rooftop_core.project import Design
 from rooftop_core.resources import SAMPLE_OND, sample_path
 from tests.kept import KEPT
+from tools.reference import reference_demo
 
 pytestmark = pytest.mark.slow
 
@@ -14,7 +14,7 @@ OFFERED = ["29x22x1", "26x24x1", "28x22x1", "28x28x2", "29x27x2"]
 
 
 def demo_with(custom, system_voltage: float | None = 1500.0, chosen: str = "") -> Design:
-    project = demo_project()
+    project = reference_demo()
     project.custom, project.system_voltage, project.chosen_option = custom, system_voltage, chosen
     design = Design(project, memo=KEPT)
     design.run_options()
@@ -120,7 +120,7 @@ def test_one_string_on_two_inverters_is_said_in_the_singular():
 
 
 def test_a_custom_over_the_mppt_maximum_is_refused_when_the_mppt_maximum_sets_the_longest_string():
-    project = demo_project()
+    project = reference_demo()
     text = open(sample_path(SAMPLE_OND), encoding="latin-1").read()
     assert "VMPPMax=1500" in text
     project.ond_path, project.ond_text = SAMPLE_OND, text.replace("VMPPMax=1500", "VMPPMax=1100")

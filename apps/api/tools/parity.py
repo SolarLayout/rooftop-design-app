@@ -24,12 +24,14 @@ from pathlib import Path
 from typing import Any
 
 from rooftop_api.services import design as design_service
-from rooftop_core.demo import demo_project
 from rooftop_core.project import Design, Project
-from tools.roof_at_the_limit import project_at_the_limit
+from tools.reference import reference_at_the_limit, reference_demo
 
 HERE = Path(__file__).resolve().parent.parent / "tests" / "fixtures" / "parity"
-ROOFS = {"demo": demo_project, "limit": project_at_the_limit}
+ROOFS = {
+    "demo": reference_demo,
+    "limit": reference_at_the_limit,
+}  # with the module the snapshots were taken with
 RELATIVE = 1e-6  # energies, powers, irradiations: the bar of D64
 ABSOLUTE = 1e-6  # in the figure's own unit (kW, W/m², °C, MWh): near zero a relative bar says nothing
 PERCENT_POINTS = 1e-3  # a figure in percent may move this much

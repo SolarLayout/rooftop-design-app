@@ -6,9 +6,9 @@ the run."""
 import pytest
 
 from rooftop_core import memo
-from rooftop_core.demo import demo_project
 from rooftop_core.project import Design
 from tests.kept import KEPT
+from tools.reference import reference_demo
 
 pytestmark = pytest.mark.slow
 
@@ -19,7 +19,7 @@ TWO_DECIMALS = 0.005
 
 @pytest.fixture(scope="module")
 def soiling_3(demo_design) -> Design:
-    project = demo_project()
+    project = reference_demo()
     project.losses.soiling_pct = 3.0
     design = Design(project, memo=KEPT)
     design.generate_layout()

@@ -10,16 +10,16 @@ is compared by the tool, here, not in the check.
 
 import pytest
 
-from rooftop_core.demo import demo_project
 from rooftop_core.project import Design
 from tests.kept import KEPT
 from tools import parity
+from tools.reference import reference_demo
 
 pytestmark = pytest.mark.slow
 
 
 def test_the_demo_is_the_snapshot_within_the_bar():
-    now = parity.snapshot_of(Design(demo_project(), memo=KEPT))
+    now = parity.snapshot_of(Design(reference_demo(), memo=KEPT))
     moved = parity.differences(parity.saved("demo"), now)
 
     past = [m for m in moved if not parity.within_the_bar(m)]

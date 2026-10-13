@@ -106,12 +106,13 @@ def _the_api_keeps_its_results_with_the_tests() -> Iterator[None]:
 
 @pytest.fixture(scope="session")
 def demo_design() -> "Design":
-    """The Pune demo run once: layout, bundled weather, shading, options. Read only: never change it."""
-    from rooftop_core.demo import demo_project
+    """The engine's reference case (tools/reference.py) run once: layout, bundled weather, shading, options.
+    Read only: never change it."""
     from rooftop_core.project import Design
     from tests.kept import KEPT
+    from tools.reference import reference_demo
 
-    design = Design(demo_project(), memo=KEPT)
+    design = Design(reference_demo(), memo=KEPT)
     design.generate_layout()
     design.run_options()
     return design

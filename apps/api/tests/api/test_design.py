@@ -827,7 +827,7 @@ def test_a_design_without_its_own_files_names_the_bundled_ones_by_their_files_al
     result = result_of(client.post("/design", json=project))
 
     # The user is shown the file's name; where the server keeps it is none of theirs.
-    assert result["equipment"]["module"]["source"] == "insolation-ina-144mhc-tf-560.PAN"
+    assert result["equipment"]["module"]["source"] == "waaree-bin-08-580.PAN"
     assert result["equipment"]["inverter"]["source"] == "wattpower-wp-330ktl-h1.OND"
     assert str(samples_dir()) not in " ".join(result["equipment"]["module_notes"])
 

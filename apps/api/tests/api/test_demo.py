@@ -1,10 +1,24 @@
 """GET /demo: the Pune demo project, whole, as a format 2 project."""
 
 from pathlib import Path
+from typing import Any
+
+import pytest
+from fastapi.testclient import TestClient
 
 from rooftop_api.main import app
+from rooftop_core.io.pvsyst import decode_pvsyst
 from rooftop_core.project import Design, Project
 from rooftop_core.resources import sample_path
+
+
+@pytest.fixture(scope="module")
+def bundled(client: TestClient) -> dict[str, Any]:
+    """The demo exactly as GET /demo hands it out, with its bundled module (the shared fixture ``demo``
+    carries the engine's reference module instead: tests/api/conftest.py)."""
+    response = client.get("/demo")
+    assert response.status_code == 200
+    return response.json()
 
 
 def test_the_demo_is_the_pune_roof_at_1500_v(demo):
@@ -41,25 +55,24 @@ def test_the_weather_is_embedded(demo):
     assert max(elevation for _, elevation in weather["horizon"]) == 2.7
 
 
-def test_the_equipment_is_embedded_under_the_names_of_its_files(demo):
-    assert demo["pan_path"] == "insolation-ina-144mhc-tf-560.PAN"
-    assert demo["ond_path"] == "wattpower-wp-330ktl-h1.OND"
-    assert demo["pan_text"] == Path(sample_path(demo["pan_path"])).read_bytes().decode("utf-8")
-    assert demo["ond_text"] == Path(sample_path(demo["ond_path"])).read_bytes().decode("utf-8")
+def test_the_equipment_is_embedded_under_the_names_of_its_files(bundled):
+    assert bundled["pan_path"] == "waaree-bin-08-580.PAN"
+    assert bundled["ond_path"] == "wattpower-wp-330ktl-h1.OND"
+    assert bundled["pan_text"] == decode_pvsyst(Path(sample_path(bundled["pan_path"])).read_bytes())
+    assert bundled["ond_text"] == decode_pvsyst(Path(sample_path(bundled["ond_path"])).read_bytes())
 
 
-def test_the_demo_shows_its_equipment_by_its_real_names(client, demo):
-    """Decision D24."""
-    module = client.post("/equipment/module", json={"name": demo["pan_path"], "text": demo["pan_text"]})
-    inverter = client.post("/equipment/inverter", json={"name": demo["ond_path"], "text": demo["ond_text"]})
+def test_the_demo_shows_its_equipment_by_its_real_names(client, bundled):
+    """Decisions D24 and D117."""
+    pan = {"name": bundled["pan_path"], "text": bundled["pan_text"]}
+    ond = {"name": bundled["ond_path"], "text": bundled["ond_text"]}
+    module = client.post("/equipment/module", json=pan)
+    inverter = client.post("/equipment/inverter", json=ond)
 
     module, inverter = module.json()["module"], inverter.json()["inverter"]
-    assert (module["manufacturer"], module["model"]) == (
-        "INSOLATION GREEN ENERGY PVT. LTD.",
-        "INA-144MHC-TF-560",
-    )
+    assert (module["manufacturer"], module["model"]) == ("Waaree Energies Ltd.", "BiN-08-580")
     assert (inverter["manufacturer"], inverter["model"]) == ("WattPower Systems Pvt.Ltd", "WP-330KTL-H1")
-    assert "Test" not in demo["pan_text"] + demo["ond_text"]
+    assert "Test" not in bundled["pan_text"] + bundled["ond_text"]
 
 
 def test_nothing_is_chosen_beyond_what_the_desktop_demo_chose(demo):
@@ -69,10 +82,10 @@ def test_nothing_is_chosen_beyond_what_the_desktop_demo_chose(demo):
     assert demo["imax_mppt_override"] is None and demo["cell_rise_c"] is None
 
 
-def test_the_engine_opens_what_the_api_hands_out(demo):
-    design = Design(Project.from_json(demo), local_files=False)
+def test_the_engine_opens_what_the_api_hands_out(bundled):
+    design = Design(Project.from_json(bundled), local_files=False)
 
-    assert design.module.pnom_w == 560 and design.inverter.pnom_kw == 275
+    assert design.module.pnom_w == 580 and design.inverter.pnom_kw == 275
     assert design.generate_layout().n_modules == 790
     assert len(design.load_weather().data) == 8760
 
