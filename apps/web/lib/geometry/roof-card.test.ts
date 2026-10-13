@@ -33,7 +33,7 @@ describe("the card of the roof in the Roof lens", () => {
       place: "18.52000° N, 73.86000° E",
       how: "Outlined on satellite",
       count: "4 corners",
-      size: "90.0 × 40.0 m · faces 180° S",
+      size: "90.0 × 40.0 m · long side faces 180° S",
       file: null,
     });
   });
@@ -68,10 +68,10 @@ describe("the card of the roof in the Roof lens", () => {
       ],
     });
 
-    expect(roofCardOf(five)).toMatchObject({ count: "5 corners", size: "4,050 m² · faces 180° S" });
+    expect(roofCardOf(five)).toMatchObject({ count: "5 corners", size: "4,050 m² · long side faces 180° S" });
   });
 
   test("the direction is taken toward the equator, in the south of the world too", () => {
-    expect(roofCardOf(roof({ lat: -33.87, lon: 151.21 })).size).toBe("90.0 × 40.0 m · faces 0° N");
+    expect(roofCardOf(roof({ lat: -33.87, lon: 151.21 })).size).toBe("90.0 × 40.0 m · long side faces 0° N");
   });
 });

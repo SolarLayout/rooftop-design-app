@@ -27,6 +27,9 @@ export const FEWEST_POINTS: Record<ObstacleKind, number> = { box: 4, cylinder: 1
 /** The height of an obstacle above the roof, in metres (plan/reference/functional-inventory.md, 1.2). */
 export const HEIGHT = { min: 0.05, max: 200, decimals: 2 };
 
+/** The hint under `Height above the roof`: the likely mistake is the height from the ground. */
+export const HEIGHT_HINT = "Above the roof's surface, not the ground";
+
 /** The box dragged across a thing: its four corners, counter-clockwise from the lowest left; null for no box. */
 export function boxOf(from: XY, to: XY): XY[] | null {
   return rectangleOf(from, to);

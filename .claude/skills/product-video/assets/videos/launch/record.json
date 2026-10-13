@@ -30,7 +30,7 @@
         { "act": "rest", "frames": 4 },
         { "act": "press-until", "testid": "detected", "includes": "Footprint found" },
         { "act": "rest", "frames": 50 },
-        { "act": "click", "role": "button", "name": "Use this outline", "exact": true },
+        { "act": "click", "role": "button", "name": "Close", "exact": true },
         { "act": "rest", "frames": 12 },
         { "act": "glide", "x": 1240, "y": 900, "frames": 20 },
         { "act": "rest", "frames": 40 }

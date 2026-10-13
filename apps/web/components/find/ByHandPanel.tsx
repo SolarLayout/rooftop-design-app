@@ -7,7 +7,8 @@ import { classNames } from "@/components/ui/class-names";
 import { IconButton } from "@/components/ui/IconButton";
 import { NumberField } from "@/components/ui/NumberField";
 import { Segmented } from "@/components/ui/Segmented";
-import { LONG_SIDE_FACES, type ByHand, type Row } from "@/lib/outline/by-hand";
+import { CORNERS_HINT, LONG_SIDE_FACES, PLACE_HINT, placeOfPaste, type ByHand, type Row } from "@/lib/outline/by-hand";
+import type { ClipboardEvent } from "react";
 
 type Props = {
   hand: ByHand;
@@ -21,16 +22,25 @@ const LATITUDE = { min: -90, max: 90, decimals: 5 };
 const LONGITUDE = { min: -180, max: 180, decimals: 5 };
 /** Lengths in a field: two decimals; the range of the desktop app (plan/reference/functional-inventory.md, 1.1). */
 const LENGTH = { min: 0.1, max: 2000, decimals: 2 };
-/** A corner: metres east and north of the middle of the roof. */
+/** A corner: metres east and north of the place. */
 const CORNER = { min: -5000, max: 5000, decimals: 2 };
 
 
 /**
  * The roof entered by its measurements (V2 · 4; the board "Find", by hand): its length, its width and where its long side
- * faces, south, east, north or west; or a table of corners. The place is the one found; without one, it is typed first.
+ * faces, south, east, north or west; or a table of corners. The place is the one found, or typed; either way it stays in
+ * its fields to be corrected (issue 238, item 4).
  */
 export function ByHandPanel({ hand, onChange, className }: Props) {
   const rows = hand.rows;
+
+  /** Coordinates or a maps link pasted into Latitude or Longitude fill both; anything else is the field's to read. */
+  function pastePlace(event: ClipboardEvent<HTMLDivElement>) {
+    const place = placeOfPaste(event.clipboardData.getData("text"));
+    if (!place) return;
+    event.preventDefault();
+    onChange(place);
+  }
 
   function changeRow(index: number, change: Partial<Row>) {
     onChange({ rows: rows.map((row, n) => (n === index ? { ...row, ...change } : row)) });
@@ -38,17 +48,17 @@ export function ByHandPanel({ hand, onChange, className }: Props) {
 
   return (
     <div className={classNames("flex flex-col gap-4 desktop:gap-5", className)}>
-      {hand.lat !== null && hand.lon !== null ? null : (
-        <section className="flex flex-col gap-2.5" aria-label="Place">
-          <SectionHeading help="find.section.place">Place</SectionHeading>
-          {/* One under the other: a coordinate with five decimals and its label need the whole row. */}
-          <div className="grid grid-cols-1 gap-field">
-            <NumberField label="Latitude" value={hand.lat} unit="°" range={LATITUDE} labelInside wide onCommit={(lat) => onChange({ lat })} />
-            <NumberField label="Longitude" value={hand.lon} unit="°" range={LONGITUDE} labelInside wide onCommit={(lon) => onChange({ lon })} />
-          </div>
-          <p className="type-body-touch desktop:type-body text-text-3">North and east positive, to 5 decimals.</p>
-        </section>
-      )}
+      {/* The place stays while the roof is entered by hand, found or typed, so that a mistyped one can be corrected. */}
+      <section className="flex flex-col gap-2.5" aria-label="Place">
+        <SectionHeading help="find.section.place">Place</SectionHeading>
+        {/* One under the other: a coordinate with five decimals and its label need the whole row. A pair or a maps link
+            pasted into either fills both: without a map there is no search to paste it in. */}
+        <div className="grid grid-cols-1 gap-field" onPaste={pastePlace}>
+          <NumberField label="Latitude" value={hand.lat} unit="°" range={LATITUDE} labelInside wide onCommit={(lat) => onChange({ lat })} />
+          <NumberField label="Longitude" value={hand.lon} unit="°" range={LONGITUDE} labelInside wide onCommit={(lon) => onChange({ lon })} />
+        </div>
+        <p className="type-body-touch desktop:type-body text-text-3">{PLACE_HINT}</p>
+      </section>
 
       <section className="flex flex-col gap-2.5" aria-label="Shape">
         <SectionHeading help="find.section.shape" value={hand.shape}>
@@ -89,7 +99,7 @@ export function ByHandPanel({ hand, onChange, className }: Props) {
             <Button size="s" icon="plus" onClick={() => onChange({ rows: [...rows, { east: null, north: null }] })} className="self-start">
               Add a corner
             </Button>
-            <p className="type-body-touch desktop:type-body text-text-3">{"Type each corner in metres east and north of the roof's centre, in order. At least 3."}</p>
+            <p className="type-body-touch desktop:type-body text-text-3">{CORNERS_HINT}</p>
           </div>
         )}
       </section>

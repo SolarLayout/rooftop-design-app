@@ -7,7 +7,7 @@ import { LIST_GAP } from "@/components/ui/design-numbers";
 import { measures } from "@/components/ui/measures";
 import { NumberField } from "@/components/ui/NumberField";
 import { placeOf, type Box } from "@/components/ui/place-floating";
-import { HEIGHT, WORD_OF_KIND, type Shape } from "@/lib/outline/obstacles";
+import { HEIGHT, HEIGHT_HINT, WORD_OF_KIND, type Shape } from "@/lib/outline/obstacles";
 
 type Props = {
   /** The shape that awaits its height; null closes the card. */
@@ -69,7 +69,11 @@ export function HeightDialog({ shape, anchor, onAdd, onDiscard }: Props) {
       style={measures(place ?? { x: 0, y: 0 })}
     >
       <p className="font-medium">{WORD_OF_KIND[shape.kind]}</p>
-      <NumberField label="Height above the roof" value={height} unit="m" range={HEIGHT} onCommit={setHeight} />
+      <div className="flex flex-col gap-1">
+        <NumberField label="Height above the roof" value={height} unit="m" range={HEIGHT} onCommit={setHeight} />
+        {/* Under the field, the card's width: beside the label it would wrap in a card this narrow. */}
+        <p className="type-body-touch text-text-3 desktop:type-body">{HEIGHT_HINT}</p>
+      </div>
       <div className="flex justify-end gap-2">
         <Button kind="quiet" size="s" onClick={() => finish(onDiscard)}>
           Cancel

@@ -338,20 +338,20 @@ test.describe("by Detect building", () => {
     // Every request of the archive was a range: the whole is never asked for.
     expect(asked.every((range) => range.startsWith("bytes="))).toBe(true);
 
-    await callout.getByRole("button", { name: "Use this outline" }).click();
+    await callout.getByRole("button", { name: "Close" }).click();
 
     await expect(callout).toHaveCount(0);
     await expect(corners(page)).toHaveCount(4);
   });
 
-  // #179, item 3 (the owner's call): one button. Adjust did what Use this outline does; the callout says to drag the corners.
-  test("Use this outline keeps the footprint, whose corners drag as any closed roof's; the toolbar has gone on to the obstacles", async ({ page }) => {
+  // #179, item 3, then issue 238, item 5: the press takes the footprint, so the one button is Undo; Close keeps it.
+  test("Close keeps the footprint, whose corners drag as any closed roof's; the toolbar has gone on to the obstacles", async ({ page }) => {
     await withTheFootprints(page);
     const centre = await atTheRoof(page);
     const callout = await proposed(page, centre);
     await expect(callout.getByRole("button", { name: "Adjust" })).toHaveCount(0);
 
-    await callout.getByRole("button", { name: "Use this outline" }).click();
+    await callout.getByRole("button", { name: "Close" }).click();
 
     await expect(callout).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Box" })).toHaveAttribute("aria-pressed", "true");

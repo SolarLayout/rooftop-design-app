@@ -11,6 +11,8 @@ export const BOARD_TOPICS: Readonly<Record<string, { title: string; summary: str
   "find.tool.move-the-roof": { title: "Move or turn the roof", summary: "Drag the roof to move it, or its round handle to turn it. Its obstacles move with it." },
   "find.tool.box": { title: "Add a box", summary: "Drag over a stair room or a plant room, then type its height above the roof." },
   "find.tool.tank": { title: "Add a tank", summary: "Drag from the middle of a round tank to its edge, then type its height." },
+  // Not on board 11: the Tree tool had no how-to until issue 238, item 3.
+  "find.tool.tree": { title: "Add a tree", summary: "Drag from the middle of a tree to the edge of its crown, then type its height." },
   "find.tool.wall": { title: "Add a wall", summary: "Click each point of the wall, end on the last one, then type its height." },
   "find.tool.building": { title: "Add a building beside the roof", summary: "Outline a building next to the roof and type its height, so its shadow on the roof counts." },
   "find.tool.move-an-obstacle": { title: "Move, turn or remove an obstacle", summary: "Select an obstacle on the map, then drag it, turn it by its handle, or remove it." },

@@ -52,7 +52,7 @@ Each act is an object with `"act"` and its fields. Frames are at 30 a second.
 | `unseen` | `acts` | The acts inside run with no frame taken (the clock still runs) |
 
 A target is `testid` (a `data-testid`), or `role` with `name` and `exact`; a name written `/.../` is a regular
-expression. Targets are the app's accessible names, the ones the browser tests use: `Detect building`, `Use this outline`,
+expression. Targets are the app's accessible names, the ones the browser tests use: `Detect building`, `Close` (the footprint note),
 `Build this roof`, `Layers`, `Satellite imagery` (a switch), the lenses `Roof` `Array` `Sun` `Strings` (links), the
 workspaces `Performance` `Handover` (links), `Present` (a link), `Play the day` / `Pause` (buttons).
 

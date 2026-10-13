@@ -86,12 +86,14 @@ describe("the label of a lift", () => {
     expect(label?.at.y).toBeCloseTo(-0.6, 9);
   });
 
-  test("a move of an obstacle at its middle, with its name", () => {
+  // Issue 238, item 27: at its middle the label hid the obstacle it moves, as large as the label or smaller.
+  test("a move of an obstacle under it, clear of it, with its name", () => {
     const moving = after(roofWithObstacles(), { type: "obstacleSelected", id: 1 }, { type: "obstacleMoved", id: 1, by: { x: 1, y: 0 } });
 
     const label = liftLabelPlaceOf(moving, M_PER_PX);
     expect(label?.text).toBe("Stair room · 1.0 m E · 0.0 m N");
-    expect(label?.at).toEqual({ x: 13, y: 7 });
+    // Its middle 28 pixels under the obstacle's lowest point, at 0.25 m a pixel.
+    expect(label?.at).toEqual({ x: 13, y: 5 - 28 * M_PER_PX });
   });
 
   test("a turn at the handle", () => {

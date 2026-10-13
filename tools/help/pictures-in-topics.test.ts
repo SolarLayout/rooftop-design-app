@@ -65,6 +65,8 @@ describe("the gate", () => {
 });
 
 const CLIP = "/help/find/move-the-roof/2.mp4";
+/** The clip's own size, as the gate says it: the clip is taken again whenever its screen changes. */
+const CLIP_KB = `${Math.round(readFileSync(join(PUBLIC, CLIP)).length / 1024)} kB`;
 
 describe("an MP4's length", () => {
   test("is read from its movie header, in seconds", () => {
@@ -95,8 +97,8 @@ describe("a clip in a topic (Phase 15)", () => {
 
   test("names a clip over 500 kB, and all of them over 6 MB", () => {
     expect(badClips([withClip(CLIP, "0:06")], PUBLIC, { each: 100 * 1024, all: 6 * 1024 * 1024 })).toEqual([
-      `find/tool/move-the-roof.mdx: ${CLIP} is 124 kB, over 100 kB a clip (D82): record it shorter or calmer`,
+      `find/tool/move-the-roof.mdx: ${CLIP} is ${CLIP_KB}, over 100 kB a clip (D82): record it shorter or calmer`,
     ]);
-    expect(badClips([withClip(CLIP, "0:06")], PUBLIC, { each: 500 * 1024, all: 50 * 1024 })[0]).toContain("the clips are 124 kB in all, over 50 kB (D82)");
+    expect(badClips([withClip(CLIP, "0:06")], PUBLIC, { each: 500 * 1024, all: 50 * 1024 })[0]).toContain(`the clips are ${CLIP_KB} in all, over 50 kB (D82)`);
   });
 });

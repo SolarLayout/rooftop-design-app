@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { buildLabelOf, cornersWordsOf, edgesFactsOf, findHeadOf, MAP_LINE, obstacleLineOf, roofTypeChoicesOf } from "./find-head";
+import { buildLabelOf, canClearOf, cornersWordsOf, edgesFactsOf, findHeadOf, MAP_LINE, obstacleLineOf, roofTypeChoicesOf } from "./find-head";
 import type { Obstacle } from "./obstacles";
 import { outlineAfter, START, type OutlineEvent } from "./outline-state";
 
@@ -71,8 +71,18 @@ describe("the corners placed, beside Undo and Clear", () => {
   });
 });
 
+// Issue 238, item 2: on touch there is no key to undo, so the column has Undo and Clear while the outline is open and once
+// it is closed.
+describe("Clear in the column", () => {
+  test("Clear while there is something to clear: a corner or an obstacle", () => {
+    const placed = outlineAfter(outlineAfter(START, { type: "began", at: { lon: 73.86, lat: 18.52 } }), { type: "placed", at: { x: 0, y: 0 }, metresPerPx: 0.283, touch: false });
+    expect(canClearOf(START)).toBe(false);
+    expect(canClearOf(placed)).toBe(true);
+  });
+});
+
 describe("the edges of a closed outline, on one line", () => {
-  test("how many, and where the roof faces", () => {
+  test("how many, and where its long side faces, which need not be where the rows face (issue 238, item 15)", () => {
     const corners = [
       { x: -45, y: -20 },
       { x: 45, y: -20 },
@@ -80,6 +90,6 @@ describe("the edges of a closed outline, on one line", () => {
       { x: -45, y: 20 },
     ];
     const events: OutlineEvent[] = [{ type: "began", at: { lon: 73.86, lat: 18.52 } }, ...corners.map((at): OutlineEvent => ({ type: "placed", at, metresPerPx: 0.283, touch: false })), { type: "close" }];
-    expect(edgesFactsOf(events.reduce(outlineAfter, START))).toBe("4 edges · faces 180° S");
+    expect(edgesFactsOf(events.reduce(outlineAfter, START))).toBe("4 edges · long side faces 180° S");
   });
 });

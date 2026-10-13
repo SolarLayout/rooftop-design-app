@@ -9,7 +9,7 @@ from the map to the handover, the product's own screens, short plain captions, a
 |---|---|---|---|---|
 | Hook | `s9-present` 15 to 235 | 7.3 | The satellite tilting into 3D, the building rising | the brand, "Rooftop PV design, in your browser." |
 | Find | `s1-home` 20 to 225 at 1.15× | 5.9 | Home; the coordinates typed; the map at the roof | 01 Paste the coordinates. |
-| Outline | `s2-detect` at 1.1× | 7.7 | Detect building; the footprint; Use this outline | 02 One click detects the building. |
+| Outline | `s2-detect` at 1.1× | 7.7 | Detect building; the footprint; its note closed | 02 One click detects the building. |
 | Build | `s3-build` | 2.9 | Build this roof; the Studio opens | 03 The roof rises in 3D, laid out at once. |
 | Site | `s4-imagery` at 1.15× | 7.9 | Layers; the imagery under the roof; an orbit | 03, then 04 On the satellite imagery, to scale. |
 | Sun | `s5-sun` at 1.1× | 8.8 | The Sun lens; the day played | 05 Shadows at any hour. |

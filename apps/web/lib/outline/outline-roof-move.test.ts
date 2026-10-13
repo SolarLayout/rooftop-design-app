@@ -137,7 +137,7 @@ describe("turning the picked roof", () => {
 
     expect(turning.lift?.kind).toBe("turn");
     expect(measurementsOf(turning).facing?.degrees).toBeCloseTo(186, 6);
-    expect(liftLabelOf(turning.lift!, turning.corners, "north")).toBe("6.0° · faces 186° S");
+    expect(liftLabelOf(turning.lift!, turning.corners, "north")).toBe("6.0° · long side faces 186° S");
     const tank = turning.obstacles[0].points[0];
     expect(Math.hypot(tank.x, tank.y)).toBeCloseTo(Math.hypot(20, 10), 6);
     expect(turning.history).toBe(state.history);

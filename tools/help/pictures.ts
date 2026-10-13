@@ -26,7 +26,7 @@ export type Place = Spot | Metres;
  * - `drag`: from a spot of the roof by so many pixels; `draw`: from one place of the map to another (a rectangle);
  * - `turn`: the handle of that name dragged round the roof's middle, clockwise on the screen;
  * - `found`: Detect building pressed at a place until its footprint is proposed;
- * - `press`: a button, by its name (Use this outline);
+ * - `press`: a button, by its name (Add, Close);
  * - `fill`: a field, by its label, given words (an obstacle's height), then left so that it takes them;
  * - `key`: a key pressed (Enter, to end a wall).
  * A turn goes round the roof's middle, or round the obstacle picked.
@@ -170,7 +170,8 @@ export const HOW_TOS: readonly HowTo[] = [
     shots: [
       { name: "1", acts: [{ kind: "tool", name: "Detect building" }] },
       { name: "2", acts: [{ kind: "found", at: A_BUILDING }] },
-      { name: "3", acts: [{ kind: "press", name: "Use this outline" }] },
+      // The footprint is the outline from the press: the note's Undo would take it back, its Close keeps it.
+      { name: "3", acts: [{ kind: "press", name: "Close" }] },
     ],
   },
   {
@@ -179,7 +180,7 @@ export const HOW_TOS: readonly HowTo[] = [
     start: "edit",
     keep: { around: "roof", margin: ROOF_MARGIN },
     shots: [
-      { name: "1", acts: [{ kind: "tool", name: "Box" }, { kind: "draw", from: { across: 0.06, down: 0.12 }, to: { across: 0.18, down: 0.36 }, held: true }] },
+      { name: "1", acts: [{ kind: "tool", name: "Box" }, { kind: "draw", from: { across: 0.25, down: 0.12 }, to: { across: 0.37, down: 0.36 }, held: true }] },
       // Let go, the box asks its height in a card beside it: the height typed, Add ready.
       { name: "2", acts: [{ kind: "fill", label: "Height above the roof", text: "2.5" }] },
       { name: "3", acts: [{ kind: "press", name: "Add" }] },
@@ -193,6 +194,17 @@ export const HOW_TOS: readonly HowTo[] = [
     shots: [
       { name: "1", acts: [{ kind: "tool", name: "Tank" }, { kind: "draw", from: { across: 0.12, down: 0.24 }, to: { across: 0.15, down: 0.24 }, held: true }] },
       { name: "2", acts: [{ kind: "fill", label: "Height above the roof", text: "2" }, { kind: "press", name: "Add" }] },
+    ],
+  },
+  {
+    dir: "find/tree",
+    window: WINDOW,
+    start: "edit",
+    keep: { around: "roof", margin: ROOF_MARGIN },
+    shots: [
+      // In the roof's south-west, clear of the stair room, the edges' lengths and the tank's picture.
+      { name: "1", acts: [{ kind: "tool", name: "Tree" }, { kind: "draw", from: { across: 0.11, down: 0.8 }, to: { across: 0.175, down: 0.8 }, held: true }] },
+      { name: "2", acts: [{ kind: "fill", label: "Height above the roof", text: "6" }, { kind: "press", name: "Add" }] },
     ],
   },
   {

@@ -8,7 +8,7 @@ import { obstacleLineOf } from "@/lib/outline/find-head";
 import type { Tool } from "@/lib/outline/how-to";
 import type { Obstacle, ObstacleKind } from "@/lib/outline/obstacles";
 import type { OutlineEvent, OutlineState } from "@/lib/outline/outline-state";
-import { OBSTACLE_TOOLS, ToolRow } from "./OutlineTools";
+import { OBSTACLE_TOOLS, ToolRow, UndoAndClear } from "./OutlineTools";
 
 type Props = {
   state: OutlineState;
@@ -26,6 +26,7 @@ const ROW_NOT_SELECTED = "border-line bg-surface-1";
 /**
  * The obstacles of Find's column once the outline is closed (V2 · 4, D98): the kinds with their words, then what was
  * drawn in words ("Stair room · Box · 5.0 × 4.0 m · 3.0 m high"); the one selected is the one selected on the map.
+ * Undo and Clear stand under the kinds, as they stand beside the corners while the outline is open (issue 238, item 2).
  */
 export function ObstacleList({ state, tool, onTool, on }: Props) {
   const { obstacles, selectedObstacle } = state;
@@ -34,6 +35,9 @@ export function ObstacleList({ state, tool, onTool, on }: Props) {
       <SectionHeading help="app.section.obstacles">Obstacles · {obstacles.length}</SectionHeading>
       <p className="text-text-2">Choose a kind, then draw it on the map.</p>
       <ToolRow tools={OBSTACLE_TOOLS} tool={tool} onTool={onTool} label="Obstacle kinds" />
+      <div className="flex items-center justify-end gap-1">
+        <UndoAndClear state={state} on={on} />
+      </div>
       {obstacles.length === 0 ? null : (
         <ul className="flex flex-col gap-1.5 pt-1">
           {obstacles.map((obstacle) => (

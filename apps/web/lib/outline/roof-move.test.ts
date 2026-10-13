@@ -144,7 +144,7 @@ describe("the label of a lift", () => {
   test("a turn says the turn, clockwise as the compass turns, and where the roof now faces", () => {
     const turned = turnedBy({ corners: ROOF, obstacles: [] }, -6).corners;
 
-    expect(liftLabelOf({ kind: "turn", degrees: -6 }, turned, "north")).toBe("6.0° · faces 186° S");
-    expect(liftLabelOf({ kind: "turn", degrees: 6 }, turnedBy({ corners: ROOF, obstacles: [] }, 6).corners, "north")).toBe("−6.0° · faces 174° S");
+    expect(liftLabelOf({ kind: "turn", degrees: -6 }, turned, "north")).toBe("6.0° · long side faces 186° S");
+    expect(liftLabelOf({ kind: "turn", degrees: 6 }, turnedBy({ corners: ROOF, obstacles: [] }, 6).corners, "north")).toBe("−6.0° · long side faces 174° S");
   });
 });

@@ -78,7 +78,7 @@ test.describe("without a map", () => {
     await expect(page).toHaveURL(/\/studio\/roof$/, { timeout: RUN });
     await expect(page.getByTestId("roof-how")).toHaveText("Entered by hand");
     await expect(page.getByTestId("roof-count")).toHaveText("4 corners");
-    await expect(page.getByTestId("roof-size")).toHaveText("90.0 × 40.0 m · faces 180° S");
+    await expect(page.getByTestId("roof-size")).toHaveText("90.0 × 40.0 m · long side faces 180° S");
     await expect(page.getByTestId("roof-place")).toHaveText("18.52000° N, 73.86000° E");
     await expect.poll(() => layouts.length, { timeout: RUN }).toBeGreaterThan(0);
     expect(layouts[0].roof.source).toBe("coordinates");

@@ -101,7 +101,7 @@
         {
           "act": "click",
           "role": "button",
-          "name": "Use this outline",
+          "name": "Close",
           "exact": true
         },
         {

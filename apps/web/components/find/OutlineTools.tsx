@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/Button";
 import { classNames } from "@/components/ui/class-names";
 import type { IconName } from "@/components/ui/Icon";
-import { cornersWordsOf } from "@/lib/outline/find-head";
+import { canClearOf, cornersWordsOf } from "@/lib/outline/find-head";
 import { canUndo } from "@/lib/outline/history";
 import type { Tool } from "@/lib/outline/how-to";
 import type { OutlineEvent, OutlineState } from "@/lib/outline/outline-state";
@@ -61,13 +61,25 @@ export function OutlineTools({ state, tool, onTool, on }: Props) {
         <span role="status" className="grow text-text-2">
           {cornersWordsOf(state.corners.length)}
         </span>
-        <Button kind="quiet" size="s" icon="undo" disabled={!canUndo(state.history)} onClick={() => on({ type: "undone" })}>
-          Undo
-        </Button>
-        <Button kind="quiet" size="s" icon="close" disabled={state.corners.length === 0 && state.obstacles.length === 0} onClick={() => on({ type: "cleared" })}>
-          Clear
-        </Button>
+        <UndoAndClear state={state} on={on} />
       </div>
     </div>
+  );
+}
+
+/**
+ * Undo and Clear, wherever the map draws (issue 238, item 2): beside the count of corners while the outline is open,
+ * under the obstacle kinds once it is closed. On touch they are the only way back.
+ */
+export function UndoAndClear({ state, on }: { state: OutlineState; on: (event: OutlineEvent) => void }) {
+  return (
+    <>
+      <Button kind="quiet" size="s" icon="undo" disabled={!canUndo(state.history)} onClick={() => on({ type: "undone" })}>
+        Undo
+      </Button>
+      <Button kind="quiet" size="s" icon="close" disabled={!canClearOf(state)} onClick={() => on({ type: "cleared" })}>
+        Clear
+      </Button>
+    </>
   );
 }

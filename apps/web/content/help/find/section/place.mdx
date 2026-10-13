@@ -11,16 +11,17 @@ docs:
   section: By hand
 ---
 
-`Place` shows in `Enter the roof by hand` only while the app does not know where the roof is: until a search finds the building, a corner is placed on the map, or both fields here hold a value.
+`Place` shows all the while the roof is entered by hand. It holds the place a search found, or where the roof drawn on the map stood, or what you typed: correct it here.
 
 ## What to set
 
 Search for the building in Find's first step, before `Enter the roof by hand`: the place found is used. Otherwise type the place here.
 
 - `Latitude` and `Longitude`: in degrees, `North and east positive, to 5 decimals.` South and west are negative. A maps link or the site's survey gives both.
+- Paste coordinates, such as a pair copied from a map, or a maps link into either field: the app fills both, as the search reads them. Without a map there is no search, so this is the way to paste a place.
 
 ## What it changes
 
 The app draws the shape typed under <HelpLink k="find.section.shape">Shape</HelpLink> about this place, in metres east and north of it. Nothing is drawn until the place and the shape are both complete.
 
-When the roof is built, the app takes its place at the middle of its outline, and works out the sun and the weather for that place. After `Enter the roof by hand` from a roof drawn on the map, the place is where the first corner was placed, and the obstacles drawn there stay.
+When the roof is built, the app takes its place at the middle of its outline, and works out the sun and the weather for that place. A place found by its address keeps its own name in the design while these fields hold it; another place typed here gives no name. After `Enter the roof by hand` from a roof drawn on the map, the place is where the first corner was placed, and the obstacles drawn there stay while the place does: change it, and they go.

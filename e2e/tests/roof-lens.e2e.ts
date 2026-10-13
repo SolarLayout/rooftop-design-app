@@ -53,7 +53,7 @@ test.describe("the inspector, mounted once", () => {
     await expect(page.getByTestId("roof-how")).toHaveCount(1);
     await expect(page.getByTestId("roof-place")).toHaveText("18.52000° N, 73.86000° E");
     await expect(page.getByTestId("roof-count")).toHaveText("4 corners · 6 obstacles");
-    await expect(page.getByTestId("roof-size")).toHaveText("90.0 × 40.0 m · faces 180° S");
+    await expect(page.getByTestId("roof-size")).toHaveText("90.0 × 40.0 m · long side faces 180° S");
     await expect(page.getByRole("radiogroup", { name: "Roof type" })).toHaveCount(1);
   });
 });

@@ -4,6 +4,7 @@ import type { XY } from "../geometry/measure";
 import {
   boxOf,
   boxWithCorner,
+  HEIGHT_HINT,
   labelOf,
   mapShapesOf,
   nameOf,
@@ -93,6 +94,11 @@ describe("a tank", () => {
 });
 
 describe("the words", () => {
+  // Issue 238, item 18: the likely mistake is the height from the ground.
+  test("the hint of the height asked on the map", () => {
+    expect(HEIGHT_HINT).toBe("Above the roof's surface, not the ground");
+  });
+
   test("a name from the kind and the count of that kind, as the API names them", () => {
     expect(nameOf("box", [])).toBe("Box 1");
     expect(nameOf("cylinder", [box([]), { ...box([]), id: 2, kind: "cylinder" }])).toBe("Tank 2");
