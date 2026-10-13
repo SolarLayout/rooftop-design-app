@@ -22,7 +22,9 @@ ISSUES = "Answers V2-40 · V2-79 · V2-96 · V2-102 · V2-103"
 LINES = [
     "Present plays the design as six scenes on the whole screen, for a client. Each scene has one name and one figure, in "
     "the panel at the top left, over the stage as D72 set it: the place, the roof, the array, the sun, the strings, the "
-    "energy. The line at the foot names what the scene shows, as a noun.",
+    "energy. The energy's panel keeps the loss chain beside the figure, from the modules' rated output to the grid, its bars "
+    "growing one after another as the energy counts (D72, D119); under the figure on phone. The line at the foot names what "
+    "the scene shows, as a noun.",
     "The presenter has controls: a move of the pointer or a touch shows them, and they fade after three seconds while the "
     "tour plays. Pause, the scene before and after, the six scenes as a track to jump to, and Leave. Keys: Space pauses, "
     "← and → move between scenes, Esc leaves. Any other key does nothing, so a stray key never ends the tour.",
@@ -83,13 +85,44 @@ def sun_arc(w: int, h: int, size: str) -> str:
             f'<circle cx="{sx:.1f}" cy="{sy:.1f}" r="11" fill="{ACCENT}"/><circle cx="{sx:.1f}" cy="{sy:.1f}" r="5.5" fill="#FFD36B"/></svg>')
 
 
-def panel(n: int, touch: bool, width: int) -> str:
-    """The scene's panel (D72's place and look): its name, its one figure, the figure's label (V2-96)."""
+# The energy scene's chain (D72, D119): the demo's cascade from the modules' rated output to the grid, as shares of the
+# track, a marker at each end; drawn as the app draws it (components/present/PresentPanel.tsx), grown to *share*.
+CHAIN = [(1.00, 0.97), (0.97, 0.70), (0.70, 0.67), (0.67, 0.62), (0.62, 0.59), (0.59, 0.53), (0.53, 0.47), (0.47, 0.44),
+         (0.44, 0.40), (0.40, 0.33), (0.33, 0.30), (0.30, 0.27)]
+CHAIN_ENDS = (("The modules' rated output", "708.4 MWh"), ("To the grid", "617.8 MWh"))
+LOSS = "#D95926"  # --color-data-loss
+TRACK_W = 150
+
+
+def chain(touch: bool, share: float) -> str:
+    rows = [f'<span style="position: relative; display: block; width: {TRACK_W}px; height: 20px"><span style="position: absolute; top: 2px; '
+            f'left: {TRACK_W - 2}px; width: 2px; height: 16px; background: {TEXT}"></span></span>']
+    for i, (a, b) in enumerate(CHAIN):
+        own = min(1.0, max(0.0, (share - i / len(CHAIN)) * len(CHAIN)))
+        to = a + (b - a) * own
+        rows.append(f'<span style="position: relative; display: block; width: {TRACK_W}px; height: 12px"><span style="position: absolute; top: 0; '
+                    f'left: {to * TRACK_W:.1f}px; width: {(a - to) * TRACK_W:.1f}px; height: 12px; border-radius: 3px; background: {LOSS}"></span></span>')
+    rows.append(f'<span style="position: relative; display: block; width: {TRACK_W}px; height: 20px"><span style="position: absolute; top: 2px; '
+                f'left: {CHAIN[-1][1] * TRACK_W:.1f}px; width: 2px; height: 16px; background: {TEXT}; opacity: {1 if share >= 1 else 0.35}"></span></span>')
+    (fl, fv), (ll, lv) = CHAIN_ENDS
+    named = lambda label, value: (f'<span style="{style("body", touch, TEXT_2)}; white-space: nowrap">{label} '
+                                  f'<span style="font-family: \'Geist Mono\', monospace; color: {TEXT}">{value}</span></span>')
+    return f'<div style="display: flex; flex-direction: column; gap: 6px">{named(fl, fv)}<div>{"".join(rows)}</div>{named(ll, lv)}</div>'
+
+
+def panel(n: int, touch: bool, width: int, share: float = 1.0) -> str:
+    """The scene's panel (D72's place and look): its name, its one figure, the figure's label (V2-96); the energy's with
+    its chain beside it, under it on phone (D119)."""
     name, figure, label, _ = SCENES[n - 1]
-    return (f'<div style="position: absolute; left: {16 if width < 640 else 40}px; top: {16 if width < 640 else 40}px; padding: 16px 20px; '
+    narrow = width < 640
+    head = f'<div style="display: flex; flex-direction: column; gap: 4px">{text("strong", name, touch, TEXT_2)}{text("figure", figure, touch)}{text("body", label, touch, TEXT_2)}</div>'
+    if n == 6:
+        sep = f"border-top: 1px solid {LINE}; padding-top: 14px" if narrow else f"border-left: 1px solid {LINE}; padding-left: 32px"
+        head = (f'<div style="display: flex; flex-direction: {"column" if narrow else "row"}; gap: {14 if narrow else 32}px; align-items: {"stretch" if narrow else "center"}">'
+                f'{head}<div style="{sep}">{chain(touch, share)}</div></div>')
+    return (f'<div style="position: absolute; left: {16 if narrow else 40}px; top: {16 if narrow else 40}px; padding: 16px 20px; '
             f'background: {DIM}; backdrop-filter: blur(12px); border: 1px solid {LINE}; border-radius: {RADIUS["card"]}px; '
-            f'display: flex; flex-direction: column; gap: 4px; min-width: {200 if width < 640 else 240}px">'
-            f'{text("strong", name, touch, TEXT_2)}{text("figure", figure, touch)}{text("body", label, touch, TEXT_2)}</div>')
+            f'display: flex; flex-direction: column; gap: 4px; min-width: {200 if narrow else 240}px">{head}</div>')
 
 
 def words(n: int, touch: bool, width: int, controls: bool) -> str:
@@ -153,7 +186,7 @@ def screen(n: int, size: str, controls_shown: bool, paused: bool = False, share:
     out = scene_picture(n, w, h, size)
     if n == 4:
         out += sun_arc(w, h, size)
-    out += panel(n, touch, w) + words(n, touch, w, controls_shown)
+    out += panel(n, touch, w, share) + words(n, touch, w, controls_shown)
     out += controls(n, share, paused, touch, w) if controls_shown else keys_hint(w, touch)
     return out
 
@@ -170,6 +203,8 @@ CHANGES = [
     ("Present · reduced motion", "The sun's play stops but the camera still moves", "Stills, each held for its time, changed with a fade", "V2-103"),
     ("Present · the button", "A bare triangle at 834 in the top bar", "Present, with its word, at the head of Performance and Handover (#209)", "V2-79, V2-57"),
     ("Present · the sun scene (D72)", "The sun path and the sun along it", "Kept: the arc, its shade-free hours thicker, the sun moving along it", "kept"),
+    ("Present · the energy's chain (D72, D119)", "The cascade beside the counting energy",
+     "Kept: beside the figure from tablet on, under it on phone; its totals in Performance's words; growing as the energy counts", "kept"),
 ]
 
 

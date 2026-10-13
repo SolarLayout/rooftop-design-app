@@ -219,6 +219,13 @@ with the hour marks of the Sun view, without its callout; through the whole tour
 on a canvas taller than wide it stands back by the aspect. A scene whose facts are not there yet has no panel. It fades
 in with its scene (`appearing`). In code: `PresentPanel`, its words from `scenePanelOf` (`lib/present/scene-panel.ts`).
 
+The energy's panel keeps the loss chain (D72, D119): beside the three lines from tablet on, across a `line-glass` rule
+and 32 apart, under them on phone. The cascade from the modules' rated output to the grid, its two totals named in
+Performance's words (`The modules' rated output 708.4 MWh` over the track, `To the grid 617.8 MWh` under it, the figures
+in mono); a track 150 wide, a step's row 12 high and a total's 20, the bars in `data-loss`, `data-gain` or a tick of
+`data-zero`, the markers 2 wide in the text's colour. Its bars grow one after another with the energy's count
+(`grownMarksOf`, `lib/present/counting.ts`; the marks from `presentChainOf`, `lib/present/chain.ts`).
+
 The foot's left: the design and its facts in `type-strong` (`Pune demo roof · 357.28 kWp · 617.8 MWh a year`), under
 them the scene as a noun in `type-body` text-2 (The roof from above, The roof in 3D, The array, Shadows over the day,
 The strings, Energy over the year; V2-40), the imagery's attribution under them while the imagery shows. 40 over the
