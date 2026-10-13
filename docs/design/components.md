@@ -868,8 +868,9 @@ newest edited first; `CARD_MENU`; the copy's name; the question); the saving sto
 (`MENU_ROW`) and `components/ui/menu-keys.ts`, shared with the project switcher.
 
 ## Deliverable row (Handover)
-V2 · 9 (D105): the files in four groups by who they are for (For the client, For the utility, For the installer, For
-you), each group's title in `type-strong` text-2 over its rows, 24 between groups. Row 60 high (64 on touch), radius
+V2 · 9 (D105): the files in one list, in the order of who they are for (the client's, the utility's, the installer's,
+yours), 4 between rows, without the groups' titles (the owner, 2026-10-13); on desktop its first row starts at the preview
+card's top edge. Row 60 high (64 on touch), radius
 `radius-row`: the name in `type-strong`, under it what the file is and its size in text-2 ("6 pages, A4 landscape · 98
 KB"); at the right its format alone as a badge (`type-unit` text-2, a `line` border, radius `radius-swatch`) and its own
 Download, a quiet icon button of 40. The open row: `surface-2` with a `line-strong` border. The row opens the file's
