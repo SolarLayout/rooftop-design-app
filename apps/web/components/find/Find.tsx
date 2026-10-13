@@ -360,6 +360,7 @@ export function Find() {
             {detected && footprintNoteStays(detected.found ? detected.taken : null, outline.corners) ? (
               <DetectedCallout
                 detected={detected}
+                stage={stage}
                 // The note stands while the outline is the footprint: its Undo takes back the footprint and nothing else.
                 onUndo={() => {
                   on({ type: "undone" });
