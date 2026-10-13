@@ -16,6 +16,7 @@ const MAKERS: Readonly<Record<string, string>> = {
   "MA SOLAR ITALY": "FIMER",
   "Silfab Solar": "Silfab",
   "Silfab Solar Inc.": "Silfab",
+  "Waaree Energies Ltd.": "Waaree",
   "WattPower Systems Pvt.Ltd": "WattPower",
   "Yaskawa Solectria Solar": "Yaskawa Solectria",
 };
