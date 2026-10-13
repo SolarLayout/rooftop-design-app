@@ -104,6 +104,7 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | V2 · 11 · Help (approved, D107; the 32 topics in V2, the tree added in #238, and the touch how-to) | `V2Help.dc.html`, `V2HelpTablet.dc.html`, `V2HelpPhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
 | V2 · 12 · The vocabulary (approved, D108) | `V2Vocabulary.dc.html`, `V2VocabularyTablet.dc.html`, `V2VocabularyPhone.dc.html` | none: the boards are the table | desktop, tablet, phone |
 | V2 · 13 · Present (a proposal: reviewed with today's Present when the build reaches #220) | `V2Present.dc.html`, `V2PresentTablet.dc.html`, `V2PresentPhone.dc.html` | `present_scenes/` (the app's own pictures) | desktop, tablet, phone |
+| Home (D120: direction A, Golden hour, with direction B's Your designs and graph paper, without Steps, the demo first; built in #256) | the canvas "Rooftop Home · Three directions", https://claude.ai/artifact/WDLXLwtxkEAMuJ4wrkaWBq (row A) | the app's Present captures (`apps/web/public/home/`) | desktop, tablet, phone |
 
 Screens still to draw are listed in `plan/phase-00-design.md`.
 
