@@ -41,6 +41,7 @@ asks for one. Paste the block inside the file into a new session started in this
 | 021 | `021-v2-build.md` | V2: the build, the epic's issues one after the other, one pull request each, without stopping | 2026-10-12 | used by the cloud session of 2026-10-12: #208 to #211 built and merged (#221 to #224), #212 begun (commit 45944db); paused for the owner's Mac |
 | 022 | `022-v2-build-local.md` | V2, the build on the owner's Mac: finish #212 (Problems) from commit 45944db, then the rest of the epic | 2026-10-12 | used on the owner's Mac, 2026-10-12: #212 to #214 built and merged (#225, #226, #228), the engine's shade loss fixed (#227); continued by 023 |
 | 023 | `023-v2-build-from-215.md` | V2, the build on the owner's Mac from #215 (Performance) to the end of the epic, merging on a green local check | 2026-10-12 | open |
+| 024 | `024-docs-rewrite-v2.md` | The Rooftop docs rewritten for V2, in solarlayout_desktop_docs; then the app's links to them (#238 item 24) | 2026-10-13 | open |
 
 ## Shape of a prompt file
 
