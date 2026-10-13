@@ -1,11 +1,11 @@
 import path from "node:path";
 import type { Page } from "@playwright/test";
-import { arcFrom, boxOf, clipAround, clipAt, placeOnScreen, pointOf, screenOf, type Act, type Box, type Clip, type HowTo, type Place, type Point } from "../../tools/help/pictures";
+import { arcFrom, boxOf, clipAround, clipAt, DEMO_ACTS, DEMO_OBSTACLES, placeOnScreen, pointOf, screenOf, type Act, type Box, type Clip, type HowTo, type Place, type Point } from "../../tools/help/pictures";
 import { expect, IMAGERY } from "../fixtures";
 import { A_MAP, atTheRoof, roofMap, withTheFootprints } from "../find";
 
-// The hand on Find, for the help's pictures and clips (D81, Phase 15): how a how-to begins (the demo's roof opened on Find,
-// or the demo's place searched), where things are on the screen, each act done on the map, and the part of the screen kept.
+// The hand on Find, for the help's pictures and clips (D81, Phase 15): how a how-to begins (the demo's place searched, and
+// for most the demo's roof outlined there with its obstacles), where things are on the screen, each act done on the map, and the part of the screen kept.
 // The imagery is a plain ground (ground.jpg): no imagery to license, nothing behind the roof. The footprints of Detect
 // building come from the tests' fixture. Nothing leaves this machine (the fixtures' guard, e2e/fixtures.ts).
 
@@ -144,21 +144,17 @@ export async function act(page: Page, map: OnTheMap, done: Act): Promise<(() => 
   }
 }
 
+/** Find fresh at the demo's place (the coordinates searched, through the geocoder's fixture); for the start `demo`, the
+ * demo's roof then outlined and its obstacles drawn by the hand (DEMO_ACTS), as a user would on Find. */
 export async function begun(page: Page, howTo: HowTo): Promise<void> {
-  if (howTo.start === "edit") {
-    // The demo opened in the Studio, then its roof on Find (/find?edit=roof). The design is not kept across a reload, so
-    // Find is reached in the page, by Next's router, as a link would.
-    await page.goto("/studio/roof");
-    await expect(page.getByRole("listitem").filter({ hasText: /^Roof, 4 corners/ })).toBeVisible({ timeout: A_MAP });
-    await page.evaluate(() => (window as unknown as { next: { router: { push: (href: string) => void } } }).next.router.push("/find?edit=roof"));
-    await expect(page).toHaveURL(/\/find\?edit=roof$/, { timeout: A_MAP });
-    await expect(roofMap(page)).toHaveAttribute("aria-busy", "false", { timeout: A_MAP });
-    await expect(page.locator('[aria-label="Corner 1"]')).toBeVisible();
-  } else {
-    expect((await page.goto("/find"))?.status()).toBe(200);
-    await expect(roofMap(page)).toHaveAttribute("data-state", "ready", { timeout: A_MAP });
-    await atTheRoof(page);
-  }
+  expect((await page.goto("/find"))?.status()).toBe(200);
+  await expect(roofMap(page)).toHaveAttribute("data-state", "ready", { timeout: A_MAP });
+  await atTheRoof(page);
+  if (howTo.start !== "demo") return;
+  const map = await onTheMap(page);
+  for (const done of DEMO_ACTS) await act(page, map, done);
+  await expect(page.getByTestId("obstacle-row")).toHaveCount(DEMO_OBSTACLES.length);
+  await expect(page.locator('[aria-label="Corner 1"]')).toBeVisible();
 }
 
 /** The how-to begun and ready for its first picture or clip: the plain ground, its window, its zoom; where the map is, and

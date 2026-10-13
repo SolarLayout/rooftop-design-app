@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { A_MAP, atTheRoof, drawTheRectangle, findOpened, roofMap, scaleLabel } from "../find";
+import { A_MAP, atTheRoof, drawTheRectangle, findOpened, roofMap } from "../find";
 import { expect, test } from "../fixtures";
 
 // "Build this roof" (plan/phase-04-plan.md, step 11): the roof type, the document from the API, the
@@ -82,36 +82,6 @@ test.describe("Build this roof", () => {
 });
 
 test.describe("the Roof lens", () => {
-  test("Edit shows the design's outline on the map; Build again keeps the design and its name", async ({ page }) => {
-    const layouts: { name: string; roof: { source: string } }[] = [];
-    page.on("request", (request) => {
-      if (request.url().endsWith("/api/layout")) layouts.push(request.postDataJSON());
-    });
-    await page.goto("/studio/roof");
-    await expect(page.getByTestId("roof-how")).toHaveText("Entered by hand", { timeout: RUN });
-    await expect(page.getByTestId("roof-count")).toHaveText("4 corners · 6 obstacles");
-    await expect(page.getByTestId("roof-size")).toHaveText("90.0 × 40.0 m · long side faces 180° S");
-
-    await page.getByRole("link", { name: "Edit" }).click();
-
-    // Under the load of a full check the navigation to the map took more than the 5 s an expectation waits by default
-    // (plan/STATE.md, the watch item): it is given the run's time.
-    await expect(page).toHaveURL(/\/find\?edit=roof$/, { timeout: RUN });
-    await expect(page.getByTestId("corner")).toHaveCount(4, { timeout: A_MAP });
-    await expect(page.getByRole("heading", { level: 1, name: "Outline the roof" })).toBeVisible();
-    await expect(page.getByRole("textbox", { name: "South" })).toHaveValue("90.0");
-    await expect(scaleLabel(page)).toHaveText("20 m", { timeout: A_MAP });
-
-    await page.getByRole("button", { name: "Build this roof" }).click();
-
-    await expect(page).toHaveURL(/\/studio\/roof$/, { timeout: RUN });
-    await expect(page.getByRole("banner").getByRole("button", { name: /Pune demo roof/ })).toBeVisible();
-    await expect(page.getByTestId("roof-how")).toHaveText("Outlined on satellite");
-    await expect(page.getByTestId("roof-count")).toHaveText("4 corners · 6 obstacles");
-    await expect.poll(() => layouts.length, { timeout: RUN }).toBeGreaterThan(1);
-    expect(layouts.at(-1)).toMatchObject({ name: "Pune demo roof", roof: { source: "map" } });
-  });
-
   test("the roof type is a committed edit: the layout is asked for again", async ({ page }, testInfo) => {
     const layouts: { roof: { roof_type: string } }[] = [];
     page.on("request", (request) => {

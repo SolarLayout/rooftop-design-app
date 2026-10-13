@@ -15,7 +15,7 @@ export type Size = { width: number; height: number };
 export type Spot = { across: number; down: number };
 /** Where on the map: metres east and north of its middle, as the demo's place is when it is searched. */
 export type Metres = { east: number; north: number };
-/** A place written either way: a spot on the roof (the demo's roof, opened on Find), or metres from the map's middle. */
+/** A place written either way: a spot on the roof (the demo's roof, outlined on Find), or metres from the map's middle. */
 export type Place = Spot | Metres;
 
 /**
@@ -52,15 +52,15 @@ export type Act =
 export type Shot = { name: string; acts: readonly Act[] };
 
 /**
- * A how-to's pictures: its folder under public/help, the window they are taken in, how it begins (the demo's roof opened
- * on Find, /find?edit=roof, or the demo's place searched with nothing drawn), and what is kept: the roof with a margin
- * round it, a part of a size round a spot of the roof (an obstacle, closer in), or a part of a size round the map's middle
- * (or round a place in metres from it).
+ * A how-to's pictures: its folder under public/help, the window they are taken in, how it begins (`place`: Find fresh at
+ * the demo's place, nothing drawn; `demo`: the same, then the demo's roof outlined by the hand and its obstacles drawn,
+ * DEMO_ACTS), and what is kept: the roof with a margin round it, a part of a size round a spot of the roof (an obstacle,
+ * closer in), or a part of a size round the map's middle (or round a place in metres from it).
  */
 export type HowTo = {
   dir: string;
   window: Size;
-  start: "edit" | "place";
+  start: "demo" | "place";
   /** Steps of the map's Zoom in after it begins, for a thing too small at the roof's scale (a building to detect). */
   zoomIn?: number;
   keep: { around: "roof"; margin: Margin } | { around: "spot"; at: Spot; size: Size } | { around: "middle"; size: Size; at?: Metres };
@@ -77,7 +77,7 @@ const STAIR_ROOM = { across: 0.251, down: 0.555 };
 // Wide enough that the demo roof stands clear of Find's column; the margin keeps the handle above the roof and the
 // obstacles' labels at its right (the AC units', which reach past its edge).
 const WINDOW = { width: 1800, height: 900 };
-const ROOF_MARGIN = { left: 60, top: 72, right: 160, bottom: 56 };
+const ROOF_MARGIN = { left: 60, top: 72, right: 175, bottom: 56 };
 /** Round the demo's place: a roof of 90 by 40 m with its handle and labels, and the building west of it. */
 const MIDDLE = { width: 520, height: 300 };
 
@@ -86,16 +86,71 @@ const SW = { east: -45, north: -20 };
 const SE = { east: 45, north: -20 };
 const NE = { east: 45, north: 20 };
 const NW = { east: -45, north: 20 };
-/** A large building of the footprints' fixture south-west of the demo's place, large enough to show its edges' labels. */
-const A_BUILDING = { east: -10, north: -26.5 };
+/** A large building of the footprints' fixture south-west of the demo's place, large enough to show its edges' labels: pressed near its
+ * south-east corner, so that the note, below and to the right of the press, leaves its corners and lengths in sight. */
+const A_BUILDING = { east: -5.4, north: -30.9 };
+
+/** An obstacle of the demo, about the demo's place: a box by its middle and its sides, a tank by its middle and diameter. */
+export type DemoObstacle =
+  | { kind: "box"; east: number; north: number; length: number; width: number; height: number }
+  | { kind: "tank"; east: number; north: number; diameter: number; height: number };
+
+/**
+ * The demo's obstacles (apps/api/src/rooftop_core/demo.py), moved from its roof's south-west corner to its middle, where
+ * the demo's place is: the stair room, the water tank, the four AC units. Drawn on Find they take the names of their kind
+ * (Box 1, Tank 1, Box 2 to 5): Find names what is drawn, the Studio renames it.
+ */
+export const DEMO_OBSTACLES: readonly DemoObstacle[] = [
+  { kind: "box", east: -22.5, north: -2, length: 5, width: 4, height: 3 },
+  { kind: "tank", east: 17, north: 4, diameter: 2.5, height: 2 },
+  ...[0, 1, 2, 3].map((n): DemoObstacle => ({ kind: "box", east: 25.75 + 3 * n, north: -16.5, length: 1.5, width: 1, height: 1.2 })),
+];
+
+/** The height card's field (Find's HeightDialog). */
+const HEIGHT_FIELD = "Height above the roof";
+
+/**
+ * The hand drawing an obstacle and giving its height: a box from its south-east corner to its north-west (a press is
+ * taken away from the obstacle drawn before it, which stays picked), a tank from its middle out to its east edge.
+ */
+export function actsOfObstacle(obstacle: DemoObstacle): Act[] {
+  const { east, north } = obstacle;
+  const draw: Act =
+    obstacle.kind === "box"
+      ? { kind: "draw", from: { east: east + obstacle.length / 2, north: north - obstacle.width / 2 }, to: { east: east - obstacle.length / 2, north: north + obstacle.width / 2 }, held: false }
+      : { kind: "draw", from: { east, north }, to: { east: east + obstacle.diameter / 2, north }, held: false };
+  return [{ kind: "tool", name: obstacle.kind === "box" ? "Box" : "Tank" }, draw, { kind: "fill", label: HEIGHT_FIELD, text: String(obstacle.height) }, { kind: "press", name: "Add" }];
+}
+
+/** South of the demo roof, on the open ground: a press there lets go of what is picked. */
+const SOUTH_OF_THE_ROOF = { east: 0, north: -32 };
+
+/**
+ * The start `demo` (issue 238, item 6: Find is for a new roof, so no design's roof is opened on it): from Find at the
+ * demo's place, its roof outlined by its four corners and closed on the first, its south and east edges typed to the
+ * demo's lengths, its obstacles drawn with their heights,
+ * then nothing picked and the box in hand, as Find leaves a closed roof.
+ */
+export const DEMO_ACTS: readonly Act[] = [
+  ...[SW, SE, NE, NW, SW].map((at): Act => ({ kind: "corner", at })),
+  // The scale bar's width is in whole pixels: the corners land within a few tenths of a metre, and the edges typed make
+  // the roof the demo's to the tenth. Edges is closed again, as a new device has it.
+  { kind: "press", name: "Edges" },
+  { kind: "fill", label: "South", text: "90" },
+  { kind: "fill", label: "East", text: "40" },
+  { kind: "press", name: "Edges" },
+  ...DEMO_OBSTACLES.flatMap(actsOfObstacle),
+  { kind: "tool", name: "Box" },
+  { kind: "corner", at: SOUTH_OF_THE_ROOF },
+];
 
 export const HOW_TOS: readonly HowTo[] = [
   {
     dir: "find/move-the-roof",
     window: WINDOW,
-    start: "edit",
-    // Wider and taller than the others: the roof dragged east and turned takes the AC units' labels further right and down.
-    keep: { around: "roof", margin: { ...ROOF_MARGIN, right: 190, bottom: 72 } },
+    start: "demo",
+    // Wider and taller than the others: the roof dragged east and turned takes the AC units' shared label further right and down.
+    keep: { around: "roof", margin: { ...ROOF_MARGIN, right: 205, bottom: 92 } },
     shots: [
       { name: "1", acts: [] },
       { name: "2", acts: [{ kind: "click", at: CLEAR }, { kind: "drag", from: CLEAR, by: { x: 30, y: 12 }, held: true }] },
@@ -166,7 +221,7 @@ export const HOW_TOS: readonly HowTo[] = [
     start: "place",
     zoomIn: 1,
     // Round the building and the callout that opens below it and to its right.
-    keep: { around: "middle", size: { width: 560, height: 320 }, at: { east: 10.6, north: -32.5 } },
+    keep: { around: "middle", size: { width: 560, height: 360 }, at: { east: 10.6, north: -35.3 } },
     shots: [
       { name: "1", acts: [{ kind: "tool", name: "Detect building" }] },
       { name: "2", acts: [{ kind: "found", at: A_BUILDING }] },
@@ -177,7 +232,7 @@ export const HOW_TOS: readonly HowTo[] = [
   {
     dir: "find/box",
     window: WINDOW,
-    start: "edit",
+    start: "demo",
     keep: { around: "roof", margin: ROOF_MARGIN },
     shots: [
       { name: "1", acts: [{ kind: "tool", name: "Box" }, { kind: "draw", from: { across: 0.25, down: 0.12 }, to: { across: 0.37, down: 0.36 }, held: true }] },
@@ -189,7 +244,7 @@ export const HOW_TOS: readonly HowTo[] = [
   {
     dir: "find/tank",
     window: WINDOW,
-    start: "edit",
+    start: "demo",
     keep: { around: "roof", margin: ROOF_MARGIN },
     shots: [
       { name: "1", acts: [{ kind: "tool", name: "Tank" }, { kind: "draw", from: { across: 0.12, down: 0.24 }, to: { across: 0.15, down: 0.24 }, held: true }] },
@@ -199,7 +254,7 @@ export const HOW_TOS: readonly HowTo[] = [
   {
     dir: "find/tree",
     window: WINDOW,
-    start: "edit",
+    start: "demo",
     keep: { around: "roof", margin: ROOF_MARGIN },
     shots: [
       // In the roof's south-west, clear of the stair room, the edges' lengths and the tank's picture.
@@ -210,7 +265,7 @@ export const HOW_TOS: readonly HowTo[] = [
   {
     dir: "find/wall",
     window: WINDOW,
-    start: "edit",
+    start: "demo",
     keep: { around: "roof", margin: ROOF_MARGIN },
     shots: [
       {
@@ -228,28 +283,28 @@ export const HOW_TOS: readonly HowTo[] = [
   {
     dir: "find/building",
     window: WINDOW,
-    start: "edit",
-    // West of the roof, in the open: its label runs east, toward the roof, clear of Find's panel.
+    start: "demo",
+    // West of the roof, in the open, and high enough that its label runs east, toward the roof, over the west edge's length.
     keep: { around: "roof", margin: { ...ROOF_MARGIN, left: 130 } },
     shots: [
       {
         name: "1",
         acts: [
           { kind: "tool", name: "Building" },
-          { kind: "corner", at: { across: -0.26, down: 0.15 } },
-          { kind: "corner", at: { across: -0.08, down: 0.15 } },
-          { kind: "corner", at: { across: -0.08, down: 0.8 } },
-          { kind: "corner", at: { across: -0.26, down: 0.8 } },
+          { kind: "corner", at: { across: -0.32, down: 0.05 } },
+          { kind: "corner", at: { across: -0.14, down: 0.05 } },
+          { kind: "corner", at: { across: -0.14, down: 0.6 } },
+          { kind: "corner", at: { across: -0.32, down: 0.6 } },
         ],
       },
       // Step 2, the first corner clicked again, has no picture.
-      { name: "3", acts: [{ kind: "corner", at: { across: -0.26, down: 0.15 } }, { kind: "fill", label: "Height above the roof", text: "9" }, { kind: "press", name: "Add" }] },
+      { name: "3", acts: [{ kind: "corner", at: { across: -0.32, down: 0.05 } }, { kind: "fill", label: "Height above the roof", text: "9" }, { kind: "press", name: "Add" }] },
     ],
   },
   {
     dir: "find/move-an-obstacle",
     window: WINDOW,
-    start: "edit",
+    start: "demo",
     // Close in, so that the stair room is larger than its corners' handles and a drag from inside it moves it.
     zoomIn: 1,
     // Round the stair room, its handle above it and the label of its turn at its right.

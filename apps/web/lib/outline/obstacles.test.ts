@@ -8,8 +8,9 @@ import {
   labelOf,
   mapShapesOf,
   nameOf,
+  numberedOf,
   obstacleMovedBy,
-  obstaclesOfMap,
+  sharedLabelOf,
   obstacleTurnedAbout,
   roundOf,
   type Obstacle,
@@ -109,6 +110,20 @@ describe("the words", () => {
   test("the label on the map: the name and the height", () => {
     expect(labelOf(box([], 3))).toBe("Box 1 · 3.0 m high");
   });
+
+  // Issue 238, item 32: obstacles close together, of one name but its number and of one height, share one label.
+  test("a name and its number: the name before it, and the number; a name without one has none", () => {
+    expect(numberedOf("AC unit 4")).toEqual({ base: "AC unit", number: 4 });
+    expect(numberedOf("Box 12")).toEqual({ base: "Box", number: 12 });
+    expect(numberedOf("Stair room")).toBeNull();
+    expect(numberedOf("12")).toBeNull();
+  });
+
+  test("the label shared: the name, the numbers as a run or a list, the height", () => {
+    expect(sharedLabelOf("AC unit", [3, 1, 2, 4], 1.2)).toBe("AC unit 1–4 · 1.2 m high");
+    expect(sharedLabelOf("AC unit", [1, 3, 4], 1.2)).toBe("AC unit 1, 3 and 4 · 1.2 m high");
+    expect(sharedLabelOf("Box", [2, 3], 1.2)).toBe("Box 2 and 3 · 1.2 m high");
+  });
 });
 
 describe("to the API and back", () => {
@@ -146,32 +161,6 @@ describe("to the API and back", () => {
     const back = toMetres(frame, { lon: shapes[1].points[0][0], lat: shapes[1].points[0][1] });
     expect(back.x).toBeCloseTo(30, 3);
     expect(back.y).toBeCloseTo(10, 3);
-  });
-
-  test("the trees of a roof shown on the map again are drawn as the others are: the map draws trees (V2 · 4)", () => {
-    const tree = { name: "Mango", kind: "tree" as const, points: [[73.8601, 18.5201]] as [number, number][], diameter: 4, height: 6 };
-    const shapes = [...mapShapesOf(drawn, frame), tree];
-
-    expect(obstaclesOfMap(shapes, frame).map((obstacle) => [obstacle.kind, obstacle.name, obstacle.diameter])).toEqual([
-      ["box", "Box 1", null],
-      ["cylinder", "Tank 1", 2.5],
-      ["wall", "Wall 1", null],
-      ["tree", "Mango", 4],
-    ]);
-  });
-
-  test("the shapes of a roof shown on the map again become obstacles in the frame, numbered on", () => {
-    const shapes = mapShapesOf(drawn, frame);
-
-    const loaded = obstaclesOfMap(shapes, frame);
-
-    expect(loaded.map((obstacle) => [obstacle.id, obstacle.kind, obstacle.name, obstacle.height, obstacle.diameter])).toEqual([
-      [1, "box", "Box 1", 3, null],
-      [2, "cylinder", "Tank 1", 2, 2.5],
-      [3, "wall", "Wall 1", 0.8, null],
-    ]);
-    expect(loaded[0].points[2].x).toBeCloseTo(15, 3);
-    expect(loaded[0].points[2].y).toBeCloseTo(9, 3);
   });
 });
 

@@ -159,9 +159,10 @@ A how-to's pictures (D81) are taken from the app by a script, never drawn, never
 are taken again and the change is seen in the pull request.
 
 - **What each picture shows** is written in `tools/help/pictures.ts`, in `HOW_TOS`: the how-to's folder (`find/corners`),
-  the window it is taken in, how it begins (`edit`: the demo opened in the Studio, then its roof on Find at
-  `/find?edit=roof`, reached in the page since the design is not kept across a reload; `place`: the demo's place searched
-  with nothing drawn), steps of `zoomIn` for something small, what is kept (the roof with a margin, a part of a size round
+  the window it is taken in, how it begins (`place`: Find fresh, the demo's place searched, nothing drawn; `demo`: the
+  same, then the demo's roof outlined by the hand as a user does it, `DEMO_ACTS`: its corners, its edges typed to 90 and
+  40 m, the stair room, the water tank and the four AC units drawn with their heights; Find is for a new roof, so no
+  design's roof is opened on it, issue 238), steps of `zoomIn` for something small, what is kept (the roof with a margin, a part of a size round
   a spot of the roof, or a part of a size round the map's middle or round a place in metres from it), and per picture,
   named for the step it shows (a step without a picture is skipped), the acts of the hand after the picture before it:
   `tool` (a tool chosen), `corner` (a press on the map), `click` (inside the roof), `drag` (from a spot of the roof),

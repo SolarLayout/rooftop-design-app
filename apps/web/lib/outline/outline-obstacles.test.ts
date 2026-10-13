@@ -221,15 +221,6 @@ describe("an obstacle on the map", () => {
     expect(back.obstacles).toHaveLength(1);
     expect(back.closed).toBe(true);
   });
-
-  test("an outline loaded from a design brings its obstacles, in its frame", () => {
-    const obstacles = [{ id: 1, kind: "box" as const, name: "Stair room", points: RECTANGLE.map((p) => ({ x: p.x / 10, y: p.y / 10 })), diameter: null, height: 3 }];
-
-    const loaded = outlineAfter(START, { type: "loaded", at: PUNE, corners: RECTANGLE, obstacles });
-
-    expect(loaded.obstacles).toEqual(obstacles);
-    expect(loaded.history.past).toHaveLength(0);
-  });
 });
 
 // V2 · 4 (the board "Find"): the tree is drawn as the tank is, from its middle to its edge, and is a tree.

@@ -146,7 +146,7 @@ describe("the address of Find", () => {
     expect(placeOfFindAddress(new URLSearchParams("at=18.52,73.86"))).toEqual({ lat: 18.52, lon: 73.86, label: "18.52000° N, 73.86000° E", byWords: false });
   });
 
-  test.each(["", "edit=roof", "at=", "at=18.52", "at=lat,lon", "at=91,73.86", "at=18.52,181", "at=18.52,73.86,5"])("'%s' carries no place", (address) => {
+  test.each(["", "by=hand", "at=", "at=18.52", "at=lat,lon", "at=91,73.86", "at=18.52,181", "at=18.52,73.86,5"])("'%s' carries no place", (address) => {
     expect(placeOfFindAddress(new URLSearchParams(address))).toBeNull();
   });
 });

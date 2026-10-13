@@ -284,18 +284,6 @@ describe("a footprint detected", () => {
   });
 });
 
-describe("an outline loaded from a design", () => {
-  test("its corners, closed, in a frame at the design's place, with nothing to undo: the beginning of editing", () => {
-    const loaded = outlineAfter(placed(RECTANGLE[0]), { type: "loaded", at: PUNE, corners: RECTANGLE });
-
-    expect(loaded.corners).toEqual(RECTANGLE);
-    expect(loaded.closed).toBe(true);
-    expect(loaded.frame?.centre).toEqual(PUNE);
-    expect(loaded.history.past).toHaveLength(0);
-    expect(edgeNamesOf(loaded)).toEqual(["South", "East", "North", "West"]);
-  });
-});
-
 describe("typed lengths", () => {
   test("a length typed into an edge corrects the outline; squared, the rectangle stays one", () => {
     const state = outlineAfter(placed(...RECTANGLE), { type: "close" });

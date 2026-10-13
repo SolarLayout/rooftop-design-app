@@ -17,26 +17,25 @@ import { StatusMark } from "@/components/ui/StatusMark";
 import { ROOF_ZOOM } from "@/components/ui/design-numbers";
 import type { Box } from "@/components/ui/place-floating";
 import { api, ApiError } from "@/lib/api";
-import { roofAfterBuild } from "@/lib/geometry/roof-type-rule";
 import { esriProvider, KEY_OF_THE_APP } from "@/lib/places/esri";
 import { FOOTPRINTS_ATTRIBUTION } from "@/lib/map/overture";
 import { mapStateOf } from "@/lib/map/map-state";
 import { buildRequestOf } from "@/lib/outline/build-request";
 import { isEntered, NOTHING_ENTERED, type ByHand } from "@/lib/outline/by-hand";
 import { buildLabelOf, edgesFactsOf, findHeadOf, MAP_LINE, type FindStage } from "@/lib/outline/find-head";
-import { frameAt, toLonLat, toMetres, type Frame } from "@/lib/outline/frame";
-import { isRound, obstaclesOfMap, type Shape } from "@/lib/outline/obstacles";
+import { toLonLat, type Frame } from "@/lib/outline/frame";
+import { isRound, type Shape } from "@/lib/outline/obstacles";
 import { firstKnownOf } from "@/lib/help/keys";
 import { HELP_KEYS } from "@/lib/help/manifest.gen";
 import { entryAfterPlace, EXAMPLES, type Entry } from "@/lib/outline/first-step";
 import { footprintNoteStays } from "@/lib/outline/footprint-note";
-import { editedPlaceNameOf, placeNameOfBuild } from "@/lib/outline/place-name";
+import { placeNameOfBuild } from "@/lib/outline/place-name";
 import { howTosOf, type Tool } from "@/lib/outline/how-to";
 import { isClosedAndSettled, measurementsOf, outlineAfter, START } from "@/lib/outline/outline-state";
 import { showsMapLineOf, tipDoneBy, type TipId } from "@/lib/outline/tips";
 import { rememberTipsGone, tipsGoneOf } from "@/lib/device/tips-seen";
 import { isByHandAsked, pathOfLens, placeOfFindAddress } from "@/lib/routes";
-import { latitudeOf, longitudeOf, projectOf } from "@/lib/stores/project-store";
+import { latitudeOf, longitudeOf } from "@/lib/stores/project-store";
 import { stepStatesOf } from "@/lib/flow/steps";
 import { StepTabBar } from "@/components/shell/StepNav";
 import { SummaryRow } from "@/components/shell/SummaryRow";
@@ -109,11 +108,9 @@ function anchorOf(map: MapLibre, frame: Frame, shape: Shape): Box {
 export function Find() {
   const router = useRouter();
   const params = useSearchParams();
-  const isEditing = params.get("edit") === "roof";
   // From Home's search (plan/phase-10-plan.md, step 11): the screen begins as if the place had just been found here.
   const [placeAsked] = useState(() => placeOfFindAddress(params));
   const { project: store } = useStores();
-  const project = useProject(projectOf);
   const latitude = useProject(latitudeOf);
   const longitude = useProject(longitudeOf);
   const webGL = useWebGL();
@@ -132,7 +129,6 @@ export function Find() {
   const [building, setBuilding] = useState<Building>({ kind: "idle" });
   const [entry, setEntry] = useState<Entry>("map");
   const [hand, setHand] = useState<ByHand>(placeAsked ? { ...NOTHING_ENTERED, lat: placeAsked.lat, lon: placeAsked.lon } : NOTHING_ENTERED);
-  const loaded = useRef(false);
   // The line on the map for the first outline: gone for good on this device once the roof is moved or turned.
   const [linesGone, setLinesGone] = useState<ReadonlySet<TipId>>(() => {
     const storage = deviceStorage();
@@ -202,30 +198,7 @@ export function Find() {
     enterByHand();
   });
 
-  // Edit from the Roof step: the outline of the design that is open is shown on the map, where it is.
-  useEffect(() => {
-    if (!isEditing || !project || loaded.current) return;
-    loaded.current = true;
-    const control = new AbortController();
-    api.roofOnMap(project.roof, { signal: control.signal }).then(
-      (onMap) => {
-        const at = { lon: project.roof.lon, lat: project.roof.lat };
-        const frame = frameAt(at);
-        on({ type: "loaded", at, corners: onMap.outline.map(([lon, lat]) => toMetres(frame, { lon, lat })), obstacles: obstaclesOfMap(onMap.obstacles, frame) });
-        setRoofType(project.roof.roof_type);
-        setView({ lon: at.lon, lat: at.lat, zoom: ROOF_ZOOM });
-        setStep("outline");
-      },
-      (error: unknown) => {
-        if (control.signal.aborted) return;
-        setBuilding({ kind: "failed", message: error instanceof ApiError ? error.message : "The outline could not be shown on the map." });
-        setStep("outline");
-      },
-    );
-    return () => control.abort();
-  }, [isEditing, project]);
-
-  /** Build this roof: the document from the API, opened as the design, or its roof put into the design that is edited. */
+  /** Build this roof: the document from the API, opened as the new design (Find is for a new roof, issue 238). */
   async function build() {
     const request = buildRequestOf(outline, roofType, foundAt, byHand ? "coordinates" : "map");
     if (!request) return;
@@ -234,11 +207,7 @@ export function Find() {
       const answer = await api.roofFromMap(request);
       // The place's own name (D114): of a place found by words; by hand, while the Place's fields still hold it.
       const handAt = byHand ? { lat: hand.lat, lon: hand.lon } : null;
-      if (isEditing && project) {
-        store.getState().commit((design) => ({ ...design, roof: roofAfterBuild(design.roof, answer.roof), place_name: editedPlaceNameOf(design.place_name, foundAt, handAt) }));
-      } else {
-        store.getState().open({ ...answer, place_name: placeNameOfBuild(foundAt, handAt) });
-      }
+      store.getState().open({ ...answer, place_name: placeNameOfBuild(foundAt, handAt) });
       setStep("build");
       router.push(pathOfLens("roof"));
     } catch (error) {
@@ -349,7 +318,7 @@ export function Find() {
   return (
     <HelpProvider>
       <div className="flex h-dvh flex-col overflow-hidden bg-ground text-text type-body-touch desktop:type-body">
-        <FindBar name={isEditing && project ? project.name : "New design"} states={ON_FIND} />
+        <FindBar states={ON_FIND} />
         <div ref={room} className="relative flex min-h-0 grow flex-col desktop:flex-row-reverse">
           {/* The column comes first for the keyboard; on desktop it stands at the right. */}
           <aside aria-label={head.title} className="hidden desktop:flex desktop:w-inspector desktop:shrink-0 desktop:flex-col desktop:border-l desktop:border-line-subtle desktop:bg-chrome">
@@ -391,6 +360,7 @@ export function Find() {
             {detected && footprintNoteStays(detected.found ? detected.taken : null, outline.corners) ? (
               <DetectedCallout
                 detected={detected}
+                stage={stage}
                 // The note stands while the outline is the footprint: its Undo takes back the footprint and nothing else.
                 onUndo={() => {
                   on({ type: "undone" });
