@@ -24,11 +24,7 @@ export const modulesUsed = (used: number, positions: number): Quantity => ({
 export const performanceRatio = (share: number): Quantity => ({ number: shown(percentOf(share), 1), unit: "%" });
 export const specificYield = (kwhPerKwp: number): Quantity => ({ number: shown(kwhPerKwp, 0), unit: "kWh/kWp" });
 
-export const roofArea = (squareMetres: number): Quantity => ({ number: shown(squareMetres, 0), unit: "m²" });
 export const positions = (count: number): Quantity => ({ number: shown(count, 0), unit: "modules" });
-/** The DC capacity if a module stood on every position. `wattsOfAModule` is its nominal power. */
-export const capacityIfAllWereUsed = (count: number, wattsOfAModule: number): Quantity =>
-  dcCapacity((count * wattsOfAModule) / 1000);
 
 /** A quantity in one piece: for a screen reader, and wherever number and unit are not set apart. */
 export const said = ({ number, unit }: Quantity): string => withUnit(number, unit);

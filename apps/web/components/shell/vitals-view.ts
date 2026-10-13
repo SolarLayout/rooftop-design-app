@@ -3,14 +3,12 @@
 import type { DesignOption, DesignProgress, DesignResult, LayoutReadouts } from "../../lib/api";
 import {
   acCapacity,
-  capacityIfAllWereUsed,
   dcAcRatio,
   dcCapacity,
   energy,
   modulesUsed,
   performanceRatio,
   positions,
-  roofArea,
   specificYield,
   type Quantity,
 } from "../../lib/format/vitals";
@@ -19,7 +17,7 @@ import type { Status } from "../../lib/stores/results-store";
 import { wordsOfTheTarget, type Note } from "./notes-view";
 import { pathOfNoOptions } from "../../lib/flow/no-options";
 
-export type VitalId = "energy" | "dc" | "ac" | "dcac" | "modules" | "pr" | "yield" | "roof" | "positions" | "if-all-used";
+export type VitalId = "energy" | "dc" | "ac" | "dcac" | "modules" | "pr" | "yield" | "positions";
 
 export type Vital = {
   id: VitalId;
@@ -97,21 +95,9 @@ function ofTheDesign(option: DesignOption, readouts: LayoutReadouts): Vital[] {
   ];
 }
 
-function ofTheLayout(readouts: LayoutReadouts | null, design: DesignResult | null): Vital[] {
-  if (!readouts) return [];
-  const cells: Vital[] = [
-    { id: "roof", label: "Roof", quantity: roofArea(readouts.roof_area_m2) },
-    { id: "positions", label: "Positions", quantity: positions(readouts.positions) },
-  ];
-  // The power of a module is known once a run has read the equipment.
-  if (design) {
-    cells.push({
-      id: "if-all-used",
-      label: "DC capacity, every position used",
-      quantity: capacityIfAllWereUsed(readouts.positions, design.equipment.module.pnom_w),
-    });
-  }
-  return cells;
+/** Before a design: the positions the layout gives, which the first open counts. */
+function ofTheLayout(readouts: LayoutReadouts | null): Vital[] {
+  return readouts ? [{ id: "positions", label: "Positions", quantity: positions(readouts.positions) }] : [];
 }
 
 function notesCell(notes: readonly Note[]): LastCell {
@@ -147,5 +133,5 @@ export function vitalsOf({ name, design, readouts, designStatus, progress, notes
 
   const current = readouts ?? design?.readouts ?? null;
   if (option && current) return { kind: "design", cells: ofTheDesign(option, current), isLoading, isDimmed: isOnItsWay, last };
-  return { kind: "layout", cells: ofTheLayout(current, design), isLoading, isDimmed: isOnItsWay, last };
+  return { kind: "layout", cells: ofTheLayout(current), isLoading, isDimmed: isOnItsWay, last };
 }

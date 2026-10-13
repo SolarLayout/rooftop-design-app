@@ -6,7 +6,7 @@ import type { Range } from "../../components/ui/number-entry";
 import { shown } from "../../components/ui/number-entry";
 import { NOTE_FIELD_RANGES, withTrueMinus } from "../../components/shell/notes-view";
 import type { DesignResult, Project } from "../api";
-import { ROOF_TYPES } from "../geometry/roof-types";
+import { roofTypeNameOf } from "../geometry/roof-types";
 import { DEFAULT, FROM_THE_WEATHER, hintOf, sectionSetByOf, wordOf, type SetBy } from "./set-by";
 
 export type SizingId = "t_min_override" | "t_max_override" | "cell_rise_c" | "voc_coefficient_pct";
@@ -34,8 +34,8 @@ export type SizingField = {
 
 const degrees = (value: number) => `${shown(value, 1)} °C`;
 
-/** The roof type by the name its choice shows: "Flat, tilted rows". */
-const roofTypeOf = (document: Project) => ROOF_TYPES.find(({ id }) => id === document.roof.roof_type)?.name ?? document.roof.roof_type;
+/** The roof type by its long name: "Flat, rows facing south" (D112). */
+const roofTypeOf = (document: Project) => roofTypeNameOf(document.roof.roof_type, document.roof.lat);
 
 /** The engine's note on the module's Voc coefficient, when it gave one. */
 const vocNoteOf = (design: DesignResult) => design.equipment.module_notes.find((note) => note.startsWith("Voc coefficient")) ?? null;

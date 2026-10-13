@@ -18,7 +18,7 @@ describe("where no string length fits", () => {
     expect(fit?.problem.title).toBe("No string length fits at 600 V");
     expect(fit?.problem.cause).toBe("This inverter needs at least 14 modules in a string. At 600 V a string holds at most 11.");
     expect(fit?.problem.actions.map((action) => action.label)).toEqual(["Choose another inverter", "Change the sizing temperatures"]);
-    expect(fit?.primary).toEqual({ volts: 1000, label: "Use 1000 V", line: "Allowed on most commercial roofs. Check the site's code first." });
+    expect(fit?.primary).toEqual({ volts: 1000, label: "Use 1000 V", line: "Check first that the site's code allows it." });
   });
 
   test("with no voltage the equipment takes that fits, the problem alone: the app never raises the voltage (D88)", () => {

@@ -100,11 +100,6 @@ export function sizeOf(shape: Shape): string {
   return `${shown(Math.round(areaOf(points)), 0)} m²`;
 }
 
-/** What the list says of an obstacle: its size, then its height. */
-export function factsOf(obstacle: Obstacle): string {
-  return `${sizeOf(obstacle)} · ${shown(obstacle.height, 1)} m high`;
-}
-
 /** The label of an obstacle on the map: its name and its height. */
 export function labelOf(obstacle: Obstacle): string {
   return `${obstacle.name} · ${shown(obstacle.height, 1)} m high`;
