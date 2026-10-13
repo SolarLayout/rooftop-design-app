@@ -39,6 +39,7 @@ theme (`:root`).
 | `--color-dim-panel` | `rgba(5,7,10,.58)` | A panel of figures over Present's stage, the stage seen through it, blurred (D72) |
 | `--color-line-glass` | `rgba(255,255,255,.08)` | The edge of a panel over the stage that the stage shows through |
 | `--color-track-glass` | `rgba(242,244,247,.24)` | The empty part of a segment of Present's track, over the stage (V2 · 13) |
+| `--color-graph-line` | `rgba(255,255,255,.035)` | The lines of Home's graph paper under its hero (D120) |
 | `--color-handle-fill` | `#FFFFFF` | The handle of a corner on the map: white, so that it reads on any imagery, with an accent line |
 
 ## Colour: text
@@ -209,6 +210,8 @@ tracking together.
 |---|---|---|---|---|---|---|
 | `--text-display` | `--font-display` | `600` | `64px` | `68px` | `-0.03em` | The one lead number of a page: the energy on Performance |
 | `--text-display-touch` | `--font-display` | `600` | `48px` | `52px` | `-0.03em` | The same on phone and tablet |
+| `--text-banner` | `--font-display` | `600` | `84px` | `84px` | `-0.035em` | Home's title over its picture, on desktop (D120) |
+| `--text-banner-line` | `--font-sans` | `400` | `18px` | `28px` | `0` | The line under Home's title, from tablet on (D120) |
 | `--text-figure` | `--font-display` | `600` | `36px` | `40px` | `-0.02em` | A figure a buyer reads: the KPIs, the figure of a scene of Present, the energy in a status |
 | `--text-figure-touch` | `--font-display` | `600` | `26px` | `32px` | `-0.02em` | The same on phone and tablet |
 | `--text-title` | `--font-display` | `600` | `26px` | `32px` | `-0.02em` | Page and lens titles, Home's title |
@@ -276,10 +279,14 @@ sections. A half step of the utilities (2 px) is for the inside of a control alo
 | `--size-touch` | `44px` | Touch target, the least on phone and tablet, both ways |
 | `--size-sheet-peek` | `84px` | What is seen of the bottom sheet at its lowest stop: the handle and the top of the step |
 | `--size-stage-phone` | `40dvh` | The Studio's stage on phone: 40 % of the height; the sheet at half meets its foot (V2 · 3) |
+| `--size-graph` | `40px` | The square of Home's graph paper from tablet on (D120) |
+| `--size-graph-phone` | `32px` | The same on phone |
+| `--size-graph-fade` | `260px` | How far the graph paper fades in from its top, under the hero's own fade |
 | `--columns-p-values-phone` | `1fr 1fr 1.5fr` | The three exceedance values of the lead tile on phone: the last cell, which carries the sigma too, is wider |
 | `--columns-loss-chain` | `210px 100px 64px 216px minmax(0, 1fr)` | A row of the loss chain on desktop: the label, the field where the step is the user's, the change, the track, the running total |
 | `--columns-loss-chain-tablet` | `220px 112px 72px 190px minmax(0, 1fr)` | The same on tablet |
 | `--columns-loss-chain-phone` | `minmax(0, 1fr) auto auto` | On phone: the field, then the change and the running total at the right; the label over them and the track under them take the width |
+| `--columns-designs` | `72px minmax(0, 2fr) minmax(0, 1.4fr) 104px 120px 160px 32px` | Your designs on desktop (D120): the plan, the design, the place, kWp, MWh a year, Edited, the menu |
 
 Reference widths: 390, 834, 1440.
 
@@ -297,6 +304,8 @@ small ones under them draw marks, not boxes.
 | `--radius-row` | `12px` | List rows, option cards, stat tiles, the track of a segmented control, compact cards |
 | `--radius-card` | `16px` | Cards, the bars and timelines that float, Home's cards |
 | `--radius-panel` | `24px` | Floating panels, the top corners of the bottom sheet |
+| `--radius-cta` | `14px` | The large orange primary: Find the roof, a step's primary (D120) |
+| `--radius-hero` | `20px` | Home's search field over the picture (D120) |
 | `--radius-full` | `9999px` | Pills, switches, round buttons |
 
 ## Lines
