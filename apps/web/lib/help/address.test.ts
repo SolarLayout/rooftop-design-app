@@ -12,8 +12,8 @@ describe("the help in the address", () => {
   });
 
   test("written beside what is there, and taken away", () => {
-    expect(withHelp("https://x.app/studio/strings?edit=roof#a", "studio.section.inverter")).toBe("https://x.app/studio/strings?edit=roof&help=studio.section.inverter#a");
-    expect(withHelp("https://x.app/studio/strings?edit=roof&help=studio.section.inverter", null)).toBe("https://x.app/studio/strings?edit=roof");
+    expect(withHelp("https://x.app/studio/strings?view=plan#a", "studio.section.inverter")).toBe("https://x.app/studio/strings?view=plan&help=studio.section.inverter#a");
+    expect(withHelp("https://x.app/studio/strings?view=plan&help=studio.section.inverter", null)).toBe("https://x.app/studio/strings?view=plan");
     expect(withHelp("https://x.app/find?help=a.section.b", "a.section.c")).toBe("https://x.app/find?help=a.section.c");
   });
 });

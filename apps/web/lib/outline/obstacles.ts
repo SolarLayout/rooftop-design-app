@@ -4,7 +4,7 @@
 // the imagery. Pure functions; the reducer of the outline holds them.
 import { shown } from "../../components/ui/number-entry";
 import type { MapShapeRequest } from "../api";
-import { toLonLat, toMetres, type Frame } from "./frame";
+import { toLonLat, type Frame } from "./frame";
 import { areaOf, edgesOf, type XY } from "../geometry/measure";
 import { rectangleOf, turnedAbout } from "./rectangle";
 
@@ -128,17 +128,5 @@ export function mapShapesOf(obstacles: readonly Obstacle[], frame: Frame): MapSh
     }),
     ...(obstacle.diameter === null ? {} : { diameter: obstacle.diameter }),
     height: obstacle.height,
-  }));
-}
-
-/** The shapes of a roof shown on the map again, as obstacles in the frame, numbered from one. */
-export function obstaclesOfMap(shapes: readonly MapShapeRequest[], frame: Frame): Obstacle[] {
-  return shapes.map((shape, index) => ({
-    id: index + 1,
-    kind: shape.kind ?? "box",
-    name: shape.name ?? "",
-    points: shape.points.map(([lon, lat]) => toMetres(frame, { lon, lat })),
-    diameter: shape.diameter ?? null,
-    height: shape.height,
   }));
 }

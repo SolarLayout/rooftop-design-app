@@ -71,7 +71,6 @@ export type OutlineEvent =
   | { type: "boxTurned"; handle: XY }
   | { type: "turnDropped" }
   | { type: "footprintTaken"; corners: readonly XY[] }
-  | { type: "loaded"; at: LonLat; corners: readonly XY[]; obstacles?: readonly Obstacle[] }
   | { type: "entered"; at: LonLat; corners: readonly XY[] }
   | { type: "shapeDragged"; kind: "box" | "cylinder" | "tree"; from: XY; to: XY }
   | { type: "shapeDropped" }
@@ -346,13 +345,6 @@ export function outlineAfter(state: OutlineState, event: OutlineEvent): OutlineS
     case "footprintTaken":
       if (event.corners.length < FEWEST_CORNERS) return state;
       return stepped(state, { corners: event.corners, closed: true, rectangle: null }, null);
-
-    case "loaded": {
-      if (event.corners.length < FEWEST_CORNERS) return state;
-      const obstacles = event.obstacles ?? [];
-      const drawn: Drawn = { corners: event.corners, closed: true, rectangle: null, obstacles };
-      return { ...START, frame: frameAt(event.at), ...drawn, squared: state.squared, nextId: Math.max(0, ...obstacles.map((obstacle) => obstacle.id)) + 1, history: historyOf(drawn) };
-    }
 
     case "entered": {
       // The roof typed by hand: a closed outline at the place, a step each time it changes. The

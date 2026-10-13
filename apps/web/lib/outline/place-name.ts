@@ -24,8 +24,3 @@ export function placeNameOfBuild(found: Found | null, handAt: { lat: number | nu
   if (handAt && (handAt.lat !== found.lat || handAt.lon !== found.lon)) return "";
   return placeNameOf(found.label);
 }
-
-/** A design's roof edited again: it keeps its name while no place is found; a place found gives the name of the build. */
-export function editedPlaceNameOf(kept: string, found: Found | null, handAt: { lat: number | null; lon: number | null } | null): string {
-  return found === null ? kept : placeNameOfBuild(found, handAt);
-}
