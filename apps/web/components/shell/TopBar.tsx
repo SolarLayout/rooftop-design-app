@@ -52,9 +52,12 @@ export const BAR = classNames(
  */
 export function Present({ className }: { className?: string }) {
   return (
-    <ButtonLink size="m" icon="play" href={PRESENT} className={classNames("hidden tablet:inline-flex", className)}>
-      Present
-    </ButtonLink>
+    // Hidden around it: the link's own look sets its display (components/hidden-looks.test.ts).
+    <span className="hidden tablet:contents">
+      <ButtonLink size="m" icon="play" href={PRESENT} className={className}>
+        Present
+      </ButtonLink>
+    </span>
   );
 }
 
@@ -62,9 +65,11 @@ export function Present({ className }: { className?: string }) {
 export function Docs() {
   const home = useDocsHome();
   return (
-    <ButtonLink kind="quiet" size="m" icon="book" href={home} target="_blank" rel="noreferrer" className="hidden desktop:inline-flex">
-      Docs
-    </ButtonLink>
+    <span className="hidden desktop:contents">
+      <ButtonLink kind="quiet" size="m" icon="book" href={home} target="_blank" rel="noreferrer">
+        Docs
+      </ButtonLink>
+    </span>
   );
 }
 

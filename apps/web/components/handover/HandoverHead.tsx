@@ -62,10 +62,8 @@ export function HandoverHead(props: Props) {
 export function PinnedDownloadAll(props: Props) {
   return (
     <div className={classNames("sticky bottom-0 mt-auto flex items-center justify-end gap-3 border-t border-line-subtle bg-chrome px-page-x-phone py-3", "tablet:px-page-x-tablet desktop:hidden")}>
-      {/* Present on tablet alone: the phone's room is Download all's. */}
-      <span className="hidden tablet:contents">
-        <Present />
-      </span>
+      {/* Present on tablet alone: the phone's room is Download all's (Present hides itself there). */}
+      <Present />
       <DownloadAll {...props} className="w-full tablet:w-auto" />
     </div>
   );

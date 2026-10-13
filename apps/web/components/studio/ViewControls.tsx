@@ -70,9 +70,11 @@ export function ViewControls({ stage, className }: Props) {
       <Imagery />
       {/* The work column hidden on desktop: its way back, beside the view controls (D99). */}
       {isPanelHidden ? (
-        <Button size="s" icon="panel" onClick={() => view.getState().hidePanel(false)} className="hidden desktop:inline-flex">
-          Show panel
-        </Button>
+        <span className="hidden desktop:contents">
+          <Button size="s" icon="panel" onClick={() => view.getState().hidePanel(false)}>
+            Show panel
+          </Button>
+        </span>
       ) : null}
     </div>
   );
