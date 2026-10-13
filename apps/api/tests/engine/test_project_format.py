@@ -131,6 +131,27 @@ def test_a_file_written_before_the_voc_coefficient_opens_without_one(fmt):
     assert not Design(back).coeffs.entered
 
 
+# ── the place's name (D114) ──────────────────────────────────────────────────
+def test_the_places_name_comes_back_from_the_file():
+    project = _light_project()
+    project.place_name = "Pune"
+
+    assert Project.from_json(json.loads(project.to_text())).place_name == "Pune"
+
+
+@pytest.mark.parametrize("fmt", [1, 2])
+def test_a_file_written_before_the_places_name_opens_without_one(fmt):
+    written = json.loads(json.dumps(_light_project().to_json()))
+    del written["place_name"]
+    written["format"] = fmt
+
+    assert Project.from_json(written).place_name == ""
+
+
+def test_the_demo_is_in_pune():
+    assert demo_project().place_name == "Pune"
+
+
 # ── who set the voltage ──────────────────────────────────────────────────────
 @pytest.mark.parametrize("by", ["app", "user"])
 def test_who_set_the_voltage_comes_back_from_the_file(by):
