@@ -99,8 +99,9 @@ describe("who set each field (V2 · 3)", () => {
 
 describe("the facts of each section, on one line (V2 · 3)", () => {
   test("the roof type in its words", () => {
-    expect(roofTypeFactsOf(DEMO)).toBe("Flat, tilted rows · rows facing the equator");
-    expect(roofTypeFactsOf({ ...DEMO, roof_type: "sloped_flush" })).toBe("Sloped, flush · modules follow the roof pitch");
+    expect(roofTypeFactsOf(DEMO)).toBe("Flat, rows facing south");
+    expect(roofTypeFactsOf({ ...DEMO, roof_type: "flat_ew" })).toBe("Flat, rows facing east and west · back to back, low tilt");
+    expect(roofTypeFactsOf({ ...DEMO, roof_type: "sloped_flush" })).toBe("Sloped · modules follow the roof pitch");
   });
 
   test("the edges: the parapet and the setback", () => {
@@ -141,10 +142,12 @@ describe("the groups of Edges and access", () => {
     expect(hints).toEqual({
       parapet_h: "Default · measure it on site",
       setback_m: "Default · usually 0.5 to 1.5 m",
-      walkway_m: "Default",
+      walkway_m: "Default · room to clean and repair the modules",
       walkway_every_modules: "Default · counted in modules along a row",
       obstacle_clearance_m: "Default · kept free on every side",
     });
+    const eastWest = roofGroupsOf({ ...DEMO, roof_type: "flat_ew" }).flatMap((group) => group.fields).find((field) => field.id === "walkway_every_rows");
+    expect(eastWest?.hint).toBe("Default · counted in rows");
     const changed = roofGroupsOf({ ...DEMO, parapet_h: 1.2 }).flatMap((group) => group.fields).find((field) => field.id === "parapet_h");
     expect(changed?.hint).toBe("Yours · default 0.90 m");
   });

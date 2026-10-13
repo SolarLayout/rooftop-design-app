@@ -12,14 +12,14 @@ const run = (change: Partial<DesignResult> = {}) =>
     ...change,
   }) as unknown as DesignResult;
 
-const DOCUMENT = { roof: { roof_type: "flat_tilted" }, t_min_override: null, t_max_override: null, cell_rise_c: null, voc_coefficient_pct: null } as unknown as Project;
+const DOCUMENT = { roof: { roof_type: "flat_tilted", lat: 18.52 }, t_min_override: null, t_max_override: null, cell_rise_c: null, voc_coefficient_pct: null } as unknown as Project;
 
 describe("the sizing temperatures and the Voc coefficient (the board \"Inverter and sizing\"; plan/phase-07-plan.md, decisions 6 and 7)", () => {
   test("every field empty for its default, with the default and where it comes from beside it", () => {
     expect(sizingFieldsOf(DOCUMENT, run()).map(({ id, value, detail }) => ({ id, value, detail }))).toEqual([
       { id: "t_min_override", value: null, detail: "From the weather · 11.9 °C" },
       { id: "t_max_override", value: null, detail: "From the weather · 39.3 °C" },
-      { id: "cell_rise_c", value: null, detail: "Default · 25 °C by roof type: Flat, tilted rows" },
+      { id: "cell_rise_c", value: null, detail: "Default · 25 °C by roof type: Flat, rows facing south" },
       { id: "voc_coefficient_pct", value: null, detail: "Default · −0.164 %/°C, computed from the module file" },
     ]);
   });
@@ -44,9 +44,9 @@ describe("the sizing temperatures and the Voc coefficient (the board \"Inverter 
 
   test("the coefficient said is the one that sizes the strings, the model's, though the PAN states its own (#179, item 15); a sloped roof's cell rise is flush", () => {
     const design = run({ equipment: { coefficients: { mu_voc_pct: -0.286, source: "PAN file" }, module_notes: [] } } as never);
-    const sloped = { ...DOCUMENT, roof: { roof_type: "sloped_flush" } } as Project;
+    const sloped = { ...DOCUMENT, roof: { roof_type: "sloped_flush", lat: 18.52 } } as Project;
     const fields = sizingFieldsOf(sloped, { ...design, sizing: { ...design.sizing, cell_rise_c: 35, voc_coefficient_pct: -0.164, voc_coefficient_from: "one-diode model" } });
-    expect(fields[2]?.detail).toBe("Default · 35 °C by roof type: Sloped, flush");
+    expect(fields[2]?.detail).toBe("Default · 35 °C by roof type: Sloped");
     expect(fields[3]?.detail).toBe("Default · −0.164 %/°C, computed from the module file");
   });
 

@@ -13,7 +13,6 @@ const layout = (last: VitalsView["last"]): VitalsView => ({
   isDimmed: false,
   last,
   cells: [
-    { id: "roof", label: "Roof", quantity: { number: "3,600", unit: "m²" } },
     { id: "positions", label: "Positions", quantity: { number: "790", unit: "modules" } },
   ],
 });

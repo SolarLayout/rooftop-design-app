@@ -3,7 +3,7 @@
 // inspector renders them; a committed value is an edit of the roof.
 import { shown, withUnit, type Range } from "../../components/ui/number-entry";
 import type { Roof } from "../api";
-import { ROOF_TYPES } from "../geometry/roof-types";
+import { ROOF_TYPES, roofTypeNameOf } from "../geometry/roof-types";
 import { roofDefaultOf } from "./defaults";
 import { hintOf, setByOfValue, type SetBy } from "./set-by";
 
@@ -26,7 +26,9 @@ export type RoofField = RoofFieldSpec & {
 const USUAL: Partial<Record<RoofFieldId, string>> = {
   parapet_h: "measure it on site",
   setback_m: "usually 0.5 to 1.5 m",
+  walkway_m: "room to clean and repair the modules",
   walkway_every_modules: "counted in modules along a row",
+  walkway_every_rows: "counted in rows",
   obstacle_clearance_m: "kept free on every side",
 };
 
@@ -83,10 +85,10 @@ export function withRoofField(roof: Roof, id: RoofFieldId, value: number): Roof 
 
 const lower = (words: string) => (/^[A-Z][a-z]/.test(words) ? words[0]?.toLowerCase() + words.slice(1) : words);
 
-/** The roof type in its words: "Flat, tilted rows · rows facing the equator". */
+/** The roof type in its long name, and what it means where the name does not say it: "Sloped · modules follow the roof pitch". */
 export function roofTypeFactsOf(roof: Roof): string {
-  const type = ROOF_TYPES.find((one) => one.id === roof.roof_type);
-  return type ? `${type.name} · ${lower(type.caption)}` : "";
+  const caption = ROOF_TYPES.find((one) => one.id === roof.roof_type)?.caption;
+  return [roofTypeNameOf(roof.roof_type, roof.lat), ...(caption ? [lower(caption)] : [])].join(" · ");
 }
 
 const metres = (id: RoofFieldId, value: number) => withUnit(shown(value, ROOF_FIELDS[id].range.decimals), ROOF_FIELDS[id].unit);

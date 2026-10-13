@@ -1,7 +1,7 @@
 // Find's column (V2 · 4, D98; the board "Find"): its head follows the step, never the tool in hand; the roof type is a
 // question with a default; the obstacles are said in words; Build says the area it builds. Pure; the column draws it.
 import { shown } from "../../components/ui/number-entry";
-import type { RoofType } from "../geometry/roof-types";
+import { roofTypeNameOf, type RoofType } from "../geometry/roof-types";
 import { areaOf, edgesOf } from "../geometry/measure";
 import { WORD_OF_KIND, isRound, type Obstacle } from "./obstacles";
 import { measurementsOf, type OutlineState } from "./outline-state";
@@ -39,11 +39,10 @@ export type RoofTypeChoice = { id: RoofType; name: string; line: string; isDefau
 
 /** The roof type's three choices, the rows facing the equator of the roof's hemisphere; tilted rows the default. */
 export function roofTypeChoicesOf(latitude: number): RoofTypeChoice[] {
-  const equator = latitude >= 0 ? "south" : "north";
   return [
-    { id: "flat_tilted", name: `Flat, rows facing ${equator}`, line: "Tilted rows, the usual for a flat roof", isDefault: true },
-    { id: "flat_ew", name: "Flat, rows facing east and west", line: "Low rows back to back: more modules, less from each", isDefault: false },
-    { id: "sloped_flush", name: "Sloped", line: "Modules follow the roof pitch", isDefault: false },
+    { id: "flat_tilted", name: roofTypeNameOf("flat_tilted", latitude), line: "Tilted rows, the usual for a flat roof", isDefault: true },
+    { id: "flat_ew", name: roofTypeNameOf("flat_ew", latitude), line: "Low rows back to back: more modules, less from each", isDefault: false },
+    { id: "sloped_flush", name: roofTypeNameOf("sloped_flush", latitude), line: "Modules follow the roof pitch", isDefault: false },
   ];
 }
 

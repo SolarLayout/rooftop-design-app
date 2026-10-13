@@ -1,14 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import {
   acCapacity,
-  capacityIfAllWereUsed,
   dcAcRatio,
   dcCapacity,
   energy,
   modulesUsed,
   performanceRatio,
   positions,
-  roofArea,
   said,
   specificYield,
 } from "./vitals";
@@ -46,16 +44,8 @@ describe("the vitals of the demo", () => {
 });
 
 describe("the vitals before a system voltage", () => {
-  test("the roof: whole square metres", () => {
-    expect(roofArea(3600)).toEqual({ number: "3,600", unit: "m²" });
-  });
-
   test("the positions, in modules", () => {
     expect(positions(790)).toEqual({ number: "790", unit: "modules" });
-  });
-
-  test("if all were used: the positions times the power of a module", () => {
-    expect(capacityIfAllWereUsed(790, 560)).toEqual({ number: "442.40", unit: "kWp" });
   });
 });
 

@@ -23,7 +23,7 @@ const METRES = (min: number, max: number): Range => ({ min, max, decimals: 2 });
 const SPEC: Record<ObstacleFieldId, { label: string; unit?: string; range: Range }> = {
   length: { label: "Length", unit: "m", range: METRES(0.1, 500) },
   width: { label: "Width", unit: "m", range: METRES(0.1, 500) },
-  height: { label: "Height", unit: "m", range: METRES(0.05, 200) },
+  height: { label: "Height above the roof", unit: "m", range: METRES(0.05, 200) },
   rotation_deg: { label: "Rotation", unit: "°", range: { min: -180, max: 180, decimals: 0 } },
   x: { label: "East", unit: "m", range: METRES(-5000, 5000) },
   y: { label: "North", unit: "m", range: METRES(-5000, 5000) },

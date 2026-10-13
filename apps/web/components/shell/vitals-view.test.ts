@@ -208,10 +208,7 @@ describe("the run failed", () => {
 
     expect(view.kind).toBe("layout");
     expect(view.isLoading).toBe(false);
-    expect(shownOf(view)).toEqual([
-      ["Roof", "3,600", "m²"],
-      ["Positions", "790", "modules"],
-    ]);
+    expect(shownOf(view)).toEqual([["Positions", "790", "modules"]]);
     expect(view.last).toMatchObject({ kind: "failed", title: "Energy not computed", problem: { title: "Energy not computed", cause: "The server could not be reached." } });
   });
 
@@ -227,16 +224,11 @@ describe("the run failed", () => {
 describe("before a system voltage", () => {
   const waiting = { ...AT_REST, design: WAITS_FOR_THE_VOLTAGE, notes: [] };
 
-  test("the roof and the positions only, and what they would carry", () => {
+  test("the positions only: what the first open counts (the cells nothing read are gone, #238)", () => {
     const view = vitalsOf(waiting);
 
     expect(view.kind).toBe("layout");
-    expect(shownOf(view)).toEqual([
-      ["Roof", "3,600", "m²"],
-      ["Positions", "790", "modules"],
-      ["DC capacity, every position used", "442.40", "kWp"],
-    ]);
-    expect(view.cells.map((cell) => cell.id)).toEqual(["roof", "positions", "if-all-used"]);
+    expect(shownOf(view)).toEqual([["Positions", "790", "modules"]]);
   });
 
   test("no energy, no ratio, no yield: a value that cannot exist yet is absent", () => {

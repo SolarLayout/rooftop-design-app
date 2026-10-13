@@ -51,7 +51,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     title: "Roof type",
     summary: "Choose how the modules sit: rows facing south, rows facing east and west, or flush on a slope.",
     kind: "section",
-    values: [{"id":"flat_tilted","label":"Flat, tilted rows","meaning":"Rows of tilted modules on a flat roof, facing its edge nearest the equator, spaced to keep clear of each other's shade."},{"id":"flat_ew","label":"Flat, east-west","meaning":"Low rows back to back on a flat roof, one face turned east and one west. More modules, less energy from each."},{"id":"sloped_flush","label":"Sloped, flush","meaning":"Modules laid on a pitched roof, at its pitch and facing the way it slopes, with no gap for shade."}],
+    values: [{"id":"flat_tilted","label":"Flat, rows facing south","meaning":"Rows of tilted modules on a flat roof, facing its edge nearest the equator, spaced to keep clear of each other's shade."},{"id":"flat_ew","label":"Flat, rows facing east and west","meaning":"Low rows back to back on a flat roof, one face turned east and one west. More modules, less energy from each."},{"id":"sloped_flush","label":"Sloped","meaning":"Modules laid on a pitched roof, at its pitch and facing the way it slopes, with no gap for shade."}],
     related: ["studio.section.edges-and-access","studio.section.spacing","app.section.obstacles"],
     aliases: [],
     docs: {"page":"roof","section":"Roof type"},

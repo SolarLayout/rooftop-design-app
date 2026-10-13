@@ -95,7 +95,7 @@ describe("no string length fits", () => {
     expect(noStringsFitProblemOf({ voltage: 600, range, fitsAt: 1000 }).primary).toEqual({
       volts: 1000,
       label: "Use 1000 V",
-      line: "Allowed on most commercial roofs. Check the site's code first.",
+      line: "Check first that the site's code allows it.",
     });
   });
 });

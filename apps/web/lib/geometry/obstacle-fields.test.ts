@@ -29,7 +29,7 @@ describe("the fields of an obstacle", () => {
     expect(fieldsOfObstacle(box()).map((field) => [field.id, field.label, field.value, field.unit])).toEqual([
       ["length", "Length", 5, "m"],
       ["width", "Width", 4, "m"],
-      ["height", "Height", 3, "m"],
+      ["height", "Height above the roof", 3, "m"],
       ["rotation_deg", "Rotation", 0, "°"],
       ["x", "East", 22.5, "m"],
       ["y", "North", 18, "m"],
@@ -44,7 +44,7 @@ describe("the fields of an obstacle", () => {
     const fields = fieldsOfObstacle(box({ kind: "tree", diameter: 4, height: 6, trunk_height: 2 }));
     expect(fields.map((field) => [field.id, field.label])).toEqual([
       ["diameter", "Crown diameter"],
-      ["height", "Height"],
+      ["height", "Height above the roof"],
       ["trunk_height", "Crown starts at"],
       ["x", "East"],
       ["y", "North"],

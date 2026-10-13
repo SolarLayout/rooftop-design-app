@@ -4,7 +4,6 @@ import type { XY } from "../geometry/measure";
 import {
   boxOf,
   boxWithCorner,
-  factsOf,
   labelOf,
   mapShapesOf,
   nameOf,
@@ -99,42 +98,6 @@ describe("the words", () => {
     expect(nameOf("cylinder", [box([]), { ...box([]), id: 2, kind: "cylinder" }])).toBe("Tank 2");
     expect(nameOf("wall", [])).toBe("Wall 1");
     expect(nameOf("building", [])).toBe("Building 1");
-  });
-
-  test("the facts of the list: a box by its sides, a tank by its diameter, a wall by its length, a building by its area; the height after", () => {
-    const sides = box([
-      { x: 0, y: 0 },
-      { x: 5, y: 0 },
-      { x: 5, y: 4 },
-      { x: 0, y: 4 },
-    ]);
-    expect(factsOf(sides)).toBe("5.0 × 4.0 · 3.0 m high");
-    expect(factsOf({ ...sides, kind: "cylinder", points: [{ x: 1, y: 1 }], diameter: 2.5, height: 2 })).toBe("⌀ 2.5 · 2.0 m high");
-    expect(
-      factsOf({
-        ...sides,
-        kind: "wall",
-        points: [
-          { x: 0, y: 0 },
-          { x: 10, y: 0 },
-          { x: 10, y: 8 },
-        ],
-        height: 0.8,
-      }),
-    ).toBe("18.0 m · 0.8 m high");
-    expect(
-      factsOf({
-        ...sides,
-        kind: "building",
-        points: [
-          { x: 0, y: 0 },
-          { x: 8, y: 0 },
-          { x: 8, y: 8 },
-          { x: 0, y: 8 },
-        ],
-        height: 8,
-      }),
-    ).toBe("64 m² · 8.0 m high");
   });
 
   test("the label on the map: the name and the height", () => {

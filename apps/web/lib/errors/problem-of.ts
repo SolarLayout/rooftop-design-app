@@ -85,7 +85,7 @@ export function noStringsFitProblemOf<Volts extends number>({ voltage, range, fi
       ],
       details: null,
     },
-    primary: fitsAt === null ? null : { volts: fitsAt, label: `Use ${fitsAt} V`, line: "Allowed on most commercial roofs. Check the site's code first." },
+    primary: fitsAt === null ? null : { volts: fitsAt, label: `Use ${fitsAt} V`, line: "Check first that the site's code allows it." },
   };
 }
 
