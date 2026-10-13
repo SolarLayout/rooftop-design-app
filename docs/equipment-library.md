@@ -3,7 +3,7 @@
 The app carries a library of PVsyst files, so that a user without a PAN or an OND file at hand can choose a module or
 an inverter (D75): Change on the module card or the inverter card opens a picker over it. The files are the ones their
 makers publish, gathered in the owner's two libraries (`solarlayout-pan-repo`, `solarlayout-ond-repo`), and, for a maker
-that publishes no PAN file, module files fitted from its datasheets (D115, below).
+that publishes none, files fitted from its datasheets (modules, D115; inverters, D116; below).
 
 ## Where it lives
 
@@ -64,9 +64,24 @@ WFLW panels (no temperature coefficients in their text) and BiN-08's revision 10
 The specs, the list of datasheets with their URLs, and the script that writes the specs from the datasheets' text are
 in `datasheet-to-pan-ond`, `datasheets/waaree/` (its README says how to rebuild them).
 
+## Inverter files fitted from a datasheet (D116)
+
+The same way, with `ds2panond inverter <spec>.yaml --strict`. Before they are added, every file is read by
+`rooftop_core.catalog` (none refused), and the engine builds options with each on a roof sized to it (about 1.2 DC/AC),
+at 1000 V and at 600 V, beside a maker's own file of the same size. A model the engine cannot size at either voltage
+is left out, and the reason said. `IMaxDC` is the current per MPPT times the MPPTs, as makers' own files give it; the
+MPPT window is the operating range. The tool writes no `VmppNom` yet: the engine then takes the longest string as the
+nominal one, as for the maker files without it.
+
+Waaree (#249, 2026-10-13): 38 on-grid string inverters from its inverter catalogue ("Inverter Vr 01 / Oct 2025"),
+single-phase 0.7 to 6 kW, three-phase 3 to 136 kW, named by phases, rating and family (`3P-50K (30-75 kW)`), as the
+catalogue names models only by rating. Left out: the 350 kW model (no string length under 600 V; 800 V AC output, for
+a plant with its own transformer), and the hybrid inverters.
+
 ## What the library held
 
-On 2026-10-13, after #248: 278 modules from 6 makers (300 to 730 Wp), Waaree's 159 fitted from datasheets.
+On 2026-10-13, after #248 and #249: 278 modules from 6 makers (300 to 730 Wp), Waaree's 159 fitted from datasheets; 426
+inverters from 9 makers, Waaree's 38 fitted from its catalogue.
 
 On 2026-10-06: 119 modules from 5 makers (300 to 650 Wp) and 388 inverters from 8 makers (0.7 to 350 kW), the superseded and the `-old`
 inverter files of the owner's library left out.
