@@ -101,7 +101,7 @@ Approved by the owner on 2026-09-29 (decisions D14, D15, D32 and D35 in `plan/RE
 | V2 · 8 · Performance (approved, D104) | `V2Performance.dc.html`, `V2PerformanceTablet.dc.html`, `V2PerformancePhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
 | V2 · 9 · Handover and Home (approved, D105) | `V2HandoverHome.dc.html`, `V2HandoverHomeTablet.dc.html`, `V2HandoverHomePhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
 | V2 · 10 · Phone and tablet (approved, D106) | `V2Touch.dc.html` (an overview), `V2TouchTablet.dc.html`, `V2TouchPhone.dc.html` | none: the boards are the drawing | desktop overview, tablet, phone |
-| V2 · 11 · Help (approved, D107; the 31 topics in V2 and the touch how-to, for approval) | `V2Help.dc.html`, `V2HelpTablet.dc.html`, `V2HelpPhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
+| V2 · 11 · Help (approved, D107; the 32 topics in V2, the tree added in #238, and the touch how-to) | `V2Help.dc.html`, `V2HelpTablet.dc.html`, `V2HelpPhone.dc.html` | none: the boards are the drawing | desktop, tablet, phone |
 | V2 · 12 · The vocabulary (approved, D108) | `V2Vocabulary.dc.html`, `V2VocabularyTablet.dc.html`, `V2VocabularyPhone.dc.html` | none: the boards are the table | desktop, tablet, phone |
 | V2 · 13 · Present (a proposal: reviewed with today's Present when the build reaches #220) | `V2Present.dc.html`, `V2PresentTablet.dc.html`, `V2PresentPhone.dc.html` | `present_scenes/` (the app's own pictures) | desktop, tablet, phone |
 

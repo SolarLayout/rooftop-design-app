@@ -1241,7 +1241,7 @@ The board "V2 · 3 · The Studio's first open". The column has three weights, in
 1. **The step**: its head (`StepHead`): the instruction in `heading` (`Check the roof`, `Choose the module`, `Check the
    strings`), one line under it in `text-2`; after Build this roof, until the user continues to another step, the
    first-open status in a card of `surface-1` with `line`: a tick and `The array is on the roof` with its modules and kWp,
-   then a turning ring and `Computing the energy · Shading every module over the year. A few seconds.`, then a tick and
+   then a turning ring and `Computing the energy · Shading the modules over the year. A few seconds.`, then a tick and
    `<energy> MWh in year 1 · The energy follows each change you make.` (`first-open.ts`). A run that failed says the first
    line alone: the problem is said where problems are. The primary at the foot.
 2. **The facts**: each section a summary row (`SummaryRow`): its name in `section` with its ?, its facts on one line in

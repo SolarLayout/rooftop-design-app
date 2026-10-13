@@ -52,7 +52,7 @@ GROUPS = [
         ("The inverter's data file", "OND alone · Replace from an OND", "Inverter file (OND)", ""),
         ("The ways the run wires the roof", "Stringings · configurations", "Options (A to E)", ""),
         ("The stringing the user adds", "Custom · Your own, alone", "Your own option", "Add your own option"),
-        ("Modules a string holds", "Series · string length", "Modules a string (in series)", ""),
+        ("Modules a string holds", "Series · string length", "Modules per string (in series)", ""),
         ("DC to AC", "DC/AC alone · sizing ratio", "DC/AC ratio", ""),
     ]),
     ("Results", [

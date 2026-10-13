@@ -76,7 +76,7 @@
 | State | What the user sees |
 |---|---|
 | Empty | What goes here and the one action that fills it |
-| Loading or computing | Skeleton for layout; progress ring and the engine's step name for a run ("Computing hourly shading for every module") |
+| Loading or computing | Skeleton for layout; progress ring and the engine's step name for a run ("Computing the hourly shading of the modules") |
 | Updating | Old values, dimmed slightly, ring beside the number |
 | Waiting for a decision | Decision card; vitals say what is waiting |
 | Note | Exclamation mark, reason, and where to fix it |
