@@ -1,7 +1,8 @@
 // The Rooftop docs, as the app links to them (issue 193, D91): their address, which follows the app's, and their pages and
 // sections, so that a help topic names a place the docs have. The pages and their sections are those of
-// solarlayout_desktop_docs content/rooftop as rewritten for V2 (2026-10-13, #238 item 24); a page or a heading renamed
-// there is renamed here.
+// solarlayout_desktop_docs content/rooftop as rewritten for V2, in its sidebar's folders (2026-10-13): a page's address
+// holds its folder ("roof/find"), a folder's own page is the folder ("roof"), so a help link never goes through a redirect.
+// A page moved or a heading renamed there is changed here in the same release.
 
 /** Where a help topic is told more about: a page of the docs, by its address, and one of its sections, by its heading. */
 export type DocsPlace = { page: string; section: string };
@@ -28,13 +29,13 @@ export const docsLinkOf = (home: string, place: DocsPlace): string => `${home}/$
 
 /** The pages of the docs, by address: each one's title and the headings of its sections. */
 export const DOCS_PAGES: Readonly<Record<string, { title: string; sections: readonly string[] }>> = {
-  intro: { title: "What SolarLayout Rooftop does", sections: ["From a roof to a design", "What you need"] },
-  "getting-started": {
+  "start/intro": { title: "What SolarLayout Rooftop does", sections: ["From a roof to a design", "What you need"] },
+  "start/getting-started": {
     title: "Getting started",
     sections: ["Open Rooftop", "Add it to the home screen", "Try the demo", "Where your designs are kept", "What the browser needs"],
   },
-  "first-design": { title: "Your first rooftop design", sections: [] },
-  steps: {
+  "start/first-design": { title: "Your first rooftop design", sections: [] },
+  "start/steps": {
     title: "The five steps",
     sections: [
       "The steps and their marks",
@@ -47,7 +48,7 @@ export const DOCS_PAGES: Readonly<Record<string, { title: string; sections: read
       "Saving",
     ],
   },
-  find: {
+  "roof/find": {
     title: "Find the roof",
     sections: [
       "Find the building",
@@ -65,11 +66,11 @@ export const DOCS_PAGES: Readonly<Record<string, { title: string; sections: read
     title: "Roof",
     sections: ["Check the roof", "Outline", "Roof type", "Edges and access", "Obstacles", "When something goes wrong"],
   },
-  array: {
+  "steps/array": {
     title: "Array",
     sections: ["Module", "Mounting", "Spacing", "Shade-free hours", "Design day", "How the layout is placed", "When something goes wrong"],
   },
-  sun: {
+  "steps/sun": {
     title: "The Sun view",
     sections: [
       "Turn on the Sun view",
@@ -81,7 +82,7 @@ export const DOCS_PAGES: Readonly<Record<string, { title: string; sections: read
       "How shading is worked out",
     ],
   },
-  strings: {
+  "steps/strings": {
     title: "Strings",
     sections: [
       "Options",
@@ -95,7 +96,7 @@ export const DOCS_PAGES: Readonly<Record<string, { title: string; sections: read
       "When no string length fits",
     ],
   },
-  performance: {
+  "steps/performance": {
     title: "Performance",
     sections: [
       "How a run starts",
@@ -110,7 +111,7 @@ export const DOCS_PAGES: Readonly<Record<string, { title: string; sections: read
       "When something goes wrong",
     ],
   },
-  handover: {
+  "steps/handover": {
     title: "Handover",
     sections: [
       "The files",
@@ -126,16 +127,16 @@ export const DOCS_PAGES: Readonly<Record<string, { title: string; sections: read
       "When a file is not made",
     ],
   },
-  present: {
+  "show/present": {
     title: "Present",
     sections: ["Start the tour", "The six scenes", "The controls", "Leave the tour", "Reduced motion", "When 3D cannot be drawn"],
   },
-  projects: {
+  "show/projects": {
     title: "Your designs and the project file",
     sections: ["Home", "On this device", "A design's menu", "Open a project file", "When a file will not open"],
   },
   reference: { title: "Reference", sections: ["Equipment files", "Other files Rooftop opens", "Limits", "Glossary"] },
-  troubleshooting: {
+  "reference/troubleshooting": {
     title: "Troubleshooting",
     sections: [
       "Anywhere in the app",
@@ -147,7 +148,7 @@ export const DOCS_PAGES: Readonly<Record<string, { title: string; sections: read
       "Handover and Present",
     ],
   },
-  support: { title: "Getting help", sections: ["The help in the app", "These pages", "Contacting SolarLayout"] },
+  "reference/support": { title: "Getting help", sections: ["The help in the app", "These pages", "Contacting SolarLayout"] },
 };
 
 /** What is wrong with *place*, in words: a page the docs do not have, or a section its page does not have. */
