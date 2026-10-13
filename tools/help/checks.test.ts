@@ -74,7 +74,7 @@ describe("options", () => {
 describe("the place in the docs (issue 193, D91)", () => {
   test("every topic names a page of the docs and one of its sections", () => {
     const topics = [
-      topic("studio.section.design-day", { docs: { page: "sun", section: "The day" } }),
+      topic("studio.section.design-day", { docs: { page: "array", section: "Design day" } }),
       topic("studio.section.none"),
       topic("studio.section.moon", { docs: { page: "moon", section: "Craters" } }),
       topic("studio.section.lost", { docs: { page: "sun", section: "Moonlight" } }),
@@ -82,7 +82,7 @@ describe("the place in the docs (issue 193, D91)", () => {
     expect(badDocsPlaces(topics)).toEqual([
       "studio/section/none.mdx: names no place in the docs; give docs, its page and section",
       'studio/section/moon.mdx: docs: "moon" is no page of the docs',
-      'studio/section/lost.mdx: docs: "Moonlight" is no section of The Sun lens',
+      'studio/section/lost.mdx: docs: "Moonlight" is no section of The Sun view',
     ]);
   });
 });

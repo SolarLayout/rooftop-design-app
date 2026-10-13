@@ -23,25 +23,25 @@ describe("a section of a docs page", () => {
   });
 
   test("the link is the page at its section", () => {
-    expect(docsLinkOf("https://solarlayout.app/docs/rooftop", { page: "sun", section: "Shading over the year" })).toBe(
-      "https://solarlayout.app/docs/rooftop/sun#shading-over-the-year",
+    expect(docsLinkOf("https://solarlayout.app/docs/rooftop", { page: "sun", section: "Shade over the year" })).toBe(
+      "https://solarlayout.app/docs/rooftop/sun#shade-over-the-year",
     );
   });
 
   test("a place is a page the docs have and one of its sections; otherwise it says what is wrong", () => {
-    expect(DOCS_PAGES.sun?.title).toBe("The Sun lens");
+    expect(DOCS_PAGES.sun?.title).toBe("The Sun view");
     expect(problemsOfPlace({ page: "sun", section: "On the roof" })).toEqual([]);
     expect(problemsOfPlace({ page: "moon", section: "On the roof" })).toEqual(['"moon" is no page of the docs']);
-    expect(problemsOfPlace({ page: "sun", section: "Moonlight" })).toEqual(['"Moonlight" is no section of The Sun lens']);
+    expect(problemsOfPlace({ page: "sun", section: "Moonlight" })).toEqual(['"Moonlight" is no section of The Sun view']);
   });
 });
 
 describe("In the docs, the help sheet's last row (the board \"UI fixes · The docs from the app\")", () => {
   test("the page's title, the section under it, and the link to the section", () => {
-    expect(inTheDocsOf({ page: "sun", section: "Shading over the year" }, "https://staging.solarlayout.app/docs/rooftop")).toEqual({
-      title: "The Sun lens",
-      section: "Shading over the year",
-      href: "https://staging.solarlayout.app/docs/rooftop/sun#shading-over-the-year",
+    expect(inTheDocsOf({ page: "sun", section: "Shade over the year" }, "https://staging.solarlayout.app/docs/rooftop")).toEqual({
+      title: "The Sun view",
+      section: "Shade over the year",
+      href: "https://staging.solarlayout.app/docs/rooftop/sun#shade-over-the-year",
     });
   });
 
