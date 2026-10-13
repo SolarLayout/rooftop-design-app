@@ -261,8 +261,7 @@ chevron, a disclosure whose text is in mono on `well`, for what only a developer
 consequence, in one sentence with the agent named; no word of the machine (HTTP, status, JSON, key, engine, request) in
 the first two lines. It has one place: a problem of the result in the result chip's card; of a step at the head of that
 step's column (the stale result: `Energy not updated`, with the change that waits; no string length fits: with a button
-for each remedy and the likeliest, `Use 1000 V`, as the step's primary with `Allowed on most commercial roofs. Check the
-site's code first.`); of a refused file in its dialog until the file changes (`This file cannot be used`, the API's words);
+for each remedy and the likeliest, `Use 1000 V`, as the step's primary with `Check first that the site's code allows it.`); of a refused file in its dialog until the file changes (`This file cannot be used`, the API's words);
 of something done for the user, a toast with Undo. In code: `Problem` (`components/ui/Problem.tsx`), the words from
 `problemOfFailure`, `noStringsFitProblemOf`, `problemOfFile` (`lib/errors/problem-of.ts`).
 
