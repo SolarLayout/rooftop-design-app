@@ -44,7 +44,9 @@ type Props = {
 // and a file is pushed over it. Only one of the two stands on touch.
 const PAGE = "flex grow flex-col desktop:px-page-x-desktop desktop:pt-8 desktop:pb-page-y";
 const COLUMNS = "flex min-h-0 grow flex-col desktop:flex-row desktop:items-start desktop:gap-10";
-const LIST = classNames("flex-col gap-4 px-2 pt-6 pb-6 tablet:px-2", "desktop:w-handover-list desktop:shrink-0 desktop:px-0 desktop:pt-6 desktop:-ml-3");
+// On desktop the letters of the list's first heading start at the preview card's top edge (the owner, 2026-10-13): the
+// list starts 4 higher than the card, the half-leading of the heading's line.
+const LIST = classNames("flex-col gap-4 px-2 pt-6 pb-6 tablet:px-2", "desktop:w-handover-list desktop:shrink-0 desktop:px-0 desktop:pt-5 desktop:-ml-3");
 const PREVIEW = classNames(
   "min-w-0 grow flex-col gap-4 px-page-x-phone pt-2 pb-6 tablet:px-page-x-tablet",
   "desktop:mt-6 desktop:rounded-card desktop:border desktop:border-line desktop:bg-surface-1 desktop:p-6",

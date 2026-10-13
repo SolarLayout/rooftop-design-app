@@ -79,12 +79,12 @@ type FiguresProps = {
 
 const TILE = "flex min-w-0 flex-col gap-1.5 rounded-row border border-line bg-surface-1 p-4";
 
-/** The three figures (V2 · 8): tiles on desktop and tablet, a list on phone, each with its few words. */
+/** The four figures (V2 · 8): tiles on desktop and tablet (two by two), a list on phone, each with its few words. */
 export function Figures({ figures, isDimmed }: FiguresProps) {
   const dim = isDimmed && "opacity-updating";
   return (
     <div data-testid="figures">
-      <ul className="hidden tablet:grid tablet:grid-cols-3 tablet:gap-grid">
+      <ul className="hidden tablet:grid tablet:grid-cols-2 tablet:gap-grid desktop:grid-cols-4">
         {figures.map((figure) => (
           <li key={figure.id} data-testid={`kpi-${figure.id}`} className={TILE}>
             <span className={LABEL}>{figure.label}</span>
@@ -117,8 +117,8 @@ export function Figures({ figures, isDimmed }: FiguresProps) {
 /** In the place of the figures at the first load: skeletons, never for a value that was there. */
 export function FigureSkeletons() {
   return (
-    <div className="flex flex-col gap-3 tablet:grid tablet:grid-cols-3 tablet:gap-grid">
-      {[0, 1, 2].map((index) => (
+    <div className="flex flex-col gap-3 tablet:grid tablet:grid-cols-2 tablet:gap-grid desktop:grid-cols-4">
+      {[0, 1, 2, 3].map((index) => (
         <div key={index} className={classNames(TILE, "gap-2.5")}>
           <Skeleton kind="label" className="w-25" />
           <Skeleton kind="value" className="w-27" />

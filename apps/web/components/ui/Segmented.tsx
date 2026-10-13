@@ -32,15 +32,20 @@ type Props<T extends string> = {
   fill?: boolean;
   /** The control is shown and cannot be used: dim, and neither pointer nor key takes a choice. */
   disabled?: boolean;
+  /** The whole control the height of a button beside it (the stage's view controls): 32 on desktop, 44 on touch. */
+  compact?: boolean;
   className?: string;
 };
 
 const TRACK = "gap-0.5 rounded-row border border-line bg-well p-1 shadow-well";
+// Compact: a padding of 2 and the line, so that the control is as high as a button: segments of 38 (26 on desktop).
+const COMPACT_TRACK = "gap-0.5 rounded-control border border-line bg-well p-0.5 shadow-well";
+const COMPACT_ITEM = "h-9.5 px-3 desktop:h-6.5";
+const ITEM_HEIGHT = "h-touch px-3.5 desktop:h-8";
 
 const ITEM = classNames(
-  "inline-flex h-touch cursor-pointer items-center justify-center gap-1.5 rounded-control px-3.5 whitespace-nowrap select-none",
+  "inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-control whitespace-nowrap select-none",
   "type-body-touch desktop:type-body press-motion focus-ring",
-  "desktop:h-8 type-body-touch desktop:type-body",
   "disabled:cursor-default disabled:opacity-disabled",
 );
 // The weight is said again for desktop: the type style of desktop, which comes later, sets one too.
@@ -48,7 +53,7 @@ const TAKEN = "bg-control-active font-medium text-text shadow-segment desktop:fo
 const NOT_TAKEN = "bg-transparent text-text-2 hovered:text-text";
 
 /** Two to four choices with short names, of which one is taken. */
-export function Segmented<T extends string>({ label, options, value, onChange, fill = false, disabled = false, className }: Props<T>) {
+export function Segmented<T extends string>({ label, options, value, onChange, fill = false, disabled = false, compact = false, className }: Props<T>) {
   const group = useRef<HTMLDivElement>(null);
   // The keyboard stops at the choice that is taken; where none is, at the first.
   const stopAt = value ?? options[0]?.value;
@@ -73,7 +78,7 @@ export function Segmented<T extends string>({ label, options, value, onChange, f
       aria-label={label}
       aria-disabled={disabled || undefined}
       onKeyDown={onKeyDown}
-      className={classNames(fill ? "grid auto-cols-fr grid-flow-col" : "inline-flex", TRACK, disabled && "opacity-disabled", className)}
+      className={classNames(fill ? "grid auto-cols-fr grid-flow-col" : "inline-flex", compact ? COMPACT_TRACK : TRACK, disabled && "opacity-disabled", className)}
     >
       {options.map((option) => (
         <button
@@ -88,7 +93,7 @@ export function Segmented<T extends string>({ label, options, value, onChange, f
           onClick={() => {
             if (!disabled) onChange(option.value);
           }}
-          className={classNames(ITEM, option.value === value ? TAKEN : NOT_TAKEN)}
+          className={classNames(ITEM, compact ? COMPACT_ITEM : ITEM_HEIGHT, option.value === value ? TAKEN : NOT_TAKEN)}
         >
           {option.label}
           {option.mark ? <StatusMark kind={option.mark.kind} label={option.mark.label} wordsShown={false} size={14} /> : null}

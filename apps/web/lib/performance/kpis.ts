@@ -1,12 +1,12 @@
-// The lead and the three figures of Performance (V2 · 8, D104; audit V2-88, V2-89): the energy to the grid in year 1 with
+// The lead and the four figures of Performance (V2 · 8, D104; audit V2-88, V2-89): the energy to the grid in year 1 with
 // Likely (the P50) and Conservative (the highest level the document asks for, and what it means in years), then System
-// size, Yield and Performance ratio, each with a few words. Every figure the chosen option's, formatted by the
+// size, Yield, Performance ratio and the DC/AC ratio (the owner, 2026-10-13: an important KPI), each with a few words. Every figure the chosen option's, formatted by the
 // guidelines. Pure.
 import type { DesignOption } from "../api";
-import { acCapacity, dcCapacity, energy, performanceRatio, specificYield } from "../format/vitals";
+import { acCapacity, dcAcRatio, dcCapacity, energy, performanceRatio, specificYield } from "../format/vitals";
 import type { Quantity } from "../format/vitals";
 
-export type FigureId = "size" | "yield" | "pr";
+export type FigureId = "size" | "yield" | "pr" | "dcac";
 
 export type Figure = { id: FigureId; label: string; quantity: Quantity; words: string };
 
@@ -25,6 +25,17 @@ export type KpisView = { lead: Lead; figures: Figure[] };
 
 const LIKELY_LEVEL = 50;
 
+/** The engine's target of the DC/AC ratio (rooftop_core/stringing.py, DCAC_TARGET), as the options are made to it. */
+export const DCAC_TARGET = [1.1, 1.3] as const;
+const TARGET_WORDS = `${dcAcRatio(DCAC_TARGET[0]).number} to ${dcAcRatio(DCAC_TARGET[1]).number}`;
+
+/** Where the DC/AC ratio stands against the target, in a few words. */
+function againstTheTarget(dcac: number): string {
+  if (dcac < DCAC_TARGET[0]) return `Under the target, ${TARGET_WORDS}`;
+  if (dcac > DCAC_TARGET[1]) return `Over the target, ${TARGET_WORDS}`;
+  return `Within the target, ${TARGET_WORDS}`;
+}
+
 const said = ({ number, unit }: Quantity) => (unit ? `${number} ${unit}` : number);
 
 const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
@@ -35,7 +46,7 @@ export function yearsInOf(level: number): string {
   return `${level / common} years in ${100 / common} at least`;
 }
 
-export function kpisOf({ energy: figures, dc_kwp }: DesignOption): KpisView {
+export function kpisOf({ energy: figures, dc_kwp, dcac }: DesignOption): KpisView {
   const highest = figures.p_values.filter(({ level }) => level > LIKELY_LEVEL).at(-1) ?? null;
   return {
     lead: {
@@ -48,6 +59,7 @@ export function kpisOf({ energy: figures, dc_kwp }: DesignOption): KpisView {
       { id: "size", label: "System size", quantity: dcCapacity(dc_kwp), words: `${said(acCapacity(figures.ac_kw))} of inverter` },
       { id: "yield", label: "Yield", quantity: specificYield(figures.specific_yield), words: "A year, for each kWp" },
       { id: "pr", label: "Performance ratio (PR)", quantity: performanceRatio(figures.pr), words: "Of its rated output, in this sunlight" },
+      { id: "dcac", label: "DC/AC ratio", quantity: dcAcRatio(dcac), words: againstTheTarget(dcac) },
     ],
   };
 }
