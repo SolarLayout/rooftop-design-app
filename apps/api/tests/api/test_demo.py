@@ -10,6 +10,7 @@ from rooftop_core.resources import sample_path
 def test_the_demo_is_the_pune_roof_at_1500_v(demo):
     assert demo["format"] == 2
     assert demo["name"] == "Pune demo roof"
+    assert demo["place_name"] == "Pune"
     assert demo["system_voltage"] == 1500
     assert (demo["roof"]["lat"], demo["roof"]["lon"]) == (18.52, 73.86)
     assert demo["roof"]["outline"] == [[90.0, 0.0], [90.0, 40.0], [0.0, 40.0], [0.0, 0.0]]

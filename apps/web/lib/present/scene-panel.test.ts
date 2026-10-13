@@ -6,7 +6,7 @@ import { sceneFactsOf, scenePanelOf, type SceneFacts } from "./scene-panel";
 // The energy counts up in the place of its final value; nothing else counts (V2-96). The demo's facts.
 
 const DEMO: SceneFacts = {
-  roof: { areaM2: 3600, lat: 18.52, lon: 73.86, obstacles: 6 },
+  roof: { areaM2: 3600, lat: 18.52, lon: 73.86, obstacles: 6, placeName: "Pune" },
   layout: { positions: 790, rows: 6 },
   sun: { dayOfYear: 355, hour: 10.5, elevationDeg: 42.6 },
   option: { dcKwp: 357.28, strings: 22, series: 29, energyMwh: 617.84 },
@@ -17,7 +17,7 @@ describe("the panel of each scene", () => {
     const panels = (["satellite", "rising", "filling", "day", "strings", "energy"] as const).map((scene) => scenePanelOf(scene, 1, DEMO));
 
     expect(panels).toEqual([
-      { name: "The place", figure: "18.52° N · 73.86° E", label: "Latitude · longitude" },
+      { name: "The place", figure: "Pune", label: "18.52° N · 73.86° E" },
       { name: "The roof", figure: "3,600 m²", label: "Roof area · 6 obstacles" },
       { name: "The array", figure: "790", label: "Module positions · 6 rows" },
       { name: "The sun · 21 December", figure: "10:30", label: "Solar time · sun 42.6° high" },
@@ -49,8 +49,12 @@ describe("the panel of each scene", () => {
     expect(scenePanelOf("rising", 1, { ...DEMO, roof: { ...DEMO.roof, obstacles: 0 } })?.label).toBe("Roof area");
   });
 
+  test("a place whose name the design does not keep: its coordinates are the figure (D114)", () => {
+    expect(scenePanelOf("satellite", 1, { ...DEMO, roof: { ...DEMO.roof, placeName: "" } })).toEqual({ name: "The place", figure: "18.52° N · 73.86° E", label: "Latitude · longitude" });
+  });
+
   test("the place south and west; the sun below the horizon says the time alone", () => {
-    expect(scenePanelOf("satellite", 1, { ...DEMO, roof: { ...DEMO.roof, lat: -33.87, lon: -70.65 } })?.figure).toBe("33.87° S · 70.65° W");
+    expect(scenePanelOf("satellite", 1, { ...DEMO, roof: { ...DEMO.roof, lat: -33.87, lon: -70.65 } })?.label).toBe("33.87° S · 70.65° W");
     expect(scenePanelOf("day", 1, { ...DEMO, sun: { dayOfYear: 355, hour: 5, elevationDeg: null } })?.label).toBe("Solar time");
   });
 
@@ -62,7 +66,7 @@ describe("the panel of each scene", () => {
 
 describe("the facts of the panels, from the stores", () => {
   const roof = { lat: 18.52, lon: 73.86, outline: [[-45, -20], [45, -20], [45, 20], [-45, 20]], obstacles: [{}, {}, {}, {}, {}, {}] };
-  const project = { roof } as unknown as Project;
+  const project = { roof, place_name: "Pune" } as unknown as Project;
   const layout = { readouts: { positions: 790, rows: 6 } } as unknown as LayoutResponse;
   // Option A of the demo, with what the panels read of it alone (a fixture of its own: Present's tests stay in its group).
   const option = { dc_kwp: 357.28, n_strings: 22, n_series: 29, energy: { energy_mwh: 617.84 } } as unknown as DesignOption;

@@ -19,7 +19,8 @@ export type ScenePanel = {
 
 /** What the panels say of the design: plain numbers, gathered from the stores by who shows them. */
 export type SceneFacts = {
-  roof: { areaM2: number; lat: number; lon: number; obstacles: number };
+  /** The place's name as the design keeps it; empty where it does not (D114). */
+  roof: { areaM2: number; lat: number; lon: number; obstacles: number; placeName: string };
   layout: { positions: number; rows: number } | null;
   /** The sun's height is null while it is below the horizon. */
   sun: { dayOfYear: number; hour: number; elevationDeg: number | null } | null;
@@ -40,7 +41,7 @@ type Stores = {
 export function sceneFactsOf({ project, layout, sunDay, hour, sun, option }: Stores): SceneFacts {
   const { roof } = project;
   return {
-    roof: { areaM2: areaOf(roof.outline.map(([x, y]) => ({ x, y }))), lat: roof.lat, lon: roof.lon, obstacles: roof.obstacles.length },
+    roof: { areaM2: areaOf(roof.outline.map(([x, y]) => ({ x, y }))), lat: roof.lat, lon: roof.lon, obstacles: roof.obstacles.length, placeName: project.place_name },
     layout: layout ? { positions: layout.readouts.positions, rows: layout.readouts.rows } : null,
     sun: sunDay ? { dayOfYear: sunDay.dayOfYear, hour, elevationDeg: sun !== null && sun.elevationDeg > 0 ? sun.elevationDeg : null } : null,
     option: option ? { dcKwp: option.dc_kwp, strings: option.n_strings, series: option.n_series, energyMwh: option.energy.energy_mwh } : null,
@@ -54,8 +55,10 @@ const degrees = (value: number, positive: string, negative: string) => `${shown(
 export function scenePanelOf(scene: SceneId, figures: number, facts: SceneFacts): ScenePanel | null {
   const { roof, layout, sun, option } = facts;
   switch (scene) {
-    case "satellite":
-      return { name: "The place", figure: `${degrees(roof.lat, "N", "S")} · ${degrees(roof.lon, "E", "W")}`, label: "Latitude · longitude" };
+    case "satellite": {
+      const where = `${degrees(roof.lat, "N", "S")} · ${degrees(roof.lon, "E", "W")}`;
+      return roof.placeName ? { name: "The place", figure: roof.placeName, label: where } : { name: "The place", figure: where, label: "Latitude · longitude" };
+    }
     case "rising":
       return { name: "The roof", figure: `${shown(roof.areaM2, 0)} m²`, label: roof.obstacles === 0 ? "Roof area" : `Roof area · ${counted(roof.obstacles, "obstacle")}` };
     case "filling":

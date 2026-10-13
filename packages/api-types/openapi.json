@@ -2630,6 +2630,13 @@
             "title": "Pan Text",
             "type": "string"
           },
+          "place_name": {
+            "default": "",
+            "description": "The name of the roof's place, as found on Find; empty: not known (D114)",
+            "maxLength": 200,
+            "title": "Place Name",
+            "type": "string"
+          },
           "roof": {
             "$ref": "#/components/schemas/Roof"
           },

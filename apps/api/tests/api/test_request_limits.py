@@ -18,9 +18,11 @@ def text_of(total: int, line: str) -> str:
 
 
 def largest(project: dict) -> dict:
-    """The project with the largest CSV weather, module and inverter files the API takes, and its weather."""
+    """The project with the longest names and the largest CSV, module and inverter files the API takes."""
     pan, ond = project["pan_text"], project["ond_text"]
     project.update(
+        name="n" * schemas.MAX_NAME,
+        place_name="p" * schemas.MAX_NAME,
         weather_source="csv",
         weather_csv="a-year.csv",
         weather_csv_text=text_of(schemas.MAX_CSV_TEXT, CSV_ROW),

@@ -6,7 +6,7 @@ from pydantic import Field, PositiveInt
 
 from rooftop_api.schemas.array import ArraySpec
 from rooftop_api.schemas.common import Compass, Input
-from rooftop_api.schemas.limits import MAX_CSV_TEXT, MAX_EQUIPMENT_TEXT
+from rooftop_api.schemas.limits import MAX_CSV_TEXT, MAX_EQUIPMENT_TEXT, MAX_NAME
 from rooftop_api.schemas.losses import Losses
 from rooftop_api.schemas.roof import Roof
 from rooftop_api.schemas.weather import Weather, WeatherSource
@@ -62,7 +62,14 @@ class Project(Input):
     """
 
     format: Literal[1, 2] = 2
-    name: Annotated[str, Field(max_length=200)] = "Untitled roof"
+    name: Annotated[str, Field(max_length=MAX_NAME)] = "Untitled roof"
+    place_name: Annotated[
+        str,
+        Field(
+            max_length=MAX_NAME,
+            description="The name of the roof's place, as found on Find; empty: not known (D114)",
+        ),
+    ] = ""
     roof: Roof
     array: ArraySpec = ArraySpec()
     losses: Losses = Losses()

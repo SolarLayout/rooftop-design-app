@@ -33,6 +33,7 @@ READABLE_FORMATS = (1, 2)
 @dataclass
 class Project:
     name: str = "Untitled roof"
+    place_name: str = ""                     # the place's name, as found on Find; empty: not known (D114)
     roof: Roof = field(default_factory=lambda: Roof(outline=[(0, 0), (30, 0), (30, 20), (0, 20)], lat=18.52, lon=73.86))
     array: ArraySpec = field(default_factory=ArraySpec)
     losses: Losses = field(default_factory=Losses)

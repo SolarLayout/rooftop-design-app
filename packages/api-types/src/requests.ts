@@ -1593,6 +1593,12 @@ export interface components {
              * @default
              */
             pan_text?: string;
+            /**
+             * Place Name
+             * @description The name of the roof's place, as found on Find; empty: not known (D114)
+             * @default
+             */
+            place_name?: string;
             roof: components["schemas"]["Roof"];
             /**
              * @default {
