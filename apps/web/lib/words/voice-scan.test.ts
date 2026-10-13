@@ -13,6 +13,12 @@ describe("what the voice finds (V2 · 12, D108)", () => {
     expect(findingsOf("1 inverter(s)").map((one) => one.why)).toEqual(['no "(s)": say the count']);
   });
 
+  test("no \"every\": the owner's word (2026-10-13); the field Walkway every keeps its label", () => {
+    expect(findingsOf("Every position used")).toEqual([{ said: "Every position used", why: 'no "every": say "each", "all" or the number' }]);
+    expect(findingsOf("Walkway every")).toEqual([]);
+    expect(findingsOf("A walkway every 24 modules")).toEqual([{ said: "A walkway every 24 modules", why: 'no "every": say "each", "all" or the number' }]);
+  });
+
   test("what is right says nothing", () => {
     expect(findingsOf("Enter the roof by hand")).toEqual([]);
     expect(findingsOf("Showing the last result")).toEqual([]);

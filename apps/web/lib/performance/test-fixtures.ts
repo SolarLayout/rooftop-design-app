@@ -193,7 +193,7 @@ const option = ({ mwh, ...figures }: Figures): DesignOption =>
 /** The 14 rows of the engine's summary for option A, word for word. */
 export const SUMMARY = [
   { label: "Site", value: "18.52000° N, 73.86000° E" },
-  { label: "Roof", value: "Flat · tilted rows · 3,600 m² · usable 3,184 m²" },
+  { label: "Roof", value: "Flat, rows facing south · 3,600 m² · usable 3,184 m²" },
   { label: "Structure", value: "Fixed tilt 15°, 2P, lower edge 0.5 m" },
   { label: "Module", value: "INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560 · 560 Wp" },
   { label: "Inverter", value: "WattPower Systems Pvt.Ltd WP-330KTL-H1 · 275 kW · 6 MPPT" },

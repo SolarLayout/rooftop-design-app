@@ -3,7 +3,7 @@ import type { DesignResult } from "../api";
 import { pageViewOf } from "./page-view";
 import { A, B, BEFORE_A_VOLTAGE, DEMO, READOUTS } from "./test-fixtures";
 
-const SHADING = { type: "progress", step: "Computing hourly shading for every module", fraction: 0.4 } as const;
+const SHADING = { type: "progress", step: "Computing the hourly shading of the modules", fraction: 0.4 } as const;
 const FITTING = { type: "progress", step: "Fitting modules on the roof", fraction: 0.08 } as const;
 const NO_WEATHER = { code: "weather_not_loaded", message: "This project has no weather for 18.5200, 73.8600 yet. Load the PVGIS TMY weather first." };
 
@@ -39,7 +39,7 @@ describe("the design (plan/phase-08-plan.md, decision 15)", () => {
     if (view.kind !== "design") throw new Error(view.kind);
     expect(view.values.kpis.lead.quantity.number).toBe("617.8");
     expect(view.isDimmed).toBe(true);
-    expect(view.run).toEqual({ title: "Updating energy", step: "Computing hourly shading for every module", share: 0.4 });
+    expect(view.run).toEqual({ title: "Updating energy", step: "Computing the hourly shading of the modules", share: 0.4 });
   });
 
   test("during the pause before the run as well, without a step", () => {

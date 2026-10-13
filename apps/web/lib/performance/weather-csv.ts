@@ -7,7 +7,7 @@ import type { WeatherSummary } from "../api";
 
 export const CSV_WORDS = {
   title: "Load weather from a CSV",
-  sentence: "A year of values, every hour or more often, times in UTC. Columns: the time and the global irradiance, then beam, diffuse, air temperature and wind if you have them. The app averages rows of less than an hour into hours.",
+  sentence: "A year of values, hourly or more often, times in UTC. Columns: the time and the global irradiance, then beam, diffuse, air temperature and wind if you have them. The app averages rows of less than an hour into hours.",
   drop: "Drop the weather file here",
   detail: "A CSV of a year's weather, 3 MB at most",
   whenOver: "Let go to read the file",
@@ -22,7 +22,7 @@ export const CSV_WORDS = {
 export const MAX_CSV_BYTES = 3_000_000;
 
 /** The dialog's own words for a file over MAX_CSV_BYTES: no request is made for it. */
-export const CSV_TOO_LARGE = "The file is over 3 MB. A year of weather is under 3 MB, even every 15 minutes. Choose a file of one year.";
+export const CSV_TOO_LARGE = "The file is over 3 MB. A year of weather is under 3 MB, even at 15-minute steps. Choose a file of one year.";
 
 /** Whether the file is small enough to send: its size in bytes, which is at least its count of characters. */
 export function csvFits(file: Pick<File, "size">): boolean {

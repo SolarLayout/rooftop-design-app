@@ -6,7 +6,7 @@ import { classNames } from "@/components/ui/class-names";
 export const PAGES = [
   { path: "/kit", heading: "Controls, depth and motion", lead: "Light comes from above. What you press is raised. What you type into is recessed." },
   { path: "/kit/part-2", heading: "Controls, part 2", lead: "What opens, what waits and what answers." },
-  { path: "/kit/shell", heading: "Shell", lead: "What the three workspaces share, in every state." },
+  { path: "/kit/shell", heading: "Shell", lead: "What the three workspaces share, in each state." },
 ] as const;
 
 type Props = {

@@ -26,7 +26,7 @@ TITLES = ["Summary", "Layout", "Shadows", "Energy", "Schedule", "SLD"]
 # pypdf reads from the page.
 DEMO_PAGE_1_TABLE = [
     "Site 18.52000° N, 73.86000° E",
-    "Roof Flat · tilted rows · 3,600 m² · usable 3,184 m²",
+    "Roof Flat, rows facing south · 3,600 m² · usable 3,184 m²",
     "Structure Fixed tilt 15°, 2P, lower edge 0.5 m",
     "Module INSOLATION GREEN ENERGY PVT. LTD. INA-144MHC-TF-560 · 560 Wp",
     "Inverter WattPower Systems Pvt.Ltd WP-330KTL-H1 · 275 kW · 6 MPPT",

@@ -156,16 +156,17 @@ def _notes(weather: wx.Weather, raw: pd.DataFrame, label: str) -> list[str]:
     # 25 °C can be longer than the site's cold allows, so the note says what to do about it.
     if wx.csv_column(raw, wx.CSV_COLUMNS["temp_air"]) is None:
         notes.append(
-            f"{label} has no air temperature. The app takes 25 °C for every hour and sizes the strings for "
+            f"{label} has no air temperature. The app takes 25 °C for all hours and sizes the strings for "
             "25 °C. In the Strings step, enter the site's lowest and highest ambient."
         )
     if wx.csv_column(raw, wx.CSV_COLUMNS["wind_speed"]) is None:
-        notes.append(f"{label} has no wind speed. The app takes 1 m/s for every hour.")
+        notes.append(f"{label} has no wind speed. The app takes 1 m/s for all hours.")
     times = pd.DatetimeIndex(wx.csv_times(wx.csv_column(raw, wx.CSV_COLUMNS["time"]), 0.0)).dropna()
     step = wx.minutes_between_rows(times)
     if step < 60:
         notes.append(
-            f"{label} gives the weather every {step:g} minutes. The app averages the rows of each hour: "
+            f"{label} gives the weather in steps of {step:g} minutes. "
+            "The app averages the rows of each hour: "
             "the run takes one row an hour."
         )
     notes.extend(_notes_of_cells(raw, label))

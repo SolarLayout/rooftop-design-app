@@ -1,5 +1,5 @@
-"""POST /roof/from-map and POST /roof/on-map: a roof outlined on the map, in WGS84, to a project in local
-metres, and back. The projection is the engine's (rooftop_core.geo); the tests make their input with it."""
+"""POST /roof/from-map: a roof outlined on the map, in WGS84, to a project in local
+metres. The projection is the engine's (rooftop_core.geo); the tests make their input with it."""
 
 import math
 
@@ -163,27 +163,6 @@ def test_a_point_that_is_no_place_on_earth_is_refused(client):
     assert error_of(response)["field"] == "outline.2.0"
 
 
-def test_on_map_gives_the_points_back_where_they_were_drawn(client):
-    box = local_to_lonlat([(10, 5), (15, 5), (15, 9), (10, 9)], *PUNE)
-    obstacles = [{"name": "Stair room", "kind": "box", "points": [list(p) for p in box], "height": 3.0}]
-    roof = _from_map(client, obstacles=obstacles).json()["roof"]
-
-    response = client.post("/roof/on-map", json=roof)
-
-    assert response.status_code == 200
-    body = response.json()
-    assert _flat(body["outline"]) == pytest.approx(_flat(RECTANGLE), abs=1e-8)
-    (stair,) = body["obstacles"]
-    assert (stair["name"], stair["kind"], stair["height"]) == ("Stair room", "box", 3.0)
-    assert _flat(sorted(map(tuple, stair["points"]))) == pytest.approx(_flat(sorted(box)), abs=1e-8)
-
-
-def test_on_map_of_the_demo_puts_its_corners_around_its_place(client, demo):
-    body = client.post("/roof/on-map", json=demo["roof"]).json()
-
-    assert len(body["outline"]) == len(demo["roof"]["outline"])
-    lons = [p[0] for p in body["outline"]]
-    lats = [p[1] for p in body["outline"]]
-    assert min(lons) < demo["roof"]["lon"] < max(lons)
-    assert min(lats) < demo["roof"]["lat"] < max(lats)
-    assert [o["kind"] for o in body["obstacles"]] == [o["kind"] for o in demo["roof"]["obstacles"]]
+def test_the_roof_is_no_longer_shown_on_the_map_by_the_api(client, demo):
+    # Find is for a new roof (#238, item 33): nothing asks where a project's roof is on the map.
+    assert client.post("/roof/on-map", json=demo["roof"]).status_code == 404

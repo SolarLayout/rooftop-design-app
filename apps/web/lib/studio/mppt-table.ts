@@ -85,5 +85,6 @@ export function mpptLoadingFactsOf(option: DesignOption | null): string | null {
   const list = strings.length === 1 ? `${strings[0]}` : `${strings.slice(0, -1).join(", ")} and ${strings.at(-1)}`;
   const total = `${list} ${strings.length === 1 && strings[0] === 1 ? "string" : "strings"}`;
   const unknown = option.mppt_loads.some((load) => load.imp_limit_a === null || load.isc_limit_a === null);
-  return `${total} · ${unknown ? "a limit not known" : option.mppt_loads.every((load) => load.ok) ? "within limits" : "over a limit"}`;
+  const isOver = option.mppt_loads.some((load) => !load.ok);
+  return `${total} · ${unknown ? "a limit not known" : isOver ? "over a limit" : "within limits"}`;
 }

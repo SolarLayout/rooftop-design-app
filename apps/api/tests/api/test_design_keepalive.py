@@ -19,7 +19,7 @@ PING = ": ping"
 
 def silent_run(_run: object) -> Iterator[ServerSentEvent]:
     """A run with one step that says nothing for a while, as the shading does."""
-    shading = {"step": "Computing hourly shading for every module", "fraction": 0.1}
+    shading = {"step": "Computing the hourly shading of the modules", "fraction": 0.1}
     yield ServerSentEvent(event="progress", data=shading)
     time.sleep(0.5)
     yield ServerSentEvent(event="result", data={})

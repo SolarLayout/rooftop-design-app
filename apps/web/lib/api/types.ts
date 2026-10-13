@@ -21,7 +21,6 @@ export type Losses = Answers["Losses"];
 export type Weather = Answers["Weather"];
 
 export type ProjectRequest = Requests["Project"];
-export type RoofRequest = Requests["Roof"];
 export type ObstacleRequest = Requests["Obstacle"];
 export type EquipmentFile = Requests["EquipmentFile"];
 export type RoofFile = Requests["RoofFile"];
@@ -39,7 +38,6 @@ export type InverterResponse = Answers["InverterResponse"];
 export type Inverter = Answers["Inverter"];
 export type CurrentPerMppt = Answers["CurrentPerMppt"];
 export type ImportedRoof = Answers["ImportedRoof"];
-export type RoofOnMap = Answers["RoofOnMap"];
 export type MapShape = Answers["MapShape"];
 export type LayoutResponse = Answers["LayoutResponse"];
 export type Layout = Answers["Layout"];

@@ -36,7 +36,7 @@ describe("the first-open status", () => {
   test("the array on the roof as the layout has it, and the energy on its way", () => {
     expect(firstOpenLinesOf(layout(RUN))).toEqual([
       { mark: "done", title: "The array is on the roof", detail: "790 positions" },
-      { mark: "working", title: "Computing the energy", detail: "Shading every module over the year. A few seconds." },
+      { mark: "working", title: "Computing the energy", detail: "Shading the modules over the year. A few seconds." },
     ]);
   });
 

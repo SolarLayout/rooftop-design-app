@@ -29,7 +29,7 @@ const USUAL: Partial<Record<RoofFieldId, string>> = {
   walkway_m: "room to clean and repair the modules",
   walkway_every_modules: "counted in modules along a row",
   walkway_every_rows: "counted in rows",
-  obstacle_clearance_m: "kept free on every side",
+  obstacle_clearance_m: "kept free all round",
 };
 
 export const ROOF_FIELDS: Record<RoofFieldId, RoofFieldSpec> = {

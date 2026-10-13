@@ -212,8 +212,8 @@ test.describe("Vitals, while the energy is updated", () => {
     const cell = example(page, "vitals-updating").getByTestId("vitals-last");
 
     await expect(cell).toContainText("Updating energy");
-    await expect(cell).toContainText("Computing hourly shading for every module");
-    const ring = cell.getByRole("progressbar", { name: "Computing hourly shading for every module" });
+    await expect(cell).toContainText("Computing the hourly shading of the modules");
+    const ring = cell.getByRole("progressbar", { name: "Computing the hourly shading of the modules" });
     await expect(ring).toHaveAttribute("aria-valuenow", "62");
     await expect(ring).toHaveCSS("width", "20px");
   });

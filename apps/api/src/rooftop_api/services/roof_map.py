@@ -1,8 +1,6 @@
 """A roof outlined on the map, or entered by hand about a place. The projection is the engine's
 (rooftop_core.geo), and it is the only one: the browser draws in WGS84 and receives metres."""
 
-import math
-
 from shapely.geometry import Polygon
 from shapely.geometry.polygon import orient
 
@@ -56,15 +54,6 @@ def _sloped_defaults(roof_type: str) -> dict[str, float]:
     return {"parapet_h": 0.0, "slope_deg": SLOPED_PITCH_DEG} if roof_type == "sloped_flush" else {}
 
 
-def on_map(roof: schemas.Roof) -> schemas.RoofOnMap:
-    """Where the roof and its obstacles are on the map. A roof over the limit is refused as everywhere."""
-    geometry.require_roof_within_limit(roof.outline, "outline")
-    outline = [_lonlat(p) for p in local_to_lonlat(roof.outline, roof.lat, roof.lon)]
-    return schemas.RoofOnMap(
-        outline=outline, obstacles=[_shape(o, roof.lat, roof.lon) for o in roof.obstacles]
-    )
-
-
 def _obstacle(
     shape: schemas.MapShape, index: int, lat: float, lon: float, counts: dict[str, int]
 ) -> geometry.Obstacle:
@@ -100,34 +89,3 @@ def _obstacle(
             name, shape.kind, x=x, y=y, diameter=shape.diameter or 0.0, height=shape.height
         )
     return geometry.Obstacle(name, shape.kind, points=points, height=shape.height)
-
-
-def _shape(obstacle: schemas.Obstacle, lat: float, lon: float) -> schemas.MapShape:
-    if obstacle.kind == "box":
-        corners = _corners_of_box(obstacle)
-        diameter = None
-    elif obstacle.kind in ("cylinder", "tree"):
-        corners = [(obstacle.x, obstacle.y)]
-        diameter = obstacle.diameter
-    else:
-        corners = list(obstacle.points)
-        diameter = None
-    points = [_lonlat(p) for p in local_to_lonlat(corners, lat, lon)]
-    return schemas.MapShape(
-        name=obstacle.name, kind=obstacle.kind, points=points, diameter=diameter, height=obstacle.height
-    )
-
-
-def _corners_of_box(box: schemas.Obstacle) -> list[tuple[float, float]]:
-    """The four corners of a box, counter-clockwise from the one at (-length/2, -width/2) before its turn."""
-    angle = math.radians(box.rotation_deg)
-    cos, sin = math.cos(angle), math.sin(angle)
-    half_l, half_w = box.length / 2, box.width / 2
-    return [
-        (box.x + dx * cos - dy * sin, box.y + dx * sin + dy * cos)
-        for dx, dy in ((-half_l, -half_w), (half_l, -half_w), (half_l, half_w), (-half_l, half_w))
-    ]
-
-
-def _lonlat(pair) -> tuple[float, float]:
-    return (float(pair[0]), float(pair[1]))

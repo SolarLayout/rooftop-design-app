@@ -103,12 +103,6 @@ def test_a_roof_outlined_on_the_map_over_the_limit_is_refused_by_its_outline(cli
     assert error["message"].endswith(WORDS[WORDS.index(" m². SolarLayout") :])
 
 
-def test_a_roof_put_on_the_map_over_the_limit_is_refused_by_its_outline(client, light_demo):
-    response = client.post("/roof/on-map", json=_too_large(light_demo)["roof"])
-
-    assert_refused(response, "outline")
-
-
 # ── the files ────────────────────────────────────────────────────────────────
 def test_a_kml_whose_roof_is_over_the_limit_is_refused_by_the_file(client):
     response = client.post("/roof/import", json={"name": "site.kml", "base64": _b64(TOO_LARGE_KML.encode())})

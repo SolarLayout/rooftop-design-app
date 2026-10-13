@@ -49,7 +49,7 @@ const WAITS_FOR_THE_VOLTAGE = {
 } as unknown as DesignResult;
 
 const UNREACHABLE = { code: "api_unreachable", message: "The server cannot be reached. Check the connection and try again." };
-const SHADING = { type: "progress", step: "Computing hourly shading for every module", fraction: 0.4 } as const;
+const SHADING = { type: "progress", step: "Computing the hourly shading of the modules", fraction: 0.4 } as const;
 
 const fresh = () => createResultsStore();
 

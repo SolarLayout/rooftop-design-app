@@ -18,11 +18,11 @@ from shapely.ops import unary_union
 from .errors import RoofTooLarge
 
 ROOF_TYPES = ("flat_tilted", "flat_ew", "sloped_flush")
-ROOF_TYPE_LABELS = {
-    "flat_tilted": "Flat · tilted rows",
-    "flat_ew": "Flat · east-west",
-    "sloped_flush": "Sloped · flush",
-}
+def roof_type_name(roof_type: str, lat: float) -> str:
+    """The roof type's long name, as Find asks and the web app names it (D112): the rows face the equator."""
+    if roof_type == "flat_tilted":
+        return f"Flat, rows facing {'south' if lat >= 0 else 'north'}"
+    return "Flat, rows facing east and west" if roof_type == "flat_ew" else "Sloped"
 OBSTACLE_KINDS = ("box", "cylinder", "wall", "tree", "building")
 PARAPET_THICKNESS_M = 0.2
 # One roof at a time: about 3 MWp at the demo's density, eight demo roofs (plan/phase-11-plan.md, D11).

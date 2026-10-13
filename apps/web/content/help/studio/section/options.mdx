@@ -13,13 +13,13 @@ docs:
 
 ## Choosing one
 
-Press a card to use it, or move between the cards with the arrow keys. Nothing runs again: the run has computed every option already. The chosen option sets the strings on the roof and the <HelpLink k="studio.section.mppt-loading">MPPT loading</HelpLink>.
+Press a card to use it, or move between the cards with the arrow keys. Nothing runs again: the run has computed all options already. The chosen option sets the strings on the roof and the <HelpLink k="studio.section.mppt-loading">MPPT loading</HelpLink>.
 
 ## What a card says
 
 Why it is there in two or three words, such as `Recommended`, `Fills the inverter`, `Less clipping`, `Below target` or `Your own option`. Then the modules per string × the strings, the system's size in kWp, the inverters when there is more than one, and the energy in year 1 in MWh.
 
-A tick: it fits. Its DC/AC ratio, the modules' power over the inverters' AC power, is in the target, and every MPPT's current limit is known and kept. An exclamation mark: one of them does not hold. The options outside the target fold under one line, such as `2 more, below the DC/AC target`; press it to open them.
+A tick: it fits. Its DC/AC ratio, the modules' power over the inverters' AC power, is in the target, and each MPPT's current limit is known and kept. An exclamation mark: one of them does not hold. The options outside the target fold under one line, such as `2 more, below the DC/AC target`; press it to open them.
 
 Under the chosen card, one line says whether its string length fits at the system voltage. `Why` opens the proof: see <HelpLink k="studio.section.modules-per-string">Modules per string</HelpLink>.
 
@@ -27,7 +27,7 @@ Under the chosen card, one line says whether its string length fits at the syste
 
 `How the options are made`, under the cards, opens the rules with this inverter's numbers.
 
-1. The app looks for options whose DC/AC ratio is between 1.10 and 1.30, the target. For each string length it tries the most strings that keep the target, the strings that fill those inverters, and every string the roof holds. The last two can fall outside the target.
+1. The app looks for options whose DC/AC ratio is between 1.10 and 1.30, the target. For each string length it tries the most strings that keep the target, the strings that fill those inverters, and all the strings the roof holds. The last two can fall outside the target.
 2. An MPPT takes as many strings as its current limit allows.
 3. The least shaded strings are used first: those within a row, then those that run across rows.
 

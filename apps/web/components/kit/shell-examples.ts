@@ -61,7 +61,7 @@ const UNREACHABLE = { code: "api_unreachable", message: "The server cannot be re
 const NO_FAILURE = { layoutNotes: null, designFailure: null, layoutFailure: null, savingFailure: null };
 
 const FITTING = { type: "progress", step: "Fitting modules on the roof", fraction: 0.08 } as const;
-const SHADING = { type: "progress", step: "Computing hourly shading for every module", fraction: 0.62 } as const;
+const SHADING = { type: "progress", step: "Computing the hourly shading of the modules", fraction: 0.62 } as const;
 
 const NAME = "Pune demo roof";
 
