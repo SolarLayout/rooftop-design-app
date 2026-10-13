@@ -1,0 +1,57 @@
+{
+ "name": "rooftop-launch-v2-email-640.gif",
+ "width": 640,
+ "fps": 8,
+ "colors": 96,
+ "shots": [
+  {
+   "seg": "s10-present",
+   "start": 398,
+   "end": 420,
+   "speed": 2.0,
+   "captions": [
+    {
+     "name": "hook",
+     "in": 0,
+     "fade": 1
+    }
+   ]
+  },
+  {
+   "seg": "s2-detect",
+   "start": 160,
+   "end": 262,
+   "speed": 4.0,
+   "captions": [
+    {
+     "name": "c2",
+     "in": 2
+    }
+   ]
+  },
+  {
+   "seg": "s10-present",
+   "start": 312,
+   "end": 420,
+   "speed": 4.0,
+   "captions": [
+    {
+     "name": "c3",
+     "in": 2
+    }
+   ]
+  },
+  {
+   "seg": "s10-present",
+   "start": 1060,
+   "end": 1138,
+   "speed": 4.0,
+   "captions": [
+    {
+     "name": "c10",
+     "in": 2
+    }
+   ]
+  }
+ ]
+}

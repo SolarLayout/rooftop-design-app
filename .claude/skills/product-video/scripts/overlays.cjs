@@ -102,7 +102,7 @@ function endHtml(layout, end) {
 function thumbHtml(layout, thumb, framePath) {
   const sq = Boolean(layout.square);
   const style = `.t{position:absolute;left:${sq ? 64 : 110}px;top:50%;transform:translateY(-50%);max-width:${sq ? 900 : 980}px;display:flex;flex-direction:column;gap:${sq ? 22 : 26}px}
-  .t .head{font-size:${sq ? 96 : 118}px;line-height:1.0} .t .sub{font-size:${sq ? 34 : 40}px;color:#D5DAE2} .badge{position:absolute;right:${sq ? 56 : 96}px;bottom:${sq ? 56 : 80}px;font-size:${sq ? 26 : 30}px}`;
+  .t .head{font-size:${sq ? 96 : 118}px;line-height:1.0} .t .sub{font-size:${sq ? 34 : 40}px;color:#D5DAE2;max-width:100%} .badge{position:absolute;right:${sq ? 56 : 96}px;bottom:${sq ? 56 : 80}px;font-size:${sq ? 26 : 30}px}`;
   const frame = `<div class="frame" style="background-image:url('${pathToFileURL(framePath).href}');background-size:cover;background-position:${sq ? thumb.squarePosition ?? "38% 50%" : thumb.position ?? "0% 50%"}"></div><div class="shade"></div>`;
   return page(layout, style, `${frame}<div class="t"><div>${mark(sq ? 40 : 46)}</div><div class="head">${thumb.head}</div><div class="sub">${thumb.sub}</div><div style="margin-top:6px;display:flex;gap:14px">${pills(thumb.pills)}</div></div><div class="badge pill">rooftop.solarlayout.app</div>`);
 }

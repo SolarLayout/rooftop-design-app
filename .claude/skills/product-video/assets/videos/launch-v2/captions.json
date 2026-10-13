@@ -1,0 +1,107 @@
+{
+ "captions": [
+  {
+   "name": "hook",
+   "brand": 40,
+   "head": "Rooftop PV design,<br>in your browser.",
+   "sub": "Layout, shade, strings, energy and the drawings.",
+   "pill": "Free · no account needed"
+  },
+  {
+   "name": "c1",
+   "place": "tr",
+   "sqPlace": "tr",
+   "eyebrow": "01 · Find the roof",
+   "head": "Paste the coordinates.",
+   "sub": "Or search an address, or paste a maps link."
+  },
+  {
+   "name": "c2",
+   "place": "tl-find",
+   "sqPlace": "tr",
+   "eyebrow": "02 · Outline",
+   "head": "Detect the building.",
+   "sub": "Its footprint from Overture Maps, with corners to drag."
+  },
+  {
+   "name": "c3",
+   "place": "bl",
+   "sqPlace": "bl",
+   "eyebrow": "03 · Roof",
+   "head": "The roof in 3D, laid out.",
+   "sub": "Clear of the parapet, the edge margin and the walkways."
+  },
+  {
+   "name": "c4",
+   "place": "bl",
+   "sqPlace": "bl",
+   "eyebrow": "04 · Imagery",
+   "head": "On the satellite imagery, to scale.",
+   "sub": "Obstacles with their heights, so their shadows count."
+  },
+  {
+   "name": "c5",
+   "place": "bc",
+   "sqPlace": "br",
+   "eyebrow": "05 · Sun",
+   "head": "Shadows at any hour.",
+   "sub": "The sun's path, the shade-free hours, the shade over the year."
+  },
+  {
+   "name": "c6",
+   "place": "bl",
+   "sqPlace": "bl",
+   "eyebrow": "06 · Array",
+   "head": "The module and its rows.",
+   "sub": "Tilt, orientation and the spacing of the rows."
+  },
+  {
+   "name": "c7",
+   "place": "bl",
+   "sqPlace": "bl",
+   "eyebrow": "07 · Strings",
+   "head": "An inverter chosen for the roof.",
+   "sub": "Options compared by DC/AC ratio, clipping and energy."
+  },
+  {
+   "name": "c8",
+   "place": "bl",
+   "sqPlace": "bl",
+   "eyebrow": "08 · Performance",
+   "head": "8,760 hours, each loss named.",
+   "sub": "P50, P75 and P90 on PVGIS weather, or your own file."
+  },
+  {
+   "name": "c9",
+   "place": "bl",
+   "sqPlace": "bl",
+   "eyebrow": "09 · Handover",
+   "head": "Report, SLD, BOM, cable schedule, DXF, KMZ.",
+   "sub": "And the hourly data. One by one, or in one zip."
+  },
+  {
+   "name": "c10",
+   "eyebrow": "Present",
+   "head": "The design as a tour, for the client.",
+   "sub": ""
+  }
+ ],
+ "end": {
+  "line": "Rooftop PV design, in your browser.",
+  "pills": [
+   "Free",
+   "No account needed",
+   "Phone, tablet or computer"
+  ]
+ },
+ "thumb": {
+  "head": "Rooftop PV design,<br>in your browser.",
+  "sub": "Layout, shade, strings, energy and the drawings.",
+  "pills": [
+   "Free",
+   "No account needed"
+  ],
+  "squarePosition": "0% 50%"
+ },
+ "_about": "The launch video's words on V2 (2026-10-13), in the V2 voice (plan/v2/voice.md): short, plain and direct, no tagline. The October set's \"From a roof on the map to the energy. In minutes.\" is gone: the owner rejected that line's kind on 2026-10-13. A caption with a place is a card at that place on the wide cut (sqPlace on the square): bl, bc, tl, tr, tl-find, br; without one it stands at the bottom left over a fade. head may hold <br>."
+}
