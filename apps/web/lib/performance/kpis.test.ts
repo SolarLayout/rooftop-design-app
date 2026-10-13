@@ -42,12 +42,12 @@ describe("a level in years", () => {
 });
 
 describe("the four figures", () => {
-  test("System size, Yield, Performance ratio (PR), DC/AC ratio (the owner, 2026-10-13), each with its few words", () => {
+  test("System size, DC/AC ratio (the owner, 2026-10-13: second), Yield, Performance ratio (PR), each with its few words", () => {
     expect(kpisOf(A).figures).toEqual([
       { id: "size", label: "System size", quantity: { number: "357.28", unit: "kWp" }, words: "275 kW of inverter" },
+      { id: "dcac", label: "DC/AC ratio", quantity: { number: "1.30" }, words: "Within the target, 1.10 to 1.30" },
       { id: "yield", label: "Yield", quantity: { number: "1,729", unit: "kWh/kWp" }, words: "A year, for each kWp" },
       { id: "pr", label: "Performance ratio (PR)", quantity: { number: "86.6", unit: "%" }, words: "Of its rated output, in this sunlight" },
-      { id: "dcac", label: "DC/AC ratio", quantity: { number: "1.30" }, words: "Within the target, 1.10 to 1.30" },
     ]);
   });
 

@@ -1,6 +1,6 @@
 // The lead and the four figures of Performance (V2 · 8, D104; audit V2-88, V2-89): the energy to the grid in year 1 with
 // Likely (the P50) and Conservative (the highest level the document asks for, and what it means in years), then System
-// size, Yield, Performance ratio and the DC/AC ratio (the owner, 2026-10-13: an important KPI), each with a few words. Every figure the chosen option's, formatted by the
+// size, the DC/AC ratio (the owner, 2026-10-13: an important KPI, second), Yield and Performance ratio, each with a few words. Every figure the chosen option's, formatted by the
 // guidelines. Pure.
 import type { DesignOption } from "../api";
 import { acCapacity, dcAcRatio, dcCapacity, energy, performanceRatio, specificYield } from "../format/vitals";
@@ -57,9 +57,9 @@ export function kpisOf({ energy: figures, dc_kwp, dcac }: DesignOption): KpisVie
     },
     figures: [
       { id: "size", label: "System size", quantity: dcCapacity(dc_kwp), words: `${said(acCapacity(figures.ac_kw))} of inverter` },
+      { id: "dcac", label: "DC/AC ratio", quantity: dcAcRatio(dcac), words: againstTheTarget(dcac) },
       { id: "yield", label: "Yield", quantity: specificYield(figures.specific_yield), words: "A year, for each kWp" },
       { id: "pr", label: "Performance ratio (PR)", quantity: performanceRatio(figures.pr), words: "Of its rated output, in this sunlight" },
-      { id: "dcac", label: "DC/AC ratio", quantity: dcAcRatio(dcac), words: againstTheTarget(dcac) },
     ],
   };
 }
