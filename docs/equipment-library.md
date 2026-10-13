@@ -70,8 +70,9 @@ The same way, with `ds2panond inverter <spec>.yaml --strict`. Before they are ad
 `rooftop_core.catalog` (none refused), and the engine builds options with each on a roof sized to it (about 1.2 DC/AC),
 at 1000 V and at 600 V, beside a maker's own file of the same size. A model the engine cannot size at either voltage
 is left out, and the reason said. `IMaxDC` is the current per MPPT times the MPPTs, as makers' own files give it; the
-MPPT window is the operating range. The tool writes no `VmppNom` yet: the engine then takes the longest string as the
-nominal one, as for the maker files without it.
+MPPT window is the operating range. `VmppNom` is the datasheet's rated DC input voltage (the tool's `v_mpp_nom`), so the
+engine's nominal string length follows the inverter; 50 of the 388 maker files lack it, and the engine then takes the
+longest string as the nominal one.
 
 Waaree (#249, 2026-10-13): 38 on-grid string inverters from its inverter catalogue ("Inverter Vr 01 / Oct 2025"),
 single-phase 0.7 to 6 kW, three-phase 3 to 136 kW, named by phases, rating and family (`3P-50K (30-75 kW)`), as the
