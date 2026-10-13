@@ -8,6 +8,7 @@ import pytest
 from rooftop_core import readouts
 from rooftop_core.demo import demo_project, rectangle
 from rooftop_core.geometry import Roof
+from rooftop_core.io.pvsyst import Inverter
 from rooftop_core.project import Design
 from rooftop_core.resources import SAMPLE_OND, sample_path
 from tests.kept import KEPT
@@ -32,6 +33,15 @@ def test_the_words_for_a_missing_system_voltage_are_those_of_the_inventory():
 
 
 # ── the verdict ──────────────────────────────────────────────────────────────
+def test_the_inverters_nominal_voltage_is_said_with_where_it_comes_from():
+    from_the_file = Inverter(vmpp_nom=1080.0, vmpp_nom_from="VmppNom")
+    assert readouts.nominal_words(from_the_file) == ", inverter nominal 1,080 V"
+    assert readouts.nominal_words(Inverter(vmpp_nom=575.0, vmpp_nom_from="VNomEff")) == (
+        ", inverter nominal 575 V, from its efficiency curves"
+    )
+    assert readouts.nominal_words(Inverter()) == ""
+
+
 def test_the_verdict_of_option_a(demo_design, option_a):
     verdict = readouts.verdict(demo_design, option_a)
 

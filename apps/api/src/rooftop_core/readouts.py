@@ -11,6 +11,7 @@ from dataclasses import dataclass
 
 from .bom import BomLine, CableRow, bom, cable_schedule
 from .export.summary import structure_label, summary_rows
+from .io.pvsyst import Inverter
 from .options import StringOption
 from .project import Design
 from .stringing import DCAC_TARGET, DCAC_WARN, max_strings_per_inverter, strings_held, strings_per_mppt
@@ -51,6 +52,15 @@ class MpptLoad:
     ok: bool  # within both limits; false also when a limit is not known
 
 
+def nominal_words(inverter: Inverter) -> str:
+    """The inverter's nominal MPP voltage after the string's Vmp, saying so when it is the middle of its
+    efficiency voltages (the file gives no VmppNom); nothing when the file gives neither."""
+    if not inverter.vmpp_nom:
+        return ""
+    source = ", from its efficiency curves" if inverter.vmpp_nom_from == "VNomEff" else ""
+    return f", inverter nominal {inverter.vmpp_nom:,.0f} V{source}"
+
+
 def verdict(design: Design, option: StringOption | None) -> Verdict:
     """Whether the series length of *option* fits, in the words of the desktop app.
 
@@ -61,7 +71,7 @@ def verdict(design: Design, option: StringOption | None) -> Verdict:
     if option is None:
         return Verdict(False, f"No string length fits at {rng.system_v:.0f} V", rng.message)
     n = option.n_series
-    nominal = f", inverter nominal {inverter.vmpp_nom:,.0f} V" if inverter.vmpp_nom else ""
+    nominal = nominal_words(inverter)
     loads = mppt_loads(design, option)
     currents = _currents(loads)
     ok = option.ok and all(load.ok for load in loads)

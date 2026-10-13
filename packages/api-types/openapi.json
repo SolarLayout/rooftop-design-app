@@ -953,8 +953,14 @@
             "type": "number"
           },
           "vmpp_nom": {
+            "description": "The nominal MPP voltage; 0 when the file gives neither VmppNom nor VNomEff",
             "title": "Vmpp Nom",
             "type": "number"
+          },
+          "vmpp_nom_from": {
+            "description": "Where vmpp_nom comes from: \"VmppNom\", the file's own; \"VNomEff\", the middle of the voltages its efficiency was measured at, when the file gives no VmppNom; \"\" when it gives neither",
+            "title": "Vmpp Nom From",
+            "type": "string"
           },
           "width_m": {
             "description": "Width of the box; 0 when the file does not give it",
@@ -970,6 +976,7 @@
           "vmpp_min",
           "vmpp_max",
           "vmpp_nom",
+          "vmpp_nom_from",
           "vabs_max",
           "pseuil_w",
           "idc_max_a",

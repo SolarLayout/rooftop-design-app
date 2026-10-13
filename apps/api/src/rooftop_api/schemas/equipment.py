@@ -103,7 +103,14 @@ class Inverter(BaseModel):
     pmax_kw: float
     vmpp_min: float
     vmpp_max: float
-    vmpp_nom: float
+    vmpp_nom: float = Field(
+        description="The nominal MPP voltage; 0 when the file gives neither VmppNom nor VNomEff"
+    )
+    vmpp_nom_from: str = Field(
+        description='Where vmpp_nom comes from: "VmppNom", the file\'s own; "VNomEff", the middle of '
+        "the voltages its efficiency was measured at, when the file gives no VmppNom; "
+        '"" when it gives neither'
+    )
     vabs_max: float
     pseuil_w: float
     idc_max_a: float
