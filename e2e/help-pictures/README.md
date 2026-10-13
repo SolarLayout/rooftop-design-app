@@ -6,7 +6,7 @@ This folder is a Playwright run of its own, as the soak of Present is; the check
 | File | What |
 |---|---|
 | `playwright.config.ts` | One Chromium on the test stack, at twice the pixels, software WebGL as the tests have it |
-| `help-pictures.ts` | Begins each how-to on Find (the demo's roof at `/find?edit=roof`, or the demo's place searched), does each picture's acts, cuts out what it keeps |
+| `help-pictures.ts` | Begins each how-to on Find fresh at the demo's place (and for most, the demo's roof outlined there with its obstacles), does each picture's acts, cuts out what it keeps |
 | `on-find.ts` | The hand on Find: how a how-to begins, each act, the parts of the screen kept |
 | `ground.jpg` | The plain ground served in place of the satellite imagery: no imagery to license, nothing behind the roof |
 | `../../tools/help/pictures.ts` | What each picture shows (pure, tested by `bun test tools/help`): the window, the margin, the acts |

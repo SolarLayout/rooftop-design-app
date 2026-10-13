@@ -12,7 +12,7 @@ const ROOF = "/help/find/move-the-roof/1.jpg";
 
 describe("a JPEG's size", () => {
   test("is read from its frame", () => {
-    expect(jpegSizeOf(readFileSync(join(PUBLIC, ROOF)))).toEqual({ width: 1138, height: 578 });
+    expect(jpegSizeOf(readFileSync(join(PUBLIC, ROOF)))).toEqual({ width: 1164, height: 612 });
   });
 
   test("is none for what is not a JPEG", () => {
@@ -21,17 +21,17 @@ describe("a JPEG's size", () => {
 });
 
 const picture = (attributes: string, marks = "") => `<Picture ${attributes}>\n${marks}\n</Picture>`;
-const GOOD = `src="${ROOF}" alt="The roof" width={1138} height={578}`;
+const GOOD = `src="${ROOF}" alt="The roof" width={1164} height={612}`;
 
 describe("a picture in a topic", () => {
   test("is read with its callouts", () => {
     expect(picturesOf(picture(GOOD, '<Mark n={1} x={22} y={38.1} ring>Inside the roof</Mark>\n<Mark n={2} x={50} y={5}>The handle</Mark>'))).toEqual([
-      { src: ROOF, alt: "The roof", width: 1138, height: 578, marks: [{ n: 1, x: 22, y: 38.1, ring: true, words: "Inside the roof" }, { n: 2, x: 50, y: 5, ring: false, words: "The handle" }] },
+      { src: ROOF, alt: "The roof", width: 1164, height: 612, marks: [{ n: 1, x: 22, y: 38.1, ring: true, words: "Inside the roof" }, { n: 2, x: 50, y: 5, ring: false, words: "The handle" }] },
     ]);
   });
 
   test("closed on itself, without callouts", () => {
-    expect(picturesOf(`<Picture ${GOOD} />`)).toEqual([{ src: ROOF, alt: "The roof", width: 1138, height: 578, marks: [] }]);
+    expect(picturesOf(`<Picture ${GOOD} />`)).toEqual([{ src: ROOF, alt: "The roof", width: 1164, height: 612, marks: [] }]);
   });
 });
 
@@ -46,13 +46,13 @@ describe("the gate", () => {
     expect(badPictures([topic(`<Picture src="/help/none.jpg" alt="A" width={10} height={10} />`)], PUBLIC)).toEqual([
       "find/tool/move-the-roof.mdx: /help/none.jpg is not in apps/web/public; take it with bun help:pictures",
     ]);
-    expect(badPictures([topic(`<Picture src="${ROOF}" alt="A" width={1000} height={578} />`)], PUBLIC)).toEqual([
-      `find/tool/move-the-roof.mdx: ${ROOF} is 1138 × 578, not 1000 × 578 as written`,
+    expect(badPictures([topic(`<Picture src="${ROOF}" alt="A" width={1000} height={612} />`)], PUBLIC)).toEqual([
+      `find/tool/move-the-roof.mdx: ${ROOF} is 1164 × 612, not 1000 × 612 as written`,
     ]);
   });
 
   test("names a picture without words for a screen reader", () => {
-    expect(badPictures([topic(`<Picture src="${ROOF}" alt="" width={1138} height={578} />`)], PUBLIC)).toEqual([`find/tool/move-the-roof.mdx: ${ROOF} has no alt: say what it shows`]);
+    expect(badPictures([topic(`<Picture src="${ROOF}" alt="" width={1164} height={612} />`)], PUBLIC)).toEqual([`find/tool/move-the-roof.mdx: ${ROOF} has no alt: say what it shows`]);
   });
 
   test("names callouts past three, out of their order, outside the picture or without words", () => {
@@ -79,7 +79,7 @@ describe("an MP4's length", () => {
 });
 
 describe("a clip in a topic (Phase 15)", () => {
-  const withClip = (clip: string, length: string) => topic(`<Picture src="${ROOF}" alt="The roof" width={1138} height={578} clip="${clip}" length="${length}" />`);
+  const withClip = (clip: string, length: string) => topic(`<Picture src="${ROOF}" alt="The roof" width={1164} height={612} clip="${clip}" length="${length}" />`);
 
   test("is read with its picture", () => {
     expect(picturesOf(`<Picture ${GOOD} clip="${CLIP}" length="0:06" />`)[0]).toMatchObject({ clip: CLIP, length: "0:06" });
