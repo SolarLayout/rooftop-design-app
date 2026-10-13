@@ -43,7 +43,7 @@ export function ViewControls({ stage, className }: Props) {
 
   return (
     <div className={classNames("absolute z-stage-overlay flex flex-wrap items-center justify-end gap-2 tablet:flex-nowrap", className)}>
-      <Segmented label="View" options={LOOKS} value={look} onChange={(chosen) => view.getState().setCamera(chosen)} />
+      <Segmented compact label="View" options={LOOKS} value={look} onChange={(chosen) => view.getState().setCamera(chosen)} />
       <div className={NOT_ON_PHONE}>
         <Button size="s" aria-label="Fit the roof" onClick={() => view.getState().setCamera("fit")}>
           Fit
@@ -51,7 +51,7 @@ export function ViewControls({ stage, className }: Props) {
         <button
           type="button"
           aria-label={northWordsOf(bearingDeg)}
-          className={iconButtonLook("secondary", "s", "square")}
+          className={iconButtonLook("secondary", "xs", "square")}
           onClick={() => view.getState().turnNorthUp()}
         >
           {/* North is as far counter-clockwise from up as the view looks east of it. */}

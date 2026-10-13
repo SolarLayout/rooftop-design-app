@@ -25,27 +25,23 @@ function openOf(row: Deliverable, item: HandoverItem | null, shown: HandoverItem
 }
 
 /**
- * The files of Handover by who they are for (V2 · 9, D105; the board "V2 · 9 · Handover and Home"): For the client, For
- * the utility, For the installer, For you, each group's title in text-2 over its rows, 24 between the groups.
+ * The files of Handover in the order of who they are for (V2 · 9, D105): the client's, the utility's, the installer's,
+ * yours. One list without the groups' titles (the owner, 2026-10-13: "remove the superfluous labels"), so that its first
+ * row starts at the preview card's top edge on desktop.
  */
 export function DeliverableList({ rows, item, shown, downloads, onDownload, note = null }: Props) {
   return (
     <>
       {note ? <div className="tablet:hidden">{note}</div> : null}
-      <div data-testid="deliverables" className="flex flex-col gap-6">
-        {groupsOf(rows).map((group) => (
-          <section key={group.title} aria-label={group.title} className="flex flex-col gap-1">
-            <h3 className="px-3 type-strong-touch desktop:type-strong text-text-2">{group.title}</h3>
-            <ul className="flex flex-col gap-1">
-              {group.rows.map((row) => (
-                <li key={row.id}>
-                  <DeliverableRow row={row} open={openOf(row, item, shown)} isOnItsWay={downloads[row.id]?.status === ON_ITS_WAY} onDownload={() => onDownload(row.id)} />
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
-      </div>
+      <ul data-testid="deliverables" aria-label="Files" className="flex flex-col gap-1">
+        {groupsOf(rows)
+          .flatMap((group) => group.rows)
+          .map((row) => (
+            <li key={row.id}>
+              <DeliverableRow row={row} open={openOf(row, item, shown)} isOnItsWay={downloads[row.id]?.status === ON_ITS_WAY} onDownload={() => onDownload(row.id)} />
+            </li>
+          ))}
+      </ul>
     </>
   );
 }

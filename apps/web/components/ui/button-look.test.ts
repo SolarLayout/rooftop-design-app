@@ -58,10 +58,18 @@ describe("the heights of a button", () => {
     expect(heightsOf(buttonLook("primary", "sheet"))).toEqual(["h-12", "tablet:h-touch", "desktop:h-10"]);
   });
 
-  test("every button has the control's radius, 8, at every size", () => {
-    for (const size of ["xs", "s", "m", "l", "xl", "sheet"] as const) {
-      const corners = classesOf(buttonLook("primary", size)).filter((name) => name.includes("rounded"));
-      expect(corners).toEqual(["rounded-control"]);
+  const cornersOf = (look: string) => classesOf(look).filter((name) => name.includes("rounded"));
+
+  test("the large orange primary, 48 high, has the radius of Find the roof, 14 (the owner, 2026-10-13)", () => {
+    expect(cornersOf(buttonLook("primary", "xl"))).toEqual(["rounded-cta"]);
+  });
+
+  test("every other button has the control's radius, 8, at every size", () => {
+    for (const kind of ["primary", "secondary", "quiet"] as const) {
+      for (const size of ["xs", "s", "m", "l", "xl", "sheet"] as const) {
+        if (kind === "primary" && size === "xl") continue;
+        expect(cornersOf(buttonLook(kind, size))).toEqual(["rounded-control"]);
+      }
     }
   });
 });
