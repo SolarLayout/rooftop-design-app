@@ -96,14 +96,20 @@ describe("the pitch and the azimuth, decided by the engine or given", () => {
 });
 
 describe("the design day", () => {
-  test("is the winter solstice unless a day is given; 21 Jun is 172, 21 Mar is 80", () => {
-    expect(designDayOf(ARRAY)).toBe("winter");
-    expect(designDayOf({ ...ARRAY, design_doy: 172 })).toBe("june");
-    expect(designDayOf({ ...ARRAY, design_doy: 80 })).toBe("march");
-    expect(designDayOf({ ...ARRAY, design_doy: 100 })).toBe("winter");
-    expect(withDesignDay(ARRAY, "june").design_doy).toBe(172);
-    expect(withDesignDay(ARRAY, "march").design_doy).toBe(80);
-    expect(withDesignDay({ ...ARRAY, design_doy: 172 }, "winter").design_doy).toBeNull();
+  test("is the winter solstice unless a day is given; north of the equator the summer solstice is 172, 21 Mar is 80", () => {
+    expect(designDayOf(ARRAY, 18.52)).toBe("winter");
+    expect(designDayOf({ ...ARRAY, design_doy: 172 }, 18.52)).toBe("summer");
+    expect(designDayOf({ ...ARRAY, design_doy: 80 }, 18.52)).toBe("march");
+    expect(designDayOf({ ...ARRAY, design_doy: 100 }, 18.52)).toBe("winter");
+    expect(withDesignDay(ARRAY, "summer", 18.52).design_doy).toBe(172);
+    expect(withDesignDay(ARRAY, "march", 18.52).design_doy).toBe(80);
+    expect(withDesignDay({ ...ARRAY, design_doy: 172 }, "winter", 18.52).design_doy).toBeNull();
+  });
+
+  test("south of the equator the summer solstice is 21 December, and 21 June given is the winter solstice (#238, 1)", () => {
+    expect(withDesignDay(ARRAY, "summer", -33.9).design_doy).toBe(355);
+    expect(designDayOf({ ...ARRAY, design_doy: 355 }, -33.9)).toBe("summer");
+    expect(designDayOf({ ...ARRAY, design_doy: 172 }, -33.9)).toBe("winter");
   });
 });
 
@@ -129,8 +135,8 @@ describe("who set each field of the array (V2 · 3)", () => {
   });
 
   test("the window, the design day and shaded positions against their defaults", () => {
-    expect(Object.values(windowSetByOf(ARRAY)).map((by) => by.kind)).toEqual(["default", "default", "default"]);
-    const changed = windowSetByOf({ ...ARRAY, window_start_h: 8, design_doy: 172, allow_shaded: true });
+    expect(Object.values(windowSetByOf(ARRAY, 18.52)).map((by) => by.kind)).toEqual(["default", "default", "default"]);
+    const changed = windowSetByOf({ ...ARRAY, window_start_h: 8, design_doy: 172, allow_shaded: true }, 18.52);
     expect(changed).toEqual({ window: { kind: "yours", byDefault: "09:00 to 16:00" }, design_day: { kind: "yours", byDefault: "winter solstice" }, allow_shaded: { kind: "yours", byDefault: "off" } });
   });
 });
@@ -169,12 +175,13 @@ describe("the one sentence of Spacing (V2 · 7; audit V2-34)", () => {
   test("on the design day of the array, in the other hemisphere too; none before a layout or where no row pitch applies", () => {
     expect(spacingSentenceOf({ ...ARRAY, design_doy: 172 }, LAYOUT, "flat_tilted", 18.52)).toContain("on 21 Jun.");
     expect(spacingSentenceOf(ARRAY, LAYOUT, "flat_tilted", -33.9)).toContain("on 21 Jun.");
+    expect(spacingSentenceOf({ ...ARRAY, design_doy: 355 }, LAYOUT, "flat_tilted", -33.9)).toContain("on 21 Dec.");
     expect(spacingSentenceOf(ARRAY, null, "flat_tilted", 18.52)).toBeNull();
     expect(spacingSentenceOf(ARRAY, LAYOUT, "flat_ew", 18.52)).toBeNull();
   });
 
   test("the design days, named by their date", () => {
-    expect(designDayLabelsOf(18.52)).toEqual({ winter: "21 Dec", june: "21 Jun", march: "21 Mar" });
-    expect(designDayLabelsOf(-33.9).winter).toBe("21 Jun");
+    expect(designDayLabelsOf(18.52)).toEqual({ winter: "21 Dec", summer: "21 Jun", march: "21 Mar" });
+    expect(designDayLabelsOf(-33.9)).toEqual({ winter: "21 Jun", summer: "21 Dec", march: "21 Mar" });
   });
 });

@@ -150,7 +150,7 @@ export function RoofInspector({ size }: Props) {
     <div data-size={size} className="flex flex-col">
       {reviewing.length > 0 ? <ReviewNote count={reviewing.length} onReview={review} /> : null}
       {/* The roof type is the user's: Find asks for it before the roof is built. */}
-      <SummaryRow id="roof.type" title="Roof type" help="app.section.roof-type" facts={roofTypeFactsOf(roof)} setBy={wordOf(YOURS)}>
+      <SummaryRow id="roof.type" title="Roof type" help="app.section.roof-type" helpValue={roof.roof_type} facts={roofTypeFactsOf(roof)} setBy={wordOf(YOURS)}>
         <Segmented label="Roof type" options={ROOF_TYPES.map(({ id, short }) => ({ value: id, label: short }))} value={roof.roof_type} onChange={chooseRoofType} fill />
       </SummaryRow>
       <SummaryRow id="roof.edges" title="Edges and access" help="studio.section.edges-and-access" facts={edgesFactsOf(roof)} setBy={edgesBy && wordOf(edgesBy)}>

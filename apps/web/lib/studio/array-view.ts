@@ -16,7 +16,7 @@ export function bearingOf(degrees: number): string {
 const FOLLOWS: Record<Roof["roof_type"], string> = {
   flat_tilted: "From the roof edge nearest the equator",
   flat_ew: "Ridges square to the roof edge nearest the equator",
-  sloped_flush: "From the roof edge nearest the equator",
+  sloped_flush: "The way the roof slopes",
 };
 
 /** The azimuth as shown: the engine's with why, or the one given with where the roof edge faces. */

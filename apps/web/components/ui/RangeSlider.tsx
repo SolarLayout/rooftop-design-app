@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { SliderTrack, type Tick } from "./SliderTrack";
 import type { Scale } from "./slider-steps";
 import { useSlide } from "./use-slide";
@@ -9,6 +10,8 @@ export type Span = readonly [from: number, to: number];
 type Props = {
   /** What is set, in words. It is the name of the group; each handle adds "from" or "to". */
   label: string;
+  /** What stands beside a shown label: the ? of its help topic. */
+  labelHelp?: ReactNode;
   value: Span;
   /** Hears both ends once they are committed, and only when one is another than before. */
   onCommit: (value: [from: number, to: number]) => void;
@@ -27,7 +30,7 @@ type Props = {
 };
 
 /** Two ends on one scale, the track filled between them. */
-export function RangeSlider({ label, value, onCommit, scale, apart = scale.step, format, note, ticks, isNamed = false, disabled = false, className }: Props) {
+export function RangeSlider({ label, labelHelp, value, onCommit, scale, apart = scale.step, format, note, ticks, isNamed = false, disabled = false, className }: Props) {
   const slide = useSlide({
     values: value,
     scale,
@@ -42,7 +45,10 @@ export function RangeSlider({ label, value, onCommit, scale, apart = scale.step,
       <div className="flex flex-col gap-2">
         {isNamed ? (
           <div className="flex items-baseline justify-between gap-row">
-            <span className="whitespace-nowrap text-text-2">{label}</span>
+            <span className="flex items-center gap-1.5 whitespace-nowrap text-text-2">
+              {label}
+              {labelHelp}
+            </span>
             <span className="whitespace-nowrap">
               <span data-testid="value" className="type-mono-touch desktop:type-mono">
                 {format(from)} – {format(to)}

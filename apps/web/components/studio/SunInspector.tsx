@@ -50,7 +50,7 @@ function DaySection({ size }: { size: Size }) {
 
   return (
     <section aria-labelledby={heading} className="flex flex-col gap-3">
-      <SectionHeading id={heading} help="studio.section.design-day" value={chosen}>
+      <SectionHeading id={heading} help="studio.section.the-sun-at-the-time" value={chosen}>
         Day
       </SectionHeading>
       <Segmented

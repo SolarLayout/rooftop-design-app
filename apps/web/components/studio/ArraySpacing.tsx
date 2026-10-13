@@ -7,6 +7,7 @@ import { Segmented } from "@/components/ui/Segmented";
 import { Switch } from "@/components/ui/Switch";
 import type { ArraySpec, LayoutResponse, Roof } from "@/lib/api";
 import { hourOf } from "@/lib/geometry/keepout";
+import { HelpDisc } from "@/components/shell/help/HelpDisc";
 import { ARRAY_RANGES, designDayLabelsOf, designDayOf, pitchLineOf, spacingOf, spacingSentenceOf, spacingSetByOf, windowSetByOf, withAzimuthDecided, withDesignDay, withPitchDecided, type Decided, type DesignDay, type SpacingId } from "@/lib/studio/array-fields";
 import { ARRAY_DEFAULTS } from "@/lib/studio/defaults";
 import { DEFAULT } from "@/lib/studio/set-by";
@@ -67,12 +68,12 @@ export function ArraySpacing({ array, roof, layout, onChange }: Props) {
   const roofType = roof.roof_type;
   const set = <Id extends "row_pitch_m" | "azimuth_deg">(id: Id, value: ArraySpec[Id]) => onChange((before) => (before[id] === value ? before : { ...before, [id]: value }));
   const setBy = spacingSetByOf(array, roofType);
-  const windowBy = windowSetByOf(array);
+  const windowBy = windowSetByOf(array, roof.lat);
   const window = (from: number, to: number) => onChange((before) => (before.window_start_h === from && before.window_end_h === to ? before : { ...before, window_start_h: from, window_end_h: to }));
   const shaded = (on: boolean) => onChange((before) => (before.allow_shaded === on ? before : { ...before, allow_shaded: on }));
   const sentence = spacingSentenceOf(array, layout, roofType, roof.lat);
   const days = designDayLabelsOf(roof.lat);
-  const designDays: { value: DesignDay; label: string }[] = (["winter", "june", "march"] as const).map((value) => ({ value, label: days[value] }));
+  const designDays: { value: DesignDay; label: string }[] = (["winter", "summer", "march"] as const).map((value) => ({ value, label: days[value] }));
 
   const field = (id: SpacingId) => {
     switch (id) {
@@ -115,6 +116,8 @@ export function ArraySpacing({ array, roof, layout, onChange }: Props) {
       <WithSetBy setBy={windowBy.window} onReset={() => window(ARRAY_DEFAULTS.window_start_h, ARRAY_DEFAULTS.window_end_h)}>
         <RangeSlider
           label="Shade-free hours"
+          labelHelp={<HelpDisc topic="studio.section.shade-free-hours" />}
+          isNamed
           value={[array.window_start_h, array.window_end_h]}
           scale={WINDOW_SCALE}
           format={hourOf}
@@ -123,11 +126,14 @@ export function ArraySpacing({ array, roof, layout, onChange }: Props) {
           onCommit={(span) => window(...windowCommitted(span))}
         />
       </WithSetBy>
-      <WithSetBy setBy={windowBy.design_day} onReset={() => onChange((before) => withDesignDay(before, "winter"))}>
+      <WithSetBy setBy={windowBy.design_day} onReset={() => onChange((before) => withDesignDay(before, "winter", roof.lat))}>
         <div className="flex flex-col gap-1.5">
           <div className={ROW}>
-            <span className="text-text">Design day</span>
-            <Segmented label="Design day" options={designDays} value={designDayOf(array)} onChange={(day) => onChange((before) => withDesignDay(before, day))} />
+            <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap text-text">
+              Design day
+              <HelpDisc topic="studio.section.design-day" />
+            </span>
+            <Segmented label="Design day" options={designDays} value={designDayOf(array, roof.lat)} onChange={(day) => onChange((before) => withDesignDay(before, day, roof.lat))} />
           </div>
           <p className="type-body-touch desktop:type-body text-text-3">The day the rows are spaced for. {days.winter} has the longest shadows.</p>
         </div>
