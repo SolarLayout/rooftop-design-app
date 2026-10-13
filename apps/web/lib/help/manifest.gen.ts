@@ -73,7 +73,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["find.section.shape","find.tool.find-the-roof","app.section.roof-type"],
     aliases: [],
-    docs: {"page":"find","section":"By hand"},
+    docs: {"page":"find","section":"Enter the roof by hand"},
     load: () => import("../../content/help/find/section/place.mdx"),
   },
   "find.section.shape": {
@@ -83,7 +83,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     values: [{"id":"rectangle","label":"Rectangle","meaning":"A rectangle, by its length, its width and the direction its long side faces."},{"id":"corners","label":"Corners","meaning":"Any outline, by its corners in metres east and north of the place, in order round the roof."}],
     related: ["find.section.place","app.section.roof-type","app.section.obstacles"],
     aliases: [],
-    docs: {"page":"find","section":"By hand"},
+    docs: {"page":"find","section":"Enter the roof by hand"},
     load: () => import("../../content/help/find/section/shape.mdx"),
   },
   "find.tool.box": {
@@ -92,7 +92,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "tool",
     related: ["find.tool.move-an-obstacle","find.tool.tank","app.section.obstacles"],
     aliases: [],
-    docs: {"page":"find","section":"What stands on the roof"},
+    docs: {"page":"find","section":"Add the obstacles"},
     load: () => import("../../content/help/find/tool/box.mdx"),
   },
   "find.tool.building": {
@@ -101,7 +101,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "tool",
     related: ["find.tool.move-an-obstacle","find.tool.wall","app.section.obstacles"],
     aliases: [],
-    docs: {"page":"find","section":"What stands on the roof"},
+    docs: {"page":"find","section":"Add the obstacles"},
     load: () => import("../../content/help/find/tool/building.mdx"),
   },
   "find.tool.corners": {
@@ -137,7 +137,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "tool",
     related: ["find.tool.move-the-roof","find.tool.box","app.section.obstacles"],
     aliases: [],
-    docs: {"page":"find","section":"What stands on the roof"},
+    docs: {"page":"find","section":"Add the obstacles"},
     load: () => import("../../content/help/find/tool/move-an-obstacle.mdx"),
   },
   "find.tool.move-the-roof": {
@@ -164,7 +164,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "tool",
     related: ["find.tool.move-an-obstacle","find.tool.box","app.section.obstacles"],
     aliases: [],
-    docs: {"page":"find","section":"What stands on the roof"},
+    docs: {"page":"find","section":"Add the obstacles"},
     load: () => import("../../content/help/find/tool/tank.mdx"),
   },
   "find.tool.tree": {
@@ -173,7 +173,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "tool",
     related: ["find.tool.move-an-obstacle","find.tool.tank","app.section.obstacles"],
     aliases: [],
-    docs: {"page":"find","section":"What stands on the roof"},
+    docs: {"page":"find","section":"Add the obstacles"},
     load: () => import("../../content/help/find/tool/tree.mdx"),
   },
   "find.tool.wall": {
@@ -182,7 +182,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "tool",
     related: ["find.tool.move-an-obstacle","find.tool.building","app.section.obstacles"],
     aliases: [],
-    docs: {"page":"find","section":"What stands on the roof"},
+    docs: {"page":"find","section":"Add the obstacles"},
     load: () => import("../../content/help/find/tool/wall.mdx"),
   },
   "studio.section.design-day": {
@@ -191,7 +191,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["studio.section.shade-free-hours","studio.section.spacing","studio.section.the-sun-at-the-time"],
     aliases: ["studio.section.day"],
-    docs: {"page":"sun","section":"The day"},
+    docs: {"page":"array","section":"Design day"},
     load: () => import("../../content/help/studio/section/design-day.mdx"),
   },
   "studio.section.edges-and-access": {
@@ -227,7 +227,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["studio.section.system-voltage","studio.section.inverter","studio.section.options"],
     aliases: ["studio.section.modules-in-series"],
-    docs: {"page":"strings","section":"Modules in series"},
+    docs: {"page":"strings","section":"Modules per string"},
     load: () => import("../../content/help/studio/section/modules-per-string.mdx"),
   },
   "studio.section.mounting": {
@@ -272,7 +272,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["studio.section.edges-and-access","app.section.obstacles","app.section.roof-type"],
     aliases: ["studio.section.location"],
-    docs: {"page":"roof","section":"Location"},
+    docs: {"page":"roof","section":"Outline"},
     load: () => import("../../content/help/studio/section/outline.mdx"),
   },
   "studio.section.shade-free-hours": {
@@ -281,7 +281,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["studio.section.spacing","studio.section.design-day","studio.section.on-the-roof"],
     aliases: ["studio.section.shade-free-window"],
-    docs: {"page":"array","section":"Shade-free window"},
+    docs: {"page":"array","section":"Shade-free hours"},
     load: () => import("../../content/help/studio/section/shade-free-hours.mdx"),
   },
   "studio.section.shade-map": {
@@ -299,7 +299,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     kind: "section",
     related: ["studio.section.shade-map","studio.section.on-the-roof","app.section.obstacles"],
     aliases: ["studio.section.shading-over-the-year"],
-    docs: {"page":"sun","section":"Shading over the year"},
+    docs: {"page":"sun","section":"Shade over the year"},
     load: () => import("../../content/help/studio/section/shade-over-the-year.mdx"),
   },
   "studio.section.spacing": {
@@ -328,7 +328,7 @@ export const MANIFEST: Record<HelpKey, HelpEntry> = {
     values: [{"id":"355","label":"21 Dec","meaning":"21 December, a solstice. North of the equator its shadows are the longest of the year, south of it the shortest."},{"id":"80","label":"21 Mar","meaning":"21 March, the equinox. Its shadows are shorter than at the winter solstice, longer than at the summer one."},{"id":"172","label":"21 Jun","meaning":"21 June, a solstice. South of the equator its shadows are the longest of the year, north of it the shortest."},{"id":"any","label":"Any date","meaning":"Any day of the year, by its day and its month."}],
     related: ["studio.section.design-day","studio.section.on-the-roof","studio.section.shade-free-hours"],
     aliases: ["studio.section.sun-at-the-hour"],
-    docs: {"page":"sun","section":"The sun at the hour"},
+    docs: {"page":"sun","section":"The sun at the time"},
     load: () => import("../../content/help/studio/section/the-sun-at-the-time.mdx"),
   },
 };
