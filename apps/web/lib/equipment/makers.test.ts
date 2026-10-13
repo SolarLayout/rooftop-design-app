@@ -7,6 +7,7 @@ describe("the makers as people know them (D75)", () => {
     expect(makerOf("Heliene Inc")).toBe("Heliene");
     expect(makerOf("INSOLATION GREEN ENERGY PVT. LTD.")).toBe("Insolation");
     expect(makerOf("WattPower Systems Pvt.Ltd")).toBe("WattPower");
+    expect(makerOf("Waaree Energies Ltd.")).toBe("Waaree");
   });
 
   test("the name is found whatever its case and its spaces at the ends", () => {
