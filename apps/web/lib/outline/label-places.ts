@@ -40,7 +40,7 @@ const within = (value: number, least: number, most: number) => Math.max(least, M
 
 /**
  * The places a label may take, in the order it tries them: under the shape, above it, right of it, left of it. With steps
- * asked, then the same four slid a step along their side, then each step further out, slid or not. On a map of `bounds`,
+ * asked, the four slid a step along their side too, and so again each step further out. On a map of `bounds`,
  * a place under or over the shape that runs past a side is slid back inside along it; one beside it, up or down.
  */
 function candidatesOf({ points, size }: Asked, steps: number, bounds: Rect | undefined): Rect[] {
@@ -52,14 +52,26 @@ function candidatesOf({ points, size }: Asked, steps: number, bounds: Rect | und
   const middle = (Math.min(...ys) + Math.max(...ys)) / 2 - size.height / 2;
   const across = (left: number) => (bounds ? within(left, bounds.left, bounds.right - size.width) : left);
   const down = (top: number) => (bounds ? within(top, bounds.top, bounds.bottom - size.height) : top);
-  const four = (out: number, along: number) => [
-    rectAt(across(lowest.x + HANG.x + along), lowest.y + HANG.y + out, size),
-    rectAt(across(highest.x + HANG.x + along), highest.y - HANG.y - size.height - out, size),
-    rectAt(Math.max(...xs) + ASIDE + out, down(middle + along), size),
-    rectAt(Math.min(...xs) - ASIDE - size.width - out, down(middle + along), size),
+  const [under, over, right, left] = [
+    (out: number, along: number) => rectAt(across(lowest.x + HANG.x + along), lowest.y + HANG.y + out, size),
+    (out: number, along: number) => rectAt(across(highest.x + HANG.x + along), highest.y - HANG.y - size.height - out, size),
+    (out: number, along: number) => rectAt(Math.max(...xs) + ASIDE + out, down(middle + along), size),
+    (out: number, along: number) => rectAt(Math.min(...xs) - ASIDE - size.width - out, down(middle + along), size),
   ];
-  if (steps === 0) return four(0, 0);
-  return Array.from({ length: steps + 1 }, (_, step) => step * LABEL_STEP).flatMap((out) => [0, ...ALONG].flatMap((along) => four(out, along * LABEL_STEP)));
+  if (steps === 0) return [under, over, right, left].map((side) => side(0, 0));
+  // Each ring out: under, over and right of the shape; under and over it slid, before its left, where a label reads last;
+  // then right and left of it slid.
+  const slid = (side: typeof under, out: number) => ALONG.map((along) => side(out, along * LABEL_STEP));
+  return Array.from({ length: steps + 1 }, (_, step) => step * LABEL_STEP).flatMap((out) => [
+    under(out, 0),
+    over(out, 0),
+    right(out, 0),
+    ...slid(under, out),
+    ...slid(over, out),
+    left(out, 0),
+    ...slid(right, out),
+    ...slid(left, out),
+  ]);
 }
 
 const isWithin = (rect: Rect, bounds: Rect | undefined): boolean =>
