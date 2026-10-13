@@ -2,7 +2,8 @@
 
 The app carries a library of PVsyst files, so that a user without a PAN or an OND file at hand can choose a module or
 an inverter (D75): Change on the module card or the inverter card opens a picker over it. The files are the ones their
-makers publish, gathered in the owner's two libraries (`solarlayout-pan-repo`, `solarlayout-ond-repo`).
+makers publish, gathered in the owner's two libraries (`solarlayout-pan-repo`, `solarlayout-ond-repo`), and, for a maker
+that publishes no PAN file, module files fitted from its datasheets (D115, below).
 
 ## Where it lives
 
@@ -39,7 +40,31 @@ preliminary).
 
 Removing a file is the same: delete it, run `bun equipment:catalog`, `bun check`, commit.
 
-## What the library held on 2026-10-06
+## Module files fitted from a datasheet (D115)
 
-119 modules from 5 makers (300 to 650 Wp) and 388 inverters from 8 makers (0.7 to 350 kW), the superseded and the `-old`
+Where a maker publishes datasheets but no PAN file, a file per power bin is fitted from the datasheet with the owner's
+`datasheet-to-pan-ond` (`uv run ds2panond module <spec>.yaml -o <file>.PAN --strict`):
+
+1. One spec a power bin, from the datasheet's own figures: the STC values (Pmax, Vmp, Imp, Isc, Voc), the three
+   temperature coefficients, the 200 W/m² loss as `low_light_rel_eff_pct`, the maximum system voltage, the size, the cell
+   layout (a half-cut module of N cells is `cells_in_series: N/2`, `cells_in_parallel: 2`, `half_cell: true`) and the
+   bifaciality. `data_source` names the datasheet by its document number.
+2. A figure the datasheet does not give is written into `provenance_notes`, so the file's Remarks say what was assumed and
+   why. Nothing is guessed silently.
+3. Only a fit without warnings is written (`--strict`).
+4. Before the files are added: every file read by `rooftop_core.catalog` (none refused), and the engine's `ModuleModel`
+   giving the nameplate at STC within 0.5 % and the datasheet's 200 W/m² figure.
+5. Then as any other file: copied in as `<Maker>_<Model>.PAN`, `bun equipment:catalog`, the maker's everyday name in
+   `makers.ts`.
+
+Waaree (#248, 2026-10-13): its 22 current framed datasheets (Elite and Elite R TOPCon, Plexus HJT, Ahnay and Arka PERC),
+from the download center's Product Datasheet section, 159 files. Assumed where silent: the bifaciality of Bi-53 and Bi-57
+(0.70, as the other Ahnay PERC datasheets state) and 3 bypass diodes on the Ahnay and Arka sheets. Left out: the flexible
+WFLW panels (no temperature coefficients in their text) and BiN-08's revision 10 (revision 12 has the same figures).
+
+## What the library held
+
+On 2026-10-13, after #248: 278 modules from 6 makers (300 to 730 Wp), Waaree's 159 fitted from datasheets.
+
+On 2026-10-06: 119 modules from 5 makers (300 to 650 Wp) and 388 inverters from 8 makers (0.7 to 350 kW), the superseded and the `-old`
 inverter files of the owner's library left out.
