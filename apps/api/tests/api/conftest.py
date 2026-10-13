@@ -7,6 +7,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 from rooftop_api.main import app
+from rooftop_core.io.pvsyst import decode_pvsyst
+from tools.reference import REFERENCE_PAN
 
 
 @pytest.fixture(scope="session")
@@ -16,14 +18,18 @@ def client() -> TestClient:
 
 @pytest.fixture(scope="session")
 def _demo(client: TestClient) -> dict[str, Any]:
+    """The demo as the API hands it out, with the engine's reference module (tools/reference.py): the
+    numbers the tests pin were taken with it. tests/api/test_demo.py holds the demo as it is bundled."""
     response = client.get("/demo")
     assert response.status_code == 200
-    return response.json()
+    demo = response.json()
+    demo["pan_path"], demo["pan_text"] = REFERENCE_PAN.name, decode_pvsyst(REFERENCE_PAN.read_bytes())
+    return demo
 
 
 @pytest.fixture
 def demo(_demo: dict[str, Any]) -> dict[str, Any]:
-    """The demo project as the API hands it out. A copy: a test may change it."""
+    """The demo project as the API hands it out, with the reference module. A copy: a test may change it."""
     return copy.deepcopy(_demo)
 
 

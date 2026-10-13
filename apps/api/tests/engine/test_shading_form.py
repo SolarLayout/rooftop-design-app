@@ -10,17 +10,18 @@ import pytest
 import shapely
 
 from rooftop_core import geometry, shading
-from rooftop_core.demo import demo_project, rectangle
+from rooftop_core.demo import rectangle
 from rooftop_core.geometry import Obstacle, Roof, casters_shadow, sky_loss_sectors
 from rooftop_core.project import Design
 from rooftop_core.weather import solar_position
+from tools.reference import reference_demo
 
 pytestmark = pytest.mark.slow
 
 
 def a_shaded_roof(orientation: str = "portrait") -> Design:
     """A 30 x 14 m roof at the demo's site with a parapet, a tank, a wall and a tree: shade of every kind."""
-    project = demo_project()
+    project = reference_demo()
     project.roof = Roof(outline=rectangle(30.0, 14.0), lat=project.roof.lat, lon=project.roof.lon)
     project.roof.obstacles = [
         Obstacle("Tank", "cylinder", x=8.0, y=7.0, diameter=2.0, height=2.0),

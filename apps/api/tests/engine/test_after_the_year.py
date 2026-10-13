@@ -8,11 +8,11 @@ import dataclasses
 import pytest
 
 from rooftop_core import memo
-from rooftop_core.demo import demo_project
 from rooftop_core.project import Design, Project
 from rooftop_core.simulation import after_the_year, simulate
 from tests.engine.same import assert_same_results
 from tests.kept import KEPT
+from tools.reference import reference_demo
 
 pytestmark = pytest.mark.slow
 
@@ -28,7 +28,7 @@ ONE_DECIMAL = 0.05
 
 
 def demo_with(name: str, value) -> Project:
-    project = demo_project()
+    project = reference_demo()
     assert getattr(project.losses, name) != value, f"{name} is {value} already"
     setattr(project.losses, name, value)
     return project

@@ -8,12 +8,13 @@ import numpy as np
 import pytest
 
 from rooftop_core import readouts
-from rooftop_core.demo import demo_project, rectangle
+from rooftop_core.demo import rectangle
 from rooftop_core.geometry import Obstacle, Roof
 from rooftop_core.project import Design
 from rooftop_core.stringing import max_strings_per_inverter, strings_per_mppt
 from tests.equipment import fixture_text
 from tests.kept import KEPT
+from tools.reference import reference_demo
 
 pytestmark = pytest.mark.slow
 
@@ -33,7 +34,7 @@ def variant(name: str, line: str, changed: str) -> str:
 def design(pan: str | None = None, ond: str | None = None, volts: float = 1500.0, **texts: str) -> Design:
     """The small roof at the site of the demo with the equipment named, run to the end. Its shading and
     options are kept for the session: the same roof with the same equipment is not worked out again."""
-    project = demo_project()
+    project = reference_demo()
     project.roof = Roof(outline=rectangle(30.0, 14.0), lat=project.roof.lat, lon=project.roof.lon)
     project.roof.obstacles = [Obstacle("Tank", "cylinder", x=8.0, y=7.0, diameter=2.0, height=2.0)]
     project.system_voltage = volts

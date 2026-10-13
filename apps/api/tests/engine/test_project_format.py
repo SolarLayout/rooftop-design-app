@@ -262,7 +262,7 @@ def test_empty_paths_mean_the_bundled_samples_named_by_their_files_alone():
     design = Design(_light_project())
 
     # The user is shown the file's name; where the server keeps it is none of theirs.
-    assert design.module.pnom_w == 560 and design.module.source == SAMPLE_PAN
+    assert design.module.pnom_w == 580 and design.module.source == SAMPLE_PAN
     assert design.inverter.pnom_kw == 275 and design.inverter.source == SAMPLE_OND
 
 
@@ -327,7 +327,7 @@ def test_a_server_still_has_the_bundled_samples_and_the_embedded_text():
     sample = Design(_light_project(), local_files=False)
     embedded = Design(_light_project(pan_path="Big.PAN", pan_text=PAN_TEXT), local_files=False)
 
-    assert sample.module.pnom_w == 560
+    assert sample.module.pnom_w == 580
     assert embedded.module.source == "Big.PAN"
 
 

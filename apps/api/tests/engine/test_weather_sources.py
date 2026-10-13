@@ -9,9 +9,9 @@ import pvlib
 import pytest
 
 from rooftop_core import weather as wx
-from rooftop_core.demo import demo_project
 from rooftop_core.errors import WeatherNotLoaded
 from rooftop_core.project import Design
+from tools.reference import reference_demo
 
 CSV = """# a day of made-up weather
 time,GHI,DNI,DHI,Temp,Wind
@@ -285,7 +285,7 @@ def test_load_hands_the_cache_to_the_download(pvgis):
 
 # ── the design ───────────────────────────────────────────────────────────────
 def test_loading_the_demo_never_downloads(no_download):
-    design = Design(demo_project())
+    design = Design(reference_demo())
 
     weather = design.load_weather()
 
@@ -295,7 +295,7 @@ def test_loading_the_demo_never_downloads(no_download):
 
 
 def test_a_project_without_weather_waits_for_it_instead_of_downloading(no_download):
-    project = demo_project()
+    project = reference_demo()
     project.weather_json = None
     design = Design(project)
 
@@ -311,7 +311,7 @@ def test_a_project_without_weather_waits_for_it_instead_of_downloading(no_downlo
 
 
 def test_weather_of_another_site_is_not_used_and_not_replaced_unasked(no_download):
-    project = demo_project()
+    project = reference_demo()
     project.roof.lat, project.roof.lon = 19.07, 72.88
     design = Design(project)
 
@@ -326,7 +326,7 @@ def test_weather_of_another_site_is_not_used_and_not_replaced_unasked(no_downloa
 
 
 def test_prepare_does_not_download_either(no_download):
-    project = demo_project()
+    project = reference_demo()
     project.weather_json = None
     design = Design(project)
 
@@ -337,7 +337,7 @@ def test_prepare_does_not_download_either(no_download):
 
 
 def test_a_download_that_was_asked_for_is_embedded_in_the_project(pvgis):
-    project = demo_project()
+    project = reference_demo()
     project.weather_json = None
     design = Design(project)
 
@@ -350,7 +350,7 @@ def test_a_download_that_was_asked_for_is_embedded_in_the_project(pvgis):
 
 
 def test_csv_weather_embedded_as_text_is_read_without_a_file(no_download):
-    project = demo_project()
+    project = reference_demo()
     project.weather_json = None
     project.weather_source = "csv"
     project.weather_csv = "C:/Users/someone/site.csv"
@@ -365,7 +365,7 @@ def test_csv_weather_embedded_as_text_is_read_without_a_file(no_download):
 
 
 def test_csv_weather_with_irradiance_alone_loads_into_a_design(no_download):
-    project = demo_project()
+    project = reference_demo()
     project.weather_json = None
     project.weather_source = "csv"
     project.weather_csv = "site.csv"

@@ -7,11 +7,12 @@ import pytest
 
 from rooftop_core import memo
 from rooftop_core import shading as shading_mod
-from rooftop_core.demo import demo_project, rectangle
+from rooftop_core.demo import rectangle
 from rooftop_core.geometry import Obstacle, Roof
 from rooftop_core.project import Design, Project
 from tests.engine.same import assert_same_results
 from tests.equipment import fixture_path
+from tools.reference import reference_demo
 
 pytestmark = pytest.mark.slow
 
@@ -20,7 +21,7 @@ OTHER_MODULE = "tests/fixtures/equipment/emmvee-e620hcbg132-t.PAN"
 
 def small_project(system_voltage: float | None = 1500.0) -> Project:
     """A 30 x 14 m roof at the site of the demo, with its weather: a run takes a second or two."""
-    project = demo_project()
+    project = reference_demo()
     project.roof = Roof(outline=rectangle(30.0, 14.0), lat=project.roof.lat, lon=project.roof.lon)
     project.roof.obstacles = [Obstacle("Tank", "cylinder", x=8.0, y=7.0, diameter=2.0, height=2.0)]
     project.system_voltage = system_voltage

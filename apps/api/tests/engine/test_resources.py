@@ -18,9 +18,9 @@ def test_every_sample_is_there(name):
 
 
 def test_the_samples_are_the_equipment_of_the_demo_and_its_weather():
-    assert (SAMPLE_PAN, SAMPLE_OND) == ("insolation-ina-144mhc-tf-560.PAN", "wattpower-wp-330ktl-h1.OND")
+    assert (SAMPLE_PAN, SAMPLE_OND) == ("waaree-bin-08-580.PAN", "wattpower-wp-330ktl-h1.OND")
     assert sorted(path.name for path in samples_dir().iterdir() if not path.name.startswith(".")) == [
-        "insolation-ina-144mhc-tf-560.PAN",
         "pune_weather.json",
+        "waaree-bin-08-580.PAN",
         "wattpower-wp-330ktl-h1.OND",
     ]
