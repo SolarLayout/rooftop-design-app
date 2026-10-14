@@ -18,20 +18,22 @@ before posting if the engine has changed.
 
 A launch or a feature post has four parts, in this order:
 
-- **The hook**, one sentence that names the product or the feature and what it does: "Introducing SolarLayout Rooftop:
-  design a rooftop PV system in your browser, from the roof on the map to the drawings." A feature: "<Feature> is now in
-  SolarLayout Rooftop: <what it does>." Under it, one line that says what the reader most wants to know next (for the
-  launch, "It is free, with no account needed."). The two fit in the 160 characters LinkedIn shows before "…see more" on
-  a phone. A claim, never a question, a teaser or a superlative.
+- **The hook**, one full, standard sentence that names the product or the feature and what it is: "Introducing
+  SolarLayout Rooftop, an app for designing rooftop PV systems in the browser." A feature: "<Product> now <does what>."
+  Under it, one sentence that says what the reader most wants to know next (for the launch, "It is free, and no account
+  is needed."). The two fit in the 160 characters LinkedIn shows before "…see more" on a phone. Never a slogan or a
+  phrase in place of a sentence ("from the roof on the map to the drawings" was rejected, 2026-10-14), a question, a
+  teaser or a superlative.
 - **The body**: one sentence on how it starts, then what you get as a list of four to eight bullets (typed "•"), in the
-  order the video shows it, each a plain noun phrase a reader takes in at a glance; then the proof, one or two sentences
+  order the video shows it, each one short full sentence ("It works out the shade on the modules over a year."); then the proof, one or two sentences
   on the roof in the video and its numbers.
 - **The availability**: "<Product> is available today", where it runs, and what the reader should know about their
   data, then "The link is in the first comment." (no outbound link in the post: LinkedIn shows a post with one to fewer
   people). Four to seven hashtags on their own line, the industry's: #solar #rooftopsolar #pvdesign #solarenergy, and
   the feature's where there is one.
 - **The first comment**, written out, posted within a minute and pinned: the app's link and the docs' link, each on its
-  own labelled line ("Try SolarLayout Rooftop: …", "Read the docs: …"), and one line asking for what is missing.
+  own line as a sentence ("You can open SolarLayout Rooftop at …", "The documentation is at …"), and one sentence asking
+  for what is missing.
 
 Two versions: A, about 1,000 to 1,300 characters, the whole form; B, about 500 to 600, the same hook and line, the body
 in one paragraph. Count each without its line breaks. Notes for posting: which cut to upload (the voice cut, native
@@ -58,6 +60,8 @@ plain text, the numbers on screen and their date.
 
 ## Checking a post
 
-Read it once aloud in your head: every sentence a complete one, nothing twice, no word of marketing. Count the
+Read it once aloud in your head: every sentence a complete one, nothing twice, no word of marketing, and none of the
+absolutes the owner rejected (2026-10-14): "every", "each", "whole", "entire", "all" and the like, where the plain noun
+says it ("the shade on the modules over a year", not "the shade on every module for the whole year"). Count the
 characters of the version with a limit (`wc -m`). Confirm every number against the frames of the video. Say in the
 delivery which versions were written and that the owner approves the words before posting.
