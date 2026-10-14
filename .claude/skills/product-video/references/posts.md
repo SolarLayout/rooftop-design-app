@@ -4,7 +4,9 @@ A video made for LinkedIn, Twitter or an email is not delivered alone: the post,
 with is written with it, in the video's folder as `post-<channel>.md` (`post-linkedin.md`, `post-twitter.md`,
 `post-email.md`), committed with the captions and the narration, and copied beside the cuts at delivery. The owner set
 this on 2026-10-10: the words are half the work, and a video handed over without them is posted late or posted badly.
-The launch's post, `assets/videos/launch/post-linkedin.md`, is the model, approved by the owner.
+The launch's post on V2, `assets/videos/launch-v2/post-linkedin.md`, is the model for a LinkedIn post (the owner,
+2026-10-14: a launch post reads like one, in the form OpenAI, Anthropic, Vercel and Stripe use); October's
+`assets/videos/launch/post-linkedin.md`, a description in paragraphs, is kept as the record of that campaign.
 
 The words follow the rule of every copy here: plain, direct, natural full sentences, nothing flowery, dramatic or clipped,
 nothing said twice. "Free, no account needed" is the agreed wording; "rooftop solar" is the industry's phrase, never a
@@ -14,14 +16,27 @@ before posting if the engine has changed.
 
 ## LinkedIn (`post-linkedin.md`)
 
-- Two versions: A, about 800 to 1,000 characters, what the video shows in the order it shows it, then the roof, then
-  "free, no account needed, in the browser"; B, about 400 to 500 characters, the same in one paragraph.
-- No outbound link in the post (LinkedIn shows a post with a link to fewer people): "The link is in the first comment",
-  and the first comment written out, with the app's address and the docs'.
-- Four to seven hashtags on their own line, the industry's: #solar #rooftopsolar #pvdesign #solarenergy, and the
-  feature's where there is one.
-- Notes for posting: which cut to upload (the voice cut, native video; the square one for the mobile feed), the
-  thumbnail to set, the link in the first comment within a minute, the numbers on screen and their date.
+A launch or a feature post has four parts, in this order:
+
+- **The hook**, one sentence that names the product or the feature and what it does: "Introducing SolarLayout Rooftop:
+  design a rooftop PV system in your browser, from the roof on the map to the drawings." A feature: "<Feature> is now in
+  SolarLayout Rooftop: <what it does>." Under it, one line that says what the reader most wants to know next (for the
+  launch, "It is free, with no account needed."). The two fit in the 160 characters LinkedIn shows before "…see more" on
+  a phone. A claim, never a question, a teaser or a superlative.
+- **The body**: one sentence on how it starts, then what you get as a list of four to eight bullets (typed "•"), in the
+  order the video shows it, each a plain noun phrase a reader takes in at a glance; then the proof, one or two sentences
+  on the roof in the video and its numbers.
+- **The availability**: "<Product> is available today", where it runs, and what the reader should know about their
+  data, then "The link is in the first comment." (no outbound link in the post: LinkedIn shows a post with one to fewer
+  people). Four to seven hashtags on their own line, the industry's: #solar #rooftopsolar #pvdesign #solarenergy, and
+  the feature's where there is one.
+- **The first comment**, written out, posted within a minute and pinned: the app's link and the docs' link, each on its
+  own labelled line ("Try SolarLayout Rooftop: …", "Read the docs: …"), and one line asking for what is missing.
+
+Two versions: A, about 1,000 to 1,300 characters, the whole form; B, about 500 to 600, the same hook and line, the body
+in one paragraph. Count each without its line breaks. Notes for posting: which cut to upload (the voice cut, native
+video; the square one for the mobile feed), the thumbnail to set, the first comment and its pin, the bullets pasted as
+plain text, the numbers on screen and their date.
 
 ## Twitter (`post-twitter.md`)
 
