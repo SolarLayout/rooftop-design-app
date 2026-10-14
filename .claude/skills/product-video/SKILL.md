@@ -39,8 +39,8 @@ without recording again. The ElevenLabs key and voice are in `.product-video/.en
    complete sentences, the way a person explains something aloud, never clipped fragments, never flourish, drama or
    emotion, never the same thing said twice. Numbers spoken are written in words. If a sentence needs more time than its
    screen, lengthen the screen in the plan; do not cut the English. With the words of the screen, write the post of the
-   channel the video is for, `post-<channel>.md`, in the form `references/posts.md` gives (the launch's
-   `post-linkedin.md` is the model): two versions, the first comment, the notes for posting.
+   channel the video is for, `post-<channel>.md`, in the form `references/posts.md` gives
+   (`assets/videos/launch-v2/post-linkedin.md` is the model): the hook, the body, the first comment, two versions, the notes.
 3. **Write the script** (`record.json`), one segment per thing shown, copying the launch's segments where they fit
    (the design from the map, each lens, Performance, Handover, Present). A site is in `assets/sites/`; a new site needs
    its weather fetched once (`references/pipeline.md`).

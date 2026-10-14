@@ -1,60 +1,75 @@
 # SolarLayout Rooftop · LinkedIn launch post (V2)
 
-Written to the same rule as the narration: plain, direct, natural full sentences. Two versions. The link goes in the
-first comment, so the post itself has no outbound link.
+The form of a product launch as OpenAI, Anthropic, Vercel and Stripe post one (the owner, 2026-10-14): a hook that
+names the product and what it does in one sentence, before LinkedIn's "…see more"; a body that a reader scans, what
+you get in the order the video shows it, then the proof on a real roof; the availability; and the links in the first
+comment. Plain words throughout (`references/posts.md`): no superlative, no drama, nothing said twice.
 
 ---
 
-## Version A (recommended), about 1,000 characters
+## Version A (recommended), about 1,200 characters
 
-SolarLayout Rooftop is a tool for designing rooftop PV systems, and it runs in the browser.
+Introducing SolarLayout Rooftop: design a rooftop PV system in your browser, from the roof on the map to the drawings.
 
-You start by pasting the coordinates of the roof or searching for an address. When you click the building, its footprint
-is detected from the map, and you can drag the corners. When you build the roof, it opens in 3D with the
-modules already laid out, on the satellite imagery.
+It is free, with no account needed.
 
-The shade on every module is worked out for the whole year. You choose the module
-and the spacing of the rows. The app chooses an inverter for the roof and compares the stringing options. Every hour of a
-typical year is simulated, each loss is listed, and you get the P50, P75 and P90 values. For the handover you get the
-report, the single-line diagram, the bill of materials, the cable schedule, and DXF and KMZ files.
+You find the roof by its coordinates or its address. From there, Rooftop takes the design through every step:
 
-The roof in the video is a real roof of about 5,300 square metres in Pune. The design came to 705 kWp and 1,175 MWh a
-year.
+• The building's footprint, detected from the map, with corners you can drag
+• The roof in 3D on the satellite imagery, with the modules laid out clear of the parapet and the walkways
+• The shade on every module, worked out for the whole year
+• An inverter chosen for the roof, and the stringing options compared by DC/AC ratio, clipping and energy
+• Every hour of a typical year simulated, each loss named, with the P50, P75 and P90 values
+• The report, the single-line diagram, the bill of materials, the cable schedule, and DXF and KMZ files
+• A tour of the design in 3D, to present it to your client
 
-It is free, there is no account to create, and it works on a phone, a tablet or a computer.
+The video shows a real roof of about 5,300 m² in Pune. The design came to 705 kWp on four inverters and 1,175 MWh in
+its first year.
+
+Rooftop is available today, on a phone, a tablet or a computer. Your designs are saved on your device.
 
 The link is in the first comment.
 
 #solar #rooftopsolar #pvdesign #solarenergy #renewableenergy #solarinstallers #EPC
 
-**First comment:** You can open it at https://rooftop.solarlayout.app. The documentation is at
-https://solarlayout.app/docs/rooftop.
+### First comment (pin it)
+
+Try SolarLayout Rooftop: https://rooftop.solarlayout.app
+Read the docs: https://solarlayout.app/docs/rooftop
+
+If something you need for the roofs you design is missing, tell us in the comments.
 
 ---
 
-## Version B, about 500 characters
+## Version B, about 600 characters
 
-SolarLayout Rooftop is a tool for designing rooftop PV systems in the browser.
+Introducing SolarLayout Rooftop: design a rooftop PV system in your browser, from the roof on the map to the drawings.
 
-You find the roof on the map, the building's footprint is detected, and the roof is built in 3D with the modules laid
-out. The shade, the strings with an inverter chosen for the roof, and the energy for every hour of a typical year are
-worked out, and you get the report, the single-line diagram, the bill of materials, the cable schedule, and DXF and KMZ
-files.
+It is free, with no account needed.
 
-It is free, with no account needed. The link is in the first comment.
+You find the roof, and Rooftop detects the building, lays out the modules in 3D, works out the shade for the year,
+chooses an inverter for the roof, compares the strings, simulates every hour of a typical year, and gives you the
+report, the single-line diagram, the bill of materials and the DXF.
+
+Available today, on a phone, a tablet or a computer. The link is in the first comment.
 
 #solar #rooftopsolar #pvdesign #solarenergy
+
+The first comment is the same as Version A's.
 
 ---
 
 ## Notes for posting
 
+- The hook and the line under it are the 160 characters LinkedIn shows before "…see more" on a phone; keep them first
+  and together.
 - Upload the voice cut as a native video (`solarlayout-rooftop-launch-v2-1920x1080-voice.mp4`; or the square one for the
   mobile feed) and set the thumbnail to `solarlayout-rooftop-launch-v2-thumbnail-1920x1080.jpg` or
   `solarlayout-rooftop-launch-v2-thumbnail-1080x1080.png`. The captions are in the picture, so the video reads with the
   sound off.
-- Post the link in the first comment within a minute of posting.
-- The numbers are the app's own for that roof on 2026-10-13 (705.28 kWp DC on four Waaree 3P-136K inverters chosen for the roof, DC/AC 1.30, 1,175.0 MWh in year 1, PR 83.3 %). Check
-  them again if the engine changes before posting.
+- Post the first comment within a minute of posting, and pin it.
+- The bullets are typed as "•" so they keep their place in LinkedIn's editor; paste the post as plain text.
+- The numbers are the app's own for that roof on 2026-10-13 (705.28 kWp DC on four Waaree 3P-136K inverters chosen for
+  the roof, DC/AC 1.30, 1,175.0 MWh in year 1, PR 83.3 %). Check them again if the engine changes before posting.
 - "Free, no account needed" is the launch wording agreed for the docs and the website. "Rooftop solar" is the industry's
   wording, never a bare "rooftops".
