@@ -1,5 +1,7 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { StoresProvider } from "@/components/shell/stores";
+import { analyticsOn } from "@/lib/analytics/analytics";
 import { fontVariables } from "./fonts";
 import "./globals.css";
 import { METADATA } from "./metadata";
@@ -15,6 +17,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="min-h-full">
         {/* One design for the whole app: what is outlined on the map is what the workspaces show. */}
         <StoresProvider>{children}</StoresProvider>
+        {analyticsOn(process.env) && <Analytics />}
       </body>
     </html>
   );
