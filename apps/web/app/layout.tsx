@@ -1,4 +1,5 @@
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { StoresProvider } from "@/components/shell/stores";
 import { analyticsOn } from "@/lib/analytics/analytics";
@@ -17,7 +18,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="min-h-full">
         {/* One design for the whole app: what is outlined on the map is what the workspaces show. */}
         <StoresProvider>{children}</StoresProvider>
-        {analyticsOn(process.env) && <Analytics />}
+        {analyticsOn(process.env) && (
+          <>
+            <Analytics />
+            <SpeedInsights />
+          </>
+        )}
       </body>
     </html>
   );
