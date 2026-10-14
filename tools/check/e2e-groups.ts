@@ -46,6 +46,8 @@ export const BASE_INPUTS: string[] = [
   "apps/web/lib/words/**",
   // The words of every problem the app shows (V2 · 5, D101): the result chip, the steps' heads, the dialogs, on every page.
   "apps/web/lib/errors/**",
+  // Vercel Analytics, on a build made by Vercel alone: the root layout of every page.
+  "apps/web/lib/analytics/**",
   "apps/web/content/**",
   "apps/web/public/**",
   "apps/web/*",
