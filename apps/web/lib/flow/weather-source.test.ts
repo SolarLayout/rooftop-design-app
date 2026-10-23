@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import type { Project, Weather } from "../api";
+import { ApiError, type Project, type Weather } from "../api";
 import { DOCUMENT } from "../performance/test-fixtures";
-import { loadingWordsOf, stepOfLoading, WEATHER_ITEMS, weatherRequestOf, weatherShownOf, withWeather, withWeatherLoaded } from "./weather-source";
+import { loadingWordsOf, STAND_IN_WORDS, standInFor, stepOfLoading, WEATHER_ITEMS, weatherRequestOf, weatherShownOf, withStandInLoaded, withWeather, withWeatherLoaded } from "./weather-source";
 
 const PVGIS_DOCUMENT = { ...DOCUMENT, weather_source: "pvgis", weather_csv: "", weather_csv_text: "", weather_json: null } as Project;
 const CSV_DOCUMENT = { ...PVGIS_DOCUMENT, weather_source: "csv", weather_csv: "pune-ghi.csv", weather_csv_text: "time,ghi\n2019-01-01T00:00,0" } as Project;
@@ -77,5 +77,35 @@ describe("the weather source (decision 12)", () => {
     const edited = withWeather(PVGIS_WITH_HOURS, { source: "nasa", weather: NASA_HOURS });
 
     expect({ ...edited, weather_source: "pvgis", weather_json: HOURS }).toEqual<Project>(PVGIS_WITH_HOURS);
+  });
+});
+
+describe("NASA POWER in the place of PVGIS (D122)", () => {
+  const PVGIS_FAILED = new ApiError(502, "weather_source_failed", "PVGIS TMY failed: it answered 403. Try again later, or choose another weather source.", "source");
+  const PVGIS_UNREACHABLE = new ApiError(502, "weather_source_unreachable", "PVGIS TMY could not be reached. Check the connection and try again, or choose another weather source.", "source");
+
+  test("PVGIS that fails or cannot be reached has NASA POWER in its place", () => {
+    expect(standInFor("pvgis", PVGIS_FAILED)).toBe("nasa");
+    expect(standInFor("pvgis", PVGIS_UNREACHABLE)).toBe("nasa");
+  });
+
+  test("a refusal about the site, a fault of the app's own server, or another source has none", () => {
+    expect(standInFor("pvgis", new ApiError(422, "no_weather_for_site", "PVGIS TMY has no weather for 10.0000, 65.0000: Location over the sea.", null))).toBeNull();
+    expect(standInFor("pvgis", ApiError.unreachable(new TypeError("fetch failed")))).toBeNull();
+    expect(standInFor("pvgis", new TypeError("fetch failed"))).toBeNull();
+    expect(standInFor("nasa", PVGIS_FAILED)).toBeNull();
+    expect(standInFor("csv", PVGIS_FAILED)).toBeNull();
+  });
+
+  test("its hours go into the document with NASA POWER as the source, and nothing else changes", () => {
+    const amended = withStandInLoaded(NASA_HOURS)(PVGIS_DOCUMENT);
+
+    expect(amended.weather_source).toBe("nasa");
+    expect(amended.weather_json).toBe(NASA_HOURS);
+    expect({ ...amended, weather_source: "pvgis", weather_json: null }).toEqual<Project>(PVGIS_DOCUMENT);
+  });
+
+  test("the note says what failed and which weather the design has", () => {
+    expect(STAND_IN_WORDS).toBe("PVGIS failed. The weather is NASA POWER's 2023, without a horizon.");
   });
 });
