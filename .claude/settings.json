@@ -1,4 +1,11 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(git push *)",
+      "Bash(bun tools/pr-shots.ts *)",
+      "Bash(gh pr create *)"
+    ]
+  },
   "hooks": {
     "SessionStart": [
       {
