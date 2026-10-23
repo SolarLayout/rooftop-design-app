@@ -4,17 +4,18 @@
 // are there.
 //
 // A run refused for want of weather loads the weather of the document's source for its site, puts it into the
-// document of that edit (no step of undo) and runs again, once per edit (plan/phase-08-plan.md, decision 11).
+// document of that edit (no step of undo) and runs again, once per edit (plan/phase-08-plan.md, decision 11). PVGIS that
+// fails or cannot be reached has NASA POWER's year in its place, with NASA as the document's source and a note (D122).
 //
 // The calls go through the client of the API (lib/api) and nothing else.
 import { DESIGN_PAUSE, TIME_REST } from "../../components/ui/design-numbers";
 import { partsOfAnEdit } from "./edit-parts";
-import { api as apiOfTheApp, ApiError, type Api, type DesignResult, type Project } from "../api";
+import { api as apiOfTheApp, ApiError, type Api, type DesignResult, type Project, type Weather, type WeatherRequest } from "../api";
 import { CLOCK_OF_THE_BROWSER, type Clock } from "../clock";
-import { stepOfLoading, weatherRequestOf, withWeatherLoaded } from "./weather-source";
+import { loadingWordsOf, STAND_IN_WORDS, standInFor, stepOfLoading, weatherRequestOf, withStandInLoaded, withWeatherLoaded } from "./weather-source";
 import { hoursOf, QUARTER_HOUR } from "./sun-day";
 import { heldHourOf } from "./sun-time";
-import type { ProjectState, ProjectStore } from "../stores/project-store";
+import type { Edit, ProjectState, ProjectStore } from "../stores/project-store";
 import { designEditOf, sunKeyOf, withTheChoice, type Failure, type ResultsStore, type SunDay, type SunKey } from "../stores/results-store";
 import type { ViewStore } from "../stores/view-store";
 import { choiceGoneOf, withTheChoiceShown, type ChoiceGone } from "./choice-gone";
@@ -29,6 +30,8 @@ type Options = {
   clock?: Clock;
   /** Hears a choice of stringing an edit took away, once the document is brought to the option shown. */
   onChoiceGone?: (gone: ChoiceGone) => void;
+  /** Says what the flow did in the user's place, in a note: NASA's weather standing in for PVGIS's (D122). */
+  say?: (words: string) => void;
 };
 
 export type DesignFlow = {
@@ -58,7 +61,7 @@ export function failureOf(error: unknown): Failure {
   return { code: "unexpected_fault", message: "The app could not finish this step.", status: null, details: what };
 }
 
-export function createDesignFlow({ project, results, view, api = apiOfTheApp, clock = CLOCK_OF_THE_BROWSER, onChoiceGone }: Options): DesignFlow {
+export function createDesignFlow({ project, results, view, api = apiOfTheApp, clock = CLOCK_OF_THE_BROWSER, onChoiceGone, say }: Options): DesignFlow {
   let followed = 0;
   /** The edit at which the demo was opened: the run of that edit is the untouched demo's. Edits only grow, so no later edit is it. */
   /** The document of the edit followed last: what the next edit is compared with. */
@@ -263,23 +266,54 @@ export function createDesignFlow({ project, results, view, api = apiOfTheApp, cl
    * the load up, as it gives up the run.
    */
   function loadTheWeatherThenRun(document: Project, edit: number) {
+    loadThenRun(document, edit, weatherRequestOf(document), stepOfLoading(document), withWeatherLoaded, (error) => {
+      // PVGIS down is not the end of the design: NASA's year stands in, once, and the note says so (D122). NASA failing too
+      // is the run's failure in PVGIS's words, the source the document still has.
+      const standIn = standInFor(document.weather_source, error);
+      if (standIn === null) return results.getState().designFailed(edit, failureOf(error));
+      loadThenRun(
+        document,
+        edit,
+        { ...weatherRequestOf(document), source: standIn },
+        loadingWordsOf(standIn),
+        withStandInLoaded,
+        () => results.getState().designFailed(edit, failureOf(error)),
+        () => say?.(STAND_IN_WORDS),
+      );
+    });
+  }
+
+  /**
+   * Asks /weather, puts what comes into the document of the edit with *loaded*, says it with *arrived*, and runs; what does
+   * not come goes to *failed*.
+   */
+  function loadThenRun(
+    document: Project,
+    edit: number,
+    request: WeatherRequest,
+    step: string,
+    loaded: (weather: Weather) => Edit,
+    failed: (error: unknown) => void,
+    arrived?: () => void,
+  ) {
     const call = new AbortController();
     weatherCall = call;
-    results.getState().designProgressed(edit, { type: "progress", step: stepOfLoading(document), fraction: 0 });
+    results.getState().designProgressed(edit, { type: "progress", step, fraction: 0 });
     api
-      .loadWeather(weatherRequestOf(document), { signal: call.signal })
+      .loadWeather(request, { signal: call.signal })
       .then(
         (answer) => {
           if (call.signal.aborted) return;
           weatherCall = null;
           weatherLoadedFor = edit;
-          const withTheWeather = withWeatherLoaded(answer.weather);
+          const withTheWeather = loaded(answer.weather);
           // Once another edit is current the document is no longer this one; the run of this edit still has its weather.
           const amended = project.getState().amend(edit, withTheWeather) ?? withTheWeather(document);
+          arrived?.();
           run(amended, edit);
         },
         (error: unknown) => {
-          if (!call.signal.aborted) results.getState().designFailed(edit, failureOf(error));
+          if (!call.signal.aborted) failed(error);
         },
       )
       .finally(() => {

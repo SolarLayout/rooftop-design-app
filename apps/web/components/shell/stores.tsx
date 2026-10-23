@@ -88,6 +88,7 @@ function createStores(): Stores {
     results,
     view,
     onChoiceGone: (gone) => choicesGone.getState().heard(gone),
+    say: (words) => void toasts.show({ kind: "note", words }),
   });
   return { project, results, view, flow, play, toasts, downloads, saving, choicesGone, country };
 }

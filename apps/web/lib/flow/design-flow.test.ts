@@ -99,6 +99,8 @@ function flow() {
   /** The runs of the untouched demo, as the flow reports them (plan/phase-10-plan.md, step 11). */
   /** The choices taken away, as the flow tells them. */
   const gone: ChoiceGone[] = [];
+  /** What the flow says in a note. */
+  const said: string[] = [];
   const designFlow = createDesignFlow({
     api: server.api,
     clock: time.clock,
@@ -106,6 +108,7 @@ function flow() {
     results,
     view,
     onChoiceGone: (choice) => gone.push(choice),
+    say: (words) => said.push(words),
   });
   designFlow.start();
   const last = <Answer>(list: Array<Asked<Answer>>): Asked<Answer> => {
@@ -113,7 +116,7 @@ function flow() {
     if (!found) throw new Error("Nothing was asked.");
     return found;
   };
-  return { ...time, ...server, project, results, view, designFlow, gone, last };
+  return { ...time, ...server, project, results, view, designFlow, gone, said, last };
 }
 
 /** The demo is open and its first results are there. */
@@ -1216,5 +1219,108 @@ describe("weather for a design that has none", () => {
 
     expect(weathers[0]?.request).toEqual({ source: "csv", lat: 18.52, lon: 73.86, csv_name: "pune.csv", csv_text: "time,ghi" });
     expect(progressOf(results.getState())?.step).toBe("Reading pune.csv");
+  });
+
+  // NASA POWER in the place of PVGIS (D122): PVGIS that fails or cannot be reached is not the end of a design without
+  // weather; NASA's year is loaded instead, the document's source becomes NASA's, and the note says so.
+  describe("PVGIS fails", () => {
+    const PVGIS_FAILED = "PVGIS TMY failed: it answered 403. Try again later, or choose another weather source.";
+    const pvgisFailed = () => new ApiError(502, "weather_source_failed", PVGIS_FAILED, "source");
+    const NASA_HOURS = { source: "nasa", label: "NASA POWER 2023", lat: 18.52, lon: 73.86, time: ["2023-01-01T00:00:00+00:00"] } as unknown as Weather;
+    const NASA_LOADED = { weather: NASA_HOURS, summary: {}, notes: [] } as unknown as WeatherResponse;
+    const NOTE = "PVGIS failed. The weather is NASA POWER's 2023, without a horizon.";
+
+    test("NASA POWER is asked for the same place, and the step says so", async () => {
+      const { weathers, results, last } = await refused();
+
+      last(weathers).refuse(pvgisFailed());
+      await settled();
+
+      expect(weathers.map((call) => call.request.source)).toEqual(["pvgis", "nasa"]);
+      expect(weathers[1]?.request).toEqual({ source: "nasa", lat: 18.52, lon: 73.86, csv_name: "", csv_text: "" });
+      expect(designStatusOf(results.getState())).toBe("running");
+      expect(designFailureOf(results.getState())).toBeNull();
+      expect(progressOf(results.getState())?.step).toBe("Loading 2023's weather from NASA POWER");
+    });
+
+    test("PVGIS that cannot be reached has NASA POWER in its place too", async () => {
+      const { weathers, last } = await refused();
+
+      last(weathers).refuse(new ApiError(502, "weather_source_unreachable", "PVGIS TMY could not be reached.", "source"));
+      await settled();
+
+      expect(weathers.map((call) => call.request.source)).toEqual(["pvgis", "nasa"]);
+    });
+
+    test("NASA's hours and source go into the document of that edit, the run is asked again with them, and the note is said", async () => {
+      const { weathers, runs, project, results, said, last } = await refused();
+      last(weathers).refuse(pvgisFailed());
+      await settled();
+
+      last(weathers).answer(NASA_LOADED);
+      await settled();
+
+      expect(runs).toHaveLength(2);
+      expect(runs[1]?.project.weather_source).toBe("nasa");
+      expect(runs[1]?.project.weather_json).toBe(NASA_HOURS);
+      expect(project.getState().project?.weather_source).toBe("nasa");
+      expect(project.getState().edit).toBe(1);
+      expect(canUndo(project.getState())).toBe(false);
+      expect(said).toEqual([NOTE]);
+
+      last(runs).answer(design(790));
+      await settled();
+      expect(designOf(results.getState())?.readouts.positions).toBe(790);
+    });
+
+    test("NASA POWER failing too is the run's failure, in PVGIS's words, and the document keeps its source", async () => {
+      const { weathers, runs, project, results, said, last } = await refused();
+      last(weathers).refuse(pvgisFailed());
+      await settled();
+
+      last(weathers).refuse(new ApiError(502, "weather_source_unreachable", "NASA POWER could not be reached.", "source"));
+      await settled();
+
+      expect(weathers).toHaveLength(2);
+      expect(runs).toHaveLength(1);
+      expect(designFailureOf(results.getState())).toMatchObject({ code: "weather_source_failed", message: PVGIS_FAILED });
+      expect(project.getState().project?.weather_source).toBe("pvgis");
+      expect(said).toEqual([]);
+    });
+
+    test("a refusal about the site or a fault of the app's own server asks nothing more", async () => {
+      for (const error of [new ApiError(422, "no_weather_for_site", OVER_THE_SEA, null), ApiError.unreachable(new TypeError("fetch failed"))]) {
+        const { weathers, results, last } = await refused();
+
+        last(weathers).refuse(error);
+        await settled();
+
+        expect(weathers).toHaveLength(1);
+        expect(designStatusOf(results.getState())).toBe("failed");
+      }
+    });
+
+    test("a NASA document whose NASA fails asks nothing more", async () => {
+      const { weathers, results, last } = await refused({ ...WITHOUT_WEATHER, weather_source: "nasa" } as Project);
+
+      last(weathers).refuse(new ApiError(502, "weather_source_failed", "NASA POWER failed: it answered 503.", "source"));
+      await settled();
+
+      expect(weathers).toHaveLength(1);
+      expect(designStatusOf(results.getState())).toBe("failed");
+    });
+
+    test("an edit while NASA's hours load gives them up, and is no failure", async () => {
+      const { weathers, results, project, said, last } = await refused();
+      last(weathers).refuse(pvgisFailed());
+      await settled();
+
+      project.getState().commit(tilt(20));
+
+      expect(weathers[1]?.signal.aborted).toBe(true);
+      await settled();
+      expect(designFailureOf(results.getState())).toBeNull();
+      expect(said).toEqual([]);
+    });
   });
 });

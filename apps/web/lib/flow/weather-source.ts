@@ -3,7 +3,7 @@
 // and the edit of the document once the hours came. Pure.
 import type { SelectOption } from "../../components/ui/Select";
 import type { Edit } from "../stores/project-store";
-import type { Project, Weather, WeatherRequest } from "../api";
+import { ApiError, type Project, type Weather, type WeatherRequest } from "../api";
 
 export type WeatherSource = Project["weather_source"];
 
@@ -46,6 +46,25 @@ export function stepOfLoading(document: Project): string {
 export const withWeatherLoaded =
   (weather: Weather): Edit =>
   (document) => ({ ...document, weather_json: weather });
+
+/** The API's words for a weather service that failed or could not be reached, as against a refusal about the site. */
+const SERVICE_DOWN = new Set(["weather_source_failed", "weather_source_unreachable"]);
+
+/**
+ * The source loaded in the place of the document's when that one fails (D122): NASA POWER for PVGIS that failed or could not
+ * be reached. A refusal about the site, a fault of the app's own server, NASA itself or a CSV has none.
+ */
+export function standInFor(source: WeatherSource, error: unknown): DownloadedSource | null {
+  return source === "pvgis" && error instanceof ApiError && SERVICE_DOWN.has(error.code) ? "nasa" : null;
+}
+
+/** NASA's hours put into the document in the place of PVGIS's, with NASA as its source: the run takes them as the document's. */
+export const withStandInLoaded =
+  (weather: Weather): Edit =>
+  (document) => ({ ...document, weather_source: "nasa", weather_json: weather });
+
+/** The note said once NASA's hours stand in for PVGIS's (D122): what failed, and which weather the design has. */
+export const STAND_IN_WORDS = "PVGIS failed. The weather is NASA POWER's 2023, without a horizon.";
 
 /** A source chosen, with the hours /weather answered for it; a CSV with its file's name and text, which the document carries (D7). */
 export type WeatherChosen = { source: WeatherSource; weather: Weather; csv?: { name: string; text: string } };
