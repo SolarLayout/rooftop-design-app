@@ -4,6 +4,18 @@
       "Bash(git push *)",
       "Bash(bun tools/pr-shots.ts *)",
       "Bash(gh pr create *)"
+    ],
+    "deny": [
+      "Bash(git push *--receive-pack*)",
+      "Bash(git push *--exec*)",
+      "Bash(git push *--force*)",
+      "Bash(git push *-f *)",
+      "Bash(git push * -f)",
+      "Bash(git push *--mirror*)",
+      "Bash(git push *--delete*)",
+      "Bash(git push * :*)",
+      "Bash(gh pr create *--repo*)",
+      "Bash(gh pr create *-R *)"
     ]
   },
   "hooks": {
